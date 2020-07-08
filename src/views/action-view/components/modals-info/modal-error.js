@@ -1,22 +1,22 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import {
-  Modal, Button,
-} from 'semantic-ui-react';
+  Modal, Button
+} from 'semantic-ui-react'
 
 const message = {
-  '0': 'You do not have enough approved tokens.',
-  '1': 'You do not have enough ether.',
-};
+  0: 'You do not have enough approved tokens.',
+  1: 'You do not have enough ether.'
+}
 
 class ModalError extends Component {
   static propTypes = {
     modalError: PropTypes.bool.isRequired,
     error: PropTypes.string.isRequired,
-    toggleModalError: PropTypes.func.isRequired,
+    onToggleModalError: PropTypes.func.isRequired
   }
 
-  render() {
+  render () {
     return (
       <Modal open={this.props.modalError}>
         <Modal.Header>Error</Modal.Header>
@@ -24,13 +24,13 @@ class ModalError extends Component {
           {message[this.props.error]}
         </Modal.Content>
         <Modal.Actions>
-          <Button color="red" onClick={this.props.toggleModalError}>
+          <Button color='red' onClick={this.props.onToggleModalError}>
             OK
           </Button>
         </Modal.Actions>
       </Modal>
-    );
+    )
   }
 }
 
-export default ModalError;
+export default ModalError
