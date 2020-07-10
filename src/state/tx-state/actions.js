@@ -1,30 +1,30 @@
-import * as CONSTANTS from './constants';
+import * as CONSTANTS from './constants'
 
-const web3 = require('web3');
-const operator = require('bundle-op');
+const web3 = require('web3')
+const operator = require('../../utils/bundle-op')
 
-function stateSend(tx) {
+function stateSend (tx) {
   return {
     type: CONSTANTS.STATE_SEND,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-function stateSendSuccess(tx) {
+function stateSendSuccess (tx) {
   return {
     type: CONSTANTS.STATE_SEND_SUCCESS,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-function stateSendError(tx) {
+function stateSendError (tx) {
   return {
     type: CONSTANTS.STATE_SEND_ERROR,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-export function handleStateSend(res, urlOperator, amount, fee, tokenId, babyJubReceiver, pendingOff, babyjub) {
+export function handleStateSend (res, urlOperator, amount, fee, tokenId, babyJubReceiver, pendingOff, babyjub) {
   const infoTx = {
     currentBatch: res.currentBatch,
     nonce: res.nonce,
@@ -36,104 +36,105 @@ export function handleStateSend(res, urlOperator, amount, fee, tokenId, babyJubR
     fee,
     tokenId,
     from: babyjub,
-    timestamp: Date.now(),
-  };
+    timestamp: Date.now()
+  }
   if (babyJubReceiver === 'exit') {
-    infoTx.type = 'Exit';
+    infoTx.type = 'Exit'
   } else {
-    infoTx.type = 'Send';
+    infoTx.type = 'Send'
   }
   return async function (dispatch) {
     if (pendingOff.filter((tx) => tx.id === infoTx.id).length === 0) {
-      dispatch(stateSend(infoTx));
+      dispatch(stateSend(infoTx))
       try {
-        const nonceTx = res.nonce;
-        let currentBatch = Number(res.currentBatch);
-        const { maxNumBatch } = infoTx;
-        const apiOperator = new operator.cliExternalOperator(urlOperator);
-        let actualNonce;
+        const nonceTx = res.nonce
+        let currentBatch = Number(res.currentBatch)
+        const { maxNumBatch } = infoTx
+        // eslint-disable-next-line new-cap
+        const apiOperator = new operator.cliExternalOperator(urlOperator)
+        let actualNonce
         try {
-          const resFrom = await apiOperator.getStateAccountByAddress(tokenId, babyjub);
-          actualNonce = resFrom.data.nonce;
+          const resFrom = await apiOperator.getStateAccountByAddress(tokenId, babyjub)
+          actualNonce = resFrom.data.nonce
         } catch (err) {
-          actualNonce = 0;
+          actualNonce = 0
         }
         while (actualNonce <= nonceTx && currentBatch <= maxNumBatch) {
           // eslint-disable-next-line no-await-in-loop
-          const newState = await getNewState(apiOperator, tokenId, babyjub);
-          actualNonce = newState.actualNonce;
-          currentBatch = newState.currentBatch;
+          const newState = await getNewState(apiOperator, tokenId, babyjub)
+          actualNonce = newState.actualNonce
+          currentBatch = newState.currentBatch
         }
-        infoTx.finalBatch = currentBatch;
-        infoTx.currentBatch = currentBatch;
+        infoTx.finalBatch = currentBatch
+        infoTx.currentBatch = currentBatch
         if (actualNonce > nonceTx) {
-          infoTx.state = 'Success (pending confirmation batches)';
-          dispatch(stateSendSuccess(infoTx));
+          infoTx.state = 'Success (pending confirmation batches)'
+          dispatch(stateSendSuccess(infoTx))
           while (currentBatch < maxNumBatch + 5) {
             // eslint-disable-next-line no-await-in-loop
-            currentBatch = await getCurrentBatch(apiOperator);
+            currentBatch = await getCurrentBatch(apiOperator)
           }
-          infoTx.currentBatch = currentBatch;
-          infoTx.state = 'Success';
-          dispatch(stateSendSuccess(infoTx));
+          infoTx.currentBatch = currentBatch
+          infoTx.state = 'Success'
+          dispatch(stateSendSuccess(infoTx))
         } else {
-          dispatch(stateSendError(infoTx));
+          dispatch(stateSendError(infoTx))
         }
       } catch (error) {
-        dispatch(stateSendError(infoTx));
+        dispatch(stateSendError(infoTx))
       }
     } else {
-      infoTx.id = `${res.nonce.toString() + tokenId}error`;
-      infoTx.error = 'Nonce Error';
-      dispatch(stateSendError(infoTx));
+      infoTx.id = `${res.nonce.toString() + tokenId}error`
+      infoTx.error = 'Nonce Error'
+      dispatch(stateSendError(infoTx))
     }
-  };
+  }
 }
 
-function getNewState(apiOperator, tokenId, address) {
-  return new Promise(((resolve) => {
+function getNewState (apiOperator, tokenId, address) {
+  return new Promise((resolve) => {
     setTimeout(async () => {
-      let actualNonce;
-      let currentBatch;
+      let actualNonce
+      let currentBatch
       try {
-        const resFrom = await apiOperator.getStateAccountByAddress(tokenId, address);
-        actualNonce = resFrom.data.nonce;
+        const resFrom = await apiOperator.getStateAccountByAddress(tokenId, address)
+        actualNonce = resFrom.data.nonce
       } catch (err) {
-        actualNonce = 0;
+        actualNonce = 0
       }
       try {
-        const resOperator = await apiOperator.getState();
-        currentBatch = resOperator.data.rollupSynch.lastBatchSynched;
+        const resOperator = await apiOperator.getState()
+        currentBatch = resOperator.data.rollupSynch.lastBatchSynched
       } catch (err) {
-        currentBatch = 0;
+        currentBatch = 0
       }
-      resolve({ actualNonce, currentBatch });
-    }, 30000);
-  }));
+      resolve({ actualNonce, currentBatch })
+    }, 30000)
+  })
 }
 
-function stateDeposit(tx) {
+function stateDeposit (tx) {
   return {
     type: CONSTANTS.STATE_DEPOSIT,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-function stateDepositSuccess(tx) {
+function stateDepositSuccess (tx) {
   return {
     type: CONSTANTS.STATE_DEPOSIT_SUCCESS,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-function stateDepositError(tx) {
+function stateDepositError (tx) {
   return {
     type: CONSTANTS.STATE_DEPOSIT_ERROR,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-export function handleStateDeposit(tx, tokenId, urlOperator, amount) {
+export function handleStateDeposit (tx, tokenId, urlOperator, amount) {
   const infoTx = {
     currentBatch: tx.currentBatch,
     nonce: tx.res.nonce,
@@ -145,81 +146,82 @@ export function handleStateDeposit(tx, tokenId, urlOperator, amount) {
     maxNumBatch: 'Pending',
     finalBatch: 'Pending',
     tokenId,
-    timestamp: Date.now(),
-  };
+    timestamp: Date.now()
+  }
   return async function (dispatch) {
-    infoTx.state = 'Pending (Ethereum)';
-    dispatch(stateDeposit(infoTx));
+    infoTx.state = 'Pending (Ethereum)'
+    dispatch(stateDeposit(infoTx))
     try {
-      await tx.res.wait();
-      const apiOperator = new operator.cliExternalOperator(urlOperator);
-      const resState = await apiOperator.getState();
-      let currentBatch = resState.data.rollupSynch.lastBatchSynched;
-      const maxNumBatch = currentBatch + 2;
-      infoTx.currentBatch = currentBatch;
-      infoTx.state = 'Pending (Operator)';
-      infoTx.maxNumBatch = maxNumBatch;
-      dispatch(stateDeposit(infoTx));
+      await tx.res.wait()
+      // eslint-disable-next-line new-cap
+      const apiOperator = new operator.cliExternalOperator(urlOperator)
+      const resState = await apiOperator.getState()
+      let currentBatch = resState.data.rollupSynch.lastBatchSynched
+      const maxNumBatch = currentBatch + 2
+      infoTx.currentBatch = currentBatch
+      infoTx.state = 'Pending (Operator)'
+      infoTx.maxNumBatch = maxNumBatch
+      dispatch(stateDeposit(infoTx))
       while (currentBatch < maxNumBatch) {
         // eslint-disable-next-line no-await-in-loop
-        currentBatch = await getCurrentBatch(apiOperator);
+        currentBatch = await getCurrentBatch(apiOperator)
       }
-      infoTx.currentBatch = currentBatch;
-      infoTx.finalBatch = currentBatch;
-      infoTx.state = 'Success (pending confirmation batches)';
+      infoTx.currentBatch = currentBatch
+      infoTx.finalBatch = currentBatch
+      infoTx.state = 'Success (pending confirmation batches)'
       // infoTx.confirmationBatch = maxNumBatch + 5;
-      dispatch(stateDepositSuccess(infoTx));
+      dispatch(stateDepositSuccess(infoTx))
       while (currentBatch < maxNumBatch + 5) {
         // eslint-disable-next-line no-await-in-loop
-        currentBatch = await getCurrentBatch(apiOperator);
+        currentBatch = await getCurrentBatch(apiOperator)
       }
       // infoTx.confirmedBatch = currentBatch;
-      infoTx.currentBatch = currentBatch;
-      infoTx.state = 'Success';
-      dispatch(stateDepositSuccess(infoTx));
+      infoTx.currentBatch = currentBatch
+      infoTx.state = 'Success'
+      dispatch(stateDepositSuccess(infoTx))
     } catch (error) {
-      dispatch(stateDepositError(infoTx));
+      dispatch(stateDepositError(infoTx))
     }
-  };
+  }
 }
 
-function getCurrentBatch(apiOperator) {
-  return new Promise(((resolve) => {
+function getCurrentBatch (apiOperator) {
+  return new Promise((resolve) => {
     setTimeout(async () => {
-      let currentBatch;
+      let currentBatch
       try {
-        const resOperator = await apiOperator.getState();
-        currentBatch = resOperator.data.rollupSynch.lastBatchSynched;
+        const resOperator = await apiOperator.getState()
+        currentBatch = resOperator.data.rollupSynch.lastBatchSynched
       } catch (err) {
-        currentBatch = 0;
+        currentBatch = 0
       }
-      resolve(currentBatch);
-    }, 30000);
-  }));
+      resolve(currentBatch)
+    }, 30000)
+  })
 }
 
-function stateWithdraw(tx) {
+function stateWithdraw (tx) {
   return {
     type: CONSTANTS.STATE_WITHDRAW,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-function stateWithdrawSuccess(tx) {
+function stateWithdrawSuccess (tx) {
   return {
     type: CONSTANTS.STATE_WITHDRAW_SUCCESS,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-function stateWithdrawError(tx) {
+function stateWithdrawError (tx) {
   return {
     type: CONSTANTS.STATE_WITHDRAW_ERROR,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-export function handleStateWithdraw(tx, tokenId) {
+export function handleStateWithdraw (tx, tokenId) {
   const infoTx = {
     currentBatch: tx.currentBatch,
     nonce: tx.res.nonce,
@@ -229,41 +231,41 @@ export function handleStateWithdraw(tx, tokenId) {
     from: tx.res.from,
     to: tx.res.to,
     tokenId,
-    timestamp: Date.now(),
-  };
+    timestamp: Date.now()
+  }
   return async function (dispatch) {
-    dispatch(stateWithdraw(infoTx));
+    dispatch(stateWithdraw(infoTx))
     try {
-      await tx.res.wait();
-      dispatch(stateWithdrawSuccess(infoTx));
+      await tx.res.wait()
+      dispatch(stateWithdrawSuccess(infoTx))
     } catch (error) {
-      dispatch(stateWithdrawError(infoTx));
+      dispatch(stateWithdrawError(infoTx))
     }
-  };
+  }
 }
 
-function stateForceExit(tx) {
+function stateForceExit (tx) {
   return {
     type: CONSTANTS.STATE_FORCE_EXIT,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-function stateForceExitSuccess(tx) {
+function stateForceExitSuccess (tx) {
   return {
     type: CONSTANTS.STATE_FORCE_EXIT_SUCCESS,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-function stateForceExitError(tx) {
+function stateForceExitError (tx) {
   return {
     type: CONSTANTS.STATE_FORCE_EXIT_ERROR,
-    payload: tx,
-  };
+    payload: tx
+  }
 }
 
-export function handleStateForceExit(tx, urlOperator, tokenId, amount) {
+export function handleStateForceExit (tx, urlOperator, tokenId, amount) {
   const infoTx = {
     currentBatch: tx.currentBatch,
     nonce: tx.res.nonce,
@@ -275,52 +277,53 @@ export function handleStateForceExit(tx, urlOperator, tokenId, amount) {
     tokenId,
     maxNumBatch: 'Pending',
     finalBatch: 'Pending',
-    timestamp: Date.now(),
-  };
+    timestamp: Date.now()
+  }
   return async function (dispatch) {
-    infoTx.state = 'Pending (Ethereum)';
-    dispatch(stateForceExit(infoTx));
+    infoTx.state = 'Pending (Ethereum)'
+    dispatch(stateForceExit(infoTx))
     try {
-      await tx.res.wait();
-      const apiOperator = new operator.cliExternalOperator(urlOperator);
-      const resState = await apiOperator.getState();
-      let currentBatch = resState.data.rollupSynch.lastBatchSynched;
-      const maxNumBatch = currentBatch + 2;
-      infoTx.state = 'Pending (Operator)';
-      infoTx.currentBatch = currentBatch;
-      infoTx.maxNumBatch = maxNumBatch;
-      dispatch(stateForceExit(infoTx));
+      await tx.res.wait()
+      // eslint-disable-next-line new-cap
+      const apiOperator = new operator.cliExternalOperator(urlOperator)
+      const resState = await apiOperator.getState()
+      let currentBatch = resState.data.rollupSynch.lastBatchSynched
+      const maxNumBatch = currentBatch + 2
+      infoTx.state = 'Pending (Operator)'
+      infoTx.currentBatch = currentBatch
+      infoTx.maxNumBatch = maxNumBatch
+      dispatch(stateForceExit(infoTx))
       while (currentBatch < maxNumBatch) {
         // eslint-disable-next-line no-await-in-loop
-        currentBatch = await getCurrentBatch(apiOperator);
+        currentBatch = await getCurrentBatch(apiOperator)
       }
-      infoTx.currentBatch = currentBatch;
-      infoTx.finalBatch = currentBatch;
-      infoTx.state = 'Success (pending confirmation batches)';
-      infoTx.confirmationBatch = maxNumBatch + 5;
-      dispatch(stateForceExitSuccess(infoTx));
+      infoTx.currentBatch = currentBatch
+      infoTx.finalBatch = currentBatch
+      infoTx.state = 'Success (pending confirmation batches)'
+      infoTx.confirmationBatch = maxNumBatch + 5
+      dispatch(stateForceExitSuccess(infoTx))
       while (currentBatch < maxNumBatch + 5) {
         // eslint-disable-next-line no-await-in-loop
-        currentBatch = await getCurrentBatch(apiOperator);
+        currentBatch = await getCurrentBatch(apiOperator)
       }
-      infoTx.currentBatch = currentBatch;
-      infoTx.confirmedBatch = currentBatch;
-      infoTx.state = 'Success';
-      dispatch(stateForceExitSuccess(infoTx));
+      infoTx.currentBatch = currentBatch
+      infoTx.confirmedBatch = currentBatch
+      infoTx.state = 'Success'
+      dispatch(stateForceExitSuccess(infoTx))
     } catch (error) {
-      dispatch(stateForceExitError(infoTx));
+      dispatch(stateForceExitError(infoTx))
     }
-  };
+  }
 }
 
-function resetTxs() {
+function resetTxs () {
   return {
-    type: CONSTANTS.RESET_TXS,
-  };
+    type: CONSTANTS.RESET_TXS
+  }
 }
 
-export function handleResetTxs() {
+export function handleResetTxs () {
   return function (dispatch) {
-    dispatch(resetTxs());
-  };
+    dispatch(resetTxs())
+  }
 }

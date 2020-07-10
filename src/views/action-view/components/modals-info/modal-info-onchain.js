@@ -1,26 +1,26 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import {
-  Button, Modal, Table,
-} from 'semantic-ui-react';
+  Button, Modal, Table
+} from 'semantic-ui-react'
 
 class ModalInfoOnchain extends Component {
     static propTypes = {
       modalInfoOnchain: PropTypes.bool.isRequired,
       keyItem: PropTypes.object.isRequired,
       toggleModalInfoOnchain: PropTypes.func.isRequired,
-      currentBatch: PropTypes.number.isRequired,
+      currentBatch: PropTypes.number.isRequired
     }
 
     handleClick = () => {
-      this.props.toggleModalInfoOnchain();
+      this.props.toggleModalInfoOnchain()
     }
 
     getCurrentBatch = () => {
-      const { keyItem } = this.props;
+      const { keyItem } = this.props
       if (keyItem.type === 'ForceExit' || keyItem.type === 'Deposit') {
         if (keyItem.state.includes('Pending')) {
-          const currentBatch = Math.max(this.props.currentBatch, keyItem.currentBatch);
+          const currentBatch = Math.max(this.props.currentBatch, keyItem.currentBatch)
           return (
             <Table.Row>
               <Table.Cell>
@@ -30,16 +30,16 @@ class ModalInfoOnchain extends Component {
                 {currentBatch}
               </Table.Cell>
             </Table.Row>
-          );
+          )
         }
       }
     }
 
     getConfirmationBatch = () => {
-      const { keyItem } = this.props;
+      const { keyItem } = this.props
       if (keyItem.type === 'ForceExit' || keyItem.type === 'Deposit') {
         if (keyItem.state.includes('Success') && keyItem.state.includes('pending')) {
-          const currentBatch = Math.max(this.props.currentBatch, keyItem.currentBatch);
+          const currentBatch = Math.max(this.props.currentBatch, keyItem.currentBatch)
           return (
             <Table.Row>
               <Table.Cell>
@@ -49,7 +49,7 @@ class ModalInfoOnchain extends Component {
                 {currentBatch - keyItem.finalBatch}
               </Table.Cell>
             </Table.Row>
-          );
+          )
         } if (keyItem.state.includes('Success') && !keyItem.state.includes('pending')) {
           return (
             <Table.Row>
@@ -60,13 +60,13 @@ class ModalInfoOnchain extends Component {
                 5+
               </Table.Cell>
             </Table.Row>
-          );
+          )
         }
       }
     }
 
     getMaxBatch = () => {
-      const { keyItem } = this.props;
+      const { keyItem } = this.props
       if (keyItem.type === 'ForceExit' || keyItem.type === 'Deposit') {
         if (keyItem.state.includes('Pending')) {
           return (
@@ -78,13 +78,13 @@ class ModalInfoOnchain extends Component {
                 {keyItem.maxNumBatch}
               </Table.Cell>
             </Table.Row>
-          );
+          )
         }
       }
     }
 
     getForgedBatch = () => {
-      const { keyItem } = this.props;
+      const { keyItem } = this.props
       if (keyItem.type === 'ForceExit' || keyItem.type === 'Deposit') {
         if (keyItem.state.includes('Success')) {
           return (
@@ -96,23 +96,23 @@ class ModalInfoOnchain extends Component {
                 {keyItem.finalBatch}
               </Table.Cell>
             </Table.Row>
-          );
+          )
         }
       }
     }
 
     getModalContent = () => {
-      const { keyItem } = this.props;
+      const { keyItem } = this.props
       if (keyItem) {
-        let state;
+        let state
         if (keyItem.state && keyItem.state.includes('Success')) {
-          state = <Table.Cell positive>{keyItem.state}</Table.Cell>;
+          state = <Table.Cell positive>{keyItem.state}</Table.Cell>
         } else if (keyItem.state === 'Error') {
-          state = <Table.Cell negative>{keyItem.state}</Table.Cell>;
+          state = <Table.Cell negative>{keyItem.state}</Table.Cell>
         } else if (keyItem.state && keyItem.state.includes('Pending')) {
-          state = <Table.Cell warning>{keyItem.state}</Table.Cell>;
+          state = <Table.Cell warning>{keyItem.state}</Table.Cell>
         } else {
-          state = <Table.Cell>{keyItem.state}</Table.Cell>;
+          state = <Table.Cell>{keyItem.state}</Table.Cell>
         }
         return (
           <Table>
@@ -161,11 +161,11 @@ class ModalInfoOnchain extends Component {
               {this.getConfirmationBatch()}
             </Table.Body>
           </Table>
-        );
+        )
       }
     }
 
-    render() {
+    render () {
       return (
         <div>
           <Modal open={this.props.modalInfoOnchain}>
@@ -174,14 +174,14 @@ class ModalInfoOnchain extends Component {
               {this.getModalContent()}
             </Modal.Content>
             <Modal.Actions>
-              <Button color="blue" onClick={this.handleClick}>
+              <Button color='blue' onClick={this.handleClick}>
                 OK
               </Button>
             </Modal.Actions>
           </Modal>
         </div>
-      );
+      )
     }
 }
 
-export default ModalInfoOnchain;
+export default ModalInfoOnchain

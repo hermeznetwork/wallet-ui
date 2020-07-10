@@ -1,4 +1,4 @@
-import * as CONSTANTS from './constants';
+import * as CONSTANTS from './constants'
 
 const initialState = {
   tx: {},
@@ -20,18 +20,18 @@ const initialState = {
   successSend: false,
   messageOpen: false,
   batch: 0,
-  error: '',
-};
+  error: ''
+}
 
-function transactions(state = initialState, action) {
+function transactions (state = initialState, action) {
   switch (action.type) {
     case CONSTANTS.SEND_DEPOSIT:
       return {
         ...state,
         isLoadingDeposit: true,
         successDeposit: false,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.SEND_DEPOSIT_SUCCESS:
       return {
         ...state,
@@ -42,23 +42,23 @@ function transactions(state = initialState, action) {
         successTx: false,
         successForceExit: false,
         messageOpen: true,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.SEND_DEPOSIT_ERROR:
       return {
         ...state,
         isLoadingDeposit: false,
         successDeposit: false,
         messageOpen: true,
-        error: action.error,
-      };
+        error: action.error
+      }
     case CONSTANTS.SEND_WITHDRAW:
       return {
         ...state,
         isLoadingWithdraw: true,
         successTx: false,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.SEND_WITHDRAW_SUCCESS:
       return {
         ...state,
@@ -67,23 +67,23 @@ function transactions(state = initialState, action) {
         batch: action.payload.currentBatch,
         successTx: true,
         messageOpen: true,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.SEND_WITHDRAW_ERROR:
       return {
         ...state,
         isLoadingWithdraw: false,
         successTx: false,
         messageOpen: true,
-        error: action.error,
-      };
+        error: action.error
+      }
     case CONSTANTS.SEND_FORCE_EXIT:
       return {
         ...state,
         isLoadingForceExit: true,
         successForceExit: false,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.SEND_FORCE_EXIT_SUCCESS:
       return {
         ...state,
@@ -92,23 +92,23 @@ function transactions(state = initialState, action) {
         batch: action.payload.currentBatch,
         successForceExit: true,
         messageOpen: true,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.SEND_FORCE_EXIT_ERROR:
       return {
         ...state,
         isLoadingForceExit: false,
         successForceExit: false,
         messageOpen: true,
-        error: action.error,
-      };
+        error: action.error
+      }
     case CONSTANTS.SEND_SEND:
       return {
         ...state,
         isLoadingSend: true,
         successSend: false,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.SEND_SEND_SUCCESS:
       return {
         ...state,
@@ -120,23 +120,23 @@ function transactions(state = initialState, action) {
         successForceExit: false,
         batch: action.payload.currentBatch,
         nonce: action.payload.nonce,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.SEND_SEND_ERROR:
       return {
         ...state,
         isLoadingSend: false,
         successSend: false,
         messageOpen: true,
-        error: action.error,
-      };
+        error: action.error
+      }
     case CONSTANTS.APPROVE:
       return {
         ...state,
         isLoadingApprove: true,
         successTx: false,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.APPROVE_SUCCESS:
       return {
         ...state,
@@ -144,23 +144,23 @@ function transactions(state = initialState, action) {
         successTx: true,
         messageOpen: true,
         tx: action.payload,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.APPROVE_ERROR:
       return {
         ...state,
         isLoadingApprove: false,
         successTx: false,
         messageOpen: true,
-        error: action.error,
-      };
+        error: action.error
+      }
     case CONSTANTS.GET_TOKENS:
       return {
         ...state,
         isLoadingGetTokens: true,
         successTx: false,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.GET_TOKENS_SUCCESS:
       return {
         ...state,
@@ -168,43 +168,43 @@ function transactions(state = initialState, action) {
         tx: action.payload,
         successTx: true,
         messageOpen: true,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.GET_TOKENS_ERROR:
       return {
         ...state,
         isLoadingGetTokens: false,
         successTx: false,
         messageOpen: true,
-        error: action.error,
-      };
+        error: action.error
+      }
     case CONSTANTS.GET_IDS:
       return {
         ...state,
         isLoadingGetIds: true,
         successGetIds: false,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.GET_IDS_SUCCESS:
       return {
         ...state,
         isLoadingGetIDs: false,
         ids: action.payload,
         successGetIds: true,
-        error: '',
-      };
+        error: ''
+      }
     case CONSTANTS.GET_IDS_ERROR:
       return {
         ...state,
         isLoadingGetIds: false,
         successGetIds: false,
-        error: action.error,
-      };
+        error: action.error
+      }
     case CONSTANTS.CLOSE_MESSAGE:
       return {
         ...state,
-        messageOpen: false,
-      };
+        messageOpen: false
+      }
     case CONSTANTS.GET_INIT:
       return {
         ...state,
@@ -225,11 +225,11 @@ function transactions(state = initialState, action) {
         isLoadingGetIDs: false,
         ids: [],
         successGetIds: false,
-        error: '',
-      };
+        error: ''
+      }
     default:
-      return state;
+      return state
   }
 }
 
-export default transactions;
+export default transactions

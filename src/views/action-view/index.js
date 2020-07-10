@@ -1,1 +1,1 @@
-export { default } from './containers/action-view';
+export { default } from './containers/action-view'

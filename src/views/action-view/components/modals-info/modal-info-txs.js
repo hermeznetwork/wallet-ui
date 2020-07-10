@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import {
-  Button, Modal, Table,
-} from 'semantic-ui-react';
+  Button, Modal, Table
+} from 'semantic-ui-react'
 
 class ModalInfoTx extends Component {
     static propTypes = {
@@ -10,26 +10,26 @@ class ModalInfoTx extends Component {
       txTotal: PropTypes.array.isRequired,
       toggleModalInfoTx: PropTypes.func.isRequired,
       getInfoModalOnchain: PropTypes.func.isRequired,
-      getInfoModalOffchain: PropTypes.func.isRequired,
+      getInfoModalOffchain: PropTypes.func.isRequired
     }
 
     handleClick = () => {
-      this.props.toggleModalInfoTx();
+      this.props.toggleModalInfoTx()
     }
 
     getModalContent = () => {
       try {
-        const { txTotal } = this.props;
+        const { txTotal } = this.props
         return txTotal.map((key, index) => {
-          let state;
+          let state
           if (key.state && key.state.includes('Success')) {
-            state = <Table.Cell positive>{key.state}</Table.Cell>;
+            state = <Table.Cell positive>{key.state}</Table.Cell>
           } else if (key.state === 'Error') {
-            state = <Table.Cell negative>{key.state}</Table.Cell>;
+            state = <Table.Cell negative>{key.state}</Table.Cell>
           } else {
-            state = <Table.Cell>{key.state}</Table.Cell>;
+            state = <Table.Cell>{key.state}</Table.Cell>
           }
-          let buttonInfo;
+          let buttonInfo
           if (key.type === 'Deposit' || key.type === 'Withdraw' || key.type === 'ForceExit') {
             buttonInfo = (
               <Table.Cell>
@@ -37,7 +37,7 @@ class ModalInfoTx extends Component {
                 Info
                 </Button>
               </Table.Cell>
-            );
+            )
           } else if (key.type === 'Send' || key.type === 'Exit') {
             buttonInfo = (
               <Table.Cell>
@@ -45,7 +45,7 @@ class ModalInfoTx extends Component {
                 Info
                 </Button>
               </Table.Cell>
-            );
+            )
           }
           return (
             <Table.Row key={index}>
@@ -54,14 +54,14 @@ class ModalInfoTx extends Component {
               {state}
               {buttonInfo}
             </Table.Row>
-          );
-        });
+          )
+        })
       } catch (err) {
-        return ('');
+        return ('')
       }
     }
 
-    render() {
+    render () {
       return (
         <div>
           <Modal open={this.props.modalInfoTx}>
@@ -82,15 +82,14 @@ class ModalInfoTx extends Component {
               </Table>
             </Modal.Content>
             <Modal.Actions>
-              <Button color="blue" onClick={this.handleClick}>
+              <Button color='blue' onClick={this.handleClick}>
                 OK
               </Button>
             </Modal.Actions>
           </Modal>
         </div>
-      );
+      )
     }
 }
 
-
-export default ModalInfoTx;
+export default ModalInfoTx

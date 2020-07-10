@@ -1,86 +1,87 @@
 /* eslint-disable react/no-unescaped-entities */
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import {
-  Menu, Icon, Modal, Button, Popup, Form,
-} from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+  Menu, Icon, Modal, Button, Popup, Form
+} from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
 
 class MenuBack extends Component {
   static propTypes = {
     config: PropTypes.object.isRequired,
     changeNode: PropTypes.func.isRequired,
-    isLoadingInfoAccount: PropTypes.bool.isRequired,
+    isLoadingInfoAccount: PropTypes.bool.isRequired
   }
 
-  constructor(props) {
-    super(props);
-    this.nodeRef = React.createRef();
+  constructor (props) {
+    super(props)
+    this.nodeRef = React.createRef()
     this.state = {
       modalHelp: false,
       loading: false,
       changeNode: false,
       flagChange: false,
-      viewChangeNode: false,
-    };
+      viewChangeNode: false
+    }
   }
 
   componentDidUpdate = () => {
     if (this.props.isLoadingInfoAccount === true && this.state.changeNode === true && this.state.flagChange === false) {
-      this.setState({ loading: true, flagChange: true });
-    } else if (this.props.isLoadingInfoAccount === false && this.state.changeNode === true
-      && this.state.flagChange === true) {
-      this.setState({ loading: false, changeNode: false, flagChange: false });
+      this.setState({ loading: true, flagChange: true })
+    } else if (this.props.isLoadingInfoAccount === false && this.state.changeNode === true &&
+      this.state.flagChange === true) {
+      this.setState({ loading: false, changeNode: false, flagChange: false })
     }
   }
 
-  toggleModalHelp = () => { this.setState((prev) => ({ modalHelp: !prev.modalHelp })); }
+  handleToggleModalHelp = () => { this.setState((prev) => ({ modalHelp: !prev.modalHelp })) }
 
-  toggleChangeNode = () => { this.setState((prev) => ({ viewChangeNode: !prev.viewChangeNode })); }
+  toggleChangeNode = () => { this.setState((prev) => ({ viewChangeNode: !prev.viewChangeNode })) }
 
   handleClickChangeNode = () => {
-    const currentNode = this.nodeRef.current.value;
-    this.setState({ changeNode: true });
-    this.props.changeNode(currentNode);
+    const currentNode = this.nodeRef.current.value
+    this.setState({ changeNode: true })
+    this.props.changeNode(currentNode)
   }
 
   loadingIcon = () => {
-    if (this.state.loading) return <Icon name="circle notched" loading />;
+    if (this.state.loading) return <Icon name='circle notched' loading />
   }
 
-  render() {
+  render () {
     return (
-      <Menu secondary size="large">
-        <Menu.Menu position="left">
+      <Menu secondary size='large'>
+        <Menu.Menu position='left'>
           <Menu.Item>
             <Popup
-              position="bottom left"
+              position='bottom left'
               flowing
-              on="click"
-              trigger={<Button content="Change Node" icon="ethereum" basic />}>
+              on='click'
+              trigger={<Button content='Change Node' icon='ethereum' basic />}
+            >
               <Form>
-                <label htmlFor="nodeEth">
+                <label htmlFor='nodeEth'>
                   <b>Url Node Ethereum: </b>
-                  <input type="text" id="node" size="40" defaultValue={this.props.config.nodeEth} ref={this.nodeRef} />
+                  <input type='text' id='node' size='40' defaultValue={this.props.config.nodeEth} ref={this.nodeRef} />
                   <Button onClick={this.handleClickChangeNode}>Change Node</Button>
                   {this.loadingIcon()}
                 </label>
               </Form>
             </Popup>
-            <Button content="Help" icon="help" basic onClick={this.toggleModalHelp} />
+            <Button content='Help' icon='help' basic onClick={this.handleToggleModalHelp} />
           </Menu.Item>
         </Menu.Menu>
-        <Menu.Menu position="right">
-          <Link to="/">
-            <Menu.Item name="initView">
-              <Icon name="reply" />
+        <Menu.Menu position='right'>
+          <Link to='/'>
+            <Menu.Item name='initView'>
+              <Icon name='reply' />
               Back
             </Menu.Item>
           </Link>
         </Menu.Menu>
         <Modal open={this.state.modalHelp}>
           <Modal.Header>
-            <Icon name="help circle" />
+            <Icon name='help circle' />
             Help
           </Modal.Header>
           <Modal.Content>
@@ -187,14 +188,14 @@ class MenuBack extends Component {
             </p>
           </Modal.Content>
           <Modal.Actions>
-            <Button color="blue" onClick={this.toggleModalHelp}>
+            <Button color='blue' onClick={this.handleToggleModalHelp}>
               OK
             </Button>
           </Modal.Actions>
         </Modal>
       </Menu>
-    );
+    )
   }
 }
 
-export default MenuBack;
+export default MenuBack

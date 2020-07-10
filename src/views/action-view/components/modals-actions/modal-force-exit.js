@@ -1,104 +1,107 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import {
-  Button, Modal, Form, Icon, Dropdown,
-} from 'semantic-ui-react';
-import ModalError from '../modals-info/modal-error';
-import ButtonGM from './gm-buttons';
-import { handleSendForceExit, handleGetIds } from '../../../../state/tx/actions';
-import { handleStateForceExit } from '../../../../state/tx-state/actions';
-import { getWei } from '../../../../utils/utils';
+  Button, Modal, Form, Icon, Dropdown
+} from 'semantic-ui-react'
+import ModalError from '../modals-info/modal-error'
+import ButtonGM from './gm-buttons'
+import { handleSendForceExit } from '../../../../state/tx/actions'
+import { handleStateForceExit } from '../../../../state/tx-state/actions'
+import { getWei } from '../../../../utils/utils'
 
 class ModalForceExit extends Component {
     static propTypes = {
       config: PropTypes.object.isRequired,
       modalForceExit: PropTypes.bool.isRequired,
-      toggleModalForceExit: PropTypes.func.isRequired,
-      handleSendForceExit: PropTypes.func.isRequired,
-      handleStateForceExit: PropTypes.func.isRequired,
+      onToggleModalForceExit: PropTypes.func.isRequired,
+      onSendForceExit: PropTypes.func.isRequired,
+      onStateForceExit: PropTypes.func.isRequired,
       desWallet: PropTypes.object.isRequired,
       babyjub: PropTypes.string.isRequired,
       tokensList: PropTypes.array.isRequired,
-      gasMultiplier: PropTypes.number.isRequired,
+      gasMultiplier: PropTypes.number.isRequired
     }
 
-    constructor(props) {
-      super(props);
+    constructor (props) {
+      super(props)
       this.state = {
         amount: '',
         modalError: false,
         sendDisabled: true,
         error: '',
-        tokenId: '',
-      };
+        tokenId: ''
+      }
     }
 
-    closeModal = () => {
-      this.props.toggleModalForceExit();
+    handleCloseModal = () => {
+      this.props.onToggleModalForceExit()
       this.setState({
         amount: '',
         modalError: false,
         sendDisabled: true,
         error: '',
-        tokenId: '',
-      });
+        tokenId: ''
+      })
     }
 
-    toggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })); }
+    handleToggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })) }
 
     checkForm = () => {
       const {
-        amount, tokenId,
-      } = this.state;
+        amount, tokenId
+      } = this.state
       if (parseInt(amount, 10) && (parseInt(tokenId, 10) || tokenId === 0)) {
-        this.setState({ sendDisabled: false });
+        this.setState({ sendDisabled: false })
       } else {
-        this.setState({ sendDisabled: true });
+        this.setState({ sendDisabled: true })
       }
     }
 
-    setAmount = (event) => {
-      this.setState({ amount: event.target.value }, () => { this.checkForm(); });
+    handleSetAmount = (event) => {
+      this.setState({ amount: event.target.value }, () => { this.checkForm() })
     }
 
-    setToken = (event, { value }) => {
-      const tokenId = Number(value);
-      this.setState({ tokenId }, () => { this.checkForm(); });
+    handleSetToken = (event, { value }) => {
+      const tokenId = Number(value)
+      this.setState({ tokenId }, () => { this.checkForm() })
     }
 
     handleClick = async () => {
-      const { config, desWallet, gasMultiplier } = this.props;
-      const amountWei = getWei(this.state.amount);
-      const tokenId = this.state.tokenId;
-      this.closeModal();
-      const res = await this.props.handleSendForceExit(config.nodeEth, config.address, tokenId, amountWei, desWallet,
-        config.abiRollup, config.operator, gasMultiplier);
+      const { config, desWallet, gasMultiplier } = this.props
+      const amountWei = getWei(this.state.amount)
+      const tokenId = this.state.tokenId
+      this.handleCloseModal()
+      const res = await this.props.onSendForceExit(config.nodeEth, config.address, tokenId, amountWei, desWallet,
+        config.abiRollup, config.operator, gasMultiplier)
       if (res.message !== undefined) {
         if (res.message.includes('insufficient funds')) {
-          this.setState({ error: '1' });
-          this.toggleModalError();
+          this.setState({ error: '1' })
+          this.handleToggleModalError()
         }
       }
       if (res.res) {
-        this.props.handleStateForceExit(res, config.operator, tokenId, amountWei);
+        this.props.onStateForceExit(res, config.operator, tokenId, amountWei)
       }
     }
 
     dropDownTokens = () => {
-      const tokensOptions = [];
-      for(const token in this.props.tokensList) {
+      const tokensOptions = []
+      for (const token in this.props.tokensList) {
         tokensOptions.push({
           key: this.props.tokensList[token].address,
           value: this.props.tokensList[token].tokenId,
-          text: `${this.props.tokensList[token].tokenId}: ${this.props.tokensList[token].address}`,
-        });
+          text: `${this.props.tokensList[token].tokenId}: ${this.props.tokensList[token].address}`
+        })
       }
-      return <Dropdown
-      placeholder="token"
-      options={tokensOptions}
-      onChange={this.setToken}
-      scrolling />
+      return (
+        <Dropdown
+          placeholder='token'
+          options={tokensOptions}
+          onChange={this.handleSetToken}
+          scrolling
+        />
+      )
     }
 
     modal = () => {
@@ -108,26 +111,28 @@ class ModalForceExit extends Component {
           <Modal.Content>
             <Form>
               <Form.Field>
-                <label htmlFor="babyjub-from">
+                <label htmlFor='babyjub-from'>
                   Sender BabyJubJub Address
                   <input
-                    type="text"
+                    type='text'
                     defaultValue={this.props.babyjub}
-                    id="baby-ax-s"
-                    disabled />
+                    id='baby-ax-s'
+                    disabled
+                  />
                 </label>
               </Form.Field>
               <Form.Field>
-                <label htmlFor="amount">
+                <label htmlFor='amount'>
                   Amount
                   <input
-                    type="text"
-                    id="amount"
-                    onChange={this.setAmount} />
+                    type='text'
+                    id='amount'
+                    onChange={this.handleSetAmount}
+                  />
                 </label>
               </Form.Field>
               <Form.Field>
-                <label htmlFor="tokenid">
+                <label htmlFor='tokenid'>
                   Token ID
                 </label>
                 {this.dropDownTokens()}
@@ -138,36 +143,43 @@ class ModalForceExit extends Component {
             </Form>
           </Modal.Content>
           <Modal.Actions>
-            <Button color="blue" onClick={this.handleClick} disabled={this.state.sendDisabled}>
-              <Icon name="share" />
+            <Button color='blue' onClick={this.handleClick} disabled={this.state.sendDisabled}>
+              <Icon name='share' />
               Force Exit
             </Button>
-            <Button color="grey" basic onClick={this.closeModal}>
-              <Icon name="close" />
+            <Button color='grey' basic onClick={this.handleCloseModal}>
+              <Icon name='close' />
               Close
             </Button>
           </Modal.Actions>
         </Modal>
-      );
+      )
     }
 
-    render() {
+    render () {
       return (
         <div>
           <ModalError
             error={this.state.error}
             modalError={this.state.modalError}
-            toggleModalError={this.toggleModalError} />
+            onToggleModalError={this.handleToggleModalError}
+          />
           {this.modal()}
         </div>
-      );
+      )
     }
 }
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
   desWallet: state.general.desWallet,
-  gasMultiplier: state.general.gasMultiplier,
-});
+  gasMultiplier: state.general.gasMultiplier
+})
 
-export default connect(mapStateToProps, { handleSendForceExit, handleGetIds, handleStateForceExit })(ModalForceExit);
+export default connect(
+  mapStateToProps,
+  {
+    onSendForceExit: handleSendForceExit,
+    onStateForceExit: handleStateForceExit
+  }
+)(ModalForceExit)

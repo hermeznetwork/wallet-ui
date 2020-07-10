@@ -1,4 +1,4 @@
-import * as CONSTANTS from './constants';
+import * as CONSTANTS from './constants'
 
 const initialState = {
   errorWallet: '',
@@ -33,17 +33,17 @@ const initialState = {
   chainId: -1,
   errorInfoAccount: '',
   gasMultiplier: 2,
-  currentBatch: 0,
-};
+  currentBatch: 0
+}
 
-function general(state = initialState, action) {
+function general (state = initialState, action) {
   switch (action.type) {
     case CONSTANTS.LOAD_WALLET:
       return {
         ...state,
         isLoadingWallet: true,
-        errorWallet: '',
-      };
+        errorWallet: ''
+      }
     case CONSTANTS.LOAD_WALLET_SUCCESS:
       return {
         ...state,
@@ -51,8 +51,8 @@ function general(state = initialState, action) {
         wallet: action.payload.wallet,
         password: action.payload.password,
         desWallet: action.payload.desWallet,
-        errorWallet: '',
-      };
+        errorWallet: ''
+      }
     case CONSTANTS.LOAD_WALLET_ERROR:
       return {
         ...state,
@@ -60,34 +60,34 @@ function general(state = initialState, action) {
         wallet: {},
         password: '',
         desWallet: {},
-        errorWallet: action.error,
-      };
+        errorWallet: action.error
+      }
     case CONSTANTS.CREATE_WALLET:
       return {
         ...state,
         isCreatingWallet: true,
-        errorCreateWallet: '',
-      };
+        errorCreateWallet: ''
+      }
     case CONSTANTS.CREATE_WALLET_SUCCESS:
       return {
         ...state,
         isCreatingWallet: false,
         created: true,
-        errorCreateWallet: '',
-      };
+        errorCreateWallet: ''
+      }
     case CONSTANTS.CREATE_WALLET_ERROR:
       return {
         ...state,
         isCreatingWallet: false,
         created: false,
-        errorCreateWallet: action.error,
-      };
+        errorCreateWallet: action.error
+      }
     case CONSTANTS.LOAD_FILES:
       return {
         ...state,
         isLoadingFiles: true,
-        errorFiles: '',
-      };
+        errorFiles: ''
+      }
     case CONSTANTS.LOAD_FILES_SUCCESS:
       return {
         ...state,
@@ -96,41 +96,41 @@ function general(state = initialState, action) {
         abiTokens: action.payload.abiTokens,
         chainId: action.payload.chainId,
         isLoadingFiles: false,
-        errorFiles: action.error,
-      };
+        errorFiles: action.error
+      }
     case CONSTANTS.LOAD_FILES_ERROR:
       return {
         ...state,
         isLoadingFiles: false,
         chainId: -1,
         config: action.payload.config,
-        errorFiles: action.error,
-      };
+        errorFiles: action.error
+      }
     case CONSTANTS.LOAD_OPERATOR:
       return {
         ...state,
         isLoadingOp: true,
-        errorOp: '',
-      };
+        errorOp: ''
+      }
     case CONSTANTS.LOAD_OPERATOR_SUCCESS:
       return {
         ...state,
         isLoadingOp: false,
         apiOperator: action.payload.apiOperator,
-        errorOp: '',
-      };
+        errorOp: ''
+      }
     case CONSTANTS.LOAD_OPERATOR_ERROR:
       return {
         ...state,
         isLoadingOp: false,
-        errorInfoOp: action.error,
-      };
+        errorInfoOp: action.error
+      }
     case CONSTANTS.INFO_ACCOUNT:
       return {
         ...state,
         isLoadingInfoAccount: true,
-        errorInfoAccount: '',
-      };
+        errorInfoAccount: ''
+      }
     case CONSTANTS.INFO_ACCOUNT_SUCCESS:
       return {
         ...state,
@@ -147,8 +147,8 @@ function general(state = initialState, action) {
         tokensArray: action.payload.tokensArray,
         tokensAArray: action.payload.tokensAArray,
         tokensRArray: action.payload.tokensRArray,
-        errorInfoAccount: '',
-      };
+        errorInfoAccount: ''
+      }
     case CONSTANTS.INFO_ACCOUNT_ERROR:
       return {
         ...state,
@@ -158,46 +158,46 @@ function general(state = initialState, action) {
         tokensR: '0',
         tokensE: '0',
         tokensA: '0',
-        tokensTotal: '0',
-      };
+        tokensTotal: '0'
+      }
     case CONSTANTS.CHECK_APPROVED_TOKENS_ERROR:
       return {
         ...state,
-        errorApprovedTokens: true,
-      };
+        errorApprovedTokens: true
+      }
     case CONSTANTS.CHECK_ETHER_ERROR:
       return {
         ...state,
-        errorEther: true,
-      };
+        errorEther: true
+      }
     case CONSTANTS.INIT_APPROVED_TOKENS_ERROR:
       return {
         ...state,
-        errorApprovedTokens: false,
-      };
+        errorApprovedTokens: false
+      }
     case CONSTANTS.INIT_ETHER_ERROR:
       return {
         ...state,
-        errorEther: false,
-      };
+        errorEther: false
+      }
     case CONSTANTS.SET_GAS_MULTIPLIER:
       return {
         ...state,
-        gasMultiplier: action.payload,
-      };
+        gasMultiplier: action.payload
+      }
     case CONSTANTS.GET_CURRENT_BATCH:
       return {
         ...state,
-        currentBatch: action.payload,
-      };
+        currentBatch: action.payload
+      }
     case CONSTANTS.GET_CURRENT_BATCH_ERROR:
       return {
         ...state,
-        currentBatch: state.currentBatch,
-      };
+        currentBatch: state.currentBatch
+      }
     default:
-      return state;
+      return state
   }
 }
 
-export default general;
+export default general

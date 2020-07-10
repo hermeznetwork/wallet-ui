@@ -1,1 +1,1 @@
-export { default } from './containers/init-view';
+export { default } from './containers/init-view'

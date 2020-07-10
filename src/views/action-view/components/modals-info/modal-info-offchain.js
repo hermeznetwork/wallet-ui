@@ -1,23 +1,23 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import {
-  Button, Modal, Table,
-} from 'semantic-ui-react';
+  Button, Modal, Table
+} from 'semantic-ui-react'
 
 class ModalInfoOffchain extends Component {
   static propTypes = {
     modalInfoOffchain: PropTypes.bool.isRequired,
     keyItem: PropTypes.object.isRequired,
     toggleModalInfoOffchain: PropTypes.func.isRequired,
-    currentBatch: PropTypes.number.isRequired,
+    currentBatch: PropTypes.number.isRequired
   }
 
   handleClick = () => {
-    this.props.toggleModalInfoOffchain();
+    this.props.toggleModalInfoOffchain()
   }
 
   getReceiver = () => {
-    const { keyItem } = this.props;
+    const { keyItem } = this.props
     if (keyItem.type === 'Send') {
       return (
         <Table.Row>
@@ -28,12 +28,12 @@ class ModalInfoOffchain extends Component {
             {keyItem.receiver}
           </Table.Cell>
         </Table.Row>
-      );
+      )
     }
   }
 
   getCurrentBatch = () => {
-    const { keyItem, currentBatch } = this.props;
+    const { keyItem, currentBatch } = this.props
     if (keyItem.state && keyItem.state.includes('Pending')) {
       return (
         <Table.Row>
@@ -44,12 +44,12 @@ class ModalInfoOffchain extends Component {
             {currentBatch}
           </Table.Cell>
         </Table.Row>
-      );
+      )
     }
   }
 
   getMaxBatch = () => {
-    const { keyItem } = this.props;
+    const { keyItem } = this.props
     if (keyItem.state && keyItem.state.includes('Pending')) {
       return (
         <Table.Row>
@@ -60,12 +60,12 @@ class ModalInfoOffchain extends Component {
             {keyItem.maxNumBatch}
           </Table.Cell>
         </Table.Row>
-      );
+      )
     }
   }
 
   getForgedBatch = () => {
-    const { keyItem } = this.props;
+    const { keyItem } = this.props
     if (keyItem.state && keyItem.state.includes('Success')) {
       return (
         <Table.Row>
@@ -76,14 +76,14 @@ class ModalInfoOffchain extends Component {
             {keyItem.finalBatch}
           </Table.Cell>
         </Table.Row>
-      );
+      )
     }
   }
 
   getConfirmationBatch = () => {
-    const { keyItem } = this.props;
+    const { keyItem } = this.props
     if (keyItem.state && keyItem.state.includes('Success') && keyItem.state.includes('pending')) {
-      const currentBatch = Math.max(this.props.currentBatch, keyItem.currentBatch);
+      const currentBatch = Math.max(this.props.currentBatch, keyItem.currentBatch)
       return (
         <Table.Row>
           <Table.Cell>
@@ -93,7 +93,7 @@ class ModalInfoOffchain extends Component {
             {currentBatch - keyItem.finalBatch}
           </Table.Cell>
         </Table.Row>
-      );
+      )
     } if (keyItem.state && keyItem.state.includes('Success') && !keyItem.state.includes('pending')) {
       return (
         <Table.Row>
@@ -104,12 +104,12 @@ class ModalInfoOffchain extends Component {
             5+
           </Table.Cell>
         </Table.Row>
-      );
+      )
     }
   }
 
   getError = () => {
-    const { keyItem } = this.props;
+    const { keyItem } = this.props
     if (keyItem.error && keyItem.state.includes('Error')) {
       return (
         <Table.Row>
@@ -120,22 +120,22 @@ class ModalInfoOffchain extends Component {
             {keyItem.error}
           </Table.Cell>
         </Table.Row>
-      );
+      )
     }
   }
 
   getModalContent = () => {
-    const { keyItem } = this.props;
+    const { keyItem } = this.props
     if (keyItem) {
-      let state;
+      let state
       if (keyItem.state && keyItem.state.includes('Success')) {
-        state = <Table.Cell positive>{keyItem.state}</Table.Cell>;
+        state = <Table.Cell positive>{keyItem.state}</Table.Cell>
       } else if (keyItem.state === 'Error') {
-        state = <Table.Cell negative>{keyItem.state}</Table.Cell>;
+        state = <Table.Cell negative>{keyItem.state}</Table.Cell>
       } else if (keyItem.state === 'Pending') {
-        state = <Table.Cell warning>{keyItem.state}</Table.Cell>;
+        state = <Table.Cell warning>{keyItem.state}</Table.Cell>
       } else {
-        state = <Table.Cell>{keyItem.state}</Table.Cell>;
+        state = <Table.Cell>{keyItem.state}</Table.Cell>
       }
       return (
         <Table>
@@ -186,11 +186,11 @@ class ModalInfoOffchain extends Component {
             {this.getError()}
           </Table.Body>
         </Table>
-      );
+      )
     }
   }
 
-  render() {
+  render () {
     return (
       <div>
         <Modal open={this.props.modalInfoOffchain}>
@@ -199,14 +199,14 @@ class ModalInfoOffchain extends Component {
             {this.getModalContent()}
           </Modal.Content>
           <Modal.Actions>
-            <Button color="blue" onClick={this.handleClick}>
+            <Button color='blue' onClick={this.handleClick}>
               OK
             </Button>
           </Modal.Actions>
         </Modal>
       </div>
-    );
+    )
   }
 }
 
-export default ModalInfoOffchain;
+export default ModalInfoOffchain
