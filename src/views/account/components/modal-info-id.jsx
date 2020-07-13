@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import {
   Table, Icon, Modal, Button
@@ -6,19 +6,12 @@ import {
 
 const web3 = require('web3')
 
-class ModalInfoId extends Component {
-  static propTypes = {
-    txs: PropTypes.array,
-    noImported: PropTypes.bool.isRequired
-  };
-
-  static defaultProps = {
-    txs: [{ coin: 0, amount: 0 }]
-  };
-
-  getIdTokens = () => {
+function ModalInfoId ({
+  txs,
+  noImported
+}) {
+  function getIdTokens () {
     try {
-      const { txs } = this.props
       return txs.map((key, index) => {
         return (
           <Table.Row key={index}>
@@ -37,26 +30,33 @@ class ModalInfoId extends Component {
     }
   }
 
-  render () {
-    return (
-      <Modal trigger={<Button icon='info' content='More Information...' disabled={this.props.noImported} />} closeIcon>
-        <Modal.Header><Icon name='info' /></Modal.Header>
-        <Modal.Content>
-          <Table>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>COIN</Table.HeaderCell>
-                <Table.HeaderCell>TOKENS</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {this.getIdTokens()}
-            </Table.Body>
-          </Table>
-        </Modal.Content>
-      </Modal>
-    )
-  }
+  return (
+    <Modal trigger={<Button icon='info' content='More Information...' disabled={noImported} />} closeIcon>
+      <Modal.Header><Icon name='info' /></Modal.Header>
+      <Modal.Content>
+        <Table>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>COIN</Table.HeaderCell>
+              <Table.HeaderCell>TOKENS</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {getIdTokens()}
+          </Table.Body>
+        </Table>
+      </Modal.Content>
+    </Modal>
+  )
+}
+
+ModalInfoId.propTypes = {
+  txs: PropTypes.array,
+  noImported: PropTypes.bool.isRequired
+}
+
+ModalInfoId.defaultProps = {
+  txs: [{ coin: 0, amount: 0 }]
 }
 
 export default ModalInfoId
