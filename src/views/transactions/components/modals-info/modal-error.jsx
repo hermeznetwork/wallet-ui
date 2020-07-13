@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import {
   Modal, Button
@@ -9,28 +9,30 @@ const message = {
   1: 'You do not have enough ether.'
 }
 
-class ModalError extends Component {
-  static propTypes = {
-    modalError: PropTypes.bool.isRequired,
-    error: PropTypes.string.isRequired,
-    onToggleModalError: PropTypes.func.isRequired
-  }
-
-  render () {
-    return (
-      <Modal open={this.props.modalError}>
-        <Modal.Header>Error</Modal.Header>
-        <Modal.Content>
-          {message[this.props.error]}
-        </Modal.Content>
-        <Modal.Actions>
-          <Button color='red' onClick={this.props.onToggleModalError}>
+function ModalError ({
+  modalError,
+  error,
+  onToggleModalError
+}) {
+  return (
+    <Modal open={modalError}>
+      <Modal.Header>Error</Modal.Header>
+      <Modal.Content>
+        {message[error]}
+      </Modal.Content>
+      <Modal.Actions>
+        <Button color='red' onClick={onToggleModalError}>
             OK
-          </Button>
-        </Modal.Actions>
-      </Modal>
-    )
-  }
+        </Button>
+      </Modal.Actions>
+    </Modal>
+  )
+}
+
+ModalError.propTypes = {
+  modalError: PropTypes.bool.isRequired,
+  error: PropTypes.string.isRequired,
+  onToggleModalError: PropTypes.func.isRequired
 }
 
 export default ModalError
