@@ -80,7 +80,7 @@ class InitView extends Component {
       if (this.state.walletImport === '' || this.passwordRef.current.value === '') {
         throw new Error('Incorrect wallet or password')
       } else {
-        await this.props.onHandleInitStateTx()
+        await this.props.onInitStateTx()
         this.props.onResetTxs()
         await this.props.onLoadFiles(config)
         this.setState({ step: 1, desc: '1/3 Loading Operator' })
@@ -105,7 +105,7 @@ class InitView extends Component {
       } else {
         this.setState({ step: 1, desc: '1/4 Creating Wallet' })
         const encWallet = await this.props.onCreateWallet(fileName, password)
-        await this.props.onHandleInitStateTx()
+        await this.props.onInitStateTx()
         await this.props.onLoadFiles(config)
         this.setState({ step: 2, desc: '2/4 Loading Operator' })
         await this.props.onLoadOperator(config)
@@ -113,7 +113,7 @@ class InitView extends Component {
         await this.props.onLoadWallet(encWallet, password, false)
       }
     } catch (err) {
-      this.props.onHandleInitStateTx()
+      this.props.onInitStateTx()
     }
   }
 
