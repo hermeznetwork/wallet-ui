@@ -1,70 +1,82 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import {
   Button, Modal, Form, Icon, Message, Progress
 } from 'semantic-ui-react'
 
 function ModalImport ({
-  passwordRef,
   errorWallet,
-  modalImport,
+  isOpen,
   isLoadingWallet,
-  onChangeWallet,
-  onClickImport,
-  onToggleModalImport,
   desc,
-  step
+  step,
+  onImportWallet,
+  onClose
 }) {
-  function isLoading () {
-    if (isLoadingWallet === true) {
-      return (
-        <div>
-          <Message warning>
-            <Icon name='circle notched' loading />
-              Your wallet is being checked...
-              This may take a few seconds!
-          </Message>
-          <p>{desc}</p>
-          <Progress value={step} total='3' progress='ratio' color='blue' active />
-        </div>
-      )
-    } if (errorWallet !== '') {
-      return (
-        <Message error>
-            Invalid Wallet or Password
-        </Message>
-      )
-    }
+  const [password, setPassword] = useState('')
+  const [wallet, setWallet] = useState()
+
+  function handleWalletChange (event) {
+    setWallet(event.target.files[0])
+  }
+
+  function handlePasswordChange (event) {
+    setPassword(event.target.value)
   }
 
   return (
-    <Modal open={modalImport}>
+    <Modal open={isOpen}>
       <Modal.Header>Import Wallet</Modal.Header>
       <Modal.Content>
         <Form>
           <Form.Field>
             <label htmlFor='wallet-file'>
-                  Wallet
-              <input type='file' onChange={(e) => onChangeWallet(e)} id='wallet-file' />
+              Wallet
+              <input type='file' onChange={handleWalletChange} id='wallet-file' />
             </label>
           </Form.Field>
           <Form.Field>
             <label htmlFor='password'>
-                  Password
-              <input type='password' ref={passwordRef} id='password' />
+              Password
+              <input type='password' value={password} onChange={handlePasswordChange} id='password' />
             </label>
           </Form.Field>
         </Form>
-        {isLoading()}
+        {
+          isLoadingWallet
+            ? (
+              <div>
+                <Message warning>
+                  <Icon name='circle notched' loading />
+                  Your wallet is being checked...
+                  This may take a few seconds!
+                </Message>
+                <p>{desc}</p>
+                <Progress value={step} total='3' progress='ratio' color='blue' active />
+              </div>
+            ) : (
+              <></>
+            )
+        }
+        {
+          errorWallet
+            ? (
+              <Message error>
+                Invalid Wallet or Password
+              </Message>
+            ) : (
+              <></>
+            )
+        }
       </Modal.Content>
       <Modal.Actions>
-        <Button color='blue' onClick={onClickImport}>
+        <Button color='blue' onClick={() => onImportWallet(wallet, password)} disabled={!wallet || !password}>
           <Icon name='check' />
-              Import
+          Import
         </Button>
-        <Button color='grey' basic onClick={onToggleModalImport}>
+        <Button color='grey' basic onClick={onClose}>
           <Icon name='close' />
-              Close
+          Close
         </Button>
       </Modal.Actions>
     </Modal>
@@ -72,15 +84,13 @@ function ModalImport ({
 }
 
 ModalImport.propTypes = {
-  passwordRef: PropTypes.object.isRequired,
-  errorWallet: PropTypes.string,
-  modalImport: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
   isLoadingWallet: PropTypes.bool.isRequired,
-  onChangeWallet: PropTypes.func.isRequired,
-  onClickImport: PropTypes.func.isRequired,
-  onToggleModalImport: PropTypes.func.isRequired,
+  errorWallet: PropTypes.string,
   desc: PropTypes.string,
-  step: PropTypes.number.isRequired
+  step: PropTypes.number.isRequired,
+  onImportWallet: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired
 }
 
 export default ModalImport

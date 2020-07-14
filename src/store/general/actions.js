@@ -43,6 +43,7 @@ export function handleLoadWallet (walletFile, password, file) {
       const desWallet = await rollup.wallet.Wallet.fromEncryptedJson(wallet, password)
       dispatch(loadWalletSuccess(wallet, password, desWallet))
     } catch (error) {
+      console.log(error)
       dispatch(loadWalletError(error.message))
     }
   }
@@ -138,7 +139,6 @@ export function handleLoadFiles (config) {
       if (!config.abiRollup) errorMessage = 'No Rollup ABI'
       if (!config.abiTokens) errorMessage = 'No Tokens ABI'
       if (!config.tokensAddress) errorMessage = 'No Tokens Address'
-
       dispatch(loadFilesSuccess(config, config.abiRollup, config.abiTokens, chainId, errorMessage))
       if (errorMessage !== '') {
         return false

@@ -31,18 +31,14 @@ function InitView ({
   onResetWallet,
   onResetTxs
 }) {
+  const { search } = useLocation()
   const [state, setState] = React.useState({
     isLoaded: false,
-    modalImport: false,
-    modalCreate: false,
-    walletImport: '',
-    nameWallet: '',
+    isModalImportOpen: false,
+    isModalCreateOpen: false,
     step: 0,
     desc: ''
   })
-  const passwordRef = React.createRef()
-  const fileNameRef = React.createRef()
-  const { search } = useLocation()
 
   React.useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
@@ -58,22 +54,25 @@ function InitView ({
 
   React.useEffect(() => {
     if (isLoadingWallet === false && Object.keys(desWallet).length !== 0) {
-      setState({ ...state, isLoaded: true, modalImport: false })
+      setState({ ...state, isLoaded: true, isModalImportOpen: false })
     }
-    if (created === true && state.isLoaded === true && state.modalCreate === true) {
-      setState({ ...state, modalCreate: false })
+    if (created === true && state.isLoaded === true && state.isModalCreateOpen === true) {
+      setState({ ...state, isModalCreateOpen: false })
     }
   }, [isLoadingWallet, desWallet, created, state, setState])
 
-  function handleChangeWallet (event) {
-    event.preventDefault()
-    setState({ ...state, walletImport: event.target.files[0] })
+  function handleToggleModalImport () {
+    setState({ ...state, isModalImportOpen: !state.isModalImportOpen })
   }
 
-  async function handleClickImport () {
+  function handleToggleModalCreate () {
+    setState({ ...state, isModalCreateOpen: !state.isModalCreateOpen })
+  }
+
+  async function handleWalletImport (wallet, password) {
     try {
       setState({ ...state, step: 0, desc: '' })
-      if (state.walletImport === '' || passwordRef.current.value === '') {
+      if (!wallet || !password) {
         throw new Error('Incorrect wallet or password')
       } else {
         await onInitStateTx()
@@ -82,7 +81,7 @@ function InitView ({
         setState({ ...state, step: 1, desc: '1/3 Loading Operator' })
         await onLoadOperator(config)
         setState({ ...state, step: 2, desc: '2/3 Loading Wallet' })
-        await onLoadWallet(state.walletImport, passwordRef.current.value, true)
+        await onLoadWallet(wallet, password, true)
       }
     } catch (err) {
       setState({
@@ -92,50 +91,27 @@ function InitView ({
     }
   }
 
-  async function handleClickCreate () {
+  async function handleCreateWallet (filename, password) {
     try {
       setState({ ...state, step: 0, desc: '' })
 
-      const fileName = fileNameRef.current.value
-      const password = passwordRef.current.value
-
-      if (fileName === '' || password === '') {
+      if (!filename || !password) {
         throw new Error('Incorrect wallet or password')
-      } else {
-        setState({ ...state, step: 1, desc: '1/4 Creating Wallet' })
-
-        const encWallet = await onCreateWallet(fileName, password)
-
-        await onInitStateTx()
-        await onLoadFiles(config)
-        setState({ ...state, step: 2, desc: '2/4 Loading Operator' })
-        await onLoadOperator(config)
-        setState({ ...state, step: 3, desc: '3/4 Loading Wallet' })
-        await onLoadWallet(encWallet, password, false)
       }
+
+      setState({ ...state, step: 1, desc: '1/4 Creating Wallet' })
+
+      const encWallet = await onCreateWallet(filename, password)
+
+      await onInitStateTx()
+      await onLoadFiles(config)
+      setState({ ...state, step: 2, desc: '2/4 Loading Operator' })
+      await onLoadOperator(config)
+      setState({ ...state, step: 3, desc: '3/4 Loading Wallet' })
+      await onLoadWallet(encWallet, password, false)
     } catch (err) {
       onInitStateTx()
     }
-  }
-
-  function handleToggleModalImport () {
-    setState((prev) => ({ modalImport: !prev.modalImport }))
-  }
-
-  function handleToggleModalCreate () {
-    const nameWallet = 'zkrollup-backup-'
-    const date = new Date(Date.now())
-    const year = date.getFullYear()
-    const month = date.getMonth() + 1
-    const day = date.getDate()
-    const hour = date.getHours()
-    const min = date.getMinutes()
-
-    setState({
-      ...state,
-      modalCreate: !state.modalCreate,
-      nameWallet: `${nameWallet}${year}${month}${day}-${hour}${min}`
-    })
   }
 
   function renderRedirect () {
@@ -155,7 +131,7 @@ function InitView ({
           marginTop: '3em'
         }}
       >
-          Rollup
+        Rollup
       </Header>
       <Divider />
       <Button.Group vertical>
@@ -176,28 +152,23 @@ function InitView ({
         />
       </Button.Group>
       <ModalCreate
-        modalCreate={state.modalCreate}
-        onToggleModalCreate={handleToggleModalCreate}
-        onClickCreate={handleClickCreate}
-        fileNameRef={fileNameRef}
-        passwordRef={passwordRef}
+        isOpen={state.isModalCreateOpen}
         isLoadingWallet={isLoadingWallet}
         isCreatingWallet={isCreatingWallet}
         errorCreateWallet={errorCreateWallet}
-        nameWallet={state.nameWallet}
         desc={state.desc}
         step={state.step}
+        onCreateWallet={handleCreateWallet}
+        onClose={handleToggleModalCreate}
       />
       <ModalImport
-        modalImport={state.modalImport}
-        onToggleModalImport={handleToggleModalImport}
-        onChangeWallet={handleChangeWallet}
-        onClickImport={handleClickImport}
-        passwordRef={passwordRef}
+        isOpen={state.isModalImportOpen}
         isLoadingWallet={isLoadingWallet}
         errorWallet={errorWallet}
         desc={state.desc}
         step={state.step}
+        onClose={handleToggleModalImport}
+        onImportWallet={handleWalletImport}
       />
       {renderRedirect()}
     </Container>
