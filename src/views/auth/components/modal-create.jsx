@@ -17,10 +17,10 @@ function ModalCreate ({
   desc,
   step
 }) {
-  const [state, setState] = {
+  const [state, setState] = React.useState({
     password: '',
     match: ''
-  }
+  })
 
   function isLoading () {
     if (isCreatingWallet === true || isLoadingWallet === true) {
