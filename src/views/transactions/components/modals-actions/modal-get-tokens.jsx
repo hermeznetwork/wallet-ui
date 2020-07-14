@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import {
@@ -9,87 +9,87 @@ import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
 import { handleGetTokens } from '../../../../store/tx/actions'
 
-class ModalGetTokens extends Component {
-  static propTypes = {
-    config: PropTypes.object.isRequired,
-    desWallet: PropTypes.object.isRequired,
-    modalGetTokens: PropTypes.bool.isRequired,
-    onToggleModalGetTokens: PropTypes.func.isRequired,
-    onGetTokens: PropTypes.func.isRequired
+function ModalGetTokens ({
+  config,
+  desWallet,
+  modalGetTokens,
+  onToggleModalGetTokens,
+  onGetTokens
+}) {
+  const [state, setState] = { modalError: false, errors: '' }
+
+  function handleToggleModalError () {
+    setState({ ...state, modalError: !state.modalError })
   }
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      modalError: false,
-      error: ''
-    }
-  }
+  async function handleClickGetTokens () {
+    onToggleModalGetTokens()
 
-  handleToggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })) }
+    const res = await onGetTokens(config.nodeEth, config.tokensAddress, desWallet)
 
-  handleClickGetTokens = async () => {
-    const { config, desWallet } = this.props
-    this.props.onToggleModalGetTokens()
-    const res = await this.props.onGetTokens(config.nodeEth, config.tokensAddress, desWallet)
     if (res.message !== undefined) {
       if (res.message.includes('insufficient funds')) {
-        this.setState({ error: '1' })
-        this.handleToggleModalError()
+        setState({ ...state, error: '1' })
+        handleToggleModalError()
       }
     }
   }
 
-  render () {
-    return (
-      <div>
-        <ModalError
-          error={this.state.error}
-          modalError={this.state.modalError}
-          onToggleModalError={this.handleToggleModalError}
-        />
-        <Modal open={this.props.modalGetTokens}>
-          <Modal.Header>Get Tokens</Modal.Header>
-          <Modal.Content>
-            <Form>
-              <Form.Field>
-                <b>
+  return (
+    <div>
+      <ModalError
+        error={state.error}
+        modalError={state.modalError}
+        onToggleModalError={handleToggleModalError}
+      />
+      <Modal open={modalGetTokens}>
+        <Modal.Header>Get Tokens</Modal.Header>
+        <Modal.Content>
+          <Form>
+            <Form.Field>
+              <b>
                   Amount Tokens:
-                </b>
-                <p>1000</p>
-              </Form.Field>
-              <Form.Field>
-                <label htmlFor='addressTokens'>
+              </b>
+              <p>1000</p>
+            </Form.Field>
+            <Form.Field>
+              <label htmlFor='addressTokens'>
                   Address SC Tokens:
-                  <input
-                    type='text'
-                    disabled
-                    placeholder='0x0000000000000000000000000000000000000000'
-                    ref={this.addressTokensRef}
-                    defaultValue={this.props.config.tokensAddress}
-                    size='40'
-                  />
-                </label>
-              </Form.Field>
-              <Form.Field>
-                <ButtonGM />
-              </Form.Field>
-            </Form>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button onClick={this.handleClickGetTokens} color='blue'>
-              <Icon name='ethereum' />
-                  GET TOKENS
-            </Button>
-            <Button color='grey' basic onClick={this.props.onToggleModalGetTokens}>
-              <Icon name='close' />
-                Close
-            </Button>
-          </Modal.Actions>
-        </Modal>
-      </div>
-    )
-  }
+                <input
+                  type='text'
+                  disabled
+                  placeholder='0x0000000000000000000000000000000000000000'
+                  defaultValue={config.tokensAddress}
+                  size='40'
+                />
+              </label>
+            </Form.Field>
+            <Form.Field>
+              <ButtonGM />
+            </Form.Field>
+          </Form>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button onClick={handleClickGetTokens} color='blue'>
+            <Icon name='ethereum' />
+              GET TOKENS
+          </Button>
+          <Button color='grey' basic onClick={onToggleModalGetTokens}>
+            <Icon name='close' />
+              Close
+          </Button>
+        </Modal.Actions>
+      </Modal>
+    </div>
+  )
+}
+
+ModalGetTokens.propTypes = {
+  config: PropTypes.object.isRequired,
+  desWallet: PropTypes.object.isRequired,
+  modalGetTokens: PropTypes.bool.isRequired,
+  onToggleModalGetTokens: PropTypes.func.isRequired,
+  onGetTokens: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({

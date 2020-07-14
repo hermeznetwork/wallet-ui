@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Button } from 'semantic-ui-react'
@@ -11,72 +11,61 @@ const GAS_MULTIPLIER = {
   FAST: 3
 }
 
-class ButtonGM extends Component {
-  static propTypes = {
-    selectGasMultiplier: PropTypes.func.isRequired
-  }
+function ButtonGM ({
+  selectGasMultiplier
+}) {
+  const [state, setState] = React.useState({
+    slow: false,
+    avg: true,
+    fast: false
+  })
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      slow: false,
-      avg: true,
-      fast: false
-    }
-  }
-
-  selectActive = (num) => {
+  function selectActive (num) {
     if (num === GAS_MULTIPLIER.SLOW) {
-      this.setState({
-        slow: true, avg: false, fast: false
-      })
+      setState({ slow: true, avg: false, fast: false })
     } else if (num === GAS_MULTIPLIER.AVG) {
-      this.setState({
-        slow: false, avg: true, fast: false
-      })
+      setState({ slow: false, avg: true, fast: false })
     } else if (num === GAS_MULTIPLIER.FAST) {
-      this.setState({
-        slow: false, avg: false, fast: true
-      })
+      setState({ slow: false, avg: false, fast: true })
     } else {
-      this.setState({
-        slow: false, avg: false, fast: false
-      })
+      setState({ slow: false, avg: false, fast: false })
     }
   }
 
-  changeGasMultiplier = (num, event) => {
+  function changeGasMultiplier (num, event) {
     event.preventDefault()
-    this.props.selectGasMultiplier(num)
-    this.selectActive(num)
+    selectGasMultiplier(num)
+    selectActive(num)
   }
 
-  render () {
-    return (
-      <Button.Group>
-        <Button
-          onClick={(event) => this.changeGasMultiplier(GAS_MULTIPLIER.SLOW, event)}
-          active={this.state.slow}
-        >
-          Slow
-        </Button>
-        <Button.Or />
-        <Button
-          onClick={(event) => this.changeGasMultiplier(GAS_MULTIPLIER.AVG, event)}
-          active={this.state.avg}
-        >
-          Avg
-        </Button>
-        <Button.Or />
-        <Button
-          onClick={(event) => this.changeGasMultiplier(GAS_MULTIPLIER.FAST, event)}
-          active={this.state.fast}
-        >
-          Fast
-        </Button>
-      </Button.Group>
-    )
-  }
+  return (
+    <Button.Group>
+      <Button
+        onClick={(event) => changeGasMultiplier(GAS_MULTIPLIER.SLOW, event)}
+        active={state.slow}
+      >
+        Slow
+      </Button>
+      <Button.Or />
+      <Button
+        onClick={(event) => changeGasMultiplier(GAS_MULTIPLIER.AVG, event)}
+        active={state.avg}
+      >
+        Avg
+      </Button>
+      <Button.Or />
+      <Button
+        onClick={(event) => changeGasMultiplier(GAS_MULTIPLIER.FAST, event)}
+        active={state.fast}
+      >
+        Fast
+      </Button>
+    </Button.Group>
+  )
+}
+
+ButtonGM.propTypes = {
+  selectGasMultiplier: PropTypes.func.isRequired
 }
 
 export default connect(null, { selectGasMultiplier })(ButtonGM)

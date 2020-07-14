@@ -1,42 +1,39 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import {
   Button, Modal, Form, Icon, Dropdown
 } from 'semantic-ui-react'
+
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
 import { handleSendForceExit } from '../../../../store/tx/actions'
 import { handleStateForceExit } from '../../../../store/tx-state/actions'
 import { getWei } from '../../../../utils/utils'
 
-class ModalForceExit extends Component {
-  static propTypes = {
-    config: PropTypes.object.isRequired,
-    modalForceExit: PropTypes.bool.isRequired,
-    onToggleModalForceExit: PropTypes.func.isRequired,
-    onSendForceExit: PropTypes.func.isRequired,
-    onStateForceExit: PropTypes.func.isRequired,
-    desWallet: PropTypes.object.isRequired,
-    babyjub: PropTypes.string.isRequired,
-    tokensList: PropTypes.array.isRequired,
-    gasMultiplier: PropTypes.number.isRequired
-  }
+function ModalForceExit ({
+  config,
+  modalForceExit,
+  onToggleModalForceExit,
+  onSendForceExit,
+  onStateForceExit,
+  desWallet,
+  babyjub,
+  tokensList,
+  gasMultiplier
+}) {
+  const [state, setState] = React.useState({
+    amount: '',
+    modalError: false,
+    sendDisabled: true,
+    error: '',
+    tokenId: ''
+  })
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      amount: '',
-      modalError: false,
-      sendDisabled: true,
-      error: '',
-      tokenId: ''
-    }
-  }
-
-  handleCloseModal = () => {
-    this.props.onToggleModalForceExit()
-    this.setState({
+  function handleCloseModal () {
+    onToggleModalForceExit()
+    setState({
+      ...state,
       amount: '',
       modalError: false,
       sendDisabled: true,
@@ -45,68 +42,82 @@ class ModalForceExit extends Component {
     })
   }
 
-  handleToggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })) }
+  function handleToggleModalError () {
+    setState({ ...state, modalError: !state.modalError })
+  }
 
-  checkForm = () => {
-    const {
-      amount, tokenId
-    } = this.state
-    if (parseInt(amount, 10) && (parseInt(tokenId, 10) || tokenId === 0)) {
-      this.setState({ sendDisabled: false })
+  function checkForm () {
+    if (parseInt(state.amount, 10) && (parseInt(state.tokenId, 10) || state.tokenId === 0)) {
+      setState({ ...state, sendDisabled: false })
     } else {
-      this.setState({ sendDisabled: true })
+      setState({ ...state, sendDisabled: true })
     }
   }
 
-  handleSetAmount = (event) => {
-    this.setState({ amount: event.target.value }, () => { this.checkForm() })
+  function handleSetAmount (event) {
+    setState({ ...state, amount: event.target.value })
+    checkForm()
   }
 
-  handleSetToken = (event, { value }) => {
+  function handleSetToken (event, { value }) {
     const tokenId = Number(value)
-    this.setState({ tokenId }, () => { this.checkForm() })
+
+    setState({ ...state, tokenId })
+    checkForm()
   }
 
-  handleClick = async () => {
-    const { config, desWallet, gasMultiplier } = this.props
-    const amountWei = getWei(this.state.amount)
-    const tokenId = this.state.tokenId
-    this.handleCloseModal()
-    const res = await this.props.onSendForceExit(config.nodeEth, config.address, tokenId, amountWei, desWallet,
-      config.abiRollup, config.operator, gasMultiplier)
+  async function handleClick () {
+    const amountWei = getWei(state.amount)
+
+    handleCloseModal()
+
+    const res = await onSendForceExit(
+      config.nodeEth,
+      config.address,
+      state.tokenId,
+      amountWei,
+      desWallet,
+      config.abiRollup,
+      config.operator,
+      gasMultiplier
+    )
+
     if (res.message !== undefined) {
       if (res.message.includes('insufficient funds')) {
-        this.setState({ error: '1' })
-        this.handleToggleModalError()
+        setState({ ...state, error: '1' })
+        handleToggleModalError()
       }
     }
     if (res.res) {
-      this.props.onStateForceExit(res, config.operator, tokenId, amountWei)
+      onStateForceExit(res, config.operator, state.tokenId, amountWei)
     }
   }
 
-  dropDownTokens = () => {
-    const tokensOptions = []
-    for (const token in this.props.tokensList) {
-      tokensOptions.push({
-        key: this.props.tokensList[token].address,
-        value: this.props.tokensList[token].tokenId,
-        text: `${this.props.tokensList[token].tokenId}: ${this.props.tokensList[token].address}`
-      })
-    }
+  function dropDownTokens () {
+    const tokensOptions = tokensList.map((token) => ({
+      key: tokensList[token].address,
+      value: tokensList[token].tokenId,
+      text: `${tokensList[token].tokenId}: ${tokensList[token].address}`
+    }))
+
     return (
       <Dropdown
         placeholder='token'
         options={tokensOptions}
-        onChange={this.handleSetToken}
+        onChange={handleSetToken}
         scrolling
       />
     )
   }
 
-  modal = () => {
-    return (
-      <Modal open={this.props.modalForceExit}>
+  return (
+    <div>
+      <ModalError
+        error={state.error}
+        modalError={state.modalError}
+        onToggleModalError={handleToggleModalError}
+      />
+      <Modal open={modalForceExit}>
         <Modal.Header>Force Exit</Modal.Header>
         <Modal.Content>
           <Form>
@@ -115,7 +126,7 @@ class ModalForceExit extends Component {
                 Sender BabyJubJub Address
                 <input
                   type='text'
-                  defaultValue={this.props.babyjub}
+                  defaultValue={babyjub}
                   id='baby-ax-s'
                   disabled
                 />
@@ -127,7 +138,7 @@ class ModalForceExit extends Component {
                 <input
                   type='text'
                   id='amount'
-                  onChange={this.handleSetAmount}
+                  onChange={handleSetAmount}
                 />
               </label>
             </Form.Field>
@@ -135,7 +146,7 @@ class ModalForceExit extends Component {
               <label htmlFor='tokenid'>
                 Token ID
               </label>
-              {this.dropDownTokens()}
+              {dropDownTokens()}
             </Form.Field>
             <Form.Field>
               <ButtonGM />
@@ -143,31 +154,30 @@ class ModalForceExit extends Component {
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='blue' onClick={this.handleClick} disabled={this.state.sendDisabled}>
+          <Button color='blue' onClick={handleClick} disabled={state.sendDisabled}>
             <Icon name='share' />
               Force Exit
           </Button>
-          <Button color='grey' basic onClick={this.handleCloseModal}>
+          <Button color='grey' basic onClick={handleCloseModal}>
             <Icon name='close' />
               Close
           </Button>
         </Modal.Actions>
       </Modal>
-    )
-  }
+    </div>
+  )
+}
 
-  render () {
-    return (
-      <div>
-        <ModalError
-          error={this.state.error}
-          modalError={this.state.modalError}
-          onToggleModalError={this.handleToggleModalError}
-        />
-        {this.modal()}
-      </div>
-    )
-  }
+ModalForceExit.propTypes = {
+  config: PropTypes.object.isRequired,
+  modalForceExit: PropTypes.bool.isRequired,
+  onToggleModalForceExit: PropTypes.func.isRequired,
+  onSendForceExit: PropTypes.func.isRequired,
+  onStateForceExit: PropTypes.func.isRequired,
+  desWallet: PropTypes.object.isRequired,
+  babyjub: PropTypes.string.isRequired,
+  tokensList: PropTypes.array.isRequired,
+  gasMultiplier: PropTypes.number.isRequired
 }
 
 const mapStateToProps = (state) => ({
