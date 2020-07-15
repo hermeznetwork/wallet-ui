@@ -18,7 +18,7 @@ function ModalGetTokens ({
 }) {
   const [state, setState] = React.useState({
     modalError: false,
-    errors: ''
+    error: ''
   })
 
   function handleToggleModalError () {

@@ -43,7 +43,6 @@ export function handleLoadWallet (walletFile, password, file) {
       const desWallet = await rollup.wallet.Wallet.fromEncryptedJson(wallet, password)
       dispatch(loadWalletSuccess(wallet, password, desWallet))
     } catch (error) {
-      console.log(error)
       dispatch(loadWalletError(error.message))
     }
   }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Header, Container, Divider } from 'semantic-ui-react'
@@ -20,285 +20,241 @@ import ModalApprove from './components/modals-actions/modal-approve'
 import ModalGetTokens from './components/modals-actions/modal-get-tokens'
 import ModalForceExit from './components/modals-actions/modal-force-exit'
 
-function ActionView (
-  desWallet,
-  wallet,
-  config,
-  abiTokens,
-  tokens,
-  tokensList,
-  tokensArray,
-  tokensR,
-  tokensA,
-  tokensAArray,
-  tokensRArray,
-  tokensE,
-  tokensTotal,
-  balance,
-  txs,
-  txsExits,
-  apiOperator,
-  handleInitStateTx,
-  isLoadingInfoAccount,
-  handleInfoAccount,
-  handleLoadFiles,
-  getCurrentBatch,
-  errorFiles,
-  txTotal
-) {
-  const [state, setState] = React.useState({
-    modalDeposit: false,
-    modalWithdraw: false,
-    modalForceExit: false,
-    modalSend: false,
-    modalApprove: false,
-    modalGetTokens: false,
-    modalError: false,
-    error: '',
-    activeItem: '',
-    noImported: false,
-    babyjub: '0x0000000000000000000000000000000000000000',
-    lengthTx: 0
-  })
+class ActionView extends Component {
+  static propTypes = {
+    desWallet: PropTypes.object.isRequired,
+    wallet: PropTypes.object.isRequired,
+    config: PropTypes.object.isRequired,
+    abiTokens: PropTypes.array.isRequired,
+    tokens: PropTypes.string,
+    tokensList: PropTypes.array.isRequired,
+    tokensArray: PropTypes.array,
+    tokensR: PropTypes.string,
+    tokensA: PropTypes.string,
+    tokensAArray: PropTypes.array,
+    tokensE: PropTypes.string,
+    tokensTotal: PropTypes.string,
+    balance: PropTypes.string,
+    txs: PropTypes.array,
+    txsExits: PropTypes.array,
+    apiOperator: PropTypes.object.isRequired,
+    handleInitStateTx: PropTypes.func.isRequired,
+    isLoadingInfoAccount: PropTypes.bool.isRequired,
+    handleInfoAccount: PropTypes.func.isRequired,
+    handleLoadFiles: PropTypes.func.isRequired,
+    getCurrentBatch: PropTypes.func.isRequired,
+    errorFiles: PropTypes.string.isRequired,
+    txTotal: PropTypes.array.isRequired
+  }
 
-  const getInfoAccount = React.useCallback(async () => {
-    if (Object.keys(desWallet).length !== 0) {
-      await handleInfoAccount(
-        config.nodeEth,
-        abiTokens,
-        wallet,
-        config.operator,
-        config.address,
-        config.abiRollup,
-        desWallet
-      )
+  static defaultProps = {
+    tokens: '0',
+    tokensR: '0',
+    tokensE: '0',
+    balance: '0',
+    txs: [],
+    txsExits: [],
+    tokensArray: [],
+    tokensAArray: []
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      modalDeposit: false,
+      modalWithdraw: false,
+      modalForceExit: false,
+      modalSend: false,
+      modalApprove: false,
+      modalGetTokens: false,
+      modalError: false,
+      error: '',
+      activeItem: '',
+      noImported: false,
+      babyjub: '0x0000000000000000000000000000000000000000',
+      lengthTx: 0
     }
-  }, [config, abiTokens, desWallet, wallet, handleInfoAccount])
+  }
 
-  const infoOperator = React.useCallback(() => {
-    getCurrentBatch(config.operator)
-    setTimeout(infoOperator, 30000)
-  }, [config, getCurrentBatch])
-
-  React.useEffect(() => {
-    getInfoAccount()
-    infoOperator()
-    if (Object.keys(desWallet).length === 0 || errorFiles !== '') {
-      setState({ ...state, noImported: true })
+  componentDidMount = async () => {
+    this.getInfoAccount()
+    this.infoOperator()
+    if (Object.keys(this.props.desWallet).length === 0 || this.props.errorFiles !== '') {
+      this.setState({ noImported: true })
     } else {
-      setState({
-        ...state,
-        babyjub: pointToCompress(desWallet.babyjubWallet.publicKey),
-        lengthTx: txTotal.length
+      this.setState({
+        babyjub: pointToCompress(this.props.desWallet.babyjubWallet.publicKey),
+        lengthTx: this.props.txTotal.length
       })
     }
-  }, [desWallet, txTotal, errorFiles, state, setState, getInfoAccount, infoOperator])
+  }
 
-  React.useEffect(() => {
-    if (txTotal.length > state.lengthTx) {
-      setState({ ...state, lengthTx: txTotal.length })
-      getInfoAccount()
+  componentDidUpdate = () => {
+    if (this.props.txTotal.length > this.state.lengthTx) {
+      this.setState({ lengthTx: this.props.txTotal.length })
+      this.getInfoAccount()
     }
-  }, [txTotal, state, setState, getInfoAccount])
+  }
 
-  async function changeNode (currentNode) {
-    handleInitStateTx()
+  changeNode = async (currentNode) => {
+    const { config } = this.props
+    this.props.handleInitStateTx()
     config.nodeEth = currentNode
-
-    const nodeLoad = await handleLoadFiles(config)
-
-    await getInfoAccount()
-    if (Object.keys(desWallet).length === 0 || !nodeLoad) {
-      setState({ ...state, noImported: true })
+    const nodeLoad = await this.props.handleLoadFiles(config)
+    await this.getInfoAccount()
+    if (Object.keys(this.props.desWallet).length === 0 || !nodeLoad) {
+      this.setState({ noImported: true })
     } else {
-      setState({
-        ...state,
-        babyjub: pointToCompress(desWallet.babyjubWallet.publicKey),
-        noImported: false
+      this.setState({
+        babyjub: pointToCompress(this.props.desWallet.babyjubWallet.publicKey)
       })
+      this.setState({ noImported: false })
     }
   }
 
-  function handleItemClick (event, { name }) {
-    event.preventDefault()
-    setState({ ...state, activeItem: name })
+  infoOperator = () => {
+    this.props.getCurrentBatch(this.props.config.operator)
+    setTimeout(this.infoOperator, 30000)
+  }
+
+  getInfoAccount = async () => {
+    if (Object.keys(this.props.desWallet).length !== 0) {
+      await this.props.handleInfoAccount(this.props.config.nodeEth, this.props.abiTokens, this.props.wallet,
+        this.props.config.operator, this.props.config.address, this.props.config.abiRollup, this.props.desWallet)
+    }
+  }
+
+  handleItemClick = (e, { name }) => {
+    e.preventDefault()
+    this.setState({ activeItem: name })
     if (name === 'deposit') {
-      setState({ ...state, modalDeposit: true })
+      this.setState({ modalDeposit: true })
     } else if (name === 'withdraw') {
-      setState({ ...state, modalWithdraw: true })
+      this.setState({ modalWithdraw: true })
     } else if (name === 'send' || name === 'send0') {
-      setState({ ...state, modalSend: true })
+      this.setState({ modalSend: true })
     } else if (name === 'approve') {
-      setState({ ...state, modalApprove: true })
+      this.setState({ modalApprove: true })
     } else if (name === 'getTokens') {
-      setState({ ...state, modalGetTokens: true })
+      this.setState({ modalGetTokens: true })
     } else if (name === 'forcexit') {
-      setState({ ...state, modalForceExit: true })
+      this.setState({ modalForceExit: true })
     }
   }
 
-  function handleToggleModalDeposit () {
-    setState({ ...state, modalDeposit: !state.modalDeposit })
-  }
+  handleToggleModalDeposit = () => { this.setState((prev) => ({ modalDeposit: !prev.modalDeposit })) }
 
-  function handleToggleModalWithdraw () {
-    setState({ ...state, modalWithdraw: !state.modalWithdraw })
-  }
+  handleToggleModalWithdraw = () => { this.setState((prev) => ({ modalWithdraw: !prev.modalWithdraw })) }
 
-  function handleToggleModalForceExit () {
-    setState({ ...state, modalForceExit: !state.modalForceExit })
-  }
+  handleToggleModalForceExit = () => { this.setState((prev) => ({ modalForceExit: !prev.modalForceExit })) }
 
-  function handleToggleModalSend () {
-    setState({ ...state, modalSend: !state.modalSend })
-  }
+  handleToggleModalSend = () => { this.setState((prev) => ({ modalSend: !prev.modalSend })) }
 
-  function handleToggleModalApprove () {
-    setState({ ...state, modalApprove: !state.modalApprove })
-  }
+  handleToggleModalApprove = () => { this.setState((prev) => ({ modalApprove: !prev.modalApprove })) }
 
-  function handleToggleModalGetTokens () {
-    setState({ ...state, modalGetTokens: !state.modalGetTokens })
-  }
+  handleToggleModalGetTokens = () => { this.setState((prev) => ({ modalGetTokens: !prev.modalGetTokens })) }
 
-  function handleToggleModalError () {
-    setState({ ...state, modalError: !state.modalError })
-  }
+  handleToggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })) }
 
-  function redirectInitView () {
-    if (Object.keys(desWallet).length === 0) {
+  redirectInitView = () => {
+    if (Object.keys(this.props.desWallet).length === 0) {
       return <Redirect to='/' />
     }
   }
 
-  return (
-    <Container textAlign='center'>
-      <MenuBack
-        config={config}
-        changeNode={changeNode}
-        isLoadingInfoAccount={isLoadingInfoAccount}
-      />
-      <Header
-        as='h1'
-        style={{
-          fontSize: '4em',
-          fontWeight: 'normal',
-          marginBottom: 0,
-          marginTop: '1em'
-        }}
-      >
+  render () {
+    return (
+      <Container textAlign='center'>
+        <MenuBack
+          config={this.props.config}
+          changeNode={this.changeNode}
+          isLoadingInfoAccount={this.props.isLoadingInfoAccount}
+        />
+        <Header
+          as='h1'
+          style={{
+            fontSize: '4em',
+            fontWeight: 'normal',
+            marginBottom: 0,
+            marginTop: '1em'
+          }}
+        >
           Rollup Wallet
-      </Header>
-      <Divider />
-      <MenuActions
-        onItemClick={handleItemClick}
-        noImported={state.noImported}
-      />
-      <MessageTx />
-      <InfoWallet
-        desWallet={desWallet}
-        balance={balance}
-        tokens={tokens}
-        tokensR={tokensR}
-        tokensE={tokensE}
-        tokensA={tokensA}
-        tokensArray={tokensArray}
-        tokensAArray={tokensAArray}
-        tokensTotal={tokensTotal}
-        isLoadingInfoAccount={isLoadingInfoAccount}
-        getInfoAccount={getInfoAccount}
-        txs={txs}
-        txsExits={txsExits}
-        noImported={state.noImported}
-      />
-      <br />
-      <InfoTx
-        desWallet={desWallet}
-      />
-      <ModalDeposit
-        balance={balance}
-        tokensList={tokensList}
-        tokensA={tokensA}
-        modalDeposit={state.modalDeposit}
-        onToggleModalDeposit={handleToggleModalDeposit}
-      />
-      <ModalWithdraw
-        desWallet={desWallet}
-        modalWithdraw={state.modalWithdraw}
-        onToggleModalWithdraw={handleToggleModalWithdraw}
-      />
-      <ModalForceExit
-        tokensList={tokensList}
-        desWallet={desWallet}
-        babyjub={state.babyjub}
-        modalForceExit={state.modalForceExit}
-        onToggleModalForceExit={handleToggleModalForceExit}
-      />
-      <ModalSend
-        tokensRArray={tokensRArray}
-        babyjub={state.babyjub}
-        apiOperator={apiOperator}
-        modalSend={state.modalSend}
-        onToggleModalSend={handleToggleModalSend}
-        activeItem={state.activeItem}
-      />
-      <ModalApprove
-        balance={balance}
-        modalApprove={state.modalApprove}
-        onToggleModalApprove={handleToggleModalApprove}
-        tokensA={tokensA}
-      />
-      <ModalGetTokens
-        balance={balance}
-        modalGetTokens={state.modalGetTokens}
-        onToggleModalGetTokens={handleToggleModalGetTokens}
-      />
-      <ModalError
-        error={state.error}
-        modalError={state.modalError}
-        onToggleModalError={handleToggleModalError}
-      />
-      {redirectInitView()}
-      <br />
-    </Container>
-  )
-}
-
-ActionView.propTypes = {
-  desWallet: PropTypes.object.isRequired,
-  wallet: PropTypes.object.isRequired,
-  config: PropTypes.object.isRequired,
-  abiTokens: PropTypes.array.isRequired,
-  tokens: PropTypes.string,
-  tokensList: PropTypes.array.isRequired,
-  tokensArray: PropTypes.array,
-  tokensR: PropTypes.string,
-  tokensA: PropTypes.string,
-  tokensAArray: PropTypes.array,
-  tokensE: PropTypes.string,
-  tokensTotal: PropTypes.string,
-  balance: PropTypes.string,
-  txs: PropTypes.array,
-  txsExits: PropTypes.array,
-  apiOperator: PropTypes.object.isRequired,
-  handleInitStateTx: PropTypes.func.isRequired,
-  isLoadingInfoAccount: PropTypes.bool.isRequired,
-  handleInfoAccount: PropTypes.func.isRequired,
-  handleLoadFiles: PropTypes.func.isRequired,
-  getCurrentBatch: PropTypes.func.isRequired,
-  errorFiles: PropTypes.string.isRequired,
-  txTotal: PropTypes.array.isRequired
-}
-
-ActionView.defaultProps = {
-  tokens: '0',
-  tokensR: '0',
-  tokensE: '0',
-  balance: '0',
-  txs: [],
-  txsExits: [],
-  tokensArray: [],
-  tokensAArray: []
+        </Header>
+        <Divider />
+        <MenuActions
+          onItemClick={this.handleItemClick}
+          noImported={this.state.noImported}
+        />
+        <MessageTx />
+        <InfoWallet
+          desWallet={this.props.desWallet}
+          balance={this.props.balance}
+          tokens={this.props.tokens}
+          tokensR={this.props.tokensR}
+          tokensE={this.props.tokensE}
+          tokensA={this.props.tokensA}
+          tokensArray={this.props.tokensArray}
+          tokensAArray={this.props.tokensAArray}
+          tokensTotal={this.props.tokensTotal}
+          isLoadingInfoAccount={this.props.isLoadingInfoAccount}
+          getInfoAccount={this.getInfoAccount}
+          txs={this.props.txs}
+          txsExits={this.props.txsExits}
+          noImported={this.state.noImported}
+        />
+        <br />
+        <InfoTx
+          desWallet={this.props.desWallet}
+        />
+        <ModalDeposit
+          balance={this.props.balance}
+          tokensList={this.props.tokensList}
+          tokensA={this.props.tokensA}
+          modalDeposit={this.state.modalDeposit}
+          onToggleModalDeposit={this.handleToggleModalDeposit}
+        />
+        <ModalWithdraw
+          desWallet={this.props.desWallet}
+          modalWithdraw={this.state.modalWithdraw}
+          onToggleModalWithdraw={this.handleToggleModalWithdraw}
+        />
+        <ModalForceExit
+          tokensList={this.props.tokensList}
+          desWallet={this.props.desWallet}
+          babyjub={this.state.babyjub}
+          modalForceExit={this.state.modalForceExit}
+          onToggleModalForceExit={this.handleToggleModalForceExit}
+        />
+        <ModalSend
+          tokensRArray={this.props.tokensRArray}
+          babyjub={this.state.babyjub}
+          apiOperator={this.props.apiOperator}
+          modalSend={this.state.modalSend}
+          onToggleModalSend={this.handleToggleModalSend}
+          activeItem={this.state.activeItem}
+        />
+        <ModalApprove
+          balance={this.props.balance}
+          modalApprove={this.state.modalApprove}
+          onToggleModalApprove={this.handleToggleModalApprove}
+          tokensA={this.props.tokensA}
+        />
+        <ModalGetTokens
+          balance={this.props.balance}
+          modalGetTokens={this.state.modalGetTokens}
+          onToggleModalGetTokens={this.handleToggleModalGetTokens}
+        />
+        <ModalError
+          error={this.state.error}
+          modalError={this.state.modalError}
+          onToggleModalError={this.handleToggleModalError}
+        />
+        {this.redirectInitView()}
+        <br />
+      </Container>
+    )
+  }
 }
 
 const mapStateToProps = (state) => ({
