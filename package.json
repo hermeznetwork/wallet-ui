@@ -39,7 +39,6 @@
   "devDependencies": {
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
-    "redux-devtools-extension": "^2.13.8",
     "standard": "^14.3.4"
   },
   "standard": {

@@ -1,6 +1,5 @@
-import { createStore, applyMiddleware, combineReducers } from 'redux'
+import { createStore, applyMiddleware, combineReducers, compose } from 'redux'
 import thunk from 'redux-thunk'
-import { composeWithDevTools } from 'redux-devtools-extension'
 
 import generalReducer from './general/reducer'
 import transactionsReducer from './tx/reducer'
@@ -16,7 +15,7 @@ const middlewares = [thunk]
 const middlewareEnhancer = applyMiddleware(...middlewares)
 
 const enhancers = [middlewareEnhancer]
-const composedEnhancers = composeWithDevTools(...enhancers)
+const composedEnhancers = compose(...enhancers)
 
 const store = createStore(rootReducer, composedEnhancers)
 
