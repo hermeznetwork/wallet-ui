@@ -1,6 +1,4 @@
-import {
-  createStore, applyMiddleware, compose, combineReducers
-} from 'redux'
+import { createStore, applyMiddleware, combineReducers, compose } from 'redux'
 import thunk from 'redux-thunk'
 
 import generalReducer from './general/reducer'
@@ -13,8 +11,12 @@ const rootReducer = combineReducers({
   txState: txStateReducer
 })
 
-const middleware = [thunk]
+const middlewares = [thunk]
+const middlewareEnhancer = applyMiddleware(...middlewares)
 
-const store = createStore(rootReducer, compose(applyMiddleware(...middleware)))
+const enhancers = [middlewareEnhancer]
+const composedEnhancers = compose(...enhancers)
+
+const store = createStore(rootReducer, composedEnhancers)
 
 export default store

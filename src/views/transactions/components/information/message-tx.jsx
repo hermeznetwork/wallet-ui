@@ -1,46 +1,48 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Message, Icon, Divider } from 'semantic-ui-react'
+
 import { handleCloseMessage } from '../../../../store/tx/actions'
 
-class MessageTx extends Component {
-  static propTypes = {
-    isLoadingDeposit: PropTypes.bool.isRequired,
-    isLoadingWithdraw: PropTypes.bool.isRequired,
-    isLoadingForceExit: PropTypes.bool.isRequired,
-    isLoadingSend: PropTypes.bool.isRequired,
-    isLoadingApprove: PropTypes.bool.isRequired,
-    isLoadingGetTokens: PropTypes.bool.isRequired,
-    successSend: PropTypes.bool.isRequired,
-    successTx: PropTypes.bool.isRequired,
-    successDeposit: PropTypes.bool.isRequired,
-    successForceExit: PropTypes.bool.isRequired,
-    error: PropTypes.string.isRequired,
-    errorFiles: PropTypes.string.isRequired,
-    tx: PropTypes.object.isRequired,
-    chainId: PropTypes.number.isRequired,
-    messageOpen: PropTypes.bool.isRequired,
-    handleCloseMessage: PropTypes.func.isRequired
-  }
-
-  getUrl = () => {
+function MessageTx ({
+  isLoadingDeposit,
+  isLoadingWithdraw,
+  isLoadingForceExit,
+  isLoadingSend,
+  isLoadingApprove,
+  isLoadingGetTokens,
+  successSend,
+  successTx,
+  successDeposit,
+  successForceExit,
+  error,
+  errorFiles,
+  tx,
+  chainId,
+  messageOpen,
+  handleCloseMessage
+}) {
+  function getUrl () {
     let net
-    if (this.props.chainId === -1) {
+
+    if (chainId === -1) {
       return ''
     }
-    if (this.props.chainId === 5) {
+
+    if (chainId === 5) {
       net = 'goerli.'
-    } else if (this.props.chainId === 3) {
+    } else if (chainId === 3) {
       net = 'ropsten.'
-    } else if (this.props.chainId === 4) {
+    } else if (chainId === 4) {
       net = 'rinkeby.'
     } else {
       net = ''
     }
+
     return (
       <a
-        href={`https://${net}etherscan.io/tx/${this.props.tx.hash}`}
+        href={`https://${net}etherscan.io/tx/${tx.hash}`}
         target='_blank'
         rel='noopener noreferrer'
       >
@@ -49,23 +51,23 @@ class MessageTx extends Component {
     )
   }
 
-  getMessage = () => {
-    if (this.props.errorFiles !== '') {
+  function getMessage () {
+    if (errorFiles !== '') {
       return (
         <Message icon color='red'>
           <Icon name='exclamation' />
           <Message.Content>
             <Message.Header>
               Error!
-              {this.props.errorFiles}
+              {errorFiles}
             </Message.Header>
           </Message.Content>
         </Message>
       )
     }
-    if (this.props.isLoadingDeposit === true || this.props.isLoadingWithdraw === true ||
-      this.props.isLoadingSend === true || this.props.isLoadingApprove === true ||
-      this.props.isLoadingGetTokens === true || this.props.isLoadingForceExit === true) {
+    if (isLoadingDeposit === true || isLoadingWithdraw === true ||
+      isLoadingSend === true || isLoadingApprove === true ||
+      isLoadingGetTokens === true || isLoadingForceExit === true) {
       return (
         <Message icon color='orange'>
           <Icon name='circle notched' loading />
@@ -74,54 +76,54 @@ class MessageTx extends Component {
           </Message.Content>
         </Message>
       )
-    } if (this.props.error !== '' && this.props.messageOpen) {
+    } if (error !== '' && messageOpen) {
       return (
-        <Message icon color='red' onDismiss={this.props.handleCloseMessage}>
+        <Message icon color='red' onDismiss={handleCloseMessage}>
           <Icon name='exclamation' />
           <Message.Content>
             <Message.Header>Error!</Message.Header>
-            <p>{this.props.error}</p>
+            <p>{error}</p>
           </Message.Content>
         </Message>
       )
-    } if (this.props.successTx === true && this.props.messageOpen) {
+    } if (successTx === true && messageOpen) {
       return (
-        <Message icon color='green' onDismiss={this.props.handleCloseMessage}>
+        <Message icon color='green' onDismiss={handleCloseMessage}>
           <Icon name='check' />
           <Message.Content>
             <Message.Header>Transaction sent!</Message.Header>
             <p>
               Transaction is being mined... Please click Reload in few seconds!
             </p>
-            {this.getUrl()}
+            {getUrl()}
           </Message.Content>
         </Message>
       )
-    } if (this.props.successDeposit === true && this.props.messageOpen) {
+    } if (successDeposit === true && messageOpen) {
       return (
-        <Message icon color='green' onDismiss={this.props.handleCloseMessage}>
+        <Message icon color='green' onDismiss={handleCloseMessage}>
           <Icon name='check' />
           <Message.Content>
             <Message.Header>Transaction sent!</Message.Header>
             <p>Transaction is being forged... Please click Reload in few seconds!</p>
-            {this.getUrl()}
+            {getUrl()}
           </Message.Content>
         </Message>
       )
-    } if (this.props.successForceExit === true && this.props.messageOpen) {
+    } if (successForceExit === true && messageOpen) {
       return (
-        <Message icon color='green' onDismiss={this.props.handleCloseMessage}>
+        <Message icon color='green' onDismiss={handleCloseMessage}>
           <Icon name='check' />
           <Message.Content>
             <Message.Header>Transaction sent!</Message.Header>
             <p>Transaction is being forged... Please click Reload in few seconds!</p>
-            {this.getUrl()}
+            {getUrl()}
           </Message.Content>
         </Message>
       )
-    } if (this.props.successSend === true && this.props.messageOpen) {
+    } if (successSend === true && messageOpen) {
       return (
-        <Message icon color='green' onDismiss={this.props.handleCloseMessage}>
+        <Message icon color='green' onDismiss={handleCloseMessage}>
           <Icon name='check' />
           <Message.Content>
             <Message.Header>
@@ -135,14 +137,32 @@ class MessageTx extends Component {
     return <Divider />
   }
 
-  render () {
-    return (
-      <div>
-        {this.getMessage()}
-      </div>
-    )
-  }
+  return (
+    <div>
+      {getMessage()}
+    </div>
+  )
 }
+
+MessageTx.propTypes = {
+  isLoadingDeposit: PropTypes.bool.isRequired,
+  isLoadingWithdraw: PropTypes.bool.isRequired,
+  isLoadingForceExit: PropTypes.bool.isRequired,
+  isLoadingSend: PropTypes.bool.isRequired,
+  isLoadingApprove: PropTypes.bool.isRequired,
+  isLoadingGetTokens: PropTypes.bool.isRequired,
+  successSend: PropTypes.bool.isRequired,
+  successTx: PropTypes.bool.isRequired,
+  successDeposit: PropTypes.bool.isRequired,
+  successForceExit: PropTypes.bool.isRequired,
+  error: PropTypes.string.isRequired,
+  errorFiles: PropTypes.string.isRequired,
+  tx: PropTypes.object.isRequired,
+  chainId: PropTypes.number.isRequired,
+  messageOpen: PropTypes.bool.isRequired,
+  handleCloseMessage: PropTypes.func.isRequired
+}
+
 const mapStateToProps = (state) => ({
   isLoadingDeposit: state.transactions.isLoadingDeposit,
   isLoadingWithdraw: state.transactions.isLoadingWithdraw,

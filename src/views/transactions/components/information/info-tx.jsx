@@ -1,60 +1,72 @@
-import React, { Component } from 'react'
+import React from 'react'
 import {
   Container, Icon, Card, Label, Menu, Header
 } from 'semantic-ui-react'
-
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+
 import ModalInfoOffchain from '../modals-info/modal-info-offchain'
 import ModalInfoOnchain from '../modals-info/modal-info-onchain'
 import ModalInfoTx from '../modals-info/modal-info-txs'
-
 import { pointToCompress } from '../../../../utils/utils'
 
-class InfoOp extends Component {
-  static propTypes = {
-    pendingOffchain: PropTypes.array.isRequired,
-    pendingOnchain: PropTypes.array.isRequired,
-    txTotal: PropTypes.array.isRequired,
-    currentBatch: PropTypes.number.isRequired,
-    desWallet: PropTypes.object.isRequired
-  }
+function InfoOp ({
+  pendingOffchain,
+  pendingOnchain,
+  txTotal,
+  currentBatch,
+  desWallet
+}) {
+  const [state, setState] = React.useState({
+    modalInfoOnchain: false,
+    modalInfoOffchain: false,
+    modalInfoTx: false,
+    keyItem: {}
+  })
+  const txTotalByAddress = txTotal.filter(
+    (tx) => tx.from === desWallet.ethWallet.address ||
+      tx.from === pointToCompress(desWallet.babyjubWallet.publicKey)
+  )
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      modalInfoOnchain: false,
-      modalInfoOffchain: false,
-      modalInfoTx: false,
-      keyItem: {}
+  txTotalByAddress.sort((o1, o2) => {
+    if (o1.timestamp > o2.timestamp) {
+      return 1
+    } if (o1.timestamp < o2.timestamp) {
+      return -1
     }
+    return 0
+  })
+
+  function toggleModalInfoOnchain () {
+    setState({ ...state, modalInfoOnchain: !state.modalInfoOnchain })
   }
 
-  toggleModalInfoOnchain = () => { this.setState((prev) => ({ modalInfoOnchain: !prev.modalInfoOnchain })) }
-
-  toggleModalInfoOffchain = () => { this.setState((prev) => ({ modalInfoOffchain: !prev.modalInfoOffchain })) }
-
-  toggleModalInfoTx = () => { this.setState((prev) => ({ modalInfoTx: !prev.modalInfoTx })) }
-
-  getInfoModalOnchain = (e, keyItem) => {
-    e.preventDefault()
-    this.setState({ keyItem })
-    this.toggleModalInfoOnchain()
+  function toggleModalInfoOffchain () {
+    setState({ ...state, modalInfoOffchain: !state.modalInfoOffchain })
   }
 
-  getInfoModalOffchain = (e, keyItem) => {
-    e.preventDefault()
-    this.setState({ keyItem })
-    this.toggleModalInfoOffchain()
+  function toggleModalInfoTx () {
+    setState({ ...state, modalInfoTx: !state.modalInfoTx })
   }
 
-  getInfoModalTx = (e) => {
-    e.preventDefault()
-    this.toggleModalInfoTx()
+  function getInfoModalOnchain (event, keyItem) {
+    event.preventDefault()
+    setState({ ...state, keyItem })
+    toggleModalInfoOnchain()
   }
 
-  getMessagePending = () => {
-    const { pendingOnchain, pendingOffchain } = this.props
+  function getInfoModalOffchain (event, keyItem) {
+    event.preventDefault()
+    setState({ ...state, keyItem })
+    toggleModalInfoOffchain()
+  }
+
+  function getInfoModalTx (event) {
+    event.preventDefault()
+    toggleModalInfoTx()
+  }
+
+  function getMessagePending () {
     if (pendingOffchain.length > 0 || pendingOnchain.length > 0) {
       return (
         <Container>
@@ -64,11 +76,10 @@ class InfoOp extends Component {
     }
   }
 
-  getPendingOffchain = () => {
-    const { pendingOffchain } = this.props
+  function getPendingOffchain () {
     return pendingOffchain.map((key) => {
       return (
-        <Card color='blue' key={key.id} onClick={(event) => this.getInfoModalOffchain(event, key)}>
+        <Card color='blue' key={key.id} onClick={(event) => getInfoModalOffchain(event, key)}>
           <Card.Content>
             <Card.Header>
               {key.type}
@@ -85,11 +96,10 @@ class InfoOp extends Component {
     })
   }
 
-  getPendingOnchain = () => {
-    const { pendingOnchain } = this.props
+  function getPendingOnchain () {
     return pendingOnchain.map((key, index) => {
       return (
-        <Card color='violet' key={index} onClick={(event) => this.getInfoModalOnchain(event, key)}>
+        <Card color='violet' key={index} onClick={(event) => getInfoModalOnchain(event, key)}>
           <Card.Content>
             <Card.Header>
               {key.type}
@@ -106,59 +116,53 @@ class InfoOp extends Component {
     })
   }
 
-  render () {
-    const txTotalByAddress = this.props.txTotal.filter(
-      (tx) => tx.from === this.props.desWallet.ethWallet.address ||
-      tx.from === pointToCompress(this.props.desWallet.babyjubWallet.publicKey)
-    )
-    txTotalByAddress.sort((o1, o2) => {
-      if (o1.timestamp > o2.timestamp) {
-        return 1
-      } if (o1.timestamp < o2.timestamp) {
-        return -1
-      }
-      return 0
-    })
-    return (
-      <Container>
-        <Container textAlign='left'>
-          <Card.Group>
-            {this.getMessagePending()}
-            {this.getPendingOffchain()}
-            {this.getPendingOnchain()}
-          </Card.Group>
-        </Container>
-        <Container textAlign='right'>
-          <Menu compact>
-            <Menu.Item as='a' onClick={(event) => this.getInfoModalTx(event)}>
-              <Label color='blue' floating>{txTotalByAddress.length}</Label>
-              <Icon name='time' color='blue' />
-              History
-            </Menu.Item>
-          </Menu>
-        </Container>
-        <ModalInfoTx
-          modalInfoTx={this.state.modalInfoTx}
-          txTotal={txTotalByAddress}
-          toggleModalInfoTx={this.toggleModalInfoTx}
-          getInfoModalOnchain={this.getInfoModalOnchain}
-          getInfoModalOffchain={this.getInfoModalOffchain}
-        />
-        <ModalInfoOffchain
-          modalInfoOffchain={this.state.modalInfoOffchain}
-          keyItem={this.state.keyItem}
-          toggleModalInfoOffchain={this.toggleModalInfoOffchain}
-          currentBatch={this.props.currentBatch}
-        />
-        <ModalInfoOnchain
-          modalInfoOnchain={this.state.modalInfoOnchain}
-          keyItem={this.state.keyItem}
-          toggleModalInfoOnchain={this.toggleModalInfoOnchain}
-          currentBatch={this.props.currentBatch}
-        />
+  return (
+    <Container>
+      <Container textAlign='left'>
+        <Card.Group>
+          {getMessagePending()}
+          {getPendingOffchain()}
+          {getPendingOnchain()}
+        </Card.Group>
       </Container>
-    )
-  }
+      <Container textAlign='right'>
+        <Menu compact>
+          <Menu.Item as='a' onClick={(event) => getInfoModalTx(event)}>
+            <Label color='blue' floating>{txTotalByAddress.length}</Label>
+            <Icon name='time' color='blue' />
+              History
+          </Menu.Item>
+        </Menu>
+      </Container>
+      <ModalInfoTx
+        modalInfoTx={state.modalInfoTx}
+        txTotal={txTotalByAddress}
+        toggleModalInfoTx={toggleModalInfoTx}
+        getInfoModalOnchain={getInfoModalOnchain}
+        getInfoModalOffchain={getInfoModalOffchain}
+      />
+      <ModalInfoOffchain
+        modalInfoOffchain={state.modalInfoOffchain}
+        keyItem={state.keyItem}
+        toggleModalInfoOffchain={toggleModalInfoOffchain}
+        currentBatch={currentBatch}
+      />
+      <ModalInfoOnchain
+        modalInfoOnchain={state.modalInfoOnchain}
+        keyItem={state.keyItem}
+        toggleModalInfoOnchain={toggleModalInfoOnchain}
+        currentBatch={currentBatch}
+      />
+    </Container>
+  )
+}
+
+InfoOp.propTypes = {
+  pendingOffchain: PropTypes.array.isRequired,
+  pendingOnchain: PropTypes.array.isRequired,
+  txTotal: PropTypes.array.isRequired,
+  currentBatch: PropTypes.number.isRequired,
+  desWallet: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({

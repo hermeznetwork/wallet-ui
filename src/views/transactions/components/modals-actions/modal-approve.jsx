@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import {
@@ -10,139 +10,146 @@ import ButtonGM from './gm-buttons'
 import { handleApprove } from '../../../../store/tx/actions'
 import { getWei } from '../../../../utils/utils'
 
-class ModalApprove extends Component {
-  static propTypes = {
-    config: PropTypes.object.isRequired,
-    abiTokens: PropTypes.array.isRequired,
-    modalApprove: PropTypes.bool.isRequired,
-    onToggleModalApprove: PropTypes.func.isRequired,
-    handleApprove: PropTypes.func.isRequired,
-    gasMultiplier: PropTypes.number.isRequired,
-    desWallet: PropTypes.object.isRequired
+function ModalApprove ({
+  config,
+  abiTokens,
+  modalApprove,
+  onToggleModalApprove,
+  handleApprove,
+  gasMultiplier,
+  desWallet
+}) {
+  const [state, setState] = React.useState({
+    modalError: false,
+    error: '',
+    amount: '',
+    addressTokens: '',
+    disableButton: true
+  })
+  const amountTokensRef = React.createRef()
+
+  function handleToggleModalError () {
+    setState({ ...state, modalError: !state.modalError })
   }
 
-  constructor (props) {
-    super(props)
-    this.amountTokensRef = React.createRef()
-    this.addressTokensRef = React.createRef()
-    this.state = {
-      modalError: false,
-      error: '',
-      amount: '',
-      addressTokens: '',
-      disableButton: true
-    }
-  }
-
-  handleToggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })) }
-
-  handleToggleModalClose = () => {
-    this.props.onToggleModalApprove()
-    this.setState({
+  function handleToggleModalClose () {
+    onToggleModalApprove()
+    setState({
+      ...state,
       disableButton: true,
       amount: '',
       addressTokens: ''
     })
   }
 
-  handleClickApprove = async () => {
-    const {
-      config, desWallet, gasMultiplier, abiTokens
-    } = this.props
-    const {
-      amount, addressTokens
-    } = this.state
-    const amountTokens = getWei(amount)
-    this.handleToggleModalClose()
-    this.setState({ disableButton: true })
-    const res = await this.props.handleApprove(addressTokens, abiTokens, desWallet, amountTokens, config.address,
-      config.nodeEth, gasMultiplier)
+  async function handleClickApprove () {
+    const amountTokens = getWei(state.amount)
+    const res = await handleApprove(
+      state.addressTokens,
+      abiTokens,
+      desWallet,
+      amountTokens,
+      config.address,
+      config.nodeEth,
+      gasMultiplier
+    )
+
+    handleToggleModalClose()
+    setState({ ...state, disableButton: true })
     if (res.message !== undefined) {
       if (res.message.includes('insufficient funds')) {
-        this.setState({ error: '1' })
-        this.handleToggleModalError()
+        setState({ ...state, error: '1' })
+        handleToggleModalError()
       }
     }
   }
 
-  checkForm = () => {
-    const {
-      amount, addressTokens
-    } = this.state
-    if (parseInt(amount, 10) && addressTokens !== '') {
-      this.setState({ disableButton: false })
+  function checkForm () {
+    if (parseInt(state.amount, 10) && state.addressTokens !== '') {
+      setState({ ...state, disableButton: false })
     } else {
-      this.setState({ disableButton: true })
+      setState({ ...state, disableButton: true })
     }
   }
 
-  handleSetAmount = () => {
-    this.setState({ amount: this.amountTokensRef.current.value }, () => { this.checkForm() })
+  function handleSetAmount () {
+    setState({ ...state, amount: amountTokensRef.current.value })
+    checkForm()
   }
 
-  handleGetExampleAddress = () => {
-    this.setState({ addressTokens: this.props.config.tokensAddress }, () => { this.checkForm() })
+  function handleGetExampleAddress () {
+    setState({ ...state, addressTokens: config.tokensAddress })
+    checkForm()
   }
 
-  handleChangeAddress = (event) => {
-    this.setState({ addressTokens: event.target.value }, () => { this.checkForm() })
+  function handleChangeAddress (event) {
+    setState({ ...state, addressTokens: event.target.value })
+    checkForm()
   }
 
-  render () {
-    return (
-      <div>
-        <ModalError
-          error={this.state.error}
-          modalError={this.state.modalError}
-          onToggleModalError={this.handleToggleModalError}
-        />
-        <Modal open={this.props.modalApprove}>
-          <Modal.Header>Approve Tokens</Modal.Header>
-          <Modal.Content>
-            <Form>
-              <Form.Field>
-                <label htmlFor='amountToken'>
-                  Amount Tokens:
-                  <input type='text' ref={this.amountTokensRef} onChange={this.handleSetAmount} id='amountToken' />
-                </label>
-              </Form.Field>
-              <Form.Field>
-                <label htmlFor='addressTokens'>
+  return (
+    <div>
+      <ModalError
+        error={state.error}
+        modalError={state.modalError}
+        onToggleModalError={handleToggleModalError}
+      />
+      <Modal open={modalApprove}>
+        <Modal.Header>Approve Tokens</Modal.Header>
+        <Modal.Content>
+          <Form>
+            <Form.Field>
+              <label htmlFor='amountToken'>
+                Amount Tokens:
+                <input type='text' ref={amountTokensRef} onChange={handleSetAmount} id='amountToken' />
+              </label>
+            </Form.Field>
+            <Form.Field>
+              <label htmlFor='addressTokens'>
                   Address SC Tokens:
-                  <input
-                    type='text'
-                    id='baby-ax-r'
-                    value={this.state.addressTokens}
-                    onChange={this.handleChangeAddress}
-                    size='40'
-                  />
-                  <Button
-                    content='Fill with example address'
-                    labelPosition='right'
-                    floated='right'
-                    onClick={this.handleGetExampleAddress}
-                  />
-                </label>
-              </Form.Field>
-              <Form.Field>
-                <ButtonGM />
-              </Form.Field>
-            </Form>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button onClick={this.handleClickApprove} color='blue' disabled={this.state.disableButton}>
-              <Icon name='ethereum' />
-                APPROVE
-            </Button>
-            <Button color='grey' basic onClick={this.handleToggleModalClose}>
-              <Icon name='close' />
-                Close
-            </Button>
-          </Modal.Actions>
-        </Modal>
-      </div>
-    )
-  }
+                <input
+                  type='text'
+                  id='baby-ax-r'
+                  value={state.addressTokens}
+                  onChange={handleChangeAddress}
+                  size='40'
+                />
+                <Button
+                  content='Fill with example address'
+                  labelPosition='right'
+                  floated='right'
+                  onClick={handleGetExampleAddress}
+                />
+              </label>
+            </Form.Field>
+            <Form.Field>
+              <ButtonGM />
+            </Form.Field>
+          </Form>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button onClick={handleClickApprove} color='blue' disabled={state.disableButton}>
+            <Icon name='ethereum' />
+              APPROVE
+          </Button>
+          <Button color='grey' basic onClick={handleToggleModalClose}>
+            <Icon name='close' />
+              Close
+          </Button>
+        </Modal.Actions>
+      </Modal>
+    </div>
+  )
+}
+
+ModalApprove.propTypes = {
+  config: PropTypes.object.isRequired,
+  abiTokens: PropTypes.array.isRequired,
+  modalApprove: PropTypes.bool.isRequired,
+  onToggleModalApprove: PropTypes.func.isRequired,
+  handleApprove: PropTypes.func.isRequired,
+  gasMultiplier: PropTypes.number.isRequired,
+  desWallet: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({

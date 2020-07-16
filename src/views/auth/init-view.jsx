@@ -1,14 +1,13 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import {
   Container, Header, Divider, Button
 } from 'semantic-ui-react'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useLocation } from 'react-router-dom'
 
 import ModalImport from './components/modal-import'
 import ModalCreate from './components/modal-create'
-
 import {
   handleLoadWallet, handleLoadFiles, handleLoadOperator, resetWallet, handleCreateWallet
 } from '../../store/general/actions'
@@ -17,188 +16,179 @@ import { handleResetTxs } from '../../store/tx-state/actions'
 
 const config = require('../../utils/config.json')
 
-class InitView extends Component {
-  static propTypes = {
-    desWallet: PropTypes.object.isRequired,
-    isLoadingWallet: PropTypes.bool.isRequired,
-    errorWallet: PropTypes.string.isRequired,
-    isCreatingWallet: PropTypes.bool.isRequired,
-    errorCreateWallet: PropTypes.string.isRequired,
-    created: PropTypes.bool.isRequired,
-    onInitStateTx: PropTypes.func.isRequired,
-    onLoadWallet: PropTypes.func.isRequired,
-    onLoadFiles: PropTypes.func.isRequired,
-    onLoadOperator: PropTypes.func.isRequired,
-    onCreateWallet: PropTypes.func.isRequired,
-    onResetWallet: PropTypes.func.isRequired,
-    onResetTxs: PropTypes.func.isRequired
-  }
+function InitView ({
+  desWallet,
+  isLoadingWallet,
+  errorWallet,
+  isCreatingWallet,
+  errorCreateWallet,
+  created,
+  onInitStateTx,
+  onLoadWallet,
+  onLoadFiles,
+  onLoadOperator,
+  onCreateWallet,
+  onResetWallet,
+  onResetTxs
+}) {
+  const { search } = useLocation()
+  const [state, setState] = React.useState({
+    isLoaded: false,
+    isModalImportOpen: false,
+    isModalCreateOpen: false,
+    step: 0,
+    desc: ''
+  })
 
-  constructor (props) {
-    super(props)
-    this.passwordRef = React.createRef()
-    this.fileNameRef = React.createRef()
-    this.state = {
-      isLoaded: false,
-      modalImport: false,
-      modalCreate: false,
-      walletImport: '',
-      nameWallet: '',
-      step: 0,
-      desc: ''
-    }
-  }
-
-  componentDidMount = () => {
-    this.props.onResetWallet()
+  React.useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
+
+    onResetWallet()
     if (urlParams.has('node')) {
       const tokenInfura = urlParams.get('node')
       const node = `https://goerli.infura.io/v3/${tokenInfura}`
+
       config.nodeEth = node
     }
-  }
+  }, [search, onResetWallet])
 
-  componentDidUpdate = () => {
-    if (this.props.isLoadingWallet === false && Object.keys(this.props.desWallet).length !== 0) {
-      this.setState({ isLoaded: true, modalImport: false })
+  React.useEffect(() => {
+    if (isLoadingWallet === false && Object.keys(desWallet).length !== 0) {
+      setState({ ...state, isLoaded: true, isModalImportOpen: false })
     }
-    if (this.props.created === true && this.state.isLoaded === true && this.state.modalCreate === true) {
-      this.setState({ modalCreate: false })
+    if (created === true && state.isLoaded === true && state.isModalCreateOpen === true) {
+      setState({ ...state, isModalCreateOpen: false })
     }
+  }, [isLoadingWallet, desWallet, created, state, setState])
+
+  function handleToggleModalImport () {
+    setState({ ...state, isModalImportOpen: !state.isModalImportOpen })
   }
 
-  handleChangeWallet = (e) => {
-    e.preventDefault()
-    const { files } = e.target
-    this.setState({ walletImport: files[0] })
+  function handleToggleModalCreate () {
+    setState({ ...state, isModalCreateOpen: !state.isModalCreateOpen })
   }
 
-  handleClickImport = async () => {
+  async function handleWalletImport (wallet, password) {
     try {
-      this.setState({ step: 0, desc: '' })
-      if (this.state.walletImport === '' || this.passwordRef.current.value === '') {
+      setState({ ...state, step: 0, desc: '' })
+      if (!wallet || !password) {
         throw new Error('Incorrect wallet or password')
       } else {
-        await this.props.onHandleInitStateTx()
-        this.props.onResetTxs()
-        await this.props.onLoadFiles(config)
-        this.setState({ step: 1, desc: '1/3 Loading Operator' })
-        await this.props.onLoadOperator(config)
-        this.setState({ step: 2, desc: '2/3 Loading Wallet' })
-        await this.props.onLoadWallet(this.state.walletImport, this.passwordRef.current.value, true)
+        await onInitStateTx()
+        onResetTxs()
+        await onLoadFiles(config)
+        setState({ ...state, step: 1, desc: '1/3 Loading Operator' })
+        await onLoadOperator(config)
+        setState({ ...state, step: 2, desc: '2/3 Loading Wallet' })
+        await onLoadWallet(wallet, password, true)
       }
     } catch (err) {
-      this.setState({
+      setState({
+        ...state,
         walletImport: ''
       })
     }
   }
 
-  handleClickCreate = async () => {
+  async function handleCreateWallet (filename, password) {
     try {
-      this.setState({ step: 0, desc: '' })
-      const fileName = this.fileNameRef.current.value
-      const password = this.passwordRef.current.value
-      if (fileName === '' || password === '') {
+      setState({ ...state, step: 0, desc: '' })
+
+      if (!filename || !password) {
         throw new Error('Incorrect wallet or password')
-      } else {
-        this.setState({ step: 1, desc: '1/4 Creating Wallet' })
-        const encWallet = await this.props.onCreateWallet(fileName, password)
-        await this.props.onHandleInitStateTx()
-        await this.props.onLoadFiles(config)
-        this.setState({ step: 2, desc: '2/4 Loading Operator' })
-        await this.props.onLoadOperator(config)
-        this.setState({ step: 3, desc: '3/4 Loading Wallet' })
-        await this.props.onLoadWallet(encWallet, password, false)
       }
+
+      setState({ ...state, step: 1, desc: '1/4 Creating Wallet' })
+
+      const encWallet = await onCreateWallet(filename, password)
+
+      await onInitStateTx()
+      await onLoadFiles(config)
+      setState({ ...state, step: 2, desc: '2/4 Loading Operator' })
+      await onLoadOperator(config)
+      setState({ ...state, step: 3, desc: '3/4 Loading Wallet' })
+      await onLoadWallet(encWallet, password, false)
     } catch (err) {
-      this.props.onHandleInitStateTx()
+      onInitStateTx()
     }
   }
 
-  handleToggleModalImport = () => { this.setState((prev) => ({ modalImport: !prev.modalImport })) }
-
-  handleToggleModalCreate = () => {
-    const nameWallet = 'zkrollup-backup-'
-    const date = new Date(Date.now())
-    const year = date.getFullYear()
-    const month = date.getMonth() + 1
-    const day = date.getDate()
-    const hour = date.getHours()
-    const min = date.getMinutes()
-    this.setState((prev) => ({
-      modalCreate: !prev.modalCreate,
-      nameWallet: `${nameWallet}${year}${month}${day}-${hour}${min}`
-    }))
-  }
-
-  renderRedirect = () => {
-    if (this.state.isLoaded === true) {
+  function renderRedirect () {
+    if (state.isLoaded === true) {
       return <Redirect to='/actions' />
     }
   }
 
-  render () {
-    return (
-      <Container textAlign='center'>
-        <Header
-          as='h1'
-          style={{
-            fontSize: '4em',
-            fontWeight: 'normal',
-            marginBottom: 0,
-            marginTop: '3em'
-          }}
-        >
-          Rollup
-        </Header>
+  return (
+    <Container textAlign='center'>
+      <Header
+        as='h1'
+        style={{
+          fontSize: '4em',
+          fontWeight: 'normal',
+          marginBottom: 0,
+          marginTop: '3em'
+        }}
+      >
+        Rollup
+      </Header>
+      <Divider />
+      <Button.Group vertical>
+        <Button
+          content='Create New Rollup Wallet'
+          icon='plus'
+          size='massive'
+          color='blue'
+          onClick={handleToggleModalCreate}
+        />
         <Divider />
-        <Button.Group vertical>
-          <Button
-            content='Create New Rollup Wallet'
-            icon='plus'
-            size='massive'
-            color='blue'
-            onClick={this.handleToggleModalCreate}
-          />
-          <Divider />
-          <Button
-            content='Import Rollup Wallet'
-            icon='upload'
-            size='massive'
-            color='violet'
-            onClick={this.handleToggleModalImport}
-          />
-        </Button.Group>
-        <ModalCreate
-          modalCreate={this.state.modalCreate}
-          onToggleModalCreate={this.handleToggleModalCreate}
-          onClickCreate={this.handleClickCreate}
-          fileNameRef={this.fileNameRef}
-          passwordRef={this.passwordRef}
-          isLoadingWallet={this.props.isLoadingWallet}
-          isCreatingWallet={this.props.isCreatingWallet}
-          errorCreateWallet={this.props.errorCreateWallet}
-          nameWallet={this.state.nameWallet}
-          desc={this.state.desc}
-          step={this.state.step}
+        <Button
+          content='Import Rollup Wallet'
+          icon='upload'
+          size='massive'
+          color='violet'
+          onClick={handleToggleModalImport}
         />
-        <ModalImport
-          modalImport={this.state.modalImport}
-          onToggleModalImport={this.handleToggleModalImport}
-          onChangeWallet={this.handleChangeWallet}
-          onClickImport={this.handleClickImport}
-          passwordRef={this.passwordRef}
-          isLoadingWallet={this.props.isLoadingWallet}
-          errorWallet={this.props.errorWallet}
-          desc={this.state.desc}
-          step={this.state.step}
-        />
-        {this.renderRedirect()}
-      </Container>
-    )
-  }
+      </Button.Group>
+      <ModalCreate
+        isOpen={state.isModalCreateOpen}
+        isLoadingWallet={isLoadingWallet}
+        isCreatingWallet={isCreatingWallet}
+        errorCreateWallet={errorCreateWallet}
+        desc={state.desc}
+        step={state.step}
+        onCreateWallet={handleCreateWallet}
+        onClose={handleToggleModalCreate}
+      />
+      <ModalImport
+        isOpen={state.isModalImportOpen}
+        isLoadingWallet={isLoadingWallet}
+        errorWallet={errorWallet}
+        desc={state.desc}
+        step={state.step}
+        onClose={handleToggleModalImport}
+        onImportWallet={handleWalletImport}
+      />
+      {renderRedirect()}
+    </Container>
+  )
+}
+
+InitView.propTypes = {
+  desWallet: PropTypes.object.isRequired,
+  isLoadingWallet: PropTypes.bool.isRequired,
+  errorWallet: PropTypes.string.isRequired,
+  isCreatingWallet: PropTypes.bool.isRequired,
+  errorCreateWallet: PropTypes.string.isRequired,
+  created: PropTypes.bool.isRequired,
+  onInitStateTx: PropTypes.func.isRequired,
+  onLoadWallet: PropTypes.func.isRequired,
+  onLoadFiles: PropTypes.func.isRequired,
+  onLoadOperator: PropTypes.func.isRequired,
+  onCreateWallet: PropTypes.func.isRequired,
+  onResetWallet: PropTypes.func.isRequired,
+  onResetTxs: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({

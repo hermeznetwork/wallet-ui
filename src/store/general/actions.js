@@ -138,7 +138,6 @@ export function handleLoadFiles (config) {
       if (!config.abiRollup) errorMessage = 'No Rollup ABI'
       if (!config.abiTokens) errorMessage = 'No Tokens ABI'
       if (!config.tokensAddress) errorMessage = 'No Tokens Address'
-
       dispatch(loadFilesSuccess(config, config.abiRollup, config.abiTokens, chainId, errorMessage))
       if (errorMessage !== '') {
         return false

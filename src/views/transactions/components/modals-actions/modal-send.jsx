@@ -1,9 +1,10 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import {
   Button, Modal, Form, Icon, Dropdown
 } from 'semantic-ui-react'
+
 import { handleSendSend } from '../../../../store/tx/actions'
 import { handleStateSend } from '../../../../store/tx-state/actions'
 import {
@@ -12,42 +13,38 @@ import {
 
 const rollupExampleAddress = '0x5b2ae71f33a4e3455cb4d25bf076189093c4beac4d0fd5f8ea538c5b3d1ad8a0'
 
-class ModalSend extends Component {
-  static propTypes = {
-    config: PropTypes.object.isRequired,
-    modalSend: PropTypes.bool.isRequired,
-    onToggleModalSend: PropTypes.func.isRequired,
-    onSendSend: PropTypes.func.isRequired,
-    onStateEnd: PropTypes.func.isRequired,
-    desWallet: PropTypes.object.isRequired,
-    babyjub: PropTypes.string.isRequired,
-    activeItem: PropTypes.string.isRequired,
-    tokensRArray: PropTypes.array.isRequired,
-    pendingOffchain: PropTypes.array.isRequired
-  }
+function ModalSend ({
+  config,
+  modalSend,
+  onToggleModalSend,
+  onSendSend,
+  onStateEnd,
+  desWallet,
+  babyjub,
+  activeItem,
+  tokensRArray,
+  pendingOffchain
+}) {
+  const [state, setState] = React.useState({
+    babyJubReceiver: '',
+    amount: '',
+    fee: '',
+    tokenId: '',
+    sendDisabled: true
+  })
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      babyJubReceiver: '',
-      amount: '',
-      fee: '',
-      tokenId: '',
-      sendDisabled: true
+  React.useEffect(() => {
+    if (state.babyJubReceiver === '' && activeItem === 'send0') {
+      setState({ ...state, babyJubReceiver: 'exit' })
+    } else if (state.babyJubReceiver === 'exit' && activeItem === 'send') {
+      setState({ ...state, babyJubReceiver: '' })
     }
-  }
+  }, [activeItem, state, setState])
 
-  componentDidUpdate = () => {
-    if (this.state.babyJubReceiver === '' && this.props.activeItem === 'send0') {
-      this.setState({ babyJubReceiver: 'exit' })
-    } else if (this.state.babyJubReceiver === 'exit' && this.props.activeItem === 'send') {
-      this.setState({ babyJubReceiver: '' })
-    }
-  }
-
-  handleCloseModal = () => {
-    this.props.onToggleModalSend()
-    this.setState({
+  function handleCloseModal () {
+    onToggleModalSend()
+    setState({
+      ...state,
       babyJubReceiver: '',
       amount: '',
       fee: '',
@@ -56,102 +53,111 @@ class ModalSend extends Component {
     })
   }
 
-  handleClick = async () => {
-    const {
-      config, desWallet, pendingOffchain, babyjub
-    } = this.props
-    const {
-      amount, fee, babyJubReceiver, tokenId
-    } = this.state
-    const amountWei = getWei(amount)
-    this.handleCloseModal()
-    const res = await this.props.onSendSend(config.operator, babyJubReceiver, amountWei, desWallet,
-      tokenId, feeTable[fee])
+  async function handleClick () {
+    const amountWei = getWei(state.amount)
+
+    handleCloseModal()
+
+    const res = await onSendSend(
+      config.operator,
+      state.babyJubReceiver,
+      amountWei,
+      desWallet,
+      state.tokenId,
+      feeTable[state.fee]
+    )
 
     if (res.nonce || res.nonce === 0) {
-      this.props.onStateEnd(res, config.operator, amountWei, fee, tokenId,
-        babyJubReceiver, pendingOffchain, babyjub)
+      onStateEnd(
+        res,
+        config.operator,
+        amountWei,
+        state.fee,
+        state.tokenId,
+        state.babyJubReceiver,
+        pendingOffchain,
+        babyjub
+      )
     }
   }
 
-  checkForm = () => {
-    const {
-      amount, fee, babyJubReceiver, tokenId
-    } = this.state
-    if (parseInt(amount, 10) && fee !== '' && babyJubReceiver !== '' && (parseInt(tokenId, 10) || tokenId === 0)) {
-      this.setState({ sendDisabled: false })
+  function checkForm () {
+    if (parseInt(state.amount, 10) && state.fee !== '' && state.babyJubReceiver !== '' && (parseInt(state.tokenId, 10) || state.tokenId === 0)) {
+      setState({ ...state, sendDisabled: false })
     } else {
-      this.setState({ sendDisabled: true })
+      setState({ ...state, sendDisabled: true })
     }
   }
 
-  handleSetAmount = (event) => {
-    this.setState({ amount: event.target.value }, () => { this.checkForm() })
+  function handleSetAmount (event) {
+    setState({ ...state, amount: event.target.value })
+    checkForm()
   }
 
-  handleSetToken = (event, { value }) => {
+  function handleSetToken (event, { value }) {
     const tokenId = Number(value)
-    this.setState({ tokenId }, () => { this.checkForm() })
+
+    setState({ ...state, tokenId })
+    checkForm()
   }
 
-  handleSetFee = (event, { value }) => {
-    this.setState({ fee: value }, () => { this.checkForm() })
+  function handleSetFee (event, { value }) {
+    setState({ ...state, fee: value })
+    checkForm()
   }
 
-  handleGetExampleAddress = () => {
-    this.setState({ babyJubReceiver: rollupExampleAddress }, () => { this.checkForm() })
+  function handleGetExampleAddress () {
+    setState({ ...state, babyJubReceiver: rollupExampleAddress })
+    checkForm()
   }
 
-  handleChangeReceiver = (event) => {
-    this.setState({ babyJubReceiver: event.target.value }, () => { this.checkForm() })
+  function handleChangeReceiver (event) {
+    setState({ ...state, babyJubReceiver: event.target.value })
+    checkForm()
   }
 
-  receiverBySend = () => {
-    if (this.props.activeItem === 'send') {
+  function receiverBySend () {
+    if (activeItem === 'send') {
       return (
         <label htmlFor='babyjub-to'>
           Receiver BabyJubJub Address
           <input
             type='text'
             id='baby-ax-r'
-            value={this.state.babyJubReceiver}
-            onChange={this.handleChangeReceiver}
+            value={state.babyJubReceiver}
+            onChange={handleChangeReceiver}
           />
           <Button
             content='Fill with example address'
             labelPosition='right'
             floated='right'
-            onClick={this.handleGetExampleAddress}
+            onClick={handleGetExampleAddress}
           />
         </label>
       )
     }
   }
 
-  dropDownTokens = () => {
-    const tokensOptions = []
-    for (const token in this.props.tokensRArray) {
-      if (this.props.tokensRArray[token]) {
-        tokensOptions.push({
-          key: this.props.tokensRArray[token].address,
-          value: this.props.tokensRArray[token].tokenId,
-          text: `${this.props.tokensRArray[token].tokenId}: ${this.props.tokensRArray[token].address}`
-        })
-      }
-    }
+  function dropDownTokens () {
+    const tokensOptions = tokensRArray.filter(token => tokensRArray[token]).map((token) => ({
+      key: tokensRArray[token].address,
+      value: tokensRArray[token].tokenId,
+      text: `${tokensRArray[token].tokenId}: ${tokensRArray[token].address}`
+    }))
+
     return (
       <Dropdown
         placeholder='token'
         options={tokensOptions}
-        onChange={this.handleSetToken}
+        onChange={handleSetToken}
         scrolling
       />
     )
   }
 
-  modal = () => {
-    return (
-      <Modal open={this.props.modalSend}>
+  return (
+    <div>
+      <Modal open={modalSend}>
         <Modal.Header>Send</Modal.Header>
         <Modal.Content>
           <Form>
@@ -160,12 +166,12 @@ class ModalSend extends Component {
                 Sender BabyJubJub Address
                 <input
                   type='text'
-                  defaultValue={this.props.babyjub}
+                  defaultValue={babyjub}
                   id='baby-ax-s'
                   disabled
                 />
               </label>
-              {this.receiverBySend()}
+              {receiverBySend()}
             </Form.Field>
             <Form.Field>
               <label htmlFor='amount'>
@@ -173,8 +179,8 @@ class ModalSend extends Component {
                 <input
                   type='text'
                   id='amount'
-                  onChange={this.handleSetAmount}
-                  value={this.state.amount}
+                  onChange={handleSetAmount}
+                  value={state.amount}
                 />
               </label>
             </Form.Field>
@@ -182,40 +188,45 @@ class ModalSend extends Component {
               <label htmlFor='token-id'>
                 Token ID
               </label>
-              {this.dropDownTokens()}
+              {dropDownTokens()}
             </Form.Field>
             <Form.Field>
               <p><b>Fee</b></p>
               <Dropdown
                 placeholder='fee'
                 options={feeTableDropdown}
-                onChange={this.handleSetFee}
+                onChange={handleSetFee}
                 scrolling
               />
             </Form.Field>
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='blue' onClick={this.handleClick} disabled={this.state.sendDisabled}>
+          <Button color='blue' onClick={handleClick} disabled={state.sendDisabled}>
             <Icon name='share' />
               Send
           </Button>
-          <Button color='grey' basic onClick={this.handleCloseModal}>
+          <Button color='grey' basic onClick={handleCloseModal}>
             <Icon name='close' />
               Close
           </Button>
         </Modal.Actions>
       </Modal>
-    )
-  }
+    </div>
+  )
+}
 
-  render () {
-    return (
-      <div>
-        {this.modal()}
-      </div>
-    )
-  }
+ModalSend.propTypes = {
+  config: PropTypes.object.isRequired,
+  modalSend: PropTypes.bool.isRequired,
+  onToggleModalSend: PropTypes.func.isRequired,
+  onSendSend: PropTypes.func.isRequired,
+  onStateEnd: PropTypes.func.isRequired,
+  desWallet: PropTypes.object.isRequired,
+  babyjub: PropTypes.string.isRequired,
+  activeItem: PropTypes.string.isRequired,
+  tokensRArray: PropTypes.array.isRequired,
+  pendingOffchain: PropTypes.array.isRequired
 }
 
 const mapStateToProps = (state) => ({

@@ -1,23 +1,20 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import {
   Button, Modal, Table
 } from 'semantic-ui-react'
 
-class ModalInfoOffchain extends Component {
-  static propTypes = {
-    modalInfoOffchain: PropTypes.bool.isRequired,
-    keyItem: PropTypes.object.isRequired,
-    toggleModalInfoOffchain: PropTypes.func.isRequired,
-    currentBatch: PropTypes.number.isRequired
+function ModalInfoOffchain ({
+  modalInfoOffchain,
+  keyItem,
+  toggleModalInfoOffchain,
+  currentBatch
+}) {
+  function handleClick () {
+    toggleModalInfoOffchain()
   }
 
-  handleClick = () => {
-    this.props.toggleModalInfoOffchain()
-  }
-
-  getReceiver = () => {
-    const { keyItem } = this.props
+  function getReceiver () {
     if (keyItem.type === 'Send') {
       return (
         <Table.Row>
@@ -32,8 +29,7 @@ class ModalInfoOffchain extends Component {
     }
   }
 
-  getCurrentBatch = () => {
-    const { keyItem, currentBatch } = this.props
+  function getCurrentBatch () {
     if (keyItem.state && keyItem.state.includes('Pending')) {
       return (
         <Table.Row>
@@ -48,8 +44,7 @@ class ModalInfoOffchain extends Component {
     }
   }
 
-  getMaxBatch = () => {
-    const { keyItem } = this.props
+  function getMaxBatch () {
     if (keyItem.state && keyItem.state.includes('Pending')) {
       return (
         <Table.Row>
@@ -64,8 +59,7 @@ class ModalInfoOffchain extends Component {
     }
   }
 
-  getForgedBatch = () => {
-    const { keyItem } = this.props
+  function getForgedBatch () {
     if (keyItem.state && keyItem.state.includes('Success')) {
       return (
         <Table.Row>
@@ -80,17 +74,17 @@ class ModalInfoOffchain extends Component {
     }
   }
 
-  getConfirmationBatch = () => {
-    const { keyItem } = this.props
+  function getConfirmationBatch () {
     if (keyItem.state && keyItem.state.includes('Success') && keyItem.state.includes('pending')) {
-      const currentBatch = Math.max(this.props.currentBatch, keyItem.currentBatch)
+      const maxCurrentBatch = Math.max(currentBatch, keyItem.currentBatch)
+
       return (
         <Table.Row>
           <Table.Cell>
             Confirmation Batches:
           </Table.Cell>
           <Table.Cell>
-            {currentBatch - keyItem.finalBatch}
+            {maxCurrentBatch - keyItem.finalBatch}
           </Table.Cell>
         </Table.Row>
       )
@@ -108,8 +102,7 @@ class ModalInfoOffchain extends Component {
     }
   }
 
-  getError = () => {
-    const { keyItem } = this.props
+  function getError () {
     if (keyItem.error && keyItem.state.includes('Error')) {
       return (
         <Table.Row>
@@ -124,10 +117,10 @@ class ModalInfoOffchain extends Component {
     }
   }
 
-  getModalContent = () => {
-    const { keyItem } = this.props
+  function getModalContent () {
     if (keyItem) {
       let state
+
       if (keyItem.state && keyItem.state.includes('Success')) {
         state = <Table.Cell positive>{keyItem.state}</Table.Cell>
       } else if (keyItem.state === 'Error') {
@@ -137,6 +130,7 @@ class ModalInfoOffchain extends Component {
       } else {
         state = <Table.Cell>{keyItem.state}</Table.Cell>
       }
+
       return (
         <Table>
           <Table.Body>
@@ -178,35 +172,40 @@ class ModalInfoOffchain extends Component {
               </Table.Cell>
               {state}
             </Table.Row>
-            {this.getReceiver()}
-            {this.getForgedBatch()}
-            {this.getCurrentBatch()}
-            {this.getMaxBatch()}
-            {this.getConfirmationBatch()}
-            {this.getError()}
+            {getReceiver()}
+            {getForgedBatch()}
+            {getCurrentBatch()}
+            {getMaxBatch()}
+            {getConfirmationBatch()}
+            {getError()}
           </Table.Body>
         </Table>
       )
     }
   }
 
-  render () {
-    return (
-      <div>
-        <Modal open={this.props.modalInfoOffchain}>
-          <Modal.Header>Transaction Information</Modal.Header>
-          <Modal.Content>
-            {this.getModalContent()}
-          </Modal.Content>
-          <Modal.Actions>
-            <Button color='blue' onClick={this.handleClick}>
+  return (
+    <div>
+      <Modal open={modalInfoOffchain}>
+        <Modal.Header>Transaction Information</Modal.Header>
+        <Modal.Content>
+          {getModalContent()}
+        </Modal.Content>
+        <Modal.Actions>
+          <Button color='blue' onClick={handleClick}>
               OK
-            </Button>
-          </Modal.Actions>
-        </Modal>
-      </div>
-    )
-  }
+          </Button>
+        </Modal.Actions>
+      </Modal>
+    </div>
+  )
+}
+
+ModalInfoOffchain.propTypes = {
+  modalInfoOffchain: PropTypes.bool.isRequired,
+  keyItem: PropTypes.object.isRequired,
+  toggleModalInfoOffchain: PropTypes.func.isRequired,
+  currentBatch: PropTypes.number.isRequired
 }
 
 export default ModalInfoOffchain
