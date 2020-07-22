@@ -7,8 +7,8 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-import { handleSendWithdraw } from '../../../../store/tx/actions'
-import { handleStateWithdraw } from '../../../../store/tx-state/actions'
+import { handleSendWithdraw } from '../../../../../store/tx/actions'
+import { handleStateWithdraw } from '../../../../../store/tx-state/actions'
 
 function ModalWithdraw ({
   config,

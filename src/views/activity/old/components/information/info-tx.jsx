@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 import ModalInfoOffchain from '../modals-info/modal-info-offchain'
 import ModalInfoOnchain from '../modals-info/modal-info-onchain'
 import ModalInfoTx from '../modals-info/modal-info-txs'
-import { pointToCompress } from '../../../../utils/utils'
+import { pointToCompress } from '../../../../../utils/utils'
 
 function InfoOp ({
   pendingOffchain,

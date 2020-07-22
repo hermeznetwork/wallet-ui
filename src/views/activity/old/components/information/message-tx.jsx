@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Message, Icon, Divider } from 'semantic-ui-react'
 
-import { handleCloseMessage } from '../../../../store/tx/actions'
+import { handleCloseMessage } from '../../../../../store/tx/actions'
 
 function MessageTx ({
   isLoadingDeposit,

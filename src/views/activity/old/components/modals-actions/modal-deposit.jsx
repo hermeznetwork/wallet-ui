@@ -7,9 +7,9 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-import { handleSendDeposit } from '../../../../store/tx/actions'
-import { handleStateDeposit } from '../../../../store/tx-state/actions'
-import { getWei } from '../../../../utils/utils'
+import { handleSendDeposit } from '../../../../../store/tx/actions'
+import { handleStateDeposit } from '../../../../../store/tx-state/actions'
+import { getWei } from '../../../../../utils/utils'
 
 function ModalDeposit ({
   config,

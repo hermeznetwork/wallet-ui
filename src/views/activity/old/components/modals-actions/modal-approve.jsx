@@ -7,8 +7,8 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-import { handleApprove } from '../../../../store/tx/actions'
-import { getWei } from '../../../../utils/utils'
+import { handleApprove } from '../../../../../store/tx/actions'
+import { getWei } from '../../../../../utils/utils'
 
 function ModalApprove ({
   config,

@@ -4,12 +4,12 @@ import { connect } from 'react-redux'
 import { Header, Container, Divider } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 
-import { handleGetTokens, handleApprove, handleInitStateTx } from '../../store/tx/actions'
-import { handleInfoAccount, handleLoadFiles, getCurrentBatch } from '../../store/general/actions'
-import { pointToCompress } from '../../utils/utils'
+import { handleGetTokens, handleApprove, handleInitStateTx } from '../../../store/tx/actions'
+import { handleInfoAccount, handleLoadFiles, getCurrentBatch } from '../../../store/general/actions'
+import { pointToCompress } from '../../../utils/utils'
 import MenuActions from './components/actions/menu-actions'
 import MenuBack from './components/information/menu'
-import InfoWallet from '../account/components/info-wallet'
+import InfoWallet from '../../account/old/components/info-wallet'
 import InfoTx from './components/information/info-tx'
 import MessageTx from './components/information/message-tx'
 import ModalError from './components/modals-info/modal-error'
@@ -158,7 +158,7 @@ class ActionView extends Component {
 
   redirectInitView = () => {
     if (Object.keys(this.props.desWallet).length === 0) {
-      return <Redirect to='/' />
+      return <Redirect to='/old' />
     }
   }
 

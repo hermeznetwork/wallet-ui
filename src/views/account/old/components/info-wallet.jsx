@@ -6,7 +6,7 @@ import {
 import InfoEtherum from './info-ethereum'
 import InfoBabyjub from './info-babyjub'
 
-import { pointToCompress } from '../../../utils/utils'
+import { pointToCompress } from '../../../../utils/utils'
 
 const web3 = require('web3')
 
