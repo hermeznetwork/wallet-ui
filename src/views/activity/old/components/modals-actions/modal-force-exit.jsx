@@ -7,9 +7,9 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-import { handleSendForceExit } from '../../../../store/tx/actions'
-import { handleStateForceExit } from '../../../../store/tx-state/actions'
-import { getWei } from '../../../../utils/utils'
+import { handleSendForceExit } from '../../../../../store/tx/actions'
+import { handleStateForceExit } from '../../../../../store/tx-state/actions'
+import { getWei } from '../../../../../utils/utils'
 
 function ModalForceExit ({
   config,

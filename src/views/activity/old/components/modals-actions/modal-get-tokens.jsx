@@ -7,7 +7,7 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-import { handleGetTokens } from '../../../../store/tx/actions'
+import { handleGetTokens } from '../../../../../store/tx/actions'
 
 function ModalGetTokens ({
   config,

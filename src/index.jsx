@@ -1,15 +1,20 @@
-import { Provider } from 'react-redux'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import 'semantic-ui-css/semantic.min.css'
+import { Provider } from 'react-redux'
+import { ThemeProvider } from 'react-jss'
+import 'normalize.css/normalize.css'
+// import 'semantic-ui-css/semantic.min.css'
 
-import store from './store'
-import App from './views/app'
 import * as serviceWorker from './serviceWorker'
+import store from './store'
+import theme from './styles/theme'
+import App from './views/app.view'
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   </Provider>,
   document.getElementById('root')
 )

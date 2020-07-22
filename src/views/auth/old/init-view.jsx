@@ -10,11 +10,11 @@ import ModalImport from './components/modal-import'
 import ModalCreate from './components/modal-create'
 import {
   handleLoadWallet, handleLoadFiles, handleLoadOperator, resetWallet, handleCreateWallet
-} from '../../store/general/actions'
-import { handleInitStateTx } from '../../store/tx/actions'
-import { handleResetTxs } from '../../store/tx-state/actions'
+} from '../../../store/general/actions'
+import { handleInitStateTx } from '../../../store/tx/actions'
+import { handleResetTxs } from '../../../store/tx-state/actions'
 
-const config = require('../../utils/config.json')
+const config = require('../../../utils/config.json')
 
 function InitView ({
   desWallet,
@@ -116,7 +116,7 @@ function InitView ({
 
   function renderRedirect () {
     if (state.isLoaded === true) {
-      return <Redirect to='/actions' />
+      return <Redirect to='/old/actions' />
     }
   }
 

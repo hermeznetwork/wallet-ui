@@ -5,11 +5,11 @@ import {
   Button, Modal, Form, Icon, Dropdown
 } from 'semantic-ui-react'
 
-import { handleSendSend } from '../../../../store/tx/actions'
-import { handleStateSend } from '../../../../store/tx-state/actions'
+import { handleSendSend } from '../../../../../store/tx/actions'
+import { handleStateSend } from '../../../../../store/tx-state/actions'
 import {
   getWei, feeTable, feeTableDropdown
-} from '../../../../utils/utils'
+} from '../../../../../utils/utils'
 
 const rollupExampleAddress = '0x5b2ae71f33a4e3455cb4d25bf076189093c4beac4d0fd5f8ea538c5b3d1ad8a0'
 
