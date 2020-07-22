@@ -1,9 +1,54 @@
 /* global BigInt */
+import { Scalar, utils as ffUtils } from 'ffjavascript'
 
 const { babyJub, poseidon } = require('circomlib');
 
 const web3 = require('web3');
-const { Scalar } = require('ffjavascript');
+
+const hash = poseidon.createHash(6, 8, 57)
+const F = poseidon.F
+
+/**
+ * Chunks inputs in five elements and hash with Poseidon all them togheter
+ * @param {Array} arr - inputs hash
+ * @returns {BigInt} - final hash
+ */
+function multiHash(arr) {
+  let r = Scalar.e(0);
+  for (let i = 0; i < arr.length; i += 5) {
+      const fiveElems = [];
+      for (let j = 0; j < 5; j++) {
+          if (i + j < arr.length) {
+              fiveElems.push(arr[i + j]);
+          } else {
+              fiveElems.push(Scalar.e(0));
+          }
+      }
+      const ph = hash(fiveElems);
+      r = F.add(r, ph);
+  }
+  return F.normalize(r);
+}
+
+/**
+ * Poseidon hash of a generic buffer
+ * @param {Buffer} msgBuff 
+ * @returns {BigInt} - final hash
+ */
+export function hashBuffer(msgBuff) {
+  const n = 31;
+  const msgArray = [];
+  const fullParts = Math.floor(msgBuff.length / n);
+  for (let i = 0; i < fullParts; i++) {
+      const v = ffUtils.leBuff2int(msgBuff.slice(n * i, n * (i + 1)));
+      msgArray.push(v);
+  }
+  if (msgBuff.length % n !== 0) {
+      const v = ffUtils.leBuff2int(msgBuff.slice(fullParts * n));
+      msgArray.push(v);
+  }
+  return multiHash(msgArray);
+}
 
 export const readFile = (file) => {
   return new Promise((resolve) => {
@@ -184,6 +229,10 @@ export const getWei = (ether) => {
   }
   return wei;
 };
+
+export const hexToBuffer = (hexString) => {
+  return Buffer.from(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
+}
 
 export const feeTable = {
   '0%': 0,

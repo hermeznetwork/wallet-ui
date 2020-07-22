@@ -12,7 +12,7 @@ const web3 = require('web3');
 
 class InfoWallet extends Component {
   static propTypes = {
-    desWallet: PropTypes.object.isRequired,
+    metamaskWallet: PropTypes.object.isRequired,
     isLoadingInfoAccount: PropTypes.bool.isRequired,
     tokens: PropTypes.string,
     tokensR: PropTypes.string,

@@ -24,10 +24,6 @@ The steps assume you have the Rollup repo in the same directory as this one and 
 ## Refactor
 
 - Remove Web3
-- Remove Semantic UI?
 - Look into reducing usage of rollup-cli and rollup-op to move to an API?
-- Separate to another repo
 - Add Docker for testing locally.
-- Consider testing, is there time?
-- Change classes to Functional components.
 - Separate components from views

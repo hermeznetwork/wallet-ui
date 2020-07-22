@@ -83,7 +83,7 @@ class ActionView extends Component {
       this.setState({ noImported: true });
     } else {
       this.setState({
-        babyjub: pointToCompress(this.props.desWallet.babyjubWallet.publicKey),
+        babyjub: pointToCompress(this.props.metamaskWallet.publicKey),
         lengthTx: this.props.txTotal.length,
       });
     }
@@ -106,7 +106,7 @@ class ActionView extends Component {
       this.setState({ noImported: true });
     } else {
       this.setState({
-        babyjub: pointToCompress(this.props.desWallet.babyjubWallet.publicKey),
+        babyjub: pointToCompress(this.props.metamaskWallet.publicKey),
       });
       this.setState({ noImported: false });
     }
@@ -155,7 +155,7 @@ class ActionView extends Component {
   toggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })); }
 
   redirectInitView = () => {
-    if (Object.keys(this.props.desWallet).length === 0) {
+    if (Object.keys(this.props.metamaskWallet).length === 0) {
       return <Redirect to="/" />;
     }
   }
@@ -183,7 +183,7 @@ class ActionView extends Component {
           noImported={this.state.noImported} />
         <MessageTx />
         <InfoWallet
-          desWallet={this.props.desWallet}
+          metamaskWallet={this.props.metamaskWallet}
           balance={this.props.balance}
           tokens={this.props.tokens}
           tokensR={this.props.tokensR}
@@ -199,7 +199,7 @@ class ActionView extends Component {
           noImported={this.state.noImported} />
         <br />
         <InfoTx
-          desWallet={this.props.desWallet} />
+          metamaskWallet={this.props.metamaskWallet} />
         <ModalDeposit
           balance={this.props.balance}
           tokensList={this.props.tokensList}
@@ -207,12 +207,12 @@ class ActionView extends Component {
           modalDeposit={this.state.modalDeposit}
           toggleModalDeposit={this.toggleModalDeposit} />
         <ModalWithdraw
-          desWallet={this.props.desWallet}
+          metamaskWallet={this.props.metamaskWallet}
           modalWithdraw={this.state.modalWithdraw}
           toggleModalWithdraw={this.toggleModalWithdraw} />
         <ModalForceExit
           tokensList={this.props.tokensList}
-          desWallet={this.props.desWallet}
+          metamaskWallet={this.props.metamaskWallet}
           babyjub={this.state.babyjub}
           modalForceExit={this.state.modalForceExit}
           toggleModalForceExit={this.toggleModalForceExit} />

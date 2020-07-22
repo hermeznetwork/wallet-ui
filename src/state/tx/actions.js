@@ -1,10 +1,10 @@
 import * as CONSTANTS from './constants';
 import { hexToPoint, exitAy, exitAx } from '../../utils/utils';
 import { deposit, depositOnTop, withdraw, forceWithdraw } from '../../utils/tx';
+import rollup from '../../utils/bundle-cli';
+import { CliExternalOperator } from '../../utils/cli-external-operator';
 
 const ethers = require('ethers');
-const rollup = require('bundle-cli');
-const operator = require('bundle-op');
 const abiDecoder = require('abi-decoder');
 const Web3 = require('web3');
 
@@ -42,7 +42,7 @@ export function handleSendDeposit(nodeEth, addressSC, amount, tokenId, wallet, e
       } else {
         try {
           const babyjubToCompress = wallet.babyjubWallet.publicKeyCompressed.toString('hex');
-          const apiOperator = new operator.cliExternalOperator(operatorUrl);
+          const apiOperator = new CliExternalOperator(operatorUrl);
           await apiOperator.getStateAccountByAddress(tokenId, babyjubToCompress);
           const resOperator = await apiOperator.getState();
           const currentBatch = resOperator.data.rollupSynch.lastBatchSynched;
@@ -55,7 +55,7 @@ export function handleSendDeposit(nodeEth, addressSC, amount, tokenId, wallet, e
         } catch (error) {
           try {
             if (error.message.includes('404')) {
-              const apiOperator = new operator.cliExternalOperator(operatorUrl);
+              const apiOperator = new CliExternalOperator(operatorUrl);
               const resOperator = await apiOperator.getState();
               const currentBatch = resOperator.data.rollupSynch.lastBatchSynched;
               const res = await deposit(nodeEth, addressSC, amount, tokenId, wallet,
@@ -106,7 +106,7 @@ export function handleSendWithdraw(nodeEth, addressSC, tokenId, wallet, abiRollu
           dispatch(sendWithdrawError('The num exit root must be entered'));
           resolve('No numExitRoot');
         } else {
-          const apiOperator = new operator.cliExternalOperator(op);
+          const apiOperator = new CliExternalOperator(op);
           const resOperator = await apiOperator.getState();
           const currentBatch = resOperator.data.rollupSynch.lastBatchSynched;
           const res = await withdraw(nodeEth, addressSC, tokenId, wallet, abiRollup,
@@ -156,7 +156,7 @@ export function handleSendForceExit(nodeEth, addressSC, tokenId, amount, wallet,
     dispatch(sendForceExit());
     return new Promise(async (resolve) => {
       try {
-        const apiOperator = new operator.cliExternalOperator(urlOperator);
+        const apiOperator = new CliExternalOperator(urlOperator);
         const publicCompressed = wallet.babyjubWallet.publicKeyCompressed.toString('hex');
         const resAccount = await apiOperator.getStateAccountByAddress(tokenId, publicCompressed);
         let { address } = wallet.ethWallet;
@@ -208,7 +208,7 @@ export function handleGetIds(urlOperator, filters, address) {
     dispatch(getIds());
     return new Promise(async (resolve) => {
       try {
-        const apiOperator = new operator.cliExternalOperator(urlOperator);
+        const apiOperator = new CliExternalOperator(urlOperator);
         const res = await apiOperator.getAccounts(filters);
         const ids = [];
         res.data.map(async (key) => {
@@ -265,7 +265,7 @@ export function handleSendSend(urlOperator, babyjubTo, amount, wallet, tokenId, 
           } else {
             nonceObject = JSON.parse(item);
           }
-          const apiOperator = new operator.cliExternalOperator(urlOperator);
+          const apiOperator = new CliExternalOperator(urlOperator);
           const babyjub = wallet.babyjubWallet.publicKeyCompressed.toString('hex');
           const resAccount = await apiOperator.getStateAccountByAddress(tokenId, babyjub);
           let { address } = wallet.ethWallet;

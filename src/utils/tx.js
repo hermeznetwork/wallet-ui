@@ -1,11 +1,11 @@
 import {
   fix2float,
 } from './utils';
+import { CliExternalOperator } from './cli-external-operator';
 
 const ethers = require('ethers');
 const Web3 = require('web3');
 const { Scalar } = require('ffjavascript');
-const operator = require('bundle-op');
 
 /**
  * Get current average gas price from the last ethereum blocks and multiply it
@@ -120,7 +120,7 @@ export const depositOnTop = async (nodeEth, addressSC, loadAmount, tokenId, baby
 export const withdraw = async (nodeEth, addressSC, tokenId, walletRollup, abi, urlOperator,
   numExitRoot, gasLimit = 5000000, gasMultiplier = 1) => {
   const web3 = new Web3(Web3.givenProvider || nodeEth);
-  const apiOperator = new operator.cliExternalOperator(urlOperator);
+  const apiOperator = new CliExternalOperator(urlOperator);
   const walletBaby = walletRollup.babyjubWallet;
   const pubKeyBabyjub = [walletBaby.publicKey[0].toString(16), walletBaby.publicKey[1].toString(16)];
   const pubKeyBabyjubEthCall = [walletBaby.publicKey[0].toString(), walletBaby.publicKey[1].toString()];

@@ -1,7 +1,7 @@
 import * as CONSTANTS from './constants';
+import { CliExternalOperator } from '../../utils/cli-external-operator';
 
 const web3 = require('web3');
-const operator = require('bundle-op');
 
 function stateSend(tx) {
   return {
@@ -50,7 +50,7 @@ export function handleStateSend(res, urlOperator, amount, fee, tokenId, babyJubR
         const nonceTx = res.nonce;
         let currentBatch = Number(res.currentBatch);
         const { maxNumBatch } = infoTx;
-        const apiOperator = new operator.cliExternalOperator(urlOperator);
+        const apiOperator = new CliExternalOperator(urlOperator);
         let actualNonce;
         try {
           const resFrom = await apiOperator.getStateAccountByAddress(tokenId, babyjub);
@@ -152,7 +152,7 @@ export function handleStateDeposit(tx, tokenId, urlOperator, amount) {
     dispatch(stateDeposit(infoTx));
     try {
       await tx.res.wait();
-      const apiOperator = new operator.cliExternalOperator(urlOperator);
+      const apiOperator = new CliExternalOperator(urlOperator);
       const resState = await apiOperator.getState();
       let currentBatch = resState.data.rollupSynch.lastBatchSynched;
       const maxNumBatch = currentBatch + 2;
@@ -282,7 +282,7 @@ export function handleStateForceExit(tx, urlOperator, tokenId, amount) {
     dispatch(stateForceExit(infoTx));
     try {
       await tx.res.wait();
-      const apiOperator = new operator.cliExternalOperator(urlOperator);
+      const apiOperator = new CliExternalOperator(urlOperator);
       const resState = await apiOperator.getState();
       let currentBatch = resState.data.rollupSynch.lastBatchSynched;
       const maxNumBatch = currentBatch + 2;

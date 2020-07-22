@@ -1,52 +1,14 @@
 /* eslint-disable no-await-in-loop */
 /* global BigInt */
+import { keccak256 } from 'js-sha3'
 import * as CONSTANTS from './constants';
-import { getNullifier } from '../../utils/utils';
+import { getNullifier, hexToBuffer } from '../../utils/utils';
+import rollup from '../../utils/bundle-cli';
+import { CliExternalOperator } from '../../utils/cli-external-operator';
+import { BabyJubWallet } from '../../utils/babyjub-wallet'
 
 const ethers = require('ethers');
 const FileSaver = require('file-saver');
-const rollup = require('bundle-cli');
-const operator = require('bundle-op');
-const { readFile } = require('../../utils/utils');
-
-function loadWallet() {
-  return {
-    type: CONSTANTS.LOAD_WALLET,
-  };
-}
-
-function loadWalletSuccess(wallet, password, desWallet) {
-  return {
-    type: CONSTANTS.LOAD_WALLET_SUCCESS,
-    payload: { wallet, password, desWallet },
-    error: '',
-  };
-}
-
-function loadWalletError(error) {
-  return {
-    type: CONSTANTS.LOAD_WALLET_ERROR,
-    error,
-  };
-}
-
-export function handleLoadWallet(walletFile, password, file) {
-  return async function (dispatch) {
-    dispatch(loadWallet());
-    try {
-      let wallet;
-      if (file) {
-        wallet = await readFile(walletFile);
-      } else {
-        wallet = walletFile;
-      }
-      const desWallet = await rollup.wallet.Wallet.fromEncryptedJson(wallet, password);
-      dispatch(loadWalletSuccess(wallet, password, desWallet));
-    } catch (error) {
-      dispatch(loadWalletError(error.message));
-    }
-  };
-}
 
 function createWallet() {
   return {
@@ -81,18 +43,6 @@ export function handleCreateWallet(walletName, password) {
         resolve(encWallet);
       } catch (error) {
         dispatch(createWalletError(error));
-      }
-    });
-  };
-}
-
-export function resetWallet() {
-  return function (dispatch) {
-    return new Promise(async () => {
-      try {
-        dispatch(loadWalletSuccess({}, ''));
-      } catch (error) {
-        dispatch(loadWalletError(error));
       }
     });
   };
@@ -185,7 +135,8 @@ export function handleLoadOperator(config) {
   return async function (dispatch) {
     dispatch(loadOperator());
     try {
-      const apiOperator = new operator.cliExternalOperator(config.operator);
+      const apiOperator = new CliExternalOperator(config.operator);
+      console.log(config, apiOperator)
       dispatch(loadOperatorSuccess(apiOperator));
     } catch (error) {
       dispatch(loadOperatorError(error));
@@ -218,11 +169,15 @@ export function handleLoadMetamask() {
   return async function (dispatch) {
     dispatch(loadMetamask());
     try {
+      await window.ethereum.enable();
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      window.ethers = ethers
       const signer = provider.getSigner()
-      console.log(await signer.getAddress())
-      dispatch(loadMetamaskSuccess(signer));
+      const signature = await signer.signMessage('I accept using Metamask as a CA')
+      const hashedSignature = keccak256(signature)
+      const bufferSignature = hexToBuffer(hashedSignature)
+      const wallet = new BabyJubWallet(bufferSignature)
+      console.log(wallet)
+      dispatch(loadMetamaskSuccess(wallet));
     } catch (error) {
       dispatch(loadMetamaskError(error.message));
     }
@@ -276,7 +231,7 @@ export function handleInfoAccount(node, abiTokens, wallet, operatorUrl, addressR
       walletEth = walletEth.connect(provider);
       const balanceHex = await provider.getBalance(walletEthAddress);
       const balance = ethers.utils.formatEther(balanceHex);
-      const apiOperator = new operator.cliExternalOperator(operatorUrl);
+      const apiOperator = new CliExternalOperator(operatorUrl);
       const filters = {};
       if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress;
       else filters.ethAddr = `0x${walletEthAddress}`;
@@ -477,7 +432,7 @@ export function getCurrentBatch(urlOperator) {
   return async function (dispatch) {
     let currentBatch;
     try {
-      const apiOperator = new operator.cliExternalOperator(urlOperator);
+      const apiOperator = new CliExternalOperator(urlOperator);
       const resOperator = await apiOperator.getState();
       currentBatch = resOperator.data.rollupSynch.lastBatchSynched;
       dispatch(getInfoCurrentBatch(currentBatch));
