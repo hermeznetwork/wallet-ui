@@ -1,1 +1,11 @@
+# Editors
+.vscode/
+
+# Dependencies
 node_modules/
+
+# Artifacts
+build/
+
+# System files
+**/.DS_Store

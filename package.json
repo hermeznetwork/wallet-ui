@@ -1,7 +1,15 @@
 {
-  "name": "rollup-wallet",
+  "name": "wallet-ui",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -17,8 +25,10 @@
     "file-saver": "^2.0.2",
     "hdkey": "^2.0.1",
     "js-sha3": "^0.8.0",
+    "normalize.css": "^8.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-jss": "^10.3.0",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
@@ -29,15 +39,22 @@
     "truffle-hdwallet-provider": "^1.0.17",
     "web3": "^1.2.9"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "eslint --ext .jsx,.js src"
+  "devDependencies": {
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "standard": "^14.3.4"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "standard": {
+    "parser": "babel-eslint",
+    "env": [
+      "browser",
+      "jest"
+    ],
+    "ignore": [
+      "/build/",
+      "/public/",
+      "/src/utils/bundle-cli.js"
+    ]
   },
   "browserslist": {
     "production": [
@@ -51,13 +68,12 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "babel-eslint": "^10.0.3",
-    "eslint": "^6.7.1",
-    "eslint-config-airbnb": "^18.0.1",
-    "eslint-import-resolver-webpack": "^0.11.1",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.16.0"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{jsx,js}": "standard --fix"
   }
 }
