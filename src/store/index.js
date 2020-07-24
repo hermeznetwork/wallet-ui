@@ -4,8 +4,10 @@ import thunk from 'redux-thunk'
 import generalReducer from './general/reducer'
 import transactionsReducer from './tx/reducer'
 import txStateReducer from './tx-state/reducer'
+import homeReducer from './home/home.reducer'
 
 const rootReducer = combineReducers({
+  home: homeReducer,
   general: generalReducer,
   transactions: transactionsReducer,
   txState: txStateReducer
