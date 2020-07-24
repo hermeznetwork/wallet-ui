@@ -22,9 +22,9 @@ function Home ({ totalBalance, accounts }) {
       <section>
         <h4 className={classes.title}>Total balance</h4>
         <TotalBalance amount={getTotalBalance()} />
-        <div className={classes.actionButtons}>
-          <button>Deposit</button>
-          <button>Withdraw</button>
+        <div className={classes.actionButtonsGroup}>
+          <button className={classes.actionButton}>Deposit</button>
+          <button className={classes.actionButton}>Withdraw</button>
         </div>
       </section>
       <section>
