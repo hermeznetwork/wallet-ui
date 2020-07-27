@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useAccountStyles = createUseStyles({
+const useCoinBalanceStyles = createUseStyles({
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -28,4 +28,4 @@ const useAccountStyles = createUseStyles({
   }
 })
 
-export default useAccountStyles
+export default useCoinBalanceStyles
