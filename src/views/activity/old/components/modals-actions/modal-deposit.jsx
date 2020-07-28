@@ -23,16 +23,17 @@ function ModalDeposit ({
   gasMultiplier,
   metamaskWallet
 }) {
+  const [amount, setAmount] = React.useState(0)
+  const [tokenId, setTokenId] = React.useState('')
   const [state, setState] = React.useState({
     modalError: false,
     error: '',
-    tokenId: '',
     amount: '',
     disableButton: true
   })
 
   function checkForm () {
-    if (parseInt(state.amount, 10) && (parseInt(state.tokenId, 10) || state.tokenId === 0)) {
+    if (parseInt(amount, 10) && (parseInt(tokenId, 10) || tokenId === 0)) {
       setState({ ...state, disableButton: false })
     } else {
       setState({ ...state, disableButton: true })
@@ -49,16 +50,14 @@ function ModalDeposit ({
       ...state,
       modalError: false,
       error: '',
-      tokenId: '',
-      amount: '',
       disableButton: true
     })
   }
 
   async function handleClick () {
-    const amount = getWei(state.amount)
+    const depositAmount = getWei(amount)
     const addressSC = config.address
-    if (parseInt(amount, 10) > parseInt(tokensA, 10)) {
+    if (parseInt(depositAmount, 10) > parseInt(tokensA, 10)) {
       setState({ ...state, error: '0' })
       handleToggleModalError()
     } else {
@@ -67,8 +66,8 @@ function ModalDeposit ({
       const res = await onSendDeposit(
         config.nodeEth,
         addressSC,
-        amount,
-        state.tokenId,
+        depositAmount,
+        tokenId,
         metamaskWallet,
         undefined,
         abiRollup,
@@ -85,30 +84,29 @@ function ModalDeposit ({
         }
       }
       if (res.res) {
-        onStateDeposit(res, state.tokenId, config.operator, amount)
+        onStateDeposit(res, tokenId, config.operator, depositAmount)
       }
     }
   }
 
   function handleSetAmount (event) {
-    setState({ ...state, amount: event.target.value })
+    setAmount(event.target.value)
     checkForm()
   }
 
   function handleSetToken (event, { value }) {
     const tokenId = Number(value)
 
-    setState({ ...state, tokenId })
+    setTokenId(tokenId)
     checkForm()
   }
 
   function dropDownTokens () {
     const tokensOptions = tokensList
-      .filter(token => tokensList[token])
       .map((token) => ({
-        key: tokensList[token].address,
-        value: tokensList[token].tokenId,
-        text: `${tokensList[token].tokenId}: ${tokensList[token].address}`
+        key: token.address,
+        value: token.tokenId,
+        text: `${token.tokenId}: ${token.address}`
       }))
 
     return (
@@ -139,7 +137,7 @@ function ModalDeposit ({
                   type='text'
                   id='amount'
                   onChange={handleSetAmount}
-                  value={state.amount}
+                  value={amount}
                 />
               </label>
             </Form.Field>
