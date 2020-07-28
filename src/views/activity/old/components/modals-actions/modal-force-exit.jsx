@@ -95,9 +95,9 @@ function ModalForceExit ({
 
   function dropDownTokens () {
     const tokensOptions = tokensList.map((token) => ({
-      key: tokensList[token].address,
-      value: tokensList[token].tokenId,
-      text: `${tokensList[token].tokenId}: ${tokensList[token].address}`
+      key: token.address,
+      value: token.tokenId,
+      text: `${token.tokenId}: ${token.address}`
     }))
 
     return (
