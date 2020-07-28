@@ -17,7 +17,7 @@ function ModalForceExit ({
   onToggleModalForceExit,
   onSendForceExit,
   onStateForceExit,
-  desWallet,
+  metamaskWallet,
   babyjub,
   tokensList,
   gasMultiplier
@@ -76,7 +76,7 @@ function ModalForceExit ({
       config.address,
       state.tokenId,
       amountWei,
-      desWallet,
+      metamaskWallet,
       config.abiRollup,
       config.operator,
       gasMultiplier
@@ -95,9 +95,9 @@ function ModalForceExit ({
 
   function dropDownTokens () {
     const tokensOptions = tokensList.map((token) => ({
-      key: tokensList[token].address,
-      value: tokensList[token].tokenId,
-      text: `${tokensList[token].tokenId}: ${tokensList[token].address}`
+      key: token.address,
+      value: token.tokenId,
+      text: `${token.tokenId}: ${token.address}`
     }))
 
     return (
@@ -174,7 +174,7 @@ ModalForceExit.propTypes = {
   onToggleModalForceExit: PropTypes.func.isRequired,
   onSendForceExit: PropTypes.func.isRequired,
   onStateForceExit: PropTypes.func.isRequired,
-  desWallet: PropTypes.object.isRequired,
+  metamaskWallet: PropTypes.object.isRequired,
   babyjub: PropTypes.string.isRequired,
   tokensList: PropTypes.array.isRequired,
   gasMultiplier: PropTypes.number.isRequired
@@ -182,7 +182,7 @@ ModalForceExit.propTypes = {
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
-  desWallet: state.general.desWallet,
+  metamaskWallet: state.general.metamaskWallet,
   gasMultiplier: state.general.gasMultiplier
 })
 

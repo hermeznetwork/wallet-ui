@@ -14,7 +14,6 @@ function InfoEthereum ({
   tokensAArray,
   tokensA,
   balance,
-  noImported,
   address,
   loading
 }) {
@@ -80,7 +79,6 @@ function InfoEthereum ({
               circular
               size='large'
               onClick={handleCopyAddress}
-              disabled={noImported}
             />
           </Table.Cell>
         </Table.Row>
@@ -100,7 +98,7 @@ function InfoEthereum ({
             {isLoadingTokens()}
           </Table.Cell>
           <Table.Cell colSpan='2' floated='left'>
-            <ModalInfoId txs={tokensArray} noImported={noImported} />
+            <ModalInfoId txs={tokensArray} />
           </Table.Cell>
         </Table.Row>
         <Table.Row>
@@ -111,7 +109,7 @@ function InfoEthereum ({
             {isLoadingTokensA()}
           </Table.Cell>
           <Table.Cell colSpan='2' floated='left'>
-            <ModalInfoId txs={tokensAArray} noImported={noImported} />
+            <ModalInfoId txs={tokensAArray} />
           </Table.Cell>
         </Table.Row>
       </Table.Header>
@@ -125,7 +123,6 @@ InfoEthereum.propTypes = {
   tokensAArray: PropTypes.array,
   tokensA: PropTypes.string,
   balance: PropTypes.string,
-  noImported: PropTypes.bool.isRequired,
   address: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired
 }

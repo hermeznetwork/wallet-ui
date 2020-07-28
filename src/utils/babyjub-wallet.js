@@ -9,14 +9,16 @@ class BabyJubWallet {
   /**
      * Initialize Babyjubjub wallet from private key
      * @param {Buffer} privateKey - 32 bytes buffer
+     * @param {String} publicEthKey - Hexadecimal string containing the public Ethereum key from Metamask
      */
-  constructor (privateKey) {
+  constructor (privateKey, publicEthKey) {
     const priv = new eddsaBabyJub.PrivateKey(privateKey)
     const pub = priv.public()
 
     this.privateKey = privateKey
     this.publicKey = [pub.p[0], pub.p[1]]
     this.publicKeyCompressed = pub.compress()
+    this.publicEthKey = publicEthKey
   }
 
   /**

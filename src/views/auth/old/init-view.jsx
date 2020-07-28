@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import { Redirect, useLocation } from 'react-router-dom'
 
 import {
-  handleLoadOperator, handleLoadMetamask
+  handleLoadOperator, handleLoadMetamask, handleLoadConfig
 } from '../../../store/general/actions'
 import { handleInitStateTx } from '../../../store/tx/actions'
 
@@ -17,7 +17,8 @@ function InitView ({
   isAuthed,
   handleInitStateTx,
   handleLoadOperator,
-  handleLoadMetamask
+  handleLoadMetamask,
+  handleLoadConfig
 }) {
   const { search } = useLocation()
 
@@ -41,6 +42,7 @@ function InitView ({
     if (checkMetamask()) {
       try {
         await handleInitStateTx()
+        await handleLoadConfig(config)
         await handleLoadOperator(config)
         await handleLoadMetamask()
       } catch (error) {
@@ -97,5 +99,6 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
   handleLoadMetamask,
   handleLoadOperator,
-  handleInitStateTx
+  handleInitStateTx,
+  handleLoadConfig
 })(InitView)

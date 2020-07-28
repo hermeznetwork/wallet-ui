@@ -18,7 +18,7 @@ function ModalWithdraw ({
   handleSendWithdraw,
   handleStateWithdraw,
   gasMultiplier,
-  desWallet,
+  metamaskWallet,
   txsExits
 }) {
   const [state, setState] = React.useState({
@@ -60,7 +60,7 @@ function ModalWithdraw ({
       config.nodeEth,
       config.address.addressSC,
       tokenId,
-      desWallet,
+      metamaskWallet,
       abiRollup,
       config.operator,
       numExitRoot,
@@ -220,14 +220,14 @@ ModalWithdraw.propTypes = {
   handleSendWithdraw: PropTypes.func.isRequired,
   handleStateWithdraw: PropTypes.func.isRequired,
   gasMultiplier: PropTypes.number.isRequired,
-  desWallet: PropTypes.object.isRequired,
+  metamaskWallet: PropTypes.object.isRequired,
   txsExits: PropTypes.array
 }
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
   abiRollup: state.general.abiRollup,
-  desWallet: state.general.desWallet,
+  metamaskWallet: state.general.metamaskWallet,
   txsExits: state.general.txsExits,
   gasMultiplier: state.general.gasMultiplier
 })

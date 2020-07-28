@@ -5,8 +5,7 @@ import {
 } from 'semantic-ui-react'
 
 function ModalInfoIdExits ({
-  txsExits,
-  noImported
+  txsExits
 }) {
   function getIdTokens () {
     try {
@@ -31,7 +30,7 @@ function ModalInfoIdExits ({
   }
 
   return (
-    <Modal trigger={<Button icon='info' content='More Information...' disabled={noImported} />} closeIcon>
+    <Modal trigger={<Button icon='info' content='More Information...' />} closeIcon>
       <Modal.Header><Icon name='info' /></Modal.Header>
       <Modal.Content>
         <Table>
@@ -52,8 +51,7 @@ function ModalInfoIdExits ({
 }
 
 ModalInfoIdExits.propTypes = {
-  txsExits: PropTypes.array,
-  noImported: PropTypes.bool.isRequired
+  txsExits: PropTypes.array
 }
 
 ModalInfoIdExits.defaultProps = {

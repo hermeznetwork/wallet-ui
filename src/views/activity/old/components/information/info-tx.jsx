@@ -10,12 +10,12 @@ import ModalInfoOnchain from '../modals-info/modal-info-onchain'
 import ModalInfoTx from '../modals-info/modal-info-txs'
 import { pointToCompress } from '../../../../../utils/utils'
 
-function InfoOp ({
+function InfoTx ({
   pendingOffchain,
   pendingOnchain,
   txTotal,
   currentBatch,
-  desWallet
+  metamaskWallet
 }) {
   const [state, setState] = React.useState({
     modalInfoOnchain: false,
@@ -24,8 +24,8 @@ function InfoOp ({
     keyItem: {}
   })
   const txTotalByAddress = txTotal.filter(
-    (tx) => tx.from === desWallet.ethWallet.address ||
-      tx.from === pointToCompress(desWallet.babyjubWallet.publicKey)
+    (tx) => tx.from === metamaskWallet.publicEthKey ||
+      tx.from === pointToCompress(metamaskWallet.publicKey)
   )
 
   txTotalByAddress.sort((o1, o2) => {
@@ -157,12 +157,12 @@ function InfoOp ({
   )
 }
 
-InfoOp.propTypes = {
+InfoTx.propTypes = {
   pendingOffchain: PropTypes.array.isRequired,
   pendingOnchain: PropTypes.array.isRequired,
   txTotal: PropTypes.array.isRequired,
   currentBatch: PropTypes.number.isRequired,
-  desWallet: PropTypes.object.isRequired
+  metamaskWallet: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -172,4 +172,4 @@ const mapStateToProps = (state) => ({
   currentBatch: state.general.currentBatch
 })
 
-export default connect(mapStateToProps, { })(InfoOp)
+export default connect(mapStateToProps, { })(InfoTx)

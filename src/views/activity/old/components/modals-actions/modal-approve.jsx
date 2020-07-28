@@ -17,7 +17,7 @@ function ModalApprove ({
   onToggleModalApprove,
   handleApprove,
   gasMultiplier,
-  desWallet
+  metamaskWallet
 }) {
   const [state, setState] = React.useState({
     modalError: false,
@@ -47,7 +47,7 @@ function ModalApprove ({
     const res = await handleApprove(
       state.addressTokens,
       abiTokens,
-      desWallet,
+      metamaskWallet,
       amountTokens,
       config.address,
       config.nodeEth,
@@ -65,11 +65,13 @@ function ModalApprove ({
   }
 
   function checkForm () {
+    console.log(state.addressTokens)
     if (parseInt(state.amount, 10) && state.addressTokens !== '') {
       setState({ ...state, disableButton: false })
     } else {
       setState({ ...state, disableButton: true })
     }
+    console.log(state.addressTokens)
   }
 
   function handleSetAmount () {
@@ -83,7 +85,9 @@ function ModalApprove ({
   }
 
   function handleChangeAddress (event) {
+    console.log(state.addressTokens)
     setState({ ...state, addressTokens: event.target.value })
+    console.log(state.addressTokens)
     checkForm()
   }
 
@@ -149,13 +153,13 @@ ModalApprove.propTypes = {
   onToggleModalApprove: PropTypes.func.isRequired,
   handleApprove: PropTypes.func.isRequired,
   gasMultiplier: PropTypes.number.isRequired,
-  desWallet: PropTypes.object.isRequired
+  metamaskWallet: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
   abiTokens: state.general.abiTokens,
-  desWallet: state.general.desWallet,
+  metamaskWallet: state.general.metamaskWallet,
   gasMultiplier: state.general.gasMultiplier
 })
 

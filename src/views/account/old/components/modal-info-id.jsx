@@ -7,8 +7,7 @@ import {
 const web3 = require('web3')
 
 function ModalInfoId ({
-  txs,
-  noImported
+  txs
 }) {
   function getIdTokens () {
     try {
@@ -31,7 +30,7 @@ function ModalInfoId ({
   }
 
   return (
-    <Modal trigger={<Button icon='info' content='More Information...' disabled={noImported} />} closeIcon>
+    <Modal trigger={<Button icon='info' content='More Information...' />} closeIcon>
       <Modal.Header><Icon name='info' /></Modal.Header>
       <Modal.Content>
         <Table>
@@ -51,8 +50,7 @@ function ModalInfoId ({
 }
 
 ModalInfoId.propTypes = {
-  txs: PropTypes.array,
-  noImported: PropTypes.bool.isRequired
+  txs: PropTypes.array
 }
 
 ModalInfoId.defaultProps = {

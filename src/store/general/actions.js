@@ -8,64 +8,62 @@ import { BabyJubWallet } from '../../utils/babyjub-wallet'
 
 const ethers = require('ethers')
 
-function loadFiles () {
+function loadConfig () {
   return {
-    type: CONSTANTS.LOAD_FILES
+    type: CONSTANTS.LOAD_CONFIG
   }
 }
 
-function loadFilesSuccess (config, abiRollup, abiTokens, chainId, errorMessage) {
+function loadConfigSuccess (config, abiRollup, abiTokens, chainId, errorMessage) {
   return {
-    type: CONSTANTS.LOAD_FILES_SUCCESS,
-    payload: {
-      config, abiRollup, abiTokens, chainId
-    },
+    type: CONSTANTS.LOAD_CONFIG_SUCCESS,
+    payload: { config, abiRollup, abiTokens, chainId },
     error: errorMessage
   }
 }
 
-function loadFilesError (config, error) {
+function loadConfigError (config, error) {
   return {
-    type: CONSTANTS.LOAD_FILES_ERROR,
+    type: CONSTANTS.LOAD_CONFIG_ERROR,
     payload: { config },
     error
   }
 }
 
-export function handleLoadFiles (config) {
-  return function (dispatch) {
-    dispatch(loadFiles())
-    return async function () {
-      try {
-        const Web3 = require('web3')
-        let chainId
-        let web3
-        let errorMessage = ''
-        if (config.nodeEth) {
-          web3 = new Web3(config.nodeEth)
-          chainId = await web3.eth.getChainId()
-        } else {
-          chainId = -1
-          errorMessage = 'No Node Ethereum'
-        }
-        if (!config.operator) errorMessage = 'No operator'
-        if (!config.address) errorMessage = 'No Rollup Address'
-        if (!config.abiRollup) errorMessage = 'No Rollup ABI'
-        if (!config.abiTokens) errorMessage = 'No Tokens ABI'
-        if (!config.tokensAddress) errorMessage = 'No Tokens Address'
+export function handleLoadConfig (config) {
+  return async function (dispatch) {
+    dispatch(loadConfig())
 
-        dispatch(loadFilesSuccess(config, config.abiRollup, config.abiTokens, chainId, errorMessage))
-        if (errorMessage !== '') {
-          return false
-        } else {
-          return true
-        }
-      } catch (error) {
-        const newConfig = config
-        newConfig.nodeEth = undefined
-        dispatch(loadFilesError(newConfig, 'Error Configuration'))
-        return false
+    try {
+      let chainId
+      let errorMessage = ''
+
+      if (config.nodeEth) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const networkInfo = await provider.getNetwork()
+        chainId = networkInfo.chainId
+      } else {
+        chainId = -1
+        errorMessage = 'No Node Ethereum'
       }
+      if (!config.operator) errorMessage = 'No operator'
+      if (!config.address) errorMessage = 'No Rollup Address'
+      if (!config.abiRollup) errorMessage = 'No Rollup ABI'
+      if (!config.abiTokens) errorMessage = 'No Tokens ABI'
+      if (!config.tokensAddress) errorMessage = 'No Tokens Address'
+
+      dispatch(loadConfigSuccess(config, config.abiRollup, config.abiTokens, chainId, errorMessage))
+      if (errorMessage !== '') {
+        return false
+      } else {
+        return true
+      }
+    } catch (error) {
+      console.log(error)
+      const newConfig = config
+      newConfig.nodeEth = undefined
+      dispatch(loadConfigError(newConfig, 'Error Configuration'))
+      return false
     }
   }
 }
@@ -132,10 +130,11 @@ export function handleLoadMetamask () {
       await window.ethereum.enable()
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
+      const publicEthKey = await signer.getAddress()
       const signature = await signer.signMessage('I accept using Metamask as a CA')
       const hashedSignature = keccak256(signature)
       const bufferSignature = hexToBuffer(hashedSignature)
-      const wallet = new BabyJubWallet(bufferSignature)
+      const wallet = new BabyJubWallet(bufferSignature, publicEthKey)
       console.log(wallet)
       dispatch(loadMetamaskSuccess(wallet))
     } catch (error) {
@@ -185,17 +184,16 @@ export function handleInfoAccount (node, abiTokens, wallet, operatorUrl, address
     dispatch(infoAccount())
     try {
       const txsExits = []
-      const provider = new ethers.providers.JsonRpcProvider(node)
-      const walletEthAddress = wallet.ethWallet.address
-      let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey)
-      walletEth = walletEth.connect(provider)
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const walletEthAddress = wallet.publicEthKey
       const balanceHex = await provider.getBalance(walletEthAddress)
       const balance = ethers.utils.formatEther(balanceHex)
       const apiOperator = new CliExternalOperator(operatorUrl)
       const filters = {}
       if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress
       else filters.ethAddr = `0x${walletEthAddress}`
-      const contractRollup = new ethers.Contract(addressRollup, abiRollup, walletEth)
+      const contractRollup = new ethers.Contract(addressRollup, abiRollup, signer)
       let tokensList = {}
       let allTxs = []
       try {
@@ -210,7 +208,7 @@ export function handleInfoAccount (node, abiTokens, wallet, operatorUrl, address
       }
       const txs = allTxs.data
       const [tokensUser, tokens, tokensArray, tokensA, tokensAArray] = await getTokensInfo(tokensList, abiTokens,
-        wallet, walletEth, addressRollup)
+        wallet, signer, addressRollup)
       const [tokensR, tokensRArray] = await getTokensRollup(allTxs, tokensList)
       const tokensE = await getTokensExit(apiOperator, wallet, allTxs, contractRollup, txsExits)
       const tokensTotalNum = BigInt(tokens) + BigInt(tokensE) + BigInt(tokensR)
@@ -229,7 +227,7 @@ async function getTokensInfo (tokensList, abiTokens, wallet, walletEth, addressR
   const tokensUser = []
   let tokens = BigInt(0)
   let tokensA = BigInt(0)
-  let walletEthAddress = wallet.ethWallet.address
+  let walletEthAddress = wallet.publicEthKey
   try {
     if (!walletEthAddress.startsWith('0x')) walletEthAddress = `0x${walletEthAddress}`
     for (const [tokenId, address] of Object.entries(tokensList.data)) {

@@ -4,7 +4,7 @@ const initialState = {
   errorWallet: '',
   isAuthed: false,
   metamaskWallet: {},
-  errorFiles: '',
+  errorConfig: '',
   config: {},
   abiRollup: [],
   abiTokens: [],
@@ -71,6 +71,28 @@ function general (state = initialState, action) {
         isAuthed: false,
         metamaskWallet: {},
         errorWallet: action.error
+      }
+    case CONSTANTS.LOAD_CONFIG:
+      return {
+        ...state,
+        isLoadingWallet: true,
+        errorConfig: ''
+      }
+    case CONSTANTS.LOAD_CONFIG_SUCCESS:
+      return {
+        ...state,
+        config: action.payload.config,
+        abiRollup: action.payload.abiRollup,
+        abiTokens: action.payload.abiTokens,
+        chainId: action.payload.chainId,
+        errorConfig: ''
+      }
+    case CONSTANTS.LOAD_CONFIG_ERROR:
+      return {
+        ...state,
+        chainId: -1,
+        config: action.payload.config,
+        errorConfig: action.error
       }
     case CONSTANTS.INFO_ACCOUNT:
       return {

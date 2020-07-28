@@ -5,7 +5,7 @@ import { Header, Container, Divider } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 
 import { handleGetTokens, handleApprove, handleInitStateTx } from '../../../store/tx/actions'
-import { handleInfoAccount, handleLoadFiles, getCurrentBatch } from '../../../store/general/actions'
+import { handleInfoAccount, handleLoadConfig, getCurrentBatch } from '../../../store/general/actions'
 import { pointToCompress } from '../../../utils/utils'
 import MenuActions from './components/actions/menu-actions'
 import MenuBack from './components/information/menu'
@@ -22,7 +22,6 @@ import ModalForceExit from './components/modals-actions/modal-force-exit'
 
 class ActionView extends Component {
   static propTypes = {
-    wallet: PropTypes.object.isRequired,
     metamaskWallet: PropTypes.object.isRequired,
     config: PropTypes.object.isRequired,
     abiTokens: PropTypes.array.isRequired,
@@ -41,9 +40,9 @@ class ActionView extends Component {
     handleInitStateTx: PropTypes.func.isRequired,
     isLoadingInfoAccount: PropTypes.bool.isRequired,
     handleInfoAccount: PropTypes.func.isRequired,
-    handleLoadFiles: PropTypes.func.isRequired,
+    handleLoadConfig: PropTypes.func.isRequired,
     getCurrentBatch: PropTypes.func.isRequired,
-    errorFiles: PropTypes.string.isRequired,
+    errorConfig: PropTypes.string.isRequired,
     txTotal: PropTypes.array.isRequired
   }
 
@@ -70,7 +69,6 @@ class ActionView extends Component {
       modalError: false,
       error: '',
       activeItem: '',
-      noImported: false,
       babyjub: '0x0000000000000000000000000000000000000000',
       lengthTx: 0
     }
@@ -79,9 +77,7 @@ class ActionView extends Component {
   componentDidMount = async () => {
     this.getInfoAccount()
     this.infoOperator()
-    if (this.props.errorFiles !== '') {
-      this.setState({ noImported: true })
-    } else {
+    if (Object.keys(this.props.metamaskWallet).length) {
       this.setState({
         babyjub: pointToCompress(this.props.metamaskWallet.publicKey),
         lengthTx: this.props.txTotal.length
@@ -100,15 +96,12 @@ class ActionView extends Component {
     const { config } = this.props
     this.props.handleInitStateTx()
     config.nodeEth = currentNode
-    const nodeLoad = await this.props.handleLoadFiles(config)
+    const nodeLoad = await this.props.handleLoadConfig(config)
     await this.getInfoAccount()
-    if (!nodeLoad) {
-      this.setState({ noImported: true })
-    } else {
+    if (nodeLoad) {
       this.setState({
         babyjub: pointToCompress(this.props.metamaskWallet.publicKey)
       })
-      this.setState({ noImported: false })
     }
   }
 
@@ -118,7 +111,7 @@ class ActionView extends Component {
   }
 
   getInfoAccount = async () => {
-    await this.props.handleInfoAccount(this.props.config.nodeEth, this.props.abiTokens, this.props.wallet,
+    await this.props.handleInfoAccount(this.props.config.nodeEth, this.props.abiTokens, this.props.metamaskWallet,
       this.props.config.operator, this.props.config.address, this.props.config.abiRollup)
   }
 
@@ -182,7 +175,6 @@ class ActionView extends Component {
         <Divider />
         <MenuActions
           onItemClick={this.handleItemClick}
-          noImported={this.state.noImported}
         />
         <MessageTx />
         <InfoWallet
@@ -199,7 +191,6 @@ class ActionView extends Component {
           getInfoAccount={this.getInfoAccount}
           txs={this.props.txs}
           txsExits={this.props.txsExits}
-          noImported={this.state.noImported}
         />
         <br />
         <InfoTx
@@ -256,7 +247,6 @@ class ActionView extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  wallet: state.general.wallet,
   metamaskWallet: state.general.metamaskWallet,
   apiOperator: state.general.apiOperator,
   abiTokens: state.general.abiTokens,
@@ -275,7 +265,7 @@ const mapStateToProps = (state) => ({
   txs: state.general.txs,
   txsExits: state.general.txsExits,
   isLoadingInfoAccount: state.general.isLoadingInfoAccount,
-  errorFiles: state.general.errorFiles,
+  errorConfig: state.general.errorConfig,
   txTotal: state.txState.txTotal
 })
 
@@ -283,7 +273,7 @@ export default connect(mapStateToProps, {
   handleGetTokens,
   handleApprove,
   handleInfoAccount,
-  handleLoadFiles,
+  handleLoadConfig,
   handleInitStateTx,
   getCurrentBatch
 })(ActionView)
