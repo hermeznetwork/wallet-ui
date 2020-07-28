@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-The steps assume you have the Rollup repo in the same directory as this one and that you ran `npm install` in both. The Rollup repo should be in the *metamask* branch.
+The steps assume you have the Rollup repo in the same directory as this one and that you ran `npm install` in rollup folder, rollup/rollup-operator folder and wallet-ui folder. The Rollup repo should be in the *metamask* branch. Check also that you have installed ganache-cli and truffle: `npm install -g ganache-cli`, `npm install -g truffle` 
 
 You need 4 different terminals to end up running:
 
@@ -23,9 +23,14 @@ These are the steps:
 
 ### Set up Metamask
 
-1. Create a normal Metamask account.
-2. Import this private key from Ganache: `0xe9693c57e65070578fbe61581e98dd68121d1ee80f5073a15ba8404a2f135837`. It includes Ether and some tokens.
-3. In Metamask, you need to add 2 token smart contracts to be able to see them in the Metamask UI. These are found in the `rollup` repo in `rollup-operator/test/config/test-pob.json` after running the steps above. From there you need to find the addressess under `tokenAddress` and `tokenAddress2`.
-4. Sign into **wallet-ui** using this imported account.
+1. Install Metamask extension on your web explorer
+2. Select the Localhost network
+3. Select `import using account seed phrase`
+4. Add this seed phrase `hard crop gallery regular neglect weekend fatal stamp eight flock inch doll` and a new password and click Restore.
+5. In Metamask, you need to add 2 token smart contracts to be able to see them in the Metamask UI. These are found in the `rollup` repo in `rollup-operator/test/config/test-pob.json` after running the steps above. From there you need to find the addressess under `tokenAddress` and `tokenAddress2`.
+6. Select `Account 1` and click `Add Token`
+7. Select Custom Token tab and introduce this Token Contract Address `0x7dFc5b5D172db3941f669770f9993b1df250B560`, introduce any token symbol and leave the Decimals of Precision to zero.
+8. Repeat step 6 with the following Token Contact Address `0x88C20845cC5979AAc23C5ae22b8c4d93e9d04334`
+9. Sign into **wallet-ui** using this imported account.
 
 
