@@ -16,8 +16,7 @@ function ModalApprove ({
   modalApprove,
   onToggleModalApprove,
   handleApprove,
-  gasMultiplier,
-  metamaskWallet
+  gasMultiplier
 }) {
   const [amount, setAmount] = React.useState(0)
   const [addressTokens, setAddressTokens] = React.useState('')
@@ -47,10 +46,8 @@ function ModalApprove ({
     const res = await handleApprove(
       addressTokens,
       abiTokens,
-      metamaskWallet,
       amountTokens,
       config.address,
-      config.nodeEth,
       gasMultiplier
     )
 
@@ -64,29 +61,20 @@ function ModalApprove ({
     }
   }
 
-  function checkForm () {
-    console.log(amount, addressTokens)
-    console.log(parseInt(amount, 10), addressTokens !== '')
-    if (parseInt(amount, 10) && addressTokens !== '') {
-      setState({ ...state, disableButton: false })
-    } else {
-      setState({ ...state, disableButton: true })
-    }
+  function isFormValid () {
+    return Boolean(parseInt(amount, 10) && addressTokens !== '')
   }
 
   function handleSetAmount () {
     setAmount(amountTokensRef.current.value)
-    checkForm()
   }
 
   function handleGetExampleAddress () {
     setAddressTokens(config.tokensAddress)
-    checkForm()
   }
 
   function handleChangeAddress (event) {
     setAddressTokens(event.target.value)
-    checkForm()
   }
 
   return (
@@ -130,7 +118,7 @@ function ModalApprove ({
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={handleClickApprove} color='blue' disabled={state.disableButton}>
+          <Button onClick={handleClickApprove} color='blue' disabled={!isFormValid()}>
             <Icon name='ethereum' />
               APPROVE
           </Button>
@@ -150,14 +138,12 @@ ModalApprove.propTypes = {
   modalApprove: PropTypes.bool.isRequired,
   onToggleModalApprove: PropTypes.func.isRequired,
   handleApprove: PropTypes.func.isRequired,
-  gasMultiplier: PropTypes.number.isRequired,
-  metamaskWallet: PropTypes.object.isRequired
+  gasMultiplier: PropTypes.number.isRequired
 }
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
   abiTokens: state.general.abiTokens,
-  metamaskWallet: state.general.metamaskWallet,
   gasMultiplier: state.general.gasMultiplier
 })
 

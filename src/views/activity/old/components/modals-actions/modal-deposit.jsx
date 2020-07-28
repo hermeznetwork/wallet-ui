@@ -86,7 +86,7 @@ function ModalDeposit ({
     setAmount(event.target.value)
   }
 
-  function handleSetToken (event, { value }) {
+  function handleSetToken (_, { value }) {
     const tokenId = Number(value)
 
     setTokenId(tokenId)

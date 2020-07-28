@@ -40,7 +40,7 @@ export function handleSendDeposit (nodeEth, addressSC, amount, tokenId, wallet, 
       return 'Deposit Error'
     } else {
       try {
-        const babyjubToCompress = wallet.babyjubWallet.publicKeyCompressed.toString('hex')
+        const babyjubToCompress = wallet.publicKeyCompressed.toString('hex')
         // eslint-disable-next-line new-cap
         const apiOperator = new CliExternalOperator(operatorUrl)
         await apiOperator.getStateAccountByAddress(tokenId, babyjubToCompress)
@@ -318,8 +318,7 @@ function approveError (error) {
   }
 }
 
-export function handleApprove (addressTokens, abiTokens, wallet, amountToken, addressRollup,
-  node, gasMultiplier) {
+export function handleApprove (addressTokens, abiTokens, amountToken, addressRollup, gasMultiplier) {
   return async function (dispatch) {
     dispatch(approve())
     try {
@@ -327,10 +326,10 @@ export function handleApprove (addressTokens, abiTokens, wallet, amountToken, ad
         dispatch(approveError('The amount of tokens must be greater than 0'))
         return 'Approve Error'
       } else {
-        const provider = new ethers.providers.JsonRpcProvider(node)
-        let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey)
-        walletEth = walletEth.connect(provider)
-        const contractTokens = new ethers.Contract(addressTokens, abiTokens, walletEth)
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = provider.getSigner()
+        console.log(addressTokens)
+        const contractTokens = new ethers.Contract(addressTokens, abiTokens, signer)
         const gasPrice = await rollup.onchain.utils.getGasPrice(gasMultiplier, provider)
         const overrides = {
           gasLimit,
@@ -368,18 +367,17 @@ function getTokensError (error) {
   }
 }
 
-export function handleGetTokens (node, addressTokens, wallet) {
+export function handleGetTokens (addressTokens) {
   return async function (dispatch) {
     dispatch(getTokens())
     try {
-      const provider = new ethers.providers.JsonRpcProvider(node)
-      let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey)
-      walletEth = walletEth.connect(provider)
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
       const tx = {
         to: addressTokens,
         value: ethers.utils.parseEther('0')
       }
-      const res = await walletEth.sendTransaction(tx)
+      const res = await signer.sendTransaction(tx)
       dispatch(getTokensSuccess(res))
       return res
     } catch (error) {

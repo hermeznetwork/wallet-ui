@@ -59,7 +59,6 @@ export function handleLoadConfig (config) {
         return true
       }
     } catch (error) {
-      console.log(error)
       const newConfig = config
       newConfig.nodeEth = undefined
       dispatch(loadConfigError(newConfig, 'Error Configuration'))
@@ -94,7 +93,6 @@ export function handleLoadOperator (config) {
     dispatch(loadOperator())
     try {
       const apiOperator = new CliExternalOperator(config.operator)
-      console.log(config, apiOperator)
       dispatch(loadOperatorSuccess(apiOperator))
     } catch (error) {
       dispatch(loadOperatorError(error))
@@ -135,7 +133,6 @@ export function handleLoadMetamask () {
       const hashedSignature = keccak256(signature)
       const bufferSignature = hexToBuffer(hashedSignature)
       const wallet = new BabyJubWallet(bufferSignature, publicEthKey)
-      console.log(wallet)
       dispatch(loadMetamaskSuccess(wallet))
     } catch (error) {
       dispatch(loadMetamaskError(error.message))

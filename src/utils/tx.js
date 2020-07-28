@@ -22,16 +22,14 @@ async function getGasPrice (multiplier, provider) {
 export const deposit = async (nodeEth, addressSC, loadAmount, tokenId, walletRollup,
   ethAddress, abi, gasLimit = 5000000, gasMultiplier = 1) => {
   const web3 = new Web3(Web3.givenProvider || nodeEth)
-  const walletBaby = walletRollup.babyjubWallet
-  const pubKeyBabyjub = [walletBaby.publicKey[0].toString(), walletBaby.publicKey[1].toString()]
+  const pubKeyBabyjub = [walletRollup.publicKey[0].toString(), walletRollup.publicKey[1].toString()]
 
   if (web3.currentProvider.host) {
-    let walletEth = walletRollup.ethWallet.wallet
-    const provider = new ethers.providers.JsonRpcProvider(nodeEth)
-    walletEth = walletEth.connect(provider)
-    const contractWithSigner = new ethers.Contract(addressSC, abi, walletEth)
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner()
+    const contractWithSigner = new ethers.Contract(addressSC, abi, signer)
 
-    const address = ethAddress || await walletEth.getAddress()
+    const address = ethAddress || await signer.getAddress()
 
     const feeOnchainTx = await contractWithSigner.feeOnchainTx()
     const feeDeposit = await contractWithSigner.depositFee()
@@ -75,10 +73,9 @@ export const depositOnTop = async (nodeEth, addressSC, loadAmount, tokenId, baby
   const web3 = new Web3(Web3.givenProvider || nodeEth)
 
   if (web3.currentProvider.host) {
-    let walletEth = walletRollup.ethWallet.wallet
-    const provider = new ethers.providers.JsonRpcProvider(nodeEth)
-    walletEth = walletEth.connect(provider)
-    const contractWithSigner = new ethers.Contract(addressSC, abi, walletEth)
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner()
+    const contractWithSigner = new ethers.Contract(addressSC, abi, signer)
 
     const feeOnchainTx = await contractWithSigner.feeOnchainTx()
     const overrides = {

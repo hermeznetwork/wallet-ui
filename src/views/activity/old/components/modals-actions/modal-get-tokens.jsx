@@ -28,7 +28,7 @@ function ModalGetTokens ({
   async function handleClickGetTokens () {
     onToggleModalGetTokens()
 
-    const res = await onGetTokens(config.nodeEth, config.tokensAddress, metamaskWallet)
+    const res = await onGetTokens(config.tokensAddress)
 
     if (res.message !== undefined) {
       if (res.message.includes('insufficient funds')) {
