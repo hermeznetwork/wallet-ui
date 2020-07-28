@@ -19,11 +19,11 @@ function ModalApprove ({
   gasMultiplier,
   metamaskWallet
 }) {
+  const [addressTokens, setAddressTokens] = React.useState('')
   const [state, setState] = React.useState({
     modalError: false,
     error: '',
     amount: '',
-    addressTokens: '',
     disableButton: true
   })
   const amountTokensRef = React.createRef()
@@ -37,15 +37,15 @@ function ModalApprove ({
     setState({
       ...state,
       disableButton: true,
-      amount: '',
-      addressTokens: ''
+      amount: ''
     })
+    setAddressTokens('')
   }
 
   async function handleClickApprove () {
     const amountTokens = getWei(state.amount)
     const res = await handleApprove(
-      state.addressTokens,
+      addressTokens,
       abiTokens,
       metamaskWallet,
       amountTokens,
@@ -65,13 +65,13 @@ function ModalApprove ({
   }
 
   function checkForm () {
-    console.log(state.addressTokens)
-    if (parseInt(state.amount, 10) && state.addressTokens !== '') {
+    console.log(state.amount, addressTokens)
+    console.log(parseInt(state.amount, 10), addressTokens !== '')
+    if (parseInt(state.amount, 10) && addressTokens !== '') {
       setState({ ...state, disableButton: false })
     } else {
       setState({ ...state, disableButton: true })
     }
-    console.log(state.addressTokens)
   }
 
   function handleSetAmount () {
@@ -80,14 +80,12 @@ function ModalApprove ({
   }
 
   function handleGetExampleAddress () {
-    setState({ ...state, addressTokens: config.tokensAddress })
+    setAddressTokens(config.tokensAddress)
     checkForm()
   }
 
   function handleChangeAddress (event) {
-    console.log(state.addressTokens)
-    setState({ ...state, addressTokens: event.target.value })
-    console.log(state.addressTokens)
+    setAddressTokens(event.target.value)
     checkForm()
   }
 
@@ -114,7 +112,7 @@ function ModalApprove ({
                 <input
                   type='text'
                   id='baby-ax-r'
-                  value={state.addressTokens}
+                  value={addressTokens}
                   onChange={handleChangeAddress}
                   size='40'
                 />
