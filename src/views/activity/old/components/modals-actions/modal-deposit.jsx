@@ -24,20 +24,15 @@ function ModalDeposit ({
   metamaskWallet
 }) {
   const [amount, setAmount] = React.useState(0)
-  const [tokenId, setTokenId] = React.useState('')
+  const [tokenId, setTokenId] = React.useState()
   const [state, setState] = React.useState({
     modalError: false,
     error: '',
-    amount: '',
-    disableButton: true
+    amount: ''
   })
 
-  function checkForm () {
-    if (parseInt(amount, 10) && (parseInt(tokenId, 10) || tokenId === 0)) {
-      setState({ ...state, disableButton: false })
-    } else {
-      setState({ ...state, disableButton: true })
-    }
+  function isFormValid () {
+    return Boolean(parseInt(amount, 10) && (parseInt(tokenId, 10) || tokenId === 0))
   }
 
   function handleToggleModalError () {
@@ -49,8 +44,7 @@ function ModalDeposit ({
     setState({
       ...state,
       modalError: false,
-      error: '',
-      disableButton: true
+      error: ''
     })
   }
 
@@ -62,7 +56,6 @@ function ModalDeposit ({
       handleToggleModalError()
     } else {
       onToggleModalDeposit()
-      setState({ ...state, disableButton: true })
       const res = await onSendDeposit(
         config.nodeEth,
         addressSC,
@@ -91,14 +84,12 @@ function ModalDeposit ({
 
   function handleSetAmount (event) {
     setAmount(event.target.value)
-    checkForm()
   }
 
   function handleSetToken (event, { value }) {
     const tokenId = Number(value)
 
     setTokenId(tokenId)
-    checkForm()
   }
 
   function dropDownTokens () {
@@ -153,7 +144,7 @@ function ModalDeposit ({
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='blue' onClick={handleClick} disabled={state.disableButton}>
+          <Button color='blue' onClick={handleClick} disabled={!isFormValid()}>
             <Icon name='sign-in' />
             Deposit
           </Button>
