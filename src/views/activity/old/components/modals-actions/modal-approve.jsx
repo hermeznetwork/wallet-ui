@@ -19,11 +19,11 @@ function ModalApprove ({
   gasMultiplier,
   metamaskWallet
 }) {
+  const [amount, setAmount] = React.useState(0)
   const [addressTokens, setAddressTokens] = React.useState('')
   const [state, setState] = React.useState({
     modalError: false,
     error: '',
-    amount: '',
     disableButton: true
   })
   const amountTokensRef = React.createRef()
@@ -36,14 +36,14 @@ function ModalApprove ({
     onToggleModalApprove()
     setState({
       ...state,
-      disableButton: true,
-      amount: ''
+      disableButton: true
     })
     setAddressTokens('')
+    setAmount(0)
   }
 
   async function handleClickApprove () {
-    const amountTokens = getWei(state.amount)
+    const amountTokens = getWei(amount)
     const res = await handleApprove(
       addressTokens,
       abiTokens,
@@ -65,9 +65,9 @@ function ModalApprove ({
   }
 
   function checkForm () {
-    console.log(state.amount, addressTokens)
-    console.log(parseInt(state.amount, 10), addressTokens !== '')
-    if (parseInt(state.amount, 10) && addressTokens !== '') {
+    console.log(amount, addressTokens)
+    console.log(parseInt(amount, 10), addressTokens !== '')
+    if (parseInt(amount, 10) && addressTokens !== '') {
       setState({ ...state, disableButton: false })
     } else {
       setState({ ...state, disableButton: true })
@@ -75,7 +75,7 @@ function ModalApprove ({
   }
 
   function handleSetAmount () {
-    setState({ ...state, amount: amountTokensRef.current.value })
+    setAmount(amountTokensRef.current.value)
     checkForm()
   }
 
