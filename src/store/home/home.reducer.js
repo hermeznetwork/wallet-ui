@@ -3,6 +3,9 @@ import { homeActionTypes } from './home.actions'
 const initialHomeState = {
   coinsBalanceTask: {
     status: 'pending'
+  },
+  recentTransactionsTask: {
+    status: 'pending'
   }
 }
 
@@ -31,6 +34,32 @@ function homeReducer (state = initialHomeState, action) {
         coinsBalanceTask: {
           status: 'failed',
           error: 'An error ocurred loading the coins balance'
+        }
+      }
+    }
+    case homeActionTypes.LOAD_RECENT_TRANSACTIONS: {
+      return {
+        ...state,
+        recentTransactionsTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case homeActionTypes.LOAD_RECENT_TRANSACTIONS_SUCCESS: {
+      return {
+        ...state,
+        recentTransactionsTask: {
+          status: 'successful',
+          data: [action.transactions]
+        }
+      }
+    }
+    case homeActionTypes.LOAD_RECENT_TRANSACTIONS_FAILURE: {
+      return {
+        ...state,
+        recentTransactionsTask: {
+          status: 'failed',
+          error: 'An error ocurred loading the recent transactions'
         }
       }
     }

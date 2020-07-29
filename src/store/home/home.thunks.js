@@ -1,14 +1,24 @@
-import { loadCoinsBalance, loadCoinsBalanceSuccess, loadCoinsBalanceFailure } from './home.actions'
-import { getCoinsBalance } from '../../apis/rollup'
+import * as homeActions from './home.actions'
+import * as rollupApi from '../../apis/rollup'
 
 function fetchCoinsBalance (ethereumAddress) {
   return (dispatch) => {
-    dispatch(loadCoinsBalance())
+    dispatch(homeActions.loadCoinsBalance())
 
-    return getCoinsBalance(ethereumAddress)
-      .then(res => dispatch(loadCoinsBalanceSuccess(res)))
-      .catch(err => dispatch(loadCoinsBalanceFailure(err)))
+    return rollupApi.getCoinsBalance(ethereumAddress)
+      .then(res => dispatch(homeActions.loadCoinsBalanceSuccess(res)))
+      .catch(err => dispatch(homeActions.loadCoinsBalanceFailure(err)))
   }
 }
 
-export { fetchCoinsBalance }
+function fetchRecentTransactions (ethereumAddress) {
+  return (dispatch) => {
+    dispatch(homeActions.loadRecentTransactions())
+
+    return rollupApi.getTransactions(ethereumAddress)
+      .then(res => dispatch(homeActions.loadRecentTransactionsSuccess(res)))
+      .catch(err => dispatch(homeActions.loadRecentTransactionsFailure(err)))
+  }
+}
+
+export { fetchCoinsBalance, fetchRecentTransactions }

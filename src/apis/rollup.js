@@ -8,4 +8,10 @@ async function getCoinsBalance (ethereumAddress) {
   return response.data
 }
 
-export { getCoinsBalance }
+async function getTransactions (ethereumAddress) {
+  const response = await axios.get(`${baseApiUrl}/account/${ethereumAddress}/txs`)
+
+  return response.data
+}
+
+export { getCoinsBalance, getTransactions }
