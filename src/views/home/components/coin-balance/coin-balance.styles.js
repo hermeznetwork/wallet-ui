@@ -23,7 +23,7 @@ const useCoinBalanceStyles = createUseStyles({
     margin: 0,
     marginBottom: 8
   },
-  fiatCurrency: {
+  preferredCurrency: {
     margin: 0
   }
 })
