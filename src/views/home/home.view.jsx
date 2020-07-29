@@ -11,8 +11,7 @@ import Spinner from '../shared/spinner/spinner.view'
 function Home ({
   ethereumAddress,
   coinsBalanceTask,
-  defaultCurrency,
-  fiatCurrency,
+  preferredCurrency,
   onLoadCoinsBalance
 }) {
   const classes = useHomeStyles()
@@ -38,7 +37,7 @@ function Home ({
               return (
                 <TotalBalance
                   amount={undefined}
-                  currency={defaultCurrency}
+                  currency={preferredCurrency}
                 />
               )
             }
@@ -46,7 +45,7 @@ function Home ({
               return (
                 <TotalBalance
                   amount={getTotalBalance(coinsBalanceTask.data)}
-                  currency={defaultCurrency}
+                  currency={preferredCurrency}
                 />
               )
             }
@@ -74,7 +73,7 @@ function Home ({
               return (
                 <CoinBalanceList
                   coinsBalance={coinsBalanceTask.data}
-                  fiatCurrency={fiatCurrency}
+                  preferredCurrency={preferredCurrency}
                 />
               )
             }
@@ -103,14 +102,13 @@ Home.propTypes = {
     ),
     error: PropTypes.string
   }),
-  fiatCurrency: PropTypes.string.isRequired
+  preferredCurrency: PropTypes.string.isRequired
 }
 
 const mapStateToProps = (state) => ({
   ethereumAddress: state.account.ethereumAddress,
   coinsBalanceTask: state.home.coinsBalanceTask,
-  defaultCurrency: state.account.defaultCurrency,
-  fiatCurrency: state.account.preferredFiatCurrency
+  preferredCurrency: state.account.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({

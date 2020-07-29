@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import useCoinBalanceStyles from './coin-balance.styles'
 
-function CoinBalance ({ amount, currency, fiatCurrency }) {
+function CoinBalance ({ amount, currency, preferredCurrency }) {
   const classes = useCoinBalanceStyles()
 
   return (
@@ -11,7 +11,7 @@ function CoinBalance ({ amount, currency, fiatCurrency }) {
       <div className={classes.image} />
       <div className={classes.details}>
         <h3 className={classes.baseCurrency}>{amount} {currency}</h3>
-        <h4 className={classes.fiatCurrency}>-- {fiatCurrency}</h4>
+        <h4 className={classes.preferredCurrency}>-- {preferredCurrency}</h4>
       </div>
     </div>
   )
@@ -20,7 +20,7 @@ function CoinBalance ({ amount, currency, fiatCurrency }) {
 CoinBalance.propTypes = {
   amount: PropTypes.number.isRequired,
   currency: PropTypes.string.isRequired,
-  fiatCurrency: PropTypes.string.isRequired
+  preferredCurrency: PropTypes.string.isRequired
 }
 
 export default CoinBalance

@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import CoinBalance from '../coin-balance/coin-balance.view'
 import useCoinBalanceListStyles from './coin-balance-list.styles'
 
-function CoinBalanceList ({ coinsBalance, fiatCurrency }) {
+function CoinBalanceList ({ coinsBalance, preferredCurrency }) {
   const classes = useCoinBalanceListStyles()
 
   return (
@@ -18,7 +18,7 @@ function CoinBalanceList ({ coinsBalance, fiatCurrency }) {
           <CoinBalance
             amount={coinBalance.amount}
             currency={coinBalance.coin.abbreviation}
-            fiatCurrency={fiatCurrency}
+            preferredCurrency={preferredCurrency}
           />
         </div>
       )}
@@ -36,7 +36,7 @@ CoinBalanceList.propTypes = {
       })
     })
   ),
-  fiatCurrency: PropTypes.string.isRequired
+  preferredCurrency: PropTypes.string.isRequired
 }
 
 export default CoinBalanceList
