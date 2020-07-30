@@ -1,26 +1,26 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import useCoinBalanceStyles from './coin-balance.styles'
+import useAccountStyles from './account.styles'
 
-function CoinBalance ({ amount, currency, preferredCurrency }) {
-  const classes = useCoinBalanceStyles()
+function Account ({ amount, tokenSymbol, preferredCurrency }) {
+  const classes = useAccountStyles()
 
   return (
     <div className={classes.root}>
       <div className={classes.image} />
       <div className={classes.details}>
-        <h3 className={classes.baseCurrency}>{amount} {currency}</h3>
+        <h3 className={classes.amount}>{amount} {tokenSymbol}</h3>
         <h4 className={classes.preferredCurrency}>-- {preferredCurrency}</h4>
       </div>
     </div>
   )
 }
 
-CoinBalance.propTypes = {
+Account.propTypes = {
   amount: PropTypes.number.isRequired,
-  currency: PropTypes.string.isRequired,
+  tokenSymbol: PropTypes.string.isRequired,
   preferredCurrency: PropTypes.string.isRequired
 }
 
-export default CoinBalance
+export default Account

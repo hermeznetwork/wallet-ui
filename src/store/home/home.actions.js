@@ -1,30 +1,30 @@
 export const homeActionTypes = {
-  LOAD_COINS_BALANCE: '[HOME] LOAD COINS BALANCE',
-  LOAD_COINS_BALANCE_SUCCESS: '[HOME] LOAD COINS BALANCE SUCCESS',
-  LOAD_COINS_BALANCE_FAILURE: '[HOME] LOAD COINS BALANCE FAILURE'
+  LOAD_ACCOUNTS: '[HOME] LOAD ACCOUNTS',
+  LOAD_ACCOUNTS_SUCCESS: '[HOME] LOAD ACCOUNTS SUCCESS',
+  LOAD_ACCOUNTS_FAILURE: '[HOME] LOAD ACCOUNTS FAILURE'
 }
 
-function loadCoinsBalance () {
+function loadAccounts () {
   return {
-    type: homeActionTypes.LOAD_COINS_BALANCE
+    type: homeActionTypes.LOAD_ACCOUNTS
   }
 }
 
-function loadCoinsBalanceSuccess (coinsBalance) {
+function loadAccountsSuccess (accounts) {
   return {
-    type: homeActionTypes.LOAD_COINS_BALANCE_SUCCESS,
-    coinsBalance
+    type: homeActionTypes.LOAD_ACCOUNTS_SUCCESS,
+    accounts: accounts
   }
 }
 
-function loadCoinsBalanceFailure () {
+function loadAccountsFailure () {
   return {
-    type: homeActionTypes.LOAD_COINS_BALANCE_FAILURE
+    type: homeActionTypes.LOAD_ACCOUNTS_FAILURE
   }
 }
 
 export {
-  loadCoinsBalance,
-  loadCoinsBalanceSuccess,
-  loadCoinsBalanceFailure
+  loadAccounts,
+  loadAccountsSuccess,
+  loadAccountsFailure
 }

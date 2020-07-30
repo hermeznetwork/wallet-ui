@@ -1,36 +1,36 @@
 import { homeActionTypes } from './home.actions'
 
 const initialHomeState = {
-  coinsBalanceTask: {
+  accountTask: {
     status: 'pending'
   }
 }
 
 function homeReducer (state = initialHomeState, action) {
   switch (action.type) {
-    case homeActionTypes.LOAD_COINS_BALANCE: {
+    case homeActionTypes.LOAD_ACCOUNTS: {
       return {
         ...state,
-        coinsBalanceTask: {
+        accountTask: {
           status: 'loading'
         }
       }
     }
-    case homeActionTypes.LOAD_COINS_BALANCE_SUCCESS: {
+    case homeActionTypes.LOAD_ACCOUNTS_SUCCESS: {
       return {
         ...state,
-        coinsBalanceTask: {
+        accountTask: {
           status: 'successful',
-          data: action.coinsBalance
+          data: action.accounts
         }
       }
     }
-    case homeActionTypes.LOAD_COINS_BALANCE_FAILURE: {
+    case homeActionTypes.LOAD_ACCOUNTS_FAILURE: {
       return {
         ...state,
-        coinsBalanceTask: {
+        accountTask: {
           status: 'failed',
-          error: 'An error ocurred loading the coins balance'
+          error: 'An error ocurred loading the accounts'
         }
       }
     }

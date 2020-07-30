@@ -4,24 +4,24 @@ import { connect } from 'react-redux'
 
 import useHomeStyles from './home.styles'
 import TotalBalance from './components/total-balance/total-balance.view'
-import CoinBalanceList from './components/coin-balance-list/coin-balance-list.view'
-import { fetchCoinsBalance } from '../../store/home/home.thunks'
+import AccountList from './components/account-list/account-list.view'
+import { fetchAccounts } from '../../store/home/home.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 
 function Home ({
   ethereumAddress,
-  coinsBalanceTask,
+  accountTask,
   preferredCurrency,
-  onLoadCoinsBalance
+  onLoadAccounts
 }) {
   const classes = useHomeStyles()
 
   React.useEffect(() => {
-    onLoadCoinsBalance(ethereumAddress)
-  }, [ethereumAddress, onLoadCoinsBalance])
+    onLoadAccounts(ethereumAddress)
+  }, [ethereumAddress, onLoadAccounts])
 
-  function getTotalBalance (coinsBalance) {
-    return coinsBalance.reduce((amount, coinBalance) => amount + coinBalance.amount, 0)
+  function getTotalBalance (accounts) {
+    return accounts.reduce((amount, account) => amount + account.Balance, 0)
   }
 
   return (
@@ -29,7 +29,7 @@ function Home ({
       <section>
         <h4 className={classes.title}>Total balance</h4>
         {(() => {
-          switch (coinsBalanceTask.status) {
+          switch (accountTask.status) {
             case 'loading': {
               return <Spinner />
             }
@@ -44,7 +44,7 @@ function Home ({
             case 'successful': {
               return (
                 <TotalBalance
-                  amount={getTotalBalance(coinsBalanceTask.data)}
+                  amount={getTotalBalance(accountTask.data)}
                   currency={preferredCurrency}
                 />
               )
@@ -62,17 +62,17 @@ function Home ({
       <section>
         <h4 className={classes.title}>Accounts</h4>
         {(() => {
-          switch (coinsBalanceTask.status) {
+          switch (accountTask.status) {
             case 'loading': {
               return <Spinner />
             }
             case 'failed': {
-              return <p>{coinsBalanceTask.error}</p>
+              return <p>{accountTask.error}</p>
             }
             case 'successful': {
               return (
-                <CoinBalanceList
-                  coinsBalance={coinsBalanceTask.data}
+                <AccountList
+                  accounts={accountTask.data}
                   preferredCurrency={preferredCurrency}
                 />
               )
@@ -93,10 +93,10 @@ Home.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        amount: PropTypes.number.isRequired,
-        coin: PropTypes.shape({
-          id: PropTypes.number.isRequired,
-          abbreviation: PropTypes.string.isRequired
+        Balance: PropTypes.number.isRequired,
+        Token: PropTypes.shape({
+          Id: PropTypes.number.isRequired,
+          Symbol: PropTypes.string.isRequired
         })
       })
     ),
@@ -107,12 +107,12 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
   ethereumAddress: state.account.ethereumAddress,
-  coinsBalanceTask: state.home.coinsBalanceTask,
+  accountTask: state.home.accountTask,
   preferredCurrency: state.account.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadCoinsBalance: (ethereumAddress) => dispatch(fetchCoinsBalance(ethereumAddress))
+  onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home)
