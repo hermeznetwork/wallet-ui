@@ -4,6 +4,9 @@
 # Dependencies
 node_modules/
 
+# Environment
+.env
+
 # Artifacts
 build/
 
