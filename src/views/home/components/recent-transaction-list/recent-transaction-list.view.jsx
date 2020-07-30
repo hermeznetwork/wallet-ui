@@ -12,7 +12,7 @@ function RecentTransactionList ({ transactions }) {
     <div>
       {transactions.map((transaction, index) =>
         <div
-          key={index}
+          key={transaction.ID}
           className={clsx({ [classes.recentTransaction]: index > 0 })}
         >
           <RecentTransaction
@@ -30,6 +30,7 @@ function RecentTransactionList ({ transactions }) {
 RecentTransactionList.propTypes = {
   transactions: PropTypes.arrayOf(
     PropTypes.shape({
+      ID: PropTypes.string.isRequired,
       Type: PropTypes.string.isRequired,
       Amount: PropTypes.number.isRequired,
       Token: PropTypes.shape({

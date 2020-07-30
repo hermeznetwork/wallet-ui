@@ -1,13 +1,13 @@
 import * as homeActions from './home.actions'
 import * as rollupApi from '../../apis/rollup'
 
-function fetchCoinsBalance (ethereumAddress) {
+function fetchAccounts (ethereumAddress) {
   return (dispatch) => {
-    dispatch(homeActions.loadCoinsBalance())
+    dispatch(homeActions.loadAccounts())
 
-    return rollupApi.getCoinsBalance(ethereumAddress)
-      .then(res => dispatch(homeActions.loadCoinsBalanceSuccess(res)))
-      .catch(err => dispatch(homeActions.loadCoinsBalanceFailure(err)))
+    return rollupApi.getAccounts(ethereumAddress)
+      .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
+      .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
   }
 }
 
@@ -21,4 +21,4 @@ function fetchRecentTransactions (ethereumAddress) {
   }
 }
 
-export { fetchCoinsBalance, fetchRecentTransactions }
+export { fetchAccounts, fetchRecentTransactions }

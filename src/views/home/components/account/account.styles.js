@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useCoinBalanceStyles = createUseStyles({
+const useAccountStyles = createUseStyles({
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -19,13 +19,13 @@ const useCoinBalanceStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column'
   },
-  baseCurrency: {
+  amount: {
     margin: 0,
     marginBottom: 8
   },
-  fiatCurrency: {
+  preferredCurrency: {
     margin: 0
   }
 })
 
-export default useCoinBalanceStyles
+export default useAccountStyles

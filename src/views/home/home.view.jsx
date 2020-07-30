@@ -3,30 +3,29 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import useHomeStyles from './home.styles'
-import { fetchCoinsBalance, fetchRecentTransactions } from '../../store/home/home.thunks'
+import { fetchAccounts, fetchRecentTransactions } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
-import CoinBalanceList from './components/coin-balance-list/coin-balance-list.view'
+import AccountList from './components/account-list/account-list.view'
 import RecentTransactionList from './components/recent-transaction-list/recent-transaction-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 
 function Home ({
   ethereumAddress,
-  coinsBalanceTask,
+  accountTask,
   recentTransactionsTask,
-  defaultCurrency,
-  fiatCurrency,
-  onLoadCoinsBalance,
+  preferredCurrency,
+  onLoadAccounts,
   onLoadRecentTransactions
 }) {
   const classes = useHomeStyles()
 
   React.useEffect(() => {
-    onLoadCoinsBalance(ethereumAddress)
+    onLoadAccounts(ethereumAddress)
     onLoadRecentTransactions(ethereumAddress)
-  }, [ethereumAddress, onLoadCoinsBalance, onLoadRecentTransactions])
+  }, [ethereumAddress, onLoadAccounts, onLoadRecentTransactions])
 
-  function getTotalBalance (coinsBalance) {
-    return coinsBalance.reduce((amount, coinBalance) => amount + coinBalance.amount, 0)
+  function getTotalBalance (accounts) {
+    return accounts.reduce((amount, account) => amount + account.Balance, 0)
   }
 
   return (
@@ -34,7 +33,7 @@ function Home ({
       <section>
         <h4 className={classes.title}>Total balance</h4>
         {(() => {
-          switch (coinsBalanceTask.status) {
+          switch (accountTask.status) {
             case 'loading': {
               return <Spinner />
             }
@@ -42,15 +41,15 @@ function Home ({
               return (
                 <TotalBalance
                   amount={undefined}
-                  currency={defaultCurrency}
+                  currency={preferredCurrency}
                 />
               )
             }
             case 'successful': {
               return (
                 <TotalBalance
-                  amount={getTotalBalance(coinsBalanceTask.data)}
-                  currency={defaultCurrency}
+                  amount={getTotalBalance(accountTask.data)}
+                  currency={preferredCurrency}
                 />
               )
             }
@@ -67,18 +66,18 @@ function Home ({
       <section>
         <h4 className={classes.title}>Accounts</h4>
         {(() => {
-          switch (coinsBalanceTask.status) {
+          switch (accountTask.status) {
             case 'loading': {
               return <Spinner />
             }
             case 'failed': {
-              return <p>{coinsBalanceTask.error}</p>
+              return <p>{accountTask.error}</p>
             }
             case 'successful': {
               return (
-                <CoinBalanceList
-                  coinsBalance={coinsBalanceTask.data}
-                  fiatCurrency={fiatCurrency}
+                <AccountList
+                  accounts={accountTask.data}
+                  preferredCurrency={preferredCurrency}
                 />
               )
             }
@@ -119,28 +118,28 @@ Home.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        amount: PropTypes.number.isRequired,
-        coin: PropTypes.shape({
-          id: PropTypes.number.isRequired,
-          abbreviation: PropTypes.string.isRequired
+        ID: PropTypes.string.isRequired,
+        Balance: PropTypes.number.isRequired,
+        Token: PropTypes.shape({
+          Id: PropTypes.number.isRequired,
+          Symbol: PropTypes.string.isRequired
         })
       })
     ),
     error: PropTypes.string
   }),
-  fiatCurrency: PropTypes.string.isRequired
+  preferredCurrency: PropTypes.string.isRequired
 }
 
 const mapStateToProps = (state) => ({
   ethereumAddress: state.account.ethereumAddress,
-  coinsBalanceTask: state.home.coinsBalanceTask,
-  recentTransactionsTask: state.home.recentTransactionsTask,
-  defaultCurrency: state.account.defaultCurrency,
-  fiatCurrency: state.account.preferredFiatCurrency
+  accountTask: state.home.accountTask,
+  preferredCurrency: state.account.preferredCurrency,
+  recentTransactionsTask: state.home.recentTransactionsTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadCoinsBalance: (ethereumAddress) => dispatch(fetchCoinsBalance(ethereumAddress)),
+  onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress)),
   onLoadRecentTransactions: (ethereumAddress) => dispatch(fetchRecentTransactions(ethereumAddress))
 })
 
