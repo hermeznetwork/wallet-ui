@@ -16,6 +16,7 @@
     "@testing-library/user-event": "^7.2.1",
     "abi-decoder": "^2.3.0",
     "axios": "^0.19.2",
+    "axios-mock-adapter": "^1.18.2",
     "big-integer": "^1.6.48",
     "bip39": "^3.0.2",
     "blake-hash": "^2.0.0",

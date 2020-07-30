@@ -50,7 +50,7 @@ function homeReducer (state = initialHomeState, action) {
         ...state,
         recentTransactionsTask: {
           status: 'successful',
-          data: [action.transactions]
+          data: action.transactions
         }
       }
     }

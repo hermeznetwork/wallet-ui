@@ -16,8 +16,8 @@ function RecentTransactionList ({ transactions }) {
           className={clsx({ [classes.recentTransaction]: index > 0 })}
         >
           <RecentTransaction
-            amount={transaction.amount}
-            currency={transaction.coin.abbreviation}
+            amount={transaction.Amount}
+            currency={transaction.Token.Symbol}
             date={new Date().toLocaleString()}
           />
         </div>
@@ -29,10 +29,10 @@ function RecentTransactionList ({ transactions }) {
 RecentTransactionList.propTypes = {
   transactions: PropTypes.arrayOf(
     PropTypes.shape({
-      amount: PropTypes.number.isRequired,
-      coin: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        abbreviation: PropTypes.string.isRequired
+      Amount: PropTypes.number.isRequired,
+      Token: PropTypes.shape({
+        ID: PropTypes.number.isRequired,
+        Symbol: PropTypes.string.isRequired
       })
     })
   )
