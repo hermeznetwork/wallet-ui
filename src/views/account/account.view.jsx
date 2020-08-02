@@ -6,6 +6,9 @@ import useHomeStyles from './account.styles'
 import { fetchAccounts } from '../../store/home/home.thunks'
 import QRCode from 'qrcode.react'
 
+// I named it Settings since this is how it's called in design.
+// Also it makes more sense to call it like that than account,
+// which can be confusing (account usualy linked with financial vocabulary)
 function Settings ({
   ethereumAddress,
   preferredCurrency,
