@@ -4,21 +4,15 @@ import { connect } from 'react-redux'
 import QRCode from 'qrcode.react'
 
 import useSettingsStyles from './account.styles'
-import { fetchAccounts } from '../../store/home/home.thunks'
 
 // I named it Settings since this is how it's called in design.
 // Also it makes more sense to call it like that than account,
 // which can be confusing (account usualy linked with financial vocabulary)
 function Settings ({
   ethereumAddress,
-  preferredCurrency,
-  onLoadAccounts
+  preferredCurrency
 }) {
   const classes = useSettingsStyles()
-
-  React.useEffect(() => {
-    onLoadAccounts(ethereumAddress)
-  }, [ethereumAddress, onLoadAccounts])
 
   return (
     <section>
@@ -49,8 +43,4 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.account.preferredCurrency
 })
 
-const mapDispatchToProps = (dispatch) => ({
-  onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress))
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(Settings)
+export default connect(mapStateToProps)(Settings)
