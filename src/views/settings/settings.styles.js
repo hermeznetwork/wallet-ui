@@ -11,12 +11,7 @@ const useSettingsStyles = createUseStyles({
   preferredCurrency: {
     marginBottom: 16
   },
-  qrWrapper: {
-    width: '222px',
-    // 222 a random number added for testing purposes until design is delivered
-    height: '222px'
-  },
-  qrCanvas: {
+  qrCode: {
     width: '100% !important',
     // important added in order to be able to overwrite inner styles and be
     // able to fit its own container completely

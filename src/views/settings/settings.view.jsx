@@ -23,10 +23,11 @@ function Settings ({
       <div className={classes.preferredCurrency}>
         {preferredCurrency}
       </div>
-      <div className={classes.qrWrapper}>
+      <div>
         <QRCode
           value={ethereumAddress}
-          className={classes.qrCanvas}
+          className={classes.qrCode}
+          size={256}// Adding a random number until we have designs.
         />
       </div>
     </section>
