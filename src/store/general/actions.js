@@ -175,7 +175,7 @@ function infoAccountError (error) {
   }
 }
 
-export function handleInfoAccount (node, abiTokens, wallet, operatorUrl, addressRollup,
+export function handleInfoAccount (abiTokens, wallet, operatorUrl, addressRollup,
   abiRollup) {
   return async function (dispatch) {
     dispatch(infoAccount())
@@ -275,7 +275,7 @@ async function getTokensExit (apiOperator, wallet, allTxs, contractRollup, txsEx
     for (const tx in allTxs.data) {
       if (tx) {
         const { coin } = allTxs.data[tx]
-        const { ax, ay } = wallet.babyjubWallet.public
+        const { ax, ay } = wallet.public
         try {
           const exits = await apiOperator.getExits(coin, ax, ay)
           const batches = exits.data

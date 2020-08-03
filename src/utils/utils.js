@@ -203,14 +203,14 @@ export const hashState = (st) => {
 }
 
 export const getNullifier = async (wallet, info, contractRollup, batch) => {
-  const { ax } = wallet.babyjubWallet.public
-  const { ay } = wallet.babyjubWallet.public
+  const { ax } = wallet.public
+  const { ay } = wallet.public
   const exitEntry = state2array(
     info.data.state.amount,
     info.data.state.coin,
     ax.toString(16),
     ay.toString(16),
-    wallet.ethWallet.address,
+    wallet.publicEthKey,
     0
   )
   const valueExitTree = hashState(exitEntry)
@@ -238,6 +238,27 @@ export const getWei = (ether) => {
 
 export const hexToBuffer = (hexString) => {
   return Buffer.from(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
+}
+
+/**
+ * Encode tx Data
+ * @param {String} tx - Transaction object
+ * @returns {Scalar} Encoded TxData
+ */
+export function buildTxData (tx) {
+  const IDEN3_ROLLUP_TX = Scalar.fromString('4839017969649077913')
+  let res = Scalar.e(0)
+
+  res = Scalar.add(res, IDEN3_ROLLUP_TX)
+  res = Scalar.add(res, Scalar.shl(fix2float(tx.amount || 0), 64))
+  res = Scalar.add(res, Scalar.shl(tx.coin || 0, 80))
+  res = Scalar.add(res, Scalar.shl(tx.nonce || 0, 112))
+  res = Scalar.add(res, Scalar.shl(tx.fee || 0, 160))
+  res = Scalar.add(res, Scalar.shl(tx.rqOffset || 0, 164))
+  res = Scalar.add(res, Scalar.shl(tx.onChain ? 1 : 0, 167))
+  res = Scalar.add(res, Scalar.shl(tx.newAccount ? 1 : 0, 168))
+
+  return res
 }
 
 export const feeTable = {

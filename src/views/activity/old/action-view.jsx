@@ -75,9 +75,9 @@ class ActionView extends Component {
   }
 
   componentDidMount = async () => {
-    this.getInfoAccount()
-    this.infoOperator()
     if (Object.keys(this.props.metamaskWallet).length) {
+      this.getInfoAccount()
+      this.infoOperator()
       this.setState({
         babyjub: pointToCompress(this.props.metamaskWallet.publicKey),
         lengthTx: this.props.txTotal.length
@@ -111,7 +111,7 @@ class ActionView extends Component {
   }
 
   getInfoAccount = async () => {
-    await this.props.handleInfoAccount(this.props.config.nodeEth, this.props.abiTokens, this.props.metamaskWallet,
+    await this.props.handleInfoAccount(this.props.abiTokens, this.props.metamaskWallet,
       this.props.config.operator, this.props.config.address, this.props.config.abiRollup)
   }
 

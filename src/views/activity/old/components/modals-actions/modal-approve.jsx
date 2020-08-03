@@ -22,8 +22,7 @@ function ModalApprove ({
   const [addressTokens, setAddressTokens] = React.useState('')
   const [state, setState] = React.useState({
     modalError: false,
-    error: '',
-    disableButton: true
+    error: ''
   })
   const amountTokensRef = React.createRef()
 
@@ -33,10 +32,6 @@ function ModalApprove ({
 
   function handleToggleModalClose () {
     onToggleModalApprove()
-    setState({
-      ...state,
-      disableButton: true
-    })
     setAddressTokens('')
     setAmount(0)
   }
@@ -52,7 +47,6 @@ function ModalApprove ({
     )
 
     handleToggleModalClose()
-    setState({ ...state, disableButton: true })
     if (res.message !== undefined) {
       if (res.message.includes('insufficient funds')) {
         setState({ ...state, error: '1' })

@@ -1,11 +1,16 @@
-const eddsaBabyJub = require('./eddsa-babyjub')
-const utils = require('./utils')
+import { Scalar } from 'ffjavascript'
+import { poseidon, eddsa } from 'circomlib'
+
+import * as eddsaBabyJub from './eddsa-babyjub'
+import { hashBuffer, buildTxData } from './utils'
+
+const hash = poseidon.createHash(6, 8, 57)
 
 /**
  * Manage Babyjubjub keys
  * Perform standard wallet actions
  */
-class BabyJubWallet {
+export class BabyJubWallet {
   /**
      * Initialize Babyjubjub wallet from private key
      * @param {Buffer} privateKey - 32 bytes buffer
@@ -28,10 +33,34 @@ class BabyJubWallet {
      */
   signMessage (messageStr) {
     const messBuff = Buffer.from(messageStr)
-    const messHash = utils.hashBuffer(messBuff)
+    const messHash = hashBuffer(messBuff)
     const privKey = new eddsaBabyJub.PrivateKey(this.privateKey)
     const sig = privKey.signPoseidon(messHash)
     return sig.toString('hex')
+  }
+
+  /**
+   * To sign transaction with babyjubjub keys
+   * @param {Object} tx -transaction
+   */
+  signRollupTx (tx) {
+    const data = buildTxData(tx)
+
+    const h = hash([
+      data,
+      Scalar.e(tx.rqTxData || 0),
+      Scalar.fromString(tx.toAx, 16),
+      Scalar.fromString(tx.toAy, 16),
+      Scalar.fromString(tx.toEthAddr, 16)
+    ])
+
+    const signature = eddsa.signPoseidon(this.privateKey, h)
+    tx.r8x = signature.R8[0]
+    tx.r8y = signature.R8[1]
+    tx.s = signature.S
+    tx.fromAx = this.publicKey[0].toString(16)
+    tx.fromAy = this.publicKey[1].toString(16)
+    tx.fromEthAddr = this.publicEthKey
   }
 }
 
@@ -42,17 +71,12 @@ class BabyJubWallet {
  * @param {String} signatureHex - Ecdsa signature compresed and encoded as hex string
  * @returns {boolean} True if validation is succesfull; otherwise false
  */
-function verifyBabyJub (publicKeyHex, messStr, signatureHex) {
+export function verifyBabyJub (publicKeyHex, messStr, signatureHex) {
   const pkBuff = Buffer.from(publicKeyHex, 'hex')
   const pk = eddsaBabyJub.PublicKey.newFromCompressed(pkBuff)
   const msgBuff = Buffer.from(messStr)
-  const hash = utils.hashBuffer(msgBuff)
+  const hash = hashBuffer(msgBuff)
   const sigBuff = Buffer.from(signatureHex, 'hex')
   const sig = eddsaBabyJub.Signature.newFromCompressed(sigBuff)
   return pk.verifyPoseidon(hash, sig)
-}
-
-module.exports = {
-  BabyJubWallet,
-  verifyBabyJub
 }

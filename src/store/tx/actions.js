@@ -1,7 +1,6 @@
 import * as CONSTANTS from './constants'
 import { hexToPoint, exitAy, exitAx } from '../../utils/utils'
-import { deposit, depositOnTop, withdraw, forceWithdraw } from '../../utils/tx'
-import rollup from '../../utils/bundle-cli'
+import { deposit, depositOnTop, withdraw, forceWithdraw, send, getGasPrice } from '../../utils/tx'
 import { CliExternalOperator } from '../../utils/cli-external-operator'
 
 const ethers = require('ethers')
@@ -31,8 +30,7 @@ function sendDepositError (error) {
   }
 }
 
-export function handleSendDeposit (nodeEth, addressSC, amount, tokenId, wallet, ethAddress,
-  abiRollup, gasMultiplier, operatorUrl) {
+export function handleSendDeposit (addressSC, amount, tokenId, wallet, abiRollup, gasMultiplier, operatorUrl) {
   return async function (dispatch) {
     dispatch(sendDeposit())
     if (amount === '0') {
@@ -47,11 +45,11 @@ export function handleSendDeposit (nodeEth, addressSC, amount, tokenId, wallet, 
         const resOperator = await apiOperator.getState()
         const currentBatch = resOperator.data.rollupSynch.lastBatchSynched
         const babyjubTo = [
-          wallet.babyjubWallet.publicKey[0].toString(),
-          wallet.babyjubWallet.publicKey[1].toString()
+          wallet.publicKey[0].toString(),
+          wallet.publicKey[1].toString()
         ]
-        const res = await depositOnTop(nodeEth, addressSC, amount, tokenId,
-          babyjubTo, wallet, abiRollup, gasLimit, gasMultiplier)
+        const res = await depositOnTop(addressSC, amount, tokenId,
+          babyjubTo, abiRollup, gasLimit, gasMultiplier)
         dispatch(sendDepositSuccess(res, currentBatch))
         return { res, currentBatch }
       } catch (error) {
@@ -61,8 +59,7 @@ export function handleSendDeposit (nodeEth, addressSC, amount, tokenId, wallet, 
             const apiOperator = new CliExternalOperator(operatorUrl)
             const resOperator = await apiOperator.getState()
             const currentBatch = resOperator.data.rollupSynch.lastBatchSynched
-            const res = await deposit(nodeEth, addressSC, amount, tokenId, wallet,
-              ethAddress, abiRollup, gasLimit, gasMultiplier)
+            const res = await deposit(addressSC, amount, tokenId, wallet, abiRollup, gasLimit, gasMultiplier)
             dispatch(sendDepositSuccess(res, currentBatch))
             return { res, currentBatch }
           } else {
@@ -246,7 +243,7 @@ function sendSendError (error) {
   }
 }
 
-export function handleSendSend (urlOperator, babyjubTo, amount, wallet, tokenId, fee) {
+export function handleSend (urlOperator, babyjubTo, amount, wallet, tokenId, fee) {
   return async function (dispatch) {
     dispatch(sendSend())
     try {
@@ -265,11 +262,11 @@ export function handleSendSend (urlOperator, babyjubTo, amount, wallet, tokenId,
         }
         // eslint-disable-next-line new-cap
         const apiOperator = new CliExternalOperator(urlOperator)
-        const babyjub = wallet.babyjubWallet.publicKeyCompressed.toString('hex')
+        const babyjub = wallet.publicKeyCompressed.toString('hex')
         const resAccount = await apiOperator.getStateAccountByAddress(tokenId, babyjub)
-        let { address } = wallet.ethWallet
-        if (!wallet.ethWallet.address.startsWith('0x')) {
-          address = `0x${wallet.ethWallet.address}`
+        let address = wallet.publicEthKey
+        if (!address.startsWith('0x')) {
+          address = `0x${address}`
         }
         if (resAccount && resAccount.data.ethAddress.toUpperCase() === address.toUpperCase()) {
           const resOperator = await apiOperator.getState()
@@ -280,7 +277,8 @@ export function handleSendSend (urlOperator, babyjubTo, amount, wallet, tokenId,
           } else {
             babyjubToAxAy = hexToPoint(babyjubTo)
           }
-          const res = await rollup.offchain.send.send(urlOperator, babyjubToAxAy, amount, wallet, tokenId,
+
+          const res = await send(urlOperator, babyjubToAxAy, amount, wallet, tokenId,
             fee, undefined, nonceObject, address)
           localStorage.setItem('nonceObject', JSON.stringify(res.nonceObject))
           dispatch(sendSendSuccess(res.nonce, currentBatch))
@@ -291,6 +289,7 @@ export function handleSendSend (urlOperator, babyjubTo, amount, wallet, tokenId,
         }
       }
     } catch (error) {
+      console.log('error', error)
       dispatch(sendSendError(`Send Error: ${error.message}`))
       return error
     }
@@ -328,14 +327,14 @@ export function handleApprove (addressTokens, abiTokens, amountToken, addressRol
       } else {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = provider.getSigner()
-        console.log(addressTokens)
         const contractTokens = new ethers.Contract(addressTokens, abiTokens, signer)
-        const gasPrice = await rollup.onchain.utils.getGasPrice(gasMultiplier, provider)
+        const gasPrice = await getGasPrice(gasMultiplier, provider)
         const overrides = {
           gasLimit,
           gasPrice: gasPrice._hex
         }
         const res = await contractTokens.approve(addressRollup, amountToken, overrides)
+        console.log(res, contractTokens, addressRollup,amountToken, overrides )
         dispatch(approveSuccess(res))
         return res
       }

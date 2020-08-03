@@ -27,8 +27,7 @@ function ModalDeposit ({
   const [tokenId, setTokenId] = React.useState()
   const [state, setState] = React.useState({
     modalError: false,
-    error: '',
-    amount: ''
+    error: ''
   })
 
   function isFormValid () {
@@ -57,12 +56,10 @@ function ModalDeposit ({
     } else {
       onToggleModalDeposit()
       const res = await onSendDeposit(
-        config.nodeEth,
         addressSC,
         depositAmount,
         tokenId,
         metamaskWallet,
-        undefined,
         abiRollup,
         gasMultiplier,
         config.operator

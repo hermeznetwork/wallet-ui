@@ -35,6 +35,7 @@ class MenuActions extends Component {
     const {
       tokensR, tokensA, tokensE, balance, isLoadingInfoAccount
     } = this.props
+    console.log(this.props)
     if (prevProps.isLoadingInfoAccount !== isLoadingInfoAccount) {
       if (isLoadingInfoAccount) {
         this.setState({

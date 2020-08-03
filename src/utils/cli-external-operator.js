@@ -1,5 +1,5 @@
 import axios from 'axios'
-import utils from 'ffjavascript'
+import { utils } from 'ffjavascript'
 
 /**
  * Client to interact with operator API
