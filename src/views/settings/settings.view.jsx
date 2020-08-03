@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import QRCode from 'qrcode.react'
 
-import useSettingsStyles from './account.styles'
+import useSettingsStyles from './settings.styles'
 
 // I named it Settings since this is how it's called in design.
 // Also it makes more sense to call it like that than account,
@@ -39,8 +39,8 @@ Settings.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  ethereumAddress: state.account.ethereumAddress,
-  preferredCurrency: state.account.preferredCurrency
+  ethereumAddress: state.settings.ethereumAddress,
+  preferredCurrency: state.settings.preferredCurrency
 })
 
 export default connect(mapStateToProps)(Settings)

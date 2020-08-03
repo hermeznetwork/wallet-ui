@@ -5,11 +5,11 @@ import generalReducer from './general/reducer'
 import transactionsReducer from './tx/reducer'
 import txStateReducer from './tx-state/reducer'
 import homeReducer from './home/home.reducer'
-import accountReducer from './account/account.reducer'
+import settingsReducer from './settings/settings.reducer'
 
 const rootReducer = combineReducers({
   home: homeReducer,
-  account: accountReducer,
+  settings: settingsReducer,
   general: generalReducer,
   transactions: transactionsReducer,
   txState: txStateReducer
