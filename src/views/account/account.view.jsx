@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import QRCode from 'qrcode.react'
 
-import useHomeStyles from './account.styles'
+import useSettingsStyles from './account.styles'
 import { fetchAccounts } from '../../store/home/home.thunks'
 
 // I named it Settings since this is how it's called in design.
@@ -14,7 +14,7 @@ function Settings ({
   preferredCurrency,
   onLoadAccounts
 }) {
-  const classes = useHomeStyles()
+  const classes = useSettingsStyles()
 
   React.useEffect(() => {
     onLoadAccounts(ethereumAddress)

@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useHomeStyles = createUseStyles({
+const useSettingsStyles = createUseStyles({
   title: {
     marginBottom: 16
   },
@@ -24,4 +24,4 @@ const useHomeStyles = createUseStyles({
   }
 })
 
-export default useHomeStyles
+export default useSettingsStyles
