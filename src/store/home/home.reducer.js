@@ -1,7 +1,7 @@
 import { homeActionTypes } from './home.actions'
 
 const initialHomeState = {
-  accountTask: {
+  accountsTask: {
     status: 'pending'
   },
   recentTransactionsTask: {
@@ -14,7 +14,7 @@ function homeReducer (state = initialHomeState, action) {
     case homeActionTypes.LOAD_ACCOUNTS: {
       return {
         ...state,
-        accountTask: {
+        accountsTask: {
           status: 'loading'
         }
       }
@@ -22,7 +22,7 @@ function homeReducer (state = initialHomeState, action) {
     case homeActionTypes.LOAD_ACCOUNTS_SUCCESS: {
       return {
         ...state,
-        accountTask: {
+        accountsTask: {
           status: 'successful',
           data: action.accounts
         }
@@ -31,7 +31,7 @@ function homeReducer (state = initialHomeState, action) {
     case homeActionTypes.LOAD_ACCOUNTS_FAILURE: {
       return {
         ...state,
-        accountTask: {
+        accountsTask: {
           status: 'failed',
           error: 'An error ocurred loading the accounts'
         }

@@ -12,7 +12,7 @@ import Spinner from '../shared/spinner/spinner.view'
 function Home ({
   ethereumAddress,
   tokensTask,
-  accountTask,
+  accountsTask,
   recentTransactionsTask,
   preferredCurrency,
   onLoadAccounts,
@@ -45,7 +45,7 @@ function Home ({
                 <section>
                   <h4 className={classes.title}>Total balance</h4>
                   {(() => {
-                    switch (accountTask.status) {
+                    switch (accountsTask.status) {
                       case 'loading': {
                         return <Spinner />
                       }
@@ -60,7 +60,7 @@ function Home ({
                       case 'successful': {
                         return (
                           <TotalBalance
-                            amount={getTotalBalance(accountTask.data)}
+                            amount={getTotalBalance(accountsTask.data)}
                             currency={preferredCurrency}
                           />
                         )
@@ -78,17 +78,17 @@ function Home ({
                 <section>
                   <h4 className={classes.title}>Accounts</h4>
                   {(() => {
-                    switch (accountTask.status) {
+                    switch (accountsTask.status) {
                       case 'loading': {
                         return <Spinner />
                       }
                       case 'failed': {
-                        return <p>{accountTask.error}</p>
+                        return <p>{accountsTask.error}</p>
                       }
                       case 'successful': {
                         return (
                           <AccountList
-                            accounts={accountTask.data}
+                            accounts={accountsTask.data}
                             tokens={tokensTask.data}
                             preferredCurrency={preferredCurrency}
                           />
@@ -138,7 +138,7 @@ function Home ({
 
 Home.propTypes = {
   ethereumAddress: PropTypes.string.isRequired,
-  accountTask: PropTypes.shape({
+  accountsTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
@@ -177,7 +177,7 @@ Home.propTypes = {
 const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
   ethereumAddress: state.settings.ethereumAddress,
-  accountTask: state.home.accountTask,
+  accountsTask: state.home.accountsTask,
   preferredCurrency: state.settings.preferredCurrency,
   recentTransactionsTask: state.home.recentTransactionsTask
 })
