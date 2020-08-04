@@ -1,5 +1,6 @@
 import Home from '../views/home/home.view'
 import Transfer from '../views/transfer/transfer.view'
+import Settings from '../views/settings/settings.view'
 
 const routes = [
   {
@@ -11,6 +12,11 @@ const routes = [
     path: '/transfer',
     label: 'Transfer',
     component: Transfer
+  },
+  {
+    path: '/settings',
+    label: 'Settings',
+    component: Settings
   }
 ]
 

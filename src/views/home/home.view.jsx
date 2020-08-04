@@ -176,9 +176,9 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
-  ethereumAddress: state.account.ethereumAddress,
+  ethereumAddress: state.settings.ethereumAddress,
   accountTask: state.home.accountTask,
-  preferredCurrency: state.account.preferredCurrency,
+  preferredCurrency: state.settings.preferredCurrency,
   recentTransactionsTask: state.home.recentTransactionsTask
 })
 
