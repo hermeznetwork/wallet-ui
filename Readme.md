@@ -23,7 +23,7 @@ These are the steps:
 
 ### Set up Metamask
 
-1. Install Metamask extension on your web explorer
+1. Install Metamask extension on your web browser
 2. Select the Localhost network
 3. Select `import using account seed phrase`
 4. Add this seed phrase `hard crop gallery regular neglect weekend fatal stamp eight flock inch doll` and a new password and click Restore.
