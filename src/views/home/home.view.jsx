@@ -11,6 +11,7 @@ import Spinner from '../shared/spinner/spinner.view'
 
 function Home ({
   ethereumAddress,
+  tokensTask,
   accountTask,
   recentTransactionsTask,
   preferredCurrency,
@@ -30,108 +31,151 @@ function Home ({
 
   return (
     <div>
-      <section>
-        <h4 className={classes.title}>Total balance</h4>
-        {(() => {
-          switch (accountTask.status) {
-            case 'loading': {
-              return <Spinner />
-            }
-            case 'failed': {
-              return (
-                <TotalBalance
-                  amount={undefined}
-                  currency={preferredCurrency}
-                />
-              )
-            }
-            case 'successful': {
-              return (
-                <TotalBalance
-                  amount={getTotalBalance(accountTask.data)}
-                  currency={preferredCurrency}
-                />
-              )
-            }
-            default: {
-              return <></>
-            }
+      {(() => {
+        switch (tokensTask.status) {
+          case 'loading': {
+            return <Spinner />
           }
-        })()}
-        <div className={classes.actionButtonsGroup}>
-          <button className={classes.actionButton}>Deposit</button>
-          <button className={classes.actionButton}>Withdraw</button>
-        </div>
-      </section>
-      <section>
-        <h4 className={classes.title}>Accounts</h4>
-        {(() => {
-          switch (accountTask.status) {
-            case 'loading': {
-              return <Spinner />
-            }
-            case 'failed': {
-              return <p>{accountTask.error}</p>
-            }
-            case 'successful': {
-              return (
-                <AccountList
-                  accounts={accountTask.data}
-                  preferredCurrency={preferredCurrency}
-                />
-              )
-            }
-            default: {
-              return <></>
-            }
+          case 'failed': {
+            return <p>{tokensTask.error}</p>
           }
-        })()}
-      </section>
-      <section>
-        <h4 className={classes.title}>Recent activity</h4>
-        {(() => {
-          switch (recentTransactionsTask.status) {
-            case 'loading': {
-              return <Spinner />
-            }
-            case 'failed': {
-              return <p>{recentTransactionsTask.error}</p>
-            }
-            case 'successful': {
-              return (
-                <RecentTransactionList transactions={recentTransactionsTask.data} />
-              )
-            }
-            default: {
-              return <></>
-            }
+          case 'successful': {
+            return (
+              <>
+                <section>
+                  <h4 className={classes.title}>Total balance</h4>
+                  {(() => {
+                    switch (accountTask.status) {
+                      case 'loading': {
+                        return <Spinner />
+                      }
+                      case 'failed': {
+                        return (
+                          <TotalBalance
+                            amount={undefined}
+                            currency={preferredCurrency}
+                          />
+                        )
+                      }
+                      case 'successful': {
+                        return (
+                          <TotalBalance
+                            amount={getTotalBalance(accountTask.data)}
+                            currency={preferredCurrency}
+                          />
+                        )
+                      }
+                      default: {
+                        return <></>
+                      }
+                    }
+                  })()}
+                  <div className={classes.actionButtonsGroup}>
+                    <button className={classes.actionButton}>Deposit</button>
+                    <button className={classes.actionButton}>Withdraw</button>
+                  </div>
+                </section>
+                <section>
+                  <h4 className={classes.title}>Accounts</h4>
+                  {(() => {
+                    switch (accountTask.status) {
+                      case 'loading': {
+                        return <Spinner />
+                      }
+                      case 'failed': {
+                        return <p>{accountTask.error}</p>
+                      }
+                      case 'successful': {
+                        return (
+                          <AccountList
+                            accounts={accountTask.data}
+                            tokens={tokensTask.data}
+                            preferredCurrency={preferredCurrency}
+                          />
+                        )
+                      }
+                      default: {
+                        return <></>
+                      }
+                    }
+                  })()}
+                </section>
+                <section>
+                  <h4 className={classes.title}>Recent activity</h4>
+                  {(() => {
+                    switch (recentTransactionsTask.status) {
+                      case 'loading': {
+                        return <Spinner />
+                      }
+                      case 'failed': {
+                        return <p>{recentTransactionsTask.error}</p>
+                      }
+                      case 'successful': {
+                        return (
+                          <RecentTransactionList
+                            transactions={recentTransactionsTask.data}
+                            tokens={tokensTask.data}
+                          />
+                        )
+                      }
+                      default: {
+                        return <></>
+                      }
+                    }
+                  })()}
+                </section>
+              </>
+            )
           }
-        })()}
-      </section>
+          default: {
+            return <></>
+          }
+        }
+      })()}
     </div>
   )
 }
 
 Home.propTypes = {
   ethereumAddress: PropTypes.string.isRequired,
-  accounts: PropTypes.shape({
+  accountTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        ID: PropTypes.string.isRequired,
         Balance: PropTypes.number.isRequired,
-        Token: PropTypes.shape({
-          Id: PropTypes.number.isRequired,
-          Symbol: PropTypes.string.isRequired
-        })
+        TokenID: PropTypes.number.isRequired
       })
     ),
     error: PropTypes.string
   }),
-  preferredCurrency: PropTypes.string.isRequired
+  preferredCurrency: PropTypes.string.isRequired,
+  recentTransactionsTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        ID: PropTypes.string.isRequired,
+        Type: PropTypes.string.isRequired,
+        Amount: PropTypes.number.isRequired,
+        TokenID: PropTypes.number.isRequired
+      })
+    ),
+    error: PropTypes.string
+  }),
+  tokensTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        TokenID: PropTypes.number.isRequired,
+        Name: PropTypes.string.isRequired,
+        Symbol: PropTypes.string.isRequired
+      })
+    ),
+    error: PropTypes.string
+  })
 }
 
 const mapStateToProps = (state) => ({
+  tokensTask: state.global.tokensTask,
   ethereumAddress: state.account.ethereumAddress,
   accountTask: state.home.accountTask,
   preferredCurrency: state.account.preferredCurrency,

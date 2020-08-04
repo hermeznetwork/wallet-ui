@@ -11,16 +11,13 @@ mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}`)
     [
       {
         EthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
-        Token: {
-          ID: 3,
-          Symbol: 'SCT'
-        },
+        TokenID: 0,
         Balance: 2.38
       }
     ]
   )
 
-mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/txs`)
+mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/txs/history`)
   .reply(
     200,
     [
@@ -34,11 +31,19 @@ mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/txs`)
         Nonce: 0,
         FeeSelector: 15,
         Type: 'Transfer',
-        Token: {
-          ID: 3,
-          Addr: 'Some Cool Token',
-          Symbol: 'SCT'
-        }
+        TokenID: 0
+      }
+    ]
+  )
+
+mock.onGet(`${baseApiUrl}/tokens`)
+  .reply(
+    200,
+    [
+      {
+        TokenID: 0,
+        Name: 'Some Cool Token',
+        Symbol: 'SCT'
       }
     ]
   )
@@ -50,9 +55,15 @@ async function getAccounts (ethereumAddress) {
 }
 
 async function getTransactions (ethereumAddress) {
-  const response = await axios.get(`${baseApiUrl}/account/${ethereumAddress}/txs`)
+  const response = await axios.get(`${baseApiUrl}/account/${ethereumAddress}/txs/history`)
 
   return response.data
 }
 
-export { getAccounts, getTransactions }
+async function getTokens () {
+  const response = await axios.get(`${baseApiUrl}/tokens`)
+
+  return response.data
+}
+
+export { getAccounts, getTransactions, getTokens }

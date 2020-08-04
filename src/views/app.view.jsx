@@ -1,12 +1,19 @@
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 
 import InitView from './auth/old/init-view'
 import ActionView from './activity/old/action-view'
 import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
+import { fetchTokens } from '../store/global/global.thunks'
 
-function App () {
+function App ({ onLoadTokens }) {
+  React.useEffect(() => {
+    onLoadTokens()
+  }, [onLoadTokens])
+
   return (
     <BrowserRouter>
       <Switch>
@@ -43,4 +50,12 @@ function App () {
   )
 }
 
-export default (App)
+App.propTypes = {
+  onLoadTokens: PropTypes.func.isRequired
+}
+
+const mapDispatchToProps = (dispatch) => ({
+  onLoadTokens: () => dispatch(fetchTokens())
+})
+
+export default connect(undefined, mapDispatchToProps)(App)

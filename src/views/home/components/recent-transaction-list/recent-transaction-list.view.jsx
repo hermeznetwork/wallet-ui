@@ -5,8 +5,12 @@ import clsx from 'clsx'
 import RecentTransaction from '../recent-transaction/recent-transaction.view'
 import useRecentTransactionListStyles from './recent-transaction-list.styles'
 
-function RecentTransactionList ({ transactions }) {
+function RecentTransactionList ({ transactions, tokens }) {
   const classes = useRecentTransactionListStyles()
+
+  function getToken (tokenId) {
+    return tokens.find((token) => token.TokenID === tokenId)
+  }
 
   return (
     <div>
@@ -18,7 +22,7 @@ function RecentTransactionList ({ transactions }) {
           <RecentTransaction
             type={transaction.Type}
             amount={transaction.Amount}
-            currency={transaction.Token.Symbol}
+            currency={getToken(transaction.TokenID).Symbol}
             date={new Date().toLocaleString()}
           />
         </div>
@@ -33,10 +37,14 @@ RecentTransactionList.propTypes = {
       ID: PropTypes.string.isRequired,
       Type: PropTypes.string.isRequired,
       Amount: PropTypes.number.isRequired,
-      Token: PropTypes.shape({
-        ID: PropTypes.number.isRequired,
-        Symbol: PropTypes.string.isRequired
-      })
+      TokenID: PropTypes.number.isRequired
+    })
+  ),
+  tokens: PropTypes.arrayOf(
+    PropTypes.shape({
+      TokenID: PropTypes.number.isRequired,
+      Name: PropTypes.string.isRequired,
+      Symbol: PropTypes.string.isRequired
     })
   )
 }

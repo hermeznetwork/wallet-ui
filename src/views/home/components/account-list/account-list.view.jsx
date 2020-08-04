@@ -5,19 +5,23 @@ import clsx from 'clsx'
 import Account from '../account/account.view'
 import useAccountListStyles from './account-list.styles'
 
-function AccountList ({ accounts, preferredCurrency }) {
+function AccountList ({ accounts, tokens, preferredCurrency }) {
   const classes = useAccountListStyles()
+
+  function getToken (tokenId) {
+    return tokens.find((token) => token.TokenID === tokenId)
+  }
 
   return (
     <div>
       {accounts.map((account, index) =>
         <div
-          key={account.Token.ID}
+          key={account.TokenID}
           className={clsx({ [classes.account]: index > 0 })}
         >
           <Account
             amount={account.Balance}
-            tokenSymbol={account.Token.Symbol}
+            tokenSymbol={getToken(account.TokenID).Symbol}
             preferredCurrency={preferredCurrency}
           />
         </div>
@@ -31,10 +35,14 @@ AccountList.propTypes = {
     PropTypes.shape({
       EthAddr: PropTypes.string.isRequired,
       Balance: PropTypes.number.isRequired,
-      Token: PropTypes.shape({
-        ID: PropTypes.number.isRequired,
-        Symbol: PropTypes.string.isRequired
-      })
+      TokenID: PropTypes.number.isRequired
+    })
+  ),
+  tokens: PropTypes.arrayOf(
+    PropTypes.shape({
+      TokenID: PropTypes.number.isRequired,
+      Name: PropTypes.string.isRequired,
+      Symbol: PropTypes.string.isRequired
     })
   ),
   preferredCurrency: PropTypes.string.isRequired
