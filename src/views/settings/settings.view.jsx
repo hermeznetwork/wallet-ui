@@ -10,7 +10,8 @@ import useSettingsStyles from './settings.styles'
 // which can be confusing (account usualy linked with financial vocabulary)
 function Settings ({
   ethereumAddress,
-  preferredCurrency
+  preferredCurrency,
+  tokenList
 }) {
   const classes = useSettingsStyles()
 
@@ -19,6 +20,9 @@ function Settings ({
       <h4 className={classes.title}>Settings</h4>
       <div className={classes.ethereumAddress}>
         {ethereumAddress}
+      </div>
+      <div>
+        {tokenList}
       </div>
       <div className={classes.preferredCurrency}>
         {preferredCurrency}
@@ -36,12 +40,14 @@ function Settings ({
 
 Settings.propTypes = {
   ethereumAddress: PropTypes.string.isRequired,
-  preferredCurrency: PropTypes.string.isRequired
+  preferredCurrency: PropTypes.string.isRequired,
+  tokenList: PropTypes.array.isRequired
 }
 
 const mapStateToProps = (state) => ({
   ethereumAddress: state.settings.ethereumAddress,
-  preferredCurrency: state.settings.preferredCurrency
+  preferredCurrency: state.settings.preferredCurrency,
+  tokenList: state.settings.tokenList
 })
 
 export default connect(mapStateToProps)(Settings)
