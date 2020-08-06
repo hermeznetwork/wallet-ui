@@ -9,7 +9,7 @@ import { handleInfoAccount, handleLoadConfig, getCurrentBatch } from '../../../s
 import { pointToCompress } from '../../../utils/utils'
 import MenuActions from './components/actions/menu-actions'
 import MenuBack from './components/information/menu'
-import InfoWallet from '../../account/old/components/info-wallet'
+import InfoWallet from '../../settings/old/components/info-wallet'
 import InfoTx from './components/information/info-tx'
 import MessageTx from './components/information/message-tx'
 import ModalError from './components/modals-info/modal-error'
