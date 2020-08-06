@@ -275,7 +275,7 @@ async function getTokensExit (apiOperator, wallet, allTxs, contractRollup, txsEx
     for (const tx in allTxs.data) {
       if (tx) {
         const { coin } = allTxs.data[tx]
-        const { ax, ay } = wallet.public
+        const [ax, ay] = wallet.publicKey.map((key) => key.toString(16))
         try {
           const exits = await apiOperator.getExits(coin, ax, ay)
           const batches = exits.data

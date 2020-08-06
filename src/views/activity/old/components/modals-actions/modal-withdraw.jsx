@@ -21,8 +21,8 @@ function ModalWithdraw ({
   metamaskWallet,
   txsExits
 }) {
+  const [exitRoots, setExitRoots] = React.useState([])
   const [state, setState] = React.useState({
-    exitRoots: [],
     numExitRoot: -1,
     tokenId: -1,
     initModal: true,
@@ -57,8 +57,7 @@ function ModalWithdraw ({
     onToggleModalWithdraw()
 
     const res = await handleSendWithdraw(
-      config.nodeEth,
-      config.address.addressSC,
+      config.address,
       tokenId,
       metamaskWallet,
       abiRollup,
@@ -81,30 +80,22 @@ function ModalWithdraw ({
   }
 
   async function handleGetExitRoot () {
-    const txsExitsById = txsExits.filter((tx) => tx.coin === state.tokenId)
-    const exitRoots = txsExitsById.map(async (key, index) => ({
-      key: index,
-      value: key.batch,
-      text: `Batch: ${key.batch} Amount: ${key.amount}`
-    }))
+    const exitRoots = txsExits
+      .filter((tx) => tx.coin === state.tokenId)
+      .map((key) => ({
+        key: key.batch,
+        value: key.batch,
+        text: `Batch: ${key.batch} Amount: ${key.amount}`
+      }))
 
-    setState({ ...state, exitRoots })
+    setExitRoots(exitRoots)
     handleToggleModalChange()
   }
 
   function idsExit () {
-    const infoTxsExits = txsExits
-      .filter(i => {
-        const tx = txsExits[i]
-
-        return {}.hasOwnProperty.call(txsExits, i) &&
-          !infoTxsExits.find((info) => info.value === tx.coin)
-      })
-      .map((i) => {
-        const tx = txsExits[i]
-
-        return { key: i, value: tx.coin, text: tx.coin }
-      })
+    const infoTxsExits = txsExits.map((tx, i) => {
+      return { key: i, value: tx.coin, text: tx.coin }
+    })
 
     if (infoTxsExits.length === 0) {
       return <Dropdown placeholder='ID' />
@@ -125,14 +116,14 @@ function ModalWithdraw ({
   }
 
   function exitRoot () {
-    if (state.exitRoots.length === 0) {
+    if (exitRoots.length === 0) {
       return <Dropdown placeholder='Batch and Amount' />
     } else {
       return (
         <Dropdown
           scrolling
           placeholder='Batch and Amount'
-          options={state.exitRoots}
+          options={exitRoots}
           onChange={handleChange}
         />
       )

@@ -203,8 +203,7 @@ export const hashState = (st) => {
 }
 
 export const getNullifier = async (wallet, info, contractRollup, batch) => {
-  const { ax } = wallet.public
-  const { ay } = wallet.public
+  const [ax, ay] = wallet.publicKey
   const exitEntry = state2array(
     info.data.state.amount,
     info.data.state.coin,

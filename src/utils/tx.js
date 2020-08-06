@@ -63,7 +63,7 @@ export const depositOnTop = async (addressSC, loadAmount, tokenId, babyjubTo, ab
   }
 }
 
-export const withdraw = async (nodeEth, addressSC, tokenId, walletRollup, abi, urlOperator,
+export const withdraw = async (addressSC, tokenId, walletRollup, abi, urlOperator,
   numExitRoot, gasLimit = 5000000, gasMultiplier = 1) => {
   const apiOperator = new CliExternalOperator(urlOperator)
   const pubKeyBabyjub = [walletRollup.publicKey[0].toString(16), walletRollup.publicKey[1].toString(16)]
@@ -91,9 +91,12 @@ export const withdraw = async (nodeEth, addressSC, tokenId, walletRollup, abi, u
   }
 }
 
-export const forceWithdraw = async (nodeEth, addressSC, tokenId, amount, walletRollup, abi,
+export const forceWithdraw = async (addressSC, tokenId, amount, walletRollup, abi,
   gasLimit = 5000000, gasMultiplier = 1) => {
-  const pubKeyBabyjub = [walletRollup.publicKey[0].toString(16), walletRollup.publicKey[1].toString(16)]
+  const pubKeyBabyjub = [
+    walletRollup.publicKey[0],
+    walletRollup.publicKey[1]
+  ]
 
   const provider = new ethers.providers.Web3Provider(window.ethereum)
   const signer = provider.getSigner()
@@ -208,7 +211,6 @@ export async function send (urlOperator, babyjubTo, amount, walletRollup, tokenI
   }
 
   walletRollup.signRollupTx(tx) // sign included in transaction
-  console.log('sending', tx)
   const resTx = await apiOperator.sendTx(tx)
 
   let nonceObjectToWrite

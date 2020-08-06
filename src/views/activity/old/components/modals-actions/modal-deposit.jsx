@@ -40,6 +40,7 @@ function ModalDeposit ({
 
   function handleToggleModalClose () {
     onToggleModalDeposit()
+    setAmount(0)
     setState({
       ...state,
       modalError: false,
@@ -64,6 +65,7 @@ function ModalDeposit ({
         gasMultiplier,
         config.operator
       )
+      console.log(res)
       const walletEthAddress = metamaskWallet.publicEthKey
       const filters = {}
       if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress

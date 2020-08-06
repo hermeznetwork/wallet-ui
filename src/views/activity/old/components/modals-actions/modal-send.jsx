@@ -123,7 +123,6 @@ function ModalSend ({
   }
 
   function dropDownTokens () {
-    console.log(tokensRArray)
     const tokensOptions = tokensRArray.map((token) => ({
       key: token.address,
       value: token.tokenId,

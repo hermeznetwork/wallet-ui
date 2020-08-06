@@ -17,11 +17,11 @@ function InfoTx ({
   currentBatch,
   metamaskWallet
 }) {
+  const [keyItem, setKeyIem] = React.useState({})
   const [state, setState] = React.useState({
     modalInfoOnchain: false,
     modalInfoOffchain: false,
-    modalInfoTx: false,
-    keyItem: {}
+    modalInfoTx: false
   })
   const txTotalByAddress = txTotal.filter(
     (tx) => tx.from === metamaskWallet.publicEthKey ||
@@ -51,13 +51,13 @@ function InfoTx ({
 
   function getInfoModalOnchain (event, keyItem) {
     event.preventDefault()
-    setState({ ...state, keyItem })
+    setKeyIem(keyItem)
     toggleModalInfoOnchain()
   }
 
   function getInfoModalOffchain (event, keyItem) {
     event.preventDefault()
-    setState({ ...state, keyItem })
+    setKeyIem(keyItem)
     toggleModalInfoOffchain()
   }
 
@@ -143,13 +143,13 @@ function InfoTx ({
       />
       <ModalInfoOffchain
         modalInfoOffchain={state.modalInfoOffchain}
-        keyItem={state.keyItem}
+        keyItem={keyItem}
         toggleModalInfoOffchain={toggleModalInfoOffchain}
         currentBatch={currentBatch}
       />
       <ModalInfoOnchain
         modalInfoOnchain={state.modalInfoOnchain}
-        keyItem={state.keyItem}
+        keyItem={keyItem}
         toggleModalInfoOnchain={toggleModalInfoOnchain}
         currentBatch={currentBatch}
       />

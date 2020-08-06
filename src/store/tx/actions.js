@@ -5,7 +5,6 @@ import { CliExternalOperator } from '../../utils/cli-external-operator'
 
 const ethers = require('ethers')
 const abiDecoder = require('abi-decoder')
-const Web3 = require('web3')
 
 const gasLimit = 5000000
 
@@ -96,7 +95,7 @@ function sendWithdrawError (error) {
   }
 }
 
-export function handleSendWithdraw (nodeEth, addressSC, tokenId, wallet, abiRollup, op, numExitRoot, gasMultiplier) {
+export function handleSendWithdraw (addressSC, tokenId, wallet, abiRollup, op, numExitRoot, gasMultiplier) {
   return async function (dispatch) {
     dispatch(sendWithdraw())
     try {
@@ -104,16 +103,15 @@ export function handleSendWithdraw (nodeEth, addressSC, tokenId, wallet, abiRoll
         dispatch(sendWithdrawError('The num exit root must be entered'))
         return 'No numExitRoot'
       } else {
-        // eslint-disable-next-line new-cap
         const apiOperator = new CliExternalOperator(op)
         const resOperator = await apiOperator.getState()
         const currentBatch = resOperator.data.rollupSynch.lastBatchSynched
-        const res = await withdraw(nodeEth, addressSC, tokenId, wallet, abiRollup,
+        const res = await withdraw(addressSC, tokenId, wallet, abiRollup,
           op, numExitRoot, gasLimit, gasMultiplier)
         abiDecoder.addABI(abiRollup)
-        const web3 = new Web3(nodeEth)
-        const txData = await web3.eth.getTransaction(res.hash)
-        const decodedData = abiDecoder.decodeMethod(txData.input)
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const txData = await provider.getTransaction(res.hash)
+        const decodedData = abiDecoder.decodeMethod(txData.data)
         const amount = decodedData.params.find((param) => {
           return param.name === 'amount'
         }).value
@@ -148,23 +146,22 @@ function sendForceExitError (error) {
   }
 }
 
-export function handleSendForceExit (nodeEth, addressSC, tokenId, amount, wallet, abiRollup, urlOperator,
-  gasMultiplier) {
+export function handleSendForceExit (addressSC, tokenId, amount, wallet, abiRollup, urlOperator, gasMultiplier) {
   return async function (dispatch) {
     dispatch(sendForceExit())
     try {
       // eslint-disable-next-line new-cap
       const apiOperator = new CliExternalOperator(urlOperator)
-      const publicCompressed = wallet.babyjubWallet.publicKeyCompressed.toString('hex')
+      const publicCompressed = wallet.publicKeyCompressed.toString('hex')
       const resAccount = await apiOperator.getStateAccountByAddress(tokenId, publicCompressed)
-      let { address } = wallet.ethWallet
-      if (!wallet.ethWallet.address.startsWith('0x')) {
-        address = `0x${wallet.ethWallet.address}`
+      let address = wallet.publicEthKey
+      if (!address.startsWith('0x')) {
+        address = `0x${address}`
       }
       if (resAccount && resAccount.data.ethAddress.toUpperCase() === address.toUpperCase()) {
         const resOperator = await apiOperator.getState()
         const currentBatch = resOperator.data.rollupSynch.lastBatchSynched
-        const res = await forceWithdraw(nodeEth, addressSC, tokenId,
+        const res = await forceWithdraw(addressSC, tokenId,
           amount, wallet, abiRollup, gasLimit, gasMultiplier)
         dispatch(sendForceExitSuccess(res, currentBatch))
         return { res, currentBatch }
@@ -334,7 +331,7 @@ export function handleApprove (addressTokens, abiTokens, amountToken, addressRol
           gasPrice: gasPrice._hex
         }
         const res = await contractTokens.approve(addressRollup, amountToken, overrides)
-        console.log(res, contractTokens, addressRollup,amountToken, overrides )
+        console.log(res, contractTokens, addressRollup, amountToken, overrides)
         dispatch(approveSuccess(res))
         return res
       }

@@ -22,12 +22,12 @@ function ModalForceExit ({
   tokensList,
   gasMultiplier
 }) {
+  const [amount, setAmount] = React.useState(0)
+  const [tokenId, setTokenId] = React.useState()
   const [state, setState] = React.useState({
-    amount: '',
     modalError: false,
     sendDisabled: true,
-    error: '',
-    tokenId: ''
+    error: ''
   })
 
   function handleCloseModal () {
@@ -46,41 +46,35 @@ function ModalForceExit ({
     setState({ ...state, modalError: !state.modalError })
   }
 
-  function checkForm () {
-    if (parseInt(state.amount, 10) && (parseInt(state.tokenId, 10) || state.tokenId === 0)) {
-      setState({ ...state, sendDisabled: false })
-    } else {
-      setState({ ...state, sendDisabled: true })
-    }
+  function isFormValid () {
+    return Boolean(parseInt(amount, 10) && (parseInt(tokenId, 10) || tokenId === 0))
   }
 
   function handleSetAmount (event) {
-    setState({ ...state, amount: event.target.value })
-    checkForm()
+    setAmount(event.target.value)
   }
 
-  function handleSetToken (event, { value }) {
+  function handleSetToken (_, { value }) {
     const tokenId = Number(value)
 
-    setState({ ...state, tokenId })
-    checkForm()
+    setTokenId(tokenId)
   }
 
   async function handleClick () {
-    const amountWei = getWei(state.amount)
+    const amountWei = getWei(amount)
 
     handleCloseModal()
 
     const res = await onSendForceExit(
-      config.nodeEth,
       config.address,
-      state.tokenId,
+      tokenId,
       amountWei,
       metamaskWallet,
       config.abiRollup,
       config.operator,
       gasMultiplier
     )
+    console.log('modal1', res)
 
     if (res.message !== undefined) {
       if (res.message.includes('insufficient funds')) {
@@ -89,13 +83,14 @@ function ModalForceExit ({
       }
     }
     if (res.res) {
-      onStateForceExit(res, config.operator, state.tokenId, amountWei)
+      onStateForceExit(res, config.operator, amount, amountWei)
     }
   }
 
   function dropDownTokens () {
+    console.log('lelo', tokensList)
     const tokensOptions = tokensList.map((token) => ({
-      key: token.address,
+      key: token.tokenId,
       value: token.tokenId,
       text: `${token.tokenId}: ${token.address}`
     }))
@@ -154,7 +149,7 @@ function ModalForceExit ({
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='blue' onClick={handleClick} disabled={state.sendDisabled}>
+          <Button color='blue' onClick={handleClick} disabled={!isFormValid()}>
             <Icon name='share' />
               Force Exit
           </Button>
