@@ -1,14 +1,24 @@
-import { loadAccounts, loadAccountsSuccess, loadAccountsFailure } from './home.actions'
-import { getAccounts } from '../../apis/rollup'
+import * as homeActions from './home.actions'
+import * as rollupApi from '../../apis/rollup'
 
 function fetchAccounts (ethereumAddress) {
   return (dispatch) => {
-    dispatch(loadAccounts())
+    dispatch(homeActions.loadAccounts())
 
-    return getAccounts(ethereumAddress)
-      .then(res => dispatch(loadAccountsSuccess(res)))
-      .catch(err => dispatch(loadAccountsFailure(err)))
+    return rollupApi.getAccounts(ethereumAddress)
+      .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
+      .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
   }
 }
 
-export { fetchAccounts }
+function fetchRecentTransactions (ethereumAddress) {
+  return (dispatch) => {
+    dispatch(homeActions.loadRecentTransactions())
+
+    return rollupApi.getTransactions(ethereumAddress)
+      .then(res => dispatch(homeActions.loadRecentTransactionsSuccess(res)))
+      .catch(err => dispatch(homeActions.loadRecentTransactionsFailure(err)))
+  }
+}
+
+export { fetchAccounts, fetchRecentTransactions }
