@@ -55,8 +55,7 @@
     ],
     "ignore": [
       "/build/",
-      "/public/",
-      "/src/utils/bundle-cli.js"
+      "/public/"
     ]
   },
   "browserslist": {
