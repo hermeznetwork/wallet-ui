@@ -21,9 +21,11 @@ function Settings ({
       <div className={classes.ethereumAddress}>
         {ethereumAddress}
       </div>
+
       <div>
         {tokenList}
       </div>
+
       <div className={classes.preferredCurrency}>
         {preferredCurrency}
       </div>
