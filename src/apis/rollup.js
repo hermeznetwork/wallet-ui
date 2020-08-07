@@ -48,6 +48,9 @@ mock.onGet(`${baseApiUrl}/tokens`)
     ]
   )
 
+mock.onAny()
+  .passThrough()
+
 async function getAccounts (ethereumAddress) {
   const response = await axios.get(`${baseApiUrl}/account/${ethereumAddress}`)
 

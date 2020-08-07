@@ -175,8 +175,7 @@ function infoAccountError (error) {
   }
 }
 
-export function handleInfoAccount (abiTokens, wallet, operatorUrl, addressRollup,
-  abiRollup) {
+export function handleInfoAccount (abiTokens, wallet, operatorUrl, addressRollup, abiRollup) {
   return async function (dispatch) {
     dispatch(infoAccount())
     try {
@@ -188,8 +187,11 @@ export function handleInfoAccount (abiTokens, wallet, operatorUrl, addressRollup
       const balance = ethers.utils.formatEther(balanceHex)
       const apiOperator = new CliExternalOperator(operatorUrl)
       const filters = {}
-      if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress
-      else filters.ethAddr = `0x${walletEthAddress}`
+      if (walletEthAddress.startsWith('0x')) {
+        filters.ethAddr = walletEthAddress
+      } else {
+        filters.ethAddr = `0x${walletEthAddress}`
+      }
       const contractRollup = new ethers.Contract(addressRollup, abiRollup, signer)
       let tokensList = {}
       let allTxs = []
@@ -226,7 +228,9 @@ async function getTokensInfo (tokensList, abiTokens, wallet, walletEth, addressR
   let tokensA = BigInt(0)
   let walletEthAddress = wallet.publicEthKey
   try {
-    if (!walletEthAddress.startsWith('0x')) walletEthAddress = `0x${walletEthAddress}`
+    if (!walletEthAddress.startsWith('0x')) {
+      walletEthAddress = `0x${walletEthAddress}`
+    }
     for (const [tokenId, address] of Object.entries(tokensList.data)) {
       if (tokenId) {
         const contractTokens = new ethers.Contract(address, abiTokens, walletEth)

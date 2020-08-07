@@ -1,7 +1,7 @@
+import ethers from 'ethers'
+
 import * as CONSTANTS from './constants'
 import { CliExternalOperator } from '../../utils/cli-external-operator'
-
-const web3 = require('web3')
 
 function stateSend (tx) {
   return {
@@ -29,7 +29,7 @@ export function handleStateSend (res, urlOperator, amount, fee, tokenId, babyJub
     currentBatch: res.currentBatch,
     nonce: res.nonce,
     id: res.nonce.toString() + tokenId,
-    amount: web3.utils.fromWei(amount, 'ether'),
+    amount: ethers.utils.formatEther(amount),
     receiver: babyJubReceiver,
     maxNumBatch: Number(res.currentBatch) + 2,
     finalBatch: 'Pending',
@@ -139,7 +139,7 @@ export function handleStateDeposit (tx, tokenId, urlOperator, amount) {
     currentBatch: tx.currentBatch,
     nonce: tx.res.nonce,
     id: tx.res.hash,
-    amount: web3.utils.fromWei(amount, 'ether'),
+    amount: ethers.utils.formatEther(amount),
     type: 'Deposit',
     from: tx.res.from,
     to: tx.res.to,
@@ -226,7 +226,7 @@ export function handleStateWithdraw (tx, tokenId) {
     currentBatch: tx.currentBatch,
     nonce: tx.res.nonce,
     id: tx.res.hash,
-    amount: web3.utils.fromWei(tx.amount, 'ether'),
+    amount: ethers.utils.formatEther(tx.amount),
     type: 'Withdraw',
     from: tx.res.from,
     to: tx.res.to,
@@ -270,7 +270,7 @@ export function handleStateForceExit (tx, urlOperator, tokenId, amount) {
     currentBatch: tx.currentBatch,
     nonce: tx.res.nonce,
     id: tx.res.hash,
-    amount: web3.utils.fromWei(amount, 'ether'),
+    amount: ethers.utils.formatEther(amount),
     type: 'ForceExit',
     from: tx.res.from,
     to: tx.res.to,

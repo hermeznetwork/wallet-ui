@@ -54,7 +54,6 @@ export function handleSendDeposit (addressSC, amount, tokenId, wallet, abiRollup
       } catch (error) {
         try {
           if (error.message.includes('404')) {
-            // eslint-disable-next-line new-cap
             const apiOperator = new CliExternalOperator(operatorUrl)
             const resOperator = await apiOperator.getState()
             const currentBatch = resOperator.data.rollupSynch.lastBatchSynched

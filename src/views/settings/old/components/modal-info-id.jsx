@@ -1,10 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import ethers from 'ethers'
 import {
   Table, Icon, Modal, Button
 } from 'semantic-ui-react'
-
-const web3 = require('web3')
 
 function ModalInfoId ({
   txs
@@ -15,7 +14,7 @@ function ModalInfoId ({
         return (
           <Table.Row key={index}>
             <Table.Cell>{key.coin}</Table.Cell>
-            <Table.Cell>{web3.utils.fromWei(key.amount, 'ether')}</Table.Cell>
+            <Table.Cell>{ethers.utils.formatEther(key.amount)}</Table.Cell>
           </Table.Row>
         )
       })
