@@ -286,7 +286,6 @@ export function handleSend (urlOperator, babyjubTo, amount, wallet, tokenId, fee
         }
       }
     } catch (error) {
-      console.log('error', error)
       dispatch(sendSendError(`Send Error: ${error.message}`))
       return error
     }
@@ -331,7 +330,6 @@ export function handleApprove (addressTokens, abiTokens, amountToken, addressRol
           gasPrice: gasPrice._hex
         }
         const res = await contractTokens.approve(addressRollup, amountToken, overrides)
-        console.log(res, contractTokens, addressRollup, amountToken, overrides)
         dispatch(approveSuccess(res))
         return res
       }

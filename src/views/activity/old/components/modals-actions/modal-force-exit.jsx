@@ -74,7 +74,6 @@ function ModalForceExit ({
       config.operator,
       gasMultiplier
     )
-    console.log('modal1', res)
 
     if (res.message !== undefined) {
       if (res.message.includes('insufficient funds')) {
@@ -88,7 +87,6 @@ function ModalForceExit ({
   }
 
   function dropDownTokens () {
-    console.log('lelo', tokensList)
     const tokensOptions = tokensList.map((token) => ({
       key: token.tokenId,
       value: token.tokenId,
