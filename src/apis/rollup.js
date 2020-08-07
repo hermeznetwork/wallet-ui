@@ -44,6 +44,21 @@ mock.onGet(`${baseApiUrl}/tokens`)
         TokenID: 0,
         Name: 'Some Cool Token',
         Symbol: 'SCT'
+      },
+      {
+        TokenID: 1,
+        Name: 'Other Cool Token',
+        Symbol: 'OCT'
+      },
+      {
+        TokenID: 2,
+        Name: 'New Token',
+        Symbol: 'NTO'
+      },
+      {
+        TokenID: 3,
+        Name: 'Too Good Token',
+        Symbol: 'TGT'
       }
     ]
   )
