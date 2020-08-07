@@ -22,7 +22,6 @@ function TokenList ({ tokens, preferredCurrency }) {
           <Token
             tokenSymbol={getToken(token.TokenID).Symbol}
             tokenName={getToken(token.TokenID).Name}
-            preferredCurrency={preferredCurrency}
           />
         </div>
       )}
@@ -37,8 +36,7 @@ TokenList.propTypes = {
       Name: PropTypes.string.isRequired,
       Symbol: PropTypes.string.isRequired
     })
-  ),
-  preferredCurrency: PropTypes.string.isRequired
+  )
 }
 
 export default TokenList

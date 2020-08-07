@@ -58,9 +58,12 @@ function Settings ({
                               {ethereumAddress}
                             </div>
 
+                            <div>
+                              Default currency - {preferredCurrency}
+                            </div>
+
                             <TokenList
                               tokens={tokensTask.data}
-                              preferredCurrency={preferredCurrency}
                             />
 
                             <div>
