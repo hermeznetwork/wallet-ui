@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import ethers from 'ethers'
 import {
   Table, Button, Container, Icon
 } from 'semantic-ui-react'
@@ -7,8 +8,6 @@ import InfoEtherum from './info-ethereum'
 import InfoBabyjub from './info-babyjub'
 
 import { pointToCompress } from '../../../../utils/utils'
-
-const web3 = require('web3')
 
 class InfoWallet extends Component {
   static propTypes = {
@@ -86,7 +85,7 @@ class InfoWallet extends Component {
 
   isLoadingTokensTotal = () => {
     if (this.state.loading === false) {
-      return web3.utils.fromWei(this.props.tokensTotal, 'ether')
+      return ethers.utils.formatEther(this.props.tokensTotal)
     }
     return <Icon name='circle notched' loading />
   }

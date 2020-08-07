@@ -3,10 +3,9 @@ import PropTypes from 'prop-types'
 import {
   Table, Button, Icon
 } from 'semantic-ui-react'
+import ethers from 'ethers'
 
 import ModalInfoId from './modal-info-id'
-
-const web3 = require('web3')
 
 function InfoEthereum ({
   tokens,
@@ -32,7 +31,7 @@ function InfoEthereum ({
 
   function isLoadingTokens () {
     if (loading === false) {
-      return web3.utils.fromWei(tokens, 'ether')
+      return ethers.utils.formatEther(tokens)
     }
 
     return <Icon name='circle notched' loading />
@@ -40,7 +39,7 @@ function InfoEthereum ({
 
   function isLoadingTokensA () {
     if (loading === false) {
-      return web3.utils.fromWei(tokensA, 'ether')
+      return ethers.utils.formatEther(tokensA)
     }
 
     return <Icon name='circle notched' loading />

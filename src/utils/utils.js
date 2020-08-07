@@ -1,9 +1,7 @@
 /* global BigInt */
 import { Scalar, utils as ffUtils } from 'ffjavascript'
-
+import ethers from 'ethers'
 const { babyJub, poseidon } = require('circomlib')
-
-const web3 = require('web3')
 
 const hash = poseidon.createHash(6, 8, 57)
 const F = poseidon.F
@@ -228,7 +226,7 @@ export const getNullifier = async (wallet, info, contractRollup, batch) => {
 export const getWei = (ether) => {
   let wei
   try {
-    wei = web3.utils.toWei(ether, 'ether')
+    wei = ethers.utils.parseUnits(ether, 'ether').toString()
   } catch (err) {
     wei = '0'
   }
