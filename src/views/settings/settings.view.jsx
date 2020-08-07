@@ -5,9 +5,6 @@ import QRCode from 'qrcode.react'
 
 import useSettingsStyles from './settings.styles'
 
-// I named it Settings since this is how it's called in design.
-// Also it makes more sense to call it like that than account,
-// which can be confusing (account usualy linked with financial vocabulary)
 function Settings ({
   ethereumAddress,
   preferredCurrency,
