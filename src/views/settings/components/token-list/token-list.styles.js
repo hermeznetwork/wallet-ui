@@ -1,7 +1,7 @@
 import { createUseStyles } from 'react-jss'
 
 const useTokenListStyles = createUseStyles({
-  account: {
+  token: {
     marginTop: 16
   }
 })
