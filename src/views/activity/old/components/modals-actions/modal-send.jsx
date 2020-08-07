@@ -5,7 +5,7 @@ import {
   Button, Modal, Form, Icon, Dropdown
 } from 'semantic-ui-react'
 
-import { handleSendSend } from '../../../../../store/tx/actions'
+import { handleSend } from '../../../../../store/tx/actions'
 import { handleStateSend } from '../../../../../store/tx-state/actions'
 import {
   getWei, feeTable, feeTableDropdown
@@ -19,52 +19,45 @@ function ModalSend ({
   onToggleModalSend,
   onSendSend,
   onStateEnd,
-  desWallet,
+  metamaskWallet,
   babyjub,
   activeItem,
   tokensRArray,
   pendingOffchain
 }) {
-  const [state, setState] = React.useState({
-    babyJubReceiver: '',
-    amount: '',
-    fee: '',
-    tokenId: '',
-    sendDisabled: true
-  })
+  const [amount, setAmount] = React.useState(0)
+  const [tokenId, setTokenId] = React.useState('')
+  const [babyJubReceiver, setBabyJubReceiver] = React.useState('')
+  const [fee, setFee] = React.useState('')
 
   React.useEffect(() => {
-    if (state.babyJubReceiver === '' && activeItem === 'send0') {
-      setState({ ...state, babyJubReceiver: 'exit' })
-    } else if (state.babyJubReceiver === 'exit' && activeItem === 'send') {
-      setState({ ...state, babyJubReceiver: '' })
+    if (babyJubReceiver === '' && activeItem === 'send0') {
+      setBabyJubReceiver('exit')
+    } else if (babyJubReceiver === 'exit' && activeItem === 'send') {
+      setBabyJubReceiver('')
     }
-  }, [activeItem, state, setState])
+  }, [activeItem, babyJubReceiver, setBabyJubReceiver])
 
   function handleCloseModal () {
     onToggleModalSend()
-    setState({
-      ...state,
-      babyJubReceiver: '',
-      amount: '',
-      fee: '',
-      tokenId: '',
-      sendDisabled: true
-    })
+    setAmount(0)
+    setFee('')
+    setTokenId('')
+    setBabyJubReceiver('')
   }
 
   async function handleClick () {
-    const amountWei = getWei(state.amount)
+    const amountWei = getWei(amount)
 
     handleCloseModal()
 
     const res = await onSendSend(
       config.operator,
-      state.babyJubReceiver,
+      babyJubReceiver,
       amountWei,
-      desWallet,
-      state.tokenId,
-      feeTable[state.fee]
+      metamaskWallet,
+      tokenId,
+      feeTable[fee]
     )
 
     if (res.nonce || res.nonce === 0) {
@@ -72,48 +65,39 @@ function ModalSend ({
         res,
         config.operator,
         amountWei,
-        state.fee,
-        state.tokenId,
-        state.babyJubReceiver,
+        fee,
+        tokenId,
+        babyJubReceiver,
         pendingOffchain,
         babyjub
       )
     }
   }
 
-  function checkForm () {
-    if (parseInt(state.amount, 10) && state.fee !== '' && state.babyJubReceiver !== '' && (parseInt(state.tokenId, 10) || state.tokenId === 0)) {
-      setState({ ...state, sendDisabled: false })
-    } else {
-      setState({ ...state, sendDisabled: true })
-    }
+  function isFormValid () {
+    return Boolean(parseInt(amount, 10) && fee !== '' && babyJubReceiver !== '' && (parseInt(tokenId, 10) || tokenId === 0))
   }
 
   function handleSetAmount (event) {
-    setState({ ...state, amount: event.target.value })
-    checkForm()
+    setAmount(event.target.value)
   }
 
-  function handleSetToken (event, { value }) {
+  function handleSetToken (_, { value }) {
     const tokenId = Number(value)
 
-    setState({ ...state, tokenId })
-    checkForm()
+    setTokenId(tokenId)
   }
 
-  function handleSetFee (event, { value }) {
-    setState({ ...state, fee: value })
-    checkForm()
+  function handleSetFee (_, { value }) {
+    setFee(value)
   }
 
   function handleGetExampleAddress () {
-    setState({ ...state, babyJubReceiver: rollupExampleAddress })
-    checkForm()
+    setBabyJubReceiver(rollupExampleAddress)
   }
 
   function handleChangeReceiver (event) {
-    setState({ ...state, babyJubReceiver: event.target.value })
-    checkForm()
+    setBabyJubReceiver(event.target.value)
   }
 
   function receiverBySend () {
@@ -124,7 +108,7 @@ function ModalSend ({
           <input
             type='text'
             id='baby-ax-r'
-            value={state.babyJubReceiver}
+            value={babyJubReceiver}
             onChange={handleChangeReceiver}
           />
           <Button
@@ -139,10 +123,10 @@ function ModalSend ({
   }
 
   function dropDownTokens () {
-    const tokensOptions = tokensRArray.filter(token => tokensRArray[token]).map((token) => ({
-      key: tokensRArray[token].address,
-      value: tokensRArray[token].tokenId,
-      text: `${tokensRArray[token].tokenId}: ${tokensRArray[token].address}`
+    const tokensOptions = tokensRArray.map((token) => ({
+      key: token.address,
+      value: token.tokenId,
+      text: `${token.tokenId}: ${token.address}`
     }))
 
     return (
@@ -180,7 +164,7 @@ function ModalSend ({
                   type='text'
                   id='amount'
                   onChange={handleSetAmount}
-                  value={state.amount}
+                  value={amount}
                 />
               </label>
             </Form.Field>
@@ -202,7 +186,7 @@ function ModalSend ({
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='blue' onClick={handleClick} disabled={state.sendDisabled}>
+          <Button color='blue' onClick={handleClick} disabled={!isFormValid()}>
             <Icon name='share' />
               Send
           </Button>
@@ -222,7 +206,7 @@ ModalSend.propTypes = {
   onToggleModalSend: PropTypes.func.isRequired,
   onSendSend: PropTypes.func.isRequired,
   onStateEnd: PropTypes.func.isRequired,
-  desWallet: PropTypes.object.isRequired,
+  metamaskWallet: PropTypes.object.isRequired,
   babyjub: PropTypes.string.isRequired,
   activeItem: PropTypes.string.isRequired,
   tokensRArray: PropTypes.array.isRequired,
@@ -231,11 +215,11 @@ ModalSend.propTypes = {
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
-  desWallet: state.general.desWallet,
+  metamaskWallet: state.general.metamaskWallet,
   pendingOffchain: state.txState.pendingOffchain
 })
 
 export default connect(mapStateToProps, {
-  onSendSend: handleSendSend,
+  onSendSend: handleSend,
   onStateEnd: handleStateSend
 })(ModalSend)

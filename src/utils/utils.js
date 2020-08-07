@@ -1,9 +1,54 @@
 /* global BigInt */
+import { Scalar, utils as ffUtils } from 'ffjavascript'
 
 const { babyJub, poseidon } = require('circomlib')
 
 const web3 = require('web3')
-const { Scalar } = require('ffjavascript')
+
+const hash = poseidon.createHash(6, 8, 57)
+const F = poseidon.F
+
+/**
+ * Chunks inputs in five elements and hash with Poseidon all them togheter
+ * @param {Array} arr - inputs hash
+ * @returns {BigInt} - final hash
+ */
+function multiHash (arr) {
+  let r = Scalar.e(0)
+  for (let i = 0; i < arr.length; i += 5) {
+    const fiveElems = []
+    for (let j = 0; j < 5; j++) {
+      if (i + j < arr.length) {
+        fiveElems.push(arr[i + j])
+      } else {
+        fiveElems.push(Scalar.e(0))
+      }
+    }
+    const ph = hash(fiveElems)
+    r = F.add(r, ph)
+  }
+  return F.normalize(r)
+}
+
+/**
+ * Poseidon hash of a generic buffer
+ * @param {Buffer} msgBuff
+ * @returns {BigInt} - final hash
+ */
+export function hashBuffer (msgBuff) {
+  const n = 31
+  const msgArray = []
+  const fullParts = Math.floor(msgBuff.length / n)
+  for (let i = 0; i < fullParts; i++) {
+    const v = ffUtils.leBuff2int(msgBuff.slice(n * i, n * (i + 1)))
+    msgArray.push(v)
+  }
+  if (msgBuff.length % n !== 0) {
+    const v = ffUtils.leBuff2int(msgBuff.slice(fullParts * n))
+    msgArray.push(v)
+  }
+  return multiHash(msgArray)
+}
 
 export const readFile = (file) => {
   return new Promise((resolve) => {
@@ -158,14 +203,13 @@ export const hashState = (st) => {
 }
 
 export const getNullifier = async (wallet, info, contractRollup, batch) => {
-  const { ax } = wallet.babyjubWallet.public
-  const { ay } = wallet.babyjubWallet.public
+  const [ax, ay] = wallet.publicKey
   const exitEntry = state2array(
     info.data.state.amount,
     info.data.state.coin,
     ax.toString(16),
     ay.toString(16),
-    wallet.ethWallet.address,
+    wallet.publicEthKey,
     0
   )
   const valueExitTree = hashState(exitEntry)
@@ -189,6 +233,31 @@ export const getWei = (ether) => {
     wei = '0'
   }
   return wei
+}
+
+export const hexToBuffer = (hexString) => {
+  return Buffer.from(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
+}
+
+/**
+ * Encode tx Data
+ * @param {String} tx - Transaction object
+ * @returns {Scalar} Encoded TxData
+ */
+export function buildTxData (tx) {
+  const IDEN3_ROLLUP_TX = Scalar.fromString('4839017969649077913')
+  let res = Scalar.e(0)
+
+  res = Scalar.add(res, IDEN3_ROLLUP_TX)
+  res = Scalar.add(res, Scalar.shl(fix2float(tx.amount || 0), 64))
+  res = Scalar.add(res, Scalar.shl(tx.coin || 0, 80))
+  res = Scalar.add(res, Scalar.shl(tx.nonce || 0, 112))
+  res = Scalar.add(res, Scalar.shl(tx.fee || 0, 160))
+  res = Scalar.add(res, Scalar.shl(tx.rqOffset || 0, 164))
+  res = Scalar.add(res, Scalar.shl(tx.onChain ? 1 : 0, 167))
+  res = Scalar.add(res, Scalar.shl(tx.newAccount ? 1 : 0, 168))
+
+  return res
 }
 
 export const feeTable = {

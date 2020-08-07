@@ -1,134 +1,47 @@
 /* eslint-disable no-await-in-loop */
 /* global BigInt */
+import { keccak256 } from 'js-sha3'
 import * as CONSTANTS from './constants'
-import { getNullifier } from '../../utils/utils'
+import { getNullifier, hexToBuffer } from '../../utils/utils'
+import { CliExternalOperator } from '../../utils/cli-external-operator'
+import { BabyJubWallet } from '../../utils/babyjub-wallet'
 
 const ethers = require('ethers')
-const FileSaver = require('file-saver')
-const rollup = require('../../utils/bundle-cli')
-const operator = require('../../utils/bundle-op')
-const { readFile } = require('../../utils/utils')
 
-function loadWallet () {
+function loadConfig () {
   return {
-    type: CONSTANTS.LOAD_WALLET
+    type: CONSTANTS.LOAD_CONFIG
   }
 }
 
-function loadWalletSuccess (wallet, password, desWallet) {
+function loadConfigSuccess (config, abiRollup, abiTokens, chainId, errorMessage) {
   return {
-    type: CONSTANTS.LOAD_WALLET_SUCCESS,
-    payload: { wallet, password, desWallet },
-    error: ''
-  }
-}
-
-function loadWalletError (error) {
-  return {
-    type: CONSTANTS.LOAD_WALLET_ERROR,
-    error
-  }
-}
-
-export function handleLoadWallet (walletFile, password, file) {
-  return async function (dispatch) {
-    dispatch(loadWallet())
-    try {
-      let wallet
-      if (file) {
-        wallet = await readFile(walletFile)
-      } else {
-        wallet = walletFile
-      }
-      const desWallet = await rollup.wallet.Wallet.fromEncryptedJson(wallet, password)
-      dispatch(loadWalletSuccess(wallet, password, desWallet))
-    } catch (error) {
-      dispatch(loadWalletError(error.message))
-    }
-  }
-}
-
-function createWallet () {
-  return {
-    type: CONSTANTS.CREATE_WALLET
-  }
-}
-
-function createWalletSuccess () {
-  return {
-    type: CONSTANTS.CREATE_WALLET_SUCCESS,
-    error: ''
-  }
-}
-
-function createWalletError (error) {
-  return {
-    type: CONSTANTS.CREATE_WALLET_ERROR,
-    error
-  }
-}
-
-export function handleCreateWallet (walletName, password) {
-  return async function (dispatch) {
-    dispatch(createWallet())
-    try {
-      const wallet = await rollup.wallet.Wallet.createRandom()
-      const encWallet = await wallet.toEncryptedJson(password)
-      dispatch(createWalletSuccess())
-      const blob = new Blob([JSON.stringify(encWallet)], { type: 'text/plain;charset=utf-8' })
-      FileSaver.saveAs(blob, `${walletName}.json`)
-      return encWallet
-    } catch (error) {
-      dispatch(createWalletError(error))
-    }
-  }
-}
-
-export function resetWallet () {
-  return async function (dispatch) {
-    try {
-      dispatch(loadWalletSuccess({}, ''))
-    } catch (error) {
-      dispatch(loadWalletError(error))
-    }
-  }
-}
-
-function loadFiles () {
-  return {
-    type: CONSTANTS.LOAD_FILES
-  }
-}
-
-function loadFilesSuccess (config, abiRollup, abiTokens, chainId, errorMessage) {
-  return {
-    type: CONSTANTS.LOAD_FILES_SUCCESS,
-    payload: {
-      config, abiRollup, abiTokens, chainId
-    },
+    type: CONSTANTS.LOAD_CONFIG_SUCCESS,
+    payload: { config, abiRollup, abiTokens, chainId },
     error: errorMessage
   }
 }
 
-function loadFilesError (config, error) {
+function loadConfigError (config, error) {
   return {
-    type: CONSTANTS.LOAD_FILES_ERROR,
+    type: CONSTANTS.LOAD_CONFIG_ERROR,
     payload: { config },
     error
   }
 }
 
-export function handleLoadFiles (config) {
+export function handleLoadConfig (config) {
   return async function (dispatch) {
-    dispatch(loadFiles())
+    dispatch(loadConfig())
+
     try {
-      const Web3 = require('web3')
       let chainId
-      let web3
       let errorMessage = ''
+
       if (config.nodeEth) {
-        web3 = new Web3(config.nodeEth)
-        chainId = await web3.eth.getChainId()
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const networkInfo = await provider.getNetwork()
+        chainId = networkInfo.chainId
       } else {
         chainId = -1
         errorMessage = 'No Node Ethereum'
@@ -138,7 +51,8 @@ export function handleLoadFiles (config) {
       if (!config.abiRollup) errorMessage = 'No Rollup ABI'
       if (!config.abiTokens) errorMessage = 'No Tokens ABI'
       if (!config.tokensAddress) errorMessage = 'No Tokens Address'
-      dispatch(loadFilesSuccess(config, config.abiRollup, config.abiTokens, chainId, errorMessage))
+
+      dispatch(loadConfigSuccess(config, config.abiRollup, config.abiTokens, chainId, errorMessage))
       if (errorMessage !== '') {
         return false
       } else {
@@ -147,7 +61,7 @@ export function handleLoadFiles (config) {
     } catch (error) {
       const newConfig = config
       newConfig.nodeEth = undefined
-      dispatch(loadFilesError(newConfig, 'Error Configuration'))
+      dispatch(loadConfigError(newConfig, 'Error Configuration'))
       return false
     }
   }
@@ -178,11 +92,50 @@ export function handleLoadOperator (config) {
   return async function (dispatch) {
     dispatch(loadOperator())
     try {
-      // eslint-disable-next-line new-cap
-      const apiOperator = new operator.cliExternalOperator(config.operator)
+      const apiOperator = new CliExternalOperator(config.operator)
       dispatch(loadOperatorSuccess(apiOperator))
     } catch (error) {
       dispatch(loadOperatorError(error))
+    }
+  }
+}
+
+function loadMetamask () {
+  return {
+    type: CONSTANTS.LOAD_METAMASK
+  }
+}
+
+function loadMetamaskSuccess (metamaskWallet) {
+  return {
+    type: CONSTANTS.LOAD_METAMASK_SUCCESS,
+    payload: { metamaskWallet },
+    error: ''
+  }
+}
+
+function loadMetamaskError (error) {
+  return {
+    type: CONSTANTS.LOAD_METAMASK_ERROR,
+    error
+  }
+}
+
+export function handleLoadMetamask () {
+  return async function (dispatch) {
+    dispatch(loadMetamask())
+    try {
+      await window.ethereum.enable()
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const publicEthKey = await signer.getAddress()
+      const signature = await signer.signMessage('I accept using Metamask as a CA')
+      const hashedSignature = keccak256(signature)
+      const bufferSignature = hexToBuffer(hashedSignature)
+      const wallet = new BabyJubWallet(bufferSignature, publicEthKey)
+      dispatch(loadMetamaskSuccess(wallet))
+    } catch (error) {
+      dispatch(loadMetamaskError(error.message))
     }
   }
 }
@@ -222,24 +175,22 @@ function infoAccountError (error) {
   }
 }
 
-export function handleInfoAccount (node, abiTokens, wallet, operatorUrl, addressRollup,
-  abiRollup, desWallet) {
+export function handleInfoAccount (abiTokens, wallet, operatorUrl, addressRollup,
+  abiRollup) {
   return async function (dispatch) {
     dispatch(infoAccount())
     try {
       const txsExits = []
-      const provider = new ethers.providers.JsonRpcProvider(node)
-      const walletEthAddress = wallet.ethWallet.address
-      let walletEth = new ethers.Wallet(desWallet.ethWallet.privateKey)
-      walletEth = walletEth.connect(provider)
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const walletEthAddress = wallet.publicEthKey
       const balanceHex = await provider.getBalance(walletEthAddress)
       const balance = ethers.utils.formatEther(balanceHex)
-      // eslint-disable-next-line new-cap
-      const apiOperator = new operator.cliExternalOperator(operatorUrl)
+      const apiOperator = new CliExternalOperator(operatorUrl)
       const filters = {}
       if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress
       else filters.ethAddr = `0x${walletEthAddress}`
-      const contractRollup = new ethers.Contract(addressRollup, abiRollup, walletEth)
+      const contractRollup = new ethers.Contract(addressRollup, abiRollup, signer)
       let tokensList = {}
       let allTxs = []
       try {
@@ -254,7 +205,7 @@ export function handleInfoAccount (node, abiTokens, wallet, operatorUrl, address
       }
       const txs = allTxs.data
       const [tokensUser, tokens, tokensArray, tokensA, tokensAArray] = await getTokensInfo(tokensList, abiTokens,
-        wallet, walletEth, addressRollup)
+        wallet, signer, addressRollup)
       const [tokensR, tokensRArray] = await getTokensRollup(allTxs, tokensList)
       const tokensE = await getTokensExit(apiOperator, wallet, allTxs, contractRollup, txsExits)
       const tokensTotalNum = BigInt(tokens) + BigInt(tokensE) + BigInt(tokensR)
@@ -273,7 +224,7 @@ async function getTokensInfo (tokensList, abiTokens, wallet, walletEth, addressR
   const tokensUser = []
   let tokens = BigInt(0)
   let tokensA = BigInt(0)
-  let walletEthAddress = wallet.ethWallet.address
+  let walletEthAddress = wallet.publicEthKey
   try {
     if (!walletEthAddress.startsWith('0x')) walletEthAddress = `0x${walletEthAddress}`
     for (const [tokenId, address] of Object.entries(tokensList.data)) {
@@ -324,7 +275,7 @@ async function getTokensExit (apiOperator, wallet, allTxs, contractRollup, txsEx
     for (const tx in allTxs.data) {
       if (tx) {
         const { coin } = allTxs.data[tx]
-        const { ax, ay } = wallet.babyjubWallet.public
+        const [ax, ay] = wallet.publicKey.map((key) => key.toString(16))
         try {
           const exits = await apiOperator.getExits(coin, ax, ay)
           const batches = exits.data
@@ -436,8 +387,7 @@ export function getCurrentBatch (urlOperator) {
   return async function (dispatch) {
     let currentBatch
     try {
-      // eslint-disable-next-line new-cap
-      const apiOperator = new operator.cliExternalOperator(urlOperator)
+      const apiOperator = new CliExternalOperator(urlOperator)
       const resOperator = await apiOperator.getState()
       currentBatch = resOperator.data.rollupSynch.lastBatchSynched
       dispatch(getInfoCurrentBatch(currentBatch))

@@ -8,7 +8,6 @@ import {
 class MenuActions extends Component {
   static propTypes = {
     onItemClick: PropTypes.func.isRequired,
-    noImported: PropTypes.bool.isRequired,
     tokensA: PropTypes.string.isRequired,
     tokensR: PropTypes.string.isRequired,
     tokensE: PropTypes.string.isRequired,
@@ -118,7 +117,6 @@ class MenuActions extends Component {
   }
 
   render () {
-    const { noImported } = this.props
     const {
       depositDisabled, forcexitDisabled, withdrawDisabled, exitDisabled, sendDisabled, getResourcesDisabled,
       onChainDisabled, offChainDisabled, getTokensDisabled, approveTokensDisabled
@@ -138,13 +136,13 @@ class MenuActions extends Component {
             )}
             pointing
             className='icon item'
-            disabled={noImported || onChainDisabled}
+            disabled={onChainDisabled}
           >
             <Dropdown.Menu>
               <Dropdown.Item
                 name='deposit'
                 onClick={this.props.onItemClick}
-                disabled={noImported || depositDisabled}
+                disabled={depositDisabled}
               >
                 <Segment textAlign='center'>
                   <Icon name='sign-in' />
@@ -154,7 +152,7 @@ class MenuActions extends Component {
               <Dropdown.Item
                 name='withdraw'
                 onClick={this.props.onItemClick}
-                disabled={noImported || withdrawDisabled}
+                disabled={withdrawDisabled}
               >
                 <Segment textAlign='center'>
                   <Icon name='sign-out' />
@@ -164,7 +162,7 @@ class MenuActions extends Component {
               <Dropdown.Item
                 name='forcexit'
                 onClick={this.props.onItemClick}
-                disabled={noImported || forcexitDisabled}
+                disabled={forcexitDisabled}
               >
                 <Segment textAlign='center'>
                   <Icon name='reply' />
@@ -182,16 +180,16 @@ class MenuActions extends Component {
             )}
             pointing
             className='icon item'
-            disabled={noImported || offChainDisabled}
+            disabled={offChainDisabled}
           >
             <Dropdown.Menu>
-              <Dropdown.Item name='send' onClick={this.props.onItemClick} disabled={noImported || sendDisabled}>
+              <Dropdown.Item name='send' onClick={this.props.onItemClick} disabled={sendDisabled}>
                 <Segment textAlign='center'>
                   <Icon name='exchange' />
                   SEND
                 </Segment>
               </Dropdown.Item>
-              <Dropdown.Item name='send0' onClick={this.props.onItemClick} disabled={noImported || exitDisabled}>
+              <Dropdown.Item name='send0' onClick={this.props.onItemClick} disabled={exitDisabled}>
                 <Segment textAlign='center'>
                   <Icon name='reply' />
                   EXIT
@@ -208,7 +206,7 @@ class MenuActions extends Component {
             )}
             pointing
             className='icon item'
-            disabled={noImported || getResourcesDisabled}
+            disabled={getResourcesDisabled}
           >
             <Dropdown.Menu>
               <Dropdown.Item>
@@ -222,7 +220,7 @@ class MenuActions extends Component {
               <Dropdown.Item
                 name='getTokens'
                 onClick={this.props.onItemClick}
-                disabled={noImported || getTokensDisabled}
+                disabled={getTokensDisabled}
               >
                 <Segment textAlign='center'>
                   <Icon name='cart arrow down' />
@@ -232,7 +230,7 @@ class MenuActions extends Component {
               <Dropdown.Item
                 name='approve'
                 onClick={this.props.onItemClick}
-                disabled={noImported || approveTokensDisabled}
+                disabled={approveTokensDisabled}
               >
                 <Segment textAlign='center'>
                   <Icon name='checkmark' />

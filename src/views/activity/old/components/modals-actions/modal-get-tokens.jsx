@@ -11,7 +11,7 @@ import { handleGetTokens } from '../../../../../store/tx/actions'
 
 function ModalGetTokens ({
   config,
-  desWallet,
+  metamaskWallet,
   modalGetTokens,
   onToggleModalGetTokens,
   onGetTokens
@@ -28,7 +28,7 @@ function ModalGetTokens ({
   async function handleClickGetTokens () {
     onToggleModalGetTokens()
 
-    const res = await onGetTokens(config.nodeEth, config.tokensAddress, desWallet)
+    const res = await onGetTokens(config.tokensAddress)
 
     if (res.message !== undefined) {
       if (res.message.includes('insufficient funds')) {
@@ -89,7 +89,7 @@ function ModalGetTokens ({
 
 ModalGetTokens.propTypes = {
   config: PropTypes.object.isRequired,
-  desWallet: PropTypes.object.isRequired,
+  metamaskWallet: PropTypes.object.isRequired,
   modalGetTokens: PropTypes.bool.isRequired,
   onToggleModalGetTokens: PropTypes.func.isRequired,
   onGetTokens: PropTypes.func.isRequired
@@ -97,7 +97,7 @@ ModalGetTokens.propTypes = {
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
-  desWallet: state.general.desWallet,
+  metamaskWallet: state.general.metamaskWallet,
   gasMultiplier: state.general.gasMultiplier
 })
 

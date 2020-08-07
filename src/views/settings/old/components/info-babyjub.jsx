@@ -14,7 +14,6 @@ function InfoBabyjub ({
   tokensE,
   txs,
   txsExits,
-  noImported,
   babyjub,
   loading
 }) {
@@ -72,7 +71,6 @@ function InfoBabyjub ({
               circular
               size='large'
               onClick={handleCopyBabyJub}
-              disabled={noImported}
             />
           </Table.Cell>
         </Table.Row>
@@ -84,7 +82,7 @@ function InfoBabyjub ({
             {isLoadingTokensR()}
           </Table.Cell>
           <Table.Cell colSpan='2' floated='left'>
-            <ModalInfoId txs={txs} noImported={noImported} />
+            <ModalInfoId txs={txs} />
           </Table.Cell>
         </Table.Row>
         <Table.Row>
@@ -95,7 +93,7 @@ function InfoBabyjub ({
             {isLoadingTokensE()}
           </Table.Cell>
           <Table.Cell colSpan='2' floated='left'>
-            <ModalInfoIdExits txsExits={txsExits} noImported={noImported} />
+            <ModalInfoIdExits txsExits={txsExits} />
           </Table.Cell>
         </Table.Row>
       </Table.Header>
@@ -108,7 +106,6 @@ InfoBabyjub.propTypes = {
   tokensE: PropTypes.string,
   txs: PropTypes.array,
   txsExits: PropTypes.array,
-  noImported: PropTypes.bool.isRequired,
   babyjub: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired
 }

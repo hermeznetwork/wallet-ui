@@ -16,15 +16,13 @@ function ModalApprove ({
   modalApprove,
   onToggleModalApprove,
   handleApprove,
-  gasMultiplier,
-  desWallet
+  gasMultiplier
 }) {
+  const [amount, setAmount] = React.useState(0)
+  const [addressTokens, setAddressTokens] = React.useState('')
   const [state, setState] = React.useState({
     modalError: false,
-    error: '',
-    amount: '',
-    addressTokens: '',
-    disableButton: true
+    error: ''
   })
   const amountTokensRef = React.createRef()
 
@@ -34,28 +32,21 @@ function ModalApprove ({
 
   function handleToggleModalClose () {
     onToggleModalApprove()
-    setState({
-      ...state,
-      disableButton: true,
-      amount: '',
-      addressTokens: ''
-    })
+    setAddressTokens('')
+    setAmount(0)
   }
 
   async function handleClickApprove () {
-    const amountTokens = getWei(state.amount)
+    const amountTokens = getWei(amount)
     const res = await handleApprove(
-      state.addressTokens,
+      addressTokens,
       abiTokens,
-      desWallet,
       amountTokens,
       config.address,
-      config.nodeEth,
       gasMultiplier
     )
 
     handleToggleModalClose()
-    setState({ ...state, disableButton: true })
     if (res.message !== undefined) {
       if (res.message.includes('insufficient funds')) {
         setState({ ...state, error: '1' })
@@ -64,27 +55,20 @@ function ModalApprove ({
     }
   }
 
-  function checkForm () {
-    if (parseInt(state.amount, 10) && state.addressTokens !== '') {
-      setState({ ...state, disableButton: false })
-    } else {
-      setState({ ...state, disableButton: true })
-    }
+  function isFormValid () {
+    return Boolean(parseInt(amount, 10) && addressTokens !== '')
   }
 
   function handleSetAmount () {
-    setState({ ...state, amount: amountTokensRef.current.value })
-    checkForm()
+    setAmount(amountTokensRef.current.value)
   }
 
   function handleGetExampleAddress () {
-    setState({ ...state, addressTokens: config.tokensAddress })
-    checkForm()
+    setAddressTokens(config.tokensAddress)
   }
 
   function handleChangeAddress (event) {
-    setState({ ...state, addressTokens: event.target.value })
-    checkForm()
+    setAddressTokens(event.target.value)
   }
 
   return (
@@ -110,7 +94,7 @@ function ModalApprove ({
                 <input
                   type='text'
                   id='baby-ax-r'
-                  value={state.addressTokens}
+                  value={addressTokens}
                   onChange={handleChangeAddress}
                   size='40'
                 />
@@ -128,7 +112,7 @@ function ModalApprove ({
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={handleClickApprove} color='blue' disabled={state.disableButton}>
+          <Button onClick={handleClickApprove} color='blue' disabled={!isFormValid()}>
             <Icon name='ethereum' />
               APPROVE
           </Button>
@@ -148,14 +132,12 @@ ModalApprove.propTypes = {
   modalApprove: PropTypes.bool.isRequired,
   onToggleModalApprove: PropTypes.func.isRequired,
   handleApprove: PropTypes.func.isRequired,
-  gasMultiplier: PropTypes.number.isRequired,
-  desWallet: PropTypes.object.isRequired
+  gasMultiplier: PropTypes.number.isRequired
 }
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
   abiTokens: state.general.abiTokens,
-  desWallet: state.general.desWallet,
   gasMultiplier: state.general.gasMultiplier
 })
 
