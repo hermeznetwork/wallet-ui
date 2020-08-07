@@ -3,10 +3,9 @@ import PropTypes from 'prop-types'
 import {
   Table, Button, Icon
 } from 'semantic-ui-react'
+import ethers from 'ethers'
 
 import ModalInfoId from './modal-info-id'
-
-const web3 = require('web3')
 
 function InfoEthereum ({
   tokens,
@@ -14,7 +13,6 @@ function InfoEthereum ({
   tokensAArray,
   tokensA,
   balance,
-  noImported,
   address,
   loading
 }) {
@@ -33,7 +31,7 @@ function InfoEthereum ({
 
   function isLoadingTokens () {
     if (loading === false) {
-      return web3.utils.fromWei(tokens, 'ether')
+      return ethers.utils.formatEther(tokens)
     }
 
     return <Icon name='circle notched' loading />
@@ -41,7 +39,7 @@ function InfoEthereum ({
 
   function isLoadingTokensA () {
     if (loading === false) {
-      return web3.utils.fromWei(tokensA, 'ether')
+      return ethers.utils.formatEther(tokensA)
     }
 
     return <Icon name='circle notched' loading />
@@ -80,7 +78,6 @@ function InfoEthereum ({
               circular
               size='large'
               onClick={handleCopyAddress}
-              disabled={noImported}
             />
           </Table.Cell>
         </Table.Row>
@@ -100,7 +97,7 @@ function InfoEthereum ({
             {isLoadingTokens()}
           </Table.Cell>
           <Table.Cell colSpan='2' floated='left'>
-            <ModalInfoId txs={tokensArray} noImported={noImported} />
+            <ModalInfoId txs={tokensArray} />
           </Table.Cell>
         </Table.Row>
         <Table.Row>
@@ -111,7 +108,7 @@ function InfoEthereum ({
             {isLoadingTokensA()}
           </Table.Cell>
           <Table.Cell colSpan='2' floated='left'>
-            <ModalInfoId txs={tokensAArray} noImported={noImported} />
+            <ModalInfoId txs={tokensAArray} />
           </Table.Cell>
         </Table.Row>
       </Table.Header>
@@ -125,7 +122,6 @@ InfoEthereum.propTypes = {
   tokensAArray: PropTypes.array,
   tokensA: PropTypes.string,
   balance: PropTypes.string,
-  noImported: PropTypes.bool.isRequired,
   address: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired
 }

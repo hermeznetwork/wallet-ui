@@ -17,7 +17,7 @@ function MessageTx ({
   successDeposit,
   successForceExit,
   error,
-  errorFiles,
+  errorConfig,
   tx,
   chainId,
   messageOpen,
@@ -52,14 +52,14 @@ function MessageTx ({
   }
 
   function getMessage () {
-    if (errorFiles !== '') {
+    if (errorConfig !== '') {
       return (
         <Message icon color='red'>
           <Icon name='exclamation' />
           <Message.Content>
             <Message.Header>
               Error!
-              {errorFiles}
+              {errorConfig}
             </Message.Header>
           </Message.Content>
         </Message>
@@ -156,7 +156,7 @@ MessageTx.propTypes = {
   successDeposit: PropTypes.bool.isRequired,
   successForceExit: PropTypes.bool.isRequired,
   error: PropTypes.string.isRequired,
-  errorFiles: PropTypes.string.isRequired,
+  errorConfig: PropTypes.string.isRequired,
   tx: PropTypes.object.isRequired,
   chainId: PropTypes.number.isRequired,
   messageOpen: PropTypes.bool.isRequired,
@@ -175,7 +175,7 @@ const mapStateToProps = (state) => ({
   successForceExit: state.transactions.successForceExit,
   successDeposit: state.transactions.successDeposit,
   error: state.transactions.error,
-  errorFiles: state.general.errorFiles,
+  errorConfig: state.general.errorConfig,
   tx: state.transactions.tx,
   batch: state.transactions.batch,
   messageOpen: state.transactions.messageOpen,

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import ethers from 'ethers'
 import {
   Table, Button, Container, Icon
 } from 'semantic-ui-react'
@@ -8,11 +9,9 @@ import InfoBabyjub from './info-babyjub'
 
 import { pointToCompress } from '../../../../utils/utils'
 
-const web3 = require('web3')
-
 class InfoWallet extends Component {
   static propTypes = {
-    desWallet: PropTypes.object.isRequired,
+    metamaskWallet: PropTypes.object.isRequired,
     isLoadingInfoAccount: PropTypes.bool.isRequired,
     tokens: PropTypes.string,
     tokensR: PropTypes.string,
@@ -24,8 +23,7 @@ class InfoWallet extends Component {
     balance: PropTypes.string,
     txs: PropTypes.array,
     txsExits: PropTypes.array,
-    getInfoAccount: PropTypes.func.isRequired,
-    noImported: PropTypes.bool.isRequired
+    getInfoAccount: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -54,14 +52,14 @@ class InfoWallet extends Component {
   async componentDidMount () {
     try {
       let address
-      if (Object.keys(this.props.desWallet).length !== 0) {
-        if (this.props.desWallet.ethWallet.address.startsWith('0x')) {
-          address = this.props.desWallet.ethWallet.address
+      if (Object.keys(this.props.metamaskWallet).length !== 0) {
+        if (this.props.metamaskWallet.publicEthKey.startsWith('0x')) {
+          address = this.props.metamaskWallet.publicEthKey
         } else {
-          address = `0x${this.props.desWallet.ethWallet.address}`
+          address = `0x${this.props.metamaskWallet.publicEthKey}`
         }
         if (this.state.address !== address) {
-          const babyjub = pointToCompress(this.props.desWallet.babyjubWallet.publicKey)
+          const babyjub = pointToCompress(this.props.metamaskWallet.publicKey)
           this.setState({ address, babyjub })
         }
       }
@@ -87,7 +85,7 @@ class InfoWallet extends Component {
 
   isLoadingTokensTotal = () => {
     if (this.state.loading === false) {
-      return web3.utils.fromWei(this.props.tokensTotal, 'ether')
+      return ethers.utils.formatEther(this.props.tokensTotal)
     }
     return <Icon name='circle notched' loading />
   }
@@ -101,7 +99,7 @@ class InfoWallet extends Component {
               <Table.HeaderCell />
               <Table.HeaderCell colSpan='6' textAlign='center'>INFORMATION</Table.HeaderCell>
               <Table.HeaderCell textAlign='right'>
-                <Button onClick={this.handleReload} disabled={this.props.noImported}>
+                <Button onClick={this.handleReload}>
                   <Icon name='sync' color='blue' />
                   Reload
                 </Button>
@@ -116,7 +114,6 @@ class InfoWallet extends Component {
           tokensArray={this.props.tokensArray}
           tokensAArray={this.props.tokensAArray}
           balance={this.props.balance}
-          noImported={this.props.noImported}
           loading={this.state.loading}
         />
         <InfoBabyjub
@@ -125,7 +122,6 @@ class InfoWallet extends Component {
           tokensE={this.props.tokensE}
           txs={this.props.txs}
           txsExits={this.props.txsExits}
-          noImported={this.props.noImported}
           loading={this.state.loading}
         />
         <Table attached fixed>

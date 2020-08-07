@@ -26,6 +26,7 @@
     "ffjavascript": "^0.1.3",
     "file-saver": "^2.0.2",
     "hdkey": "^2.0.1",
+    "js-sha3": "^0.8.0",
     "normalize.css": "^8.0.1",
     "qrcode.react": "^1.0.0",
     "react": "^16.13.1",
@@ -38,8 +39,7 @@
     "redux-thunk": "^2.3.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
-    "truffle-hdwallet-provider": "^1.0.17",
-    "web3": "^1.2.9"
+    "truffle-hdwallet-provider": "^1.0.17"
   },
   "devDependencies": {
     "husky": "^4.2.5",
@@ -54,9 +54,7 @@
     ],
     "ignore": [
       "/build/",
-      "/public/",
-      "/src/utils/bundle-cli.js",
-      "/src/utils/bundle-op.js"
+      "/public/"
     ]
   },
   "browserslist": {

@@ -3,18 +3,16 @@ import PropTypes from 'prop-types'
 import {
   Table, Button, Icon
 } from 'semantic-ui-react'
+import ethers from 'ethers'
 
 import ModalInfoId from './modal-info-id'
 import ModalInfoIdExits from './modal-info-id-exits'
-
-const web3 = require('web3')
 
 function InfoBabyjub ({
   tokensR,
   tokensE,
   txs,
   txsExits,
-  noImported,
   babyjub,
   loading
 }) {
@@ -33,7 +31,7 @@ function InfoBabyjub ({
 
   function isLoadingTokensR () {
     if (loading === false) {
-      return web3.utils.fromWei(tokensR, 'ether')
+      return ethers.utils.formatEther(tokensR)
     }
 
     return <Icon name='circle notched' loading />
@@ -41,7 +39,7 @@ function InfoBabyjub ({
 
   function isLoadingTokensE () {
     if (loading === false) {
-      return web3.utils.fromWei(tokensE, 'ether')
+      return ethers.utils.formatEther(tokensE)
     }
 
     return <Icon name='circle notched' loading />
@@ -72,7 +70,6 @@ function InfoBabyjub ({
               circular
               size='large'
               onClick={handleCopyBabyJub}
-              disabled={noImported}
             />
           </Table.Cell>
         </Table.Row>
@@ -84,7 +81,7 @@ function InfoBabyjub ({
             {isLoadingTokensR()}
           </Table.Cell>
           <Table.Cell colSpan='2' floated='left'>
-            <ModalInfoId txs={txs} noImported={noImported} />
+            <ModalInfoId txs={txs} />
           </Table.Cell>
         </Table.Row>
         <Table.Row>
@@ -95,7 +92,7 @@ function InfoBabyjub ({
             {isLoadingTokensE()}
           </Table.Cell>
           <Table.Cell colSpan='2' floated='left'>
-            <ModalInfoIdExits txsExits={txsExits} noImported={noImported} />
+            <ModalInfoIdExits txsExits={txsExits} />
           </Table.Cell>
         </Table.Row>
       </Table.Header>
@@ -108,7 +105,6 @@ InfoBabyjub.propTypes = {
   tokensE: PropTypes.string,
   txs: PropTypes.array,
   txsExits: PropTypes.array,
-  noImported: PropTypes.bool.isRequired,
   babyjub: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired
 }

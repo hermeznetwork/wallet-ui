@@ -21,14 +21,13 @@ function ModalDeposit ({
   tokensList,
   tokensA,
   gasMultiplier,
-  desWallet
+  metamaskWallet
 }) {
   const [amount, setAmount] = React.useState(0)
   const [tokenId, setTokenId] = React.useState()
   const [state, setState] = React.useState({
     modalError: false,
-    error: '',
-    amount: ''
+    error: ''
   })
 
   function isFormValid () {
@@ -41,6 +40,7 @@ function ModalDeposit ({
 
   function handleToggleModalClose () {
     onToggleModalDeposit()
+    setAmount(0)
     setState({
       ...state,
       modalError: false,
@@ -57,17 +57,15 @@ function ModalDeposit ({
     } else {
       onToggleModalDeposit()
       const res = await onSendDeposit(
-        config.nodeEth,
         addressSC,
         depositAmount,
         tokenId,
-        desWallet,
-        undefined,
+        metamaskWallet,
         abiRollup,
         gasMultiplier,
         config.operator
       )
-      const walletEthAddress = desWallet.ethWallet.address
+      const walletEthAddress = metamaskWallet.publicEthKey
       const filters = {}
       if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress
       if (res.message !== undefined) {
@@ -86,7 +84,7 @@ function ModalDeposit ({
     setAmount(event.target.value)
   }
 
-  function handleSetToken (event, { value }) {
+  function handleSetToken (_, { value }) {
     const tokenId = Number(value)
 
     setTokenId(tokenId)
@@ -168,13 +166,13 @@ ModalDeposit.propTypes = {
   tokensList: PropTypes.array.isRequired,
   tokensA: PropTypes.string.isRequired,
   gasMultiplier: PropTypes.number.isRequired,
-  desWallet: PropTypes.object.isRequired
+  metamaskWallet: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
   abiRollup: state.general.abiRollup,
-  desWallet: state.general.desWallet,
+  metamaskWallet: state.general.metamaskWallet,
   gasMultiplier: state.general.gasMultiplier,
   pendingOnchain: state.txState.pendingOnchain
 })

@@ -2,15 +2,9 @@ import * as CONSTANTS from './constants'
 
 const initialState = {
   errorWallet: '',
-  isLoadingWallet: false,
-  wallet: {},
-  desWallet: {},
-  password: '',
-  errorCreateWallet: '',
-  isCreatingWallet: false,
-  created: false,
-  isLoadingFiles: false,
-  errorFiles: '',
+  isAuthed: false,
+  metamaskWallet: {},
+  errorConfig: '',
   config: {},
   abiRollup: [],
   abiTokens: [],
@@ -38,74 +32,6 @@ const initialState = {
 
 function general (state = initialState, action) {
   switch (action.type) {
-    case CONSTANTS.LOAD_WALLET:
-      return {
-        ...state,
-        isLoadingWallet: true,
-        errorWallet: ''
-      }
-    case CONSTANTS.LOAD_WALLET_SUCCESS:
-      return {
-        ...state,
-        isLoadingWallet: false,
-        wallet: action.payload.wallet,
-        password: action.payload.password,
-        desWallet: action.payload.desWallet,
-        errorWallet: ''
-      }
-    case CONSTANTS.LOAD_WALLET_ERROR:
-      return {
-        ...state,
-        isLoadingWallet: false,
-        wallet: {},
-        password: '',
-        desWallet: {},
-        errorWallet: action.error
-      }
-    case CONSTANTS.CREATE_WALLET:
-      return {
-        ...state,
-        isCreatingWallet: true,
-        errorCreateWallet: ''
-      }
-    case CONSTANTS.CREATE_WALLET_SUCCESS:
-      return {
-        ...state,
-        isCreatingWallet: false,
-        created: true,
-        errorCreateWallet: ''
-      }
-    case CONSTANTS.CREATE_WALLET_ERROR:
-      return {
-        ...state,
-        isCreatingWallet: false,
-        created: false,
-        errorCreateWallet: action.error
-      }
-    case CONSTANTS.LOAD_FILES:
-      return {
-        ...state,
-        isLoadingFiles: true,
-        errorFiles: ''
-      }
-    case CONSTANTS.LOAD_FILES_SUCCESS:
-      return {
-        ...state,
-        config: action.payload.config,
-        abiRollup: action.payload.abiRollup,
-        abiTokens: action.payload.abiTokens,
-        chainId: action.payload.chainId,
-        isLoadingFiles: false,
-        errorFiles: action.error
-      }
-    case CONSTANTS.LOAD_FILES_ERROR:
-      return {
-        ...state,
-        isLoadingFiles: false,
-        chainId: -1,
-        config: action.payload.config,
-        errorFiles: action.error
-      }
     case CONSTANTS.LOAD_OPERATOR:
       return {
         ...state,
@@ -124,6 +50,49 @@ function general (state = initialState, action) {
         ...state,
         isLoadingOp: false,
         errorInfoOp: action.error
+      }
+    case CONSTANTS.LOAD_METAMASK:
+      return {
+        ...state,
+        isAuthed: false,
+        isLoadingWallet: true,
+        errorWallet: ''
+      }
+    case CONSTANTS.LOAD_METAMASK_SUCCESS:
+      return {
+        ...state,
+        isAuthed: true,
+        metamaskWallet: action.payload.metamaskWallet,
+        errorWallet: ''
+      }
+    case CONSTANTS.LOAD_METAMASK_ERROR:
+      return {
+        ...state,
+        isAuthed: false,
+        metamaskWallet: {},
+        errorWallet: action.error
+      }
+    case CONSTANTS.LOAD_CONFIG:
+      return {
+        ...state,
+        isLoadingWallet: true,
+        errorConfig: ''
+      }
+    case CONSTANTS.LOAD_CONFIG_SUCCESS:
+      return {
+        ...state,
+        config: action.payload.config,
+        abiRollup: action.payload.abiRollup,
+        abiTokens: action.payload.abiTokens,
+        chainId: action.payload.chainId,
+        errorConfig: ''
+      }
+    case CONSTANTS.LOAD_CONFIG_ERROR:
+      return {
+        ...state,
+        chainId: -1,
+        config: action.payload.config,
+        errorConfig: action.error
       }
     case CONSTANTS.INFO_ACCOUNT:
       return {

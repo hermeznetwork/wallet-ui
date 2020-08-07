@@ -1,7 +1,7 @@
-import * as CONSTANTS from './constants'
+import ethers from 'ethers'
 
-const web3 = require('web3')
-const operator = require('../../utils/bundle-op')
+import * as CONSTANTS from './constants'
+import { CliExternalOperator } from '../../utils/cli-external-operator'
 
 function stateSend (tx) {
   return {
@@ -29,7 +29,7 @@ export function handleStateSend (res, urlOperator, amount, fee, tokenId, babyJub
     currentBatch: res.currentBatch,
     nonce: res.nonce,
     id: res.nonce.toString() + tokenId,
-    amount: web3.utils.fromWei(amount, 'ether'),
+    amount: ethers.utils.formatEther(amount),
     receiver: babyJubReceiver,
     maxNumBatch: Number(res.currentBatch) + 2,
     finalBatch: 'Pending',
@@ -51,7 +51,7 @@ export function handleStateSend (res, urlOperator, amount, fee, tokenId, babyJub
         let currentBatch = Number(res.currentBatch)
         const { maxNumBatch } = infoTx
         // eslint-disable-next-line new-cap
-        const apiOperator = new operator.cliExternalOperator(urlOperator)
+        const apiOperator = new CliExternalOperator(urlOperator)
         let actualNonce
         try {
           const resFrom = await apiOperator.getStateAccountByAddress(tokenId, babyjub)
@@ -139,7 +139,7 @@ export function handleStateDeposit (tx, tokenId, urlOperator, amount) {
     currentBatch: tx.currentBatch,
     nonce: tx.res.nonce,
     id: tx.res.hash,
-    amount: web3.utils.fromWei(amount, 'ether'),
+    amount: ethers.utils.formatEther(amount),
     type: 'Deposit',
     from: tx.res.from,
     to: tx.res.to,
@@ -154,7 +154,7 @@ export function handleStateDeposit (tx, tokenId, urlOperator, amount) {
     try {
       await tx.res.wait()
       // eslint-disable-next-line new-cap
-      const apiOperator = new operator.cliExternalOperator(urlOperator)
+      const apiOperator = new CliExternalOperator(urlOperator)
       const resState = await apiOperator.getState()
       let currentBatch = resState.data.rollupSynch.lastBatchSynched
       const maxNumBatch = currentBatch + 2
@@ -226,7 +226,7 @@ export function handleStateWithdraw (tx, tokenId) {
     currentBatch: tx.currentBatch,
     nonce: tx.res.nonce,
     id: tx.res.hash,
-    amount: web3.utils.fromWei(tx.amount, 'ether'),
+    amount: ethers.utils.formatEther(tx.amount),
     type: 'Withdraw',
     from: tx.res.from,
     to: tx.res.to,
@@ -270,7 +270,7 @@ export function handleStateForceExit (tx, urlOperator, tokenId, amount) {
     currentBatch: tx.currentBatch,
     nonce: tx.res.nonce,
     id: tx.res.hash,
-    amount: web3.utils.fromWei(amount, 'ether'),
+    amount: ethers.utils.formatEther(amount),
     type: 'ForceExit',
     from: tx.res.from,
     to: tx.res.to,
@@ -285,7 +285,7 @@ export function handleStateForceExit (tx, urlOperator, tokenId, amount) {
     try {
       await tx.res.wait()
       // eslint-disable-next-line new-cap
-      const apiOperator = new operator.cliExternalOperator(urlOperator)
+      const apiOperator = new CliExternalOperator(urlOperator)
       const resState = await apiOperator.getState()
       let currentBatch = resState.data.rollupSynch.lastBatchSynched
       const maxNumBatch = currentBatch + 2
