@@ -31,7 +31,7 @@ mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/txs/history`)
         Nonce: 0,
         FeeSelector: 15,
         Type: 'Transfer',
-        TokenID: 0
+        TokenID: 2
       }
     ]
   )
