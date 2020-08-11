@@ -7,20 +7,6 @@ import TokenList from './components/token-list/token-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import useSettingsStyles from './settings.styles'
 
-// Za default currency:
-// prvo ti treba lista svih koina i da ih prikazes na strani
-// onda treba da moze da se selektuje jedna (samo jedna)
-// i ta jedna da se sacuva u localStorrage
-
-// Za copy eth address:
-// copy to clipboard (samo to?)
-
-// Za disconnect wallet
-// da se uradi refresh stranice
-
-// Za force exit
-// funkcionalnost nedustupna
-
 function Settings ({
   ethereumAddress,
   preferredCurrency,
@@ -28,8 +14,16 @@ function Settings ({
 }) {
   const classes = useSettingsStyles()
 
+  const handleId = function (id) {
+    console.log(id)
+  }
+
   return (
     <div>
+      <h4 className={classes.title}>Settings</h4>
+      <div className={classes.ethereumAddress}>
+        {ethereumAddress}
+      </div>
       {(() => {
         switch (tokensTask.status) {
           case 'loading': {
@@ -53,26 +47,13 @@ function Settings ({
                       case 'successful': {
                         return (
                           <div>
-                            <h4 className={classes.title}>Settings</h4>
-                            <div className={classes.ethereumAddress}>
-                              {ethereumAddress}
-                            </div>
-
                             <div>
                               Default currency - {preferredCurrency}
                             </div>
-
                             <TokenList
                               tokens={tokensTask.data}
+                              handleId={handleId}
                             />
-
-                            <div>
-                              <QRCode
-                                value={ethereumAddress}
-                                className={classes.qrCode}
-                                size={256}// Adding a random number until we have designs.
-                              />
-                            </div>
                           </div>
                         )
                       }
@@ -90,6 +71,13 @@ function Settings ({
           }
         }
       })()}
+      <div>
+        <QRCode
+          value={ethereumAddress}
+          className={classes.qrCode}
+          size={256}// Adding a random number until we have designs.
+        />
+      </div>
     </div>
   )
 

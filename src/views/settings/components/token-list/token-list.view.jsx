@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import Token from '../token/token.view'
 import useTokenListStyles from './token-list.styles'
 
-function TokenList ({ tokens, preferredCurrency }) {
+function TokenList ({ tokens, handleId }) {
   const classes = useTokenListStyles()
 
   function getToken (tokenId) {
@@ -20,8 +20,10 @@ function TokenList ({ tokens, preferredCurrency }) {
           className={clsx({ [classes.token]: index > 0 })}
         >
           <Token
+            tokenId={token.TokenID}
             tokenSymbol={getToken(token.TokenID).Symbol}
             tokenName={getToken(token.TokenID).Name}
+            handleId={handleId}
           />
         </div>
       )}
@@ -36,7 +38,8 @@ TokenList.propTypes = {
       Name: PropTypes.string.isRequired,
       Symbol: PropTypes.string.isRequired
     })
-  )
+  ),
+  handleId: PropTypes.func.isRequired
 }
 
 export default TokenList
