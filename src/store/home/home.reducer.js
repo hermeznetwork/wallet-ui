@@ -4,7 +4,7 @@ const initialHomeState = {
   accountsTask: {
     status: 'pending'
   },
-  recentTransactionsTask: {
+  transactionsTask: {
     status: 'pending'
   }
 }
@@ -37,29 +37,29 @@ function homeReducer (state = initialHomeState, action) {
         }
       }
     }
-    case homeActionTypes.LOAD_RECENT_TRANSACTIONS: {
+    case homeActionTypes.LOAD_TRANSACTIONS: {
       return {
         ...state,
-        recentTransactionsTask: {
+        transactionsTask: {
           status: 'loading'
         }
       }
     }
-    case homeActionTypes.LOAD_RECENT_TRANSACTIONS_SUCCESS: {
+    case homeActionTypes.LOAD_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
-        recentTransactionsTask: {
+        transactionsTask: {
           status: 'successful',
           data: action.transactions
         }
       }
     }
-    case homeActionTypes.LOAD_RECENT_TRANSACTIONS_FAILURE: {
+    case homeActionTypes.LOAD_TRANSACTIONS_FAILURE: {
       return {
         ...state,
-        recentTransactionsTask: {
+        transactionsTask: {
           status: 'failed',
-          error: 'An error ocurred loading the recent transactions'
+          error: 'An error ocurred loading the transactions'
         }
       }
     }

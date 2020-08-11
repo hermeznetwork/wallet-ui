@@ -3,17 +3,17 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import useHomeStyles from './home.styles'
-import { fetchAccounts, fetchRecentTransactions } from '../../store/home/home.thunks'
+import { fetchAccounts, fetchTransactions } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from './components/account-list/account-list.view'
-import RecentTransactionList from '../shared/recent-transaction-list/recent-transaction-list.view'
+import TransactionList from '../shared/transaction-list/transaction-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 
 function Home ({
   ethereumAddress,
   tokensTask,
   accountsTask,
-  recentTransactionsTask,
+  transactionsTask,
   preferredCurrency,
   onLoadAccounts,
   onLoadRecentTransactions
@@ -101,19 +101,19 @@ function Home ({
                   })()}
                 </section>
                 <section>
-                  <h4 className={classes.title}>Recent activity</h4>
+                  <h4 className={classes.title}>Activity</h4>
                   {(() => {
-                    switch (recentTransactionsTask.status) {
+                    switch (transactionsTask.status) {
                       case 'loading': {
                         return <Spinner />
                       }
                       case 'failed': {
-                        return <p>{recentTransactionsTask.error}</p>
+                        return <p>{transactionsTask.error}</p>
                       }
                       case 'successful': {
                         return (
-                          <RecentTransactionList
-                            transactions={recentTransactionsTask.data}
+                          <TransactionList
+                            transactions={transactionsTask.data}
                             tokens={tokensTask.data}
                           />
                         )
@@ -149,7 +149,7 @@ Home.propTypes = {
     error: PropTypes.string
   }),
   preferredCurrency: PropTypes.string.isRequired,
-  recentTransactionsTask: PropTypes.shape({
+  transactionsTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
@@ -179,12 +179,12 @@ const mapStateToProps = (state) => ({
   ethereumAddress: state.settings.ethereumAddress,
   accountsTask: state.home.accountsTask,
   preferredCurrency: state.settings.preferredCurrency,
-  recentTransactionsTask: state.home.recentTransactionsTask
+  transactionsTask: state.home.transactionsTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress)),
-  onLoadRecentTransactions: (ethereumAddress) => dispatch(fetchRecentTransactions(ethereumAddress))
+  onLoadRecentTransactions: (ethereumAddress) => dispatch(fetchTransactions(ethereumAddress))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home)
