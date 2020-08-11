@@ -80,32 +80,6 @@ function Settings ({
       </div>
     </div>
   )
-
-  // return (
-  //   <section>
-  //     <h4 className={classes.title}>Settings</h4>
-  //     <div className={classes.ethereumAddress}>
-  //       {ethereumAddress}
-  //     </div>
-
-  //     <TokenList
-  //       tokens={tokensTask.data}
-  //       preferredCurrency={preferredCurrency}
-  //     />
-
-  //     <div className={classes.preferredCurrency}>
-  //       Preferred: {preferredCurrency}
-  //     </div>
-  //     <div>
-  //       <QRCode
-  //         value={ethereumAddress}
-  //         className={classes.qrCode}
-  //         size={256}// Adding a random number until we have designs.
-  //       />
-  //     </div>
-
-  //   </section>
-  // )
 }
 
 Settings.propTypes = {
