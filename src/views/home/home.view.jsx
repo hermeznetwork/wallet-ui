@@ -6,7 +6,7 @@ import useHomeStyles from './home.styles'
 import { fetchAccounts, fetchRecentTransactions } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from './components/account-list/account-list.view'
-import RecentTransactionList from './components/recent-transaction-list/recent-transaction-list.view'
+import RecentTransactionList from '../shared/recent-transaction-list/recent-transaction-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 
 function Home ({

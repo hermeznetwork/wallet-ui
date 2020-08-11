@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import useAccountListStyles from '../home/components/account-list/account-list.styles'
 import { fetchAccount, fetchTransactions } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
-import RecentTransactionList from '../home/components/recent-transaction-list/recent-transaction-list.view'
+import RecentTransactionList from '../shared/recent-transaction-list/recent-transaction-list.view'
 
 function AccountDetails ({
   ethereumAddress,
