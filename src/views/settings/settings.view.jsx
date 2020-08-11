@@ -6,6 +6,21 @@ import QRCode from 'qrcode.react'
 import TokenList from './components/token-list/token-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import useSettingsStyles from './settings.styles'
+import { SETTINGS } from '../../constants'
+
+// Za default currency:
+// DONE prvo ti treba lista svih koina i da ih prikazes na strani
+// onda treba da moze da se selektuje jedna (samo jedna)
+// i ta jedna da se sacuva u localStorrage
+
+// Za copy eth address:
+// copy to clipboard (samo to?)
+
+// Za disconnect wallet
+// da se uradi refresh stranice
+
+// Za force exit
+// funkcionalnost nedustupna
 
 function Settings ({
   ethereumAddress,
@@ -14,8 +29,19 @@ function Settings ({
 }) {
   const classes = useSettingsStyles()
 
-  const handleId = function (id) {
-    console.log(id)
+  // if there is no default currency stored, set to one from constants
+  if (!localStorage.getItem('defaultCurrencyId')) {
+    localStorage.setItem('defaultCurrencyId', SETTINGS.DEFAULT_CURRENCY_ID)
+  }
+
+  const handleTokenSelection = function (selectedTokenId) {
+    var defaultCurrencyId = parseInt(localStorage.getItem('defaultCurrencyId'))
+
+    if (selectedTokenId !== defaultCurrencyId) {
+      // if selected is different then default, set selected as new default
+      localStorage.setItem('defaultCurrencyId', selectedTokenId)
+      defaultCurrencyId = selectedTokenId
+    }
   }
 
   return (
@@ -52,7 +78,7 @@ function Settings ({
                             </div>
                             <TokenList
                               tokens={tokensTask.data}
-                              handleId={handleId}
+                              handleTokenSelection={handleTokenSelection}
                             />
                           </div>
                         )

@@ -3,13 +3,13 @@ import PropTypes from 'prop-types'
 
 import useTokenStyles from './token.styles'
 
-function Token ({ tokenSymbol, tokenName, tokenId, handleId }) {
+function Token ({ tokenSymbol, tokenName, tokenId, handleTokenSelection }) {
   const classes = useTokenStyles()
 
   return (
     <div
       className={classes.root}
-      onClick={() => handleId(tokenId)}
+      onClick={() => handleTokenSelection(tokenId)}
     >
       <div className={classes.image} />
       <div className={classes.details}>
@@ -24,7 +24,7 @@ Token.propTypes = {
   tokenId: PropTypes.number.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
   tokenName: PropTypes.string.isRequired,
-  handleId: PropTypes.func.isRequired
+  handleTokenSelection: PropTypes.func.isRequired
 }
 
 export default Token
