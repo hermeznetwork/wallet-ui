@@ -24,7 +24,7 @@ Token.propTypes = {
   tokenId: PropTypes.number.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
   tokenName: PropTypes.string.isRequired,
-  handleTokenSelection: PropTypes.func.isRequired
+  handleTokenSelection: PropTypes.func
 }
 
 export default Token

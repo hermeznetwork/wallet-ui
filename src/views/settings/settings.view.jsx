@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import QRCode from 'qrcode.react'
 
 import TokenList from './components/token-list/token-list.view'
+import Token from './components/token/token.view'
 import Spinner from '../shared/spinner/spinner.view'
 import useSettingsStyles from './settings.styles'
 import { SETTINGS } from '../../constants'
@@ -24,7 +25,6 @@ import { SETTINGS } from '../../constants'
 
 function Settings ({
   ethereumAddress,
-  preferredCurrency,
   tokensTask
 }) {
   const classes = useSettingsStyles()
@@ -34,14 +34,24 @@ function Settings ({
     localStorage.setItem('defaultCurrencyId', SETTINGS.DEFAULT_CURRENCY_ID)
   }
 
-  const handleTokenSelection = function (selectedTokenId) {
-    var defaultCurrencyId = parseInt(localStorage.getItem('defaultCurrencyId'))
+  var defaultCurrencyId = parseInt(localStorage.getItem('defaultCurrencyId'))
 
+  console.log('defaultCurrencyId PRE ' + defaultCurrencyId)
+
+  const handleTokenSelection = function (selectedTokenId) {
     if (selectedTokenId !== defaultCurrencyId) {
       // if selected is different then default, set selected as new default
       localStorage.setItem('defaultCurrencyId', selectedTokenId)
       defaultCurrencyId = selectedTokenId
+
+      console.log('defaultCurrencyId UNUTRA ' + defaultCurrencyId)
     }
+  }
+
+  console.log('defaultCurrencyId POSLE ' + defaultCurrencyId)
+
+  function getToken (defaultCurrencyId) {
+    return tokensTask.data.find((token) => token.TokenID === defaultCurrencyId)
   }
 
   return (
@@ -74,7 +84,12 @@ function Settings ({
                         return (
                           <div>
                             <div>
-                              Default currency - {preferredCurrency}
+                              Default currency
+                              <Token
+                                tokenId={defaultCurrencyId}
+                                tokenSymbol={getToken(defaultCurrencyId).Symbol}
+                                tokenName={getToken(defaultCurrencyId).Name}
+                              />
                             </div>
                             <TokenList
                               tokens={tokensTask.data}
@@ -110,7 +125,6 @@ function Settings ({
 
 Settings.propTypes = {
   ethereumAddress: PropTypes.string.isRequired,
-  preferredCurrency: PropTypes.string.isRequired,
   tokensTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
@@ -126,7 +140,6 @@ Settings.propTypes = {
 
 const mapStateToProps = (state) => ({
   ethereumAddress: state.settings.ethereumAddress,
-  preferredCurrency: state.settings.preferredCurrency,
   tokensTask: state.global.tokensTask
 })
 
