@@ -71,8 +71,8 @@ function Home ({
                     }
                   })()}
                   <div className={classes.actionButtonsGroup}>
-                    <button className={classes.actionButton}>Deposit</button>
-                    <button className={classes.actionButton}>Withdraw</button>
+                    <button className={classes.actionButton}>Send</button>
+                    <button className={classes.actionButton}>Add funds</button>
                   </div>
                 </section>
                 <section>

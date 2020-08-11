@@ -5,6 +5,8 @@ const useAccountStyles = createUseStyles({
     display: 'flex',
     alignItems: 'center',
     background: 'gainsboro',
+    textDecoration: 'none',
+    color: 'currentColor',
     borderRadius: 8,
     padding: 24
   },
