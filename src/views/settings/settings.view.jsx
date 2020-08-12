@@ -7,48 +7,46 @@ import TokenList from './components/token-list/token-list.view'
 import Token from './components/token/token.view'
 import Spinner from '../shared/spinner/spinner.view'
 import useSettingsStyles from './settings.styles'
-import { SETTINGS } from '../../constants'
-
-// Za default currency:
-// DONE prvo ti treba lista svih koina i da ih prikazes na strani
-// onda treba da moze da se selektuje jedna (samo jedna)
-// i ta jedna da se sacuva u localStorrage
-
-// Za copy eth address:
-// copy to clipboard (samo to?)
-
-// Za disconnect wallet
-// da se uradi refresh stranice
-
-// Za force exit
-// funkcionalnost nedustupna
+// import { SETTINGS } from '../../constants'
+import { fetchDefaultCurrency } from '../../store/settings/settings.thunks'
 
 function Settings ({
   ethereumAddress,
-  tokensTask
+  tokensTask,
+  onChangeDefaultCurrency,
+  preferredCurrency
 }) {
   const classes = useSettingsStyles()
 
   // if there is no default currency stored, set to one from constants
-  if (!localStorage.getItem('defaultCurrencyId')) {
-    localStorage.setItem('defaultCurrencyId', SETTINGS.DEFAULT_CURRENCY_ID)
-  }
+  // if (!localStorage.getItem('defaultCurrencyId')) {
+  //   localStorage.setItem('defaultCurrencyId', SETTINGS.DEFAULT_CURRENCY_ID)
+  // }
 
-  var defaultCurrencyId = parseInt(localStorage.getItem('defaultCurrencyId'))
+  // var defaultCurrencyId = parseInt(localStorage.getItem('defaultCurrencyId'))
 
-  console.log('defaultCurrencyId PRE ' + defaultCurrencyId)
+  // const handleTokenSelection = function (selectedTokenId) {
+  //   if (selectedTokenId !== defaultCurrencyId) {
+  //     // if selected is different then default, set selected as new default
+  //     localStorage.setItem('defaultCurrencyId', selectedTokenId)
+  //     defaultCurrencyId = selectedTokenId
+
+  //     //call the prop
+  //     //dispatch redux action
+  //     //defaultCurrencyId
+  //   }
+  // }
 
   const handleTokenSelection = function (selectedTokenId) {
-    if (selectedTokenId !== defaultCurrencyId) {
-      // if selected is different then default, set selected as new default
-      localStorage.setItem('defaultCurrencyId', selectedTokenId)
-      defaultCurrencyId = selectedTokenId
-
-      console.log('defaultCurrencyId UNUTRA ' + defaultCurrencyId)
+    if (selectedTokenId !== preferredCurrency) {
+      onChangeDefaultCurrency(selectedTokenId)
     }
   }
 
-  console.log('defaultCurrencyId POSLE ' + defaultCurrencyId)
+  // ako bi onChangeDefaultCurrency mogao da zameni funkciju iza handleTokenSelection
+  // onda handleTokenSelection jednako onChangeDefaultCurrency
+  // i da se ostalo nastavi tako kako je
+  // proba 1: ovako kako je gore i napisano
 
   function getToken (defaultCurrencyId) {
     return tokensTask.data.find((token) => token.TokenID === defaultCurrencyId)
@@ -86,14 +84,16 @@ function Settings ({
                             <div>
                               Default currency
                               <Token
-                                tokenId={defaultCurrencyId}
-                                tokenSymbol={getToken(defaultCurrencyId).Symbol}
-                                tokenName={getToken(defaultCurrencyId).Name}
+                                tokenId={preferredCurrency}
+                                tokenSymbol={getToken(preferredCurrency).Symbol}
+                                tokenName={getToken(preferredCurrency).Name}
+                                handleTokenSelection={handleTokenSelection}
                               />
                             </div>
                             <TokenList
                               tokens={tokensTask.data}
                               handleTokenSelection={handleTokenSelection}
+                              // pass active token ID removing the need to call Token
                             />
                           </div>
                         )
@@ -135,12 +135,18 @@ Settings.propTypes = {
       })
     ),
     error: PropTypes.string
-  })
+  }),
+  onChangeDefaultCurrency: PropTypes.func
 }
 
 const mapStateToProps = (state) => ({
   ethereumAddress: state.settings.ethereumAddress,
-  tokensTask: state.global.tokensTask
+  tokensTask: state.global.tokensTask,
+  preferredCurrency: state.settings.preferredCurrency
 })
 
-export default connect(mapStateToProps)(Settings)
+const mapDispatchToProps = (dispatch) => ({
+  onChangeDefaultCurrency: (selectedTokenId) => dispatch(fetchDefaultCurrency(selectedTokenId))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Settings)
