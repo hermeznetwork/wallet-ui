@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useRecentTransactionStyles = createUseStyles({
+const useTransactionStyles = createUseStyles({
   root: {
     display: 'flex',
     alignItems: 'center'
@@ -24,4 +24,4 @@ const useRecentTransactionStyles = createUseStyles({
   }
 })
 
-export default useRecentTransactionStyles
+export default useTransactionStyles
