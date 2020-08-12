@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 import { connect } from 'react-redux'
 
-import useAccountListStyles from '../home/components/account-list/account-list.styles'
+import useAccountDetailsStyles from './account-details.styles'
 import { fetchAccount, fetchTransactions } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from '../shared/transaction-list/transaction-list.view'
@@ -17,7 +17,7 @@ function AccountDetails ({
   onLoadAccount,
   onLoadTransactions
 }) {
-  const classes = useAccountListStyles()
+  const classes = useAccountDetailsStyles()
   const { tokenId } = useParams()
 
   React.useEffect(() => {
@@ -67,6 +67,11 @@ function AccountDetails ({
                       }
                     }
                   })()}
+                  <div className={classes.actionButtonsGroup}>
+                    <button className={classes.actionButton}>Send</button>
+                    <button className={classes.actionButton}>Add funds</button>
+                    <button className={classes.actionButton}>Withdrawal</button>
+                  </div>
                 </section>
                 <section>
                   <h4 className={classes.title}>Activity</h4>
