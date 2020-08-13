@@ -2,7 +2,7 @@ import { createUseStyles } from 'react-jss'
 
 const useTokenListStyles = createUseStyles({
   token: {
-    marginTop: 16
+    marginBottom: 16
   }
 })
 

@@ -4,10 +4,8 @@ import { connect } from 'react-redux'
 import QRCode from 'qrcode.react'
 
 import TokenList from './components/token-list/token-list.view'
-import Token from './components/token/token.view'
 import Spinner from '../shared/spinner/spinner.view'
 import useSettingsStyles from './settings.styles'
-// import { SETTINGS } from '../../constants'
 import { fetchDefaultCurrency } from '../../store/settings/settings.thunks'
 
 function Settings ({
@@ -18,38 +16,10 @@ function Settings ({
 }) {
   const classes = useSettingsStyles()
 
-  // if there is no default currency stored, set to one from constants
-  // if (!localStorage.getItem('defaultCurrencyId')) {
-  //   localStorage.setItem('defaultCurrencyId', SETTINGS.DEFAULT_CURRENCY_ID)
-  // }
-
-  // var defaultCurrencyId = parseInt(localStorage.getItem('defaultCurrencyId'))
-
-  // const handleTokenSelection = function (selectedTokenId) {
-  //   if (selectedTokenId !== defaultCurrencyId) {
-  //     // if selected is different then default, set selected as new default
-  //     localStorage.setItem('defaultCurrencyId', selectedTokenId)
-  //     defaultCurrencyId = selectedTokenId
-
-  //     //call the prop
-  //     //dispatch redux action
-  //     //defaultCurrencyId
-  //   }
-  // }
-
   const handleTokenSelection = function (selectedTokenId) {
     if (selectedTokenId !== preferredCurrency) {
       onChangeDefaultCurrency(selectedTokenId)
     }
-  }
-
-  // ako bi onChangeDefaultCurrency mogao da zameni funkciju iza handleTokenSelection
-  // onda handleTokenSelection jednako onChangeDefaultCurrency
-  // i da se ostalo nastavi tako kako je
-  // proba 1: ovako kako je gore i napisano
-
-  function getToken (defaultCurrencyId) {
-    return tokensTask.data.find((token) => token.TokenID === defaultCurrencyId)
   }
 
   return (
@@ -81,19 +51,11 @@ function Settings ({
                       case 'successful': {
                         return (
                           <div>
-                            <div>
-                              Default currency
-                              <Token
-                                tokenId={preferredCurrency}
-                                tokenSymbol={getToken(preferredCurrency).Symbol}
-                                tokenName={getToken(preferredCurrency).Name}
-                                handleTokenSelection={handleTokenSelection}
-                              />
-                            </div>
                             <TokenList
                               tokens={tokensTask.data}
                               handleTokenSelection={handleTokenSelection}
                               // pass active token ID removing the need to call Token
+                              seletedTokenId={preferredCurrency}
                             />
                           </div>
                         )

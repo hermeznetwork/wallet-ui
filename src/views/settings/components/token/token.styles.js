@@ -6,7 +6,8 @@ const useTokenStyles = createUseStyles({
     alignItems: 'center',
     background: 'gainsboro',
     borderRadius: 8,
-    padding: 24
+    padding: 24,
+    marginTop: 16
   },
   image: {
     width: 40,

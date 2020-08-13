@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import Token from '../token/token.view'
 import useTokenListStyles from './token-list.styles'
 
-function TokenList ({ tokens, handleTokenSelection }) {
+function TokenList ({ tokens, handleTokenSelection, seletedTokenId }) {
   const classes = useTokenListStyles()
 
   function getToken (tokenId) {
@@ -14,19 +14,31 @@ function TokenList ({ tokens, handleTokenSelection }) {
 
   return (
     <div>
-      {tokens.map((token, index) =>
-        <div
-          key={token.TokenID}
-          className={clsx({ [classes.token]: index > 0 })}
-        >
-          <Token
-            tokenId={token.TokenID}
-            tokenSymbol={getToken(token.TokenID).Symbol}
-            tokenName={getToken(token.TokenID).Name}
-            handleTokenSelection={handleTokenSelection}
-          />
-        </div>
-      )}
+      <div>
+        <h4>Default currency</h4>
+        <Token
+          tokenId={seletedTokenId}
+          tokenSymbol={getToken(seletedTokenId).Symbol}
+          tokenName={getToken(seletedTokenId).Name}
+          handleTokenSelection={handleTokenSelection}
+        />
+      </div>
+      <div>
+        <h4>Currency list</h4>
+        {tokens.map((token, index) =>
+          <div
+            key={token.TokenID}
+            className={clsx({ [classes.token]: index > 0 })}
+          >
+            <Token
+              tokenId={token.TokenID}
+              tokenSymbol={getToken(token.TokenID).Symbol}
+              tokenName={getToken(token.TokenID).Name}
+              handleTokenSelection={handleTokenSelection}
+            />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -39,7 +51,8 @@ TokenList.propTypes = {
       Symbol: PropTypes.string.isRequired
     })
   ),
-  handleTokenSelection: PropTypes.func.isRequired
+  handleTokenSelection: PropTypes.func.isRequired,
+  seletedTokenId: PropTypes.number
 }
 
 export default TokenList
