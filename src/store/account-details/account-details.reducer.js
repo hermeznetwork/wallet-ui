@@ -1,7 +1,7 @@
-import { homeActionTypes } from './home.actions'
+import { accountDetailsActionTypes } from './account-details.actions'
 
-const initialHomeState = {
-  accountsTask: {
+const initialAccountDetailsReducer = {
+  accountTask: {
     status: 'pending'
   },
   transactionsTask: {
@@ -9,35 +9,35 @@ const initialHomeState = {
   }
 }
 
-function homeReducer (state = initialHomeState, action) {
+function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
   switch (action.type) {
-    case homeActionTypes.LOAD_ACCOUNTS: {
+    case accountDetailsActionTypes.LOAD_ACCOUNT: {
       return {
         ...state,
-        accountsTask: {
+        accountTask: {
           status: 'loading'
         }
       }
     }
-    case homeActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+    case accountDetailsActionTypes.LOAD_ACCOUNT_SUCCESS: {
       return {
         ...state,
-        accountsTask: {
+        accountTask: {
           status: 'successful',
-          data: action.accounts
+          data: action.account
         }
       }
     }
-    case homeActionTypes.LOAD_ACCOUNTS_FAILURE: {
+    case accountDetailsActionTypes.LOAD_ACCOUNT_FAILURE: {
       return {
         ...state,
-        accountsTask: {
+        accountTask: {
           status: 'failed',
-          error: 'An error ocurred loading the accounts'
+          error: 'An error ocurred loading the account'
         }
       }
     }
-    case homeActionTypes.LOAD_TRANSACTIONS: {
+    case accountDetailsActionTypes.LOAD_TRANSACTIONS: {
       return {
         ...state,
         transactionsTask: {
@@ -45,7 +45,7 @@ function homeReducer (state = initialHomeState, action) {
         }
       }
     }
-    case homeActionTypes.LOAD_TRANSACTIONS_SUCCESS: {
+    case accountDetailsActionTypes.LOAD_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
         transactionsTask: {
@@ -54,7 +54,7 @@ function homeReducer (state = initialHomeState, action) {
         }
       }
     }
-    case homeActionTypes.LOAD_TRANSACTIONS_FAILURE: {
+    case accountDetailsActionTypes.LOAD_TRANSACTIONS_FAILURE: {
       return {
         ...state,
         transactionsTask: {
@@ -69,4 +69,4 @@ function homeReducer (state = initialHomeState, action) {
   }
 }
 
-export default homeReducer
+export default accountDetailsReducer

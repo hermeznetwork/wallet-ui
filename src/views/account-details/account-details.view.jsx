@@ -1,36 +1,34 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 import { connect } from 'react-redux'
 
-import useHomeStyles from './home.styles'
-import { fetchAccounts, fetchTransactions } from '../../store/home/home.thunks'
-import TotalBalance from './components/total-balance/total-balance.view'
-import AccountList from './components/account-list/account-list.view'
-import TransactionList from '../shared/transaction-list/transaction-list.view'
+import useAccountDetailsStyles from './account-details.styles'
+import { fetchAccount, fetchTransactions } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
+import TransactionList from '../shared/transaction-list/transaction-list.view'
 
-function Home ({
+function AccountDetails ({
   ethereumAddress,
-  tokensTask,
-  accountsTask,
-  transactionsTask,
   preferredCurrency,
-  onLoadAccounts,
-  onLoadRecentTransactions
+  accountTask,
+  transactionsTask,
+  tokensTask,
+  onLoadAccount,
+  onLoadTransactions
 }) {
-  const classes = useHomeStyles()
+  const classes = useAccountDetailsStyles()
+  const { tokenId } = useParams()
 
   React.useEffect(() => {
-    onLoadAccounts(ethereumAddress)
-    onLoadRecentTransactions(ethereumAddress)
-  }, [ethereumAddress, onLoadAccounts, onLoadRecentTransactions])
+    onLoadAccount(ethereumAddress, tokenId)
+    onLoadTransactions(ethereumAddress, tokenId)
+  }, [ethereumAddress, tokenId, onLoadAccount, onLoadTransactions])
 
-  function getTotalBalance (accounts) {
-    return accounts.reduce((amount, account) => amount + account.Balance, 0)
-  }
+  function getTokenName (tokens, tokenId) {
+    const tokenData = tokens.find(token => token.TokenID === tokenId)
 
-  function getToken (tokenId) {
-    return tokensTask.data.find((token) => token.TokenID === tokenId)
+    return tokenData?.Name
   }
 
   return (
@@ -47,26 +45,21 @@ function Home ({
             return (
               <>
                 <section>
-                  <h4 className={classes.title}>Total balance</h4>
                   {(() => {
-                    switch (accountsTask.status) {
+                    switch (accountTask.status) {
                       case 'loading': {
                         return <Spinner />
                       }
                       case 'failed': {
-                        return (
-                          <TotalBalance
-                            amount={undefined}
-                            currency={getToken(preferredCurrency).Symbol}
-                          />
-                        )
+                        return <p>{accountTask.error}</p>
                       }
                       case 'successful': {
                         return (
-                          <TotalBalance
-                            amount={getTotalBalance(accountsTask.data)}
-                            currency={getToken(preferredCurrency).Symbol}
-                          />
+                          <div>
+                            <h3>{getTokenName(tokensTask.data, accountTask.data.TokenID)}</h3>
+                            <h1>{accountTask.data.Balance}</h1>
+                            <p>- {preferredCurrency}</p>
+                          </div>
                         )
                       }
                       default: {
@@ -77,32 +70,8 @@ function Home ({
                   <div className={classes.actionButtonsGroup}>
                     <button className={classes.actionButton}>Send</button>
                     <button className={classes.actionButton}>Add funds</button>
+                    <button className={classes.actionButton}>Withdrawal</button>
                   </div>
-                </section>
-                <section>
-                  <h4 className={classes.title}>Accounts</h4>
-                  {(() => {
-                    switch (accountsTask.status) {
-                      case 'loading': {
-                        return <Spinner />
-                      }
-                      case 'failed': {
-                        return <p>{accountsTask.error}</p>
-                      }
-                      case 'successful': {
-                        return (
-                          <AccountList
-                            accounts={accountsTask.data}
-                            tokens={tokensTask.data}
-                            preferredCurrency={preferredCurrency}
-                          />
-                        )
-                      }
-                      default: {
-                        return <></>
-                      }
-                    }
-                  })()}
                 </section>
                 <section>
                   <h4 className={classes.title}>Activity</h4>
@@ -140,19 +109,17 @@ function Home ({
   )
 }
 
-Home.propTypes = {
+AccountDetails.propTypes = {
   ethereumAddress: PropTypes.string.isRequired,
-  accountsTask: PropTypes.shape({
+  preferredCurrency: PropTypes.string.isRequired,
+  accountTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        Balance: PropTypes.number.isRequired,
-        TokenID: PropTypes.number.isRequired
-      })
-    ),
+    data: PropTypes.shape({
+      Balance: PropTypes.number.isRequired,
+      TokenID: PropTypes.number.isRequired
+    }),
     error: PropTypes.string
   }),
-  preferredCurrency: PropTypes.number.isRequired,
   transactionsTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
@@ -173,22 +140,22 @@ Home.propTypes = {
         Name: PropTypes.string.isRequired,
         Symbol: PropTypes.string.isRequired
       })
-    ),
-    error: PropTypes.string
-  })
+    )
+  }),
+  onLoadAccount: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
-  tokensTask: state.global.tokensTask,
   ethereumAddress: state.settings.ethereumAddress,
-  accountsTask: state.home.accountsTask,
   preferredCurrency: state.settings.preferredCurrency,
-  transactionsTask: state.home.transactionsTask
+  accountTask: state.accountDetails.accountTask,
+  transactionsTask: state.accountDetails.transactionsTask,
+  tokensTask: state.global.tokensTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress)),
-  onLoadRecentTransactions: (ethereumAddress) => dispatch(fetchTransactions(ethereumAddress))
+  onLoadAccount: (ethereumAddress, tokenId) => dispatch(fetchAccount(ethereumAddress, tokenId)),
+  onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home)
+export default connect(mapStateToProps, mapDispatchToProps)(AccountDetails)

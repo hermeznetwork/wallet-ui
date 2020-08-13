@@ -20,6 +20,7 @@ function AccountList ({ accounts, tokens, preferredCurrency }) {
           className={clsx({ [classes.account]: index > 0 })}
         >
           <Account
+            tokenId={account.TokenID}
             amount={account.Balance}
             tokenSymbol={getToken(account.TokenID).Symbol}
             preferredCurrency={getToken(preferredCurrency).Symbol}
@@ -33,7 +34,6 @@ function AccountList ({ accounts, tokens, preferredCurrency }) {
 AccountList.propTypes = {
   accounts: PropTypes.arrayOf(
     PropTypes.shape({
-      EthAddr: PropTypes.string.isRequired,
       Balance: PropTypes.number.isRequired,
       TokenID: PropTypes.number.isRequired
     })

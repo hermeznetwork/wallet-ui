@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import useRecentTransactionStyles from './recent-transaction.styles'
+import useTransactionStyles from './transaction.styles'
 
-function RecentTransaction ({ type, amount, currency, date, toAddress }) {
-  const classes = useRecentTransactionStyles()
+function Transaction ({ type, amount, currency, date, toAddress }) {
+  const classes = useTransactionStyles()
 
   return (
     <div className={classes.root}>
@@ -19,11 +19,11 @@ function RecentTransaction ({ type, amount, currency, date, toAddress }) {
   )
 }
 
-RecentTransaction.propTypes = {
+Transaction.propTypes = {
   type: PropTypes.string.isRequired,
   amount: PropTypes.number.isRequired,
   currency: PropTypes.string.isRequired,
   date: PropTypes.string.isRequired
 }
 
-export default RecentTransaction
+export default Transaction

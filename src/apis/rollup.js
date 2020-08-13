@@ -3,6 +3,7 @@ import MockAdapter from 'axios-mock-adapter'
 
 const mock = new MockAdapter(axios)
 const mockedEthereumAddress = '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a'
+const mockedTokenId = 0
 const baseApiUrl = process.env.REACT_APP_ROLLUP_API_URL
 
 mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}`)
@@ -15,6 +16,16 @@ mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}`)
         Balance: 2.38
       }
     ]
+  )
+
+mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/${mockedTokenId}`)
+  .reply(
+    200,
+    {
+      EthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
+      TokenID: 0,
+      Balance: 2.38
+    }
   )
 
 mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/txs/history`)
@@ -72,8 +83,20 @@ async function getAccounts (ethereumAddress) {
   return response.data
 }
 
-async function getTransactions (ethereumAddress) {
-  const response = await axios.get(`${baseApiUrl}/account/${ethereumAddress}/txs/history`)
+async function getAccount (ethereumAddress, tokenId) {
+  const response = await axios.get(`${baseApiUrl}/account/${ethereumAddress}/${tokenId}`)
+
+  return response.data
+}
+
+async function getTransactions (ethereumAddress, tokenId) {
+  const params = {
+    ...(tokenId ? { tokenId } : {})
+  }
+  const response = await axios.get(
+    `${baseApiUrl}/account/${ethereumAddress}/txs/history`,
+    { params }
+  )
 
   return response.data
 }
@@ -84,4 +107,4 @@ async function getTokens () {
   return response.data
 }
 
-export { getAccounts, getTransactions, getTokens }
+export { getAccounts, getAccount, getTransactions, getTokens }

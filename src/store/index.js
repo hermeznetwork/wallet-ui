@@ -7,10 +7,12 @@ import txStateReducer from './tx-state/reducer'
 import globalReducer from './global/global.reducer'
 import homeReducer from './home/home.reducer'
 import settingsReducer from './settings/settings.reducer'
+import accountDetailsReducer from './account-details/account-details.reducer'
 
 const rootReducer = combineReducers({
   global: globalReducer,
   home: homeReducer,
+  accountDetails: accountDetailsReducer,
   settings: settingsReducer,
   general: generalReducer,
   transactions: transactionsReducer,

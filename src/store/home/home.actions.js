@@ -2,9 +2,9 @@ export const homeActionTypes = {
   LOAD_ACCOUNTS: '[HOME] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[HOME] LOAD ACCOUNTS SUCCESS',
   LOAD_ACCOUNTS_FAILURE: '[HOME] LOAD ACCOUNTS FAILURE',
-  LOAD_RECENT_TRANSACTIONS: '[HOME] LOAD RECENT TRANSACTIONS',
-  LOAD_RECENT_TRANSACTIONS_SUCCESS: '[HOME] LOAD RECENT TRANSACTIONS SUCCESS',
-  LOAD_RECENT_TRANSACTIONS_FAILURE: '[HOME] LOAD RECENT TRANSACTIONS FAILURE'
+  LOAD_TRANSACTIONS: '[HOME] LOAD TRANSACTIONS',
+  LOAD_TRANSACTIONS_SUCCESS: '[HOME] LOAD TRANSACTIONS SUCCESS',
+  LOAD_TRANSACTIONS_FAILURE: '[HOME] LOAD TRANSACTIONS FAILURE'
 }
 
 function loadAccounts () {
@@ -26,22 +26,22 @@ function loadAccountsFailure () {
   }
 }
 
-function loadRecentTransactions () {
+function loadTransactions () {
   return {
-    type: homeActionTypes.LOAD_RECENT_TRANSACTIONS
+    type: homeActionTypes.LOAD_TRANSACTIONS
   }
 }
 
-function loadRecentTransactionsSuccess (transactions) {
+function loadTransactionsSuccess (transactions) {
   return {
-    type: homeActionTypes.LOAD_RECENT_TRANSACTIONS_SUCCESS,
+    type: homeActionTypes.LOAD_TRANSACTIONS_SUCCESS,
     transactions
   }
 }
 
-function loadRecentTransactionsFailure () {
+function loadTransactionsFailure () {
   return {
-    type: homeActionTypes.LOAD_RECENT_TRANSACTIONS_FAILURE
+    type: homeActionTypes.LOAD_TRANSACTIONS_FAILURE
   }
 }
 
@@ -49,7 +49,7 @@ export {
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
-  loadRecentTransactions,
-  loadRecentTransactionsSuccess,
-  loadRecentTransactionsFailure
+  loadTransactions,
+  loadTransactionsSuccess,
+  loadTransactionsFailure
 }

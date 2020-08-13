@@ -11,14 +11,14 @@ function fetchAccounts (ethereumAddress) {
   }
 }
 
-function fetchRecentTransactions (ethereumAddress) {
+function fetchTransactions (ethereumAddress) {
   return (dispatch) => {
-    dispatch(homeActions.loadRecentTransactions())
+    dispatch(homeActions.loadTransactions())
 
     return rollupApi.getTransactions(ethereumAddress)
-      .then(res => dispatch(homeActions.loadRecentTransactionsSuccess(res)))
-      .catch(err => dispatch(homeActions.loadRecentTransactionsFailure(err)))
+      .then(res => dispatch(homeActions.loadTransactionsSuccess(res)))
+      .catch(err => dispatch(homeActions.loadTransactionsFailure(err)))
   }
 }
 
-export { fetchAccounts, fetchRecentTransactions }
+export { fetchAccounts, fetchTransactions }
