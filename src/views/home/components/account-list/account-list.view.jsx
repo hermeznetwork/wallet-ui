@@ -22,7 +22,7 @@ function AccountList ({ accounts, tokens, preferredCurrency }) {
           <Account
             amount={account.Balance}
             tokenSymbol={getToken(account.TokenID).Symbol}
-            preferredCurrency={preferredCurrency}
+            preferredCurrency={getToken(preferredCurrency).Symbol}
           />
         </div>
       )}
@@ -45,7 +45,7 @@ AccountList.propTypes = {
       Symbol: PropTypes.string.isRequired
     })
   ),
-  preferredCurrency: PropTypes.string.isRequired
+  preferredCurrency: PropTypes.number.isRequired
 }
 
 export default AccountList
