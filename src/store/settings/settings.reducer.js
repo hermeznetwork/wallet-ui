@@ -19,7 +19,7 @@ const initialSettingsState = {
 
 function settingsReducer (state = initialSettingsState, action) {
   switch (action.type) {
-    case settingsActionTypes.LOAD_DEFAULT_CURRENCY: {
+    case settingsActionTypes.CHANGE_PREFERRED_CURRENCY: {
       return {
         ...state,
         preferredCurrency: action.tokenId

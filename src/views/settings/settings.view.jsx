@@ -6,7 +6,7 @@ import QRCode from 'qrcode.react'
 import TokenList from './components/token-list/token-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import useSettingsStyles from './settings.styles'
-import { fetchDefaultCurrency } from '../../store/settings/settings.thunks'
+import { changePreferredCurrency } from '../../store/settings/settings.thunks'
 
 function Settings ({
   ethereumAddress,
@@ -16,7 +16,7 @@ function Settings ({
 }) {
   const classes = useSettingsStyles()
 
-  const handleTokenSelection = function (selectedTokenId) {
+  function handleTokenSelection (selectedTokenId) {
     if (selectedTokenId !== preferredCurrency) {
       onChangeDefaultCurrency(selectedTokenId)
     }
@@ -53,8 +53,7 @@ function Settings ({
                           <div>
                             <TokenList
                               tokens={tokensTask.data}
-                              handleTokenSelection={handleTokenSelection}
-                              // pass active token ID removing the need to call Token
+                              onTokenSelection={handleTokenSelection}
                               seletedTokenId={preferredCurrency}
                             />
                           </div>
@@ -108,7 +107,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeDefaultCurrency: (selectedTokenId) => dispatch(fetchDefaultCurrency(selectedTokenId))
+  onChangeDefaultCurrency: (selectedTokenId) => dispatch(changePreferredCurrency(selectedTokenId))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Settings)

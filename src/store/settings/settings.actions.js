@@ -1,14 +1,14 @@
 export const settingsActionTypes = {
-  LOAD_DEFAULT_CURRENCY: '[SETTINGS] LOAD DEFAULT CURRENCY'
+  CHANGE_PREFERRED_CURRENCY: '[SETTINGS] LOAD DEFAULT CURRENCY'
 }
 
-function loadDefaultCurrency (tokenId) {
+function changePreferredCurrency (tokenId) {
   return {
-    type: settingsActionTypes.LOAD_DEFAULT_CURRENCY,
+    type: settingsActionTypes.CHANGE_PREFERRED_CURRENCY,
     tokenId
   }
 }
 
 export {
-  loadDefaultCurrency
+  changePreferredCurrency
 }
