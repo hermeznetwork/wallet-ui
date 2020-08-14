@@ -29,6 +29,10 @@ function Home ({
     return accounts.reduce((amount, account) => amount + account.Balance, 0)
   }
 
+  function getToken (tokenId) {
+    return tokensTask.data.find((token) => token.TokenID === tokenId)
+  }
+
   return (
     <div>
       {(() => {
@@ -53,7 +57,7 @@ function Home ({
                         return (
                           <TotalBalance
                             amount={undefined}
-                            currency={preferredCurrency}
+                            currency={getToken(preferredCurrency).Symbol}
                           />
                         )
                       }
@@ -61,7 +65,7 @@ function Home ({
                         return (
                           <TotalBalance
                             amount={getTotalBalance(accountsTask.data)}
-                            currency={preferredCurrency}
+                            currency={getToken(preferredCurrency).Symbol}
                           />
                         )
                       }
@@ -148,7 +152,7 @@ Home.propTypes = {
     ),
     error: PropTypes.string
   }),
-  preferredCurrency: PropTypes.string.isRequired,
+  preferredCurrency: PropTypes.number.isRequired,
   transactionsTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(

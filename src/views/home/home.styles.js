@@ -17,6 +17,14 @@ const useHomeStyles = createUseStyles({
     borderRadius: 8,
     cursor: 'pointer',
     flex: '0 0 48%'
+  },
+  test: {
+    width: '222px', // random number added for testing purposes until design is delivered
+    height: '222px'
+  },
+  testCanvas: {
+    width: '100% !important',
+    height: '100% !important'
   }
 })
 

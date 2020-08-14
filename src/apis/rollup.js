@@ -42,7 +42,7 @@ mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/txs/history`)
         Nonce: 0,
         FeeSelector: 15,
         Type: 'Transfer',
-        TokenID: 0
+        TokenID: 2
       }
     ]
   )
@@ -55,6 +55,21 @@ mock.onGet(`${baseApiUrl}/tokens`)
         TokenID: 0,
         Name: 'Some Cool Token',
         Symbol: 'SCT'
+      },
+      {
+        TokenID: 1,
+        Name: 'Other Cool Token',
+        Symbol: 'OCT'
+      },
+      {
+        TokenID: 2,
+        Name: 'New Token',
+        Symbol: 'NTO'
+      },
+      {
+        TokenID: 3,
+        Name: 'Too Good Token',
+        Symbol: 'TGT'
       }
     ]
   )

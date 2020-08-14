@@ -1,12 +1,12 @@
 import { globalActionTypes } from './global.actions'
 
-const initialHomeState = {
+const initialGlobalState = {
   tokensTask: {
     status: 'pending'
   }
 }
 
-function homeReducer (state = initialHomeState, action) {
+function globalReducer (state = initialGlobalState, action) {
   switch (action.type) {
     case globalActionTypes.LOAD_TOKENS: {
       return {
@@ -40,4 +40,4 @@ function homeReducer (state = initialHomeState, action) {
   }
 }
 
-export default homeReducer
+export default globalReducer
