@@ -6,7 +6,6 @@ import useHomeStyles from './home.styles'
 import { fetchAccounts, fetchTransactions } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from './components/account-list/account-list.view'
-import TransactionList from '../shared/transaction-list/transaction-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 
 function Home ({
@@ -95,30 +94,6 @@ function Home ({
                             accounts={accountsTask.data}
                             tokens={tokensTask.data}
                             preferredCurrency={preferredCurrency}
-                          />
-                        )
-                      }
-                      default: {
-                        return <></>
-                      }
-                    }
-                  })()}
-                </section>
-                <section>
-                  <h4 className={classes.title}>Activity</h4>
-                  {(() => {
-                    switch (transactionsTask.status) {
-                      case 'loading': {
-                        return <Spinner />
-                      }
-                      case 'failed': {
-                        return <p>{transactionsTask.error}</p>
-                      }
-                      case 'successful': {
-                        return (
-                          <TransactionList
-                            transactions={transactionsTask.data}
-                            tokens={tokensTask.data}
                           />
                         )
                       }
