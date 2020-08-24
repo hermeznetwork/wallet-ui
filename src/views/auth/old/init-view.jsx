@@ -9,13 +9,11 @@ import { Redirect, useLocation } from 'react-router-dom'
 import {
   handleLoadOperator, handleLoadMetamask, handleLoadConfig
 } from '../../../store/general/actions'
-import { handleInitStateTx } from '../../../store/tx/actions'
 
 const config = require('../../../utils/config.json')
 
 function InitView ({
   isAuthed,
-  handleInitStateTx,
   handleLoadOperator,
   handleLoadMetamask,
   handleLoadConfig
@@ -41,7 +39,7 @@ function InitView ({
   async function handleSignInMetamask () {
     if (checkMetamask()) {
       try {
-        await handleInitStateTx()
+        localStorage.clear()
         await handleLoadConfig(config)
         await handleLoadOperator(config)
         await handleLoadMetamask()
@@ -87,7 +85,6 @@ function InitView ({
 
 InitView.propTypes = {
   isAuthed: PropTypes.bool.isRequired,
-  handleInitStateTx: PropTypes.func.isRequired,
   handleLoadOperator: PropTypes.func.isRequired,
   handleLoadMetamask: PropTypes.func.isRequired
 }
@@ -99,6 +96,5 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
   handleLoadMetamask,
   handleLoadOperator,
-  handleInitStateTx,
   handleLoadConfig
 })(InitView)

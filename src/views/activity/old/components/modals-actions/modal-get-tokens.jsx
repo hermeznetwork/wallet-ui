@@ -11,7 +11,6 @@ import { handleGetTokens } from '../../../../../store/tx/actions'
 
 function ModalGetTokens ({
   config,
-  metamaskWallet,
   modalGetTokens,
   onToggleModalGetTokens,
   onGetTokens
