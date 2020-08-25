@@ -15,7 +15,6 @@ import config from '../../utils/config.json'
 function Home ({
   tokensTask,
   accountsTask,
-  transactionsTask,
   metamaskWalletTask,
   preferredCurrency,
   onLoadAccounts,
@@ -172,18 +171,6 @@ Home.propTypes = {
     error: PropTypes.string
   }),
   preferredCurrency: PropTypes.number.isRequired,
-  transactionsTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        ID: PropTypes.string.isRequired,
-        Type: PropTypes.string.isRequired,
-        Amount: PropTypes.number.isRequired,
-        TokenID: PropTypes.number.isRequired
-      })
-    ),
-    error: PropTypes.string
-  }),
   tokensTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
@@ -201,8 +188,7 @@ const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
   metamaskWalletTask: state.account.metamaskWalletTask,
   accountsTask: state.home.accountsTask,
-  preferredCurrency: state.settings.preferredCurrency,
-  transactionsTask: state.home.transactionsTask
+  preferredCurrency: state.settings.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({
