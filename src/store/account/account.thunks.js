@@ -7,9 +7,9 @@ import { CliExternalOperator } from '../../utils/cli-external-operator'
 
 import * as accountActions from './account.actions'
 
-function fetchMetamask () {
+function fetchMetamaskWallet () {
   return async function (dispatch) {
-    dispatch(accountActions.loadMetamask())
+    dispatch(accountActions.loadMetamaskWallet())
     try {
       await window.ethereum.enable()
       const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -19,9 +19,9 @@ function fetchMetamask () {
       const hashedSignature = keccak256(signature)
       const bufferSignature = hexToBuffer(hashedSignature)
       const wallet = new BabyJubWallet(bufferSignature, publicEthKey)
-      dispatch(accountActions.loadMetamaskSuccess(wallet))
+      dispatch(accountActions.loadMetamaskWalletSuccess(wallet))
     } catch (error) {
-      dispatch(accountActions.loadMetamaskFailure(error.message))
+      dispatch(accountActions.loadMetamaskWalletFailure(error.message))
     }
   }
 }
@@ -170,6 +170,6 @@ async function getTokensExit (apiOperator, wallet, allTxs, contractRollup, txsEx
 }
 
 export {
-  fetchMetamask,
+  fetchMetamaskWallet,
   fetchAccountInfo
 }

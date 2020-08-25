@@ -1,28 +1,28 @@
 export const accountActionTypes = {
-  LOAD_METAMASK: '[ACCOUNT] LOAD_METAMASK',
-  LOAD_METAMASK_SUCCESS: '[ACCOUNT] LOAD_METAMASK_SUCCESS',
-  LOAD_METAMASK_FAILURE: '[ACCOUNT] LOAD_METAMASK_FAILURE',
-  ACCOUNT_INFO: '[ACCOUNT] ACCOUNT_INFO',
-  ACCOUNT_INFO_SUCCESS: '[ACCOUNT] ACCOUNT_INFO_SUCCESS',
-  ACCOUNT_INFO_FAILURE: '[ACCOUNT] ACCOUNT_INFO_FAILURE'
+  LOAD_METAMASK_WALLET: '[ACCOUNT] LOAD METAMASK WALLET',
+  LOAD_METAMASK_WALLET_SUCCESS: '[ACCOUNT] LOAD METAMASK WALLET SUCCESS',
+  LOAD_METAMASK_WALLET_FAILURE: '[ACCOUNT] LOAD METAMASK WALLET FAILURE',
+  ACCOUNT_INFO: '[ACCOUNT] ACCOUNT INFO',
+  ACCOUNT_INFO_SUCCESS: '[ACCOUNT] ACCOUNT INFO SUCCESS',
+  ACCOUNT_INFO_FAILURE: '[ACCOUNT] ACCOUNT INFO FAILURE'
 }
 
-function loadMetamask () {
+function loadMetamaskWallet () {
   return {
-    type: accountActionTypes.LOAD_METAMASK
+    type: accountActionTypes.LOAD_METAMASK_WALLET
   }
 }
 
-function loadMetamaskSuccess (metamaskWallet) {
+function loadMetamaskWalletSuccess (metamaskWallet) {
   return {
-    type: accountActionTypes.LOAD_METAMASK_SUCCESS,
+    type: accountActionTypes.LOAD_METAMASK_WALLET_SUCCESS,
     metamaskWallet: metamaskWallet
   }
 }
 
-function loadMetamaskFailure (error) {
+function loadMetamaskWalletFailure (error) {
   return {
-    type: accountActionTypes.LOAD_METAMASK_FAILURE,
+    type: accountActionTypes.LOAD_METAMASK_WALLET_FAILURE,
     error
   }
 }
@@ -61,9 +61,9 @@ function loadAccountInfoFailure (error) {
 }
 
 export {
-  loadMetamask,
-  loadMetamaskSuccess,
-  loadMetamaskFailure,
+  loadMetamaskWallet,
+  loadMetamaskWalletSuccess,
+  loadMetamaskWalletFailure,
   loadAccountInfo,
   loadAccountInfoSuccess,
   loadAccountInfoFailure

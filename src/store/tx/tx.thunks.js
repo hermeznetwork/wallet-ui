@@ -37,7 +37,7 @@ export function sendDeposit (addressSC, amount, tokenId, wallet, abiRollup, gasM
             const resOperator = await apiOperator.getState()
             const currentBatch = resOperator.data.rollupSynch.lastBatchSynched
             const res = await deposit(addressSC, amount, tokenId, wallet, abiRollup, gasLimit, gasMultiplier)
-            dispatch(txActions.DepositSuccess(res, currentBatch))
+            dispatch(txActions.depositSuccess(res, currentBatch))
             return { res, currentBatch }
           } else {
             dispatch(txActions.depositFailure(`Deposit Error: ${error.message}`))

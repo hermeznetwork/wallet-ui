@@ -1,7 +1,7 @@
 import { accountActionTypes } from './account.actions'
 
 const initialAccountState = {
-  metamaskTask: {
+  metamaskWalletTask: {
     status: 'pending'
   },
   accountInfoTask: {
@@ -11,14 +11,14 @@ const initialAccountState = {
 
 function accountReducer (state = initialAccountState, action) {
   switch (action.type) {
-    case accountActionTypes.LOAD_METAMASK:
+    case accountActionTypes.LOAD_METAMASK_WALLET:
       return {
         ...state,
-        metamaskTask: {
+        metamaskWalletTask: {
           state: 'loading'
         }
       }
-    case accountActionTypes.LOAD_METAMASK_SUCCESS:
+    case accountActionTypes.LOAD_METAMASK_WALLET_SUCCESS:
       return {
         ...state,
         metamaskTask: {
@@ -26,7 +26,7 @@ function accountReducer (state = initialAccountState, action) {
           metamaskWallet: action.metamaskWallet
         }
       }
-    case accountActionTypes.LOAD_METAMASK_ERROR:
+    case accountActionTypes.LOAD_METAMASK_WALLET_ERROR:
       return {
         ...state,
         metamaskTask: {

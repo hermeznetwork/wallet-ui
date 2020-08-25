@@ -11,7 +11,7 @@ import accountDetailsReducer from './account-details/account-details.reducer'
 
 const rootReducer = combineReducers({
   global: globalReducer,
-  acount: accountReducer,
+  account: accountReducer,
   home: homeReducer,
   accountDetails: accountDetailsReducer,
   settings: settingsReducer,
