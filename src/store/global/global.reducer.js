@@ -3,6 +3,16 @@ import { globalActionTypes } from './global.actions'
 const initialGlobalState = {
   tokensTask: {
     status: 'pending'
+  },
+  configTask: {
+    status: 'pending'
+  },
+  operatorTask: {
+    status: 'pending'
+  },
+  gasMultiplierTask: {},
+  currentBatchTask: {
+    status: 'pending'
   }
 }
 
@@ -34,6 +44,86 @@ function globalReducer (state = initialGlobalState, action) {
         }
       }
     }
+    case globalActionTypes.LOAD_CONFIG:
+      return {
+        ...state,
+        configTask: {
+          status: 'loading'
+        }
+      }
+    case globalActionTypes.LOAD_CONFIG_SUCCESS:
+      return {
+        ...state,
+        configTask: {
+          status: 'successful',
+          data: action.config,
+          error: action.error
+        }
+      }
+    case globalActionTypes.LOAD_CONFIG_FAILURE:
+      return {
+        ...state,
+        configTask: {
+          status: 'failed',
+          data: {
+            chainId: -1,
+            config: action.config
+          },
+          error: action.error
+        }
+      }
+    case globalActionTypes.LOAD_OPERATOR:
+      return {
+        ...state,
+        operatorTask: {
+          status: 'loading'
+        }
+      }
+    case globalActionTypes.LOAD_OPERATOR_SUCCESS:
+      return {
+        ...state,
+        operatorTask: {
+          status: 'successful',
+          data: action.apiOperator
+        }
+      }
+    case globalActionTypes.LOAD_OPERATOR_FAILURE:
+      return {
+        ...state,
+        operatorTask: {
+          status: 'failed',
+          error: action.error
+        }
+      }
+    case globalActionTypes.LOAD_GAS_MULTIPLIER:
+      return {
+        ...state,
+        gasMultiplierTask: {
+          data: action.gasMultiplier
+        }
+      }
+    case globalActionTypes.LOAD_CURRENT_BATCH:
+      return {
+        ...state,
+        currentBatchTask: {
+          status: 'loading'
+        }
+      }
+    case globalActionTypes.LOAD_CURRENT_BATCH_SUCCESS:
+      return {
+        ...state,
+        currentBatchTask: {
+          status: 'successful',
+          data: state.currentBatch
+        }
+      }
+    case globalActionTypes.LOAD_CURRENT_BATCH_FAILURE:
+      return {
+        ...state,
+        currentBatchTask: {
+          status: 'failed'
+        }
+      }
     default: {
       return state
     }

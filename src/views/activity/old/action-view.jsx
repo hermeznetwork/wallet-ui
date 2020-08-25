@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Header, Container, Divider } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 
-import { handleGetTokens, handleApprove, handleInitStateTx } from '../../../store/tx/actions'
+import { handleApprove } from '../../../store/tx/actions'
 import { handleInfoAccount, handleLoadConfig, getCurrentBatch } from '../../../store/general/actions'
 import { pointToCompress } from '../../../utils/utils'
 import MenuActions from './components/actions/menu-actions'
@@ -37,7 +37,6 @@ class ActionView extends Component {
     txs: PropTypes.array,
     txsExits: PropTypes.array,
     apiOperator: PropTypes.object.isRequired,
-    handleInitStateTx: PropTypes.func.isRequired,
     isLoadingInfoAccount: PropTypes.bool.isRequired,
     handleInfoAccount: PropTypes.func.isRequired,
     handleLoadConfig: PropTypes.func.isRequired,
@@ -94,7 +93,7 @@ class ActionView extends Component {
 
   changeNode = async (currentNode) => {
     const { config } = this.props
-    this.props.handleInitStateTx()
+    localStorage.clear()
     config.nodeEth = currentNode
     const nodeLoad = await this.props.handleLoadConfig(config)
     await this.getInfoAccount()
@@ -270,10 +269,8 @@ const mapStateToProps = (state) => ({
 })
 
 export default connect(mapStateToProps, {
-  handleGetTokens,
   handleApprove,
   handleInfoAccount,
   handleLoadConfig,
-  handleInitStateTx,
   getCurrentBatch
 })(ActionView)
