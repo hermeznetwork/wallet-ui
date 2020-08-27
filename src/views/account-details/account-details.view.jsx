@@ -111,7 +111,7 @@ function AccountDetails ({
 
 AccountDetails.propTypes = {
   ethereumAddress: PropTypes.string.isRequired,
-  preferredCurrency: PropTypes.string.isRequired,
+  preferredCurrency: PropTypes.number.isRequired,
   accountTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.shape({
