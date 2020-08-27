@@ -6,17 +6,17 @@ import {
 import { connect } from 'react-redux'
 import { Redirect, useLocation } from 'react-router-dom'
 
-import {
-  handleLoadOperator, handleLoadMetamask, handleLoadConfig
-} from '../../../store/general/actions'
+// import {
+//   handleLoadOperator, handleLoadMetamask, handleLoadConfig
+// } from '../../../store/general/actions'
 
 const config = require('../../../utils/config.json')
 
 function InitView ({
-  isAuthed,
-  handleLoadOperator,
-  handleLoadMetamask,
-  handleLoadConfig
+  isAuthed
+  // handleLoadOperator,
+  // handleLoadMetamask,
+  // handleLoadConfig
 }) {
   const { search } = useLocation()
 
@@ -38,14 +38,14 @@ function InitView ({
 
   async function handleSignInMetamask () {
     if (checkMetamask()) {
-      try {
-        localStorage.clear()
-        await handleLoadConfig(config)
-        await handleLoadOperator(config)
-        await handleLoadMetamask()
-      } catch (error) {
-        console.error(error)
-      }
+      // try {
+      //   localStorage.clear()
+      //   await handleLoadConfig(config)
+      //   await handleLoadOperator(config)
+      //   await handleLoadMetamask()
+      // } catch (error) {
+      //   console.error(error)
+      // }
     }
   }
 
@@ -84,9 +84,9 @@ function InitView ({
 }
 
 InitView.propTypes = {
-  isAuthed: PropTypes.bool.isRequired,
-  handleLoadOperator: PropTypes.func.isRequired,
-  handleLoadMetamask: PropTypes.func.isRequired
+  isAuthed: PropTypes.bool.isRequired
+  // handleLoadOperator: PropTypes.func.isRequired,
+  // handleLoadMetamask: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -94,7 +94,7 @@ const mapStateToProps = (state) => ({
 })
 
 export default connect(mapStateToProps, {
-  handleLoadMetamask,
-  handleLoadOperator,
-  handleLoadConfig
+  // handleLoadMetamask,
+  // handleLoadOperator,
+  // handleLoadConfig
 })(InitView)

@@ -20,6 +20,7 @@ function TransactionList ({ transactions, tokens }) {
           className={clsx({ [classes.transaction]: index > 0 })}
         >
           <Transaction
+            id={transaction.ID}
             type={transaction.Type}
             amount={transaction.Amount}
             currency={getToken(transaction.TokenID).Symbol}

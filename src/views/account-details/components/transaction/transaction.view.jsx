@@ -1,13 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 
 import useTransactionStyles from './transaction.styles'
 
-function Transaction ({ type, amount, currency, date, toAddress }) {
+function Transaction ({ id, type, amount, currency, date, toAddress }) {
   const classes = useTransactionStyles()
 
   return (
-    <div className={classes.root}>
+    <Link to={`/transactions/${id}`} className={classes.root}>
       <div className={classes.typeContainer}>
         <p className={classes.type}>{type.charAt(0)}</p>
       </div>
@@ -15,11 +16,12 @@ function Transaction ({ type, amount, currency, date, toAddress }) {
         <h3 className={classes.amount}>{amount} {currency}</h3>
         <p className={classes.date}>{date}</p>
       </div>
-    </div>
+    </Link>
   )
 }
 
 Transaction.propTypes = {
+  id: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   amount: PropTypes.number.isRequired,
   currency: PropTypes.string.isRequired,

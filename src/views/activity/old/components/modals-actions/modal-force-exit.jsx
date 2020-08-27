@@ -7,16 +7,16 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-import { handleSendForceExit } from '../../../../../store/tx/actions'
-import { handleStateForceExit } from '../../../../../store/tx-state/actions'
-import { getWei } from '../../../../../utils/utils'
+// import { handleSendForceExit } from '../../../../../store/tx/actions'
+// import { handleStateForceExit } from '../../../../../store/tx-state/actions'
+// import { getWei } from '../../../../../utils/utils'
 
 function ModalForceExit ({
   config,
   modalForceExit,
   onToggleModalForceExit,
-  onSendForceExit,
-  onStateForceExit,
+  // onSendForceExit,
+  // onStateForceExit,
   metamaskWallet,
   babyjub,
   tokensList,
@@ -61,29 +61,29 @@ function ModalForceExit ({
   }
 
   async function handleClick () {
-    const amountWei = getWei(amount)
+    // const amountWei = getWei(amount)
 
     handleCloseModal()
 
-    const res = await onSendForceExit(
-      config.address,
-      tokenId,
-      amountWei,
-      metamaskWallet,
-      config.abiRollup,
-      config.operator,
-      gasMultiplier
-    )
+    // const res = await onSendForceExit(
+    //   config.address,
+    //   tokenId,
+    //   amountWei,
+    //   metamaskWallet,
+    //   config.abiRollup,
+    //   config.operator,
+    //   gasMultiplier
+    // )
 
-    if (res.message !== undefined) {
-      if (res.message.includes('insufficient funds')) {
-        setState({ ...state, error: '1' })
-        handleToggleModalError()
-      }
-    }
-    if (res.res) {
-      onStateForceExit(res, config.operator, amount, amountWei)
-    }
+    // if (res.message !== undefined) {
+    //   if (res.message.includes('insufficient funds')) {
+    //     setState({ ...state, error: '1' })
+    //     handleToggleModalError()
+    //   }
+    // }
+    // if (res.res) {
+    //   onStateForceExit(res, config.operator, amount, amountWei)
+    // }
   }
 
   function dropDownTokens () {
@@ -166,7 +166,7 @@ ModalForceExit.propTypes = {
   modalForceExit: PropTypes.bool.isRequired,
   onToggleModalForceExit: PropTypes.func.isRequired,
   onSendForceExit: PropTypes.func.isRequired,
-  onStateForceExit: PropTypes.func.isRequired,
+  // onStateForceExit: PropTypes.func.isRequired,
   metamaskWallet: PropTypes.object.isRequired,
   babyjub: PropTypes.string.isRequired,
   tokensList: PropTypes.array.isRequired,
@@ -182,7 +182,7 @@ const mapStateToProps = (state) => ({
 export default connect(
   mapStateToProps,
   {
-    onSendForceExit: handleSendForceExit,
-    onStateForceExit: handleStateForceExit
+    // onSendForceExit: handleSendForceExit
+    // onStateForceExit: handleStateForceExit
   }
 )(ModalForceExit)

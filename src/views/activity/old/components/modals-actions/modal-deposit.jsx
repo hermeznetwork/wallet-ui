@@ -7,8 +7,8 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-import { handleSendDeposit } from '../../../../../store/tx/actions'
-import { handleStateDeposit } from '../../../../../store/tx-state/actions'
+// import { handleSendDeposit } from '../../../../../store/tx/actions'
+// import { handleStateDeposit } from '../../../../../store/tx-state/actions'
 import { getWei } from '../../../../../utils/utils'
 
 function ModalDeposit ({
@@ -16,8 +16,8 @@ function ModalDeposit ({
   abiRollup,
   modalDeposit,
   onToggleModalDeposit,
-  onSendDeposit,
-  onStateDeposit,
+  // onSendDeposit,
+  // onStateDeposit,
   tokensList,
   tokensA,
   gasMultiplier,
@@ -50,33 +50,33 @@ function ModalDeposit ({
 
   async function handleClick () {
     const depositAmount = getWei(amount)
-    const addressSC = config.address
+    // const addressSC = config.address
     if (parseInt(depositAmount, 10) > parseInt(tokensA, 10)) {
       setState({ ...state, error: '0' })
       handleToggleModalError()
     } else {
-      onToggleModalDeposit()
-      const res = await onSendDeposit(
-        addressSC,
-        depositAmount,
-        tokenId,
-        metamaskWallet,
-        abiRollup,
-        gasMultiplier,
-        config.operator
-      )
-      const walletEthAddress = metamaskWallet.publicEthKey
-      const filters = {}
-      if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress
-      if (res.message !== undefined) {
-        if (res.message.includes('insufficient funds')) {
-          setState({ ...state, error: '1' })
-          handleToggleModalError()
-        }
-      }
-      if (res.res) {
-        onStateDeposit(res, tokenId, config.operator, depositAmount)
-      }
+      // onToggleModalDeposit()
+      // const res = await onSendDeposit(
+      //   addressSC,
+      //   depositAmount,
+      //   tokenId,
+      //   metamaskWallet,
+      //   abiRollup,
+      //   gasMultiplier,
+      //   config.operator
+      // )
+      // const walletEthAddress = metamaskWallet.publicEthKey
+      // const filters = {}
+      // if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress
+      // if (res.message !== undefined) {
+      //   if (res.message.includes('insufficient funds')) {
+      //     setState({ ...state, error: '1' })
+      //     handleToggleModalError()
+      //   }
+      // }
+      // if (res.res) {
+      //   onStateDeposit(res, tokenId, config.operator, depositAmount)
+      // }
     }
   }
 
@@ -162,7 +162,7 @@ ModalDeposit.propTypes = {
   modalDeposit: PropTypes.bool.isRequired,
   onToggleModalDeposit: PropTypes.func.isRequired,
   onSendDeposit: PropTypes.func.isRequired,
-  onStateDeposit: PropTypes.func.isRequired,
+  // onStateDeposit: PropTypes.func.isRequired,
   tokensList: PropTypes.array.isRequired,
   tokensA: PropTypes.string.isRequired,
   gasMultiplier: PropTypes.number.isRequired,
@@ -180,7 +180,7 @@ const mapStateToProps = (state) => ({
 export default connect(
   mapStateToProps,
   {
-    onSendDeposit: handleSendDeposit,
-    onStateDeposit: handleStateDeposit
+    // onSendDeposit: handleSendDeposit
+    // onStateDeposit: handleStateDeposit
   }
 )(ModalDeposit)

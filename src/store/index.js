@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, combineReducers, compose } from 'redux'
 import thunk from 'redux-thunk'
 
 import transactionsReducer from './tx/tx.reducer'
-import txStateReducer from './tx-state/tx-state.reducer'
+// import txStateReducer from './tx-state/tx-state.reducer'
 import globalReducer from './global/global.reducer'
 import accountReducer from './account/account.reducer'
 import homeReducer from './home/home.reducer'
@@ -15,8 +15,8 @@ const rootReducer = combineReducers({
   home: homeReducer,
   accountDetails: accountDetailsReducer,
   settings: settingsReducer,
-  transactions: transactionsReducer,
-  txState: txStateReducer
+  transactions: transactionsReducer
+  // txState: txStateReducer
 })
 
 const middlewares = [thunk]

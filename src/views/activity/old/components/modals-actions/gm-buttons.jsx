@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
 import { Button } from 'semantic-ui-react'
 
-import { selectGasMultiplier } from '../../../../../store/general/actions'
+// import { selectGasMultiplier } from '../../../../../store/general/actions'
 
 const GAS_MULTIPLIER = {
   SLOW: 1,
@@ -11,9 +10,10 @@ const GAS_MULTIPLIER = {
   FAST: 3
 }
 
-function ButtonGM ({
-  selectGasMultiplier
-}) {
+// function ButtonGM ({
+//   selectGasMultiplier
+// }) {
+function ButtonGM () {
   const [state, setState] = React.useState({
     slow: false,
     avg: true,
@@ -34,7 +34,7 @@ function ButtonGM ({
 
   function changeGasMultiplier (num, event) {
     event.preventDefault()
-    selectGasMultiplier(num)
+    // selectGasMultiplier(num)
     selectActive(num)
   }
 
@@ -68,4 +68,5 @@ ButtonGM.propTypes = {
   selectGasMultiplier: PropTypes.func.isRequired
 }
 
-export default connect(null, { selectGasMultiplier })(ButtonGM)
+// export default connect(null, { selectGasMultiplier })(ButtonGM)
+export default ButtonGM
