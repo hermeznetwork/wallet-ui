@@ -34,7 +34,7 @@ mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/txs/history`)
     200,
     [
       {
-        ID: 'b89eaac7e61417341b710b727768294d0e6a277b',
+        TxID: 'b89eaac7e61417341b710b727768294d0e6a277b',
         FromEthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
         ToEthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
         FromIdx: 10,
@@ -52,7 +52,7 @@ mock.onGet(`${baseApiUrl}/tx/history/${mockedTransactionId}`)
   .reply(
     200,
     {
-      ID: 'b89eaac7e61417341b710b727768294d0e6a277b',
+      TxID: 'b89eaac7e61417341b710b727768294d0e6a277b',
       FromEthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
       ToEthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
       FromIdx: 10,

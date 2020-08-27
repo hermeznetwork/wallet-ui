@@ -107,7 +107,6 @@ TransactionDetails.propTypes = {
   transactionTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.shape({
-      ID: PropTypes.string.isRequired,
       Type: PropTypes.string.isRequired,
       ToEthAddr: PropTypes.string.isRequired,
       Amount: PropTypes.number.isRequired,

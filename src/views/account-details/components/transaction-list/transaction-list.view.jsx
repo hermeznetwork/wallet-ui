@@ -20,14 +20,14 @@ function TransactionList ({ transactions, tokens, onTransactionClick }) {
     <div>
       {transactions.map((transaction, index) =>
         <div
-          key={transaction.ID}
+          key={transaction.TxID}
           className={clsx({
             [classes.transaction]: true,
             [classes.transactionSpacer]: index > 0
           })}
         >
           <Transaction
-            id={transaction.ID}
+            id={transaction.TxID}
             type={transaction.Type}
             amount={transaction.Amount}
             currency={getToken(transaction.TokenID).Symbol}
@@ -43,7 +43,7 @@ function TransactionList ({ transactions, tokens, onTransactionClick }) {
 TransactionList.propTypes = {
   transactions: PropTypes.arrayOf(
     PropTypes.shape({
-      ID: PropTypes.string.isRequired,
+      TxID: PropTypes.string.isRequired,
       Type: PropTypes.string.isRequired,
       Amount: PropTypes.number.isRequired,
       TokenID: PropTypes.number.isRequired

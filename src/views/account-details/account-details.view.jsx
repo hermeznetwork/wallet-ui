@@ -130,7 +130,7 @@ AccountDetails.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        ID: PropTypes.string.isRequired,
+        TxID: PropTypes.string.isRequired,
         Type: PropTypes.string.isRequired,
         Amount: PropTypes.number.isRequired,
         TokenID: PropTypes.number.isRequired
