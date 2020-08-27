@@ -5,7 +5,7 @@ const mock = new MockAdapter(axios)
 const mockedTokenId = 0
 const baseApiUrl = process.env.REACT_APP_ROLLUP_API_URL
 
-const ethAccountRegex = new RegExp(`${baseApiUrl}/account/\\w+`)
+const ethAccountRegex = new RegExp(`${baseApiUrl}/account/0x[a-fA-F0-9]{40}$`)
 mock.onGet(ethAccountRegex)
   .reply(
     200,
@@ -18,7 +18,7 @@ mock.onGet(ethAccountRegex)
     ]
   )
 
-const tokenAccountRegex = new RegExp(`${baseApiUrl}/account/\\w+/${mockedTokenId}`)
+const tokenAccountRegex = new RegExp(`${baseApiUrl}/account/0x[a-fA-F0-9]{40}/${mockedTokenId}$`)
 mock.onGet(tokenAccountRegex)
   .reply(
     200,
@@ -29,7 +29,7 @@ mock.onGet(tokenAccountRegex)
     }
   )
 
-const txsRegex = new RegExp(`${baseApiUrl}/account/\\w+/txs/history`)
+const txsRegex = new RegExp(`${baseApiUrl}/account/0x[a-fA-F0-9]{40}/txs/history$`)
 mock.onGet(txsRegex)
   .reply(
     200,
