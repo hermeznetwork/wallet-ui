@@ -2,11 +2,11 @@ import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
 
 const mock = new MockAdapter(axios)
-const mockedEthereumAddress = '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a'
 const mockedTokenId = 0
 const baseApiUrl = process.env.REACT_APP_ROLLUP_API_URL
 
-mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}`)
+const ethAccountRegex = new RegExp(`${baseApiUrl}/account/\\w+`)
+mock.onGet(ethAccountRegex)
   .reply(
     200,
     [
@@ -18,7 +18,8 @@ mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}`)
     ]
   )
 
-mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/${mockedTokenId}`)
+const tokenAccountRegex = new RegExp(`${baseApiUrl}/account/\\w+/${mockedTokenId}`)
+mock.onGet(tokenAccountRegex)
   .reply(
     200,
     {
@@ -28,7 +29,8 @@ mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/${mockedTokenId}`)
     }
   )
 
-mock.onGet(`${baseApiUrl}/account/${mockedEthereumAddress}/txs/history`)
+const txsRegex = new RegExp(`${baseApiUrl}/account/\\w+/txs/history`)
+mock.onGet(txsRegex)
   .reply(
     200,
     [

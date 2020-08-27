@@ -53,10 +53,10 @@ class InfoWallet extends Component {
     try {
       let address
       if (Object.keys(this.props.metamaskWallet).length !== 0) {
-        if (this.props.metamaskWallet.publicEthKey.startsWith('0x')) {
-          address = this.props.metamaskWallet.publicEthKey
+        if (this.props.metamaskWallet.ethereumAddress.startsWith('0x')) {
+          address = this.props.metamaskWallet.ethereumAddress
         } else {
-          address = `0x${this.props.metamaskWallet.publicEthKey}`
+          address = `0x${this.props.metamaskWallet.ethereumAddress}`
         }
         if (this.state.address !== address) {
           const babyjub = pointToCompress(this.props.metamaskWallet.publicKey)

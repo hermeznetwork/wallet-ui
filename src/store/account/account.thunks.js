@@ -14,11 +14,11 @@ function fetchMetamaskWallet () {
       await window.ethereum.enable()
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
-      const publicEthKey = await signer.getAddress()
+      const ethereumAddress = await signer.getAddress()
       const signature = await signer.signMessage('I accept using Metamask as a CA')
       const hashedSignature = keccak256(signature)
       const bufferSignature = hexToBuffer(hashedSignature)
-      const wallet = new BabyJubWallet(bufferSignature, publicEthKey)
+      const wallet = new BabyJubWallet(bufferSignature, ethereumAddress)
       dispatch(accountActions.loadMetamaskWalletSuccess(wallet))
     } catch (error) {
       dispatch(accountActions.loadMetamaskWalletFailure(error.message))
@@ -33,7 +33,7 @@ function fetchAccountInfo (abiTokens, wallet, operatorUrl, addressRollup, abiRol
       const txsExits = []
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
-      const walletEthAddress = wallet.publicEthKey
+      const walletEthAddress = wallet.ethereumAddress
       const balanceHex = await provider.getBalance(walletEthAddress)
       const balance = ethers.utils.formatEther(balanceHex)
       const apiOperator = new CliExternalOperator(operatorUrl)
@@ -76,7 +76,7 @@ async function getTokensInfo (tokensList, abiTokens, wallet, walletEth, addressR
   const tokensUser = []
   let tokens = BigInt(0)
   let tokensA = BigInt(0)
-  let walletEthAddress = wallet.publicEthKey
+  let walletEthAddress = wallet.ethereumAddress
   try {
     if (!walletEthAddress.startsWith('0x')) {
       walletEthAddress = `0x${walletEthAddress}`

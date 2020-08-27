@@ -3,26 +3,34 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import useHomeStyles from './home.styles'
+import { fetchConfig } from '../../store/global/global.thunks'
+import { fetchMetamaskWallet } from '../../store/account/account.thunks'
 import { fetchAccounts, fetchTransactions } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from './components/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 
+import config from '../../utils/config.json'
+
 function Home ({
-  ethereumAddress,
   tokensTask,
   accountsTask,
   transactionsTask,
+  metamaskWalletTask,
   preferredCurrency,
   onLoadAccounts,
-  onLoadRecentTransactions
+  onLoadRecentTransactions,
+  loadConfig,
+  loadMetamaskWallet
 }) {
   const classes = useHomeStyles()
 
   React.useEffect(() => {
-    onLoadAccounts(ethereumAddress)
-    onLoadRecentTransactions(ethereumAddress)
-  }, [ethereumAddress, onLoadAccounts, onLoadRecentTransactions])
+    if (metamaskWalletTask.status === 'successful') {
+      onLoadAccounts(metamaskWalletTask.data.ethereumAddress)
+      onLoadRecentTransactions(metamaskWalletTask.data.ethereumAddress)
+    }
+  }, [metamaskWalletTask, onLoadAccounts, onLoadRecentTransactions])
 
   function getTotalBalance (accounts) {
     return accounts.reduce((amount, account) => amount + account.Balance, 0)
@@ -32,9 +40,32 @@ function Home ({
     return tokensTask.data.find((token) => token.TokenID === tokenId)
   }
 
-  return (
-    <div>
-      {(() => {
+  function checkMetamask () {
+    const { ethereum } = window
+    return Boolean(ethereum && ethereum.isMetaMask)
+  }
+
+  async function handleLogInMetamask () {
+    if (checkMetamask()) {
+      try {
+        localStorage.clear()
+        await loadConfig(config)
+        await loadMetamaskWallet()
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }
+
+  function renderHome () {
+    switch (metamaskWalletTask.status) {
+      case 'loading': {
+        return <Spinner />
+      }
+      case 'failed': {
+        return <p>{metamaskWalletTask.error}</p>
+      }
+      case 'successful': {
         switch (tokensTask.status) {
           case 'loading': {
             return <Spinner />
@@ -110,13 +141,21 @@ function Home ({
             return <></>
           }
         }
-      })()}
-    </div>
-  )
+      }
+      default: {
+        return <></>
+      }
+    }
+  }
+
+  if (metamaskWalletTask.status === 'pending') {
+    return <button onClick={handleLogInMetamask}>Log In with Metamask</button>
+  } else {
+    return renderHome()
+  }
 }
 
 Home.propTypes = {
-  ethereumAddress: PropTypes.string.isRequired,
   accountsTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
@@ -125,6 +164,11 @@ Home.propTypes = {
         TokenID: PropTypes.number.isRequired
       })
     ),
+    error: PropTypes.string
+  }),
+  metamaskWalletTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.object,
     error: PropTypes.string
   }),
   preferredCurrency: PropTypes.number.isRequired,
@@ -155,7 +199,7 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
-  ethereumAddress: state.settings.ethereumAddress,
+  metamaskWalletTask: state.account.metamaskWalletTask,
   accountsTask: state.home.accountsTask,
   preferredCurrency: state.settings.preferredCurrency,
   transactionsTask: state.home.transactionsTask
@@ -163,7 +207,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress)),
-  onLoadRecentTransactions: (ethereumAddress) => dispatch(fetchTransactions(ethereumAddress))
+  onLoadRecentTransactions: (ethereumAddress) => dispatch(fetchTransactions(ethereumAddress)),
+  loadConfig: (config) => dispatch(fetchConfig(config)),
+  loadMetamaskWallet: () => dispatch(fetchMetamaskWallet())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home)
