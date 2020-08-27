@@ -2,6 +2,7 @@ import Home from '../views/home/home.view'
 import Transfer from '../views/transfer/transfer.view'
 import Settings from '../views/settings/settings.view'
 import AccountDetails from '../views/account-details/account-details.view'
+import TransactionDetails from '../views/transaction-details/transaction-details.view'
 
 const routes = [
   {
@@ -19,6 +20,10 @@ const routes = [
   {
     path: '/accounts/:tokenId',
     component: AccountDetails
+  },
+  {
+    path: '/transactions/:transactionId',
+    component: TransactionDetails
   }
 ]
 
