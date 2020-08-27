@@ -22,7 +22,7 @@ const routes = [
     component: AccountDetails
   },
   {
-    path: '/transactions/:transactionId',
+    path: '/accounts/:tokenId/transactions/:transactionId',
     component: TransactionDetails
   }
 ]

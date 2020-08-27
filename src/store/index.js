@@ -8,6 +8,7 @@ import accountReducer from './account/account.reducer'
 import homeReducer from './home/home.reducer'
 import settingsReducer from './settings/settings.reducer'
 import accountDetailsReducer from './account-details/account-details.reducer'
+import transactionDetailsReducer from './transaction-details/transaction-details.reducer'
 
 const rootReducer = combineReducers({
   global: globalReducer,
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   home: homeReducer,
   accountDetails: accountDetailsReducer,
   settings: settingsReducer,
-  transactions: transactionsReducer
+  transactions: transactionsReducer,
+  transactionDetails: transactionDetailsReducer
   // txState: txStateReducer
 })
 

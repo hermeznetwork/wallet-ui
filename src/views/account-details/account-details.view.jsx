@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import useAccountDetailsStyles from './account-details.styles'
@@ -18,6 +18,7 @@ function AccountDetails ({
   onLoadTransactions
 }) {
   const classes = useAccountDetailsStyles()
+  const history = useHistory()
   const { tokenId } = useParams()
 
   React.useEffect(() => {
@@ -29,6 +30,10 @@ function AccountDetails ({
     const tokenData = tokens.find(token => token.TokenID === tokenId)
 
     return tokenData?.Name
+  }
+
+  function handleTransactionClick (transactionId) {
+    history.push(`/accounts/${tokenId}/transactions/${transactionId}`)
   }
 
   return (
@@ -88,6 +93,7 @@ function AccountDetails ({
                           <TransactionList
                             transactions={transactionsTask.data}
                             tokens={tokensTask.data}
+                            onTransactionClick={handleTransactionClick}
                           />
                         )
                       }

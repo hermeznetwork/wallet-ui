@@ -5,11 +5,15 @@ import clsx from 'clsx'
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
 
-function TransactionList ({ transactions, tokens }) {
+function TransactionList ({ transactions, tokens, onTransactionClick }) {
   const classes = useTransactionListStyles()
 
   function getToken (tokenId) {
     return tokens.find((token) => token.TokenID === tokenId)
+  }
+
+  function handleTransactionClick (transactionId) {
+    onTransactionClick(transactionId)
   }
 
   return (
@@ -17,7 +21,10 @@ function TransactionList ({ transactions, tokens }) {
       {transactions.map((transaction, index) =>
         <div
           key={transaction.ID}
-          className={clsx({ [classes.transaction]: index > 0 })}
+          className={clsx({
+            [classes.transaction]: true,
+            [classes.transactionSpacer]: index > 0
+          })}
         >
           <Transaction
             id={transaction.ID}
@@ -25,6 +32,7 @@ function TransactionList ({ transactions, tokens }) {
             amount={transaction.Amount}
             currency={getToken(transaction.TokenID).Symbol}
             date={new Date().toLocaleString()}
+            onClick={handleTransactionClick}
           />
         </div>
       )}
@@ -47,7 +55,8 @@ TransactionList.propTypes = {
       Name: PropTypes.string.isRequired,
       Symbol: PropTypes.string.isRequired
     })
-  )
+  ),
+  onTransactionClick: PropTypes.func.isRequired
 }
 
 export default TransactionList

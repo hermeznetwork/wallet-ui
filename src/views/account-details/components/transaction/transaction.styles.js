@@ -3,9 +3,7 @@ import { createUseStyles } from 'react-jss'
 const useTransactionStyles = createUseStyles({
   root: {
     display: 'flex',
-    alignItems: 'center',
-    textDecoration: 'none',
-    color: 'currentColor'
+    alignItems: 'center'
   },
   typeContainer: {
     marginRight: 24,
