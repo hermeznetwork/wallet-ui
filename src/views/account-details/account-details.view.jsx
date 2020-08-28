@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import useAccountDetailsStyles from './account-details.styles'
@@ -9,7 +9,7 @@ import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 
 function AccountDetails ({
-  ethereumAddress,
+  metamaskWalletTask,
   preferredCurrency,
   accountTask,
   transactionsTask,
@@ -18,12 +18,20 @@ function AccountDetails ({
   onLoadTransactions
 }) {
   const classes = useAccountDetailsStyles()
+  const history = useHistory()
   const { tokenId } = useParams()
 
   React.useEffect(() => {
-    onLoadAccount(ethereumAddress, tokenId)
-    onLoadTransactions(ethereumAddress, tokenId)
-  }, [ethereumAddress, tokenId, onLoadAccount, onLoadTransactions])
+    if (metamaskWalletTask.status === 'successful') {
+      console.log(metamaskWalletTask.data.ethereumAddress)
+      onLoadAccount(metamaskWalletTask.data.ethereumAddress, tokenId)
+      onLoadTransactions(metamaskWalletTask.data.ethereumAddress, tokenId)
+    }
+  }, [metamaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
+
+  if (metamaskWalletTask.status === 'pending') {
+    history.replace('/')
+  }
 
   function getTokenName (tokens, tokenId) {
     const tokenData = tokens.find(token => token.TokenID === tokenId)
@@ -110,8 +118,7 @@ function AccountDetails ({
 }
 
 AccountDetails.propTypes = {
-  ethereumAddress: PropTypes.string.isRequired,
-  preferredCurrency: PropTypes.string.isRequired,
+  preferredCurrency: PropTypes.number.isRequired,
   accountTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.shape({
@@ -146,7 +153,7 @@ AccountDetails.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  ethereumAddress: state.settings.ethereumAddress,
+  metamaskWalletTask: state.account.metamaskWalletTask,
   preferredCurrency: state.settings.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
   transactionsTask: state.accountDetails.transactionsTask,

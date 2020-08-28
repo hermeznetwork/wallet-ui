@@ -2,9 +2,6 @@ export const globalActionTypes = {
   LOAD_TOKENS: '[GLOBAL] LOAD TOKENS',
   LOAD_TOKENS_SUCCESS: '[GLOBAL] LOAD TOKENS SUCCESS',
   LOAD_TOKENS_FAILURE: '[GLOBAL] LOAD TOKENS FAILURE',
-  LOAD_OPERATOR: '[GLOBAL] LOAD OPERATOR',
-  LOAD_OPERATOR_SUCCESS: '[GLOBAL] LOAD OPERATOR SUCCESS',
-  LOAD_OPERATOR_FAILURE: '[GLOBAL] LOAD OPERATOR FAILURE',
   LOAD_CONFIG: '[GLOBAL] LOAD CONFIG',
   LOAD_CONFIG_SUCCESS: '[GLOBAL] LOAD CONFIG SUCCESS',
   LOAD_CONFIG_FAILURE: '[GLOBAL] LOAD CONFIG FAILURE',
@@ -55,26 +52,6 @@ function loadConfigFailure (config, error) {
   }
 }
 
-function loadOperator () {
-  return {
-    type: globalActionTypes.LOAD_OPERATOR
-  }
-}
-
-function loadOperatorSuccess (apiOperator) {
-  return {
-    type: globalActionTypes.LOAD_OPERATOR_SUCCESS,
-    apiOperator: apiOperator
-  }
-}
-
-function loadOperatorFailure (error) {
-  return {
-    type: globalActionTypes.LOAD_OPERATOR_FAILURE,
-    error
-  }
-}
-
 function loadGasMultiplier (num) {
   return {
     type: globalActionTypes.LOAD_GAS_MULTIPLIER,
@@ -108,9 +85,6 @@ export {
   loadConfig,
   loadConfigSuccess,
   loadConfigFailure,
-  loadOperator,
-  loadOperatorSuccess,
-  loadOperatorFailure,
   loadGasMultiplier,
   loadCurrentBatch,
   loadCurrentBatchSuccess,

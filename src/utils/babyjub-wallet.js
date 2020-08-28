@@ -14,16 +14,16 @@ export class BabyJubWallet {
   /**
      * Initialize Babyjubjub wallet from private key
      * @param {Buffer} privateKey - 32 bytes buffer
-     * @param {String} publicEthKey - Hexadecimal string containing the public Ethereum key from Metamask
+     * @param {String} ethereumAddress - Hexadecimal string containing the public Ethereum key from Metamask
      */
-  constructor (privateKey, publicEthKey) {
+  constructor (privateKey, ethereumAddress) {
     const priv = new eddsaBabyJub.PrivateKey(privateKey)
     const pub = priv.public()
 
     this.privateKey = privateKey
     this.publicKey = [pub.p[0], pub.p[1]]
     this.publicKeyCompressed = pub.compress()
-    this.publicEthKey = publicEthKey
+    this.ethereumAddress = ethereumAddress
   }
 
   /**
@@ -60,7 +60,7 @@ export class BabyJubWallet {
     tx.s = signature.S
     tx.fromAx = this.publicKey[0].toString(16)
     tx.fromAy = this.publicKey[1].toString(16)
-    tx.fromEthAddr = this.publicEthKey
+    tx.fromEthAddr = this.ethereumAddress
   }
 }
 

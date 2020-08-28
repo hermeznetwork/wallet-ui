@@ -65,7 +65,7 @@ function ModalDeposit ({
         gasMultiplier,
         config.operator
       )
-      const walletEthAddress = metamaskWallet.publicEthKey
+      const walletEthAddress = metamaskWallet.ethereumAddress
       const filters = {}
       if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress
       if (res.message !== undefined) {

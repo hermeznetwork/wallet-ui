@@ -24,7 +24,7 @@ function InfoTx ({
     modalInfoTx: false
   })
   const txTotalByAddress = txTotal.filter(
-    (tx) => tx.from === metamaskWallet.publicEthKey ||
+    (tx) => tx.from === metamaskWallet.ethereumAddress ||
       tx.from === pointToCompress(metamaskWallet.publicKey)
   )
 
