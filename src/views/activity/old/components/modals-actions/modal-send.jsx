@@ -5,8 +5,6 @@ import {
   Button, Modal, Form, Icon, Dropdown
 } from 'semantic-ui-react'
 
-// import { handleSend } from '../../../../../store/tx/actions'
-// import { handleStateSend } from '../../../../../store/tx-state/actions'
 import {
   feeTableDropdown
 } from '../../../../../utils/utils'
@@ -17,8 +15,6 @@ function ModalSend ({
   config,
   modalSend,
   onToggleModalSend,
-  // onSendSend,
-  // onStateEnd,
   metamaskWallet,
   babyjub,
   activeItem,
@@ -47,31 +43,7 @@ function ModalSend ({
   }
 
   async function handleClick () {
-    // const amountWei = getWei(amount)
-
     handleCloseModal()
-
-    // const res = await onSendSend(
-    //   config.operator,
-    //   babyJubReceiver,
-    //   amountWei,
-    //   metamaskWallet,
-    //   tokenId,
-    //   feeTable[fee]
-    // )
-
-    // if (res.nonce || res.nonce === 0) {
-    //   onStateEnd(
-    //     res,
-    //     config.operator,
-    //     amountWei,
-    //     fee,
-    //     tokenId,
-    //     babyJubReceiver,
-    //     pendingOffchain,
-    //     babyjub
-    //   )
-    // }
   }
 
   function isFormValid () {
@@ -204,8 +176,6 @@ ModalSend.propTypes = {
   config: PropTypes.object.isRequired,
   modalSend: PropTypes.bool.isRequired,
   onToggleModalSend: PropTypes.func.isRequired,
-  // onSendSend: PropTypes.func.isRequired,
-  // onStateEnd: PropTypes.func.isRequired,
   metamaskWallet: PropTypes.object.isRequired,
   babyjub: PropTypes.string.isRequired,
   activeItem: PropTypes.string.isRequired,
@@ -219,7 +189,4 @@ const mapStateToProps = (state) => ({
   pendingOffchain: state.txState.pendingOffchain
 })
 
-export default connect(mapStateToProps, {
-  // onSendSend: handleSend
-  // onStateEnd: handleStateSend
-})(ModalSend)
+export default connect(mapStateToProps)(ModalSend)

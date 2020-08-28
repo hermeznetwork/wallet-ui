@@ -90,7 +90,7 @@ export function sendForceExit (addressSC, tokenId, amount, wallet, abiRollup, ur
       const apiOperator = new CliExternalOperator(urlOperator)
       const publicCompressed = wallet.publicKeyCompressed.toString('hex')
       const resAccount = await apiOperator.getStateAccountByAddress(tokenId, publicCompressed)
-      let address = wallet.publicEthKey
+      let address = wallet.ethereumAddress
       if (!address.startsWith('0x')) {
         address = `0x${address}`
       }
@@ -133,7 +133,7 @@ export function sendTransfer (urlOperator, babyjubTo, amount, wallet, tokenId, f
         const apiOperator = new CliExternalOperator(urlOperator)
         const babyjub = wallet.publicKeyCompressed.toString('hex')
         const resAccount = await apiOperator.getStateAccountByAddress(tokenId, babyjub)
-        let address = wallet.publicEthKey
+        let address = wallet.ethereumAddress
         if (!address.startsWith('0x')) {
           address = `0x${address}`
         }

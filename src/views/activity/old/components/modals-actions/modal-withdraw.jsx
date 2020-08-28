@@ -7,16 +7,12 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-// import { handleSendWithdraw } from '../../../../../store/tx/actions'
-// import { handleStateWithdraw } from '../../../../../store/tx-state/actions'
 
 function ModalWithdraw ({
   config,
   abiRollup,
   modalWithdraw,
   onToggleModalWithdraw,
-  // handleSendWithdraw,
-  // handleStateWithdraw,
   gasMultiplier,
   metamaskWallet,
   txsExits
@@ -50,33 +46,8 @@ function ModalWithdraw ({
   }
 
   async function handleClick () {
-    // const tokenId = Number(state.tokenId)
-    // const numExitRoot = Number(state.numExitRoot)
-
     handleToggleModalChange()
     onToggleModalWithdraw()
-
-    // const res = await handleSendWithdraw(
-    //   config.address,
-    //   tokenId,
-    //   metamaskWallet,
-    //   abiRollup,
-    //   config.operator,
-    //   numExitRoot,
-    //   gasMultiplier
-    // )
-
-    // if (res !== undefined) {
-    //   if (res.message !== undefined) {
-    //     if (res.message.includes('insufficient funds')) {
-    //       setState({ ...state, error: '1' })
-    //       handleToggleModalError()
-    //     }
-    //   }
-    // if (res.res) {
-    //   handleStateWithdraw(res, tokenId)
-    // }
-    // }
   }
 
   async function handleGetExitRoot () {
@@ -208,8 +179,6 @@ ModalWithdraw.propTypes = {
   abiRollup: PropTypes.array.isRequired,
   modalWithdraw: PropTypes.bool.isRequired,
   onToggleModalWithdraw: PropTypes.func.isRequired,
-  // handleSendWithdraw: PropTypes.func.isRequired,
-  // handleStateWithdraw: PropTypes.func.isRequired,
   gasMultiplier: PropTypes.number.isRequired,
   metamaskWallet: PropTypes.object.isRequired,
   txsExits: PropTypes.array
@@ -223,10 +192,4 @@ const mapStateToProps = (state) => ({
   gasMultiplier: state.general.gasMultiplier
 })
 
-export default connect(
-  mapStateToProps,
-  {
-    // handleSendWithdraw
-    // handleStateWithdraw
-  }
-)(ModalWithdraw)
+export default connect(mapStateToProps)(ModalWithdraw)

@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Message, Icon, Divider } from 'semantic-ui-react'
 
-// import { handleCloseMessage } from '../../../../../store/tx/actions'
-
 function MessageTx ({
   isLoadingDeposit,
   isLoadingWithdraw,
@@ -21,7 +19,6 @@ function MessageTx ({
   tx,
   chainId,
   messageOpen
-  // handleCloseMessage
 }) {
   function getUrl () {
     let net
@@ -160,7 +157,6 @@ MessageTx.propTypes = {
   tx: PropTypes.object.isRequired,
   chainId: PropTypes.number.isRequired,
   messageOpen: PropTypes.bool.isRequired
-  // handleCloseMessage: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -182,9 +178,4 @@ const mapStateToProps = (state) => ({
   chainId: state.general.chainId
 })
 
-export default connect(
-  mapStateToProps,
-  {
-    // handleCloseMessage
-  }
-)(MessageTx)
+export default connect(mapStateToProps)(MessageTx)

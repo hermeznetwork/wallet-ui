@@ -7,15 +7,12 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-// import { handleApprove } from '../../../../../store/tx/actions'
-// import { getWei } from '../../../../../utils/utils'
 
 function ModalApprove ({
   config,
   abiTokens,
   modalApprove,
   onToggleModalApprove,
-  // handleApprove,
   gasMultiplier
 }) {
   const [amount, setAmount] = React.useState(0)
@@ -37,22 +34,7 @@ function ModalApprove ({
   }
 
   async function handleClickApprove () {
-    // const amountTokens = getWei(amount)
-    // const res = await handleApprove(
-    //   addressTokens,
-    //   abiTokens,
-    //   amountTokens,
-    //   config.address,
-    //   gasMultiplier
-    // )
-
-    // handleToggleModalClose()
-    // if (res.message !== undefined) {
-    //   if (res.message.includes('insufficient funds')) {
-    //     setState({ ...state, error: '1' })
-    //     handleToggleModalError()
-    //   }
-    // }
+    handleToggleModalClose()
   }
 
   function isFormValid () {
@@ -131,7 +113,6 @@ ModalApprove.propTypes = {
   abiTokens: PropTypes.array.isRequired,
   modalApprove: PropTypes.bool.isRequired,
   onToggleModalApprove: PropTypes.func.isRequired,
-  // handleApprove: PropTypes.func.isRequired,
   gasMultiplier: PropTypes.number.isRequired
 }
 
@@ -141,9 +122,4 @@ const mapStateToProps = (state) => ({
   gasMultiplier: state.general.gasMultiplier
 })
 
-export default connect(
-  mapStateToProps,
-  {
-    // handleApprove
-  }
-)(ModalApprove)
+export default connect(mapStateToProps)(ModalApprove)

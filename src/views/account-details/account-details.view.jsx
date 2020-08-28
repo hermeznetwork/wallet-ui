@@ -9,7 +9,7 @@ import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 
 function AccountDetails ({
-  ethereumAddress,
+  metamaskWalletTask,
   preferredCurrency,
   accountTask,
   transactionsTask,
@@ -22,9 +22,15 @@ function AccountDetails ({
   const { tokenId } = useParams()
 
   React.useEffect(() => {
-    onLoadAccount(ethereumAddress, tokenId)
-    onLoadTransactions(ethereumAddress, tokenId)
-  }, [ethereumAddress, tokenId, onLoadAccount, onLoadTransactions])
+    if (metamaskWalletTask.status === 'successful') {
+      onLoadAccount(metamaskWalletTask.data.ethereumAddress, tokenId)
+      onLoadTransactions(metamaskWalletTask.data.ethereumAddress, tokenId)
+    }
+  }, [metamaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
+
+  if (metamaskWalletTask.status === 'pending') {
+    history.replace('/')
+  }
 
   function getTokenName (tokens, tokenId) {
     const tokenData = tokens.find(token => token.TokenID === tokenId)
@@ -116,7 +122,6 @@ function AccountDetails ({
 }
 
 AccountDetails.propTypes = {
-  ethereumAddress: PropTypes.string.isRequired,
   preferredCurrency: PropTypes.number.isRequired,
   accountTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
@@ -152,7 +157,7 @@ AccountDetails.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  ethereumAddress: state.settings.ethereumAddress,
+  metamaskWalletTask: state.account.metamaskWalletTask,
   preferredCurrency: state.settings.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
   transactionsTask: state.accountDetails.transactionsTask,

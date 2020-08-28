@@ -15,21 +15,22 @@ function accountReducer (state = initialAccountState, action) {
       return {
         ...state,
         metamaskWalletTask: {
-          state: 'loading'
+          status: 'loading'
         }
       }
     case accountActionTypes.LOAD_METAMASK_WALLET_SUCCESS:
       return {
         ...state,
-        metamaskTask: {
-          state: 'successful',
-          metamaskWallet: action.metamaskWallet
+        metamaskWalletTask: {
+          status: 'successful',
+          data: action.metamaskWallet
         }
       }
     case accountActionTypes.LOAD_METAMASK_WALLET_ERROR:
       return {
         ...state,
-        metamaskTask: {
+        metamaskWalletTask: {
+          stauts: 'failed',
           error: action.error
         }
       }
@@ -52,6 +53,7 @@ function accountReducer (state = initialAccountState, action) {
       return {
         ...state,
         accountInfoTask: {
+          status: 'failed',
           error: action.error
         }
       }

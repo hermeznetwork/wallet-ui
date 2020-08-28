@@ -7,9 +7,6 @@ const initialGlobalState = {
   configTask: {
     status: 'pending'
   },
-  operatorTask: {
-    status: 'pending'
-  },
   gasMultiplierTask: {},
   currentBatchTask: {
     status: 'pending'
@@ -69,29 +66,6 @@ function globalReducer (state = initialGlobalState, action) {
             chainId: -1,
             config: action.config
           },
-          error: action.error
-        }
-      }
-    case globalActionTypes.LOAD_OPERATOR:
-      return {
-        ...state,
-        operatorTask: {
-          status: 'loading'
-        }
-      }
-    case globalActionTypes.LOAD_OPERATOR_SUCCESS:
-      return {
-        ...state,
-        operatorTask: {
-          status: 'successful',
-          data: action.apiOperator
-        }
-      }
-    case globalActionTypes.LOAD_OPERATOR_FAILURE:
-      return {
-        ...state,
-        operatorTask: {
-          status: 'failed',
           error: action.error
         }
       }

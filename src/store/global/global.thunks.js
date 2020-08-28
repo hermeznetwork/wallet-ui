@@ -14,9 +14,8 @@ function fetchTokens () {
 }
 
 function fetchConfig (config) {
-  return async function (dispatch) {
+  return async (dispatch) => {
     dispatch(globalActions.loadConfig())
-
     try {
       let chainId
       let errorMessage = ''
@@ -50,18 +49,6 @@ function fetchConfig (config) {
   }
 }
 
-function fetchOperator (config) {
-  return async function (dispatch) {
-    dispatch(globalActions.loadOperator())
-    try {
-      const apiOperator = new CliExternalOperator(config.operator)
-      dispatch(globalActions.loadOperatorSuccess(apiOperator))
-    } catch (error) {
-      dispatch(globalActions.loadOperatorFailure(error))
-    }
-  }
-}
-
 function fetchGasMultiplier (num) {
   return function (dispatch) {
     dispatch(globalActions.loadGasMultiplier(num))
@@ -86,7 +73,6 @@ function fetchCurrentBatch (urlOperator) {
 export {
   fetchTokens,
   fetchConfig,
-  fetchOperator,
   fetchGasMultiplier,
   fetchCurrentBatch
 }
