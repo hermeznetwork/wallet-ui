@@ -3,11 +3,23 @@ import PropTypes from 'prop-types'
 
 import useTransactionStyles from './transaction.styles'
 
-function Transaction ({ type, amount, currency, date, toAddress }) {
+function Transaction ({
+  id,
+  type,
+  amount,
+  currency,
+  date,
+  toAddress,
+  onClick
+}) {
   const classes = useTransactionStyles()
 
+  function handleClick () {
+    onClick(id)
+  }
+
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onClick={handleClick}>
       <div className={classes.typeContainer}>
         <p className={classes.type}>{type.charAt(0)}</p>
       </div>
@@ -20,10 +32,12 @@ function Transaction ({ type, amount, currency, date, toAddress }) {
 }
 
 Transaction.propTypes = {
+  id: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   amount: PropTypes.number.isRequired,
   currency: PropTypes.string.isRequired,
-  date: PropTypes.string.isRequired
+  date: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired
 }
 
 export default Transaction

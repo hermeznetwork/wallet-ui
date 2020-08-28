@@ -7,16 +7,11 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-import { handleSendForceExit } from '../../../../../store/tx/actions'
-import { handleStateForceExit } from '../../../../../store/tx-state/actions'
-import { getWei } from '../../../../../utils/utils'
 
 function ModalForceExit ({
   config,
   modalForceExit,
   onToggleModalForceExit,
-  onSendForceExit,
-  onStateForceExit,
   metamaskWallet,
   babyjub,
   tokensList,
@@ -61,29 +56,7 @@ function ModalForceExit ({
   }
 
   async function handleClick () {
-    const amountWei = getWei(amount)
-
     handleCloseModal()
-
-    const res = await onSendForceExit(
-      config.address,
-      tokenId,
-      amountWei,
-      metamaskWallet,
-      config.abiRollup,
-      config.operator,
-      gasMultiplier
-    )
-
-    if (res.message !== undefined) {
-      if (res.message.includes('insufficient funds')) {
-        setState({ ...state, error: '1' })
-        handleToggleModalError()
-      }
-    }
-    if (res.res) {
-      onStateForceExit(res, config.operator, amount, amountWei)
-    }
   }
 
   function dropDownTokens () {
@@ -165,8 +138,6 @@ ModalForceExit.propTypes = {
   config: PropTypes.object.isRequired,
   modalForceExit: PropTypes.bool.isRequired,
   onToggleModalForceExit: PropTypes.func.isRequired,
-  onSendForceExit: PropTypes.func.isRequired,
-  onStateForceExit: PropTypes.func.isRequired,
   metamaskWallet: PropTypes.object.isRequired,
   babyjub: PropTypes.string.isRequired,
   tokensList: PropTypes.array.isRequired,
@@ -179,10 +150,4 @@ const mapStateToProps = (state) => ({
   gasMultiplier: state.general.gasMultiplier
 })
 
-export default connect(
-  mapStateToProps,
-  {
-    onSendForceExit: handleSendForceExit,
-    onStateForceExit: handleStateForceExit
-  }
-)(ModalForceExit)
+export default connect(mapStateToProps)(ModalForceExit)

@@ -7,13 +7,11 @@ import {
 
 import ModalError from '../modals-info/modal-error'
 import ButtonGM from './gm-buttons'
-import { handleGetTokens } from '../../../../../store/tx/actions'
 
 function ModalGetTokens ({
   config,
   modalGetTokens,
-  onToggleModalGetTokens,
-  onGetTokens
+  onToggleModalGetTokens
 }) {
   const [state, setState] = React.useState({
     modalError: false,
@@ -26,15 +24,6 @@ function ModalGetTokens ({
 
   async function handleClickGetTokens () {
     onToggleModalGetTokens()
-
-    const res = await onGetTokens(config.tokensAddress)
-
-    if (res.message !== undefined) {
-      if (res.message.includes('insufficient funds')) {
-        setState({ ...state, error: '1' })
-        handleToggleModalError()
-      }
-    }
   }
 
   return (
@@ -90,8 +79,7 @@ ModalGetTokens.propTypes = {
   config: PropTypes.object.isRequired,
   metamaskWallet: PropTypes.object.isRequired,
   modalGetTokens: PropTypes.bool.isRequired,
-  onToggleModalGetTokens: PropTypes.func.isRequired,
-  onGetTokens: PropTypes.func.isRequired
+  onToggleModalGetTokens: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -100,4 +88,4 @@ const mapStateToProps = (state) => ({
   gasMultiplier: state.general.gasMultiplier
 })
 
-export default connect(mapStateToProps, { onGetTokens: handleGetTokens })(ModalGetTokens)
+export default connect(mapStateToProps)(ModalGetTokens)

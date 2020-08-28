@@ -3,6 +3,7 @@ import MockAdapter from 'axios-mock-adapter'
 
 const mock = new MockAdapter(axios)
 const mockedTokenId = 0
+const mockedTransactionId = 'b89eaac7e61417341b710b727768294d0e6a277b'
 const baseApiUrl = process.env.REACT_APP_ROLLUP_API_URL
 
 const ethAccountRegex = new RegExp(`${baseApiUrl}/account/0x[a-fA-F0-9]{40}$`)
@@ -35,18 +36,35 @@ mock.onGet(txsRegex)
     200,
     [
       {
-        ID: 'b89eaac7e61417341b710b727768294d0e6a277b',
+        TxID: 'b89eaac7e61417341b710b727768294d0e6a277b',
         FromEthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
         ToEthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
         FromIdx: 10,
         ToIdx: 20,
         Amount: 44.12,
         Nonce: 0,
-        FeeSelector: 15,
+        Fee: 15,
         Type: 'Transfer',
         TokenID: 2
       }
     ]
+  )
+
+mock.onGet(`${baseApiUrl}/tx/history/${mockedTransactionId}`)
+  .reply(
+    200,
+    {
+      TxID: 'b89eaac7e61417341b710b727768294d0e6a277b',
+      FromEthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
+      ToEthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
+      FromIdx: 10,
+      ToIdx: 20,
+      Amount: 44.12,
+      Nonce: 0,
+      Fee: 15,
+      Type: 'Transfer',
+      TokenID: 2
+    }
   )
 
 mock.onGet(`${baseApiUrl}/tokens`)
@@ -103,10 +121,22 @@ async function getTransactions (ethereumAddress, tokenId) {
   return response.data
 }
 
+async function getTransaction (transactionId) {
+  const response = await axios.get(`${baseApiUrl}/tx/history/${transactionId}`)
+
+  return response.data
+}
+
 async function getTokens () {
   const response = await axios.get(`${baseApiUrl}/tokens`)
 
   return response.data
 }
 
-export { getAccounts, getAccount, getTransactions, getTokens }
+export {
+  getAccounts,
+  getAccount,
+  getTransactions,
+  getTransaction,
+  getTokens
+}

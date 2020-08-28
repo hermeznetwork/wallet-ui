@@ -23,7 +23,6 @@ function AccountDetails ({
 
   React.useEffect(() => {
     if (metamaskWalletTask.status === 'successful') {
-      console.log(metamaskWalletTask.data.ethereumAddress)
       onLoadAccount(metamaskWalletTask.data.ethereumAddress, tokenId)
       onLoadTransactions(metamaskWalletTask.data.ethereumAddress, tokenId)
     }
@@ -37,6 +36,10 @@ function AccountDetails ({
     const tokenData = tokens.find(token => token.TokenID === tokenId)
 
     return tokenData?.Name
+  }
+
+  function handleTransactionClick (transactionId) {
+    history.push(`/accounts/${tokenId}/transactions/${transactionId}`)
   }
 
   return (
@@ -96,6 +99,7 @@ function AccountDetails ({
                           <TransactionList
                             transactions={transactionsTask.data}
                             tokens={tokensTask.data}
+                            onTransactionClick={handleTransactionClick}
                           />
                         )
                       }
@@ -131,7 +135,7 @@ AccountDetails.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        ID: PropTypes.string.isRequired,
+        TxID: PropTypes.string.isRequired,
         Type: PropTypes.string.isRequired,
         Amount: PropTypes.number.isRequired,
         TokenID: PropTypes.number.isRequired

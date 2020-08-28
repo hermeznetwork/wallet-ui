@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Message, Icon, Divider } from 'semantic-ui-react'
 
-import { handleCloseMessage } from '../../../../../store/tx/actions'
-
 function MessageTx ({
   isLoadingDeposit,
   isLoadingWithdraw,
@@ -20,8 +18,7 @@ function MessageTx ({
   errorConfig,
   tx,
   chainId,
-  messageOpen,
-  handleCloseMessage
+  messageOpen
 }) {
   function getUrl () {
     let net
@@ -78,7 +75,7 @@ function MessageTx ({
       )
     } if (error !== '' && messageOpen) {
       return (
-        <Message icon color='red' onDismiss={handleCloseMessage}>
+        <Message icon color='red'>
           <Icon name='exclamation' />
           <Message.Content>
             <Message.Header>Error!</Message.Header>
@@ -88,7 +85,7 @@ function MessageTx ({
       )
     } if (successTx === true && messageOpen) {
       return (
-        <Message icon color='green' onDismiss={handleCloseMessage}>
+        <Message icon color='green'>
           <Icon name='check' />
           <Message.Content>
             <Message.Header>Transaction sent!</Message.Header>
@@ -101,7 +98,7 @@ function MessageTx ({
       )
     } if (successDeposit === true && messageOpen) {
       return (
-        <Message icon color='green' onDismiss={handleCloseMessage}>
+        <Message icon color='green'>
           <Icon name='check' />
           <Message.Content>
             <Message.Header>Transaction sent!</Message.Header>
@@ -112,7 +109,7 @@ function MessageTx ({
       )
     } if (successForceExit === true && messageOpen) {
       return (
-        <Message icon color='green' onDismiss={handleCloseMessage}>
+        <Message icon color='green'>
           <Icon name='check' />
           <Message.Content>
             <Message.Header>Transaction sent!</Message.Header>
@@ -123,7 +120,7 @@ function MessageTx ({
       )
     } if (successSend === true && messageOpen) {
       return (
-        <Message icon color='green' onDismiss={handleCloseMessage}>
+        <Message icon color='green'>
           <Icon name='check' />
           <Message.Content>
             <Message.Header>
@@ -159,8 +156,7 @@ MessageTx.propTypes = {
   errorConfig: PropTypes.string.isRequired,
   tx: PropTypes.object.isRequired,
   chainId: PropTypes.number.isRequired,
-  messageOpen: PropTypes.bool.isRequired,
-  handleCloseMessage: PropTypes.func.isRequired
+  messageOpen: PropTypes.bool.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -182,4 +178,4 @@ const mapStateToProps = (state) => ({
   chainId: state.general.chainId
 })
 
-export default connect(mapStateToProps, { handleCloseMessage })(MessageTx)
+export default connect(mapStateToProps)(MessageTx)

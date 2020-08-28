@@ -4,8 +4,6 @@ import { connect } from 'react-redux'
 import { Header, Container, Divider } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 
-import { handleApprove } from '../../../store/tx/actions'
-import { handleInfoAccount, handleLoadConfig, getCurrentBatch } from '../../../store/general/actions'
 import { pointToCompress } from '../../../utils/utils'
 import MenuActions from './components/actions/menu-actions'
 import MenuBack from './components/information/menu'
@@ -38,9 +36,6 @@ class ActionView extends Component {
     txsExits: PropTypes.array,
     apiOperator: PropTypes.object.isRequired,
     isLoadingInfoAccount: PropTypes.bool.isRequired,
-    handleInfoAccount: PropTypes.func.isRequired,
-    handleLoadConfig: PropTypes.func.isRequired,
-    getCurrentBatch: PropTypes.func.isRequired,
     errorConfig: PropTypes.string.isRequired,
     txTotal: PropTypes.array.isRequired
   }
@@ -75,8 +70,6 @@ class ActionView extends Component {
 
   componentDidMount = async () => {
     if (Object.keys(this.props.metamaskWallet).length) {
-      this.getInfoAccount()
-      this.infoOperator()
       this.setState({
         babyjub: pointToCompress(this.props.metamaskWallet.publicKey),
         lengthTx: this.props.txTotal.length
@@ -87,7 +80,6 @@ class ActionView extends Component {
   componentDidUpdate = () => {
     if (this.props.txTotal.length > this.state.lengthTx) {
       this.setState({ lengthTx: this.props.txTotal.length })
-      this.getInfoAccount()
     }
   }
 
@@ -95,23 +87,6 @@ class ActionView extends Component {
     const { config } = this.props
     localStorage.clear()
     config.nodeEth = currentNode
-    const nodeLoad = await this.props.handleLoadConfig(config)
-    await this.getInfoAccount()
-    if (nodeLoad) {
-      this.setState({
-        babyjub: pointToCompress(this.props.metamaskWallet.publicKey)
-      })
-    }
-  }
-
-  infoOperator = () => {
-    this.props.getCurrentBatch(this.props.config.operator)
-    setTimeout(this.infoOperator, 30000)
-  }
-
-  getInfoAccount = async () => {
-    await this.props.handleInfoAccount(this.props.abiTokens, this.props.metamaskWallet,
-      this.props.config.operator, this.props.config.address, this.props.config.abiRollup)
   }
 
   handleItemClick = (e, { name }) => {
@@ -268,9 +243,4 @@ const mapStateToProps = (state) => ({
   txTotal: state.txState.txTotal
 })
 
-export default connect(mapStateToProps, {
-  handleApprove,
-  handleInfoAccount,
-  handleLoadConfig,
-  getCurrentBatch
-})(ActionView)
+export default connect(mapStateToProps)(ActionView)
