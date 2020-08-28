@@ -19,8 +19,8 @@ function Home ({
   preferredCurrency,
   onLoadAccounts,
   onLoadRecentTransactions,
-  loadConfig,
-  loadMetamaskWallet
+  onLoadConfig,
+  onLoadMetamaskWallet
 }) {
   const classes = useHomeStyles()
 
@@ -48,8 +48,8 @@ function Home ({
     if (checkMetamask()) {
       try {
         localStorage.clear()
-        await loadConfig(config)
-        await loadMetamaskWallet()
+        await onLoadConfig(config)
+        await onLoadMetamaskWallet()
       } catch (error) {
         console.error(error)
       }
@@ -194,8 +194,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress)),
   onLoadRecentTransactions: (ethereumAddress) => dispatch(fetchTransactions(ethereumAddress)),
-  loadConfig: (config) => dispatch(fetchConfig(config)),
-  loadMetamaskWallet: () => dispatch(fetchMetamaskWallet())
+  onLoadConfig: (config) => dispatch(fetchConfig(config)),
+  onLoadMetamaskWallet: () => dispatch(fetchMetamaskWallet())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home)
