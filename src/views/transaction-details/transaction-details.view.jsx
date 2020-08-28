@@ -7,7 +7,12 @@ import useTransactionDetailsStyles from './transaction-details.styles'
 import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 
-function TransactionDetails ({ tokensTask, transactionTask, onLoadTransaction }) {
+function TransactionDetails ({
+  tokensTask,
+  transactionTask,
+  preferredCurrency,
+  onLoadTransaction
+}) {
   const classes = useTransactionDetailsStyles()
   const history = useHistory()
   const { tokenId, transactionId } = useParams()
@@ -58,7 +63,7 @@ function TransactionDetails ({ tokensTask, transactionTask, onLoadTransaction })
                             </a>
                           </div>
                           <div className={classes.transactionInfoContainer}>
-                            <h1>{transactionTask.data.Type} -€</h1>
+                            <h1>{transactionTask.data.Type} - {getToken(preferredCurrency).Symbol}</h1>
                             <p>{transactionTask.data.Amount} {getToken(transactionTask.data.TokenID).Symbol}</p>
                             <ul className={classes.transactionInfoList}>
                               <li className={classes.transactionInfoListItem}>
@@ -70,7 +75,7 @@ function TransactionDetails ({ tokensTask, transactionTask, onLoadTransaction })
                                   Fee
                                 </p>
                                 <div>
-                                  <p>- €</p>
+                                  <p>- {getToken(preferredCurrency).Symbol}</p>
                                   <p>{transactionTask.data.Fee} {getToken(transactionTask.data.TokenID).Symbol}</p>
                                 </div>
                               </li>
@@ -104,6 +109,17 @@ function TransactionDetails ({ tokensTask, transactionTask, onLoadTransaction })
 }
 
 TransactionDetails.propTypes = {
+  tokensTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        TokenID: PropTypes.number.isRequired,
+        Name: PropTypes.string.isRequired,
+        Symbol: PropTypes.string.isRequired
+      })
+    )
+  }),
+  preferredCurrency: PropTypes.number.isRequired,
   transactionTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.shape({
@@ -120,6 +136,7 @@ TransactionDetails.propTypes = {
 
 const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
+  preferredCurrency: state.settings.preferredCurrency,
   transactionTask: state.transactionDetails.transactionTask
 })
 
