@@ -6,6 +6,7 @@ import { useParams, useHistory } from 'react-router-dom'
 import useTransactionDetailsStyles from './transaction-details.styles'
 import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
+import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 
 function TransactionDetails ({
   tokensTask,
@@ -144,4 +145,4 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionId) => dispatch(fetchTransaction(transactionId))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(TransactionDetails)
+export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(TransactionDetails))

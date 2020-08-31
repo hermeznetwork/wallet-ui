@@ -7,6 +7,7 @@ import useAccountDetailsStyles from './account-details.styles'
 import { fetchAccount, fetchTransactions } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
+import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 
 function AccountDetails ({
   metamaskWalletTask,
@@ -169,4 +170,4 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(AccountDetails)
+export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))

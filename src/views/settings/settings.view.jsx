@@ -7,6 +7,7 @@ import TokenList from './components/token-list/token-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import useSettingsStyles from './settings.styles'
 import { changePreferredCurrency } from '../../store/settings/settings.thunks'
+import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 
 function Settings ({
   ethereumAddress,
@@ -110,4 +111,4 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeDefaultCurrency: (selectedTokenId) => dispatch(changePreferredCurrency(selectedTokenId))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Settings)
+export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Settings))
