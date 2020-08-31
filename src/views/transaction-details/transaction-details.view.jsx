@@ -57,7 +57,7 @@ function TransactionDetails ({
                             Close
                           </button>
                           <div className={classes.statusContainer}>
-                            <h2>Completed</h2>
+                            <h2>{transactionTask.data.Status || 'Completed'}</h2>
                             <a href='https://hermez.io' target='_blank' rel='noopener noreferrer'>
                               View in network explorer
                             </a>
