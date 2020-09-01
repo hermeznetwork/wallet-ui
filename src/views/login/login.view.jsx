@@ -34,18 +34,23 @@ function Login ({
           }
           case 'successful': {
             switch (metamaskWallet.status) {
-              case 'pending': {
+              case 'pending':
+              case 'failed': {
                 return (
-                  <button onClick={handleMetamaskLogin}>
+                  <>
+                    {
+                      metamaskWallet.status === 'failed'
+                        ? <p>{metamaskWallet.error}</p>
+                        : <></>
+                    }
+                    <button onClick={handleMetamaskLogin}>
                     Log In with Metamask
-                  </button>
+                    </button>
+                  </>
                 )
               }
               case 'loading': {
                 return <Spinner />
-              }
-              case 'failed': {
-                return <p>{metamaskWallet.error}</p>
               }
               case 'successful': {
                 return <Redirect to='/' />

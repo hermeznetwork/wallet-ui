@@ -26,11 +26,11 @@ function accountReducer (state = initialAccountState, action) {
           data: action.metamaskWallet
         }
       }
-    case accountActionTypes.LOAD_METAMASK_WALLET_ERROR:
+    case accountActionTypes.LOAD_METAMASK_WALLET_FAILURE:
       return {
         ...state,
         metamaskWalletTask: {
-          stauts: 'failed',
+          status: 'failed',
           error: action.error
         }
       }

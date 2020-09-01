@@ -37,89 +37,76 @@ function Home ({
   return (
     <div>
       {(() => {
-        switch (metamaskWalletTask.status) {
+        switch (tokensTask.status) {
           case 'loading': {
             return <Spinner />
           }
           case 'failed': {
-            return <p>{metamaskWalletTask.error}</p>
+            return <p>{tokensTask.error}</p>
           }
           case 'successful': {
-            switch (tokensTask.status) {
-              case 'loading': {
-                return <Spinner />
-              }
-              case 'failed': {
-                return <p>{tokensTask.error}</p>
-              }
-              case 'successful': {
-                return (
-                  <>
-                    <section>
-                      <h4 className={classes.title}>Total balance</h4>
-                      {(() => {
-                        switch (accountsTask.status) {
-                          case 'loading': {
-                            return <Spinner />
-                          }
-                          case 'failed': {
-                            return (
-                              <TotalBalance
-                                amount={undefined}
-                                currency={getToken(preferredCurrency).Symbol}
-                              />
-                            )
-                          }
-                          case 'successful': {
-                            return (
-                              <TotalBalance
-                                amount={getTotalBalance(accountsTask.data)}
-                                currency={getToken(preferredCurrency).Symbol}
-                              />
-                            )
-                          }
-                          default: {
-                            return <></>
-                          }
-                        }
-                      })()}
-                      <div className={classes.actionButtonsGroup}>
-                        <button className={classes.actionButton}>Send</button>
-                        <button className={classes.actionButton}>Add funds</button>
-                      </div>
-                    </section>
-                    <section>
-                      <h4 className={classes.title}>Accounts</h4>
-                      {(() => {
-                        switch (accountsTask.status) {
-                          case 'loading': {
-                            return <Spinner />
-                          }
-                          case 'failed': {
-                            return <p>{accountsTask.error}</p>
-                          }
-                          case 'successful': {
-                            return (
-                              <AccountList
-                                accounts={accountsTask.data}
-                                tokens={tokensTask.data}
-                                preferredCurrency={preferredCurrency}
-                              />
-                            )
-                          }
-                          default: {
-                            return <></>
-                          }
-                        }
-                      })()}
-                    </section>
-                  </>
-                )
-              }
-              default: {
-                return <></>
-              }
-            }
+            return (
+              <>
+                <section>
+                  <h4 className={classes.title}>Total balance</h4>
+                  {(() => {
+                    switch (accountsTask.status) {
+                      case 'loading': {
+                        return <Spinner />
+                      }
+                      case 'failed': {
+                        return (
+                          <TotalBalance
+                            amount={undefined}
+                            currency={getToken(preferredCurrency).Symbol}
+                          />
+                        )
+                      }
+                      case 'successful': {
+                        return (
+                          <TotalBalance
+                            amount={getTotalBalance(accountsTask.data)}
+                            currency={getToken(preferredCurrency).Symbol}
+                          />
+                        )
+                      }
+                      default: {
+                        return <></>
+                      }
+                    }
+                  })()}
+                  <div className={classes.actionButtonsGroup}>
+                    <button className={classes.actionButton}>Send</button>
+                    <button className={classes.actionButton}>Add funds</button>
+                  </div>
+                </section>
+                <section>
+                  <h4 className={classes.title}>Accounts</h4>
+                  {(() => {
+                    switch (accountsTask.status) {
+                      case 'loading': {
+                        return <Spinner />
+                      }
+                      case 'failed': {
+                        return <p>{accountsTask.error}</p>
+                      }
+                      case 'successful': {
+                        return (
+                          <AccountList
+                            accounts={accountsTask.data}
+                            tokens={tokensTask.data}
+                            preferredCurrency={preferredCurrency}
+                          />
+                        )
+                      }
+                      default: {
+                        return <></>
+                      }
+                    }
+                  })()}
+                </section>
+              </>
+            )
           }
           default: {
             return <></>
