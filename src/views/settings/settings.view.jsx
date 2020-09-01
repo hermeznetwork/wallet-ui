@@ -3,13 +3,13 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import QRCode from 'qrcode.react'
 
-import TokenList from './components/token-list/token-list.view'
-import Spinner from '../shared/spinner/spinner.view'
 import useSettingsStyles from './settings.styles'
+import TokenList from './components/token-list/token-list.view'
 import { changePreferredCurrency } from '../../store/settings/settings.thunks'
+import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 
 function Settings ({
-  ethereumAddress,
+  metaMaskWalletTask,
   tokensTask,
   onChangeDefaultCurrency,
   preferredCurrency
@@ -26,66 +26,39 @@ function Settings ({
     <div>
       <h4 className={classes.title}>Settings</h4>
       <div className={classes.ethereumAddress}>
-        {ethereumAddress}
-      </div>
-      {(() => {
-        switch (tokensTask.status) {
-          case 'loading': {
-            return <Spinner />
-          }
-          case 'failed': {
-            return <p>{tokensTask.error}</p>
-          }
-          case 'successful': {
-            return (
-              <>
-                <section>
-                  {(() => {
-                    switch (tokensTask.status) {
-                      case 'loading': {
-                        return <Spinner />
-                      }
-                      case 'failed': {
-                        return <p>{tokensTask.error}</p>
-                      }
-                      case 'successful': {
-                        return (
-                          <div>
-                            <TokenList
-                              tokens={tokensTask.data}
-                              onTokenSelection={handleTokenSelection}
-                              seletedTokenId={preferredCurrency}
-                            />
-                          </div>
-                        )
-                      }
-                      default: {
-                        return <></>
-                      }
-                    }
-                  })()}
-                </section>
-              </>
-            )
-          }
-          default: {
-            return <></>
-          }
+        {
+          metaMaskWalletTask.status === 'successful'
+            ? metaMaskWalletTask.data.ethereumAddress
+            : '-'
         }
-      })()}
+      </div>
+      <section>
+        <div>
+          <TokenList
+            tokens={tokensTask.status === 'successful' ? tokensTask.data : []}
+            onTokenSelection={handleTokenSelection}
+            seletedTokenId={preferredCurrency}
+          />
+        </div>
+      </section>
       <div>
-        <QRCode
-          value={ethereumAddress}
-          className={classes.qrCode}
-          size={256}// Adding a random number until we have designs.
-        />
+        {
+          metaMaskWalletTask.status === 'successful'
+            ? (
+              <QRCode
+                value={metaMaskWalletTask.data.ethereumAddress}
+                className={classes.qrCode}
+                size={256}
+              />
+            )
+            : <></>
+        }
       </div>
     </div>
   )
 }
 
 Settings.propTypes = {
-  ethereumAddress: PropTypes.string.isRequired,
   tokensTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
@@ -101,7 +74,7 @@ Settings.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  ethereumAddress: state.settings.ethereumAddress,
+  metaMaskWalletTask: state.account.metaMaskWalletTask,
   tokensTask: state.global.tokensTask,
   preferredCurrency: state.settings.preferredCurrency
 })
@@ -110,4 +83,4 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeDefaultCurrency: (selectedTokenId) => dispatch(changePreferredCurrency(selectedTokenId))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Settings)
+export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Settings))

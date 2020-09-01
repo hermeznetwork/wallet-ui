@@ -20,7 +20,7 @@ import ModalForceExit from './components/modals-actions/modal-force-exit'
 
 class ActionView extends Component {
   static propTypes = {
-    metamaskWallet: PropTypes.object.isRequired,
+    metaMaskWallet: PropTypes.object.isRequired,
     config: PropTypes.object.isRequired,
     abiTokens: PropTypes.array.isRequired,
     tokens: PropTypes.string,
@@ -69,9 +69,9 @@ class ActionView extends Component {
   }
 
   componentDidMount = async () => {
-    if (Object.keys(this.props.metamaskWallet).length) {
+    if (Object.keys(this.props.metaMaskWallet).length) {
       this.setState({
-        babyjub: pointToCompress(this.props.metamaskWallet.publicKey),
+        babyjub: pointToCompress(this.props.metaMaskWallet.publicKey),
         lengthTx: this.props.txTotal.length
       })
     }
@@ -122,7 +122,7 @@ class ActionView extends Component {
   handleToggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })) }
 
   redirectInitView = () => {
-    if (Object.keys(this.props.metamaskWallet).length === 0) {
+    if (Object.keys(this.props.metaMaskWallet).length === 0) {
       return <Redirect to='/old' />
     }
   }
@@ -152,7 +152,7 @@ class ActionView extends Component {
         />
         <MessageTx />
         <InfoWallet
-          metamaskWallet={this.props.metamaskWallet}
+          metaMaskWallet={this.props.metaMaskWallet}
           balance={this.props.balance}
           tokens={this.props.tokens}
           tokensR={this.props.tokensR}
@@ -168,7 +168,7 @@ class ActionView extends Component {
         />
         <br />
         <InfoTx
-          metamaskWallet={this.props.metamaskWallet}
+          metaMaskWallet={this.props.metaMaskWallet}
         />
         <ModalDeposit
           balance={this.props.balance}
@@ -178,13 +178,13 @@ class ActionView extends Component {
           onToggleModalDeposit={this.handleToggleModalDeposit}
         />
         <ModalWithdraw
-          metamaskWallet={this.props.metamaskWallet}
+          metaMaskWallet={this.props.metaMaskWallet}
           modalWithdraw={this.state.modalWithdraw}
           onToggleModalWithdraw={this.handleToggleModalWithdraw}
         />
         <ModalForceExit
           tokensList={this.props.tokensList}
-          metamaskWallet={this.props.metamaskWallet}
+          metaMaskWallet={this.props.metaMaskWallet}
           babyjub={this.state.babyjub}
           modalForceExit={this.state.modalForceExit}
           onToggleModalForceExit={this.handleToggleModalForceExit}
@@ -221,7 +221,7 @@ class ActionView extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  metamaskWallet: state.general.metamaskWallet,
+  metaMaskWallet: state.general.metaMaskWallet,
   apiOperator: state.general.apiOperator,
   abiTokens: state.general.abiTokens,
   config: state.general.config,

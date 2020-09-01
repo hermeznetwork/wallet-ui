@@ -15,7 +15,7 @@ function InfoTx ({
   pendingOnchain,
   txTotal,
   currentBatch,
-  metamaskWallet
+  metaMaskWallet
 }) {
   const [keyItem, setKeyIem] = React.useState({})
   const [state, setState] = React.useState({
@@ -24,8 +24,8 @@ function InfoTx ({
     modalInfoTx: false
   })
   const txTotalByAddress = txTotal.filter(
-    (tx) => tx.from === metamaskWallet.ethereumAddress ||
-      tx.from === pointToCompress(metamaskWallet.publicKey)
+    (tx) => tx.from === metaMaskWallet.ethereumAddress ||
+      tx.from === pointToCompress(metaMaskWallet.publicKey)
   )
 
   txTotalByAddress.sort((o1, o2) => {
@@ -162,7 +162,7 @@ InfoTx.propTypes = {
   pendingOnchain: PropTypes.array.isRequired,
   txTotal: PropTypes.array.isRequired,
   currentBatch: PropTypes.number.isRequired,
-  metamaskWallet: PropTypes.object.isRequired
+  metaMaskWallet: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({

@@ -11,7 +11,7 @@ import { pointToCompress } from '../../../../utils/utils'
 
 class InfoWallet extends Component {
   static propTypes = {
-    metamaskWallet: PropTypes.object.isRequired,
+    metaMaskWallet: PropTypes.object.isRequired,
     isLoadingInfoAccount: PropTypes.bool.isRequired,
     tokens: PropTypes.string,
     tokensR: PropTypes.string,
@@ -52,14 +52,14 @@ class InfoWallet extends Component {
   async componentDidMount () {
     try {
       let address
-      if (Object.keys(this.props.metamaskWallet).length !== 0) {
-        if (this.props.metamaskWallet.ethereumAddress.startsWith('0x')) {
-          address = this.props.metamaskWallet.ethereumAddress
+      if (Object.keys(this.props.metaMaskWallet).length !== 0) {
+        if (this.props.metaMaskWallet.ethereumAddress.startsWith('0x')) {
+          address = this.props.metaMaskWallet.ethereumAddress
         } else {
-          address = `0x${this.props.metamaskWallet.ethereumAddress}`
+          address = `0x${this.props.metaMaskWallet.ethereumAddress}`
         }
         if (this.state.address !== address) {
-          const babyjub = pointToCompress(this.props.metamaskWallet.publicKey)
+          const babyjub = pointToCompress(this.props.metaMaskWallet.publicKey)
           this.setState({ address, babyjub })
         }
       }

@@ -7,7 +7,7 @@ function Header () {
   const classes = useHeaderStyles()
 
   return (
-    <header>
+    <header className={classes.root}>
       <h1>
         <Link
           to='/'
@@ -16,6 +16,7 @@ function Header () {
           Hermez
         </Link>
       </h1>
+      <Link to='/settings'>Settings</Link>
     </header>
   )
 }

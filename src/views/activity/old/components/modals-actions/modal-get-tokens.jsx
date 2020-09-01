@@ -77,14 +77,14 @@ function ModalGetTokens ({
 
 ModalGetTokens.propTypes = {
   config: PropTypes.object.isRequired,
-  metamaskWallet: PropTypes.object.isRequired,
+  metaMaskWallet: PropTypes.object.isRequired,
   modalGetTokens: PropTypes.bool.isRequired,
   onToggleModalGetTokens: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
-  metamaskWallet: state.general.metamaskWallet,
+  metaMaskWallet: state.general.metaMaskWallet,
   gasMultiplier: state.general.gasMultiplier
 })
 

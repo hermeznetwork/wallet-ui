@@ -7,9 +7,10 @@ import useAccountDetailsStyles from './account-details.styles'
 import { fetchAccount, fetchTransactions } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
+import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 
 function AccountDetails ({
-  metamaskWalletTask,
+  metaMaskWalletTask,
   preferredCurrency,
   accountTask,
   transactionsTask,
@@ -22,20 +23,22 @@ function AccountDetails ({
   const { tokenId } = useParams()
 
   React.useEffect(() => {
-    if (metamaskWalletTask.status === 'successful') {
-      onLoadAccount(metamaskWalletTask.data.ethereumAddress, tokenId)
-      onLoadTransactions(metamaskWalletTask.data.ethereumAddress, tokenId)
+    if (metaMaskWalletTask.status === 'successful') {
+      onLoadAccount(metaMaskWalletTask.data.ethereumAddress, tokenId)
+      onLoadTransactions(metaMaskWalletTask.data.ethereumAddress, tokenId)
     }
-  }, [metamaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
+  }, [metaMaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
 
-  if (metamaskWalletTask.status === 'pending') {
+  if (metaMaskWalletTask.status === 'pending') {
     history.replace('/')
   }
 
-  function getTokenName (tokens, tokenId) {
-    const tokenData = tokens.find(token => token.TokenID === tokenId)
+  function getTokenName (tokenId) {
+    if (tokensTask.status !== 'successful') {
+      return '-'
+    }
 
-    return tokenData?.Name
+    return tokensTask.data.find(token => token.TokenID === tokenId).Name
   }
 
   function handleTransactionClick (transactionId) {
@@ -44,79 +47,60 @@ function AccountDetails ({
 
   return (
     <div>
-      {(() => {
-        switch (tokensTask.status) {
-          case 'loading': {
-            return <Spinner />
+      <section>
+        {(() => {
+          switch (accountTask.status) {
+            case 'loading': {
+              return <Spinner />
+            }
+            case 'failed': {
+              return <p>{accountTask.error}</p>
+            }
+            case 'successful': {
+              return (
+                <div>
+                  <h3>{getTokenName(accountTask.data.TokenID)}</h3>
+                  <h1>{accountTask.data.Balance}</h1>
+                  <p>- {preferredCurrency}</p>
+                </div>
+              )
+            }
+            default: {
+              return <></>
+            }
           }
-          case 'failed': {
-            return <p>{tokensTask.error}</p>
+        })()}
+        <div className={classes.actionButtonsGroup}>
+          <button className={classes.actionButton}>Send</button>
+          <button className={classes.actionButton}>Add funds</button>
+          <button className={classes.actionButton}>Withdrawal</button>
+        </div>
+      </section>
+      <section>
+        <h4 className={classes.title}>Activity</h4>
+        {(() => {
+          switch (transactionsTask.status) {
+            case 'loading': {
+              return <Spinner />
+            }
+            case 'failed': {
+              return <p>{transactionsTask.error}</p>
+            }
+            case 'successful': {
+              return (
+                <TransactionList
+                  transactions={transactionsTask.data}
+                  tokens={tokensTask.data}
+                  onTransactionClick={handleTransactionClick}
+                />
+              )
+            }
+            default: {
+              return <></>
+            }
           }
-          case 'successful': {
-            return (
-              <>
-                <section>
-                  {(() => {
-                    switch (accountTask.status) {
-                      case 'loading': {
-                        return <Spinner />
-                      }
-                      case 'failed': {
-                        return <p>{accountTask.error}</p>
-                      }
-                      case 'successful': {
-                        return (
-                          <div>
-                            <h3>{getTokenName(tokensTask.data, accountTask.data.TokenID)}</h3>
-                            <h1>{accountTask.data.Balance}</h1>
-                            <p>- {preferredCurrency}</p>
-                          </div>
-                        )
-                      }
-                      default: {
-                        return <></>
-                      }
-                    }
-                  })()}
-                  <div className={classes.actionButtonsGroup}>
-                    <button className={classes.actionButton}>Send</button>
-                    <button className={classes.actionButton}>Add funds</button>
-                    <button className={classes.actionButton}>Withdrawal</button>
-                  </div>
-                </section>
-                <section>
-                  <h4 className={classes.title}>Activity</h4>
-                  {(() => {
-                    switch (transactionsTask.status) {
-                      case 'loading': {
-                        return <Spinner />
-                      }
-                      case 'failed': {
-                        return <p>{transactionsTask.error}</p>
-                      }
-                      case 'successful': {
-                        return (
-                          <TransactionList
-                            transactions={transactionsTask.data}
-                            tokens={tokensTask.data}
-                            onTransactionClick={handleTransactionClick}
-                          />
-                        )
-                      }
-                      default: {
-                        return <></>
-                      }
-                    }
-                  })()}
-                </section>
-              </>
-            )
-          }
-          default: {
-            return <></>
-          }
-        }
-      })()}
+        })()}
+      </section>
     </div>
   )
 }
@@ -157,7 +141,7 @@ AccountDetails.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metamaskWalletTask: state.account.metamaskWalletTask,
+  metaMaskWalletTask: state.account.metaMaskWalletTask,
   preferredCurrency: state.settings.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
   transactionsTask: state.accountDetails.transactionsTask,
@@ -169,4 +153,4 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(AccountDetails)
+export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))

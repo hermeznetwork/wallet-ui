@@ -14,7 +14,7 @@ function ModalWithdraw ({
   modalWithdraw,
   onToggleModalWithdraw,
   gasMultiplier,
-  metamaskWallet,
+  metaMaskWallet,
   txsExits
 }) {
   const [exitRoots, setExitRoots] = React.useState([])
@@ -180,14 +180,14 @@ ModalWithdraw.propTypes = {
   modalWithdraw: PropTypes.bool.isRequired,
   onToggleModalWithdraw: PropTypes.func.isRequired,
   gasMultiplier: PropTypes.number.isRequired,
-  metamaskWallet: PropTypes.object.isRequired,
+  metaMaskWallet: PropTypes.object.isRequired,
   txsExits: PropTypes.array
 }
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
   abiRollup: state.general.abiRollup,
-  metamaskWallet: state.general.metamaskWallet,
+  metaMaskWallet: state.general.metaMaskWallet,
   txsExits: state.general.txsExits,
   gasMultiplier: state.general.gasMultiplier
 })

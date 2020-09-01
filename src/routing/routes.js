@@ -3,27 +3,38 @@ import Transfer from '../views/transfer/transfer.view'
 import Settings from '../views/settings/settings.view'
 import AccountDetails from '../views/account-details/account-details.view'
 import TransactionDetails from '../views/transaction-details/transaction-details.view'
+import Login from '../views/login/login.view'
 
 const routes = [
   {
     path: '/',
-    component: Home
+    component: Home,
+    renderLayout: true
+  },
+  {
+    path: '/login',
+    component: Login,
+    renderLayout: false
   },
   {
     path: '/transfer',
-    component: Transfer
+    component: Transfer,
+    renderLayout: true
   },
   {
     path: '/settings',
-    component: Settings
+    component: Settings,
+    renderLayout: true
   },
   {
     path: '/accounts/:tokenId',
-    component: AccountDetails
+    component: AccountDetails,
+    renderLayout: true
   },
   {
     path: '/accounts/:tokenId/transactions/:transactionId',
-    component: TransactionDetails
+    component: TransactionDetails,
+    renderLayout: true
   }
 ]
 
