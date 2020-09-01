@@ -1,6 +1,8 @@
 import ethers from 'ethers'
+
 import * as globalActions from './global.actions'
 import * as rollupApi from '../../apis/rollup'
+import config from '../../utils/config.json'
 import { CliExternalOperator } from '../../utils/cli-external-operator'
 
 function fetchTokens () {
@@ -13,7 +15,7 @@ function fetchTokens () {
   }
 }
 
-function fetchConfig (config) {
+function fetchConfig () {
   return async (dispatch) => {
     dispatch(globalActions.loadConfig())
     try {

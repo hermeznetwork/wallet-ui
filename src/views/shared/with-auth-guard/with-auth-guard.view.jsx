@@ -7,7 +7,7 @@ const withAuth = (Component) => ({ metamaskWalletTask }) => {
   if (metamaskWalletTask.status === 'successful') {
     return <Component />
   } else {
-    return <Redirect to='/' />
+    return <Redirect to='/login' />
   }
 }
 

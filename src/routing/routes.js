@@ -3,11 +3,16 @@ import Transfer from '../views/transfer/transfer.view'
 import Settings from '../views/settings/settings.view'
 import AccountDetails from '../views/account-details/account-details.view'
 import TransactionDetails from '../views/transaction-details/transaction-details.view'
+import Login from '../views/login/login.view'
 
 const routes = [
   {
     path: '/',
     component: Home
+  },
+  {
+    path: '/login',
+    component: Login
   },
   {
     path: '/transfer',
