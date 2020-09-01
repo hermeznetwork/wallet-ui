@@ -13,10 +13,10 @@ function loadMetamaskWallet () {
   }
 }
 
-function loadMetamaskWalletSuccess (metamaskWallet) {
+function loadMetamaskWalletSuccess (metaMaskWallet) {
   return {
     type: accountActionTypes.LOAD_METAMASK_WALLET_SUCCESS,
-    metamaskWallet: metamaskWallet
+    metaMaskWallet
   }
 }
 

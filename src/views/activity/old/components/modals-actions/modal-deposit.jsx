@@ -17,7 +17,7 @@ function ModalDeposit ({
   tokensList,
   tokensA,
   gasMultiplier,
-  metamaskWallet
+  metaMaskWallet
 }) {
   const [amount, setAmount] = React.useState(0)
   const [tokenId, setTokenId] = React.useState()
@@ -51,7 +51,7 @@ function ModalDeposit ({
       handleToggleModalError()
     } else {
       onToggleModalDeposit()
-      const walletEthAddress = metamaskWallet.publicEthKey
+      const walletEthAddress = metaMaskWallet.publicEthKey
       const filters = {}
       if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress
     }
@@ -141,13 +141,13 @@ ModalDeposit.propTypes = {
   tokensList: PropTypes.array.isRequired,
   tokensA: PropTypes.string.isRequired,
   gasMultiplier: PropTypes.number.isRequired,
-  metamaskWallet: PropTypes.object.isRequired
+  metaMaskWallet: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
   abiRollup: state.general.abiRollup,
-  metamaskWallet: state.general.metamaskWallet,
+  metaMaskWallet: state.general.metaMaskWallet,
   gasMultiplier: state.general.gasMultiplier,
   pendingOnchain: state.txState.pendingOnchain
 })

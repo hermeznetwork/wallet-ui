@@ -12,7 +12,7 @@ import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
 function Home ({
   tokensTask,
   accountsTask,
-  metamaskWalletTask,
+  metaMaskWalletTask,
   preferredCurrency,
   onLoadAccounts,
   onLoadRecentTransactions
@@ -20,11 +20,11 @@ function Home ({
   const classes = useHomeStyles()
 
   React.useEffect(() => {
-    if (metamaskWalletTask.status === 'successful') {
-      onLoadAccounts(metamaskWalletTask.data.ethereumAddress)
-      onLoadRecentTransactions(metamaskWalletTask.data.ethereumAddress)
+    if (metaMaskWalletTask.status === 'successful') {
+      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress)
+      onLoadRecentTransactions(metaMaskWalletTask.data.ethereumAddress)
     }
-  }, [metamaskWalletTask, onLoadAccounts, onLoadRecentTransactions])
+  }, [metaMaskWalletTask, onLoadAccounts, onLoadRecentTransactions])
 
   function getTotalBalance (accounts) {
     return accounts.reduce((amount, account) => amount + account.Balance, 0)
@@ -128,7 +128,7 @@ Home.propTypes = {
     ),
     error: PropTypes.string
   }),
-  metamaskWalletTask: PropTypes.shape({
+  metaMaskWalletTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.object,
     error: PropTypes.string
@@ -149,7 +149,7 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
-  metamaskWalletTask: state.account.metamaskWalletTask,
+  metaMaskWalletTask: state.account.metaMaskWalletTask,
   accountsTask: state.home.accountsTask,
   preferredCurrency: state.settings.preferredCurrency
 })

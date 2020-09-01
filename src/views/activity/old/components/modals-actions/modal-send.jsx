@@ -15,7 +15,7 @@ function ModalSend ({
   config,
   modalSend,
   onToggleModalSend,
-  metamaskWallet,
+  metaMaskWallet,
   babyjub,
   activeItem,
   tokensRArray,
@@ -176,7 +176,7 @@ ModalSend.propTypes = {
   config: PropTypes.object.isRequired,
   modalSend: PropTypes.bool.isRequired,
   onToggleModalSend: PropTypes.func.isRequired,
-  metamaskWallet: PropTypes.object.isRequired,
+  metaMaskWallet: PropTypes.object.isRequired,
   babyjub: PropTypes.string.isRequired,
   activeItem: PropTypes.string.isRequired,
   tokensRArray: PropTypes.array.isRequired,
@@ -185,7 +185,7 @@ ModalSend.propTypes = {
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
-  metamaskWallet: state.general.metamaskWallet,
+  metaMaskWallet: state.general.metaMaskWallet,
   pendingOffchain: state.txState.pendingOffchain
 })
 

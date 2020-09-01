@@ -2,9 +2,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 
-const withAuth = (Component) => ({ metamaskWalletTask }) => {
-  console.log(metamaskWalletTask)
-  if (metamaskWalletTask.status === 'successful') {
+const withAuth = (Component) => ({ metaMaskWalletTask }) => {
+  console.log(metaMaskWalletTask)
+  if (metaMaskWalletTask.status === 'successful') {
     return <Component />
   } else {
     return <Redirect to='/login' />
@@ -12,7 +12,7 @@ const withAuth = (Component) => ({ metamaskWalletTask }) => {
 }
 
 const mapStateToProps = (state) => ({
-  metamaskWalletTask: state.account.metamaskWalletTask
+  metaMaskWalletTask: state.account.metaMaskWalletTask
 })
 
 const withAuthGuard = (Component) => connect(mapStateToProps)(withAuth(Component))

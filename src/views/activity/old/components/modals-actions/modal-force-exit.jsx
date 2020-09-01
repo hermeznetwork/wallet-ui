@@ -12,7 +12,7 @@ function ModalForceExit ({
   config,
   modalForceExit,
   onToggleModalForceExit,
-  metamaskWallet,
+  metaMaskWallet,
   babyjub,
   tokensList,
   gasMultiplier
@@ -138,7 +138,7 @@ ModalForceExit.propTypes = {
   config: PropTypes.object.isRequired,
   modalForceExit: PropTypes.bool.isRequired,
   onToggleModalForceExit: PropTypes.func.isRequired,
-  metamaskWallet: PropTypes.object.isRequired,
+  metaMaskWallet: PropTypes.object.isRequired,
   babyjub: PropTypes.string.isRequired,
   tokensList: PropTypes.array.isRequired,
   gasMultiplier: PropTypes.number.isRequired
@@ -146,7 +146,7 @@ ModalForceExit.propTypes = {
 
 const mapStateToProps = (state) => ({
   config: state.general.config,
-  metamaskWallet: state.general.metamaskWallet,
+  metaMaskWallet: state.general.metaMaskWallet,
   gasMultiplier: state.general.gasMultiplier
 })
 

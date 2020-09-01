@@ -9,7 +9,7 @@ import { Redirect } from 'react-router-dom'
 
 function Login ({
   configTask,
-  metamaskWallet,
+  metaMaskWallet,
   onLoadConfig,
   onLoadMetaMaskWallet
 }) {
@@ -33,14 +33,14 @@ function Login ({
             return <p>{configTask.error}</p>
           }
           case 'successful': {
-            switch (metamaskWallet.status) {
+            switch (metaMaskWallet.status) {
               case 'pending':
               case 'failed': {
                 return (
                   <>
                     {
-                      metamaskWallet.status === 'failed'
-                        ? <p>{metamaskWallet.error}</p>
+                      metaMaskWallet.status === 'failed'
+                        ? <p>{metaMaskWallet.error}</p>
                         : <></>
                     }
                     <button onClick={handleMetamaskLogin}>
@@ -76,7 +76,7 @@ Login.propTypes = {
 
 const mapStateToProps = (state) => ({
   configTask: state.global.configTask,
-  metamaskWallet: state.account.metamaskWalletTask
+  metaMaskWallet: state.account.metaMaskWalletTask
 })
 
 const mapDispatchToProps = (dispatch) => ({

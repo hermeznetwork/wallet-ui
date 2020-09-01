@@ -10,7 +10,7 @@ import TransactionList from './components/transaction-list/transaction-list.view
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 
 function AccountDetails ({
-  metamaskWalletTask,
+  metaMaskWalletTask,
   preferredCurrency,
   accountTask,
   transactionsTask,
@@ -23,13 +23,13 @@ function AccountDetails ({
   const { tokenId } = useParams()
 
   React.useEffect(() => {
-    if (metamaskWalletTask.status === 'successful') {
-      onLoadAccount(metamaskWalletTask.data.ethereumAddress, tokenId)
-      onLoadTransactions(metamaskWalletTask.data.ethereumAddress, tokenId)
+    if (metaMaskWalletTask.status === 'successful') {
+      onLoadAccount(metaMaskWalletTask.data.ethereumAddress, tokenId)
+      onLoadTransactions(metaMaskWalletTask.data.ethereumAddress, tokenId)
     }
-  }, [metamaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
+  }, [metaMaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
 
-  if (metamaskWalletTask.status === 'pending') {
+  if (metaMaskWalletTask.status === 'pending') {
     history.replace('/')
   }
 
@@ -158,7 +158,7 @@ AccountDetails.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metamaskWalletTask: state.account.metamaskWalletTask,
+  metaMaskWalletTask: state.account.metaMaskWalletTask,
   preferredCurrency: state.settings.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
   transactionsTask: state.accountDetails.transactionsTask,
