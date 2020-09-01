@@ -22,8 +22,12 @@ function TransactionDetails ({
     onLoadTransaction(transactionId)
   }, [transactionId, onLoadTransaction])
 
-  function getToken (tokenId) {
-    return tokensTask.data.find((token) => token.TokenID === tokenId)
+  function getTokenSymbol (tokenId) {
+    if (tokensTask.status !== 'successful') {
+      return '-'
+    }
+
+    return tokensTask.data.find((token) => token.TokenID === tokenId).Symbol
   }
 
   function handleNavigationToAccountDetails () {
@@ -33,69 +37,50 @@ function TransactionDetails ({
   return (
     <div>
       {(() => {
-        switch (tokensTask.status) {
+        switch (transactionTask.status) {
           case 'loading': {
             return <Spinner />
           }
           case 'failed': {
-            return <p>{tokensTask.error}</p>
+            return <p>{transactionTask.error}</p>
           }
           case 'successful': {
             return (
               <>
-                {(() => {
-                  switch (transactionTask.status) {
-                    case 'loading': {
-                      return <Spinner />
-                    }
-                    case 'failed': {
-                      return <p>{transactionTask.error}</p>
-                    }
-                    case 'successful': {
-                      return (
-                        <>
-                          <button className={classes.closeButton} onClick={handleNavigationToAccountDetails}>
-                            Close
-                          </button>
-                          <div className={classes.statusContainer}>
-                            <h2>{transactionTask.data.Status || 'Completed'}</h2>
-                            <a href='https://hermez.io' target='_blank' rel='noopener noreferrer'>
-                              View in network explorer
-                            </a>
-                          </div>
-                          <div className={classes.transactionInfoContainer}>
-                            <h1>{transactionTask.data.Type} - {getToken(preferredCurrency).Symbol}</h1>
-                            <p>{transactionTask.data.Amount} {getToken(transactionTask.data.TokenID).Symbol}</p>
-                            <ul className={classes.transactionInfoList}>
-                              <li className={classes.transactionInfoListItem}>
-                                <p className={classes.transactionInfoListItemTitle}>To</p>
-                                <p>{transactionTask.data.ToEthAddr}</p>
-                              </li>
-                              <li className={classes.transactionInfoListItem}>
-                                <p className={classes.transactionInfoListItemTitle}>
-                                  Fee
-                                </p>
-                                <div>
-                                  <p>- {getToken(preferredCurrency).Symbol}</p>
-                                  <p>{transactionTask.data.Fee} {getToken(transactionTask.data.TokenID).Symbol}</p>
-                                </div>
-                              </li>
-                              <li className={classes.transactionInfoListItem}>
-                                <p className={classes.transactionInfoListItemTitle}>
-                                  Date
-                                </p>
-                                <p>{new Date().toLocaleString()}</p>
-                              </li>
-                            </ul>
-                          </div>
-                        </>
-                      )
-                    }
-                    default: {
-                      return <></>
-                    }
-                  }
-                })()}
+                <button className={classes.closeButton} onClick={handleNavigationToAccountDetails}>
+                  Close
+                </button>
+                <div className={classes.statusContainer}>
+                  <h2>{transactionTask.data.Status || 'Completed'}</h2>
+                  <a href='https://hermez.io' target='_blank' rel='noopener noreferrer'>
+                    View in network explorer
+                  </a>
+                </div>
+                <div className={classes.transactionInfoContainer}>
+                  <h1>{transactionTask.data.Type} - {getTokenSymbol(preferredCurrency)}</h1>
+                  <p>{transactionTask.data.Amount} {getTokenSymbol(transactionTask.data.TokenID)}</p>
+                  <ul className={classes.transactionInfoList}>
+                    <li className={classes.transactionInfoListItem}>
+                      <p className={classes.transactionInfoListItemTitle}>To</p>
+                      <p>{transactionTask.data.ToEthAddr}</p>
+                    </li>
+                    <li className={classes.transactionInfoListItem}>
+                      <p className={classes.transactionInfoListItemTitle}>
+                        Fee
+                      </p>
+                      <div>
+                        <p>- {getTokenSymbol(preferredCurrency)}</p>
+                        <p>{transactionTask.data.Fee} {getTokenSymbol(transactionTask.data.TokenID)}</p>
+                      </div>
+                    </li>
+                    <li className={classes.transactionInfoListItem}>
+                      <p className={classes.transactionInfoListItemTitle}>
+                        Date
+                      </p>
+                      <p>{new Date().toLocaleString()}</p>
+                    </li>
+                  </ul>
+                </div>
               </>
             )
           }
@@ -104,7 +89,6 @@ function TransactionDetails ({
           }
         }
       })()}
-
     </div>
   )
 }

@@ -33,10 +33,12 @@ function AccountDetails ({
     history.replace('/')
   }
 
-  function getTokenName (tokens, tokenId) {
-    const tokenData = tokens.find(token => token.TokenID === tokenId)
+  function getTokenName (tokenId) {
+    if (tokensTask.status !== 'successful') {
+      return '-'
+    }
 
-    return tokenData?.Name
+    return tokensTask.data.find(token => token.TokenID === tokenId).Name
   }
 
   function handleTransactionClick (transactionId) {
@@ -45,79 +47,60 @@ function AccountDetails ({
 
   return (
     <div>
-      {(() => {
-        switch (tokensTask.status) {
-          case 'loading': {
-            return <Spinner />
+      <section>
+        {(() => {
+          switch (accountTask.status) {
+            case 'loading': {
+              return <Spinner />
+            }
+            case 'failed': {
+              return <p>{accountTask.error}</p>
+            }
+            case 'successful': {
+              return (
+                <div>
+                  <h3>{getTokenName(accountTask.data.TokenID)}</h3>
+                  <h1>{accountTask.data.Balance}</h1>
+                  <p>- {preferredCurrency}</p>
+                </div>
+              )
+            }
+            default: {
+              return <></>
+            }
           }
-          case 'failed': {
-            return <p>{tokensTask.error}</p>
+        })()}
+        <div className={classes.actionButtonsGroup}>
+          <button className={classes.actionButton}>Send</button>
+          <button className={classes.actionButton}>Add funds</button>
+          <button className={classes.actionButton}>Withdrawal</button>
+        </div>
+      </section>
+      <section>
+        <h4 className={classes.title}>Activity</h4>
+        {(() => {
+          switch (transactionsTask.status) {
+            case 'loading': {
+              return <Spinner />
+            }
+            case 'failed': {
+              return <p>{transactionsTask.error}</p>
+            }
+            case 'successful': {
+              return (
+                <TransactionList
+                  transactions={transactionsTask.data}
+                  tokens={tokensTask.data}
+                  onTransactionClick={handleTransactionClick}
+                />
+              )
+            }
+            default: {
+              return <></>
+            }
           }
-          case 'successful': {
-            return (
-              <>
-                <section>
-                  {(() => {
-                    switch (accountTask.status) {
-                      case 'loading': {
-                        return <Spinner />
-                      }
-                      case 'failed': {
-                        return <p>{accountTask.error}</p>
-                      }
-                      case 'successful': {
-                        return (
-                          <div>
-                            <h3>{getTokenName(tokensTask.data, accountTask.data.TokenID)}</h3>
-                            <h1>{accountTask.data.Balance}</h1>
-                            <p>- {preferredCurrency}</p>
-                          </div>
-                        )
-                      }
-                      default: {
-                        return <></>
-                      }
-                    }
-                  })()}
-                  <div className={classes.actionButtonsGroup}>
-                    <button className={classes.actionButton}>Send</button>
-                    <button className={classes.actionButton}>Add funds</button>
-                    <button className={classes.actionButton}>Withdrawal</button>
-                  </div>
-                </section>
-                <section>
-                  <h4 className={classes.title}>Activity</h4>
-                  {(() => {
-                    switch (transactionsTask.status) {
-                      case 'loading': {
-                        return <Spinner />
-                      }
-                      case 'failed': {
-                        return <p>{transactionsTask.error}</p>
-                      }
-                      case 'successful': {
-                        return (
-                          <TransactionList
-                            transactions={transactionsTask.data}
-                            tokens={tokensTask.data}
-                            onTransactionClick={handleTransactionClick}
-                          />
-                        )
-                      }
-                      default: {
-                        return <></>
-                      }
-                    }
-                  })()}
-                </section>
-              </>
-            )
-          }
-          default: {
-            return <></>
-          }
-        }
-      })()}
+        })()}
+      </section>
     </div>
   )
 }

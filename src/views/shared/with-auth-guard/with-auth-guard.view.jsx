@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 
 const withAuth = (Component) => ({ metaMaskWalletTask }) => {
-  console.log(metaMaskWalletTask)
   if (metaMaskWalletTask.status === 'successful') {
     return <Component />
   } else {

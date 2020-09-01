@@ -15,7 +15,7 @@ function fetchMetamaskWallet () {
       if (!ethereum || !ethereum.isMetaMask) {
         dispatch(accountActions.loadMetamaskWalletFailure('MetaMask is not available'))
       }
-      await ethereum.send('eth_requestAccounts')
+      await ethereum.request({ method: 'eth_requestAccounts' })
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
       const ethereumAddress = await signer.getAddress()

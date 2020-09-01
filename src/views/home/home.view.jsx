@@ -30,89 +30,74 @@ function Home ({
     return accounts.reduce((amount, account) => amount + account.Balance, 0)
   }
 
-  function getToken (tokenId) {
-    return tokensTask.data.find((token) => token.TokenID === tokenId)
+  function getTokenSymbol (tokenId) {
+    if (tokensTask.status !== 'successful') {
+      return '-'
+    }
+
+    return tokensTask.data.find((token) => token.TokenID === tokenId).Symbol
   }
 
   return (
     <div>
-      {(() => {
-        switch (tokensTask.status) {
-          case 'loading': {
-            return <Spinner />
+      <section>
+        <h4 className={classes.title}>Total balance</h4>
+        {(() => {
+          switch (accountsTask.status) {
+            case 'loading': {
+              return <Spinner />
+            }
+            case 'failed': {
+              return (
+                <TotalBalance
+                  amount={undefined}
+                  currency={getTokenSymbol(preferredCurrency)}
+                />
+              )
+            }
+            case 'successful': {
+              return (
+                <TotalBalance
+                  amount={getTotalBalance(accountsTask.data)}
+                  currency={getTokenSymbol(preferredCurrency)}
+                />
+              )
+            }
+            default: {
+              return <></>
+            }
           }
-          case 'failed': {
-            return <p>{tokensTask.error}</p>
+        })()}
+        <div className={classes.actionButtonsGroup}>
+          <button className={classes.actionButton}>Send</button>
+          <button className={classes.actionButton}>Add funds</button>
+        </div>
+      </section>
+      <section>
+        <h4 className={classes.title}>Accounts</h4>
+        {(() => {
+          switch (accountsTask.status) {
+            case 'loading': {
+              return <Spinner />
+            }
+            case 'failed': {
+              return <p>{accountsTask.error}</p>
+            }
+            case 'successful': {
+              return (
+                <AccountList
+                  accounts={accountsTask.data}
+                  tokens={tokensTask.status === 'successful' ? tokensTask.data : []}
+                  preferredCurrency={preferredCurrency}
+                />
+              )
+            }
+            default: {
+              return <></>
+            }
           }
-          case 'successful': {
-            return (
-              <>
-                <section>
-                  <h4 className={classes.title}>Total balance</h4>
-                  {(() => {
-                    switch (accountsTask.status) {
-                      case 'loading': {
-                        return <Spinner />
-                      }
-                      case 'failed': {
-                        return (
-                          <TotalBalance
-                            amount={undefined}
-                            currency={getToken(preferredCurrency).Symbol}
-                          />
-                        )
-                      }
-                      case 'successful': {
-                        return (
-                          <TotalBalance
-                            amount={getTotalBalance(accountsTask.data)}
-                            currency={getToken(preferredCurrency).Symbol}
-                          />
-                        )
-                      }
-                      default: {
-                        return <></>
-                      }
-                    }
-                  })()}
-                  <div className={classes.actionButtonsGroup}>
-                    <button className={classes.actionButton}>Send</button>
-                    <button className={classes.actionButton}>Add funds</button>
-                  </div>
-                </section>
-                <section>
-                  <h4 className={classes.title}>Accounts</h4>
-                  {(() => {
-                    switch (accountsTask.status) {
-                      case 'loading': {
-                        return <Spinner />
-                      }
-                      case 'failed': {
-                        return <p>{accountsTask.error}</p>
-                      }
-                      case 'successful': {
-                        return (
-                          <AccountList
-                            accounts={accountsTask.data}
-                            tokens={tokensTask.data}
-                            preferredCurrency={preferredCurrency}
-                          />
-                        )
-                      }
-                      default: {
-                        return <></>
-                      }
-                    }
-                  })()}
-                </section>
-              </>
-            )
-          }
-          default: {
-            return <></>
-          }
-        }
-      })()}
+        })()}
+      </section>
     </div>
   )
 }
