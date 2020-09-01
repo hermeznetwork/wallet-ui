@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-The steps assume you have the Rollup repo in the same directory as this one and that you ran `npm install` in rollup folder, rollup/rollup-operator folder and wallet-ui folder. The Rollup repo should be in the *MetaMask* branch. Check also that you have installed ganache-cli and truffle: `npm install -g ganache-cli`, `npm install -g truffle` 
+The steps assume you have the Rollup repo in the same directory as this one and that you ran `npm install` in rollup folder, rollup/rollup-operator folder and wallet-ui folder. The Rollup repo should be in the *metamask* branch. Check also that you have installed ganache-cli and truffle: `npm install -g ganache-cli`, `npm install -g truffle` 
 
 You need 4 different terminals to end up running:
 
