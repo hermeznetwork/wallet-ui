@@ -19,11 +19,6 @@ export async function getGasPrice (multiplier, provider) {
 }
 
 export const deposit = async (addressSC, loadAmount, tokenId, walletRollup, abi, gasLimit = 5000000, gasMultiplier = 1) => {
-  const pubKeyBabyjub = [
-    walletRollup.publicKey[0].toString(),
-    walletRollup.publicKey[1].toString()
-  ]
-
   const provider = new ethers.providers.Web3Provider(window.ethereum)
   const signer = provider.getSigner()
   const contractWithSigner = new ethers.Contract(addressSC, abi, signer)
@@ -38,7 +33,7 @@ export const deposit = async (addressSC, loadAmount, tokenId, walletRollup, abi,
     value: `0x${(Scalar.add(feeOnchainTx, feeDeposit)).toString(16)}`
   }
   try {
-    return await contractWithSigner.deposit(loadAmount, tokenId, address, pubKeyBabyjub, overrides)
+    return await contractWithSigner.deposit(loadAmount, tokenId, address, walletRollup.publicKey, overrides)
   } catch (error) {
     throw new Error(`Message error: ${error.message}`)
   }
@@ -65,10 +60,8 @@ export const depositOnTop = async (addressSC, loadAmount, tokenId, babyjubTo, ab
 
 export const withdraw = async (addressSC, tokenId, walletRollup, abi, urlOperator,
   numExitRoot, gasLimit = 5000000, gasMultiplier = 1) => {
+  const { publicKey, publicKeyHex } = walletRollup
   const apiOperator = new CliExternalOperator(urlOperator)
-  const pubKeyBabyjub = [walletRollup.publicKey[0].toString(16), walletRollup.publicKey[1].toString(16)]
-  const pubKeyBabyjubEthCall = [walletRollup.publicKey[0].toString(), walletRollup.publicKey[1].toString()]
-
   const provider = new ethers.providers.Web3Provider(window.ethereum)
   const signer = provider.getSigner()
   const contractWithSigner = new ethers.Contract(addressSC, abi, signer)
@@ -79,13 +72,13 @@ export const withdraw = async (addressSC, tokenId, walletRollup, abi, urlOperato
   }
 
   try {
-    const res = await apiOperator.getExitInfo(tokenId, pubKeyBabyjub[0], pubKeyBabyjub[1], numExitRoot)
+    const res = await apiOperator.getExitInfo(tokenId, publicKeyHex[0], publicKeyHex[1], numExitRoot)
     const infoExitTree = res.data
     if (infoExitTree.found) {
       return await contractWithSigner.withdraw(infoExitTree.state.amount, numExitRoot,
-        infoExitTree.siblings, pubKeyBabyjubEthCall, tokenId, overrides)
+        infoExitTree.siblings, publicKey, tokenId, overrides)
     }
-    throw new Error(`No exit tree leaf was found in batch: ${numExitRoot} with babyjub: ${pubKeyBabyjub}`)
+    throw new Error(`No exit tree leaf was found in batch: ${numExitRoot} with babyjub: ${publicKeyHex}`)
   } catch (error) {
     throw new Error(`Message error: ${error.message}`)
   }
@@ -93,11 +86,6 @@ export const withdraw = async (addressSC, tokenId, walletRollup, abi, urlOperato
 
 export const forceWithdraw = async (addressSC, tokenId, amount, walletRollup, abi,
   gasLimit = 5000000, gasMultiplier = 1) => {
-  const pubKeyBabyjub = [
-    walletRollup.publicKey[0],
-    walletRollup.publicKey[1]
-  ]
-
   const provider = new ethers.providers.Web3Provider(window.ethereum)
   const signer = provider.getSigner()
   const contractWithSigner = new ethers.Contract(addressSC, abi, signer)
@@ -111,7 +99,7 @@ export const forceWithdraw = async (addressSC, tokenId, amount, walletRollup, ab
 
   const amountF = fix2float(amount)
   try {
-    return await contractWithSigner.forceWithdraw(pubKeyBabyjub, tokenId, amountF, overrides)
+    return await contractWithSigner.forceWithdraw(walletRollup.publicKey, tokenId, amountF, overrides)
   } catch (error) {
     throw new Error(`Message error: ${error.message}`)
   }
@@ -164,8 +152,6 @@ const exitEthAddr = '0x0000000000000000000000000000000000000000'
  * @returns {Object} - return a object with the response status, current batch, current nonce and nonceObject
 */
 export async function send (urlOperator, babyjubTo, amount, walletRollup, tokenId, fee, nonce, nonceObject, ethAddress) {
-  const [fromAx, fromAy] = [walletRollup.publicKey[0].toString(16), walletRollup.publicKey[1].toString(16)]
-
   const apiOperator = new CliExternalOperator(urlOperator)
   const generalInfo = await apiOperator.getState()
   const currentBatch = generalInfo.data.rollupSynch.lastBatchSynched
@@ -187,7 +173,7 @@ export async function send (urlOperator, babyjubTo, amount, walletRollup, tokenI
   if (nonce !== undefined) {
     nonceToSend = nonce
   } else {
-    const resOp = await apiOperator.getStateAccount(tokenId, fromAx, fromAy)
+    const resOp = await apiOperator.getStateAccount(tokenId, walletRollup.publicKeyHex[0], walletRollup.publicKeyHex[1])
     const senderLeaf = resOp.data
     if (nonceObject !== undefined) {
       const res = await _checkNonce(senderLeaf, currentBatch, nonceObject)

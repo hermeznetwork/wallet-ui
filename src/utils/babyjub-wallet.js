@@ -21,7 +21,8 @@ export class BabyJubWallet {
     const pub = priv.public()
 
     this.privateKey = privateKey
-    this.publicKey = [pub.p[0], pub.p[1]]
+    this.publicKey = [pub.p[0].toString(), pub.p[1].toString()]
+    this.publicKeyHex = [pub.p[0].toString(16), pub.p[1].toString(16)]
     this.publicKeyCompressed = pub.compress()
     this.ethereumAddress = ethereumAddress
   }
@@ -58,8 +59,8 @@ export class BabyJubWallet {
     tx.r8x = signature.R8[0]
     tx.r8y = signature.R8[1]
     tx.s = signature.S
-    tx.fromAx = this.publicKey[0].toString(16)
-    tx.fromAy = this.publicKey[1].toString(16)
+    tx.fromAx = this.publicKeyHex[0]
+    tx.fromAy = this.publicKeyHex[1]
     tx.fromEthAddr = this.ethereumAddress
   }
 }
