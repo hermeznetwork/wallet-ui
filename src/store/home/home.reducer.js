@@ -4,7 +4,7 @@ const initialHomeState = {
   accountsTask: {
     status: 'pending'
   },
-  transactionsTask: {
+  tokensPriceTask: {
     status: 'pending'
   }
 }
@@ -37,29 +37,29 @@ function homeReducer (state = initialHomeState, action) {
         }
       }
     }
-    case homeActionTypes.LOAD_TRANSACTIONS: {
+    case homeActionTypes.LOAD_TOKENS_PRICE: {
       return {
         ...state,
-        transactionsTask: {
+        tokensPriceTask: {
           status: 'loading'
         }
       }
     }
-    case homeActionTypes.LOAD_TRANSACTIONS_SUCCESS: {
+    case homeActionTypes.LOAD_TOKENS_PRICE_SUCCESS: {
       return {
         ...state,
-        transactionsTask: {
+        tokensPriceTask: {
           status: 'successful',
-          data: action.transactions
+          data: action.tokensPrice
         }
       }
     }
-    case homeActionTypes.LOAD_TRANSACTIONS_FAILURE: {
+    case homeActionTypes.LOAD_TOKENS_PRICE_FAILURE: {
       return {
         ...state,
-        transactionsTask: {
+        tokensPriceTask: {
           status: 'failed',
-          error: 'An error ocurred loading the transactions'
+          error: 'An error ocurred loading the tokens price'
         }
       }
     }

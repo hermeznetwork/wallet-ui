@@ -2,9 +2,9 @@ export const homeActionTypes = {
   LOAD_ACCOUNTS: '[HOME] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[HOME] LOAD ACCOUNTS SUCCESS',
   LOAD_ACCOUNTS_FAILURE: '[HOME] LOAD ACCOUNTS FAILURE',
-  LOAD_TRANSACTIONS: '[HOME] LOAD TRANSACTIONS',
-  LOAD_TRANSACTIONS_SUCCESS: '[HOME] LOAD TRANSACTIONS SUCCESS',
-  LOAD_TRANSACTIONS_FAILURE: '[HOME] LOAD TRANSACTIONS FAILURE'
+  LOAD_TOKENS_PRICE: '[HOME] LOAD TOKENS PRICE',
+  LOAD_TOKENS_PRICE_SUCCESS: '[HOME] LOAD TOKENS PRICE SUCCESS',
+  LOAD_TOKENS_PRICE_FAILURE: '[HOME] LOAD TOKENS PRICE FAILURE'
 }
 
 function loadAccounts () {
@@ -16,7 +16,7 @@ function loadAccounts () {
 function loadAccountsSuccess (accounts) {
   return {
     type: homeActionTypes.LOAD_ACCOUNTS_SUCCESS,
-    accounts: accounts
+    accounts
   }
 }
 
@@ -26,22 +26,22 @@ function loadAccountsFailure () {
   }
 }
 
-function loadTransactions () {
+function loadTokensPrice () {
   return {
-    type: homeActionTypes.LOAD_TRANSACTIONS
+    type: homeActionTypes.LOAD_TOKENS_PRICE
   }
 }
 
-function loadTransactionsSuccess (transactions) {
+function loadTokensPriceSuccess (tokensPrice) {
   return {
-    type: homeActionTypes.LOAD_TRANSACTIONS_SUCCESS,
-    transactions
+    type: homeActionTypes.LOAD_TOKENS_PRICE_SUCCESS,
+    tokensPrice
   }
 }
 
-function loadTransactionsFailure () {
+function loadTokensPriceFailure () {
   return {
-    type: homeActionTypes.LOAD_TRANSACTIONS_FAILURE
+    type: homeActionTypes.LOAD_TOKENS_PRICE_FAILURE
   }
 }
 
@@ -49,7 +49,7 @@ export {
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
-  loadTransactions,
-  loadTransactionsSuccess,
-  loadTransactionsFailure
+  loadTokensPrice,
+  loadTokensPriceSuccess,
+  loadTokensPriceFailure
 }

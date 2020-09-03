@@ -5,11 +5,15 @@ import clsx from 'clsx'
 import Account from '../account/account.view'
 import useAccountListStyles from './account-list.styles'
 
-function AccountList ({ accounts, tokens, preferredCurrency }) {
+function AccountList ({ accounts, tokens, preferredCurrency, tokensPrice }) {
   const classes = useAccountListStyles()
 
-  function getToken (tokenId) {
-    return tokens.find((token) => token.TokenID === tokenId)
+  function getTokenSymbol (tokenId) {
+    return tokens.find((token) => token.TokenID === tokenId)?.Symbol
+  }
+
+  function getTokenPrice (tokenSymbol) {
+    return tokensPrice.find((tokenPrice) => tokenPrice.symbol === tokenSymbol)?.value
   }
 
   return (
@@ -22,8 +26,9 @@ function AccountList ({ accounts, tokens, preferredCurrency }) {
           <Account
             tokenId={account.TokenID}
             amount={account.Balance}
-            tokenSymbol={getToken(account.TokenID).Symbol}
-            preferredCurrency={getToken(preferredCurrency).Symbol}
+            tokenSymbol={getTokenSymbol(account.TokenID)}
+            preferredCurrency={getTokenSymbol(preferredCurrency)}
+            tokenPrice={getTokenPrice(getTokenSymbol(account.TokenID))}
           />
         </div>
       )}
@@ -43,6 +48,12 @@ AccountList.propTypes = {
       TokenID: PropTypes.number.isRequired,
       Name: PropTypes.string.isRequired,
       Symbol: PropTypes.string.isRequired
+    })
+  ),
+  tokensPrice: PropTypes.arrayOf(
+    PropTypes.shape({
+      symbol: PropTypes.string.isRequired,
+      value: PropTypes.number.isRequired
     })
   ),
   preferredCurrency: PropTypes.number.isRequired

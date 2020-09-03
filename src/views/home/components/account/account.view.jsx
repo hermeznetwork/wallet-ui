@@ -4,8 +4,12 @@ import { Link } from 'react-router-dom'
 
 import useAccountStyles from './account.styles'
 
-function Account ({ tokenId, amount, tokenSymbol, preferredCurrency }) {
+function Account ({ tokenId, amount, tokenSymbol, tokenPrice, preferredCurrency }) {
   const classes = useAccountStyles()
+
+  function getPriceInPreferredCurrency () {
+    return amount * tokenPrice
+  }
 
   return (
     <Link
@@ -14,8 +18,20 @@ function Account ({ tokenId, amount, tokenSymbol, preferredCurrency }) {
     >
       <div className={classes.image} />
       <div className={classes.details}>
-        <h3 className={classes.amount}>{amount} {tokenSymbol}</h3>
-        <h4 className={classes.preferredCurrency}>-- {preferredCurrency}</h4>
+        {
+          tokenSymbol
+            ? <h3 className={classes.amount}>{amount} {tokenSymbol}</h3>
+            : <></>
+        }
+        {
+          tokenPrice
+            ? (
+              <h4 className={classes.preferredCurrency}>
+                {getPriceInPreferredCurrency()} {preferredCurrency}
+              </h4>
+            )
+            : <></>
+        }
       </div>
     </Link>
   )
@@ -24,7 +40,8 @@ function Account ({ tokenId, amount, tokenSymbol, preferredCurrency }) {
 Account.propTypes = {
   tokenId: PropTypes.number.isRequired,
   amount: PropTypes.number.isRequired,
-  tokenSymbol: PropTypes.string.isRequired,
+  tokenSymbol: PropTypes.string,
+  tokenPrice: PropTypes.number,
   preferredCurrency: PropTypes.string.isRequired
 }
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import useHomeStyles from './home.styles'
-import { fetchAccounts, fetchTransactions } from '../../store/home/home.thunks'
+import { fetchAccounts, fetchTokenPrices } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from './components/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
@@ -13,18 +13,28 @@ function Home ({
   tokensTask,
   accountsTask,
   metaMaskWalletTask,
+  tokensPriceTask,
   preferredCurrency,
   onLoadAccounts,
-  onLoadRecentTransactions
+  onLoadTokensPrice
 }) {
   const classes = useHomeStyles()
-
+  console.log(tokensPriceTask)
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
       onLoadAccounts(metaMaskWalletTask.data.ethereumAddress)
-      onLoadRecentTransactions(metaMaskWalletTask.data.ethereumAddress)
     }
-  }, [metaMaskWalletTask, onLoadAccounts, onLoadRecentTransactions])
+  }, [metaMaskWalletTask, onLoadAccounts])
+
+  React.useEffect(() => {
+    if (accountsTask.status === 'successful' && tokensTask.status === 'successful') {
+      const tokens = accountsTask.data
+        .map((account) => account.TokenID)
+        .map((tokenId) => tokensTask.data.find((token) => token.TokenID === tokenId).Symbol)
+
+      onLoadTokensPrice(tokens)
+    }
+  }, [accountsTask, tokensTask, onLoadTokensPrice])
 
   function getTotalBalance (accounts) {
     return accounts.reduce((amount, account) => amount + account.Balance, 0)
@@ -89,6 +99,7 @@ function Home ({
                   accounts={accountsTask.data}
                   tokens={tokensTask.status === 'successful' ? tokensTask.data : []}
                   preferredCurrency={preferredCurrency}
+                  tokensPrice={tokensPriceTask.status === 'successful' ? tokensPriceTask.data : []}
                 />
               )
             }
@@ -129,19 +140,32 @@ Home.propTypes = {
       })
     ),
     error: PropTypes.string
-  })
+  }),
+  tokensPriceTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        symbol: PropTypes.string.isRequired,
+        value: PropTypes.number.isRequired
+      })
+    ),
+    error: PropTypes.string
+  }),
+  onLoadAccounts: PropTypes.func.isRequired,
+  onLoadTokensPrice: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
   metaMaskWalletTask: state.account.metaMaskWalletTask,
   accountsTask: state.home.accountsTask,
+  tokensPriceTask: state.home.tokensPriceTask,
   preferredCurrency: state.settings.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress)),
-  onLoadRecentTransactions: (ethereumAddress) => dispatch(fetchTransactions(ethereumAddress))
+  onLoadTokensPrice: (tokens) => dispatch(fetchTokenPrices(tokens))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))

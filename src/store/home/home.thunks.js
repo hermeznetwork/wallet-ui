@@ -1,5 +1,6 @@
 import * as homeActions from './home.actions'
 import * as rollupApi from '../../apis/rollup'
+import * as priceUpdaterApi from '../../apis/price-updater'
 
 function fetchAccounts (ethereumAddress) {
   return (dispatch) => {
@@ -11,14 +12,14 @@ function fetchAccounts (ethereumAddress) {
   }
 }
 
-function fetchTransactions (ethereumAddress) {
+function fetchTokenPrices (tokens) {
   return (dispatch) => {
-    dispatch(homeActions.loadTransactions())
+    dispatch(homeActions.loadTokensPrice())
 
-    return rollupApi.getTransactions(ethereumAddress)
-      .then(res => dispatch(homeActions.loadTransactionsSuccess(res)))
-      .catch(err => dispatch(homeActions.loadTransactionsFailure(err)))
+    return priceUpdaterApi.getTokensPrice(tokens)
+      .then(res => dispatch(homeActions.loadTokensPriceSuccess(res)))
+      .catch(err => dispatch(homeActions.loadTokensPriceFailure(err)))
   }
 }
 
-export { fetchAccounts, fetchTransactions }
+export { fetchAccounts, fetchTokenPrices }
