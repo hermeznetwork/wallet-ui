@@ -18,19 +18,25 @@ function AccountList ({ accounts, tokens, preferredCurrency, tokensPrice }) {
 
   return (
     <div>
-      {accounts.map((account, index) =>
-        <div
-          key={account.TokenID}
-          className={clsx({ [classes.account]: index > 0 })}
-        >
-          <Account
-            tokenId={account.TokenID}
-            amount={account.Balance}
-            tokenSymbol={getTokenSymbol(account.TokenID)}
-            preferredCurrency={getTokenSymbol(preferredCurrency)}
-            tokenPrice={getTokenPrice(getTokenSymbol(account.TokenID))}
-          />
-        </div>
+      {accounts.map((account, index) => {
+        const tokenSymbol = getTokenSymbol(account.TokenID)
+        const preferredCurrencySymbol = getTokenSymbol(preferredCurrency)
+
+        return (
+          <div
+            key={account.TokenID}
+            className={clsx({ [classes.account]: index > 0 })}
+          >
+            <Account
+              tokenId={account.TokenID}
+              amount={account.Balance}
+              tokenSymbol={tokenSymbol}
+              preferredCurrency={preferredCurrencySymbol}
+              tokenPrice={getTokenPrice(tokenSymbol)}
+            />
+          </div>
+        )
+      }
       )}
     </div>
   )
