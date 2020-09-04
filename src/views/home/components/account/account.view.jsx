@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom'
 
 import useAccountStyles from './account.styles'
 
-function Account ({ tokenId, amount, tokenSymbol, tokenPrice, preferredCurrency }) {
+function Account ({ tokenId, amount, tokenSymbol, fiatRate, preferredCurrency }) {
   const classes = useAccountStyles()
-  const priceInFiat = amount * tokenPrice
+  const priceInFiat = amount * fiatRate
 
   return (
     <Link
@@ -21,10 +21,10 @@ function Account ({ tokenId, amount, tokenSymbol, tokenPrice, preferredCurrency 
             : <></>
         }
         {
-          tokenPrice
+          fiatRate
             ? (
               <h4 className={classes.preferredCurrency}>
-                {priceInFiat} {preferredCurrency}
+                {priceInFiat.toFixed(2)} {preferredCurrency}
               </h4>
             )
             : <></>
@@ -38,7 +38,7 @@ Account.propTypes = {
   tokenId: PropTypes.number.isRequired,
   amount: PropTypes.number.isRequired,
   tokenSymbol: PropTypes.string,
-  tokenPrice: PropTypes.number,
+  fiatRate: PropTypes.number,
   preferredCurrency: PropTypes.string.isRequired
 }
 

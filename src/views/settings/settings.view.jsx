@@ -7,7 +7,7 @@ import useSettingsStyles from './settings.styles'
 import CurrencyList from './components/currency-list/currency-list.view'
 import { changePreferredCurrency } from '../../store/settings/settings.thunks'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { Currency } from '../../utils/currencies'
+import { CurrencySymbol } from '../../utils/currencies'
 
 function Settings ({
   metaMaskWalletTask,
@@ -35,7 +35,7 @@ function Settings ({
       <section>
         <div>
           <CurrencyList
-            currencies={Object.values(Currency)}
+            currencies={Object.values(CurrencySymbol)}
             selectedCurrency={preferredCurrency}
             onSelectCurrency={handlePreferredCurrencySelection}
           />

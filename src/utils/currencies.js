@@ -3,4 +3,4 @@ const CurrencySymbol = {
   EUR: 'EUR'
 }
 
-export { CurrencySymbol as Currency }
+export { CurrencySymbol }

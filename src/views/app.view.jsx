@@ -8,7 +8,7 @@ import routes from '../routing/routes'
 import { fetchConfig, fetchTokens, fetchFiatExchangeRates } from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
 import Login from './login/login.view'
-import { Currency } from '../utils/currencies'
+import { CurrencySymbol } from '../utils/currencies'
 
 function App ({
   configTask,
@@ -24,12 +24,20 @@ function App ({
     onLoadFiatExchangeRates()
   }, [onLoadConfig, onLoadTokens, onLoadFiatExchangeRates])
 
-  if (configTask.status === 'loading' || tokensTask.status === 'loading') {
+  if (
+    configTask.status === 'loading' ||
+    tokensTask.status === 'loading' ||
+    fiatExchangeRatesTask.status === 'loading'
+  ) {
     return <Spinner />
   }
 
-  if (configTask.status === 'failed' || tokensTask.status === 'failed') {
-    return <p>{configTask.error || tokensTask.error}</p>
+  if (
+    configTask.status === 'failed' ||
+    tokensTask.status === 'failed' ||
+    fiatExchangeRatesTask.status === 'failed'
+  ) {
+    return <p>{configTask.error || tokensTask.error || fiatExchangeRatesTask.error}</p>
   }
 
   return (
@@ -78,6 +86,10 @@ App.propTypes = {
       })
     )
   }),
+  fiatExchangeRatesTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.object
+  }),
   onLoadConfig: PropTypes.func.isRequired,
   onLoadTokens: PropTypes.func.isRequired
 }
@@ -93,7 +105,7 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadTokens: () => dispatch(fetchTokens()),
   onLoadFiatExchangeRates: () => dispatch(
     fetchFiatExchangeRates(
-      Object.values(Currency).filter(currency => currency !== Currency.USD)
+      Object.values(CurrencySymbol).filter(currency => currency !== CurrencySymbol.USD)
     )
   )
 })

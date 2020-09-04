@@ -8,12 +8,14 @@ import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from './components/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
+import { CurrencySymbol } from '../../utils/currencies'
 
 function Home ({
   tokensTask,
   accountsTask,
   metaMaskWalletTask,
   tokensPriceTask,
+  fiatExchangeRatesTask,
   preferredCurrency,
   onLoadAccounts,
   onLoadTokensPrice
@@ -37,7 +39,27 @@ function Home ({
   }, [accountsTask, tokensTask, onLoadTokensPrice])
 
   function getTotalBalance (accounts) {
-    return accounts.reduce((amount, account) => amount + account.Balance, 0)
+    if (
+      tokensPriceTask.status !== 'successful' ||
+      fiatExchangeRatesTask.status !== 'successful'
+    ) {
+      return undefined
+    }
+
+    return accounts.reduce((amount, account) => {
+      const tokenSymbol = getTokenSymbol(account.TokenID)
+      const tokenRateInUSD = tokensPriceTask.data
+        .find((tokenPrice) => tokenPrice.symbol === tokenSymbol).value
+      const tokenFiatRate = preferredCurrency === CurrencySymbol.USD
+        ? tokenRateInUSD
+        : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
+
+      return amount + account.Balance * tokenFiatRate
+    }, 0)
+  }
+
+  function getTokenSymbol (tokenId) {
+    return tokensTask.data.find((token) => token.TokenID === tokenId).Symbol
   }
 
   return (
@@ -89,9 +111,10 @@ function Home ({
               return (
                 <AccountList
                   accounts={accountsTask.data}
-                  tokens={tokensTask.status === 'successful' ? tokensTask.data : []}
+                  tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
                   preferredCurrency={preferredCurrency}
-                  tokensPrice={tokensPriceTask.status === 'successful' ? tokensPriceTask.data : []}
+                  tokensPrice={tokensPriceTask.status === 'successful' ? tokensPriceTask.data : undefined}
+                  fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
                 />
               )
             }
@@ -143,6 +166,11 @@ Home.propTypes = {
     ),
     error: PropTypes.string
   }),
+  fiatExchangeRatesTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.object,
+    error: PropTypes.string
+  }),
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadTokensPrice: PropTypes.func.isRequired
 }
@@ -152,6 +180,7 @@ const mapStateToProps = (state) => ({
   metaMaskWalletTask: state.account.metaMaskWalletTask,
   accountsTask: state.home.accountsTask,
   tokensPriceTask: state.home.tokensPriceTask,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.settings.preferredCurrency
 })
 
