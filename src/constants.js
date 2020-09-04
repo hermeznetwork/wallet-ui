@@ -1,3 +1,6 @@
+import { Currency } from './utils/currencies'
+
 export const SETTINGS = {
-  DEFAULT_CURRENCY_ID: 0
+  PREFERRED_CURRENCY_KEY: 'preferredCurrency',
+  DEFAULT_PREFERRED_CURRENCY: Currency.USD
 }

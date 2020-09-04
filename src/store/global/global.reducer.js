@@ -7,6 +7,9 @@ const initialGlobalState = {
   configTask: {
     status: 'pending'
   },
+  fiatExchangeRatesTask: {
+    status: 'pending'
+  },
   gasMultiplierTask: {},
   currentBatchTask: {
     status: 'pending'
@@ -69,6 +72,32 @@ function globalReducer (state = initialGlobalState, action) {
           error: action.error
         }
       }
+    case globalActionTypes.LOAD_FIAT_EXCHANGE_RATES: {
+      return {
+        ...state,
+        fiatExchangeRatesTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_SUCCESS: {
+      return {
+        ...state,
+        fiatExchangeRatesTask: {
+          status: 'successful',
+          data: action.fiatExchangeRates
+        }
+      }
+    }
+    case globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE: {
+      return {
+        ...state,
+        fiatExchangeRatesTask: {
+          status: 'failure',
+          error: action.error
+        }
+      }
+    }
     case globalActionTypes.LOAD_GAS_MULTIPLIER:
       return {
         ...state,

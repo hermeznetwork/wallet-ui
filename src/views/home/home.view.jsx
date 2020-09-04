@@ -19,7 +19,7 @@ function Home ({
   onLoadTokensPrice
 }) {
   const classes = useHomeStyles()
-  console.log(tokensPriceTask)
+
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
       onLoadAccounts(metaMaskWalletTask.data.ethereumAddress)
@@ -40,14 +40,6 @@ function Home ({
     return accounts.reduce((amount, account) => amount + account.Balance, 0)
   }
 
-  function getTokenSymbol (tokenId) {
-    if (tokensTask.status !== 'successful') {
-      return '-'
-    }
-
-    return tokensTask.data.find((token) => token.TokenID === tokenId).Symbol
-  }
-
   return (
     <div>
       <section>
@@ -61,7 +53,7 @@ function Home ({
               return (
                 <TotalBalance
                   amount={undefined}
-                  currency={getTokenSymbol(preferredCurrency)}
+                  currency={preferredCurrency}
                 />
               )
             }
@@ -69,7 +61,7 @@ function Home ({
               return (
                 <TotalBalance
                   amount={getTotalBalance(accountsTask.data)}
-                  currency={getTokenSymbol(preferredCurrency)}
+                  currency={preferredCurrency}
                 />
               )
             }
@@ -129,7 +121,7 @@ Home.propTypes = {
     data: PropTypes.object,
     error: PropTypes.string
   }),
-  preferredCurrency: PropTypes.number.isRequired,
+  preferredCurrency: PropTypes.string.isRequired,
   tokensTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(

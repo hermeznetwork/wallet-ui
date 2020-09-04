@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useTokenStyles = createUseStyles({
+const useCurrencyStyles = createUseStyles({
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -21,12 +21,8 @@ const useTokenStyles = createUseStyles({
     flexDirection: 'column'
   },
   symbol: {
-    margin: 0,
-    marginBottom: 8
-  },
-  preferredCurrency: {
     margin: 0
   }
 })
 
-export default useTokenStyles
+export default useCurrencyStyles

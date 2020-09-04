@@ -20,7 +20,6 @@ function AccountList ({ accounts, tokens, preferredCurrency, tokensPrice }) {
     <div>
       {accounts.map((account, index) => {
         const tokenSymbol = getTokenSymbol(account.TokenID)
-        const preferredCurrencySymbol = getTokenSymbol(preferredCurrency)
 
         return (
           <div
@@ -31,7 +30,7 @@ function AccountList ({ accounts, tokens, preferredCurrency, tokensPrice }) {
               tokenId={account.TokenID}
               amount={account.Balance}
               tokenSymbol={tokenSymbol}
-              preferredCurrency={preferredCurrencySymbol}
+              preferredCurrency={preferredCurrency}
               tokenPrice={getTokenPrice(tokenSymbol)}
             />
           </div>
@@ -62,7 +61,7 @@ AccountList.propTypes = {
       value: PropTypes.number.isRequired
     })
   ),
-  preferredCurrency: PropTypes.number.isRequired
+  preferredCurrency: PropTypes.string.isRequired
 }
 
 export default AccountList

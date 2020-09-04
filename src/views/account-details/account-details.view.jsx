@@ -29,10 +29,6 @@ function AccountDetails ({
     }
   }, [metaMaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
 
-  if (metaMaskWalletTask.status === 'pending') {
-    history.replace('/')
-  }
-
   function getTokenName (tokenId) {
     if (tokensTask.status !== 'successful') {
       return '-'
@@ -106,7 +102,7 @@ function AccountDetails ({
 }
 
 AccountDetails.propTypes = {
-  preferredCurrency: PropTypes.number.isRequired,
+  preferredCurrency: PropTypes.string.isRequired,
   accountTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.shape({
