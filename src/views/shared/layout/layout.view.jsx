@@ -1,8 +1,8 @@
 import React from 'react'
 
 import useLayoutStyles from './layout.styles'
-import Header from '../header/header'
-import Main from '../main/main'
+import Header from '../header/header.view'
+import Main from '../main/main.view'
 
 function Layout ({ children }) {
   const classes = useLayoutStyles()

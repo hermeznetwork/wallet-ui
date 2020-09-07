@@ -38,7 +38,7 @@ function AccountDetails ({
       return '-'
     }
 
-    return tokensTask.data.find(token => token.TokenID === tokenId).Name
+    return tokensTask.data.find(token => token.tokenId === tokenId).name
   }
 
   function handleTransactionClick (transactionId) {
@@ -59,8 +59,8 @@ function AccountDetails ({
             case 'successful': {
               return (
                 <div>
-                  <h3>{getTokenName(accountTask.data.TokenID)}</h3>
-                  <h1>{accountTask.data.Balance}</h1>
+                  <h3>{getTokenName(accountTask.data.tokenId)}</h3>
+                  <h1>{accountTask.data.balance}</h1>
                   <p>- {preferredCurrency}</p>
                 </div>
               )
@@ -110,8 +110,8 @@ AccountDetails.propTypes = {
   accountTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.shape({
-      Balance: PropTypes.number.isRequired,
-      TokenID: PropTypes.number.isRequired
+      balance: PropTypes.number.isRequired,
+      tokenId: PropTypes.number.isRequired
     }),
     error: PropTypes.string
   }),
@@ -119,10 +119,10 @@ AccountDetails.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        TxID: PropTypes.string.isRequired,
-        Type: PropTypes.string.isRequired,
-        Amount: PropTypes.number.isRequired,
-        TokenID: PropTypes.number.isRequired
+        txId: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+        amount: PropTypes.number.isRequired,
+        tokenId: PropTypes.number.isRequired
       })
     ),
     error: PropTypes.string
@@ -131,9 +131,9 @@ AccountDetails.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        TokenID: PropTypes.number.isRequired,
-        Name: PropTypes.string.isRequired,
-        Symbol: PropTypes.string.isRequired
+        tokenId: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        symbol: PropTypes.string.isRequired
       })
     )
   }),

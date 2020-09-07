@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import useHomeStyles from './home.styles'
 import { fetchAccounts, fetchTransactions } from '../../store/home/home.thunks'
@@ -27,7 +28,7 @@ function Home ({
   }, [metaMaskWalletTask, onLoadAccounts, onLoadRecentTransactions])
 
   function getTotalBalance (accounts) {
-    return accounts.reduce((amount, account) => amount + account.Balance, 0)
+    return accounts.reduce((amount, account) => amount + account.balance, 0)
   }
 
   function getTokenSymbol (tokenId) {
@@ -35,7 +36,7 @@ function Home ({
       return '-'
     }
 
-    return tokensTask.data.find((token) => token.TokenID === tokenId).Symbol
+    return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
   }
 
   return (
@@ -69,8 +70,8 @@ function Home ({
           }
         })()}
         <div className={classes.actionButtonsGroup}>
-          <button className={classes.actionButton}>Send</button>
-          <button className={classes.actionButton}>Add funds</button>
+          <Link to='/transfer'><button className={classes.actionButton}>Send</button></Link>
+          <Link to='/deposit'><button className={classes.actionButton}>Add funds</button></Link>
         </div>
       </section>
       <section>
@@ -107,8 +108,8 @@ Home.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        Balance: PropTypes.number.isRequired,
-        TokenID: PropTypes.number.isRequired
+        balance: PropTypes.number.isRequired,
+        tokenId: PropTypes.number.isRequired
       })
     ),
     error: PropTypes.string
@@ -123,9 +124,9 @@ Home.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        TokenID: PropTypes.number.isRequired,
-        Name: PropTypes.string.isRequired,
-        Symbol: PropTypes.string.isRequired
+        tokenId: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        symbol: PropTypes.string.isRequired
       })
     ),
     error: PropTypes.string

@@ -66,6 +66,7 @@ export function sendWithdraw (addressSC, tokenId, wallet, abiRollup, op, numExit
         const res = await withdraw(addressSC, tokenId, wallet, abiRollup,
           op, numExitRoot, gasLimit, gasMultiplier)
         abiDecoder.addABI(abiRollup)
+
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const txData = await provider.getTransaction(res.hash)
         const decodedData = abiDecoder.decodeMethod(txData.data)

@@ -63,9 +63,9 @@ Settings.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        TokenID: PropTypes.number.isRequired,
-        Name: PropTypes.string.isRequired,
-        Symbol: PropTypes.string.isRequired
+        tokenId: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        symbol: PropTypes.string.isRequired
       })
     ),
     error: PropTypes.string

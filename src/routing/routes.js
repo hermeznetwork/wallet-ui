@@ -1,4 +1,5 @@
 import Home from '../views/home/home.view'
+import Deposit from '../views/deposit/deposit.view'
 import Transfer from '../views/transfer/transfer.view'
 import Settings from '../views/settings/settings.view'
 import AccountDetails from '../views/account-details/account-details.view'
@@ -17,9 +18,14 @@ const routes = [
     renderLayout: false
   },
   {
+    path: '/deposit',
+    component: Deposit,
+    renderLayout: false
+  },
+  {
     path: '/transfer',
     component: Transfer,
-    renderLayout: true
+    renderLayout: false
   },
   {
     path: '/settings',

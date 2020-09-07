@@ -27,7 +27,7 @@ function TransactionDetails ({
       return '-'
     }
 
-    return tokensTask.data.find((token) => token.TokenID === tokenId).Symbol
+    return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
   }
 
   function handleNavigationToAccountDetails () {
@@ -57,12 +57,12 @@ function TransactionDetails ({
                   </a>
                 </div>
                 <div className={classes.transactionInfoContainer}>
-                  <h1>{transactionTask.data.Type} - {getTokenSymbol(preferredCurrency)}</h1>
-                  <p>{transactionTask.data.Amount} {getTokenSymbol(transactionTask.data.TokenID)}</p>
+                  <h1>{transactionTask.data.type} - {getTokenSymbol(preferredCurrency)}</h1>
+                  <p>{transactionTask.data.amount} {getTokenSymbol(transactionTask.data.tokenId)}</p>
                   <ul className={classes.transactionInfoList}>
                     <li className={classes.transactionInfoListItem}>
                       <p className={classes.transactionInfoListItemTitle}>To</p>
-                      <p>{transactionTask.data.ToEthAddr}</p>
+                      <p>{transactionTask.data.toEthAddr}</p>
                     </li>
                     <li className={classes.transactionInfoListItem}>
                       <p className={classes.transactionInfoListItemTitle}>
@@ -70,7 +70,7 @@ function TransactionDetails ({
                       </p>
                       <div>
                         <p>- {getTokenSymbol(preferredCurrency)}</p>
-                        <p>{transactionTask.data.Fee} {getTokenSymbol(transactionTask.data.TokenID)}</p>
+                        <p>{transactionTask.data.fee} {getTokenSymbol(transactionTask.data.tokenId)}</p>
                       </div>
                     </li>
                     <li className={classes.transactionInfoListItem}>
@@ -98,9 +98,9 @@ TransactionDetails.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        TokenID: PropTypes.number.isRequired,
-        Name: PropTypes.string.isRequired,
-        Symbol: PropTypes.string.isRequired
+        tokenId: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        symbol: PropTypes.string.isRequired
       })
     )
   }),
@@ -108,11 +108,11 @@ TransactionDetails.propTypes = {
   transactionTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.shape({
-      Type: PropTypes.string.isRequired,
-      ToEthAddr: PropTypes.string.isRequired,
-      Amount: PropTypes.number.isRequired,
-      Fee: PropTypes.number.isRequired,
-      TokenID: PropTypes.number.isRequired
+      type: PropTypes.string.isRequired,
+      toEthAddr: PropTypes.string.isRequired,
+      amount: PropTypes.number.isRequired,
+      fee: PropTypes.number.isRequired,
+      tokenId: PropTypes.number.isRequired
     }),
     error: PropTypes.string
   }),

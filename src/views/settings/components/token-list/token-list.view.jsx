@@ -9,7 +9,7 @@ function TokenList ({ tokens, onTokenSelection, seletedTokenId }) {
   const classes = useTokenListStyles()
 
   function getToken (tokenId) {
-    return tokens.find((token) => token.TokenID === tokenId)
+    return tokens.find((token) => token.tokenId === tokenId)
   }
 
   return (
@@ -18,8 +18,8 @@ function TokenList ({ tokens, onTokenSelection, seletedTokenId }) {
         <h4>Default currency</h4>
         <Token
           tokenId={seletedTokenId}
-          tokenSymbol={getToken(seletedTokenId).Symbol}
-          tokenName={getToken(seletedTokenId).Name}
+          tokenSymbol={getToken(seletedTokenId).symbol}
+          tokenName={getToken(seletedTokenId).name}
           onTokenSelection={onTokenSelection}
         />
       </div>
@@ -27,13 +27,13 @@ function TokenList ({ tokens, onTokenSelection, seletedTokenId }) {
         <h4>Currency list</h4>
         {tokens.map((token, index) =>
           <div
-            key={token.TokenID}
+            key={token.tokenId}
             className={clsx({ [classes.token]: index > 0 })}
           >
             <Token
-              tokenId={token.TokenID}
-              tokenSymbol={getToken(token.TokenID).Symbol}
-              tokenName={getToken(token.TokenID).Name}
+              tokenId={token.tokenId}
+              tokenSymbol={getToken(token.tokenId).symbol}
+              tokenName={getToken(token.tokenId).name}
               onTokenSelection={onTokenSelection}
             />
           </div>
@@ -46,9 +46,9 @@ function TokenList ({ tokens, onTokenSelection, seletedTokenId }) {
 TokenList.propTypes = {
   tokens: PropTypes.arrayOf(
     PropTypes.shape({
-      TokenID: PropTypes.number.isRequired,
-      Name: PropTypes.string.isRequired,
-      Symbol: PropTypes.string.isRequired
+      tokenId: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      symbol: PropTypes.string.isRequired
     })
   ),
   onTokenSelection: PropTypes.func.isRequired,
