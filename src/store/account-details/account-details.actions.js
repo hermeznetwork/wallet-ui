@@ -4,7 +4,10 @@ export const accountDetailsActionTypes = {
   LOAD_ACCOUNT_FAILURE: '[ACCOUNT DETAILS] LOAD ACCOUNT FAILURE',
   LOAD_TRANSACTIONS: '[ACCOUNT DETAILS] LOAD TRANSACTIONS',
   LOAD_TRANSACTIONS_SUCCESS: '[ACCOUNT DETAILS] LOAD TRANSACTIONS SUCCESS',
-  LOAD_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD TRANSACTIONS FAILURE'
+  LOAD_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD TRANSACTIONS FAILURE',
+  LOAD_TOKEN_PRICE: '[ACCOUNT DETAILS] LOAD TOKEN PRICE',
+  LOAD_TOKEN_PRICE_SUCCESS: '[ACCOUNT DETAILS] LOAD TOKEN PRICE SUCCESS',
+  LOAD_TOKEN_PRICE_FAILURE: '[ACCOUNT DETAILS] LOAD TOKEN PRICE FAILURE'
 }
 
 function loadAccount () {
@@ -45,11 +48,33 @@ function loadTransactionsFailure () {
   }
 }
 
+function loadTokenPrice () {
+  return {
+    type: accountDetailsActionTypes.LOAD_TOKEN_PRICE
+  }
+}
+
+function loadTokenPriceSuccess (tokensPrice) {
+  return {
+    type: accountDetailsActionTypes.LOAD_TOKEN_PRICE_SUCCESS,
+    tokensPrice
+  }
+}
+
+function loadTokenPriceFailure () {
+  return {
+    type: accountDetailsActionTypes.LOAD_TOKEN_PRICE_FAILURE
+  }
+}
+
 export {
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,
   loadTransactions,
   loadTransactionsSuccess,
-  loadTransactionsFailure
+  loadTransactionsFailure,
+  loadTokenPrice,
+  loadTokenPriceSuccess,
+  loadTokenPriceFailure
 }

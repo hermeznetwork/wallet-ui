@@ -28,7 +28,7 @@ mock.onGet(tokenAccountRegex)
     {
       EthAddr: '0xaa942cfcd25ad4d90a62358b0dd84f33b398262a',
       TokenID: 0,
-      Balance: 2.38
+      Balance: 44.12
     }
   )
 
@@ -47,7 +47,7 @@ mock.onGet(txsRegex)
         Nonce: 0,
         Fee: 15,
         Type: 'Transfer',
-        TokenID: 2
+        TokenID: 0
       }
     ]
   )

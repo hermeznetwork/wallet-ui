@@ -4,10 +4,11 @@ import { useParams, useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import useAccountDetailsStyles from './account-details.styles'
-import { fetchAccount, fetchTransactions } from '../../store/account-details/account-details.thunks'
+import { fetchAccount, fetchTransactions, fetchTokenPrice } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
+import { CurrencySymbol } from '../../utils/currencies'
 
 function AccountDetails ({
   metaMaskWalletTask,
@@ -15,8 +16,11 @@ function AccountDetails ({
   accountTask,
   transactionsTask,
   tokensTask,
+  tokensPriceTask,
+  fiatExchangeRatesTask,
   onLoadAccount,
-  onLoadTransactions
+  onLoadTransactions,
+  onLoadTokenPrice
 }) {
   const classes = useAccountDetailsStyles()
   const history = useHistory()
@@ -28,6 +32,37 @@ function AccountDetails ({
       onLoadTransactions(metaMaskWalletTask.data.ethereumAddress, tokenId)
     }
   }, [metaMaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
+
+  React.useEffect(() => {
+    if (accountTask.status === 'successful' && tokensTask.status === 'successful') {
+      const token = tokensTask.data
+        .find((token) => token.TokenID === accountTask.data.TokenID)
+
+      onLoadTokenPrice(token.Symbol)
+    }
+  }, [accountTask, tokensTask, onLoadTokenPrice])
+
+  function getTokenSymbol (tokenId) {
+    return tokensTask.data.find((token) => token.TokenID === tokenId).Symbol
+  }
+
+  function getAccountBalance () {
+    if (
+      accountTask.status !== 'successful' ||
+      tokensPriceTask.status !== 'successful' ||
+      fiatExchangeRatesTask.status !== 'successful'
+    ) {
+      return '-'
+    }
+    const tokenSymbol = getTokenSymbol(accountTask.data.TokenID)
+    const tokenRateInUSD = tokensPriceTask.data
+      .find((tokenPrice) => tokenPrice.symbol === tokenSymbol).value
+    const tokenRate = preferredCurrency === CurrencySymbol.USD
+      ? tokenRateInUSD
+      : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
+
+    return accountTask.data.Balance * tokenRate
+  }
 
   function getTokenName (tokenId) {
     if (tokensTask.status !== 'successful') {
@@ -56,8 +91,8 @@ function AccountDetails ({
               return (
                 <div>
                   <h3>{getTokenName(accountTask.data.TokenID)}</h3>
-                  <h1>{accountTask.data.Balance}</h1>
-                  <p>- {preferredCurrency}</p>
+                  <h1>{getAccountBalance().toFixed(2)} {preferredCurrency}</h1>
+                  <p>{accountTask.data.Balance} {getTokenSymbol(accountTask.data.TokenID)}</p>
                 </div>
               )
             }
@@ -86,7 +121,10 @@ function AccountDetails ({
               return (
                 <TransactionList
                   transactions={transactionsTask.data}
-                  tokens={tokensTask.data}
+                  tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
+                  tokensPrice={tokensPriceTask.status === 'successful' ? tokensPriceTask.data : undefined}
+                  fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
+                  preferredCurrency={preferredCurrency}
                   onTransactionClick={handleTransactionClick}
                 />
               )
@@ -133,7 +171,23 @@ AccountDetails.propTypes = {
       })
     )
   }),
-  onLoadAccount: PropTypes.func.isRequired
+  tokensPriceTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        symbol: PropTypes.string.isRequired,
+        value: PropTypes.number.isRequired
+      })
+    ),
+    error: PropTypes.string
+  }),
+  fiatExchangeRatesTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.object,
+    error: PropTypes.string
+  }),
+  onLoadAccount: PropTypes.func.isRequired,
+  onLoadTokenPrice: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -141,12 +195,15 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.settings.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
   transactionsTask: state.accountDetails.transactionsTask,
-  tokensTask: state.global.tokensTask
+  tokensTask: state.global.tokensTask,
+  tokensPriceTask: state.home.tokensPriceTask,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccount: (ethereumAddress, tokenId) => dispatch(fetchAccount(ethereumAddress, tokenId)),
-  onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId))
+  onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId)),
+  onLoadTokenPrice: (token) => dispatch(fetchTokenPrice(token))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))
