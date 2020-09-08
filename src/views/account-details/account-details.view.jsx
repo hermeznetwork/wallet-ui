@@ -159,16 +159,6 @@ AccountDetails.propTypes = {
       })
     )
   }),
-  tokensPriceTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        symbol: PropTypes.string.isRequired,
-        value: PropTypes.number.isRequired
-      })
-    ),
-    error: PropTypes.string
-  }),
   fiatExchangeRatesTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.object,
@@ -183,7 +173,6 @@ const mapStateToProps = (state) => ({
   accountTask: state.accountDetails.accountTask,
   transactionsTask: state.accountDetails.transactionsTask,
   tokensTask: state.global.tokensTask,
-  tokensPriceTask: state.home.tokensPriceTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 

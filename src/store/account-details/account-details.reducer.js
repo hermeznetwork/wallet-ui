@@ -6,9 +6,6 @@ const initialAccountDetailsReducer = {
   },
   transactionsTask: {
     status: 'pending'
-  },
-  tokensPriceTask: {
-    status: 'pending'
   }
 }
 
