@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import useTokenListItemStyles from './token-list-item.styles'
+import useAccountListItemStyles from './account-list-item.styles'
 
-function TokenListItem ({
+function AccountListItem ({
   token
 }) {
-  const classes = useTokenListItemStyles()
+  const classes = useAccountListItemStyles()
   // TODO: Apply conversion rate from API
   const conversionRate = 1
 
@@ -24,7 +24,7 @@ function TokenListItem ({
   )
 }
 
-TokenListItem.propTypes = {
+AccountListItem.propTypes = {
   token: PropTypes.shape({
     balance: PropTypes.number.isRequired,
     tokenId: PropTypes.number.isRequired,
@@ -33,4 +33,4 @@ TokenListItem.propTypes = {
   })
 }
 
-export default TokenListItem
+export default AccountListItem

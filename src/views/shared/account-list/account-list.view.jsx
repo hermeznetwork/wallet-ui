@@ -1,15 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import useTokenListStyles from './token-list.styles'
-import TokenListItem from '../token-list-item/token-list-item.view'
+import useAccountListStyles from './account-list.styles'
+import AccountListItem from '../account-list-item/account-list-item.view'
 
-function TokenList ({
+function AccountList ({
   tokens
 }) {
-  const classes = useTokenListStyles()
+  const classes = useAccountListStyles()
 
-  function handleTokenListItemClick () {
+  function handleAccountListItemClick () {
 
   }
 
@@ -17,10 +17,10 @@ function TokenList ({
     <ul className={classes.tokenList}>
       {tokens.map((token) => {
         return (
-          <TokenListItem
+          <AccountListItem
             key={token.tokenId}
             token={token}
-            onClick={handleTokenListItemClick}
+            onClick={handleAccountListItemClick}
           />
         )
       })}
@@ -28,7 +28,7 @@ function TokenList ({
   )
 }
 
-TokenList.propTypes = {
+AccountList.propTypes = {
   tokens: PropTypes.arrayOf(
     PropTypes.shape({
       balance: PropTypes.number.isRequired,
@@ -39,4 +39,4 @@ TokenList.propTypes = {
   )
 }
 
-export default TokenList
+export default AccountList

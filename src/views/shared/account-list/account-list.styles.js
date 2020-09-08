@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useTokenListStyles = createUseStyles({
+const useAccountListStyles = createUseStyles({
   tokenList: {
     listStyleType: 'none',
     margin: 0,
@@ -8,4 +8,4 @@ const useTokenListStyles = createUseStyles({
   }
 })
 
-export default useTokenListStyles
+export default useAccountListStyles

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 import useTransactionLayoutStyles from './transaction-layout.styles'
 import Main from '../main/main.view'
-import TokenList from '../token-list/token-list.view'
+import AccountList from '../account-list/account-list.view'
 import Transaction from '../transaction/transaction.view'
 import Spinner from '../spinner/spinner.view'
 
@@ -15,7 +15,7 @@ function TransactionLayout ({
 }) {
   const classes = useTransactionLayoutStyles()
 
-  function handleTokenListClick () {
+  function handleAccountListClick () {
 
   }
 
@@ -43,9 +43,9 @@ function TransactionLayout ({
               case 'successful': {
                 if (tokensTask.data.length > 0) {
                   return (
-                    <TokenList
+                    <AccountList
                       tokens={tokensTask.data}
-                      onTokenSelected={handleTokenListClick}
+                      onTokenSelected={handleAccountListClick}
                     />
                   )
                 } else {

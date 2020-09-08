@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useTokenListStyles = createUseStyles({
+const useAccountListStyles = createUseStyles({
   tokenListItem: {
     display: 'flex',
     flexDirection: 'column',
@@ -30,4 +30,4 @@ const useTokenListStyles = createUseStyles({
   }
 })
 
-export default useTokenListStyles
+export default useAccountListStyles
