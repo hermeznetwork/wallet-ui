@@ -34,7 +34,11 @@ function fetchMetaMaskTokens () {
     const balancePromises = []
     for (const token of tokensTask.data) {
       const contract = new ethers.Contract(token.ethAddr, partialERC20ABI, provider)
-      balancePromises.push(contract.balanceOf(metaMaskWalletTask.data.ethereumAddress))
+      balancePromises.push(
+        contract.balanceOf(metaMaskWalletTask.data.ethereumAddress)
+          // We can ignore if a call to the contract of a specific token fails.
+          .catch(() => {})
+      )
     }
     try {
       const balances = (await Promise.all(balancePromises))
