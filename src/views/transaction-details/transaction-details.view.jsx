@@ -7,10 +7,12 @@ import useTransactionDetailsStyles from './transaction-details.styles'
 import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
+import { CurrencySymbol } from '../../utils/currencies'
 
 function TransactionDetails ({
   tokensTask,
   transactionTask,
+  fiatExchangeRatesTask,
   preferredCurrency,
   onLoadTransaction
 }) {
@@ -28,6 +30,23 @@ function TransactionDetails ({
     }
 
     return tokensTask.data.find((token) => token.TokenID === tokenId).Symbol
+  }
+
+  function getAmountInFiat (tokenId, amount) {
+    if (
+      tokensTask.status !== 'successful' ||
+      fiatExchangeRatesTask.status !== 'successful'
+    ) {
+      return '-'
+    }
+
+    const tokenRateInUSD = tokensTask.data
+      .find((token) => token.TokenID === tokenId).USD
+    const tokenFiatRate = preferredCurrency === CurrencySymbol.USD
+      ? tokenRateInUSD
+      : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
+
+    return amount * tokenFiatRate
   }
 
   function handleNavigationToAccountDetails () {
@@ -57,7 +76,7 @@ function TransactionDetails ({
                   </a>
                 </div>
                 <div className={classes.transactionInfoContainer}>
-                  <h1>{transactionTask.data.Type} - {preferredCurrency}</h1>
+                  <h1>{transactionTask.data.Type} {getAmountInFiat(transactionTask.data.TokenID, transactionTask.data.Amount)} {preferredCurrency}</h1>
                   <p>{transactionTask.data.Amount} {getTokenSymbol(transactionTask.data.TokenID)}</p>
                   <ul className={classes.transactionInfoList}>
                     <li className={classes.transactionInfoListItem}>
@@ -69,7 +88,7 @@ function TransactionDetails ({
                         Fee
                       </p>
                       <div>
-                        <p>- {preferredCurrency}</p>
+                        <p>{getAmountInFiat(transactionTask.data.TokenID, transactionTask.data.Fee)} {preferredCurrency}</p>
                         <p>{transactionTask.data.Fee} {getTokenSymbol(transactionTask.data.TokenID)}</p>
                       </div>
                     </li>
@@ -116,13 +135,18 @@ TransactionDetails.propTypes = {
     }),
     error: PropTypes.string
   }),
+  fiatExchangeRatesTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.object
+  }),
   onLoadTransaction: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
   preferredCurrency: state.settings.preferredCurrency,
-  transactionTask: state.transactionDetails.transactionTask
+  transactionTask: state.transactionDetails.transactionTask,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
