@@ -1,10 +1,7 @@
 export const homeActionTypes = {
   LOAD_ACCOUNTS: '[HOME] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[HOME] LOAD ACCOUNTS SUCCESS',
-  LOAD_ACCOUNTS_FAILURE: '[HOME] LOAD ACCOUNTS FAILURE',
-  LOAD_TOKENS_PRICE: '[HOME] LOAD TOKENS PRICE',
-  LOAD_TOKENS_PRICE_SUCCESS: '[HOME] LOAD TOKENS PRICE SUCCESS',
-  LOAD_TOKENS_PRICE_FAILURE: '[HOME] LOAD TOKENS PRICE FAILURE'
+  LOAD_ACCOUNTS_FAILURE: '[HOME] LOAD ACCOUNTS FAILURE'
 }
 
 function loadAccounts () {
@@ -26,30 +23,8 @@ function loadAccountsFailure () {
   }
 }
 
-function loadTokensPrice () {
-  return {
-    type: homeActionTypes.LOAD_TOKENS_PRICE
-  }
-}
-
-function loadTokensPriceSuccess (tokensPrice) {
-  return {
-    type: homeActionTypes.LOAD_TOKENS_PRICE_SUCCESS,
-    tokensPrice
-  }
-}
-
-function loadTokensPriceFailure () {
-  return {
-    type: homeActionTypes.LOAD_TOKENS_PRICE_FAILURE
-  }
-}
-
 export {
   loadAccounts,
   loadAccountsSuccess,
-  loadAccountsFailure,
-  loadTokensPrice,
-  loadTokensPriceSuccess,
-  loadTokensPriceFailure
+  loadAccountsFailure
 }
