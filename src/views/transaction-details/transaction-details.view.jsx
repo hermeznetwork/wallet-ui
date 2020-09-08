@@ -57,7 +57,7 @@ function TransactionDetails ({
                   </a>
                 </div>
                 <div className={classes.transactionInfoContainer}>
-                  <h1>{transactionTask.data.Type} - {getTokenSymbol(preferredCurrency)}</h1>
+                  <h1>{transactionTask.data.Type} - {preferredCurrency}</h1>
                   <p>{transactionTask.data.Amount} {getTokenSymbol(transactionTask.data.TokenID)}</p>
                   <ul className={classes.transactionInfoList}>
                     <li className={classes.transactionInfoListItem}>
@@ -69,7 +69,7 @@ function TransactionDetails ({
                         Fee
                       </p>
                       <div>
-                        <p>- {getTokenSymbol(preferredCurrency)}</p>
+                        <p>- {preferredCurrency}</p>
                         <p>{transactionTask.data.Fee} {getTokenSymbol(transactionTask.data.TokenID)}</p>
                       </div>
                     </li>
@@ -104,7 +104,7 @@ TransactionDetails.propTypes = {
       })
     )
   }),
-  preferredCurrency: PropTypes.number.isRequired,
+  preferredCurrency: PropTypes.string.isRequired,
   transactionTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.shape({

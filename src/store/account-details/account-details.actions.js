@@ -48,33 +48,11 @@ function loadTransactionsFailure () {
   }
 }
 
-function loadTokenPrice () {
-  return {
-    type: accountDetailsActionTypes.LOAD_TOKEN_PRICE
-  }
-}
-
-function loadTokenPriceSuccess (tokensPrice) {
-  return {
-    type: accountDetailsActionTypes.LOAD_TOKEN_PRICE_SUCCESS,
-    tokensPrice
-  }
-}
-
-function loadTokenPriceFailure () {
-  return {
-    type: accountDetailsActionTypes.LOAD_TOKEN_PRICE_FAILURE
-  }
-}
-
 export {
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,
   loadTransactions,
   loadTransactionsSuccess,
-  loadTransactionsFailure,
-  loadTokenPrice,
-  loadTokenPriceSuccess,
-  loadTokenPriceFailure
+  loadTransactionsFailure
 }

@@ -2,7 +2,6 @@ import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
 
 const baseRollupApiUrl = process.env.REACT_APP_ROLLUP_API_URL
-const basePriceUpdaterApiUrl = process.env.REACT_APP_PRICE_UPDATER_API_URL
 
 const mock = new MockAdapter(axios)
 const mockedTokenId = 0
@@ -78,35 +77,26 @@ mock.onGet(`${baseRollupApiUrl}/tokens`)
       {
         TokenID: 0,
         Name: 'Some Cool Token',
-        Symbol: 'SCT'
+        Symbol: 'SCT',
+        USD: 2
       },
       {
         TokenID: 1,
         Name: 'Other Cool Token',
-        Symbol: 'OCT'
+        Symbol: 'OCT',
+        USD: 2
       },
       {
         TokenID: 2,
         Name: 'New Token',
-        Symbol: 'NTO'
+        Symbol: 'NTO',
+        USD: 2
       },
       {
         TokenID: 3,
         Name: 'Too Good Token',
-        Symbol: 'TGT'
-      }
-    ]
-  )
-
-const tokensRegex = new RegExp(`${basePriceUpdaterApiUrl}/prices`)
-mock.onGet(tokensRegex, { params: { tokens: 'SCT' } })
-  .reply(
-    200,
-    [
-      {
-        symbol: 'SCT',
-        value: 1.24,
-        lastUpdated: new Date()
+        Symbol: 'TGT',
+        USD: 2
       }
     ]
   )

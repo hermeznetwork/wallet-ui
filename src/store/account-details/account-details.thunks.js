@@ -1,6 +1,5 @@
 import * as accountDetailsActionTypes from './account-details.actions'
 import * as rollupApi from '../../apis/rollup'
-import * as priceUpdaterApi from '../../apis/price-updater'
 
 function fetchAccount (ethereumAddress, tokenId) {
   return (dispatch) => {
@@ -22,14 +21,4 @@ function fetchTransactions (ethereumAddress, tokenId) {
   }
 }
 
-function fetchTokenPrice (token) {
-  return (dispatch) => {
-    dispatch(accountDetailsActionTypes.loadTokenPrice())
-
-    return priceUpdaterApi.getTokensPrice([token])
-      .then(res => dispatch(accountDetailsActionTypes.loadTokenPriceSuccess(res)))
-      .catch(err => dispatch(accountDetailsActionTypes.loadTokenPriceFailure(err)))
-  }
-}
-
-export { fetchAccount, fetchTransactions, fetchTokenPrice }
+export { fetchAccount, fetchTransactions }

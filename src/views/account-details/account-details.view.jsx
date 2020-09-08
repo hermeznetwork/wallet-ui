@@ -4,7 +4,7 @@ import { useParams, useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import useAccountDetailsStyles from './account-details.styles'
-import { fetchAccount, fetchTransactions, fetchTokenPrice } from '../../store/account-details/account-details.thunks'
+import { fetchAccount, fetchTransactions } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -16,11 +16,9 @@ function AccountDetails ({
   accountTask,
   transactionsTask,
   tokensTask,
-  tokensPriceTask,
   fiatExchangeRatesTask,
   onLoadAccount,
-  onLoadTransactions,
-  onLoadTokenPrice
+  onLoadTransactions
 }) {
   const classes = useAccountDetailsStyles()
   const history = useHistory()
@@ -33,15 +31,6 @@ function AccountDetails ({
     }
   }, [metaMaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
 
-  React.useEffect(() => {
-    if (accountTask.status === 'successful' && tokensTask.status === 'successful') {
-      const token = tokensTask.data
-        .find((token) => token.TokenID === accountTask.data.TokenID)
-
-      onLoadTokenPrice(token.Symbol)
-    }
-  }, [accountTask, tokensTask, onLoadTokenPrice])
-
   function getTokenSymbol (tokenId) {
     return tokensTask.data.find((token) => token.TokenID === tokenId).Symbol
   }
@@ -49,14 +38,14 @@ function AccountDetails ({
   function getAccountBalance () {
     if (
       accountTask.status !== 'successful' ||
-      tokensPriceTask.status !== 'successful' ||
+      tokensTask.status !== 'successful' ||
       fiatExchangeRatesTask.status !== 'successful'
     ) {
       return '-'
     }
     const tokenSymbol = getTokenSymbol(accountTask.data.TokenID)
-    const tokenRateInUSD = tokensPriceTask.data
-      .find((tokenPrice) => tokenPrice.symbol === tokenSymbol).value
+    const tokenRateInUSD = tokensTask.data
+      .find((token) => token.Symbol === tokenSymbol).USD
     const tokenRate = preferredCurrency === CurrencySymbol.USD
       ? tokenRateInUSD
       : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
@@ -122,7 +111,6 @@ function AccountDetails ({
                 <TransactionList
                   transactions={transactionsTask.data}
                   tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
-                  tokensPrice={tokensPriceTask.status === 'successful' ? tokensPriceTask.data : undefined}
                   fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
                   preferredCurrency={preferredCurrency}
                   onTransactionClick={handleTransactionClick}
@@ -186,8 +174,7 @@ AccountDetails.propTypes = {
     data: PropTypes.object,
     error: PropTypes.string
   }),
-  onLoadAccount: PropTypes.func.isRequired,
-  onLoadTokenPrice: PropTypes.func.isRequired
+  onLoadAccount: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -202,8 +189,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccount: (ethereumAddress, tokenId) => dispatch(fetchAccount(ethereumAddress, tokenId)),
-  onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId)),
-  onLoadTokenPrice: (token) => dispatch(fetchTokenPrice(token))
+  onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))

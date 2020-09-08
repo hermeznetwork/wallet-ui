@@ -10,7 +10,6 @@ function AccountList ({
   accounts,
   tokens,
   preferredCurrency,
-  tokensPrice,
   fiatExchangeRates
 }) {
   const classes = useAccountListStyles()
@@ -20,12 +19,12 @@ function AccountList ({
   }
 
   function getTokenFiatRate (tokenSymbol) {
-    if (!tokensPrice || !fiatExchangeRates) {
+    if (!tokens || !fiatExchangeRates) {
       return undefined
     }
 
-    const tokenRateInUSD = tokensPrice
-      .find((tokenPrice) => tokenPrice.symbol === tokenSymbol).value
+    const tokenRateInUSD = tokens
+      .find((token) => token.Symbol === tokenSymbol).USD
 
     return preferredCurrency === CurrencySymbol.USD
       ? tokenRateInUSD
@@ -70,12 +69,6 @@ AccountList.propTypes = {
       TokenID: PropTypes.number.isRequired,
       Name: PropTypes.string.isRequired,
       Symbol: PropTypes.string.isRequired
-    })
-  ),
-  tokensPrice: PropTypes.arrayOf(
-    PropTypes.shape({
-      symbol: PropTypes.string.isRequired,
-      value: PropTypes.number.isRequired
     })
   ),
   fiatExchangeRates: PropTypes.object,

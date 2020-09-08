@@ -66,32 +66,6 @@ function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_TOKEN_PRICE: {
-      return {
-        ...state,
-        tokensPriceTask: {
-          status: 'loading'
-        }
-      }
-    }
-    case accountDetailsActionTypes.LOAD_TOKEN_PRICE_SUCCESS: {
-      return {
-        ...state,
-        tokensPriceTask: {
-          status: 'successful',
-          data: action.tokensPrice
-        }
-      }
-    }
-    case accountDetailsActionTypes.LOAD_TOKEN_PRICE_FAILURE: {
-      return {
-        ...state,
-        tokensPriceTask: {
-          status: 'failed',
-          error: 'An error ocurred loading the token price'
-        }
-      }
-    }
     default: {
       return state
     }
