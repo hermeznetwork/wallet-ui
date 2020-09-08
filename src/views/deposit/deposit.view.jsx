@@ -7,14 +7,13 @@ import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import TransactionLayout from '../shared/transaction-layout/transaction-layout.view'
 
 function Deposit ({
-  tokensTask,
   metaMaskTokensTask,
   selectedToken,
   onLoadMetaMaskTokens
 }) {
   React.useEffect(() => {
-    onLoadMetaMaskTokens(tokensTask.data)
-  }, [onLoadMetaMaskTokens, tokensTask])
+    onLoadMetaMaskTokens()
+  }, [onLoadMetaMaskTokens])
 
   return (
     <TransactionLayout
@@ -26,19 +25,6 @@ function Deposit ({
 }
 
 Deposit.propTypes = {
-  tokensTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired,
-        decimals: PropTypes.number.isRequired,
-        ethAddr: PropTypes.string.isRequired,
-        ethBlockNum: PropTypes.number.isRequired
-      })
-    )
-  }),
   metaMaskTokensTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
@@ -65,7 +51,6 @@ Deposit.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  tokensTask: state.global.tokensTask,
   metaMaskTokensTask: state.deposit.metaMaskTokensTask
 })
 
