@@ -9,7 +9,7 @@ function TransactionList ({ transactions, tokens, onTransactionClick }) {
   const classes = useTransactionListStyles()
 
   function getToken (tokenId) {
-    return tokens.find((token) => token.TokenID === tokenId)
+    return tokens.find((token) => token.tokenId === tokenId)
   }
 
   function handleTransactionClick (transactionId) {
@@ -20,17 +20,17 @@ function TransactionList ({ transactions, tokens, onTransactionClick }) {
     <div>
       {transactions.map((transaction, index) =>
         <div
-          key={transaction.TxID}
+          key={transaction.txId}
           className={clsx({
             [classes.transaction]: true,
             [classes.transactionSpacer]: index > 0
           })}
         >
           <Transaction
-            id={transaction.TxID}
-            type={transaction.Type}
-            amount={transaction.Amount}
-            currency={getToken(transaction.TokenID).Symbol}
+            id={transaction.txId}
+            type={transaction.type}
+            amount={transaction.amount}
+            currency={getToken(transaction.tokenId).symbol}
             date={new Date().toLocaleString()}
             onClick={handleTransactionClick}
           />
@@ -43,17 +43,17 @@ function TransactionList ({ transactions, tokens, onTransactionClick }) {
 TransactionList.propTypes = {
   transactions: PropTypes.arrayOf(
     PropTypes.shape({
-      TxID: PropTypes.string.isRequired,
-      Type: PropTypes.string.isRequired,
-      Amount: PropTypes.number.isRequired,
-      TokenID: PropTypes.number.isRequired
+      txId: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
+      amount: PropTypes.number.isRequired,
+      tokenId: PropTypes.number.isRequired
     })
   ),
   tokens: PropTypes.arrayOf(
     PropTypes.shape({
-      TokenID: PropTypes.number.isRequired,
-      Name: PropTypes.string.isRequired,
-      Symbol: PropTypes.string.isRequired
+      tokenId: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      symbol: PropTypes.string.isRequired
     })
   ),
   onTransactionClick: PropTypes.func.isRequired

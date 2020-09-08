@@ -1,6 +1,9 @@
 import { createUseStyles } from 'react-jss'
 
 const useSettingsStyles = createUseStyles({
+  settingsWrapper: {
+    width: '100%'
+  },
   title: {
     marginBottom: 16
   },

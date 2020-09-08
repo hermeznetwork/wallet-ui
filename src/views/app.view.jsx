@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 
+import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
 import { fetchConfig, fetchTokens } from '../store/global/global.thunks'
@@ -10,6 +11,8 @@ import Spinner from './shared/spinner/spinner.view'
 import Login from './login/login.view'
 
 function App ({ configTask, tokensTask, onLoadConfig, onLoadTokens }) {
+  useAppStyles()
+
   React.useEffect(() => {
     onLoadConfig()
     onLoadTokens()
@@ -63,9 +66,9 @@ App.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        TokenID: PropTypes.number.isRequired,
-        Name: PropTypes.string.isRequired,
-        Symbol: PropTypes.string.isRequired
+        tokenId: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        symbol: PropTypes.string.isRequired
       })
     )
   }),

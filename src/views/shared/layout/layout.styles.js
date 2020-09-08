@@ -1,14 +1,12 @@
 import { createUseStyles } from 'react-jss'
 
-const useLayoutStyles = createUseStyles(theme => ({
+const useLayoutStyles = createUseStyles({
   root: {
-    margin: '0 16px',
-    [theme.breakpoints.md]: {
-      maxWidth: 700,
-      width: '100%',
-      margin: '0 auto'
-    }
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   }
-}))
+})
 
 export default useLayoutStyles
