@@ -41,18 +41,12 @@ function TransactionLayout ({
                 )
               }
               case 'successful': {
-                if (tokensTask.data.length > 0) {
-                  return (
-                    <AccountList
-                      tokens={tokensTask.data}
-                      onTokenSelected={handleAccountListClick}
-                    />
-                  )
-                } else {
-                  return (
-                    <p>You don't have any ERC 20 tokens in your MetaMask account that are registered in Hermez.</p>
-                  )
-                }
+                return (
+                  <AccountList
+                    tokens={tokensTask.data}
+                    onTokenSelected={handleAccountListClick}
+                  />
+                )
               }
               default: {
                 return <></>

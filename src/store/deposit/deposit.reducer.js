@@ -28,7 +28,7 @@ function depositReducer (state = initialDepositState, action) {
         ...state,
         metaMaskTokensTask: {
           status: 'failed',
-          error: 'Error fetching the tokens stored in your MetaMask account.'
+          error: action.error
         }
       }
     default: {

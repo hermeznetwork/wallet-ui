@@ -50,7 +50,11 @@ function fetchMetaMaskTokens () {
             ...tokenData
           }
         })
-      dispatch(depositActions.loadMetaMaskTokensSuccess(balances))
+      if (balances.length === 0) {
+        dispatch(depositActions.loadMetaMaskTokensFailure('You don\'t have any ERC 20 tokens in your MetaMask account that are registered in Hermez.'))
+      } else {
+        dispatch(depositActions.loadMetaMaskTokensSuccess(balances))
+      }
     } catch (error) {
       dispatch(depositActions.loadMetaMaskTokensFailure(error))
     }
