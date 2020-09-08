@@ -20,15 +20,12 @@ function CurrencyList ({ currencies, selectedCurrency, onSelectCurrency }) {
       <div>
         <h4>Currency list</h4>
         {currencies.map((currency, index) =>
-          <div
+          <Currency
             key={currency}
+            symbol={currency}
+            onSelect={onSelectCurrency}
             className={clsx({ [classes.currency]: index > 0 })}
-          >
-            <Currency
-              symbol={currency}
-              onSelect={onSelectCurrency}
-            />
-          </div>
+          />
         )}
       </div>
     </div>
