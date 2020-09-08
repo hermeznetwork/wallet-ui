@@ -1,6 +1,9 @@
 import { createUseStyles } from 'react-jss'
 
 const useHomeStyles = createUseStyles({
+  homeWrapper: {
+    width: '100%'
+  },
   title: {
     marginBottom: 16
   },

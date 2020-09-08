@@ -8,15 +8,17 @@ function Header () {
 
   return (
     <header className={classes.root}>
-      <h1>
-        <Link
-          to='/'
-          className={classes.logo}
-        >
-          Hermez
-        </Link>
-      </h1>
-      <Link to='/settings'>Settings</Link>
+      <div class={classes.headerContent}>
+        <h1>
+          <Link
+            to='/'
+            className={classes.logo}
+          >
+            Hermez
+          </Link>
+        </h1>
+        <Link to='/settings'>Settings</Link>
+      </div>
     </header>
   )
 }

@@ -23,7 +23,7 @@ function Settings ({
   }
 
   return (
-    <div>
+    <div className={classes.settingsWrapper}>
       <h4 className={classes.title}>Settings</h4>
       <div className={classes.ethereumAddress}>
         {

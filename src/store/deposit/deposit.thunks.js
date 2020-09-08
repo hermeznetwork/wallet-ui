@@ -8,7 +8,7 @@ import * as depositActions from './deposit.actions'
  */
 function fetchMetaMaskTokens () {
   return async function (dispatch, getState) {
-    dispatch(depositActions.loadMetamaskTokens())
+    dispatch(depositActions.loadMetaMaskTokens())
     const state = getState()
     const { metaMaskWalletTask } = state.account
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -50,9 +50,9 @@ function fetchMetaMaskTokens () {
             ...tokenData
           }
         })
-      dispatch(depositActions.loadMetamaskTokensSuccess(balances))
+      dispatch(depositActions.loadMetaMaskTokensSuccess(balances))
     } catch (error) {
-      dispatch(depositActions.loadMetamaskTokensFailure(error))
+      dispatch(depositActions.loadMetaMaskTokensFailure(error))
     }
   }
 }

@@ -6,7 +6,7 @@ const useAccountListStyles = createUseStyles({
     flexDirection: 'column',
     justifyContent: 'center',
     backgroundColor: '#F3F3F8',
-    borderRadius: '16px',
+    borderRadius: 16,
     height: 96,
     marginBottom: 20,
     padding: 24

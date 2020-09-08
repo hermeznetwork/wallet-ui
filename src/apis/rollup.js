@@ -2,7 +2,7 @@ import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
 
 const mock = new MockAdapter(axios)
-const mockedtokenId = 0
+const mockedTokenId = 0
 const mockedHistoryTransactionId = 'b89eaac7e61417341b710b727768294d0e6a277b'
 const baseApiUrl = process.env.REACT_APP_ROLLUP_API_URL
 
@@ -19,7 +19,7 @@ mock.onGet(ethAccountRegex)
     ]
   )
 
-const tokenAccountRegex = new RegExp(`${baseApiUrl}/account/0x[a-fA-F0-9]{40}/${mockedtokenId}$`)
+const tokenAccountRegex = new RegExp(`${baseApiUrl}/account/0x[a-fA-F0-9]{40}/${mockedTokenId}$`)
 mock.onGet(tokenAccountRegex)
   .reply(
     200,

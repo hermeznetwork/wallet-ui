@@ -40,7 +40,7 @@ function Home ({
   }
 
   return (
-    <div>
+    <div className={classes.homeWrapper}>
       <section>
         <h4 className={classes.title}>Total balance</h4>
         {(() => {

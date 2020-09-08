@@ -2,7 +2,7 @@ import { createUseStyles } from 'react-jss'
 
 const useTransactionLayoutStyles = createUseStyles({
   wrapper: {
-    maxWidth: 700,
+    width: '100%',
     display: 'flex',
     flexDirection: 'column'
   },

@@ -5,9 +5,8 @@ const useMainStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    '& > *': {
-      width: '100%'
-    }
+    maxWidth: 700,
+    width: '100%'
   }
 })
 

@@ -2,24 +2,16 @@ import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { createUseStyles } from 'react-jss'
 
+import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
 import { fetchConfig, fetchTokens } from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
 import Login from './login/login.view'
 
-const useStyles = createUseStyles({
-  '@global': {
-    '*': {
-      boxSizing: 'border-box'
-    }
-  }
-})
-
 function App ({ configTask, tokensTask, onLoadConfig, onLoadTokens }) {
-  useStyles()
+  useAppStyles()
 
   React.useEffect(() => {
     onLoadConfig()

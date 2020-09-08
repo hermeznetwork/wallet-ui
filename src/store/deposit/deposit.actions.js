@@ -1,23 +1,23 @@
 export const depositActionTypes = {
-  LOAD_METAMASK_TOKENS: '[DEPOSIT LOAD METAMASK TOKENS',
-  LOAD_METAMASK_TOKENS_SUCCESS: '[DEPOSIT LOAD METAMASK TOKENS SUCCESS',
-  LOAD_METAMASK_TOKENS_FAILURE: '[DEPOSIT LOAD METAMASK TOKENS FAILURE'
+  LOAD_METAMASK_TOKENS: '[DEPOSIT] LOAD METAMASK TOKENS',
+  LOAD_METAMASK_TOKENS_SUCCESS: '[DEPOSIT] LOAD METAMASK TOKENS SUCCESS',
+  LOAD_METAMASK_TOKENS_FAILURE: '[DEPOSIT] LOAD METAMASK TOKENS FAILURE'
 }
 
-function loadMetamaskTokens () {
+function loadMetaMaskTokens () {
   return {
     type: depositActionTypes.LOAD_METAMASK_TOKENS
   }
 }
 
-function loadMetamaskTokensSuccess (metaMaskTokens) {
+function loadMetaMaskTokensSuccess (metaMaskTokens) {
   return {
     type: depositActionTypes.LOAD_METAMASK_TOKENS_SUCCESS,
     metaMaskTokens
   }
 }
 
-function loadMetamaskTokensFailure (error) {
+function loadMetaMaskTokensFailure (error) {
   return {
     type: depositActionTypes.LOAD_METAMASK_TOKENS_FAILURE,
     error
@@ -25,7 +25,7 @@ function loadMetamaskTokensFailure (error) {
 }
 
 export {
-  loadMetamaskTokens,
-  loadMetamaskTokensSuccess,
-  loadMetamaskTokensFailure
+  loadMetaMaskTokens,
+  loadMetaMaskTokensSuccess,
+  loadMetaMaskTokensFailure
 }
