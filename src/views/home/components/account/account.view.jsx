@@ -6,7 +6,7 @@ import useAccountStyles from './account.styles'
 
 function Account ({ tokenId, amount, tokenSymbol, fiatRate, preferredCurrency }) {
   const classes = useAccountStyles()
-  const priceInFiat = amount * fiatRate
+  const amountInFiat = amount * fiatRate
 
   return (
     <Link
@@ -24,7 +24,7 @@ function Account ({ tokenId, amount, tokenSymbol, fiatRate, preferredCurrency })
           fiatRate
             ? (
               <h4 className={classes.preferredCurrency}>
-                {priceInFiat.toFixed(2)} {preferredCurrency}
+                {amountInFiat.toFixed(2)} {preferredCurrency}
               </h4>
             )
             : <></>

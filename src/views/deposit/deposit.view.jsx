@@ -9,6 +9,8 @@ import TransactionLayout from '../shared/transaction-layout/transaction-layout.v
 function Deposit ({
   metaMaskTokensTask,
   selectedToken,
+  preferredCurrency,
+  fiatExchangeRatesTask,
   onLoadMetaMaskTokens
 }) {
   React.useEffect(() => {
@@ -19,6 +21,8 @@ function Deposit ({
     <TransactionLayout
       tokensTask={metaMaskTokensTask}
       selectedToken={selectedToken}
+      preferredCurrency={preferredCurrency}
+      fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
       type='deposit'
     />
   )
@@ -47,11 +51,14 @@ Deposit.propTypes = {
     decimals: PropTypes.number.isRequired,
     ethAddr: PropTypes.string.isRequired,
     ethBlockNum: PropTypes.number.isRequired
-  })
+  }),
+  preferredCurrency: PropTypes.string.isRequired
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskTokensTask: state.deposit.metaMaskTokensTask
+  metaMaskTokensTask: state.deposit.metaMaskTokensTask,
+  preferredCurrency: state.settings.preferredCurrency,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({

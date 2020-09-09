@@ -3,14 +3,16 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import useTransactionLayoutStyles from './transaction-layout.styles'
-import Main from '../main/main.view'
 import AccountList from '../account-list/account-list.view'
 import Transaction from '../transaction/transaction.view'
 import Spinner from '../spinner/spinner.view'
+import Main from '../main/main.view'
 
 function TransactionLayout ({
   tokensTask,
   selectedToken,
+  preferredCurrency,
+  fiatExchangeRates,
   type
 }) {
   const classes = useTransactionLayoutStyles()
@@ -44,6 +46,8 @@ function TransactionLayout ({
                 return (
                   <AccountList
                     tokens={tokensTask.data}
+                    preferredCurrency={preferredCurrency}
+                    fiatExchangeRates={fiatExchangeRates}
                     onTokenSelected={handleAccountListClick}
                   />
                 )
@@ -95,7 +99,9 @@ TransactionLayout.propTypes = {
     ethAddr: PropTypes.string.isRequired,
     ethBlockNum: PropTypes.number.isRequired
   }),
-  type: PropTypes.string.isRequired
+  type: PropTypes.string.isRequired,
+  preferredCurrency: PropTypes.string.isRequired,
+  fiatExchangeRates: PropTypes.object.isRequired
 }
 
 export default TransactionLayout
