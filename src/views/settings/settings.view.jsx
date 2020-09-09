@@ -4,26 +4,26 @@ import { connect } from 'react-redux'
 import QRCode from 'qrcode.react'
 
 import useSettingsStyles from './settings.styles'
-import TokenList from './components/token-list/token-list.view'
+import CurrencyList from './components/currency-list/currency-list.view'
 import { changePreferredCurrency } from '../../store/settings/settings.thunks'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
+import { CurrencySymbol } from '../../utils/currencies'
 
 function Settings ({
   metaMaskWalletTask,
-  tokensTask,
-  onChangeDefaultCurrency,
-  preferredCurrency
+  preferredCurrency,
+  onChangePreferredCurrency
 }) {
   const classes = useSettingsStyles()
 
-  function handleTokenSelection (selectedTokenId) {
-    if (selectedTokenId !== preferredCurrency) {
-      onChangeDefaultCurrency(selectedTokenId)
+  function handlePreferredCurrencySelection (selectedCurrency) {
+    if (selectedCurrency !== preferredCurrency) {
+      onChangePreferredCurrency(selectedCurrency)
     }
   }
 
   return (
-    <div className={classes.settingsWrapper}>
+    <div className={classes.root}>
       <h4 className={classes.title}>Settings</h4>
       <div className={classes.ethereumAddress}>
         {
@@ -34,10 +34,10 @@ function Settings ({
       </div>
       <section>
         <div>
-          <TokenList
-            tokens={tokensTask.status === 'successful' ? tokensTask.data : []}
-            onTokenSelection={handleTokenSelection}
-            seletedTokenId={preferredCurrency}
+          <CurrencyList
+            currencies={Object.values(CurrencySymbol)}
+            selectedCurrency={preferredCurrency}
+            onSelectCurrency={handlePreferredCurrencySelection}
           />
         </div>
       </section>
@@ -59,28 +59,16 @@ function Settings ({
 }
 
 Settings.propTypes = {
-  tokensTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired
-      })
-    ),
-    error: PropTypes.string
-  }),
-  onChangeDefaultCurrency: PropTypes.func
+  onChangePreferredCurrency: PropTypes.func
 }
 
 const mapStateToProps = (state) => ({
   metaMaskWalletTask: state.account.metaMaskWalletTask,
-  tokensTask: state.global.tokensTask,
   preferredCurrency: state.settings.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeDefaultCurrency: (selectedTokenId) => dispatch(changePreferredCurrency(selectedTokenId))
+  onChangePreferredCurrency: (selectedTokenId) => dispatch(changePreferredCurrency(selectedTokenId))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Settings))

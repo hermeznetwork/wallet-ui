@@ -4,28 +4,54 @@ import clsx from 'clsx'
 
 import Account from '../account/account.view'
 import useAccountListStyles from './account-list.styles'
+import { CurrencySymbol } from '../../../../utils/currencies'
 
-function AccountList ({ accounts, tokens, preferredCurrency }) {
+function AccountList ({
+  accounts,
+  tokens,
+  preferredCurrency,
+  fiatExchangeRates
+}) {
   const classes = useAccountListStyles()
 
-  function getToken (tokenId) {
-    return tokens.find((token) => token.tokenId === tokenId)
+  function getTokenSymbol (tokenId) {
+    return tokens.find((token) => token.tokenId === tokenId)?.symbol
+  }
+
+  function getTokenFiatRate (tokenSymbol) {
+    if (!tokens || !fiatExchangeRates) {
+      return undefined
+    }
+
+    const tokenRateInUSD = tokens
+      .find((token) => token.symbol === tokenSymbol).USD
+
+    return preferredCurrency === CurrencySymbol.USD
+      ? tokenRateInUSD
+      : tokenRateInUSD * fiatExchangeRates[preferredCurrency]
   }
 
   return (
     <div>
-      {accounts.map((account, index) =>
-        <div
-          key={account.tokenId}
-          className={clsx({ [classes.account]: index > 0 })}
-        >
-          <Account
-            tokenId={account.tokenId}
-            amount={account.balance}
-            tokenSymbol={getToken(account.tokenId).symbol}
-            preferredCurrency={getToken(preferredCurrency).symbol}
-          />
-        </div>
+      {accounts.map((account, index) => {
+        const tokenSymbol = getTokenSymbol(account.tokenId)
+        const tokenFiatRate = getTokenFiatRate(tokenSymbol)
+
+        return (
+          <div
+            key={account.tokenId}
+            className={clsx({ [classes.account]: index > 0 })}
+          >
+            <Account
+              tokenId={account.tokenId}
+              amount={account.balance}
+              tokenSymbol={tokenSymbol}
+              preferredCurrency={preferredCurrency}
+              fiatRate={tokenFiatRate}
+            />
+          </div>
+        )
+      }
       )}
     </div>
   )
@@ -45,7 +71,8 @@ AccountList.propTypes = {
       symbol: PropTypes.string.isRequired
     })
   ),
-  preferredCurrency: PropTypes.number.isRequired
+  fiatExchangeRates: PropTypes.object,
+  preferredCurrency: PropTypes.string.isRequired
 }
 
 export default AccountList

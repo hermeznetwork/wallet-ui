@@ -1,7 +1,7 @@
 import { createUseStyles } from 'react-jss'
 
 const useHomeStyles = createUseStyles({
-  homeWrapper: {
+  root: {
     width: '100%'
   },
   title: {

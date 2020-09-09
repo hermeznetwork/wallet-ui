@@ -2,6 +2,7 @@ import ethers from 'ethers'
 
 import * as globalActions from './global.actions'
 import * as rollupApi from '../../apis/rollup'
+import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import config from '../../utils/config.json'
 import { CliExternalOperator } from '../../utils/cli-external-operator'
 
@@ -12,6 +13,16 @@ function fetchTokens () {
     return rollupApi.getTokens()
       .then(res => dispatch(globalActions.loadTokensSuccess(res)))
       .catch(err => dispatch(globalActions.loadTokensFailure(err)))
+  }
+}
+
+function fetchFiatExchangeRates (symbols) {
+  return (dispatch) => {
+    dispatch(globalActions.loadFiatExchangeRates())
+
+    return fiatExchangeRatesApi.getFiatExchangeRates(symbols)
+      .then(res => dispatch(globalActions.loadFiatExchangeRatesSuccess(res.rates)))
+      .catch(err => dispatch(globalActions.loadFiatExchangeRatesFailure(err)))
   }
 }
 
@@ -75,6 +86,7 @@ function fetchCurrentBatch (urlOperator) {
 export {
   fetchTokens,
   fetchConfig,
+  fetchFiatExchangeRates,
   fetchGasMultiplier,
   fetchCurrentBatch
 }

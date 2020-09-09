@@ -4,12 +4,32 @@ import clsx from 'clsx'
 
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
+import { CurrencySymbol } from '../../../../utils/currencies'
 
-function TransactionList ({ transactions, tokens, onTransactionClick }) {
+function TransactionList ({
+  transactions,
+  preferredCurrency,
+  tokens,
+  fiatExchangeRates,
+  onTransactionClick
+}) {
   const classes = useTransactionListStyles()
 
-  function getToken (tokenId) {
-    return tokens.find((token) => token.tokenId === tokenId)
+  function getTokenSymbol (tokenId) {
+    return tokens.find((token) => token.tokenId === tokenId).symbol
+  }
+
+  function getTokenFiatRate (tokenSymbol) {
+    if (!tokens || !fiatExchangeRates) {
+      return undefined
+    }
+
+    const tokenRateInUSD = tokens
+      .find((token) => token.symbol === tokenSymbol).USD
+
+    return preferredCurrency === CurrencySymbol.USD
+      ? tokenRateInUSD
+      : tokenRateInUSD * fiatExchangeRates[preferredCurrency]
   }
 
   function handleTransactionClick (transactionId) {
@@ -18,23 +38,31 @@ function TransactionList ({ transactions, tokens, onTransactionClick }) {
 
   return (
     <div>
-      {transactions.map((transaction, index) =>
-        <div
-          key={transaction.txId}
-          className={clsx({
-            [classes.transaction]: true,
-            [classes.transactionSpacer]: index > 0
-          })}
-        >
-          <Transaction
-            id={transaction.txId}
-            type={transaction.type}
-            amount={transaction.amount}
-            currency={getToken(transaction.tokenId).symbol}
-            date={new Date().toLocaleString()}
-            onClick={handleTransactionClick}
-          />
-        </div>
+      {transactions.map((transaction, index) => {
+        const tokenSymbol = getTokenSymbol(transaction.tokenId)
+        const tokenFiatRate = getTokenFiatRate(tokenSymbol)
+
+        return (
+          <div
+            key={transaction.txId}
+            className={clsx({
+              [classes.transaction]: true,
+              [classes.transactionSpacer]: index > 0
+            })}
+          >
+            <Transaction
+              id={transaction.txId}
+              type={transaction.type}
+              amount={transaction.amount}
+              tokenSymbol={tokenSymbol}
+              fiatRate={tokenFiatRate}
+              date={new Date().toLocaleString()}
+              preferredCurrency={preferredCurrency}
+              onClick={handleTransactionClick}
+            />
+          </div>
+        )
+      }
       )}
     </div>
   )
@@ -49,6 +77,7 @@ TransactionList.propTypes = {
       tokenId: PropTypes.number.isRequired
     })
   ),
+  preferredCurrency: PropTypes.string.isRequired,
   tokens: PropTypes.arrayOf(
     PropTypes.shape({
       tokenId: PropTypes.number.isRequired,
@@ -56,6 +85,7 @@ TransactionList.propTypes = {
       symbol: PropTypes.string.isRequired
     })
   ),
+  fiatExchangeRates: PropTypes.object,
   onTransactionClick: PropTypes.func.isRequired
 }
 

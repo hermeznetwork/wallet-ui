@@ -8,7 +8,7 @@ function Header () {
 
   return (
     <header className={classes.root}>
-      <div class={classes.headerContent}>
+      <div className={classes.headerContent}>
         <h1>
           <Link
             to='/'

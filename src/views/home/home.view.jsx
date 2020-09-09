@@ -4,43 +4,55 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import useHomeStyles from './home.styles'
-import { fetchAccounts, fetchTransactions } from '../../store/home/home.thunks'
+import { fetchAccounts } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from './components/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
+import { CurrencySymbol } from '../../utils/currencies'
 
 function Home ({
   tokensTask,
   accountsTask,
   metaMaskWalletTask,
+  fiatExchangeRatesTask,
   preferredCurrency,
-  onLoadAccounts,
-  onLoadRecentTransactions
+  onLoadAccounts
 }) {
   const classes = useHomeStyles()
 
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
       onLoadAccounts(metaMaskWalletTask.data.ethereumAddress)
-      onLoadRecentTransactions(metaMaskWalletTask.data.ethereumAddress)
     }
-  }, [metaMaskWalletTask, onLoadAccounts, onLoadRecentTransactions])
+  }, [metaMaskWalletTask, onLoadAccounts])
 
   function getTotalBalance (accounts) {
-    return accounts.reduce((amount, account) => amount + account.balance, 0)
+    if (
+      tokensTask.status !== 'successful' ||
+      fiatExchangeRatesTask.status !== 'successful'
+    ) {
+      return undefined
+    }
+
+    return accounts.reduce((amount, account) => {
+      const tokenSymbol = getTokenSymbol(account.tokenId)
+      const tokenRateInUSD = tokensTask.data
+        .find((token) => token.symbol === tokenSymbol).USD
+      const tokenFiatRate = preferredCurrency === CurrencySymbol.USD
+        ? tokenRateInUSD
+        : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
+
+      return amount + account.balance * tokenFiatRate
+    }, 0)
   }
 
   function getTokenSymbol (tokenId) {
-    if (tokensTask.status !== 'successful') {
-      return '-'
-    }
-
     return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
   }
 
   return (
-    <div className={classes.homeWrapper}>
+    <div className={classes.root}>
       <section>
         <h4 className={classes.title}>Total balance</h4>
         {(() => {
@@ -52,7 +64,7 @@ function Home ({
               return (
                 <TotalBalance
                   amount={undefined}
-                  currency={getTokenSymbol(preferredCurrency)}
+                  currency={preferredCurrency}
                 />
               )
             }
@@ -60,7 +72,7 @@ function Home ({
               return (
                 <TotalBalance
                   amount={getTotalBalance(accountsTask.data)}
-                  currency={getTokenSymbol(preferredCurrency)}
+                  currency={preferredCurrency}
                 />
               )
             }
@@ -88,8 +100,9 @@ function Home ({
               return (
                 <AccountList
                   accounts={accountsTask.data}
-                  tokens={tokensTask.status === 'successful' ? tokensTask.data : []}
+                  tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
                   preferredCurrency={preferredCurrency}
+                  fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
                 />
               )
             }
@@ -119,7 +132,7 @@ Home.propTypes = {
     data: PropTypes.object,
     error: PropTypes.string
   }),
-  preferredCurrency: PropTypes.number.isRequired,
+  preferredCurrency: PropTypes.string.isRequired,
   tokensTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
@@ -130,19 +143,25 @@ Home.propTypes = {
       })
     ),
     error: PropTypes.string
-  })
+  }),
+  fiatExchangeRatesTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.object,
+    error: PropTypes.string
+  }),
+  onLoadAccounts: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
   metaMaskWalletTask: state.account.metaMaskWalletTask,
   accountsTask: state.home.accountsTask,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.settings.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress)),
-  onLoadRecentTransactions: (ethereumAddress) => dispatch(fetchTransactions(ethereumAddress))
+  onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))

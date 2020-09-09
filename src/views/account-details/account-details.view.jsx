@@ -8,6 +8,7 @@ import { fetchAccount, fetchTransactions } from '../../store/account-details/acc
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
+import { CurrencySymbol } from '../../utils/currencies'
 
 function AccountDetails ({
   metaMaskWalletTask,
@@ -15,6 +16,7 @@ function AccountDetails ({
   accountTask,
   transactionsTask,
   tokensTask,
+  fiatExchangeRatesTask,
   onLoadAccount,
   onLoadTransactions
 }) {
@@ -29,8 +31,26 @@ function AccountDetails ({
     }
   }, [metaMaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
 
-  if (metaMaskWalletTask.status === 'pending') {
-    history.replace('/')
+  function getTokenSymbol (tokenId) {
+    return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
+  }
+
+  function getAccountBalance () {
+    if (
+      accountTask.status !== 'successful' ||
+      tokensTask.status !== 'successful' ||
+      fiatExchangeRatesTask.status !== 'successful'
+    ) {
+      return '-'
+    }
+    const tokenSymbol = getTokenSymbol(accountTask.data.tokenId)
+    const tokenRateInUSD = tokensTask.data
+      .find((token) => token.symbol === tokenSymbol).USD
+    const tokenRate = preferredCurrency === CurrencySymbol.USD
+      ? tokenRateInUSD
+      : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
+
+    return accountTask.data.balance * tokenRate
   }
 
   function getTokenName (tokenId) {
@@ -46,7 +66,7 @@ function AccountDetails ({
   }
 
   return (
-    <div>
+    <div className={classes.root}>
       <section>
         {(() => {
           switch (accountTask.status) {
@@ -60,8 +80,8 @@ function AccountDetails ({
               return (
                 <div>
                   <h3>{getTokenName(accountTask.data.tokenId)}</h3>
-                  <h1>{accountTask.data.balance}</h1>
-                  <p>- {preferredCurrency}</p>
+                  <h1>{getAccountBalance().toFixed(2)} {preferredCurrency}</h1>
+                  <p>{accountTask.data.balance} {getTokenSymbol(accountTask.data.tokenId)}</p>
                 </div>
               )
             }
@@ -90,7 +110,9 @@ function AccountDetails ({
               return (
                 <TransactionList
                   transactions={transactionsTask.data}
-                  tokens={tokensTask.data}
+                  tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
+                  fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
+                  preferredCurrency={preferredCurrency}
                   onTransactionClick={handleTransactionClick}
                 />
               )
@@ -106,7 +128,7 @@ function AccountDetails ({
 }
 
 AccountDetails.propTypes = {
-  preferredCurrency: PropTypes.number.isRequired,
+  preferredCurrency: PropTypes.string.isRequired,
   accountTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.shape({
@@ -137,6 +159,11 @@ AccountDetails.propTypes = {
       })
     )
   }),
+  fiatExchangeRatesTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.object,
+    error: PropTypes.string
+  }),
   onLoadAccount: PropTypes.func.isRequired
 }
 
@@ -145,7 +172,8 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.settings.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
   transactionsTask: state.accountDetails.transactionsTask,
-  tokensTask: state.global.tokensTask
+  tokensTask: state.global.tokensTask,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({

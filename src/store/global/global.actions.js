@@ -5,6 +5,9 @@ export const globalActionTypes = {
   LOAD_CONFIG: '[GLOBAL] LOAD CONFIG',
   LOAD_CONFIG_SUCCESS: '[GLOBAL] LOAD CONFIG SUCCESS',
   LOAD_CONFIG_FAILURE: '[GLOBAL] LOAD CONFIG FAILURE',
+  LOAD_FIAT_EXCHANGE_RATES: '[GLOBAL] LOAD FIAT EXCHANGE RATES',
+  LOAD_FIAT_EXCHANGE_RATES_SUCCESS: '[GLOBAL] LOAD FIAT EXCHANGE RATES SUCCESS',
+  LOAD_FIAT_EXCHANGE_RATES_FAILURE: '[GLOBAL] LOAD FIAT EXCHANGE RATES FAILURE',
   LOAD_GAS_MULTIPLIER: '[GLOBAL] LOAD GAS MULTIPLIER',
   LOAD_CURRENT_BATCH: '[GLOBAL] LOAD CURRENT BATCH',
   LOAD_CURRENT_BATCH_SUCCESS: '[GLOBAL] LOAD CURRENT BATCH SUCCESS',
@@ -52,6 +55,26 @@ function loadConfigFailure (config, error) {
   }
 }
 
+function loadFiatExchangeRates (symbols) {
+  return {
+    type: globalActionTypes.LOAD_FIAT_EXCHANGE_RATES
+  }
+}
+
+function loadFiatExchangeRatesSuccess (fiatExchangeRates) {
+  return {
+    type: globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_SUCCESS,
+    fiatExchangeRates
+  }
+}
+
+function loadFiatExchangeRatesFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE,
+    error
+  }
+}
+
 function loadGasMultiplier (num) {
   return {
     type: globalActionTypes.LOAD_GAS_MULTIPLIER,
@@ -85,6 +108,9 @@ export {
   loadConfig,
   loadConfigSuccess,
   loadConfigFailure,
+  loadFiatExchangeRates,
+  loadFiatExchangeRatesSuccess,
+  loadFiatExchangeRatesFailure,
   loadGasMultiplier,
   loadCurrentBatch,
   loadCurrentBatchSuccess,

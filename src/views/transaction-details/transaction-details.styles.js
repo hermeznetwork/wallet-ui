@@ -1,6 +1,9 @@
 const { createUseStyles } = require('react-jss')
 
 const useTransactionDetailsStyles = createUseStyles({
+  root: {
+    width: '100%'
+  },
   closeButton: {
     display: 'flex',
     marginLeft: 'auto',

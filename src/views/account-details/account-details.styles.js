@@ -1,6 +1,9 @@
 import { createUseStyles } from 'react-jss'
 
 const useAccountDetailsStyles = createUseStyles({
+  root: {
+    width: '100%'
+  },
   title: {
     marginBottom: 16
   },

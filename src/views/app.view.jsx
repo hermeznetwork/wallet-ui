@@ -6,24 +6,41 @@ import PropTypes from 'prop-types'
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
-import { fetchConfig, fetchTokens } from '../store/global/global.thunks'
+import { fetchConfig, fetchTokens, fetchFiatExchangeRates } from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
 import Login from './login/login.view'
+import { CurrencySymbol } from '../utils/currencies'
 
-function App ({ configTask, tokensTask, onLoadConfig, onLoadTokens }) {
+function App ({
+  configTask,
+  tokensTask,
+  fiatExchangeRatesTask,
+  onLoadConfig,
+  onLoadTokens,
+  onLoadFiatExchangeRates
+}) {
   useAppStyles()
 
   React.useEffect(() => {
     onLoadConfig()
     onLoadTokens()
-  }, [onLoadConfig, onLoadTokens])
+    onLoadFiatExchangeRates()
+  }, [onLoadConfig, onLoadTokens, onLoadFiatExchangeRates])
 
-  if (configTask.status === 'loading' || tokensTask.status === 'loading') {
+  if (
+    configTask.status === 'loading' ||
+    tokensTask.status === 'loading' ||
+    fiatExchangeRatesTask.status === 'loading'
+  ) {
     return <Spinner />
   }
 
-  if (configTask.status === 'failed' || tokensTask.status === 'failed') {
-    return <p>{configTask.error || tokensTask.error}</p>
+  if (
+    configTask.status === 'failed' ||
+    tokensTask.status === 'failed' ||
+    fiatExchangeRatesTask.status === 'failed'
+  ) {
+    return <p>{configTask.error || tokensTask.error || fiatExchangeRatesTask.error}</p>
   }
 
   return (
@@ -72,18 +89,28 @@ App.propTypes = {
       })
     )
   }),
+  fiatExchangeRatesTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.object
+  }),
   onLoadConfig: PropTypes.func.isRequired,
   onLoadTokens: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
   configTask: state.global.configTask,
-  tokensTask: state.global.tokensTask
+  tokensTask: state.global.tokensTask,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadConfig: () => dispatch(fetchConfig()),
-  onLoadTokens: () => dispatch(fetchTokens())
+  onLoadTokens: () => dispatch(fetchTokens()),
+  onLoadFiatExchangeRates: () => dispatch(
+    fetchFiatExchangeRates(
+      Object.values(CurrencySymbol).filter(currency => currency !== CurrencySymbol.USD)
+    )
+  )
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
