@@ -3,11 +3,20 @@ import PropTypes from 'prop-types'
 
 import useAccountListStyles from './account-list.styles'
 import AccountListItem from '../account-list-item/account-list-item.view'
+import { CurrencySymbol } from '../../../utils/currencies'
 
 function AccountList ({
-  tokens
+  tokens,
+  preferredCurrency,
+  fiatExchangeRates
 }) {
   const classes = useAccountListStyles()
+
+  function getAccountFiatRate (token) {
+    return preferredCurrency === CurrencySymbol.USD
+      ? token.USD
+      : token.USD * fiatExchangeRates[preferredCurrency]
+  }
 
   function handleAccountListItemClick () {
 
@@ -19,7 +28,11 @@ function AccountList ({
         return (
           <AccountListItem
             key={token.tokenId}
-            token={token}
+            name={token.name}
+            balance={token.balance}
+            symbol={token.symbol}
+            preferredCurrency={preferredCurrency}
+            fiatRate={getAccountFiatRate(token)}
             onClick={handleAccountListItemClick}
           />
         )
@@ -36,7 +49,9 @@ AccountList.propTypes = {
       name: PropTypes.string.isRequired,
       symbol: PropTypes.string.isRequired
     })
-  )
+  ),
+  preferredCurrency: PropTypes.string.isRequired,
+  fiatExchangeRates: PropTypes.object.isRequired
 }
 
 export default AccountList

@@ -109,6 +109,14 @@ mock.onGet(`${baseApiUrl}/tokens`)
         ethAddr: '0xe41d2489571d322189246dafa5ebde1f4699f498',
         ethBlockNum: 762375478,
         USD: 2
+      },
+      {
+        tokenId: 0,
+        name: 'Goerli Test Token',
+        symbol: 'TNT',
+        decimals: 18,
+        ethAddr: '0x7af963cf6d228e564e2a0aa0ddbf06210b38615d',
+        ethBlockNum: 762375478
       }
     ]
   )
