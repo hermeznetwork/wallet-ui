@@ -24,8 +24,8 @@ function Settings ({
   }
 
   return (
-    <div className={classes.root}>
-      <Container>
+    <Container>
+      <div className={classes.root}>
         <h4 className={classes.title}>Settings</h4>
         <div className={classes.ethereumAddress}>
           {
@@ -56,8 +56,8 @@ function Settings ({
               : <></>
           }
         </div>
-      </Container>
-    </div>
+      </div>
+    </Container>
   )
 }
 

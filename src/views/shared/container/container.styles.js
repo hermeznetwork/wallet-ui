@@ -8,7 +8,6 @@ const useContainerStyles = createUseStyles(theme => ({
   wrapper: {
     width: '100%',
     display: 'flex',
-    flexDirection: 'column',
     maxWidth: 700,
     margin: 'auto',
     padding: ({ disableGutters, disableTopGutter }) => disableGutters
