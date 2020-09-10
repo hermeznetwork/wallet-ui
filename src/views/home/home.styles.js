@@ -1,28 +1,40 @@
 import { createUseStyles } from 'react-jss'
 
-const useHomeStyles = createUseStyles({
+const useHomeStyles = createUseStyles(theme => ({
   root: {
     width: '100%'
   },
   section: {
-    width: '100%'
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
-  title: {
-    marginBottom: 16
+  hermezAddress: {
+    width: 'fit-content',
+    marginTop: theme.spacing(2),
+    margin: 'auto',
+    padding: `${theme.spacing(1.5)}px ${theme.spacing(2.5)}px`,
+    borderRadius: 50,
+    background: theme.palette.primary.dark,
+    color: theme.palette.grey.dark,
+    fontWeight: 500
+  },
+  totalBalance: {
+    marginTop: `${theme.spacing(4)}px`,
+    marginBottom: `${theme.spacing(2)}px`
   },
   actionButtonsGroup: {
-    marginTop: 16,
     display: 'flex',
     justifyContent: 'space-between'
   },
-  actionButton: {
-    appearance: 'none',
-    padding: '8px 16px',
-    border: '1px solid gainsboro',
-    background: 'transparent',
-    borderRadius: 8,
-    cursor: 'pointer',
-    flex: '0 0 48%'
+  button: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  buttonText: {
+    fontWeight: 'bold'
   },
   test: {
     width: '222px', // random number added for testing purposes until design is delivered
@@ -32,6 +44,6 @@ const useHomeStyles = createUseStyles({
     width: '100% !important',
     height: '100% !important'
   }
-})
+}))
 
 export default useHomeStyles

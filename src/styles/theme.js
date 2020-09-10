@@ -6,7 +6,12 @@ const theme = {
     },
     secondary: '#e75a2b',
     white: '#ffffff',
-    black: '#2b2b2b'
+    black: '#2b2b2b',
+    grey: {
+      light: '#f3f3f8',
+      main: '#888baa',
+      dark: '#7a7c89'
+    }
   },
   spacing: (value) => value * 8
 }

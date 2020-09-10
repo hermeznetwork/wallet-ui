@@ -12,6 +12,8 @@ import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
 import { CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
+import sendIcon from '../../images/icons/send.svg'
+import depositIcon from '../../images/icons/deposit.svg'
 
 function Home ({
   tokensTask,
@@ -56,44 +58,59 @@ function Home ({
 
   return (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main}>
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
-          <h4 className={classes.title}>Total balance</h4>
-          {(() => {
-            switch (accountsTask.status) {
-              case 'loading': {
-                return <Spinner />
+          <div className={classes.hermezAddress}>
+            <p>
+              {
+                metaMaskWalletTask.status === 'successful'
+                  ? metaMaskWalletTask.data.ethereumAddress
+                  : '-'
               }
-              case 'failed': {
-                return (
-                  <TotalBalance
-                    amount={undefined}
-                    currency={preferredCurrency}
-                  />
-                )
+            </p>
+          </div>
+          <div className={classes.totalBalance}>
+            {(() => {
+              switch (accountsTask.status) {
+                case 'loading': {
+                  return <Spinner />
+                }
+                case 'failed': {
+                  return (
+                    <TotalBalance
+                      amount={undefined}
+                      currency={preferredCurrency}
+                    />
+                  )
+                }
+                case 'successful': {
+                  return (
+                    <TotalBalance
+                      amount={getTotalBalance(accountsTask.data)}
+                      currency={preferredCurrency}
+                    />
+                  )
+                }
+                default: {
+                  return <></>
+                }
               }
-              case 'successful': {
-                return (
-                  <TotalBalance
-                    amount={getTotalBalance(accountsTask.data)}
-                    currency={preferredCurrency}
-                  />
-                )
-              }
-              default: {
-                return <></>
-              }
-            }
-          })()}
+            })()}
+          </div>
           <div className={classes.actionButtonsGroup}>
-            <Link to='/transfer'><button className={classes.actionButton}>Send</button></Link>
-            <Link to='/deposit'><button className={classes.actionButton}>Add funds</button></Link>
+            <Link to='/transfer' className={classes.button}>
+              <img src={sendIcon} alt='Send' />
+              <p className={classes.buttonText}>Send</p>
+            </Link>
+            <Link to='/deposit' className={classes.button}>
+              <img src={depositIcon} alt='Deposit' />
+              <p className={classes.buttonText}>Deposit</p>
+            </Link>
           </div>
         </section>
       </Container>
       <Container>
         <section className={classes.section}>
-          <h4 className={classes.title}>Accounts</h4>
           {(() => {
             switch (accountsTask.status) {
               case 'loading': {

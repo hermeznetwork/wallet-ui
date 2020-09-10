@@ -3,8 +3,8 @@ import React from 'react'
 import useContainerStyles from './container.styles'
 import PropTypes from 'prop-types'
 
-function Container ({ backgroundColor, className, children }) {
-  const classes = useContainerStyles({ backgroundColor })
+function Container ({ backgroundColor, disableGutters, disableTopGutter, children }) {
+  const classes = useContainerStyles({ disableGutters, disableTopGutter, backgroundColor })
 
   return (
     <div className={classes.root}>
@@ -17,7 +17,8 @@ function Container ({ backgroundColor, className, children }) {
 
 Container.propTypes = {
   backgroundColor: PropTypes.string,
-  className: PropTypes.string
+  disableGutters: PropTypes.bool,
+  disableTopGutter: PropTypes.bool
 }
 
 export default Container

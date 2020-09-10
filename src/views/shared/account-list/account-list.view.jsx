@@ -2,11 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import useAccountListStyles from './account-list.styles'
-import AccountListItem from '../account-list-item/account-list-item.view'
+import Account from '../account/account.view'
 import { CurrencySymbol } from '../../../utils/currencies'
 
 function AccountList ({
-  tokens,
+  accounts,
   preferredCurrency,
   fiatExchangeRates
 }) {
@@ -24,15 +24,15 @@ function AccountList ({
 
   return (
     <ul className={classes.tokenList}>
-      {tokens.map((token) => {
+      {accounts.map((account) => {
         return (
-          <AccountListItem
-            key={token.tokenId}
-            name={token.name}
-            balance={token.balance}
-            symbol={token.symbol}
+          <Account
+            key={account.tokenId}
+            balance={account.balance}
+            tokenName={account.name}
+            tokenSymbol={account.symbol}
             preferredCurrency={preferredCurrency}
-            fiatRate={getAccountFiatRate(token)}
+            tokenFiatRate={getAccountFiatRate(account)}
             onClick={handleAccountListItemClick}
           />
         )
@@ -42,7 +42,7 @@ function AccountList ({
 }
 
 AccountList.propTypes = {
-  tokens: PropTypes.arrayOf(
+  accounts: PropTypes.arrayOf(
     PropTypes.shape({
       balance: PropTypes.number.isRequired,
       tokenId: PropTypes.number.isRequired,

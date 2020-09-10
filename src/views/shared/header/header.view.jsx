@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 
 import useHeaderStyles from './header.styles'
 import logo from '../../../images/logo.svg'
-import userAccount from '../../../images/icons/user-account.svg'
-import qrScanner from '../../../images/icons/qr-scanner.svg'
+import userAccountIcon from '../../../images/icons/user-account.svg'
+import qrScannerIcon from '../../../images/icons/qr-scanner.svg'
 import Container from '../container/container.view'
 
 function Header () {
@@ -12,10 +12,10 @@ function Header () {
 
   return (
     <header className={classes.root}>
-      <Container>
+      <Container disableGutters>
         <div className={classes.headerContent}>
           <Link to='/settings' className={classes.link}>
-            <img src={userAccount} alt='My account' className={classes.myAccountIcon} />
+            <img src={userAccountIcon} alt='My account' className={classes.myAccountIcon} />
             <p className={classes.linkText}>My account</p>
           </Link>
           <h1>
@@ -28,7 +28,7 @@ function Header () {
           </h1>
           <Link to='/settings' className={classes.link}>
             <p className={classes.linkText}>Scan QR</p>
-            <img src={qrScanner} alt='QR Scanner' className={classes.qrScannerIcon} />
+            <img src={qrScannerIcon} alt='QR Scanner' className={classes.qrScannerIcon} />
           </Link>
         </div>
       </Container>

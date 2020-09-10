@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 
-import Account from '../account/account.view'
+import Account from '../../../shared/account/account.view'
 import useAccountListStyles from './account-list.styles'
 import { CurrencySymbol } from '../../../../utils/currencies'
 
@@ -14,8 +14,8 @@ function AccountList ({
 }) {
   const classes = useAccountListStyles()
 
-  function getTokenSymbol (tokenId) {
-    return tokens.find((token) => token.tokenId === tokenId)?.symbol
+  function getToken (tokenId) {
+    return tokens.find((token) => token.tokenId === tokenId)
   }
 
   function getTokenFiatRate (tokenSymbol) {
@@ -32,28 +32,33 @@ function AccountList ({
   }
 
   return (
-    <div>
+    <>
       {accounts.map((account, index) => {
-        const tokenSymbol = getTokenSymbol(account.tokenId)
-        const tokenFiatRate = getTokenFiatRate(tokenSymbol)
+        const token = getToken(account.tokenId)
+        const tokenFiatRate = getTokenFiatRate(token.symbol)
 
         return (
           <div
             key={account.tokenId}
-            className={clsx({ [classes.account]: index > 0 })}
+            className={
+              clsx({
+                [classes.account]: true,
+                [classes.accountSpacer]: index > 0
+              })
+            }
           >
             <Account
-              tokenId={account.tokenId}
-              amount={account.balance}
-              tokenSymbol={tokenSymbol}
+              balance={account.balance}
+              tokenName={token.name}
+              tokenSymbol={token.symbol}
               preferredCurrency={preferredCurrency}
-              fiatRate={tokenFiatRate}
+              tokenFiatRate={tokenFiatRate}
             />
           </div>
         )
       }
       )}
-    </div>
+    </>
   )
 }
 

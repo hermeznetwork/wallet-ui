@@ -45,7 +45,7 @@ function TransactionLayout ({
               case 'successful': {
                 return (
                   <AccountList
-                    tokens={tokensTask.data}
+                    accounts={tokensTask.data}
                     preferredCurrency={preferredCurrency}
                     fiatExchangeRates={fiatExchangeRates}
                     onTokenSelected={handleAccountListClick}
