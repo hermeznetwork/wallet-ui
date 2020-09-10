@@ -5,12 +5,13 @@ import useAccountListStyles from './account-list.styles'
 import AccountListItem from '../account-list-item/account-list-item.view'
 
 function AccountList ({
-  tokens
+  tokens,
+  onSelect
 }) {
   const classes = useAccountListStyles()
 
-  function handleAccountListItemClick () {
-
+  function handleAccountListItemClick (token) {
+    onSelect(token)
   }
 
   return (
@@ -20,7 +21,7 @@ function AccountList ({
           <AccountListItem
             key={token.tokenId}
             token={token}
-            onClick={handleAccountListItemClick}
+            onSelect={handleAccountListItemClick}
           />
         )
       })}
@@ -36,7 +37,8 @@ AccountList.propTypes = {
       name: PropTypes.string.isRequired,
       symbol: PropTypes.string.isRequired
     })
-  )
+  ),
+  onSelect: PropTypes.func
 }
 
 export default AccountList

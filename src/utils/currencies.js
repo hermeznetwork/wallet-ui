@@ -1,6 +1,6 @@
 const CurrencySymbol = {
-  USD: 'USD',
-  EUR: 'EUR'
+  USD: '$',
+  EUR: '€'
 }
 
 export { CurrencySymbol }
