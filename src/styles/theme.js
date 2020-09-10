@@ -1,9 +1,12 @@
 const theme = {
-  breakpoints: {
-    sm: '@media (min-width: 576px)',
-    md: '@media (min-width: 768px)',
-    lg: '@media (min-width: 992px) ',
-    xl: '@media (min-width: 1200px)'
+  palette: {
+    primary: {
+      main: '#e75a2b',
+      dark: '#f6e9d3'
+    },
+    secondary: '#faf4ea',
+    white: '#ffffff',
+    black: '#2b2b2b'
   }
 }
 
