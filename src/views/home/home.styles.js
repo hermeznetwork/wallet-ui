@@ -4,6 +4,9 @@ const useHomeStyles = createUseStyles({
   root: {
     width: '100%'
   },
+  section: {
+    width: '100%'
+  },
   title: {
     marginBottom: 16
   },
