@@ -11,8 +11,7 @@ const useHeaderStyles = createUseStyles(theme => ({
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: `0 -${theme.spacing(1)}px`
+    justifyContent: 'space-between'
   },
   logo: {
     textDecoration: 'none',
@@ -28,10 +27,12 @@ const useHeaderStyles = createUseStyles(theme => ({
     fontWeight: 'bold'
   },
   myAccountIcon: {
+    marginLeft: -8,
     marginRight: theme.spacing(1.5)
   },
   qrScannerIcon: {
-    marginLeft: theme.spacing(1.5)
+    marginLeft: theme.spacing(1.5),
+    marginRight: -8
   }
 }))
 

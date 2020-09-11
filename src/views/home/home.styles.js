@@ -18,6 +18,7 @@ const useHomeStyles = createUseStyles(theme => ({
     borderRadius: 50,
     background: theme.palette.primary.dark,
     color: theme.palette.grey.dark,
+    cursor: 'pointer',
     fontWeight: 500
   },
   totalBalance: {

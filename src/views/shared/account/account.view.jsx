@@ -8,13 +8,14 @@ function Account ({
   balance,
   tokenSymbol,
   tokenFiatRate,
-  preferredCurrency
+  preferredCurrency,
+  onClick
 }) {
   const classes = useAccountStyles()
   const balanceInFiat = balance * tokenFiatRate
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onClick={() => onClick()}>
       <div className={`${classes.values} ${classes.topRow}`}>
         <p className={classes.tokenName}>{tokenName}</p>
         <p>{preferredCurrency} {balanceInFiat.toFixed(2)}</p>
@@ -32,7 +33,8 @@ Account.propTypes = {
   tokenName: PropTypes.string.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
   tokenFiatRate: PropTypes.number.isRequired,
-  preferredCurrency: PropTypes.string.isRequired
+  preferredCurrency: PropTypes.string.isRequired,
+  onClick: PropTypes.func
 }
 
 export default Account

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { useTheme } from 'react-jss'
+import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
 import { fetchAccounts } from '../../store/home/home.thunks'
@@ -14,6 +15,7 @@ import { CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import sendIcon from '../../images/icons/send.svg'
 import depositIcon from '../../images/icons/deposit.svg'
+import { copyToClipboard } from '../../utils/clipboard'
 
 function Home ({
   tokensTask,
@@ -21,7 +23,8 @@ function Home ({
   metaMaskWalletTask,
   fiatExchangeRatesTask,
   preferredCurrency,
-  onLoadAccounts
+  onLoadAccounts,
+  onNavigateToAccountDetails
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
@@ -56,15 +59,28 @@ function Home ({
     return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
   }
 
+  function handleAccountClick (account) {
+    onNavigateToAccountDetails(account.tokenId)
+  }
+
+  function handleEthereumAddressClick (ethereumAddress) {
+    if (metaMaskWalletTask.status === 'successful') {
+      copyToClipboard(`hez:${metaMaskWalletTask.data.ethereumAddress}`)
+    }
+  }
+
   return (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
-          <div className={classes.hermezAddress}>
+          <div
+            className={classes.hermezAddress}
+            onClick={handleEthereumAddressClick}
+          >
             <p>
               {
                 metaMaskWalletTask.status === 'successful'
-                  ? metaMaskWalletTask.data.ethereumAddress
+                  ? `hez:${metaMaskWalletTask.data.ethereumAddress}`
                   : '-'
               }
             </p>
@@ -126,6 +142,7 @@ function Home ({
                     tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
                     preferredCurrency={preferredCurrency}
                     fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
+                    onAccountClick={handleAccountClick}
                   />
                 )
               }
@@ -173,7 +190,8 @@ Home.propTypes = {
     data: PropTypes.object,
     error: PropTypes.string
   }),
-  onLoadAccounts: PropTypes.func.isRequired
+  onLoadAccounts: PropTypes.func.isRequired,
+  onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -185,7 +203,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress))
+  onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress)),
+  onNavigateToAccountDetails: (tokenId) =>
+    dispatch(push(`/accounts/${tokenId}`))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))

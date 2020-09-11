@@ -12,7 +12,7 @@ function Header () {
 
   return (
     <header className={classes.root}>
-      <Container disableGutters>
+      <Container disableVerticalGutters>
         <div className={classes.headerContent}>
           <Link to='/settings' className={classes.link}>
             <img src={userAccountIcon} alt='My account' className={classes.myAccountIcon} />

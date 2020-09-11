@@ -10,7 +10,8 @@ function AccountList ({
   accounts,
   tokens,
   preferredCurrency,
-  fiatExchangeRates
+  fiatExchangeRates,
+  onAccountClick
 }) {
   const classes = useAccountListStyles()
 
@@ -53,6 +54,7 @@ function AccountList ({
               tokenSymbol={token.symbol}
               preferredCurrency={preferredCurrency}
               tokenFiatRate={tokenFiatRate}
+              onClick={() => onAccountClick(account)}
             />
           </div>
         )
@@ -77,7 +79,8 @@ AccountList.propTypes = {
     })
   ),
   fiatExchangeRates: PropTypes.object,
-  preferredCurrency: PropTypes.string.isRequired
+  preferredCurrency: PropTypes.string.isRequired,
+  onAccountClick: PropTypes.func
 }
 
 export default AccountList

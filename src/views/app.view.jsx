@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 
@@ -44,37 +44,36 @@ function App ({
   }
 
   return (
-    <BrowserRouter>
-      <Switch>
-        {routes
-          .filter(route => !route.renderLayout)
-          .map(route =>
-            <Route
-              exact
-              key={route.path}
-              path={route.path}
-              component={route.component}
-            />
-          )}
-        <Route path='/login' exact component={Login} />
-        <Route>
-          <Layout>
-            <Switch>
-              {routes
-                .filter(route => route.renderLayout)
-                .map(route =>
-                  <Route
-                    exact
-                    key={route.path}
-                    path={route.path}
-                    component={route.component}
-                  />
-                )}
-            </Switch>
-          </Layout>
-        </Route>
-      </Switch>
-    </BrowserRouter>
+    <Switch>
+      {routes
+        .filter(route => !route.renderLayout)
+        .map(route =>
+          <Route
+            exact
+            key={route.path}
+            path={route.path}
+            component={route.component}
+          />
+        )}
+      <Route path='/login' exact component={Login} />
+      <Route>
+        <Layout>
+          <Switch>
+            {routes
+              .filter(route => route.renderLayout)
+              .map(route =>
+                <Route
+                  exact
+                  key={route.path}
+                  path={route.path}
+                  component={route.component}
+                />
+              )}
+            <Redirect to='/' />
+          </Switch>
+        </Layout>
+      </Route>
+    </Switch>
   )
 }
 
