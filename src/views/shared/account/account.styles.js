@@ -22,7 +22,7 @@ const useAccountStyles = createUseStyles(theme => ({
     marginBottom: theme.spacing(1.5)
   },
   tokenName: {
-    fontWeight: 'bold'
+    fontWeight: theme.fontWeights.bold
   },
   bottomRow: {
     color: theme.palette.grey.main

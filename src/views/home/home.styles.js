@@ -19,7 +19,7 @@ const useHomeStyles = createUseStyles(theme => ({
     background: theme.palette.primary.dark,
     color: theme.palette.grey.dark,
     cursor: 'pointer',
-    fontWeight: 500
+    fontWeight: theme.fontWeights.medium
   },
   totalBalance: {
     marginTop: `${theme.spacing(4)}px`,
@@ -35,7 +35,7 @@ const useHomeStyles = createUseStyles(theme => ({
     alignItems: 'center'
   },
   buttonText: {
-    fontWeight: 'bold'
+    fontWeight: theme.fontWeights.bold
   },
   test: {
     width: '222px', // random number added for testing purposes until design is delivered

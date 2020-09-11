@@ -24,7 +24,7 @@ const useHeaderStyles = createUseStyles(theme => ({
     padding: theme.spacing(1)
   },
   linkText: {
-    fontWeight: 'bold'
+    fontWeight: theme.fontWeights.bold
   },
   myAccountIcon: {
     marginLeft: -8,
