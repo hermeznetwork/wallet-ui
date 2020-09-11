@@ -15,7 +15,7 @@ import { CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import sendIcon from '../../images/icons/send.svg'
 import depositIcon from '../../images/icons/deposit.svg'
-import { copyToClipboard } from '../../utils/clipboard'
+import { copyToClipboard } from '../../utils/dom'
 
 function Home ({
   tokensTask,
