@@ -16,6 +16,7 @@ import Container from '../shared/container/container.view'
 import sendIcon from '../../images/icons/send.svg'
 import depositIcon from '../../images/icons/deposit.svg'
 import { copyToClipboard } from '../../utils/dom'
+import Snackbar from '../shared/snackbar/snackbar.view'
 
 function Home ({
   tokensTask,
@@ -28,6 +29,7 @@ function Home ({
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
+  const [showAddressCopiedSnackbar, setShowAddressCopiedSnackbar] = React.useState(false)
 
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
@@ -66,7 +68,12 @@ function Home ({
   function handleEthereumAddressClick (ethereumAddress) {
     if (metaMaskWalletTask.status === 'successful') {
       copyToClipboard(`hez:${metaMaskWalletTask.data.ethereumAddress}`)
+      setShowAddressCopiedSnackbar(true)
     }
+  }
+
+  function handleAddressCopiedSnackbarClose () {
+    setShowAddressCopiedSnackbar(false)
   }
 
   return (
@@ -153,6 +160,11 @@ function Home ({
           })()}
         </section>
       </Container>
+      <Snackbar
+        show={showAddressCopiedSnackbar}
+        message='The Hermez address has been copied to the clipboard!'
+        onClose={handleAddressCopiedSnackbarClose}
+      />
     </div>
   )
 }

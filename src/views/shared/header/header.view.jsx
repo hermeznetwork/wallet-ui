@@ -26,7 +26,7 @@ function Header () {
               <img src={logo} alt='Hermez logo' />
             </Link>
           </h1>
-          <Link to='/settings' className={classes.link}>
+          <Link to='/' className={classes.link}>
             <p className={classes.linkText}>Scan QR</p>
             <img src={qrScannerIcon} alt='QR Scanner' className={classes.qrScannerIcon} />
           </Link>
