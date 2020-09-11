@@ -9,6 +9,8 @@ import TransactionLayout from '../shared/transaction-layout/transaction-layout.v
 
 function Deposit ({
   metaMaskTokensTask,
+  preferredCurrency,
+  fiatExchangeRatesTask,
   onLoadMetaMaskTokens
 }) {
   const { tokenId } = useParams()
@@ -22,6 +24,8 @@ function Deposit ({
     <TransactionLayout
       tokensTask={metaMaskTokensTask}
       selectedTokenId={selectedTokenId}
+      preferredCurrency={preferredCurrency}
+      fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
       type='deposit'
     />
   )
@@ -41,11 +45,14 @@ Deposit.propTypes = {
         ethBlockNum: PropTypes.number.isRequired
       })
     )
-  })
+  }),
+  preferredCurrency: PropTypes.string.isRequired
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskTokensTask: state.deposit.metaMaskTokensTask
+  metaMaskTokensTask: state.deposit.metaMaskTokensTask,
+  preferredCurrency: state.settings.preferredCurrency,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({

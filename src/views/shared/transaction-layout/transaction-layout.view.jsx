@@ -3,14 +3,16 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import useTransactionLayoutStyles from './transaction-layout.styles'
-import Main from '../main/main.view'
 import AccountList from '../account-list/account-list.view'
 import Transaction from '../transaction/transaction.view'
 import Spinner from '../spinner/spinner.view'
+import Main from '../main/main.view'
 
 function TransactionLayout ({
   tokensTask,
   selectedTokenId,
+  preferredCurrency,
+  fiatExchangeRates,
   type
 }) {
   const classes = useTransactionLayoutStyles()
@@ -31,6 +33,8 @@ function TransactionLayout ({
         <Transaction
           token={token}
           type={type}
+          preferredCurrency={preferredCurrency}
+          fiatExchangeRates={fiatExchangeRates}
         />
       )
     } else {
@@ -50,7 +54,9 @@ function TransactionLayout ({
                 return (
                   <AccountList
                     tokens={tokensTask.data}
-                    onSelect={handleAccountListClick}
+                    preferredCurrency={preferredCurrency}
+                    fiatExchangeRates={fiatExchangeRates}
+                    onTokenSelected={handleAccountListClick}
                   />
                 )
               }
@@ -69,7 +75,13 @@ function TransactionLayout ({
       <section className={classes.wrapper}>
         <header className={classes.header}>
           <h2 className={classes.heading}>{token ? 'Amount' : 'Token'}</h2>
-          <Link to='/' className={classes.closeButton}>X</Link>
+          <Link to='/' className={classes.closeButtonLink}>
+            <img
+              className={classes.closeButton}
+              src='/assets/icons/close.svg'
+              alt='Close Transaction Icon'
+            />
+          </Link>
         </header>
         {renderContent()}
       </section>
@@ -94,7 +106,9 @@ TransactionLayout.propTypes = {
     )
   }),
   selectedTokenId: PropTypes.string,
-  type: PropTypes.string.isRequired
+  type: PropTypes.string.isRequired,
+  preferredCurrency: PropTypes.string.isRequired,
+  fiatExchangeRates: PropTypes.object.isRequired
 }
 
 export default TransactionLayout

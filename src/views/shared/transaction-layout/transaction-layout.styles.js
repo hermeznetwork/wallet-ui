@@ -20,7 +20,7 @@ const useTransactionLayoutStyles = createUseStyles({
     lineHeight: '24px',
     fontWeight: 800
   },
-  closeButton: {
+  closeButtonLink: {
     position: 'absolute',
     right: 0,
     width: 20,
@@ -29,6 +29,10 @@ const useTransactionLayoutStyles = createUseStyles({
     textAlign: 'center',
     color: 'black',
     textDecoration: 'none'
+  },
+  closeButton: {
+    width: '100%',
+    height: '100%'
   }
 })
 

@@ -71,7 +71,7 @@ function loadFiatExchangeRatesSuccess (fiatExchangeRates) {
 function loadFiatExchangeRatesFailure (error) {
   return {
     type: globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE,
-    error
+    error: error.message
   }
 }
 
