@@ -1,23 +1,25 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { useParams, useHistory } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { push } from 'connected-react-router'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { CurrencySymbol } from '../../utils/currencies'
+import Container from '../shared/container/container.view'
 
 function TransactionDetails ({
   tokensTask,
   transactionTask,
   fiatExchangeRatesTask,
   preferredCurrency,
-  onLoadTransaction
+  onLoadTransaction,
+  onNavigateToAccountDetails
 }) {
   const classes = useTransactionDetailsStyles()
-  const history = useHistory()
   const { tokenId, transactionId } = useParams()
 
   React.useEffect(() => {
@@ -50,65 +52,67 @@ function TransactionDetails ({
   }
 
   function handleNavigationToAccountDetails () {
-    history.push(`/accounts/${tokenId}`)
+    onNavigateToAccountDetails(tokenId)
   }
 
   return (
-    <div className={classes.root}>
-      {(() => {
-        switch (transactionTask.status) {
-          case 'loading': {
-            return <Spinner />
-          }
-          case 'failed': {
-            return <p>{transactionTask.error}</p>
-          }
-          case 'successful': {
-            return (
-              <>
-                <button className={classes.closeButton} onClick={handleNavigationToAccountDetails}>
+    <Container>
+      <div className={classes.root}>
+        {(() => {
+          switch (transactionTask.status) {
+            case 'loading': {
+              return <Spinner />
+            }
+            case 'failed': {
+              return <p>{transactionTask.error}</p>
+            }
+            case 'successful': {
+              return (
+                <>
+                  <button className={classes.closeButton} onClick={handleNavigationToAccountDetails}>
                   Close
-                </button>
-                <div className={classes.statusContainer}>
-                  <h2>{transactionTask.data.Status || 'Completed'}</h2>
-                  <a href='https://hermez.io' target='_blank' rel='noopener noreferrer'>
+                  </button>
+                  <div className={classes.statusContainer}>
+                    <h2>{transactionTask.data.Status || 'Completed'}</h2>
+                    <a href='https://hermez.io' target='_blank' rel='noopener noreferrer'>
                     View in network explorer
-                  </a>
-                </div>
-                <div className={classes.transactionInfoContainer}>
-                  <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.tokenId, transactionTask.data.amount)} {preferredCurrency}</h1>
-                  <p>{transactionTask.data.amount} {getTokenSymbol(transactionTask.data.tokenId)}</p>
-                  <ul className={classes.transactionInfoList}>
-                    <li className={classes.transactionInfoListItem}>
-                      <p className={classes.transactionInfoListItemTitle}>To</p>
-                      <p>{transactionTask.data.toEthAddr}</p>
-                    </li>
-                    <li className={classes.transactionInfoListItem}>
-                      <p className={classes.transactionInfoListItemTitle}>
+                    </a>
+                  </div>
+                  <div className={classes.transactionInfoContainer}>
+                    <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.tokenId, transactionTask.data.amount)} {preferredCurrency}</h1>
+                    <p>{transactionTask.data.amount} {getTokenSymbol(transactionTask.data.tokenId)}</p>
+                    <ul className={classes.transactionInfoList}>
+                      <li className={classes.transactionInfoListItem}>
+                        <p className={classes.transactionInfoListItemTitle}>To</p>
+                        <p>{transactionTask.data.toEthAddr}</p>
+                      </li>
+                      <li className={classes.transactionInfoListItem}>
+                        <p className={classes.transactionInfoListItemTitle}>
                         Fee
-                      </p>
-                      <div>
-                        <p>{getAmountInFiat(transactionTask.data.tokenId, transactionTask.data.fee)} {preferredCurrency}</p>
-                        <p>{transactionTask.data.fee} {getTokenSymbol(transactionTask.data.tokenId)}</p>
-                      </div>
-                    </li>
-                    <li className={classes.transactionInfoListItem}>
-                      <p className={classes.transactionInfoListItemTitle}>
+                        </p>
+                        <div>
+                          <p>{getAmountInFiat(transactionTask.data.tokenId, transactionTask.data.fee)} {preferredCurrency}</p>
+                          <p>{transactionTask.data.fee} {getTokenSymbol(transactionTask.data.tokenId)}</p>
+                        </div>
+                      </li>
+                      <li className={classes.transactionInfoListItem}>
+                        <p className={classes.transactionInfoListItemTitle}>
                         Date
-                      </p>
-                      <p>{new Date().toLocaleString()}</p>
-                    </li>
-                  </ul>
-                </div>
-              </>
-            )
+                        </p>
+                        <p>{new Date().toLocaleString()}</p>
+                      </li>
+                    </ul>
+                  </div>
+                </>
+              )
+            }
+            default: {
+              return <></>
+            }
           }
-          default: {
-            return <></>
-          }
-        }
-      })()}
-    </div>
+        })()}
+      </div>
+    </Container>
   )
 }
 
@@ -139,7 +143,8 @@ TransactionDetails.propTypes = {
     status: PropTypes.string.isRequired,
     data: PropTypes.object
   }),
-  onLoadTransaction: PropTypes.func.isRequired
+  onLoadTransaction: PropTypes.func.isRequired,
+  onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -150,7 +155,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadTransaction: (transactionId) => dispatch(fetchTransaction(transactionId))
+  onLoadTransaction: (transactionId) => dispatch(fetchTransaction(transactionId)),
+  onNavigateToAccountDetails: (tokenId) => dispatch(push(`/accounts/${tokenId}`))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(TransactionDetails))

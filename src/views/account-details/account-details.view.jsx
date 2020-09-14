@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { useParams, useHistory } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import useAccountDetailsStyles from './account-details.styles'
@@ -9,6 +9,8 @@ import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { CurrencySymbol } from '../../utils/currencies'
+import Container from '../shared/container/container.view'
+import { push } from 'connected-react-router'
 
 function AccountDetails ({
   metaMaskWalletTask,
@@ -18,10 +20,10 @@ function AccountDetails ({
   tokensTask,
   fiatExchangeRatesTask,
   onLoadAccount,
-  onLoadTransactions
+  onLoadTransactions,
+  onNavigateToTransactionDetails
 }) {
   const classes = useAccountDetailsStyles()
-  const history = useHistory()
   const { tokenId } = useParams()
 
   React.useEffect(() => {
@@ -62,68 +64,71 @@ function AccountDetails ({
   }
 
   function handleTransactionClick (transactionId) {
-    history.push(`/accounts/${tokenId}/transactions/${transactionId}`)
+    onNavigateToTransactionDetails(tokenId, transactionId)
   }
 
   return (
-    <div className={classes.root}>
-      <section>
-        {(() => {
-          switch (accountTask.status) {
-            case 'loading': {
-              return <Spinner />
+    <Container>
+
+      <div className={classes.root}>
+        <section>
+          {(() => {
+            switch (accountTask.status) {
+              case 'loading': {
+                return <Spinner />
+              }
+              case 'failed': {
+                return <p>{accountTask.error}</p>
+              }
+              case 'successful': {
+                return (
+                  <div>
+                    <h3>{getTokenName(accountTask.data.tokenId)}</h3>
+                    <h1>{getAccountBalance().toFixed(2)} {preferredCurrency}</h1>
+                    <p>{accountTask.data.balance} {getTokenSymbol(accountTask.data.tokenId)}</p>
+                  </div>
+                )
+              }
+              default: {
+                return <></>
+              }
             }
-            case 'failed': {
-              return <p>{accountTask.error}</p>
+          })()}
+          <div className={classes.actionButtonsGroup}>
+            <button className={classes.actionButton}>Send</button>
+            <button className={classes.actionButton}>Add funds</button>
+            <button className={classes.actionButton}>Withdrawal</button>
+          </div>
+        </section>
+        <section>
+          <h4 className={classes.title}>Activity</h4>
+          {(() => {
+            switch (transactionsTask.status) {
+              case 'loading': {
+                return <Spinner />
+              }
+              case 'failed': {
+                return <p>{transactionsTask.error}</p>
+              }
+              case 'successful': {
+                return (
+                  <TransactionList
+                    transactions={transactionsTask.data}
+                    tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
+                    fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
+                    preferredCurrency={preferredCurrency}
+                    onTransactionClick={handleTransactionClick}
+                  />
+                )
+              }
+              default: {
+                return <></>
+              }
             }
-            case 'successful': {
-              return (
-                <div>
-                  <h3>{getTokenName(accountTask.data.tokenId)}</h3>
-                  <h1>{getAccountBalance().toFixed(2)} {preferredCurrency}</h1>
-                  <p>{accountTask.data.balance} {getTokenSymbol(accountTask.data.tokenId)}</p>
-                </div>
-              )
-            }
-            default: {
-              return <></>
-            }
-          }
-        })()}
-        <div className={classes.actionButtonsGroup}>
-          <button className={classes.actionButton}>Send</button>
-          <button className={classes.actionButton}>Add funds</button>
-          <button className={classes.actionButton}>Withdrawal</button>
-        </div>
-      </section>
-      <section>
-        <h4 className={classes.title}>Activity</h4>
-        {(() => {
-          switch (transactionsTask.status) {
-            case 'loading': {
-              return <Spinner />
-            }
-            case 'failed': {
-              return <p>{transactionsTask.error}</p>
-            }
-            case 'successful': {
-              return (
-                <TransactionList
-                  transactions={transactionsTask.data}
-                  tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
-                  fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
-                  preferredCurrency={preferredCurrency}
-                  onTransactionClick={handleTransactionClick}
-                />
-              )
-            }
-            default: {
-              return <></>
-            }
-          }
-        })()}
-      </section>
-    </div>
+          })()}
+        </section>
+      </div>
+    </Container>
   )
 }
 
@@ -178,7 +183,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccount: (ethereumAddress, tokenId) => dispatch(fetchAccount(ethereumAddress, tokenId)),
-  onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId))
+  onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId)),
+  onNavigateToTransactionDetails: (tokenId, transactionId) =>
+    dispatch(push(`/accounts/${tokenId}/transactions/${transactionId}`))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))

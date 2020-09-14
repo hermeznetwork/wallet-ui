@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useTransactionLayoutStyles = createUseStyles({
+const useTransactionLayoutStyles = createUseStyles(theme => ({
   wrapper: {
     width: '100%',
     display: 'flex',
@@ -18,7 +18,7 @@ const useTransactionLayoutStyles = createUseStyles({
   heading: {
     fontSize: 24,
     lineHeight: '24px',
-    fontWeight: 800
+    fontWeight: theme.fontWeights.extraBold
   },
   closeButton: {
     position: 'absolute',
@@ -30,6 +30,6 @@ const useTransactionLayoutStyles = createUseStyles({
     color: 'black',
     textDecoration: 'none'
   }
-})
+}))
 
 export default useTransactionLayoutStyles

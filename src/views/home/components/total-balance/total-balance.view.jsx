@@ -8,8 +8,7 @@ function TotalBalance ({ amount, currency }) {
 
   return (
     <div className={classes.root}>
-      <h1 className={classes.amount}>{amount?.toFixed(2) || '-'}</h1>
-      <h2 className={classes.currency}>{currency}</h2>
+      <h1 className={classes.amount}>{currency} {amount?.toFixed(2) || '-'}</h1>
     </div>
   )
 }

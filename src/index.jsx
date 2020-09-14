@@ -2,18 +2,25 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { ThemeProvider } from 'react-jss'
+import { createBrowserHistory } from 'history'
+import { ConnectedRouter } from 'connected-react-router'
 import 'normalize.css/normalize.css'
 
 import * as serviceWorker from './serviceWorker'
-import store from './store'
+import configureStore from './store'
 import theme from './styles/theme'
 import App from './views/app.view'
 
+const history = createBrowserHistory()
+const store = configureStore(history)
+
 ReactDOM.render(
   <Provider store={store}>
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
+    <ConnectedRouter history={history}>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </ConnectedRouter>
   </Provider>,
   document.getElementById('root')
 )
