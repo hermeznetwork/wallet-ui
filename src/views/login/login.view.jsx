@@ -8,6 +8,7 @@ import { Redirect } from 'react-router-dom'
 
 function Login ({
   metaMaskWallet,
+  redirectRoute,
   onLoadMetaMaskWallet
 }) {
   function handleMetamaskLogin () {
@@ -37,7 +38,7 @@ function Login ({
             return <Spinner />
           }
           case 'successful': {
-            return <Redirect to='/' />
+            return <Redirect to={redirectRoute} />
           }
           default: {
             return <></>
@@ -53,7 +54,8 @@ Login.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWallet: state.account.metaMaskWalletTask
+  metaMaskWallet: state.account.metaMaskWalletTask,
+  redirectRoute: state.global.redirectRoute
 })
 
 const mapDispatchToProps = (dispatch) => ({
