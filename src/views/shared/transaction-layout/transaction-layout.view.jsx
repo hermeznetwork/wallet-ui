@@ -24,6 +24,7 @@ function TransactionLayout ({
   }
 
   function handleAccountListClick (token) {
+    console.log(token)
     setToken(token)
   }
 
@@ -56,7 +57,7 @@ function TransactionLayout ({
                     accounts={tokensTask.data}
                     preferredCurrency={preferredCurrency}
                     fiatExchangeRates={fiatExchangeRates}
-                    onTokenSelected={handleAccountListClick}
+                    onAccountClick={handleAccountListClick}
                   />
                 )
               }
@@ -95,13 +96,15 @@ TransactionLayout.propTypes = {
     data: PropTypes.arrayOf(
       PropTypes.shape({
         balance: PropTypes.number.isRequired,
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired,
-        decimals: PropTypes.number.isRequired,
-        ethAddr: PropTypes.string.isRequired,
-        ethBlockNum: PropTypes.number.isRequired,
-        USD: PropTypes.number.isRequired
+        token: PropTypes.shape({
+          tokenId: PropTypes.number.isRequired,
+          name: PropTypes.string.isRequired,
+          symbol: PropTypes.string.isRequired,
+          decimals: PropTypes.number.isRequired,
+          ethAddr: PropTypes.string.isRequired,
+          ethBlockNum: PropTypes.number.isRequired,
+          USD: PropTypes.number.isRequired
+        })
       })
     )
   }),

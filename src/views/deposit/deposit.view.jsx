@@ -19,6 +19,7 @@ function Deposit ({
   React.useEffect(() => {
     onLoadMetaMaskTokens()
   }, [onLoadMetaMaskTokens])
+  console.log(metaMaskTokensTask)
 
   return (
     <TransactionLayout
@@ -37,12 +38,14 @@ Deposit.propTypes = {
     data: PropTypes.arrayOf(
       PropTypes.shape({
         balance: PropTypes.number.isRequired,
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired,
-        decimals: PropTypes.number.isRequired,
-        ethAddr: PropTypes.string.isRequired,
-        ethBlockNum: PropTypes.number.isRequired
+        token: PropTypes.shape({
+          tokenId: PropTypes.number.isRequired,
+          name: PropTypes.string.isRequired,
+          symbol: PropTypes.string.isRequired,
+          decimals: PropTypes.number.isRequired,
+          ethAddr: PropTypes.string.isRequired,
+          ethBlockNum: PropTypes.number.isRequired
+        })
       })
     )
   }),
