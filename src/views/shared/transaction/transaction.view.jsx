@@ -3,10 +3,12 @@ import PropTypes from 'prop-types'
 
 import useTransactionStyles from './transaction.styles'
 import { CurrencySymbol } from '../../../utils/currencies'
+import swapIcon from '../../../images/icons/swap.svg'
+import errorIcon from '../../../images/icons/error.svg'
 
 function Transaction ({
   type,
-  token,
+  account,
   preferredCurrency,
   fiatExchangeRates
 }) {
@@ -15,12 +17,22 @@ function Transaction ({
   const [amount, setAmount] = useState(0)
   const [isContinueDisabled, setIsContinueDisabled] = useState(true)
 
+  /**
+   * Returns the conversion rate from the selected token to the selected preffered currency.
+   *
+   * @returns {Number} Conversion rate from the selected token to fiat
+   */
   function getAccountFiatRate () {
     return preferredCurrency === CurrencySymbol.USD.code
-      ? token.USD
-      : token.USD * fiatExchangeRates[preferredCurrency]
+      ? account.token.USD
+      : account.token.USD * fiatExchangeRates[preferredCurrency]
   }
 
+  /**
+   * Whether to show the receiver input field if its a transfer.
+   *
+   * @returns {ReactElement} The receiver input field
+   */
   function showReceiver () {
     if (type !== 'deposit') {
       return (
@@ -29,6 +41,11 @@ function Transaction ({
     }
   }
 
+  /**
+   * Whether to show the fee selector if its a Layer 2 transaction.
+   *
+   * @returns {ReactElement} The fee selector component
+   */
   function showFeeSelector () {
     if (type !== 'deposit') {
       return (
@@ -46,21 +63,37 @@ function Transaction ({
     }
   }
 
+  /**
+   * When the amount changes, check if the Continue button should be enabled or not.
+   *
+   * @param {Event}
+   */
   function handleAmountInputChange (event) {
-    setAmount(Number(event.target.value))
-    event.target.value = amount.toString()
-    if (amount > 0) {
+    const newAmount = Number(event.target.value)
+    if (newAmount > 0) {
       setIsContinueDisabled(false)
     } else {
       setIsContinueDisabled(true)
     }
+    setAmount(newAmount)
   }
 
+  /**
+   * Sets the amount to the full balance in the account, whether in the preferred fiat currency or the token value.
+   */
   function handleSendAllButtonClick () {
-    const inputAmount = showInFiat ? getAccountFiatRate() : token.balance
+    const inputAmount = showInFiat ? account.balance * getAccountFiatRate() : account.balance
+    if (inputAmount > 0) {
+      setIsContinueDisabled(false)
+    } else {
+      setIsContinueDisabled(true)
+    }
     setAmount(inputAmount)
   }
 
+  /**
+   * Change between fiat and the token value.
+   */
   function handleChangeCurrencyButtonClick () {
     if (showInFiat) {
       setAmount(amount / getAccountFiatRate())
@@ -70,9 +103,14 @@ function Transaction ({
     setShowInFiat(!showInFiat)
   }
 
+  /**
+   * Checks if the user has the selected amount in their balance.
+   * Based on the type of transaction, prepares the necessary values (amount, receiver and fee).
+   * Communicate to TransactionLayout to display TransactionOverview.
+   */
   function handleContinueButton () {
     const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
-    if (selectedAmount > token.balance) {
+    if (selectedAmount > account.balance) {
       document.querySelector(`.${classes.selectAmount}`).classList.add(classes.selectAmountError)
       document.querySelector(`.${classes.selectAmountErrorMessage}`).classList.add(classes.selectAmountErrorMessageVisible)
     } else {
@@ -85,6 +123,9 @@ function Transaction ({
     }
   }
 
+  /**
+   * Display the Select Fee dropdown.
+   */
   function handleSelectFee () {
 
   }
@@ -92,17 +133,17 @@ function Transaction ({
   return (
     <section className={classes.transaction}>
       <div className={classes.token}>
-        <p className={classes.tokenName}>{token.name}</p>
+        <p className={classes.tokenName}>{account.token.name}</p>
         {
           (showInFiat)
-            ? <p><span>{preferredCurrency}</span> <span>{(token.balance * getAccountFiatRate()).toFixed(2)}</span></p>
-            : <p><span>{token.symbol}</span> <span>{token.balance.toFixed(2)}</span></p>
+            ? <p><span>{preferredCurrency}</span> <span>{(account.balance * getAccountFiatRate()).toFixed(2)}</span></p>
+            : <p><span>{account.token.symbol}</span> <span>{account.balance.toFixed(2)}</span></p>
         }
       </div>
 
       <div className={classes.selectAmount}>
         <div className={classes.amount}>
-          <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : token.symbol}</p>
+          <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
           <input
             className={classes.amountInput}
             type='number' value={amount}
@@ -114,17 +155,17 @@ function Transaction ({
           <button className={`${classes.amountButton} ${classes.changeCurrency}`} onClick={handleChangeCurrencyButtonClick}>
             <img
               className={classes.changeCurrencyIcon}
-              src='/assets/icons/swap.svg'
+              src={swapIcon}
               alt='Swap Icon'
             />
-            <p>{(showInFiat) ? token.symbol : preferredCurrency}</p>
+            <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
           </button>
         </div>
       </div>
       <p className={classes.selectAmountErrorMessage}>
         <img
           className={classes.errorIcon}
-          src='/assets/icons/error.svg'
+          src={errorIcon}
           alt='Error Icon'
         />
         You don't have enough funds
@@ -147,15 +188,17 @@ function Transaction ({
 
 Transaction.propTypes = {
   type: PropTypes.string.isRequired,
-  token: PropTypes.shape({
+  account: PropTypes.shape({
     balance: PropTypes.number.isRequired,
-    tokenId: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    symbol: PropTypes.string.isRequired,
-    decimals: PropTypes.number.isRequired,
-    ethAddr: PropTypes.string.isRequired,
-    ethBlockNum: PropTypes.number.isRequired,
-    USD: PropTypes.number.isRequired
+    token: PropTypes.shape({
+      tokenId: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      symbol: PropTypes.string.isRequired,
+      decimals: PropTypes.number.isRequired,
+      ethAddr: PropTypes.string.isRequired,
+      ethBlockNum: PropTypes.number.isRequired,
+      USD: PropTypes.number.isRequired
+    })
   }),
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired

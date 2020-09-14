@@ -6,7 +6,10 @@ const theme = {
     },
     secondary: '#e75a2b',
     white: '#ffffff',
-    black: '#2b2b2b',
+    black: {
+      light: '#333333',
+      dark: '#2b2b2b'
+    },
     grey: {
       light: '#f3f3f8',
       main: '#888baa',

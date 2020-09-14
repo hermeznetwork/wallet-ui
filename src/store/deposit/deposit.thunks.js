@@ -3,8 +3,9 @@ import ethers from 'ethers'
 import * as depositActions from './deposit.actions'
 
 /**
- * Fetches token balances in the user's MetaMask account,
- * but only for those tokens registered in Hermez.
+ * Fetches token balances in the user's MetaMask account. Only for those tokens registered in Hermez and Ether.
+ * Dispatch an array of { balance, token } where balance is a Number and token is the Token schema returned from the API.
+ * Dispatch an error if the user has no balances for any registered token in Hermez or an error comes up from fetching the balances on-chain.
  */
 function fetchMetaMaskTokens () {
   return async function (dispatch, getState) {
@@ -40,7 +41,6 @@ function fetchMetaMaskTokens () {
     }
     try {
       const balances = (await Promise.all(balancePromises))
-        .filter((tokenBalance) => Number(tokenBalance) > 0)
         .map((tokenBalance, index) => {
           const tokenData = tokensTask.data[index]
           return {
@@ -48,6 +48,8 @@ function fetchMetaMaskTokens () {
             token: tokenData
           }
         })
+        .filter((account) => Number(account.balance) > 0)
+
       if (balances.length === 0) {
         dispatch(depositActions.loadMetaMaskTokensFailure('You don\'t have any ERC 20 tokens in your MetaMask account that are registered in Hermez.'))
       } else {

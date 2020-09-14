@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useAccountListStyles = createUseStyles({
+const useAccountListStyles = createUseStyles(theme => ({
   transaction: {},
   token: {
     display: 'flex',
@@ -9,7 +9,7 @@ const useAccountListStyles = createUseStyles({
     backgroundColor: '#F3F3F8',
     borderRadius: 16,
     height: 80,
-    marginBottom: 48,
+    marginBottom: `${theme.spacing(6)}px`,
     padding: '30px 40px',
     fontSize: 20,
     fontWeight: 'bold',
@@ -27,7 +27,7 @@ const useAccountListStyles = createUseStyles({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    padding: 44
+    padding: `${theme.spacing(5.5)}px`
   },
   amountCurrency: {
     margin: '0 0 12px',
@@ -63,7 +63,8 @@ const useAccountListStyles = createUseStyles({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#888baa',
-    flex: 1
+    flex: 1,
+    padding: `${theme.spacing(3.5)}px 0`
   },
   sendAll: {
     borderRight: 'solid 2px #e1e1f1'
@@ -74,12 +75,12 @@ const useAccountListStyles = createUseStyles({
     justifyContent: 'center'
   },
   changeCurrencyIcon: {
-    marginRight: 4
+    marginRight: `${theme.spacing(1)}px`
   },
   selectAmountErrorMessage: {
     display: 'none',
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: `${theme.spacing(1.5)}px`,
     fontSize: 16,
     fontWeight: 500,
     color: '#ff4b40'
@@ -95,7 +96,7 @@ const useAccountListStyles = createUseStyles({
   continue: {
     cursor: 'pointer',
     width: '100%',
-    marginTop: 104,
+    marginTop: `${theme.spacing(14.5)}px`,
     padding: '28px 0',
     backgroundColor: '#e75a2b',
     border: 0,
@@ -125,6 +126,6 @@ const useAccountListStyles = createUseStyles({
     width: 16,
     height: 16
   }
-})
+}))
 
 export default useAccountListStyles

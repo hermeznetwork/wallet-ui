@@ -19,7 +19,6 @@ function Deposit ({
   React.useEffect(() => {
     onLoadMetaMaskTokens()
   }, [onLoadMetaMaskTokens])
-  console.log(metaMaskTokensTask)
 
   return (
     <TransactionLayout

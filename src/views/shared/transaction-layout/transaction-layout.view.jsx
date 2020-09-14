@@ -6,7 +6,9 @@ import useTransactionLayoutStyles from './transaction-layout.styles'
 import AccountList from '../account-list/account-list.view'
 import Transaction from '../transaction/transaction.view'
 import Spinner from '../spinner/spinner.view'
-import Main from '../main/main.view'
+import Container from '../container/container.view'
+import backIcon from '../../../images/icons/back.svg'
+import closeIcon from '../../../images/icons/close.svg'
 
 function TransactionLayout ({
   tokensTask,
@@ -18,21 +20,66 @@ function TransactionLayout ({
   const classes = useTransactionLayoutStyles()
   const [token, setToken] = useState()
 
+  // If the prop selectedTokenId is set, find and store the token to show the Transaction component
   if (selectedTokenId && tokensTask.status === 'success') {
     const selectedToken = tokensTask.data.find((token) => token.Id === selectedTokenId)
     setToken(selectedToken)
   }
 
+  /**
+   * When an account is selected, store the corresponding token to show the Transaction component
+   *
+   * @param {Token} token
+   */
   function handleAccountListClick (token) {
-    console.log(token)
     setToken(token)
   }
 
+  /**
+   * Handler for the back button.
+   * Depending on the step, unset the corresponding state to go back a step.
+   */
+  function handleBackButtonClick () {
+    if (token) {
+      setToken(undefined)
+    }
+  }
+
+  /**
+   * If the view is in a step that's not the AccountList, render the back button element.
+   *
+   * @returns {ReactElement} The back button element
+   */
+  function renderBackButton () {
+    if (token) {
+      return (
+        <button className={classes.backButton} onClick={handleBackButtonClick}>
+          <img
+            className={classes.backButtonIcon}
+            src={backIcon}
+            alt='Back Icon'
+          />
+        </button>
+      )
+    } else {
+      return <></>
+    }
+  }
+
+  /**
+   * Render the correct step:
+   * 1. AccountList
+   * 2. Transaction
+   * 3. TransactionOverview
+   * 4. TransactionConfirmation
+   *
+   * @returns {ReactElement} The correct component depending on the step the user is on
+   */
   function renderContent () {
     if (token) {
       return (
         <Transaction
-          token={token}
+          account={token}
           type={type}
           preferredCurrency={preferredCurrency}
           fiatExchangeRates={fiatExchangeRates}
@@ -72,21 +119,22 @@ function TransactionLayout ({
   }
 
   return (
-    <Main>
+    <Container disableTopGutter>
       <section className={classes.wrapper}>
         <header className={classes.header}>
+          {renderBackButton()}
           <h2 className={classes.heading}>{token ? 'Amount' : 'Token'}</h2>
           <Link to='/' className={classes.closeButtonLink}>
             <img
               className={classes.closeButton}
-              src='/assets/icons/close.svg'
+              src={closeIcon}
               alt='Close Transaction Icon'
             />
           </Link>
         </header>
         {renderContent()}
       </section>
-    </Main>
+    </Container>
   )
 }
 

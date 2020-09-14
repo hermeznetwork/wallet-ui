@@ -111,7 +111,7 @@ mock.onGet(`${baseApiUrl}/tokens`)
         USD: 2
       },
       {
-        tokenId: 0,
+        tokenId: 4,
         name: 'Goerli Test Token',
         symbol: 'TNT',
         decimals: 18,
