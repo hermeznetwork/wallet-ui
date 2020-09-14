@@ -21,8 +21,8 @@ function CurrencyList ({ currencies, selectedCurrency, onSelectCurrency }) {
         <h4>Currency list</h4>
         {currencies.map((currency, index) =>
           <Currency
-            key={currency}
-            symbol={currency}
+            key={currency.code}
+            symbol={currency.code}
             onSelect={onSelectCurrency}
             className={clsx({ [classes.currency]: index > 0 })}
           />
@@ -33,7 +33,12 @@ function CurrencyList ({ currencies, selectedCurrency, onSelectCurrency }) {
 }
 
 CurrencyList.propTypes = {
-  currencies: PropTypes.arrayOf(PropTypes.string).isRequired,
+  currencies: PropTypes.arrayOf(
+    PropTypes.shape({
+      symbol: PropTypes.string.isRequired,
+      code: PropTypes.string.isRequired
+    })
+  ).isRequired,
   selectedCurrency: PropTypes.string.isRequired,
   onSelectCurrency: PropTypes.func.isRequired
 }

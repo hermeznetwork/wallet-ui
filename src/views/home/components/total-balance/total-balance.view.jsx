@@ -5,6 +5,7 @@ import useTotalBalanceStyles from './total-balance.styles'
 
 function TotalBalance ({ amount, currency }) {
   const classes = useTotalBalanceStyles()
+  console.log(amount)
 
   return (
     <div className={classes.root}>
