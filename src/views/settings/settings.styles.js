@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useSettingsStyles = createUseStyles({
+const useSettingsStyles = createUseStyles(theme => ({
   root: {
     width: '100%'
   },
@@ -8,7 +8,7 @@ const useSettingsStyles = createUseStyles({
     marginBottom: 16
   },
   ethereumAddress: {
-    fontWeight: 'bold',
+    fontWeight: theme.fontWeights.bold,
     marginBottom: 16
   },
   preferredCurrency: {
@@ -20,6 +20,6 @@ const useSettingsStyles = createUseStyles({
     // able to fit its own container completely
     height: '100% !important'
   }
-})
+}))
 
 export default useSettingsStyles

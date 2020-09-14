@@ -1,13 +1,10 @@
 import { createUseStyles } from 'react-jss'
 
-const useMainStyles = createUseStyles({
+const useMainStyles = createUseStyles(theme => ({
   main: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    maxWidth: 700,
-    width: '100%'
+    width: '100%',
+    marginTop: theme.spacing(9)
   }
-})
+}))
 
 export default useMainStyles

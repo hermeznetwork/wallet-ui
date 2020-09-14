@@ -9,10 +9,8 @@ import * as depositActions from './deposit.actions'
 function fetchMetaMaskTokens () {
   return async function (dispatch, getState) {
     dispatch(depositActions.loadMetaMaskTokens())
-    const state = getState()
-    const { metaMaskWalletTask } = state.account
+    const { global: { tokensTask }, account: { metaMaskWalletTask } } = getState()
     const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const { tokensTask } = state.global
     const partialERC20ABI = [{
       constant: true,
       inputs: [
@@ -47,7 +45,7 @@ function fetchMetaMaskTokens () {
           const tokenData = tokensTask.data[index]
           return {
             balance: Number(tokenBalance) / (Math.pow(10, tokenData.decimals)),
-            ...tokenData
+            token: tokenData
           }
         })
       if (balances.length === 0) {

@@ -1,5 +1,6 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly'
+import { connectRouter, routerMiddleware } from 'connected-react-router'
 import thunk from 'redux-thunk'
 
 import transactionsReducer from './tx/tx.reducer'
@@ -11,23 +12,28 @@ import accountDetailsReducer from './account-details/account-details.reducer'
 import transactionDetailsReducer from './transaction-details/transaction-details.reducer'
 import depositReducer from './deposit/deposit.reducer'
 
-const rootReducer = combineReducers({
-  global: globalReducer,
-  account: accountReducer,
-  home: homeReducer,
-  accountDetails: accountDetailsReducer,
-  settings: settingsReducer,
-  transactions: transactionsReducer,
-  transactionDetails: transactionDetailsReducer,
-  deposit: depositReducer
-})
+function createRootReducer (history) {
+  return combineReducers({
+    router: connectRouter(history),
+    global: globalReducer,
+    account: accountReducer,
+    home: homeReducer,
+    accountDetails: accountDetailsReducer,
+    settings: settingsReducer,
+    transactions: transactionsReducer,
+    transactionDetails: transactionDetailsReducer,
+    deposit: depositReducer
+  })
+}
 
-const middlewares = [thunk]
-const middlewareEnhancer = applyMiddleware(...middlewares)
+function configureStore (history) {
+  const middlewares = [thunk, routerMiddleware(history)]
+  const middlewareEnhancer = applyMiddleware(...middlewares)
+  const enhancers = [middlewareEnhancer]
+  const composedEnhancers = composeWithDevTools(...enhancers)
+  const rootReducer = createRootReducer(history)
 
-const enhancers = [middlewareEnhancer]
-const composedEnhancers = composeWithDevTools(...enhancers)
+  return createStore(rootReducer, composedEnhancers)
+}
 
-const store = createStore(rootReducer, composedEnhancers)
-
-export default store
+export default configureStore

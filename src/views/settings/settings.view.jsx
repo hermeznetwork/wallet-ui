@@ -8,6 +8,7 @@ import CurrencyList from './components/currency-list/currency-list.view'
 import { changePreferredCurrency } from '../../store/settings/settings.thunks'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { CurrencySymbol } from '../../utils/currencies'
+import Container from '../shared/container/container.view'
 
 function Settings ({
   metaMaskWalletTask,
@@ -23,38 +24,40 @@ function Settings ({
   }
 
   return (
-    <div className={classes.root}>
-      <h4 className={classes.title}>Settings</h4>
-      <div className={classes.ethereumAddress}>
-        {
-          metaMaskWalletTask.status === 'successful'
-            ? metaMaskWalletTask.data.ethereumAddress
-            : '-'
-        }
-      </div>
-      <section>
-        <div>
-          <CurrencyList
-            currencies={Object.values(CurrencySymbol)}
-            selectedCurrency={preferredCurrency}
-            onSelectCurrency={handlePreferredCurrencySelection}
-          />
+    <Container>
+      <div className={classes.root}>
+        <h4 className={classes.title}>Settings</h4>
+        <div className={classes.ethereumAddress}>
+          {
+            metaMaskWalletTask.status === 'successful'
+              ? metaMaskWalletTask.data.ethereumAddress
+              : '-'
+          }
         </div>
-      </section>
-      <div>
-        {
-          metaMaskWalletTask.status === 'successful'
-            ? (
-              <QRCode
-                value={metaMaskWalletTask.data.ethereumAddress}
-                className={classes.qrCode}
-                size={256}
-              />
-            )
-            : <></>
-        }
+        <section>
+          <div>
+            <CurrencyList
+              currencies={Object.values(CurrencySymbol)}
+              selectedCurrency={preferredCurrency}
+              onSelectCurrency={handlePreferredCurrencySelection}
+            />
+          </div>
+        </section>
+        <div>
+          {
+            metaMaskWalletTask.status === 'successful'
+              ? (
+                <QRCode
+                  value={metaMaskWalletTask.data.ethereumAddress}
+                  className={classes.qrCode}
+                  size={256}
+                />
+              )
+              : <></>
+          }
+        </div>
       </div>
-    </div>
+    </Container>
   )
 }
 

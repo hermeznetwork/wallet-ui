@@ -4,3 +4,7 @@ export const SETTINGS = {
   PREFERRED_CURRENCY_KEY: 'preferredCurrency',
   DEFAULT_PREFERRED_CURRENCY: CurrencySymbol.USD
 }
+
+export const SNACKBAR = {
+  AUTO_HIDE_DURATION: 5000
+}

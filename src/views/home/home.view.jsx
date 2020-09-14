@@ -2,14 +2,21 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { useTheme } from 'react-jss'
+import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
 import { fetchAccounts } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
-import AccountList from './components/account-list/account-list.view'
+import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
 import { CurrencySymbol } from '../../utils/currencies'
+import Container from '../shared/container/container.view'
+import sendIcon from '../../images/icons/send.svg'
+import depositIcon from '../../images/icons/deposit.svg'
+import { copyToClipboard } from '../../utils/dom'
+import Snackbar from '../shared/snackbar/snackbar.view'
 
 function Home ({
   tokensTask,
@@ -17,15 +24,18 @@ function Home ({
   metaMaskWalletTask,
   fiatExchangeRatesTask,
   preferredCurrency,
-  onLoadAccounts
+  onLoadAccounts,
+  onNavigateToAccountDetails
 }) {
+  const theme = useTheme()
   const classes = useHomeStyles()
+  const [showAddressCopiedSnackbar, setShowAddressCopiedSnackbar] = React.useState(false)
 
   React.useEffect(() => {
-    if (metaMaskWalletTask.status === 'successful') {
-      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress)
+    if (metaMaskWalletTask.status === 'successful' && tokensTask.status === 'successful') {
+      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress, tokensTask.data)
     }
-  }, [metaMaskWalletTask, onLoadAccounts])
+  }, [metaMaskWalletTask, tokensTask, onLoadAccounts])
 
   function getTotalBalance (accounts) {
     if (
@@ -51,67 +61,110 @@ function Home ({
     return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
   }
 
+  function handleAccountClick (account) {
+    onNavigateToAccountDetails(account.tokenId)
+  }
+
+  function handleEthereumAddressClick (ethereumAddress) {
+    if (metaMaskWalletTask.status === 'successful') {
+      copyToClipboard(`hez:${metaMaskWalletTask.data.ethereumAddress}`)
+      setShowAddressCopiedSnackbar(true)
+    }
+  }
+
+  function handleAddressCopiedSnackbarClose () {
+    setShowAddressCopiedSnackbar(false)
+  }
+
   return (
     <div className={classes.root}>
-      <section>
-        <h4 className={classes.title}>Total balance</h4>
-        {(() => {
-          switch (accountsTask.status) {
-            case 'loading': {
-              return <Spinner />
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+        <section className={classes.section}>
+          <div
+            className={classes.hermezAddress}
+            onClick={handleEthereumAddressClick}
+          >
+            <p>
+              {
+                metaMaskWalletTask.status === 'successful'
+                  ? `hez:${metaMaskWalletTask.data.ethereumAddress}`
+                  : '-'
+              }
+            </p>
+          </div>
+          <div className={classes.totalBalance}>
+            {(() => {
+              switch (accountsTask.status) {
+                case 'loading': {
+                  return <Spinner />
+                }
+                case 'failed': {
+                  return (
+                    <TotalBalance
+                      amount={undefined}
+                      currency={preferredCurrency}
+                    />
+                  )
+                }
+                case 'successful': {
+                  return (
+                    <TotalBalance
+                      amount={getTotalBalance(accountsTask.data)}
+                      currency={preferredCurrency}
+                    />
+                  )
+                }
+                default: {
+                  return <></>
+                }
+              }
+            })()}
+          </div>
+          <div className={classes.actionButtonsGroup}>
+            <Link to='/transfer' className={classes.button}>
+              <img src={sendIcon} alt='Send' />
+              <p className={classes.buttonText}>Send</p>
+            </Link>
+            <Link to='/deposit' className={classes.button}>
+              <img src={depositIcon} alt='Deposit' />
+              <p className={classes.buttonText}>Deposit</p>
+            </Link>
+          </div>
+        </section>
+      </Container>
+      <Container>
+        <section className={classes.section}>
+          {(() => {
+            switch (accountsTask.status) {
+              case 'loading': {
+                return <Spinner />
+              }
+              case 'failed': {
+                return <p>{accountsTask.error}</p>
+              }
+              case 'successful': {
+                return (
+                  <AccountList
+                    accounts={accountsTask.data}
+                    tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
+                    preferredCurrency={preferredCurrency}
+                    fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
+                    onAccountClick={handleAccountClick}
+                  />
+                )
+              }
+              default: {
+                return <></>
+              }
             }
-            case 'failed': {
-              return (
-                <TotalBalance
-                  amount={undefined}
-                  currency={preferredCurrency}
-                />
-              )
-            }
-            case 'successful': {
-              return (
-                <TotalBalance
-                  amount={getTotalBalance(accountsTask.data)}
-                  currency={preferredCurrency}
-                />
-              )
-            }
-            default: {
-              return <></>
-            }
-          }
-        })()}
-        <div className={classes.actionButtonsGroup}>
-          <Link to='/transfer'><button className={classes.actionButton}>Send</button></Link>
-          <Link to='/deposit'><button className={classes.actionButton}>Add funds</button></Link>
-        </div>
-      </section>
-      <section>
-        <h4 className={classes.title}>Accounts</h4>
-        {(() => {
-          switch (accountsTask.status) {
-            case 'loading': {
-              return <Spinner />
-            }
-            case 'failed': {
-              return <p>{accountsTask.error}</p>
-            }
-            case 'successful': {
-              return (
-                <AccountList
-                  accounts={accountsTask.data}
-                  tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
-                  preferredCurrency={preferredCurrency}
-                  fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
-                />
-              )
-            }
-            default: {
-              return <></>
-            }
-          }
-        })()}
-      </section>
+          })()}
+        </section>
+      </Container>
+      <Snackbar
+        show={showAddressCopiedSnackbar}
+        message='The Hermez address has been copied to the clipboard!'
+        onClose={handleAddressCopiedSnackbarClose}
+      />
     </div>
   )
 }
@@ -149,7 +202,8 @@ Home.propTypes = {
     data: PropTypes.object,
     error: PropTypes.string
   }),
-  onLoadAccounts: PropTypes.func.isRequired
+  onLoadAccounts: PropTypes.func.isRequired,
+  onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -161,7 +215,10 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress))
+  onLoadAccounts: (ethereumAddress, tokens) =>
+    dispatch(fetchAccounts(ethereumAddress, tokens)),
+  onNavigateToAccountDetails: (tokenId) =>
+    dispatch(push(`/accounts/${tokenId}`))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))
