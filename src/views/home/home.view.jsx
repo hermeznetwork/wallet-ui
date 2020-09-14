@@ -8,7 +8,7 @@ import { push } from 'connected-react-router'
 import useHomeStyles from './home.styles'
 import { fetchAccounts } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
-import AccountList from './components/account-list/account-list.view'
+import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
 import { CurrencySymbol } from '../../utils/currencies'
@@ -32,10 +32,10 @@ function Home ({
   const [showAddressCopiedSnackbar, setShowAddressCopiedSnackbar] = React.useState(false)
 
   React.useEffect(() => {
-    if (metaMaskWalletTask.status === 'successful') {
-      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress)
+    if (metaMaskWalletTask.status === 'successful' && tokensTask.status === 'successful') {
+      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress, tokensTask.data)
     }
-  }, [metaMaskWalletTask, onLoadAccounts])
+  }, [metaMaskWalletTask, tokensTask, onLoadAccounts])
 
   function getTotalBalance (accounts) {
     if (
@@ -215,7 +215,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccounts: (ethereumAddress) => dispatch(fetchAccounts(ethereumAddress)),
+  onLoadAccounts: (ethereumAddress, tokens) =>
+    dispatch(fetchAccounts(ethereumAddress, tokens)),
   onNavigateToAccountDetails: (tokenId) =>
     dispatch(push(`/accounts/${tokenId}`))
 })

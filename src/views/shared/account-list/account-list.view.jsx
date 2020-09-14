@@ -4,11 +4,13 @@ import PropTypes from 'prop-types'
 import useAccountListStyles from './account-list.styles'
 import Account from '../account/account.view'
 import { CurrencySymbol } from '../../../utils/currencies'
+import clsx from 'clsx'
 
 function AccountList ({
   accounts,
   preferredCurrency,
-  fiatExchangeRates
+  fiatExchangeRates,
+  onAccountClick
 }) {
   const classes = useAccountListStyles()
 
@@ -18,26 +20,35 @@ function AccountList ({
       : token.USD * fiatExchangeRates[preferredCurrency]
   }
 
-  function handleAccountListItemClick () {
-
+  function handleAccountListItemClick (account) {
+    onAccountClick(account)
   }
 
   return (
-    <ul className={classes.tokenList}>
-      {accounts.map((account) => {
+    <div className={classes.root}>
+      {accounts.map((account, index) => {
         return (
-          <Account
-            key={account.tokenId}
-            balance={account.balance}
-            tokenName={account.name}
-            tokenSymbol={account.symbol}
-            preferredCurrency={preferredCurrency}
-            tokenFiatRate={getAccountFiatRate(account)}
-            onClick={handleAccountListItemClick}
-          />
+          <div
+            key={account.token.tokenId}
+            className={
+              clsx({
+                [classes.account]: true,
+                [classes.accountSpacer]: index > 0
+              })
+            }
+          >
+            <Account
+              balance={account.balance}
+              tokenName={account.token.name}
+              tokenSymbol={account.token.symbol}
+              preferredCurrency={preferredCurrency}
+              tokenFiatRate={getAccountFiatRate(account.token)}
+              onClick={handleAccountListItemClick}
+            />
+          </div>
         )
       })}
-    </ul>
+    </div>
   )
 }
 
@@ -45,13 +56,16 @@ AccountList.propTypes = {
   accounts: PropTypes.arrayOf(
     PropTypes.shape({
       balance: PropTypes.number.isRequired,
-      tokenId: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      symbol: PropTypes.string.isRequired
+      token: PropTypes.shape({
+        tokenId: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        symbol: PropTypes.string.isRequired
+      })
     })
   ),
   preferredCurrency: PropTypes.string.isRequired,
-  fiatExchangeRates: PropTypes.object.isRequired
+  fiatExchangeRates: PropTypes.object.isRequired,
+  onAccountClick: PropTypes.func
 }
 
 export default AccountList
