@@ -19,7 +19,7 @@ function fetchMetamaskWallet () {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
       const ethereumAddress = await signer.getAddress()
-      const signature = await signer.signMessage('I accept using Metamask as a CA')
+      const signature = await signer.signMessage('HERMEZ_ACCOUNT. Don\'t share this signature with anyone as this would reveal your Hermez private key. Unless you are in a trusted application, DO NOT SIGN THIS')
       const hashedSignature = keccak256(signature)
       const bufferSignature = hexToBuffer(hashedSignature)
       const wallet = new BabyJubWallet(bufferSignature, ethereumAddress)
