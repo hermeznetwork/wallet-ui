@@ -62,7 +62,7 @@ function Home ({
   }
 
   function handleAccountClick (account) {
-    onNavigateToAccountDetails(account.tokenId)
+    onNavigateToAccountDetails(account.token.tokenId)
   }
 
   function handleEthereumAddressClick (ethereumAddress) {

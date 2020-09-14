@@ -43,7 +43,7 @@ function AccountList ({
               tokenSymbol={account.token.symbol}
               preferredCurrency={preferredCurrency}
               tokenFiatRate={getAccountFiatRate(account.token)}
-              onClick={handleAccountListItemClick}
+              onClick={() => handleAccountListItemClick(account)}
             />
           </div>
         )
