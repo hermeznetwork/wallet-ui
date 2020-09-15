@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol } from '../../../../utils/currencies'
 import swapIcon from '../../../../images/icons/swap.svg'
+import angleDownIcon from '../../../../images/icons/angle-down.svg'
 import errorIcon from '../../../../images/icons/error.svg'
 
 function TransactionForm ({
@@ -55,7 +56,7 @@ function TransactionForm ({
           </p>
           <img
             className={classes.feeIcon}
-            src='/assets/icons/angle-down.svg'
+            src={angleDownIcon}
             alt='Select Fee Icon'
           />
         </div>
