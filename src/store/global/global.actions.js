@@ -1,4 +1,5 @@
 export const globalActionTypes = {
+  CHANGE_REDIRECT_ROUTE: '[GLOBAL] CHANGE REDIRECT ROUTE',
   LOAD_TOKENS: '[GLOBAL] LOAD TOKENS',
   LOAD_TOKENS_SUCCESS: '[GLOBAL] LOAD TOKENS SUCCESS',
   LOAD_TOKENS_FAILURE: '[GLOBAL] LOAD TOKENS FAILURE',
@@ -14,6 +15,13 @@ export const globalActionTypes = {
   LOAD_CURRENT_BATCH_FAILURE: '[GLOBAL] LOAD CURRENT BATCH FAILURE'
 }
 
+function changeRedirectRoute (redirectRoute) {
+  return {
+    type: globalActionTypes.CHANGE_REDIRECT_ROUTE,
+    redirectRoute
+  }
+}
+
 function loadTokens () {
   return {
     type: globalActionTypes.LOAD_TOKENS
@@ -23,7 +31,7 @@ function loadTokens () {
 function loadTokensSuccess (accounts) {
   return {
     type: globalActionTypes.LOAD_TOKENS_SUCCESS,
-    accounts: accounts
+    accounts
   }
 }
 
@@ -102,6 +110,7 @@ function loadCurrentBatchFailure () {
 }
 
 export {
+  changeRedirectRoute,
   loadTokens,
   loadTokensSuccess,
   loadTokensFailure,
