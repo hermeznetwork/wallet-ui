@@ -76,6 +76,15 @@ mock.onGet(`${baseApiUrl}/tokens`)
     [
       {
         tokenId: 0,
+        name: 'Ether',
+        symbol: 'ETH',
+        decimals: 18,
+        ethAddr: '0x0000000000000000000000000000000000000000',
+        ethBlockNum: 762375478,
+        USD: 350
+      },
+      {
+        tokenId: 1,
         name: 'Aragon',
         symbol: 'ANT',
         decimals: 18,
@@ -84,7 +93,7 @@ mock.onGet(`${baseApiUrl}/tokens`)
         USD: 2
       },
       {
-        tokenId: 1,
+        tokenId: 2,
         name: 'Maker',
         symbol: 'MKR',
         decimals: 18,
@@ -93,7 +102,7 @@ mock.onGet(`${baseApiUrl}/tokens`)
         USD: 2
       },
       {
-        tokenId: 2,
+        tokenId: 3,
         name: 'Dai',
         symbol: 'DAI',
         decimals: 18,
@@ -102,7 +111,7 @@ mock.onGet(`${baseApiUrl}/tokens`)
         USD: 2
       },
       {
-        tokenId: 3,
+        tokenId: 4,
         name: '0x',
         symbol: 'ZRX',
         decimals: 18,
@@ -111,7 +120,7 @@ mock.onGet(`${baseApiUrl}/tokens`)
         USD: 2
       },
       {
-        tokenId: 4,
+        tokenId: 5,
         name: 'Goerli Test Token',
         symbol: 'TNT',
         decimals: 18,

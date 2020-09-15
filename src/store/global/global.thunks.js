@@ -6,6 +6,12 @@ import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import config from '../../utils/config.json'
 import { CliExternalOperator } from '../../utils/cli-external-operator'
 
+function changeRedirectRoute (redirecRoute) {
+  return (dispatch) => {
+    dispatch(globalActions.changeRedirectRoute(redirecRoute))
+  }
+}
+
 function fetchTokens () {
   return (dispatch) => {
     dispatch(globalActions.loadTokens())
@@ -84,6 +90,7 @@ function fetchCurrentBatch (urlOperator) {
 }
 
 export {
+  changeRedirectRoute,
   fetchTokens,
   fetchConfig,
   fetchFiatExchangeRates,

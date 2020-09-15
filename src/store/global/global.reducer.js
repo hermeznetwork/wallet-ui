@@ -1,6 +1,7 @@
 import { globalActionTypes } from './global.actions'
 
 const initialGlobalState = {
+  redirectRoute: '/',
   tokensTask: {
     status: 'pending'
   },
@@ -18,6 +19,12 @@ const initialGlobalState = {
 
 function globalReducer (state = initialGlobalState, action) {
   switch (action.type) {
+    case globalActionTypes.CHANGE_REDIRECT_ROUTE: {
+      return {
+        ...state,
+        redirectRoute: action.redirectRoute
+      }
+    }
     case globalActionTypes.LOAD_TOKENS: {
       return {
         ...state,

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol } from '../../../../utils/currencies'
@@ -17,6 +18,7 @@ function TransactionForm ({
   const [showInFiat, setShowInFiat] = useState(false)
   const [amount, setAmount] = useState(0)
   const [isContinueDisabled, setIsContinueDisabled] = useState(true)
+  const [isAmountInvalid, setIsAmountInvalid] = React.useState(false)
 
   /**
    * Returns the conversion rate from the selected token to the selected preffered currency.
@@ -30,11 +32,11 @@ function TransactionForm ({
   }
 
   /**
-   * Whether to show the receiver input field if its a transfer.
+   * Renders the receiver input field if it's a transfer.
    *
    * @returns {ReactElement} The receiver input field
    */
-  function showReceiver () {
+  function renderReceiver () {
     if (type !== 'deposit') {
       return (
         <input />
@@ -43,11 +45,11 @@ function TransactionForm ({
   }
 
   /**
-   * Whether to show the fee selector if its a Layer 2 transaction.
+   * Renders the fee selector if its a Layer 2 transaction.
    *
    * @returns {ReactElement} The fee selector component
    */
-  function showFeeSelector () {
+  function renderFeeSelector () {
     if (type !== 'deposit') {
       return (
         <div className={classes.feeWrapper} onClick={handleSelectFee}>
@@ -71,6 +73,7 @@ function TransactionForm ({
    */
   function handleAmountInputChange (event) {
     const newAmount = Number(event.target.value)
+    event.target.value = newAmount
     if (newAmount > 0) {
       setIsContinueDisabled(false)
     } else {
@@ -112,11 +115,9 @@ function TransactionForm ({
   function handleContinueButton () {
     const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
     if (selectedAmount > account.balance) {
-      document.querySelector(`.${classes.selectAmount}`).classList.add(classes.selectAmountError)
-      document.querySelector(`.${classes.selectAmountErrorMessage}`).classList.add(classes.selectAmountErrorMessageVisible)
+      setIsAmountInvalid(true)
     } else {
-      document.querySelector(`.${classes.selectAmount}`).classList.remove(classes.selectAmountError)
-      document.querySelector(`.${classes.selectAmountErrorMessage}`).classList.remove(classes.selectAmountErrorMessageVisible)
+      setIsAmountInvalid(false)
     }
 
     if (type !== 'deposit') {
@@ -142,12 +143,17 @@ function TransactionForm ({
         }
       </div>
 
-      <div className={classes.selectAmount}>
+      <div className={clsx({
+        [classes.selectAmount]: true,
+        [classes.selectAmountError]: isAmountInvalid
+      })}
+      >
         <div className={classes.amount}>
           <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
           <input
             className={classes.amountInput}
-            type='number' value={amount}
+            type='number'
+            value={amount}
             onChange={handleAmountInputChange}
           />
         </div>
@@ -163,7 +169,11 @@ function TransactionForm ({
           </button>
         </div>
       </div>
-      <p className={classes.selectAmountErrorMessage}>
+      <p className={clsx({
+        [classes.selectAmountErrorMessage]: true,
+        [classes.selectAmountErrorMessageVisible]: isAmountInvalid
+      })}
+      >
         <img
           className={classes.errorIcon}
           src={errorIcon}
@@ -172,7 +182,7 @@ function TransactionForm ({
         You don't have enough funds
       </p>
 
-      {showReceiver()}
+      {renderReceiver()}
 
       <button
         className={classes.continue}
@@ -182,7 +192,7 @@ function TransactionForm ({
         Continue
       </button>
 
-      {showFeeSelector()}
+      {renderFeeSelector()}
     </section>
   )
 }
