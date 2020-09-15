@@ -1,5 +1,6 @@
 import ethers from 'ethers'
 
+import { ETHER_TOKEN_ID } from '../../constants'
 import * as depositActions from './deposit.actions'
 
 /**
@@ -32,12 +33,21 @@ function fetchMetaMaskTokens () {
     }]
     const balancePromises = []
     for (const token of tokensTask.data) {
-      const contract = new ethers.Contract(token.ethAddr, partialERC20ABI, provider)
-      balancePromises.push(
-        contract.balanceOf(metaMaskWalletTask.data.ethereumAddress)
-          // We can ignore if a call to the contract of a specific token fails.
-          .catch(() => {})
-      )
+      if (token.tokenId === ETHER_TOKEN_ID) {
+        // tokenID 0 is for Ether
+        const signer = provider.getSigner()
+        balancePromises.push(
+          signer.getBalance()
+        )
+      } else {
+        // For ERC 20 tokens, check the balance from the smart contract
+        const contract = new ethers.Contract(token.ethAddr, partialERC20ABI, provider)
+        balancePromises.push(
+          contract.balanceOf(metaMaskWalletTask.data.ethereumAddress)
+            // We can ignore if a call to the contract of a specific token fails.
+            .catch(() => {})
+        )
+      }
     }
     try {
       const balances = (await Promise.all(balancePromises))
