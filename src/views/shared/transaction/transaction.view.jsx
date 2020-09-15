@@ -115,10 +115,8 @@ function Transaction ({
     const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
     if (selectedAmount > account.balance) {
       setIsAmountInvalid(true)
-      document.querySelector(`.${classes.selectAmountErrorMessage}`).classList.add(classes.selectAmountErrorMessageVisible)
     } else {
       setIsAmountInvalid(false)
-      document.querySelector(`.${classes.selectAmountErrorMessage}`).classList.remove(classes.selectAmountErrorMessageVisible)
     }
 
     if (type !== 'deposit') {
