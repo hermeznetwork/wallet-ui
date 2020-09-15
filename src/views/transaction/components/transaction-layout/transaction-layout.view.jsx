@@ -3,12 +3,12 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import useTransactionLayoutStyles from './transaction-layout.styles'
-import AccountList from '../account-list/account-list.view'
-import Transaction from '../transaction/transaction.view'
-import Spinner from '../spinner/spinner.view'
-import Container from '../container/container.view'
-import backIcon from '../../../images/icons/back.svg'
-import closeIcon from '../../../images/icons/close.svg'
+import TransactionForm from '../transaction-form/transaction-form.view'
+import AccountList from '../../../shared/account-list/account-list.view'
+import Spinner from '../../../shared/spinner/spinner.view'
+import Container from '../../../shared/container/container.view'
+import backIcon from '../../../../images/icons/back.svg'
+import closeIcon from '../../../../images/icons/close.svg'
 
 function TransactionLayout ({
   tokensTask,
@@ -78,7 +78,7 @@ function TransactionLayout ({
   function renderContent () {
     if (token) {
       return (
-        <Transaction
+        <TransactionForm
           account={token}
           type={type}
           preferredCurrency={preferredCurrency}

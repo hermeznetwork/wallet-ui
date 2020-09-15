@@ -8,7 +8,6 @@ import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
 import { fetchConfig, fetchTokens, fetchFiatExchangeRates } from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
-import Login from './login/login.view'
 import { CurrencySymbol } from '../utils/currencies'
 
 function App ({
@@ -52,10 +51,9 @@ function App ({
             exact
             key={route.path}
             path={route.path}
-            component={route.component}
+            render={route.render}
           />
         )}
-      <Route path='/login' exact component={Login} />
       <Route>
         <Layout>
           <Switch>
@@ -66,7 +64,7 @@ function App ({
                   exact
                   key={route.path}
                   path={route.path}
-                  component={route.component}
+                  render={route.render}
                 />
               )}
             <Redirect to='/' />

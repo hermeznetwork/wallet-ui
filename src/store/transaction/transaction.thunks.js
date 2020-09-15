@@ -1,6 +1,6 @@
 import ethers from 'ethers'
 
-import * as depositActions from './deposit.actions'
+import * as transactionActions from './transaction.actions'
 
 /**
  * Fetches token balances in the user's MetaMask account. Only for those tokens registered in Hermez and Ether.
@@ -9,7 +9,7 @@ import * as depositActions from './deposit.actions'
  */
 function fetchMetaMaskTokens () {
   return async function (dispatch, getState) {
-    dispatch(depositActions.loadMetaMaskTokens())
+    dispatch(transactionActions.loadMetaMaskTokens())
     const { global: { tokensTask }, account: { metaMaskWalletTask } } = getState()
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const partialERC20ABI = [{
@@ -51,12 +51,12 @@ function fetchMetaMaskTokens () {
         .filter((account) => Number(account.balance) > 0)
 
       if (balances.length === 0) {
-        dispatch(depositActions.loadMetaMaskTokensFailure('You don\'t have any ERC 20 tokens in your MetaMask account that are registered in Hermez.'))
+        dispatch(transactionActions.loadMetaMaskTokensFailure('You don\'t have any ERC 20 tokens in your MetaMask account that are registered in Hermez.'))
       } else {
-        dispatch(depositActions.loadMetaMaskTokensSuccess(balances))
+        dispatch(transactionActions.loadMetaMaskTokensSuccess(balances))
       }
     } catch (error) {
-      dispatch(depositActions.loadMetaMaskTokensFailure(error))
+      dispatch(transactionActions.loadMetaMaskTokensFailure(error))
     }
   }
 }

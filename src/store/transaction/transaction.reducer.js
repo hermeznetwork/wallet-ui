@@ -1,21 +1,21 @@
-import { depositActionTypes } from './deposit.actions'
+import { transactionActionTypes } from './transaction.actions'
 
-const initialDepositState = {
+const initialTransactionState = {
   metaMaskTokensTask: {
     status: 'pending'
   }
 }
 
-function depositReducer (state = initialDepositState, action) {
+function transactionReducer (state = initialTransactionState, action) {
   switch (action.type) {
-    case depositActionTypes.LOAD_METAMASK_TOKENS:
+    case transactionActionTypes.LOAD_METAMASK_TOKENS:
       return {
         ...state,
         metaMaskTokensTask: {
           status: 'loading'
         }
       }
-    case depositActionTypes.LOAD_METAMASK_TOKENS_SUCCESS:
+    case transactionActionTypes.LOAD_METAMASK_TOKENS_SUCCESS:
       return {
         ...state,
         metaMaskTokensTask: {
@@ -23,7 +23,7 @@ function depositReducer (state = initialDepositState, action) {
           data: action.metaMaskTokens
         }
       }
-    case depositActionTypes.LOAD_METAMASK_TOKENS_FAILURE:
+    case transactionActionTypes.LOAD_METAMASK_TOKENS_FAILURE:
       return {
         ...state,
         metaMaskTokensTask: {
@@ -37,4 +37,4 @@ function depositReducer (state = initialDepositState, action) {
   }
 }
 
-export default depositReducer
+export default transactionReducer

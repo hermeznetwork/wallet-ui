@@ -1,6 +1,7 @@
+import React from 'react'
+
 import Home from '../views/home/home.view'
-import Deposit from '../views/deposit/deposit.view'
-import Transfer from '../views/transfer/transfer.view'
+import Transaction from '../views/transaction/transaction.view'
 import Settings from '../views/settings/settings.view'
 import AccountDetails from '../views/account-details/account-details.view'
 import TransactionDetails from '../views/transaction-details/transaction-details.view'
@@ -9,37 +10,37 @@ import Login from '../views/login/login.view'
 const routes = [
   {
     path: '/',
-    component: Home,
+    render: () => <Home />,
     renderLayout: true
   },
   {
     path: '/login',
-    component: Login,
+    render: () => <Login />,
     renderLayout: false
   },
   {
     path: '/deposit',
-    component: Deposit,
+    render: () => <Transaction transactionType='deposit' />,
     renderLayout: false
   },
   {
     path: '/transfer',
-    component: Transfer,
+    render: () => <Transaction transactionType='transfer' />,
     renderLayout: false
   },
   {
     path: '/settings',
-    component: Settings,
+    render: () => <Settings />,
     renderLayout: true
   },
   {
     path: '/accounts/:tokenId',
-    component: AccountDetails,
+    render: () => <AccountDetails />,
     renderLayout: true
   },
   {
     path: '/accounts/:tokenId/transactions/:transactionId',
-    component: TransactionDetails,
+    render: () => <TransactionDetails />,
     renderLayout: true
   }
 ]

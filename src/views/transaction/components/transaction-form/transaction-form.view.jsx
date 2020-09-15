@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-import useTransactionStyles from './transaction.styles'
-import { CurrencySymbol } from '../../../utils/currencies'
-import swapIcon from '../../../images/icons/swap.svg'
-import errorIcon from '../../../images/icons/error.svg'
+import useTransactionFormStyles from './transaction-form.styles'
+import { CurrencySymbol } from '../../../../utils/currencies'
+import swapIcon from '../../../../images/icons/swap.svg'
+import errorIcon from '../../../../images/icons/error.svg'
 
-function Transaction ({
+function TransactionForm ({
   type,
   account,
   preferredCurrency,
   fiatExchangeRates
 }) {
-  const classes = useTransactionStyles()
+  const classes = useTransactionFormStyles()
   const [showInFiat, setShowInFiat] = useState(false)
   const [amount, setAmount] = useState(0)
   const [isContinueDisabled, setIsContinueDisabled] = useState(true)
@@ -186,7 +186,7 @@ function Transaction ({
   )
 }
 
-Transaction.propTypes = {
+TransactionForm.propTypes = {
   type: PropTypes.string.isRequired,
   account: PropTypes.shape({
     balance: PropTypes.number.isRequired,
@@ -204,4 +204,4 @@ Transaction.propTypes = {
   fiatExchangeRates: PropTypes.object.isRequired
 }
 
-export default Transaction
+export default TransactionForm
