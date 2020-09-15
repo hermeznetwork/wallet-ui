@@ -6,21 +6,21 @@ const useAccountListStyles = createUseStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F3F3F8',
+    backgroundColor: theme.palette.grey.light,
     borderRadius: 16,
-    height: 80,
+    height: `${theme.spacing(10)}px`,
     marginBottom: `${theme.spacing(6)}px`,
-    padding: '30px 40px',
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black'
+    padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
+    fontSize: `${theme.spacing(2.5)}px`,
+    fontWeight: theme.fontWeights.bold,
+    color: theme.palette.black.dark
   },
   selectAmount: {
-    border: 'solid 2px #ebebf4',
+    border: `solid 2px ${theme.palette.grey.veryLight}`,
     borderRadius: 20
   },
   selectAmountError: {
-    borderColor: '#ff4b40'
+    borderColor: theme.palette.red
   },
   amount: {
     display: 'flex',
@@ -30,18 +30,18 @@ const useAccountListStyles = createUseStyles(theme => ({
     padding: `${theme.spacing(5.5)}px`
   },
   amountCurrency: {
-    margin: '0 0 12px',
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333333'
+    margin: `0 0 ${theme.spacing(1.5)}px`,
+    fontSize: `${theme.spacing(3)}px`,
+    fontWeight: theme.fontWeights.bold,
+    color: theme.palette.black.light
   },
   amountInput: {
     border: 0,
     outline: 'none',
-    caretColor: '#ffa600',
-    fontSize: '48px',
-    fontWeight: 'bold',
-    color: '#2b2b2b',
+    caretColor: theme.palette.orange,
+    fontSize: `${theme.spacing(6)}px`,
+    fontWeight: theme.fontWeights.bold,
+    color: theme.palette.black.dark,
     textAlign: 'center',
     '&::-webkit-outer-spin-button,&::-webkit-inner-spin-button': {
       '-webkit-appearance': 'none',
@@ -59,15 +59,15 @@ const useAccountListStyles = createUseStyles(theme => ({
     background: 'none',
     outline: 'none',
     border: '0',
-    borderTop: 'solid 2px #e1e1f1',
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#888baa',
+    borderTop: `solid 2px ${theme.palette.grey.veryLight}`,
+    fontSize: `${theme.spacing(3)}px`,
+    fontWeight: theme.fontWeights.bold,
+    color: theme.palette.grey.main,
     flex: 1,
     padding: `${theme.spacing(3.5)}px 0`
   },
   sendAll: {
-    borderRight: 'solid 2px #e1e1f1'
+    borderRight: `solid 2px ${theme.palette.grey.veryLight}`
   },
   changeCurrency: {
     display: 'flex',
@@ -81,32 +81,33 @@ const useAccountListStyles = createUseStyles(theme => ({
     display: 'none',
     alignItems: 'center',
     marginTop: `${theme.spacing(1.5)}px`,
-    fontSize: 16,
-    fontWeight: 500,
-    color: '#ff4b40'
+    fontSize: `${theme.spacing(2)}px`,
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.red
   },
   selectAmountErrorMessageVisible: {
     display: 'flex'
   },
   errorIcon: {
-    marginRight: 8,
-    width: 20,
-    height: 20
+    marginRight: `${theme.spacing(1)}px`,
+    width: `${theme.spacing(2.5)}px`,
+    height: `${theme.spacing(2.5)}px`
   },
   continue: {
     cursor: 'pointer',
     width: '100%',
     marginTop: `${theme.spacing(14.5)}px`,
-    padding: '28px 0',
-    backgroundColor: '#e75a2b',
+    padding: `${theme.spacing(3.5)}px 0`,
+    backgroundColor: theme.palette.secondary,
     border: 0,
     outline: 'none',
     borderRadius: 20,
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontSize: `${theme.spacing(3)}px`,
+    fontWeight: theme.fontWeights.bold,
+    color: theme.palette.white,
     '&[disabled]': {
-      backgroundColor: '#888baa'
+      backgroundColor: theme.palette.grey.main,
+      cursor: 'normal'
     }
   },
   feeWrapper: {
@@ -117,14 +118,14 @@ const useAccountListStyles = createUseStyles(theme => ({
     cursor: 'pointer'
   },
   fee: {
-    fontSize: 24,
-    fontWeight: 500,
-    color: '#888baa',
-    marginBottom: 8
+    fontSize: `${theme.spacing(3)}px`,
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.main,
+    marginBottom: `${theme.spacing(1)}px`
   },
   feeIcon: {
-    width: 16,
-    height: 16
+    width: `${theme.spacing(2)}px`,
+    height: `${theme.spacing(2)}px`
   }
 }))
 

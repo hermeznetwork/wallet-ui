@@ -11,10 +11,13 @@ const theme = {
       dark: '#2b2b2b'
     },
     grey: {
+      veryLight: '#e1e1f1',
       light: '#f3f3f8',
       main: '#888baa',
       dark: '#7a7c89'
-    }
+    },
+    red: '#ff4b40',
+    orange: '#ffa600'
   },
   fontWeights: {
     medium: '500',
