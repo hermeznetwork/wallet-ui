@@ -48,7 +48,7 @@ function AccountDetails ({
     const tokenSymbol = getTokenSymbol(accountTask.data.tokenId)
     const tokenRateInUSD = tokensTask.data
       .find((token) => token.symbol === tokenSymbol).USD
-    const tokenRate = preferredCurrency === CurrencySymbol.USD
+    const tokenRate = preferredCurrency === CurrencySymbol.USD.code
       ? tokenRateInUSD
       : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
 

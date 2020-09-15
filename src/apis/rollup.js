@@ -44,11 +44,18 @@ async function getTokens () {
   return response.data
 }
 
+async function getFees () {
+  const response = await axios.get(`${baseApiUrl}/recommendedFee`)
+
+  return response.data
+}
+
 export {
   getAccounts,
   getAccount,
   getTransactions,
   getHistoryTransaction,
   getPoolTransaction,
-  getTokens
+  getTokens,
+  getFees
 }

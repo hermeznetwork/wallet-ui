@@ -130,6 +130,16 @@ mock.onGet(`${baseApiUrl}/tokens`)
     ]
   )
 
+mock.onGet(`${baseApiUrl}/recommendedFee`)
+  .reply(
+    200,
+    {
+      existingAccount: 0.1,
+      createAccount: 0.2,
+      createAccountInternal: 0.15
+    }
+  )
+
 mock.onAny()
   .passThrough()
 

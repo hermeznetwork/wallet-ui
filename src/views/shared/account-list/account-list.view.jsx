@@ -14,12 +14,20 @@ function AccountList ({
 }) {
   const classes = useAccountListStyles()
 
+  /**
+   * Returns the conversion rate from the selected token to the selected preffered currency.
+   *
+   * @returns {Number} Conversion rate from the selected token to fiat
+   */
   function getAccountFiatRate (token) {
-    return preferredCurrency === CurrencySymbol.USD
+    return preferredCurrency === CurrencySymbol.USD.code
       ? token.USD
       : token.USD * fiatExchangeRates[preferredCurrency]
   }
 
+  /**
+   * When an account is selected, bubble it up with the onAccountClick prop function.
+   */
   function handleAccountListItemClick (account) {
     onAccountClick(account)
   }
@@ -63,6 +71,7 @@ AccountList.propTypes = {
       })
     })
   ),
+  onTokenSelected: PropTypes.func,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired,
   onAccountClick: PropTypes.func

@@ -27,7 +27,7 @@ function TransactionList ({
     const tokenRateInUSD = tokens
       .find((token) => token.symbol === tokenSymbol).USD
 
-    return preferredCurrency === CurrencySymbol.USD
+    return preferredCurrency === CurrencySymbol.USD.code
       ? tokenRateInUSD
       : tokenRateInUSD * fiatExchangeRates[preferredCurrency]
   }

@@ -44,7 +44,7 @@ function TransactionDetails ({
 
     const tokenRateInUSD = tokensTask.data
       .find((token) => token.tokenId === tokenId).USD
-    const tokenFiatRate = preferredCurrency === CurrencySymbol.USD
+    const tokenFiatRate = preferredCurrency === CurrencySymbol.USD.code
       ? tokenRateInUSD
       : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
 

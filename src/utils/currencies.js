@@ -1,6 +1,12 @@
 const CurrencySymbol = {
-  USD: 'USD',
-  EUR: 'EUR'
+  USD: {
+    symbol: '$',
+    code: 'USD'
+  },
+  EUR: {
+    symbol: '€',
+    code: 'EUR'
+  }
 }
 
 export { CurrencySymbol }
