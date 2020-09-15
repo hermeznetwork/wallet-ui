@@ -4,6 +4,7 @@ import BigInt from 'big-integer'
 import { getNullifier, hexToBuffer } from '../../utils/utils'
 import { BabyJubWallet } from '../../utils/babyjub-wallet'
 import { CliExternalOperator } from '../../utils/cli-external-operator'
+import { METAMASK_MESSAGE } from '../../constants'
 
 import * as accountActions from './account.actions'
 
@@ -19,7 +20,7 @@ function fetchMetamaskWallet () {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
       const ethereumAddress = await signer.getAddress()
-      const signature = await signer.signMessage('HERMEZ_ACCOUNT. Don\'t share this signature with anyone as this would reveal your Hermez private key. Unless you are in a trusted application, DO NOT SIGN THIS')
+      const signature = await signer.signMessage(METAMASK_MESSAGE)
       const hashedSignature = keccak256(signature)
       const bufferSignature = hexToBuffer(hashedSignature)
       const wallet = new BabyJubWallet(bufferSignature, ethereumAddress)

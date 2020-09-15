@@ -1,5 +1,6 @@
 import ethers from 'ethers'
 
+import { ETHER_TOKEN_ID } from '../../constants'
 import * as depositActions from './deposit.actions'
 
 /**
@@ -31,7 +32,7 @@ function fetchMetaMaskTokens () {
     }]
     const balancePromises = []
     for (const token of tokensTask.data) {
-      if (token.tokenId === 0) {
+      if (token.tokenId === ETHER_TOKEN_ID) {
         // tokenID 0 is for Ether
         const signer = provider.getSigner()
         balancePromises.push(
