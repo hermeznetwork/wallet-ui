@@ -107,7 +107,7 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadTokens: () => dispatch(fetchTokens()),
   onLoadFiatExchangeRates: () => dispatch(
     fetchFiatExchangeRates(
-      Object.values(CurrencySymbol).filter(currency => currency !== CurrencySymbol.USD)
+      Object.values(CurrencySymbol).filter(currency => currency.code !== CurrencySymbol.USD.code).map((currency) => currency.code)
     )
   )
 })

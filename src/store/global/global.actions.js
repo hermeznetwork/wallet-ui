@@ -1,5 +1,6 @@
 export const globalActionTypes = {
   CHANGE_HEADER: '[GLOBAL] CHANGE HEADER',
+  CHANGE_REDIRECT_ROUTE: '[GLOBAL] CHANGE REDIRECT ROUTE',
   LOAD_TOKENS: '[GLOBAL] LOAD TOKENS',
   LOAD_TOKENS_SUCCESS: '[GLOBAL] LOAD TOKENS SUCCESS',
   LOAD_TOKENS_FAILURE: '[GLOBAL] LOAD TOKENS FAILURE',
@@ -22,6 +23,13 @@ function changeHeader (header) {
   }
 }
 
+function changeRedirectRoute (redirectRoute) {
+  return {
+    type: globalActionTypes.CHANGE_REDIRECT_ROUTE,
+    redirectRoute
+  }
+}
+
 function loadTokens () {
   return {
     type: globalActionTypes.LOAD_TOKENS
@@ -31,7 +39,7 @@ function loadTokens () {
 function loadTokensSuccess (accounts) {
   return {
     type: globalActionTypes.LOAD_TOKENS_SUCCESS,
-    accounts: accounts
+    accounts
   }
 }
 
@@ -79,7 +87,7 @@ function loadFiatExchangeRatesSuccess (fiatExchangeRates) {
 function loadFiatExchangeRatesFailure (error) {
   return {
     type: globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE,
-    error
+    error: error.message
   }
 }
 
@@ -111,6 +119,7 @@ function loadCurrentBatchFailure () {
 
 export {
   changeHeader,
+  changeRedirectRoute,
   loadTokens,
   loadTokensSuccess,
   loadTokensFailure,

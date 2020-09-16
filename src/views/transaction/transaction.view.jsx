@@ -7,7 +7,8 @@ import { fetchMetaMaskTokens } from '../../store/deposit/deposit.thunks'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import TransactionLayout from '../shared/transaction-layout/transaction-layout.view'
 
-function Deposit ({
+function Transaction ({
+  transactionType,
   metaMaskTokensTask,
   preferredCurrency,
   fiatExchangeRatesTask,
@@ -26,12 +27,13 @@ function Deposit ({
       selectedTokenId={selectedTokenId}
       preferredCurrency={preferredCurrency}
       fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
-      type='deposit'
+      type={transactionType}
     />
   )
 }
 
-Deposit.propTypes = {
+Transaction.propTypes = {
+  transactionType: PropTypes.string.isRequired,
   metaMaskTokensTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.arrayOf(
@@ -61,4 +63,4 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadMetaMaskTokens: () => dispatch(fetchMetaMaskTokens())
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Deposit))
+export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Transaction))

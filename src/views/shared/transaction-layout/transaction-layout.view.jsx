@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
@@ -6,27 +6,83 @@ import useTransactionLayoutStyles from './transaction-layout.styles'
 import AccountList from '../account-list/account-list.view'
 import Transaction from '../transaction/transaction.view'
 import Spinner from '../spinner/spinner.view'
-import Main from '../main/main.view'
+import Container from '../container/container.view'
+import backIcon from '../../../images/icons/back.svg'
+import closeIcon from '../../../images/icons/close.svg'
 
 function TransactionLayout ({
   tokensTask,
-  selectedToken,
+  selectedTokenId,
   preferredCurrency,
   fiatExchangeRates,
   type
 }) {
   const classes = useTransactionLayoutStyles()
+  const [token, setToken] = useState()
 
-  function handleAccountListClick () {
-
+  // If the prop selectedTokenId is set, find and store the token to show the Transaction component
+  if (selectedTokenId && tokensTask.status === 'success') {
+    const selectedToken = tokensTask.data.find((token) => token.Id === selectedTokenId)
+    setToken(selectedToken)
   }
 
+  /**
+   * When an account is selected, store the corresponding token to show the Transaction component
+   *
+   * @param {Token} token
+   */
+  function handleAccountListClick (token) {
+    setToken(token)
+  }
+
+  /**
+   * Handler for the back button.
+   * Depending on the step, unset the corresponding state to go back a step.
+   */
+  function handleBackButtonClick () {
+    if (token) {
+      setToken(undefined)
+    }
+  }
+
+  /**
+   * If the view is in a step that's not the AccountList, render the back button element.
+   *
+   * @returns {ReactElement} The back button element
+   */
+  function renderBackButton () {
+    if (token) {
+      return (
+        <button className={classes.backButton} onClick={handleBackButtonClick}>
+          <img
+            className={classes.backButtonIcon}
+            src={backIcon}
+            alt='Back Icon'
+          />
+        </button>
+      )
+    } else {
+      return <></>
+    }
+  }
+
+  /**
+   * Render the correct step:
+   * 1. AccountList
+   * 2. Transaction
+   * 3. TransactionOverview
+   * 4. TransactionConfirmation
+   *
+   * @returns {ReactElement} The correct component depending on the step the user is on
+   */
   function renderContent () {
-    if (selectedToken) {
+    if (token) {
       return (
         <Transaction
-          token={selectedToken}
+          account={token}
           type={type}
+          preferredCurrency={preferredCurrency}
+          fiatExchangeRates={fiatExchangeRates}
         />
       )
     } else {
@@ -48,7 +104,7 @@ function TransactionLayout ({
                     accounts={tokensTask.data}
                     preferredCurrency={preferredCurrency}
                     fiatExchangeRates={fiatExchangeRates}
-                    onTokenSelected={handleAccountListClick}
+                    onAccountClick={handleAccountListClick}
                   />
                 )
               }
@@ -63,15 +119,22 @@ function TransactionLayout ({
   }
 
   return (
-    <Main>
+    <Container disableTopGutter>
       <section className={classes.wrapper}>
         <header className={classes.header}>
-          <h2 className={classes.heading}>{selectedToken ? 'Amount' : 'Token'}</h2>
-          <Link to='/' className={classes.closeButton}>X</Link>
+          {renderBackButton()}
+          <h2 className={classes.heading}>{token ? 'Amount' : 'Token'}</h2>
+          <Link to='/' className={classes.closeButtonLink}>
+            <img
+              className={classes.closeButton}
+              src={closeIcon}
+              alt='Close Transaction Icon'
+            />
+          </Link>
         </header>
         {renderContent()}
       </section>
-    </Main>
+    </Container>
   )
 }
 
@@ -81,24 +144,19 @@ TransactionLayout.propTypes = {
     data: PropTypes.arrayOf(
       PropTypes.shape({
         balance: PropTypes.number.isRequired,
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired,
-        decimals: PropTypes.number.isRequired,
-        ethAddr: PropTypes.string.isRequired,
-        ethBlockNum: PropTypes.number.isRequired
+        token: PropTypes.shape({
+          tokenId: PropTypes.number.isRequired,
+          name: PropTypes.string.isRequired,
+          symbol: PropTypes.string.isRequired,
+          decimals: PropTypes.number.isRequired,
+          ethAddr: PropTypes.string.isRequired,
+          ethBlockNum: PropTypes.number.isRequired,
+          USD: PropTypes.number.isRequired
+        })
       })
     )
   }),
-  selectedToken: PropTypes.shape({
-    balance: PropTypes.number.isRequired,
-    tokenId: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    symbol: PropTypes.string.isRequired,
-    decimals: PropTypes.number.isRequired,
-    ethAddr: PropTypes.string.isRequired,
-    ethBlockNum: PropTypes.number.isRequired
-  }),
+  selectedTokenId: PropTypes.string,
   type: PropTypes.string.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired

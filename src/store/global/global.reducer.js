@@ -4,6 +4,7 @@ const initialGlobalState = {
   header: {
     type: 'main'
   },
+  redirectRoute: '/',
   tokensTask: {
     status: 'pending'
   },
@@ -25,6 +26,12 @@ function globalReducer (state = initialGlobalState, action) {
       return {
         ...state,
         header: action.header
+      }
+    }
+    case globalActionTypes.CHANGE_REDIRECT_ROUTE: {
+      return {
+        ...state,
+        redirectRoute: action.redirectRoute
       }
     }
     case globalActionTypes.LOAD_TOKENS: {

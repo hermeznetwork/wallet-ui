@@ -17,7 +17,7 @@ const useAccountStyles = createUseStyles(theme => ({
     justifyContent: 'space-between'
   },
   topRow: {
-    color: theme.palette.black,
+    color: theme.palette.black.dark,
     fontSize: theme.spacing(2.5),
     marginBottom: theme.spacing(1.5)
   },
