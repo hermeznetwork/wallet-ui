@@ -65,15 +65,23 @@ function Home ({
     return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
   }
 
+  function getHermezAddress (ethereumAddress) {
+    const firstAddressSlice = ethereumAddress.slice(0, 6)
+    const secondAddressSlice = ethereumAddress.slice(
+      ethereumAddress.length - 4,
+      ethereumAddress.length
+    )
+
+    return `hez:${firstAddressSlice} *** ${secondAddressSlice}`
+  }
+
   function handleAccountClick (account) {
     onNavigateToAccountDetails(account.token.tokenId)
   }
 
   function handleEthereumAddressClick (ethereumAddress) {
-    if (metaMaskWalletTask.status === 'successful') {
-      copyToClipboard(`hez:${metaMaskWalletTask.data.ethereumAddress}`)
-      setShowAddressCopiedSnackbar(true)
-    }
+    copyToClipboard(`hez:${metaMaskWalletTask.data.ethereumAddress}`)
+    setShowAddressCopiedSnackbar(true)
   }
 
   function handleAddressCopiedSnackbarClose () {
@@ -84,18 +92,18 @@ function Home ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
-          <div
-            className={classes.hermezAddress}
-            onClick={handleEthereumAddressClick}
-          >
-            <p>
-              {
-                metaMaskWalletTask.status === 'successful'
-                  ? `hez:${metaMaskWalletTask.data.ethereumAddress}`
-                  : '-'
-              }
-            </p>
-          </div>
+          {
+            metaMaskWalletTask.status !== 'successful'
+              ? <></>
+              : (
+                <div
+                  className={classes.hermezAddress}
+                  onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.ethereumAddress)}
+                >
+                  <p>{getHermezAddress(metaMaskWalletTask.data.ethereumAddress)}</p>
+                </div>
+              )
+          }
           <div className={classes.totalBalance}>
             {(() => {
               switch (accountsTask.status) {
