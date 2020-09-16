@@ -4,6 +4,12 @@ import ethers from 'ethers'
 import { fix2float } from './utils'
 import { CliExternalOperator } from './cli-external-operator'
 
+export const TxType = {
+  Deposit: 'Deposit',
+  Transfer: 'Transfer',
+  Withdrawn: 'Withdrawn'
+}
+
 /**
  * Get current average gas price from the last ethereum blocks and multiply it
  * @param {Number} multiplier - multiply the average gas price by this parameter

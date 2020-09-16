@@ -3,10 +3,18 @@ import { createUseStyles } from 'react-jss'
 const useTransactionStyles = createUseStyles(theme => ({
   root: {
     display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
     width: '100%',
     padding: `${theme.spacing(3)}px 0`
+  },
+  type: {
+    marginRight: theme.spacing(2)
+  },
+  info: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
   row: {
     width: '100%',
