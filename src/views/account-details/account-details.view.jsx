@@ -204,7 +204,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (tokenName) => dispatch(changeHeader({ type: 'page', data: { title: tokenName } })),
+  onChangeHeader: (tokenName) =>
+    dispatch(changeHeader({ type: 'page', data: { title: tokenName, previousRoute: '/' } })),
   onLoadAccount: (ethereumAddress, tokenId) => dispatch(fetchAccount(ethereumAddress, tokenId)),
   onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId)),
   onNavigateToTransactionDetails: (tokenId, transactionId) =>
