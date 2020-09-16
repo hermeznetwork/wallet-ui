@@ -1,15 +1,27 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 
 import useLayoutStyles from './layout.styles'
-import Header from '../header/header.view'
+import MainHeader from '../main-header/main-header.view'
 import Main from '../main/main.view'
+import PageHeader from '../page-header/page-header.view'
 
-function Layout ({ children }) {
+function Layout ({ header, children }) {
   const classes = useLayoutStyles()
 
   return (
     <div className={classes.root}>
-      <Header />
+      {
+        header.type === 'main'
+          ? <MainHeader />
+          : (
+            <PageHeader
+              title={header.data.title}
+              goBackRoute={header.data.previousRoute}
+            />
+          )
+      }
       <Main>
         {children}
       </Main>
@@ -17,4 +29,12 @@ function Layout ({ children }) {
   )
 }
 
-export default Layout
+Layout.propTypes = {
+  header: PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state) => ({
+  header: state.global.header
+})
+
+export default connect(mapStateToProps)(Layout)

@@ -17,6 +17,7 @@ import sendIcon from '../../images/icons/send.svg'
 import depositIcon from '../../images/icons/deposit.svg'
 import { copyToClipboard } from '../../utils/dom'
 import Snackbar from '../shared/snackbar/snackbar.view'
+import { changeHeader } from '../../store/global/global.actions'
 
 function Home ({
   tokensTask,
@@ -24,12 +25,17 @@ function Home ({
   metaMaskWalletTask,
   fiatExchangeRatesTask,
   preferredCurrency,
+  onChangeHeader,
   onLoadAccounts,
   onNavigateToAccountDetails
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
   const [showAddressCopiedSnackbar, setShowAddressCopiedSnackbar] = React.useState(false)
+
+  React.useEffect(() => {
+    onChangeHeader()
+  }, [onChangeHeader])
 
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful' && tokensTask.status === 'successful') {
@@ -215,6 +221,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  onChangeHeader: () => dispatch(changeHeader({ type: 'main' })),
   onLoadAccounts: (ethereumAddress, tokens) =>
     dispatch(fetchAccounts(ethereumAddress, tokens)),
   onNavigateToAccountDetails: (tokenId) =>

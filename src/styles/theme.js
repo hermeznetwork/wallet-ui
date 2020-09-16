@@ -18,7 +18,8 @@ const theme = {
     bold: '700',
     extraBold: '800'
   },
-  spacing: (value) => value * 8
+  spacing: (value) => value * 8,
+  headerHeight: 72
 }
 
 export default theme

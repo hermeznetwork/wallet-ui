@@ -1,4 +1,5 @@
 export const globalActionTypes = {
+  CHANGE_HEADER: '[GLOBAL] CHANGE HEADER',
   LOAD_TOKENS: '[GLOBAL] LOAD TOKENS',
   LOAD_TOKENS_SUCCESS: '[GLOBAL] LOAD TOKENS SUCCESS',
   LOAD_TOKENS_FAILURE: '[GLOBAL] LOAD TOKENS FAILURE',
@@ -12,6 +13,13 @@ export const globalActionTypes = {
   LOAD_CURRENT_BATCH: '[GLOBAL] LOAD CURRENT BATCH',
   LOAD_CURRENT_BATCH_SUCCESS: '[GLOBAL] LOAD CURRENT BATCH SUCCESS',
   LOAD_CURRENT_BATCH_FAILURE: '[GLOBAL] LOAD CURRENT BATCH FAILURE'
+}
+
+function changeHeader (header) {
+  return {
+    type: globalActionTypes.CHANGE_HEADER,
+    header
+  }
 }
 
 function loadTokens () {
@@ -102,6 +110,7 @@ function loadCurrentBatchFailure () {
 }
 
 export {
+  changeHeader,
   loadTokens,
   loadTokensSuccess,
   loadTokensFailure,

@@ -1,6 +1,9 @@
 import { globalActionTypes } from './global.actions'
 
 const initialGlobalState = {
+  header: {
+    type: 'main'
+  },
   tokensTask: {
     status: 'pending'
   },
@@ -18,6 +21,12 @@ const initialGlobalState = {
 
 function globalReducer (state = initialGlobalState, action) {
   switch (action.type) {
+    case globalActionTypes.CHANGE_HEADER: {
+      return {
+        ...state,
+        header: action.header
+      }
+    }
     case globalActionTypes.LOAD_TOKENS: {
       return {
         ...state,

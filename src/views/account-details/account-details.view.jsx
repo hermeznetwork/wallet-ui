@@ -15,6 +15,7 @@ import Container from '../shared/container/container.view'
 import sendIcon from '../../images/icons/send.svg'
 import depositIcon from '../../images/icons/deposit.svg'
 import withdrawIcon from '../../images/icons/withdraw.svg'
+import { changeHeader } from '../../store/global/global.actions'
 
 function AccountDetails ({
   metaMaskWalletTask,
@@ -23,13 +24,28 @@ function AccountDetails ({
   transactionsTask,
   tokensTask,
   fiatExchangeRatesTask,
+  onChangeHeader,
   onLoadAccount,
   onLoadTransactions,
   onNavigateToTransactionDetails
 }) {
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
-  const { tokenId } = useParams()
+  const tokenId = Number(useParams().tokenId)
+
+  const getToken = React.useCallback((tokenId) => {
+    if (tokensTask.status !== 'successful') {
+      return '-'
+    }
+
+    return tokensTask.data.find((token) => token.tokenId === tokenId)
+  }, [tokensTask])
+
+  React.useEffect(() => {
+    const token = getToken(tokenId)
+
+    onChangeHeader(token.name)
+  }, [tokenId, getToken, onChangeHeader])
 
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
@@ -37,10 +53,6 @@ function AccountDetails ({
       onLoadTransactions(metaMaskWalletTask.data.ethereumAddress, tokenId)
     }
   }, [metaMaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
-
-  function getTokenSymbol (tokenId) {
-    return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
-  }
 
   function getAccountBalance () {
     if (
@@ -50,7 +62,7 @@ function AccountDetails ({
     ) {
       return '-'
     }
-    const tokenSymbol = getTokenSymbol(accountTask.data.tokenId)
+    const tokenSymbol = getToken(accountTask.data.tokenId).symbol
     const tokenRateInUSD = tokensTask.data
       .find((token) => token.symbol === tokenSymbol).USD
     const tokenRate = preferredCurrency === CurrencySymbol.USD
@@ -59,14 +71,6 @@ function AccountDetails ({
 
     return accountTask.data.balance * tokenRate
   }
-
-  // function getTokenName (tokenId) {
-  //   if (tokensTask.status !== 'successful') {
-  //     return '-'
-  //   }
-
-  //   return tokensTask.data.find(token => token.tokenId === tokenId).name
-  // }
 
   function handleTransactionClick (transactionId) {
     onNavigateToTransactionDetails(tokenId, transactionId)
@@ -92,7 +96,7 @@ function AccountDetails ({
                       {preferredCurrency} {getAccountBalance().toFixed(2)}
                     </h1>
                     <p className={classes.fiatBalance}>
-                      {accountTask.data.balance} {getTokenSymbol(accountTask.data.tokenId)}
+                      {accountTask.data.balance} {getToken(accountTask.data.tokenId).symbol}
                     </p>
                   </div>
                 )
@@ -200,6 +204,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  onChangeHeader: (tokenName) => dispatch(changeHeader({ type: 'page', data: { title: tokenName } })),
   onLoadAccount: (ethereumAddress, tokenId) => dispatch(fetchAccount(ethereumAddress, tokenId)),
   onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId)),
   onNavigateToTransactionDetails: (tokenId, transactionId) =>
