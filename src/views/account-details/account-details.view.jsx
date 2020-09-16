@@ -12,9 +12,9 @@ import TransactionList from './components/transaction-list/transaction-list.view
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
-import sendIcon from '../../images/icons/send.svg'
-import depositIcon from '../../images/icons/deposit.svg'
-import withdrawIcon from '../../images/icons/withdraw.svg'
+import sendIcon from '../../images/icons/transaction-actions/send.svg'
+import depositIcon from '../../images/icons/transaction-actions/deposit.svg'
+import withdrawIcon from '../../images/icons/transaction-actions/withdraw.svg'
 import { changeHeader } from '../../store/global/global.actions'
 
 function AccountDetails ({
@@ -91,7 +91,6 @@ function AccountDetails ({
               case 'successful': {
                 return (
                   <div>
-                    {/* <h3>{getTokenName(accountTask.data.tokenId)}</h3> */}
                     <h1 className={classes.tokenBalance}>
                       {preferredCurrency} {getAccountBalance().toFixed(2)}
                     </h1>
