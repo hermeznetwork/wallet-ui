@@ -1,27 +1,28 @@
 import { createUseStyles } from 'react-jss'
 
-const useTransactionStyles = createUseStyles({
+const useTransactionStyles = createUseStyles(theme => ({
   root: {
     display: 'flex',
-    alignItems: 'center'
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+    padding: `${theme.spacing(3)}px 0`
   },
-  typeContainer: {
-    marginRight: 24,
-    background: 'gainsboro',
-    borderRadius: 8
+  row: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
-  type: {
-    margin: 0,
-    padding: '8px 16px'
+  topRow: {
+    fontWeight: theme.fontWeights.bold,
+    marginBottom: theme.spacing(2)
   },
-  amount: {
-    margin: 0,
-    marginBottom: 8
-  },
-  date: {
-    margin: 0,
-    color: 'grey'
+  bottomRow: {
+    fontSize: theme.spacing(1.75),
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.main
   }
-})
+}))
 
 export default useTransactionStyles

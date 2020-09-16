@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import clsx from 'clsx'
 
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
@@ -37,7 +36,7 @@ function TransactionList ({
   }
 
   return (
-    <div>
+    <>
       {transactions.map((transaction, index) => {
         const tokenSymbol = getTokenSymbol(transaction.tokenId)
         const tokenFiatRate = getTokenFiatRate(tokenSymbol)
@@ -45,10 +44,7 @@ function TransactionList ({
         return (
           <div
             key={transaction.txId}
-            className={clsx({
-              [classes.transaction]: true,
-              [classes.transactionSpacer]: index > 0
-            })}
+            className={classes.transaction}
           >
             <Transaction
               id={transaction.txId}
@@ -56,7 +52,7 @@ function TransactionList ({
               amount={transaction.amount}
               tokenSymbol={tokenSymbol}
               fiatRate={tokenFiatRate}
-              date={new Date().toLocaleString()}
+              date={new Date().toLocaleDateString()}
               preferredCurrency={preferredCurrency}
               onClick={handleTransactionClick}
             />
@@ -64,7 +60,7 @@ function TransactionList ({
         )
       }
       )}
-    </div>
+    </>
   )
 }
 
