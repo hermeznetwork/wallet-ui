@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
@@ -12,10 +12,8 @@ import TransactionList from './components/transaction-list/transaction-list.view
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
-import sendIcon from '../../images/icons/transaction-actions/send.svg'
-import depositIcon from '../../images/icons/transaction-actions/deposit.svg'
-import withdrawIcon from '../../images/icons/transaction-actions/withdraw.svg'
 import { changeHeader } from '../../store/global/global.actions'
+import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 
 function AccountDetails ({
   metaMaskWalletTask,
@@ -105,20 +103,7 @@ function AccountDetails ({
               }
             }
           })()}
-          <div className={classes.actionButtonsGroup}>
-            <Link to='/transfer' className={classes.button}>
-              <img src={sendIcon} alt='Send' />
-              <p className={classes.buttonText}>Send</p>
-            </Link>
-            <Link to='/deposit' className={classes.button}>
-              <img src={depositIcon} alt='Deposit' />
-              <p className={classes.buttonText}>Deposit</p>
-            </Link>
-            <Link to='/withdraw' className={classes.button}>
-              <img src={withdrawIcon} alt='Deposit' />
-              <p className={classes.buttonText}>Withdraw</p>
-            </Link>
-          </div>
+          <TransactionActions />
         </section>
       </Container>
       <Container>

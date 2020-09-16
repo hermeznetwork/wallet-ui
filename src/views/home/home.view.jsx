@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
@@ -13,11 +12,10 @@ import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
 import { CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
-import sendIcon from '../../images/icons/transaction-actions/send.svg'
-import depositIcon from '../../images/icons/transaction-actions/deposit.svg'
 import { copyToClipboard } from '../../utils/dom'
 import Snackbar from '../shared/snackbar/snackbar.view'
 import { changeHeader } from '../../store/global/global.actions'
+import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 
 function Home ({
   tokensTask,
@@ -126,16 +124,7 @@ function Home ({
               }
             })()}
           </div>
-          <div className={classes.actionButtonsGroup}>
-            <Link to='/transfer' className={classes.button}>
-              <img src={sendIcon} alt='Send' />
-              <p className={classes.buttonText}>Send</p>
-            </Link>
-            <Link to='/deposit' className={classes.button}>
-              <img src={depositIcon} alt='Deposit' />
-              <p className={classes.buttonText}>Deposit</p>
-            </Link>
-          </div>
+          <TransactionActions hideWithdraw />
         </section>
       </Container>
       <Container>

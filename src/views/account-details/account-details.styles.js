@@ -23,18 +23,6 @@ const useAccountDetailsStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.dark,
     marginBottom: theme.spacing(2)
-  },
-  actionButtonsGroup: {
-    display: 'flex',
-    justifyContent: 'space-between'
-  },
-  button: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  },
-  buttonText: {
-    fontWeight: theme.fontWeights.bold
   }
 }))
 
