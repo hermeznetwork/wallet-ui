@@ -5,12 +5,12 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
-import { fetchAccounts } from '../../store/home/home.thunks'
+import { fetchAccounts, fetchUSDTokenExchangeRates } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
-import { CurrencySymbol } from '../../utils/currencies'
+import { getTokenFiatExchangeRate } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { copyToClipboard } from '../../utils/dom'
 import Snackbar from '../shared/snackbar/snackbar.view'
@@ -19,13 +19,14 @@ import TransactionActions from '../shared/transaction-actions/transaction-action
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 
 function Home ({
-  tokensTask,
-  accountsTask,
   metaMaskWalletTask,
+  accountsTask,
+  usdTokenExchangeRatesTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   onChangeHeader,
   onLoadAccounts,
+  onLoadUSDTokenExchangeRates,
   onNavigateToAccountDetails
 }) {
   const theme = useTheme()
@@ -37,41 +38,45 @@ function Home ({
   }, [onChangeHeader])
 
   React.useEffect(() => {
-    if (metaMaskWalletTask.status === 'successful' && tokensTask.status === 'successful') {
-      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress, tokensTask.data)
+    if (metaMaskWalletTask.status === 'successful') {
+      onLoadAccounts(metaMaskWalletTask.data.hermezEthereumAddress)
     }
-  }, [metaMaskWalletTask, tokensTask, onLoadAccounts])
+  }, [metaMaskWalletTask, onLoadAccounts])
+
+  React.useEffect(() => {
+    if (accountsTask.status === 'successful') {
+      onLoadUSDTokenExchangeRates(
+        accountsTask.data.accounts.map(account => account.tokenId)
+      )
+    }
+  }, [accountsTask, onLoadUSDTokenExchangeRates])
 
   function getTotalBalance (accounts) {
     if (
-      tokensTask.status !== 'successful' ||
+      usdTokenExchangeRatesTask.status !== 'successful' ||
       fiatExchangeRatesTask.status !== 'successful'
     ) {
       return undefined
     }
 
     return accounts.reduce((amount, account) => {
-      const tokenSymbol = getTokenSymbol(account.tokenId)
-      const tokenRateInUSD = tokensTask.data
-        .find((token) => token.symbol === tokenSymbol).USD
-      const tokenFiatRate = preferredCurrency === CurrencySymbol.USD.code
-        ? tokenRateInUSD
-        : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
+      const tokenFiatExchangeRate = getTokenFiatExchangeRate(
+        account.tokenSymbol,
+        preferredCurrency,
+        usdTokenExchangeRatesTask.data,
+        fiatExchangeRatesTask.data
+      )
 
-      return amount + account.balance * tokenFiatRate
+      return amount + account.balance * tokenFiatExchangeRate
     }, 0)
   }
 
-  function getTokenSymbol (tokenId) {
-    return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
-  }
-
   function handleAccountClick (account) {
-    onNavigateToAccountDetails(account.token.tokenId)
+    onNavigateToAccountDetails(account.accountIndex)
   }
 
   function handleEthereumAddressClick (ethereumAddress) {
-    copyToClipboard(`hez:${metaMaskWalletTask.data.ethereumAddress}`)
+    copyToClipboard(metaMaskWalletTask.data.hermezEthereumAddress)
     setShowAddressCopiedSnackbar(true)
   }
 
@@ -89,9 +94,9 @@ function Home ({
               : (
                 <div
                   className={classes.hermezAddress}
-                  onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.ethereumAddress)}
+                  onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
                 >
-                  <p>{getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.ethereumAddress)}</p>
+                  <p>{getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}</p>
                 </div>
               )
           }
@@ -112,7 +117,7 @@ function Home ({
                 case 'successful': {
                   return (
                     <TotalBalance
-                      amount={getTotalBalance(accountsTask.data)}
+                      amount={getTotalBalance(accountsTask.data.accounts)}
                       currency={preferredCurrency}
                     />
                   )
@@ -139,10 +144,18 @@ function Home ({
               case 'successful': {
                 return (
                   <AccountList
-                    accounts={accountsTask.data}
-                    tokens={tokensTask.status === 'successful' ? tokensTask.data : undefined}
+                    accounts={accountsTask.data.accounts}
                     preferredCurrency={preferredCurrency}
-                    fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : undefined}
+                    usdTokenExchangeRates={
+                      usdTokenExchangeRatesTask.status === 'successful'
+                        ? usdTokenExchangeRatesTask.data
+                        : undefined
+                    }
+                    fiatExchangeRates={
+                      fiatExchangeRatesTask.status === 'successful'
+                        ? fiatExchangeRatesTask.data
+                        : undefined
+                    }
                     onAccountClick={handleAccountClick}
                   />
                 )
@@ -164,39 +177,13 @@ function Home ({
 }
 
 Home.propTypes = {
-  accountsTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        balance: PropTypes.number.isRequired,
-        tokenId: PropTypes.number.isRequired
-      })
-    ),
-    error: PropTypes.string
-  }),
-  metaMaskWalletTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.object,
-    error: PropTypes.string
-  }),
+  accountsTask: PropTypes.object,
+  metaMaskWalletTask: PropTypes.object,
   preferredCurrency: PropTypes.string.isRequired,
-  tokensTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired
-      })
-    ),
-    error: PropTypes.string
-  }),
-  fiatExchangeRatesTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.object,
-    error: PropTypes.string
-  }),
+  usdTokenExchangeRatesTask: PropTypes.object,
+  fiatExchangeRatesTask: PropTypes.object,
   onLoadAccounts: PropTypes.func.isRequired,
+  onLoadUSDTokenExchangeRates: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
@@ -204,16 +191,19 @@ const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
   metaMaskWalletTask: state.account.metaMaskWalletTask,
   accountsTask: state.home.accountsTask,
+  usdTokenExchangeRatesTask: state.home.usdTokenExchangeRatesTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.settings.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () => dispatch(changeHeader({ type: 'main' })),
-  onLoadAccounts: (ethereumAddress, tokens) =>
-    dispatch(fetchAccounts(ethereumAddress, tokens)),
-  onNavigateToAccountDetails: (tokenId) =>
-    dispatch(push(`/accounts/${tokenId}`))
+  onLoadAccounts: (hermezEthereumAddress) =>
+    dispatch(fetchAccounts(hermezEthereumAddress)),
+  onLoadUSDTokenExchangeRates: (tokenIds) =>
+    dispatch(fetchUSDTokenExchangeRates(tokenIds)),
+  onNavigateToAccountDetails: (accountIndex) =>
+    dispatch(push(`/accounts/${accountIndex}`))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))

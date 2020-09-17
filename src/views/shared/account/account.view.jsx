@@ -7,18 +7,20 @@ function Account ({
   tokenName,
   balance,
   tokenSymbol,
-  tokenFiatRate,
+  tokenFiatExchangeRate,
   preferredCurrency,
   onClick
 }) {
   const classes = useAccountStyles()
-  const balanceInFiat = balance * tokenFiatRate
+  const balanceInFiat = tokenFiatExchangeRate
+    ? (balance * tokenFiatExchangeRate).toFixed(2)
+    : '-'
 
   return (
     <div className={classes.root} onClick={() => onClick()}>
       <div className={`${classes.values} ${classes.topRow}`}>
         <p className={classes.tokenName}>{tokenName}</p>
-        <p>{preferredCurrency} {balanceInFiat.toFixed(2)}</p>
+        <p>{preferredCurrency} {balanceInFiat}</p>
       </div>
       <div className={`${classes.values} ${classes.bottomRow}`}>
         <p>{tokenSymbol}</p>
@@ -29,10 +31,10 @@ function Account ({
 }
 
 Account.propTypes = {
-  balance: PropTypes.number.isRequired,
+  balance: PropTypes.string.isRequired,
   tokenName: PropTypes.string.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
-  tokenFiatRate: PropTypes.number.isRequired,
+  tokenFiatExchangeRate: PropTypes.number,
   preferredCurrency: PropTypes.string.isRequired,
   onClick: PropTypes.func
 }

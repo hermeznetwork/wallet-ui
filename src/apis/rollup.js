@@ -1,15 +1,16 @@
-import axios from './mock'
+import axios from 'axios'
 
 const baseApiUrl = process.env.REACT_APP_ROLLUP_API_URL
 
 async function getAccounts (ethereumAddress) {
-  const response = await axios.get(`${baseApiUrl}/account/${ethereumAddress}`)
+  const params = { hermezEthereumAddress: ethereumAddress }
+  const response = await axios.get(`${baseApiUrl}/accounts`, { params })
 
   return response.data
 }
 
-async function getAccount (ethereumAddress, tokenId) {
-  const response = await axios.get(`${baseApiUrl}/account/${ethereumAddress}/${tokenId}`)
+async function getAccount (accountIndex) {
+  const response = await axios.get(`${baseApiUrl}/account/${accountIndex}`)
 
   return response.data
 }
@@ -38,8 +39,11 @@ async function getPoolTransaction (transactionId) {
   return response.data
 }
 
-async function getTokens () {
-  const response = await axios.get(`${baseApiUrl}/tokens`)
+async function getTokens (tokenIds) {
+  const params = {
+    ...(tokenIds ? { ids: tokenIds.join(',') } : {})
+  }
+  const response = await axios.get(`${baseApiUrl}/tokens`, { params })
 
   return response.data
 }

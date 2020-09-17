@@ -43,7 +43,7 @@ function fetchMetaMaskTokens () {
         // For ERC 20 tokens, check the balance from the smart contract
         const contract = new ethers.Contract(token.ethAddr, partialERC20ABI, provider)
         balancePromises.push(
-          contract.balanceOf(metaMaskWalletTask.data.ethereumAddress)
+          contract.balanceOf(metaMaskWalletTask.data.hermezEthereumAddress)
             // We can ignore if a call to the contract of a specific token fails.
             .catch(() => {})
         )

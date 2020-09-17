@@ -3,27 +3,17 @@ import PropTypes from 'prop-types'
 
 import useAccountListStyles from './account-list.styles'
 import Account from '../account/account.view'
-import { CurrencySymbol } from '../../../utils/currencies'
+import { getTokenFiatExchangeRate } from '../../../utils/currencies'
 import clsx from 'clsx'
 
 function AccountList ({
   accounts,
   preferredCurrency,
+  usdTokenExchangeRates,
   fiatExchangeRates,
   onAccountClick
 }) {
   const classes = useAccountListStyles()
-
-  /**
-   * Returns the conversion rate from the selected token to the selected preffered currency.
-   *
-   * @returns {Number} Conversion rate from the selected token to fiat
-   */
-  function getAccountFiatRate (token) {
-    return preferredCurrency === CurrencySymbol.USD.code
-      ? token.USD
-      : token.USD * fiatExchangeRates[preferredCurrency]
-  }
 
   /**
    * When an account is selected, bubble it up with the onAccountClick prop function.
@@ -37,7 +27,7 @@ function AccountList ({
       {accounts.map((account, index) => {
         return (
           <div
-            key={account.token.tokenId}
+            key={account.accountIndex}
             className={
               clsx({
                 [classes.account]: true,
@@ -47,10 +37,15 @@ function AccountList ({
           >
             <Account
               balance={account.balance}
-              tokenName={account.token.name}
-              tokenSymbol={account.token.symbol}
+              tokenName={account.tokenName}
+              tokenSymbol={account.tokenSymbol}
               preferredCurrency={preferredCurrency}
-              tokenFiatRate={getAccountFiatRate(account.token)}
+              tokenFiatExchangeRate={getTokenFiatExchangeRate(
+                account.tokenSymbol,
+                preferredCurrency,
+                usdTokenExchangeRates,
+                fiatExchangeRates
+              )}
               onClick={() => handleAccountListItemClick(account)}
             />
           </div>
@@ -61,19 +56,10 @@ function AccountList ({
 }
 
 AccountList.propTypes = {
-  accounts: PropTypes.arrayOf(
-    PropTypes.shape({
-      balance: PropTypes.number.isRequired,
-      token: PropTypes.shape({
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired
-      })
-    })
-  ),
-  onTokenSelected: PropTypes.func,
+  accounts: PropTypes.array,
   preferredCurrency: PropTypes.string.isRequired,
-  fiatExchangeRates: PropTypes.object.isRequired,
+  usdTokenExchangeRates: PropTypes.object,
+  fiatExchangeRates: PropTypes.object,
   onAccountClick: PropTypes.func
 }
 

@@ -1,12 +1,13 @@
 import ethers from 'ethers'
 import { keccak256 } from 'js-sha3'
 import BigInt from 'big-integer'
+
+import * as accountActions from './account.actions'
 import { getNullifier, hexToBuffer } from '../../utils/utils'
+import { getHermezAddress } from '../../utils/addresses'
 import { BabyJubWallet } from '../../utils/babyjub-wallet'
 import { CliExternalOperator } from '../../utils/cli-external-operator'
 import { METAMASK_MESSAGE } from '../../constants'
-
-import * as accountActions from './account.actions'
 
 function fetchMetamaskWallet () {
   return async function (dispatch) {
@@ -20,10 +21,11 @@ function fetchMetamaskWallet () {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
       const ethereumAddress = await signer.getAddress()
+      const hermezEthereumAddress = getHermezAddress(ethereumAddress)
       const signature = await signer.signMessage(METAMASK_MESSAGE)
       const hashedSignature = keccak256(signature)
       const bufferSignature = hexToBuffer(hashedSignature)
-      const wallet = new BabyJubWallet(bufferSignature, ethereumAddress)
+      const wallet = new BabyJubWallet(bufferSignature, hermezEthereumAddress)
       dispatch(accountActions.loadMetamaskWalletSuccess(wallet))
     } catch (error) {
       dispatch(accountActions.loadMetamaskWalletFailure(error.message))
@@ -38,7 +40,7 @@ function fetchAccountInfo (abiTokens, wallet, operatorUrl, addressRollup, abiRol
       const txsExits = []
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
-      const walletEthAddress = wallet.ethereumAddress
+      const walletEthAddress = wallet.hermezEthereumAddress
       const balanceHex = await provider.getBalance(walletEthAddress)
       const balance = ethers.utils.formatEther(balanceHex)
       const apiOperator = new CliExternalOperator(operatorUrl)
@@ -81,7 +83,7 @@ async function getTokensInfo (tokensList, abiTokens, wallet, walletEth, addressR
   const tokensUser = []
   let tokens = BigInt(0)
   let tokensA = BigInt(0)
-  let walletEthAddress = wallet.ethereumAddress
+  let walletEthAddress = wallet.hermezEthereumAddress
   try {
     if (!walletEthAddress.startsWith('0x')) {
       walletEthAddress = `0x${walletEthAddress}`

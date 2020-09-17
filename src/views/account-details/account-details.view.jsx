@@ -47,8 +47,8 @@ function AccountDetails ({
 
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
-      onLoadAccount(metaMaskWalletTask.data.ethereumAddress, tokenId)
-      onLoadTransactions(metaMaskWalletTask.data.ethereumAddress, tokenId)
+      onLoadAccount(metaMaskWalletTask.data.hermezEthereumAddress, tokenId)
+      onLoadTransactions(metaMaskWalletTask.data.hermezEthereumAddress, tokenId)
     }
   }, [metaMaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
 

@@ -1,21 +1,32 @@
 import * as homeActions from './home.actions'
 import * as rollupApi from '../../apis/rollup'
 
-function fetchAccounts (ethereumAddress, tokens) {
+function fetchAccounts (hermezEthereumAddress) {
   return (dispatch) => {
     dispatch(homeActions.loadAccounts())
 
-    return rollupApi.getAccounts(ethereumAddress)
-      .then(res => {
-        const accountsWithTokenData = res.map(account => ({
-          ...account,
-          token: tokens.find((token) => token.tokenId === account.tokenId)
-        }))
-
-        dispatch(homeActions.loadAccountsSuccess(accountsWithTokenData))
-      })
+    return rollupApi.getAccounts(hermezEthereumAddress)
+      .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
   }
 }
 
-export { fetchAccounts }
+function fetchUSDTokenExchangeRates (tokenIds) {
+  return (dispatch) => {
+    dispatch(homeActions.loadUSDTokenExchangeRates())
+
+    return rollupApi.getTokens(tokenIds)
+      .then(res => {
+        const usdTokenExchangeRates = res.tokens
+          .reduce((exchangeRatesMap, token) => ({
+            ...exchangeRatesMap,
+            [token.symbol]: token.USD
+          }), {})
+
+        dispatch(homeActions.loadUSDTokenExchangeRatesSuccess(usdTokenExchangeRates))
+      })
+      .catch(err => dispatch(homeActions.loadUSDTokenExchangeRatesFailure(err)))
+  }
+}
+
+export { fetchAccounts, fetchUSDTokenExchangeRates }

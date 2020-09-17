@@ -29,7 +29,7 @@ export const deposit = async (addressSC, loadAmount, tokenId, walletRollup, abi,
   const signer = provider.getSigner()
   const contractWithSigner = new ethers.Contract(addressSC, abi, signer)
 
-  const address = walletRollup.ethereumAddress
+  const address = walletRollup.hermezEthereumAddress
   const feeOnchainTx = await contractWithSigner.feeOnchainTx()
   const feeDeposit = await contractWithSigner.depositFee()
 
