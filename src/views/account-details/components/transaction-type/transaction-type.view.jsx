@@ -20,7 +20,7 @@ function TransactionType ({ type, amount }) {
           return receivedIcon
         }
       }
-      case TxType.Withdrawn: {
+      case TxType.Withdraw: {
         return withdrawnIcon
       }
       default: {

@@ -7,7 +7,7 @@ import { CliExternalOperator } from './cli-external-operator'
 export const TxType = {
   Deposit: 'Deposit',
   Transfer: 'Transfer',
-  Withdrawn: 'Withdrawn'
+  Withdraw: 'Withdrawn'
 }
 
 /**
