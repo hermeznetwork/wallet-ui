@@ -16,6 +16,7 @@ import { copyToClipboard } from '../../utils/dom'
 import Snackbar from '../shared/snackbar/snackbar.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
+import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 
 function Home ({
   tokensTask,
@@ -65,16 +66,6 @@ function Home ({
     return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
   }
 
-  function getHermezAddress (ethereumAddress) {
-    const firstAddressSlice = ethereumAddress.slice(0, 6)
-    const secondAddressSlice = ethereumAddress.slice(
-      ethereumAddress.length - 4,
-      ethereumAddress.length
-    )
-
-    return `hez:${firstAddressSlice} *** ${secondAddressSlice}`
-  }
-
   function handleAccountClick (account) {
     onNavigateToAccountDetails(account.token.tokenId)
   }
@@ -100,7 +91,7 @@ function Home ({
                   className={classes.hermezAddress}
                   onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.ethereumAddress)}
                 >
-                  <p>{getHermezAddress(metaMaskWalletTask.data.ethereumAddress)}</p>
+                  <p>{getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.ethereumAddress)}</p>
                 </div>
               )
           }
