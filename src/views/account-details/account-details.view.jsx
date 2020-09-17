@@ -52,6 +52,11 @@ function AccountDetails ({
     }
   }, [metaMaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
 
+  /**
+   * Returns the total balance of the account in the preferred currency
+   *
+   * @returns {Number} The balance of the account in the preferred currency
+   */
   function getAccountBalance () {
     if (
       accountTask.status !== 'successful' ||
