@@ -1,17 +1,19 @@
 import { createUseStyles } from 'react-jss'
 
-const useHeaderStyles = createUseStyles(theme => ({
+const useMainHeaderStyles = createUseStyles(theme => ({
   root: {
     width: '100%',
-    padding: `${theme.spacing(2)}px 0`,
     position: 'fixed',
+    height: theme.headerHeight,
+    display: 'flex',
+    alignItems: 'center',
     background: theme.palette.primary.main
   },
   headerContent: {
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'center'
   },
   logo: {
     textDecoration: 'none',
@@ -21,19 +23,19 @@ const useHeaderStyles = createUseStyles(theme => ({
   link: {
     display: 'flex',
     alignItems: 'center',
-    padding: theme.spacing(1)
+    padding: theme.spacing(1),
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)'
   },
   linkText: {
-    fontWeight: theme.fontWeights.bold
+    fontWeight: theme.fontWeights.bold,
+    whiteSpace: 'nowrap'
   },
   myAccountIcon: {
-    marginLeft: -8,
+    marginLeft: -(theme.spacing(1)),
     marginRight: theme.spacing(1.5)
-  },
-  qrScannerIcon: {
-    marginLeft: theme.spacing(1.5),
-    marginRight: -8
   }
 }))
 
-export default useHeaderStyles
+export default useMainHeaderStyles

@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { useTheme } from 'react-jss'
+import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
 import { fetchAccount, fetchTransactions } from '../../store/account-details/account-details.thunks'
@@ -10,7 +12,8 @@ import TransactionList from './components/transaction-list/transaction-list.view
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
-import { push } from 'connected-react-router'
+import { changeHeader } from '../../store/global/global.actions'
+import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 
 function AccountDetails ({
   metaMaskWalletTask,
@@ -19,12 +22,28 @@ function AccountDetails ({
   transactionsTask,
   tokensTask,
   fiatExchangeRatesTask,
+  onChangeHeader,
   onLoadAccount,
   onLoadTransactions,
   onNavigateToTransactionDetails
 }) {
+  const theme = useTheme()
   const classes = useAccountDetailsStyles()
-  const { tokenId } = useParams()
+  const tokenId = Number(useParams().tokenId)
+
+  const getToken = React.useCallback((tokenId) => {
+    if (tokensTask.status !== 'successful') {
+      return '-'
+    }
+
+    return tokensTask.data.find((token) => token.tokenId === tokenId)
+  }, [tokensTask])
+
+  React.useEffect(() => {
+    const token = getToken(tokenId)
+
+    onChangeHeader(token.name)
+  }, [tokenId, getToken, onChangeHeader])
 
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
@@ -33,10 +52,11 @@ function AccountDetails ({
     }
   }, [metaMaskWalletTask, tokenId, onLoadAccount, onLoadTransactions])
 
-  function getTokenSymbol (tokenId) {
-    return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
-  }
-
+  /**
+   * Returns the total balance of the account in the preferred currency
+   *
+   * @returns {Number} The balance of the account in the preferred currency
+   */
   function getAccountBalance () {
     if (
       accountTask.status !== 'successful' ||
@@ -45,7 +65,7 @@ function AccountDetails ({
     ) {
       return '-'
     }
-    const tokenSymbol = getTokenSymbol(accountTask.data.tokenId)
+    const tokenSymbol = getToken(accountTask.data.tokenId).symbol
     const tokenRateInUSD = tokensTask.data
       .find((token) => token.symbol === tokenSymbol).USD
     const tokenRate = preferredCurrency === CurrencySymbol.USD.code
@@ -55,23 +75,14 @@ function AccountDetails ({
     return accountTask.data.balance * tokenRate
   }
 
-  function getTokenName (tokenId) {
-    if (tokensTask.status !== 'successful') {
-      return '-'
-    }
-
-    return tokensTask.data.find(token => token.tokenId === tokenId).name
-  }
-
   function handleTransactionClick (transactionId) {
     onNavigateToTransactionDetails(tokenId, transactionId)
   }
 
   return (
-    <Container>
-
-      <div className={classes.root}>
-        <section>
+    <div className={classes.root}>
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+        <section className={classes.section}>
           {(() => {
             switch (accountTask.status) {
               case 'loading': {
@@ -83,9 +94,12 @@ function AccountDetails ({
               case 'successful': {
                 return (
                   <div>
-                    <h3>{getTokenName(accountTask.data.tokenId)}</h3>
-                    <h1>{getAccountBalance().toFixed(2)} {preferredCurrency}</h1>
-                    <p>{accountTask.data.balance} {getTokenSymbol(accountTask.data.tokenId)}</p>
+                    <h1 className={classes.tokenBalance}>
+                      {preferredCurrency} {getAccountBalance().toFixed(2)}
+                    </h1>
+                    <p className={classes.fiatBalance}>
+                      {accountTask.data.balance} {getToken(accountTask.data.tokenId).symbol}
+                    </p>
                   </div>
                 )
               }
@@ -94,14 +108,11 @@ function AccountDetails ({
               }
             }
           })()}
-          <div className={classes.actionButtonsGroup}>
-            <button className={classes.actionButton}>Send</button>
-            <button className={classes.actionButton}>Add funds</button>
-            <button className={classes.actionButton}>Withdrawal</button>
-          </div>
+          <TransactionActions />
         </section>
-        <section>
-          <h4 className={classes.title}>Activity</h4>
+      </Container>
+      <Container>
+        <section className={classes.section}>
           {(() => {
             switch (transactionsTask.status) {
               case 'loading': {
@@ -127,8 +138,8 @@ function AccountDetails ({
             }
           })()}
         </section>
-      </div>
-    </Container>
+      </Container>
+    </div>
   )
 }
 
@@ -182,6 +193,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  onChangeHeader: (tokenName) =>
+    dispatch(changeHeader({ type: 'page', data: { title: tokenName, previousRoute: '/' } })),
   onLoadAccount: (ethereumAddress, tokenId) => dispatch(fetchAccount(ethereumAddress, tokenId)),
   onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId)),
   onNavigateToTransactionDetails: (tokenId, transactionId) =>

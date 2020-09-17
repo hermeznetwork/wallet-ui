@@ -1,26 +1,29 @@
 import { createUseStyles } from 'react-jss'
 
-const useAccountDetailsStyles = createUseStyles({
+const useAccountDetailsStyles = createUseStyles(theme => ({
   root: {
     width: '100%'
   },
-  title: {
-    marginBottom: 16
-  },
-  actionButtonsGroup: {
-    marginTop: 16,
+  section: {
+    width: '100%',
     display: 'flex',
-    justifyContent: 'space-between'
+    flexDirection: 'column',
+    alignItems: 'center'
   },
-  actionButton: {
-    appearance: 'none',
-    padding: '8px 16px',
-    border: '1px solid gainsboro',
-    background: 'transparent',
-    borderRadius: 8,
-    cursor: 'pointer',
-    flex: '0 0 32%'
+  tokenBalance: {
+    fontSize: theme.spacing(5),
+    fontWeight: theme.fontWeights.bold,
+    color: theme.palette.black,
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1)
+  },
+  fiatBalance: {
+    textAlign: 'center',
+    fontSize: theme.spacing(2.5),
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.dark,
+    marginBottom: theme.spacing(2)
   }
-})
+}))
 
 export default useAccountDetailsStyles

@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import useTransactionStyles from './transaction.styles'
+import TransactionType from '../transaction-type/transaction-type.view'
 
 function Transaction ({
   id,
@@ -22,21 +23,24 @@ function Transaction ({
 
   return (
     <div className={classes.root} onClick={handleClick}>
-      <div className={classes.typeContainer}>
-        <p className={classes.type}>{type.charAt(0)}</p>
+      <div className={classes.type}>
+        <TransactionType type={type} amount={amount} />
       </div>
-      <div>
-        <h3 className={classes.amount}>{amount} {tokenSymbol}</h3>
-        {
-          fiatRate
-            ? (
-              <h4 className={classes.preferredCurrency}>
-                {priceInFiat.toFixed(2)} {preferredCurrency}
-              </h4>
-            )
-            : <></>
-        }
-        <p className={classes.date}>{date}</p>
+      <div className={classes.info}>
+        <div className={`${classes.row} ${classes.topRow}`}>
+          <p>{type}</p>
+          <p className={classes.preferredCurrency}>
+            {
+              fiatRate
+                ? `${preferredCurrency} ${priceInFiat.toFixed(2)}`
+                : '-'
+            }
+          </p>
+        </div>
+        <div className={`${classes.row} ${classes.bottomRow}`}>
+          <p>{date}</p>
+          <p>{amount} {tokenSymbol}</p>
+        </div>
       </div>
     </div>
   )
