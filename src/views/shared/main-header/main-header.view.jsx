@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import useMainHeaderStyles from './main-header.styles'
 import logo from '../../../images/logo.svg'
-import userAccountIcon from '../../../images/icons/header/user-account.svg'
+import userAccountIcon from '../../../images/icons/user-account.svg'
 import Container from '../container/container.view'
 
 function MainHeader () {

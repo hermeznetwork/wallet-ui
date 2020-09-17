@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 import Container from '../container/container.view'
 import usePageHeaderStyles from './page-header.styles'
-import arrowBackIcon from '../../../images/icons/header/arrow-back.svg'
+import arrowBackIcon from '../../../images/icons/arrow-back.svg'
 
 function PageHeader ({ title, goBackRoute }) {
   const classes = usePageHeaderStyles()

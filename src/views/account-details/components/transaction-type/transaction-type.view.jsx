@@ -2,10 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import { TxType } from '../../../../utils/tx'
-import depositedIcon from '../../../../images/icons/transaction-type/deposited.svg'
-import receivedIcon from '../../../../images/icons/transaction-type/received.svg'
-import sentIcon from '../../../../images/icons/transaction-type/sent.svg'
-import withdrawnIcon from '../../../../images/icons/transaction-type/withdrawn.svg'
+import depositedIcon from '../../../../images/icons/deposited.svg'
+import receivedIcon from '../../../../images/icons/received.svg'
+import sentIcon from '../../../../images/icons/sent.svg'
+import withdrawnIcon from '../../../../images/icons/withdrawn.svg'
 
 function TransactionType ({ type, amount }) {
   function getIcon () {
