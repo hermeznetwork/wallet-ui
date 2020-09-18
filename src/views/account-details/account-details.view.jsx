@@ -78,7 +78,7 @@ function AccountDetails ({
   }
 
   function handleTransactionClick (transaction) {
-    onNavigateToTransactionDetails(transaction.id)
+    onNavigateToTransactionDetails(accountIndex, transaction.id)
   }
 
   return (
@@ -155,10 +155,10 @@ function AccountDetails ({
 
 AccountDetails.propTypes = {
   preferredCurrency: PropTypes.string.isRequired,
-  accountTask: PropTypes.object,
-  transactionsTask: PropTypes.object,
-  usdTokenExchangeRateTask: PropTypes.object,
-  fiatExchangeRatesTask: PropTypes.object,
+  accountTask: PropTypes.object.isRequired,
+  transactionsTask: PropTypes.object.isRequired,
+  usdTokenExchangeRateTask: PropTypes.object.isRequired,
+  fiatExchangeRatesTask: PropTypes.object.isRequired,
   onLoadAccount: PropTypes.func.isRequired,
   onChangeHeader: PropTypes.func.isRequired,
   onLoadTransactions: PropTypes.func.isRequired,
@@ -181,8 +181,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeHeader({ type: 'page', data: { title: tokenName, previousRoute: '/' } })),
   onLoadUSDTokenExchangeRate: (tokenId) => dispatch(fetchUSDTokenExchangeRate(tokenId)),
   onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId)),
-  onNavigateToTransactionDetails: (tokenId, transactionId) =>
-    dispatch(push(`/accounts/${tokenId}/transactions/${transactionId}`))
+  onNavigateToTransactionDetails: (accountIndex, transactionId) =>
+    dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))

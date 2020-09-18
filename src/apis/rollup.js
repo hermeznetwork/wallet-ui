@@ -23,11 +23,11 @@ async function getTransactions (hermezEthereumAddress, tokenId) {
 }
 
 async function getHistoryTransaction (transactionId) {
-  return extractJSON(axios.get(`${baseApiUrl}/tx/history/${transactionId}`))
+  return extractJSON(axios.get(`${baseApiUrl}/transactions-history/${transactionId}`))
 }
 
 async function getPoolTransaction (transactionId) {
-  return extractJSON(axios.get(`${baseApiUrl}/tx/pool/${transactionId}`))
+  return extractJSON(axios.get(`${baseApiUrl}/transactions-pool/${transactionId}`))
 }
 
 async function getTokens (tokenIds) {

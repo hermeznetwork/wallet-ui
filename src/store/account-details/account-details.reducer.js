@@ -62,7 +62,7 @@ function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
         ...state,
         usdTokenExchangeRateTask: {
           status: 'failed',
-          error: 'An error ocurred loading the USD token exchange rates'
+          error: 'An error ocurred loading the USD token exchange rate'
         }
       }
     }

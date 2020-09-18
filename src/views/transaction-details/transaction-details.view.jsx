@@ -5,54 +5,54 @@ import { useParams } from 'react-router-dom'
 import { push } from 'connected-react-router'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
-import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
+import { fetchTransaction, fetchUSDTokenExchangeRate } from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { CurrencySymbol } from '../../utils/currencies'
+import { getTokenFiatExchangeRate } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 
 function TransactionDetails ({
-  tokensTask,
   transactionTask,
+  usdTokenExchangeRateTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   onLoadTransaction,
-  onNavigateToAccountDetails
+  onNavigateToAccountDetails,
+  onLoadUSDTokenExchangeRate
 }) {
   const classes = useTransactionDetailsStyles()
-  const { tokenId, transactionId } = useParams()
+  const { accountIndex, transactionId } = useParams()
 
   React.useEffect(() => {
     onLoadTransaction(transactionId)
   }, [transactionId, onLoadTransaction])
 
-  function getTokenSymbol (tokenId) {
-    if (tokensTask.status !== 'successful') {
-      return '-'
+  React.useEffect(() => {
+    if (transactionTask.status === 'successful') {
+      onLoadUSDTokenExchangeRate(transactionTask.data.tokenId)
     }
+  }, [transactionTask, onLoadUSDTokenExchangeRate])
 
-    return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
-  }
-
-  function getAmountInFiat (tokenId, amount) {
+  function getAmountInFiat (amount) {
     if (
-      tokensTask.status !== 'successful' ||
+      usdTokenExchangeRateTask.status !== 'successful' ||
       fiatExchangeRatesTask.status !== 'successful'
     ) {
       return '-'
     }
 
-    const tokenRateInUSD = tokensTask.data
-      .find((token) => token.tokenId === tokenId).USD
-    const tokenFiatRate = preferredCurrency === CurrencySymbol.USD.code
-      ? tokenRateInUSD
-      : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
+    const tokenFiatExchangeRate = getTokenFiatExchangeRate(
+      transactionTask.data.tokenSymbol,
+      preferredCurrency,
+      usdTokenExchangeRateTask.data,
+      fiatExchangeRatesTask.data
+    )
 
-    return amount * tokenFiatRate
+    return (amount * tokenFiatExchangeRate).toFixed(2)
   }
 
   function handleNavigationToAccountDetails () {
-    onNavigateToAccountDetails(tokenId)
+    onNavigateToAccountDetails(accountIndex)
   }
 
   return (
@@ -79,20 +79,20 @@ function TransactionDetails ({
                     </a>
                   </div>
                   <div className={classes.transactionInfoContainer}>
-                    <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.tokenId, transactionTask.data.amount)} {preferredCurrency}</h1>
-                    <p>{transactionTask.data.amount} {getTokenSymbol(transactionTask.data.tokenId)}</p>
+                    <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.amount)} {preferredCurrency}</h1>
+                    <p>{transactionTask.data.amount} {transactionTask.data.tokenSymbol}</p>
                     <ul className={classes.transactionInfoList}>
                       <li className={classes.transactionInfoListItem}>
                         <p className={classes.transactionInfoListItemTitle}>To</p>
-                        <p>{transactionTask.data.toEthAddr}</p>
+                        <p>{transactionTask.data.toEthereumAddress}</p>
                       </li>
                       <li className={classes.transactionInfoListItem}>
                         <p className={classes.transactionInfoListItemTitle}>
                         Fee
                         </p>
                         <div>
-                          <p>{getAmountInFiat(transactionTask.data.tokenId, transactionTask.data.fee)} {preferredCurrency}</p>
-                          <p>{transactionTask.data.fee} {getTokenSymbol(transactionTask.data.tokenId)}</p>
+                          <p>{getAmountInFiat(transactionTask.data.fee)} {preferredCurrency}</p>
+                          <p>{transactionTask.data.fee} {transactionTask.data.tokenSymbol}</p>
                         </div>
                       </li>
                       <li className={classes.transactionInfoListItem}>
@@ -117,45 +117,25 @@ function TransactionDetails ({
 }
 
 TransactionDetails.propTypes = {
-  tokensTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired
-      })
-    )
-  }),
   preferredCurrency: PropTypes.string.isRequired,
-  transactionTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.shape({
-      type: PropTypes.string.isRequired,
-      toEthAddr: PropTypes.string.isRequired,
-      amount: PropTypes.number.isRequired,
-      fee: PropTypes.number.isRequired,
-      tokenId: PropTypes.number.isRequired
-    }),
-    error: PropTypes.string
-  }),
-  fiatExchangeRatesTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.object
-  }),
+  transactionTask: PropTypes.object.isRequired,
+  usdTokenExchangeRateTask: PropTypes.object.isRequired,
+  fiatExchangeRatesTask: PropTypes.object.isRequired,
   onLoadTransaction: PropTypes.func.isRequired,
-  onNavigateToAccountDetails: PropTypes.func.isRequired
+  onNavigateToAccountDetails: PropTypes.func.isRequired,
+  onLoadUSDTokenExchangeRate: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
-  tokensTask: state.global.tokensTask,
   preferredCurrency: state.settings.preferredCurrency,
   transactionTask: state.transactionDetails.transactionTask,
+  usdTokenExchangeRateTask: state.transactionDetails.usdTokenExchangeRateTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionId) => dispatch(fetchTransaction(transactionId)),
+  onLoadUSDTokenExchangeRate: (tokenId) => dispatch(fetchUSDTokenExchangeRate(tokenId)),
   onNavigateToAccountDetails: (tokenId) => dispatch(push(`/accounts/${tokenId}`))
 })
 
