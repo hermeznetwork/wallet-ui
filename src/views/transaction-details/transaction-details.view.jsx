@@ -136,7 +136,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionId) => dispatch(fetchTransaction(transactionId)),
   onLoadUSDTokenExchangeRate: (tokenId) => dispatch(fetchUSDTokenExchangeRate(tokenId)),
-  onNavigateToAccountDetails: (tokenId) => dispatch(push(`/accounts/${tokenId}`))
+  onNavigateToAccountDetails: (accountIndex) => dispatch(push(`/accounts/${accountIndex}`))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(TransactionDetails))
