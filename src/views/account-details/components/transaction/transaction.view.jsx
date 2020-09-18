@@ -5,20 +5,21 @@ import useTransactionStyles from './transaction.styles'
 import TransactionType from '../transaction-type/transaction-type.view'
 
 function Transaction ({
-  id,
   type,
   amount,
   tokenSymbol,
-  fiatRate,
+  tokenFiatExchangeRate,
   date,
   preferredCurrency,
   onClick
 }) {
   const classes = useTransactionStyles()
-  const priceInFiat = amount * fiatRate
+  const amountInFiat = tokenFiatExchangeRate
+    ? (Number(amount) * tokenFiatExchangeRate).toFixed(2)
+    : '-'
 
   function handleClick () {
-    onClick(id)
+    onClick()
   }
 
   return (
@@ -29,13 +30,7 @@ function Transaction ({
       <div className={classes.info}>
         <div className={`${classes.row} ${classes.topRow}`}>
           <p>{type}</p>
-          <p className={classes.preferredCurrency}>
-            {
-              fiatRate
-                ? `${preferredCurrency} ${priceInFiat.toFixed(2)}`
-                : '-'
-            }
-          </p>
+          <p className={classes.preferredCurrency}>{amountInFiat}</p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
           <p>{date}</p>
@@ -47,11 +42,10 @@ function Transaction ({
 }
 
 Transaction.propTypes = {
-  id: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
-  amount: PropTypes.number.isRequired,
+  amount: PropTypes.string.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
-  fiatRate: PropTypes.number,
+  tokenFiatExchangeRate: PropTypes.number,
   date: PropTypes.string.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired

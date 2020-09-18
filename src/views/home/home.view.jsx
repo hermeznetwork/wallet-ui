@@ -75,8 +75,8 @@ function Home ({
     onNavigateToAccountDetails(account.accountIndex)
   }
 
-  function handleEthereumAddressClick (ethereumAddress) {
-    copyToClipboard(metaMaskWalletTask.data.hermezEthereumAddress)
+  function handleEthereumAddressClick (hermezEthereumAddress) {
+    copyToClipboard(hermezEthereumAddress)
     setShowAddressCopiedSnackbar(true)
   }
 

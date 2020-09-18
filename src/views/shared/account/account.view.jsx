@@ -13,7 +13,7 @@ function Account ({
 }) {
   const classes = useAccountStyles()
   const balanceInFiat = tokenFiatExchangeRate
-    ? (balance * tokenFiatExchangeRate).toFixed(2)
+    ? (Number(balance) * tokenFiatExchangeRate).toFixed(2)
     : '-'
 
   return (

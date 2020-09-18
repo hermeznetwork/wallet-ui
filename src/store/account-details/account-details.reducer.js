@@ -4,6 +4,9 @@ const initialAccountDetailsReducer = {
   accountTask: {
     status: 'pending'
   },
+  usdTokenExchangeRateTask: {
+    status: 'pending'
+  },
   transactionsTask: {
     status: 'pending'
   }
@@ -34,6 +37,32 @@ function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
         accountTask: {
           status: 'failed',
           error: 'An error ocurred loading the account'
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_USD_TOKEN_EXCHANGE_RATE: {
+      return {
+        ...state,
+        usdTokenExchangeRateTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_USD_TOKEN_EXCHANGE_RATE_SUCCESS: {
+      return {
+        ...state,
+        usdTokenExchangeRateTask: {
+          status: 'successful',
+          data: action.usdTokenExchangeRate
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_USD_TOKEN_EXCHANGE_RATE_FAILURE: {
+      return {
+        ...state,
+        usdTokenExchangeRateTask: {
+          status: 'failed',
+          error: 'An error ocurred loading the USD token exchange rates'
         }
       }
     }

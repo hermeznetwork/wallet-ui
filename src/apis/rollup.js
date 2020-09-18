@@ -1,57 +1,49 @@
 import axios from 'axios'
+import { extractJSON } from '../utils/http'
 
 const baseApiUrl = process.env.REACT_APP_ROLLUP_API_URL
 
-async function getAccounts (ethereumAddress) {
-  const params = { hermezEthereumAddress: ethereumAddress }
-  const response = await axios.get(`${baseApiUrl}/accounts`, { params })
+async function getAccounts (hermezEthereumAddress) {
+  const params = { hermezEthereumAddress }
 
-  return response.data
+  return extractJSON(axios.get(`${baseApiUrl}/accounts`, { params }))
 }
 
 async function getAccount (accountIndex) {
-  const response = await axios.get(`${baseApiUrl}/account/${accountIndex}`)
-
-  return response.data
+  return extractJSON(axios.get(`${baseApiUrl}/accounts/${accountIndex}`))
 }
 
-async function getTransactions (ethereumAddress, tokenId) {
+async function getTransactions (hermezEthereumAddress, tokenId) {
   const params = {
+    ...(hermezEthereumAddress ? { hermezEthereumAddress } : {}),
     ...(tokenId ? { tokenId } : {})
   }
-  const response = await axios.get(
-    `${baseApiUrl}/account/${ethereumAddress}/txs/history`,
-    { params }
-  )
 
-  return response.data
+  return extractJSON(axios.get(`${baseApiUrl}/transactions-history`, { params }))
 }
 
 async function getHistoryTransaction (transactionId) {
-  const response = await axios.get(`${baseApiUrl}/tx/history/${transactionId}`)
-
-  return response.data
+  return extractJSON(axios.get(`${baseApiUrl}/tx/history/${transactionId}`))
 }
 
 async function getPoolTransaction (transactionId) {
-  const response = await axios.get(`${baseApiUrl}/tx/pool/${transactionId}`)
-
-  return response.data
+  return extractJSON(axios.get(`${baseApiUrl}/tx/pool/${transactionId}`))
 }
 
 async function getTokens (tokenIds) {
   const params = {
     ...(tokenIds ? { ids: tokenIds.join(',') } : {})
   }
-  const response = await axios.get(`${baseApiUrl}/tokens`, { params })
 
-  return response.data
+  return extractJSON(axios.get(`${baseApiUrl}/tokens`, { params }))
+}
+
+async function getToken (tokenId) {
+  return extractJSON(axios.get(`${baseApiUrl}/tokens/${tokenId}`))
 }
 
 async function getFees () {
-  const response = await axios.get(`${baseApiUrl}/recommendedFee`)
-
-  return response.data
+  return extractJSON(axios.get(`${baseApiUrl}/recommendedFee`))
 }
 
 export {
@@ -61,5 +53,6 @@ export {
   getHistoryTransaction,
   getPoolTransaction,
   getTokens,
+  getToken,
   getFees
 }
