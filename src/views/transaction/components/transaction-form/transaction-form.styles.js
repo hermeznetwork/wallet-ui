@@ -1,5 +1,16 @@
 import { createUseStyles } from 'react-jss'
 
+function errorMessage (theme) {
+  return {
+    display: 'none',
+    alignItems: 'center',
+    marginTop: `${theme.spacing(1.5)}px`,
+    fontSize: `${theme.spacing(2)}px`,
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.red
+  }
+}
+
 const useAccountListStyles = createUseStyles(theme => ({
   transaction: {},
   token: {
@@ -7,7 +18,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: theme.palette.grey.light,
-    borderRadius: 16,
+    borderRadius: 12,
     height: `${theme.spacing(10)}px`,
     marginBottom: `${theme.spacing(6)}px`,
     padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
@@ -17,7 +28,7 @@ const useAccountListStyles = createUseStyles(theme => ({
   },
   selectAmount: {
     border: `solid 2px ${theme.palette.grey.veryLight}`,
-    borderRadius: 20
+    borderRadius: 12
   },
   selectAmountError: {
     borderColor: theme.palette.red
@@ -77,14 +88,7 @@ const useAccountListStyles = createUseStyles(theme => ({
   changeCurrencyIcon: {
     marginRight: `${theme.spacing(1)}px`
   },
-  selectAmountErrorMessage: {
-    display: 'none',
-    alignItems: 'center',
-    marginTop: `${theme.spacing(1.5)}px`,
-    fontSize: `${theme.spacing(2)}px`,
-    fontWeight: theme.fontWeights.medium,
-    color: theme.palette.red
-  },
+  selectAmountErrorMessage: errorMessage(theme),
   selectAmountErrorMessageVisible: {
     display: 'flex'
   },
@@ -92,6 +96,71 @@ const useAccountListStyles = createUseStyles(theme => ({
     marginRight: `${theme.spacing(1)}px`,
     width: `${theme.spacing(2.5)}px`,
     height: `${theme.spacing(2.5)}px`
+  },
+  receiverInputWrapper: {
+    width: '100%',
+    position: 'relative',
+    marginTop: `${theme.spacing(5)}px`
+  },
+  receiver: {
+    width: '100%',
+    borderRadius: 12,
+    border: `solid 2px ${theme.palette.grey.veryLight}`,
+    padding: `${theme.spacing(5.5)}px ${theme.spacing(5) + 30}px ${theme.spacing(5.5)}px ${theme.spacing(5)}px`,
+    fontSize: `${theme.spacing(3)}px`,
+    color: theme.palette.black.dark,
+    fontWeight: theme.fontWeights.medium,
+    outline: 0,
+    '&::placeholder': {
+      color: theme.palette.grey.main,
+      opacity: 1
+    }
+  },
+  receiverError: {
+    borderColor: theme.palette.red
+  },
+  receiverErrorMessage: errorMessage(theme),
+  receiverErrorMessageVisible: {
+    display: 'flex'
+  },
+  receiverPaste: {
+    position: 'absolute',
+    right: `${theme.spacing(5)}px`,
+    top: 0,
+    height: '100%',
+    alignItems: 'center',
+    border: 0,
+    background: 0,
+    outline: 'none',
+    padding: 0,
+    fontSize: `${theme.spacing(2.5)}px`,
+    fontWeight: theme.fontWeights.bold,
+    color: theme.palette.black.dark,
+    cursor: 'pointer',
+    display: 'none'
+  },
+  receiverPasteVisible: {
+    display: 'flex'
+  },
+  receiverDelete: {
+    position: 'absolute',
+    right: `${theme.spacing(5)}px`,
+    top: 0,
+    height: '100%',
+    alignItems: 'center',
+    border: 0,
+    background: 0,
+    outline: 'none',
+    padding: 0,
+    cursor: 'pointer',
+    display: 'none'
+  },
+  receiverDeleteVisible: {
+    display: 'flex'
+  },
+  receiverDeleteIcon: {
+    width: 30,
+    height: 30
   },
   continue: {
     cursor: 'pointer',
@@ -101,7 +170,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     backgroundColor: theme.palette.secondary,
     border: 0,
     outline: 'none',
-    borderRadius: 20,
+    borderRadius: 14,
     fontSize: `${theme.spacing(3)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.white,
@@ -115,7 +184,8 @@ const useAccountListStyles = createUseStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    marginTop: `${theme.spacing(4.5)}px`
   },
   fee: {
     fontSize: `${theme.spacing(3)}px`,

@@ -1,6 +1,7 @@
 import ethers from 'ethers'
 
 import * as transactionActions from './transaction.actions'
+import * as rollupApi from '../../apis/rollup'
 import { ETHER_TOKEN_ID } from '../../constants'
 
 /**
@@ -71,6 +72,17 @@ function fetchMetaMaskTokens () {
   }
 }
 
+function fetchFees () {
+  return async function (dispatch) {
+    dispatch(transactionActions.loadFees())
+
+    return rollupApi.getFees()
+      .then(res => dispatch(transactionActions.loadFeesSuccess(res)))
+      .catch(err => dispatch(transactionActions.loadFeesFailure(err)))
+  }
+}
+
 export {
-  fetchMetaMaskTokens
+  fetchMetaMaskTokens,
+  fetchFees
 }
