@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
@@ -13,10 +12,11 @@ import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
 import { CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
-import sendIcon from '../../images/icons/send.svg'
-import depositIcon from '../../images/icons/deposit.svg'
 import { copyToClipboard } from '../../utils/dom'
 import Snackbar from '../shared/snackbar/snackbar.view'
+import { changeHeader } from '../../store/global/global.actions'
+import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
+import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 
 function Home ({
   tokensTask,
@@ -24,12 +24,17 @@ function Home ({
   metaMaskWalletTask,
   fiatExchangeRatesTask,
   preferredCurrency,
+  onChangeHeader,
   onLoadAccounts,
   onNavigateToAccountDetails
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
   const [showAddressCopiedSnackbar, setShowAddressCopiedSnackbar] = React.useState(false)
+
+  React.useEffect(() => {
+    onChangeHeader()
+  }, [onChangeHeader])
 
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful' && tokensTask.status === 'successful') {
@@ -66,10 +71,8 @@ function Home ({
   }
 
   function handleEthereumAddressClick (ethereumAddress) {
-    if (metaMaskWalletTask.status === 'successful') {
-      copyToClipboard(`hez:${metaMaskWalletTask.data.ethereumAddress}`)
-      setShowAddressCopiedSnackbar(true)
-    }
+    copyToClipboard(`hez:${metaMaskWalletTask.data.ethereumAddress}`)
+    setShowAddressCopiedSnackbar(true)
   }
 
   function handleAddressCopiedSnackbarClose () {
@@ -80,18 +83,18 @@ function Home ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
-          <div
-            className={classes.hermezAddress}
-            onClick={handleEthereumAddressClick}
-          >
-            <p>
-              {
-                metaMaskWalletTask.status === 'successful'
-                  ? `hez:${metaMaskWalletTask.data.ethereumAddress}`
-                  : '-'
-              }
-            </p>
-          </div>
+          {
+            metaMaskWalletTask.status !== 'successful'
+              ? <></>
+              : (
+                <div
+                  className={classes.hermezAddress}
+                  onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.ethereumAddress)}
+                >
+                  <p>{getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.ethereumAddress)}</p>
+                </div>
+              )
+          }
           <div className={classes.totalBalance}>
             {(() => {
               switch (accountsTask.status) {
@@ -120,16 +123,7 @@ function Home ({
               }
             })()}
           </div>
-          <div className={classes.actionButtonsGroup}>
-            <Link to='/transfer' className={classes.button}>
-              <img src={sendIcon} alt='Send' />
-              <p className={classes.buttonText}>Send</p>
-            </Link>
-            <Link to='/deposit' className={classes.button}>
-              <img src={depositIcon} alt='Deposit' />
-              <p className={classes.buttonText}>Deposit</p>
-            </Link>
-          </div>
+          <TransactionActions hideWithdraw />
         </section>
       </Container>
       <Container>
@@ -215,6 +209,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  onChangeHeader: () => dispatch(changeHeader({ type: 'main' })),
   onLoadAccounts: (ethereumAddress, tokens) =>
     dispatch(fetchAccounts(ethereumAddress, tokens)),
   onNavigateToAccountDetails: (tokenId) =>
