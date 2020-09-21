@@ -9,7 +9,7 @@ function Transaction ({
   amount,
   tokenSymbol,
   fiatAmount,
-  date,
+  timestamp,
   preferredCurrency,
   onClick
 }) {
@@ -30,7 +30,7 @@ function Transaction ({
           <p className={classes.preferredCurrency}>{fiatAmount.toFixed(2)}</p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
-          <p>{date}</p>
+          <p>{timestamp.toLocaleDateString()}</p>
           <p>{amount} {tokenSymbol}</p>
         </div>
       </div>
@@ -43,7 +43,7 @@ Transaction.propTypes = {
   amount: PropTypes.string.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
   fiatAmount: PropTypes.number.isRequired,
-  date: PropTypes.string.isRequired,
+  timestamp: PropTypes.string.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired
 }

@@ -35,7 +35,7 @@ function TransactionList ({
               transaction.historicUSD,
               fiatExchangeRates
             )}
-            date={new Date().toLocaleDateString()}
+            timestamp={transaction.timestamp}
             preferredCurrency={preferredCurrency}
             onClick={() => handleTransactionClick(transaction)}
           />
