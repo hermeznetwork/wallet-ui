@@ -26,30 +26,8 @@ function loadTransactionFailure () {
   }
 }
 
-function loadUSDTokenExchangeRate () {
-  return {
-    type: transactionDetailsActionTypes.LOAD_USD_TOKEN_EXCHANGE_RATE
-  }
-}
-
-function loadUSDTokenExchangeRateSuccess (usdTokenExchangeRate) {
-  return {
-    type: transactionDetailsActionTypes.LOAD_USD_TOKEN_EXCHANGE_RATE_SUCCESS,
-    usdTokenExchangeRate
-  }
-}
-
-function loadUSDTokenExchangeRateFailure () {
-  return {
-    type: transactionDetailsActionTypes.LOAD_USD_TOKEN_EXCHANGE_RATE_FAILURE
-  }
-}
-
 export {
   loadTransaction,
   loadTransactionSuccess,
-  loadTransactionFailure,
-  loadUSDTokenExchangeRate,
-  loadUSDTokenExchangeRateSuccess,
-  loadUSDTokenExchangeRateFailure
+  loadTransactionFailure
 }

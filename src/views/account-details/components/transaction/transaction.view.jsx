@@ -8,15 +8,12 @@ function Transaction ({
   type,
   amount,
   tokenSymbol,
-  tokenFiatExchangeRate,
+  fiatAmount,
   date,
   preferredCurrency,
   onClick
 }) {
   const classes = useTransactionStyles()
-  const amountInFiat = tokenFiatExchangeRate
-    ? (Number(amount) * tokenFiatExchangeRate).toFixed(2)
-    : '-'
 
   function handleClick () {
     onClick()
@@ -30,7 +27,7 @@ function Transaction ({
       <div className={classes.info}>
         <div className={`${classes.row} ${classes.topRow}`}>
           <p>{type}</p>
-          <p className={classes.preferredCurrency}>{amountInFiat}</p>
+          <p className={classes.preferredCurrency}>{fiatAmount.toFixed(2)}</p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
           <p>{date}</p>
@@ -45,7 +42,7 @@ Transaction.propTypes = {
   type: PropTypes.string.isRequired,
   amount: PropTypes.string.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
-  tokenFiatExchangeRate: PropTypes.number,
+  fiatAmount: PropTypes.number.isRequired,
   date: PropTypes.string.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired

@@ -6,11 +6,11 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
-import { fetchAccount, fetchTransactions, fetchUSDTokenExchangeRate } from '../../store/account-details/account-details.thunks'
+import { fetchAccount, fetchTransactions } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { getTokenFiatExchangeRate } from '../../utils/currencies'
+import { getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
@@ -20,13 +20,11 @@ function AccountDetails ({
   preferredCurrency,
   accountTask,
   transactionsTask,
-  usdTokenExchangeRateTask,
   fiatExchangeRatesTask,
   onChangeHeader,
   onLoadAccount,
   onLoadTransactions,
-  onNavigateToTransactionDetails,
-  onLoadUSDTokenExchangeRate
+  onNavigateToTransactionDetails
 }) {
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
@@ -35,12 +33,6 @@ function AccountDetails ({
   React.useEffect(() => {
     onLoadAccount(accountIndex)
   }, [accountIndex, onLoadAccount])
-
-  React.useEffect(() => {
-    if (accountTask.status === 'successful') {
-      onLoadUSDTokenExchangeRate(accountTask.data.tokenId)
-    }
-  }, [accountTask, onLoadUSDTokenExchangeRate])
 
   React.useEffect(() => {
     if (accountTask.status === 'successful') {
@@ -60,17 +52,14 @@ function AccountDetails ({
    * @returns {Number} The balance of the account in the preferred currency
    */
   function getAccountBalance (account) {
-    if (
-      usdTokenExchangeRateTask.status !== 'successful' ||
-      fiatExchangeRatesTask.status !== 'successful'
-    ) {
+    if (fiatExchangeRatesTask.status !== 'successful') {
       return '-'
     }
 
-    const tokenFiatExchangeRate = getTokenFiatExchangeRate(
+    const tokenFiatExchangeRate = getTokenAmountInPreferredCurrency(
       account.tokenSymbol,
       preferredCurrency,
-      usdTokenExchangeRateTask.data,
+      account.balanceUSD,
       fiatExchangeRatesTask.data
     )
 
@@ -127,11 +116,6 @@ function AccountDetails ({
                 return (
                   <TransactionList
                     transactions={transactionsTask.data.transactions}
-                    usdTokenExchangeRate={
-                      usdTokenExchangeRateTask.status === 'successful'
-                        ? usdTokenExchangeRateTask.data
-                        : undefined
-                    }
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
                         ? fiatExchangeRatesTask.data
@@ -157,13 +141,11 @@ AccountDetails.propTypes = {
   preferredCurrency: PropTypes.string.isRequired,
   accountTask: PropTypes.object.isRequired,
   transactionsTask: PropTypes.object.isRequired,
-  usdTokenExchangeRateTask: PropTypes.object.isRequired,
   fiatExchangeRatesTask: PropTypes.object.isRequired,
   onLoadAccount: PropTypes.func.isRequired,
   onChangeHeader: PropTypes.func.isRequired,
   onLoadTransactions: PropTypes.func.isRequired,
-  onNavigateToTransactionDetails: PropTypes.func.isRequired,
-  onLoadUSDTokenExchangeRate: PropTypes.func.isRequired
+  onNavigateToTransactionDetails: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -171,7 +153,6 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.settings.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
   transactionsTask: state.accountDetails.transactionsTask,
-  usdTokenExchangeRateTask: state.accountDetails.usdTokenExchangeRateTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
@@ -179,7 +160,6 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadAccount: (accountIndex) => dispatch(fetchAccount(accountIndex)),
   onChangeHeader: (tokenName) =>
     dispatch(changeHeader({ type: 'page', data: { title: tokenName, previousRoute: '/' } })),
-  onLoadUSDTokenExchangeRate: (tokenId) => dispatch(fetchUSDTokenExchangeRate(tokenId)),
   onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`))

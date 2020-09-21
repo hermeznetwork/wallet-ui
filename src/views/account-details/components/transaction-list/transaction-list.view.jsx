@@ -3,12 +3,11 @@ import PropTypes from 'prop-types'
 
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
-import { getTokenFiatExchangeRate } from '../../../../utils/currencies'
+import { getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
 
 function TransactionList ({
   transactions,
   preferredCurrency,
-  usdTokenExchangeRate,
   fiatExchangeRates,
   onTransactionClick
 }) {
@@ -30,10 +29,10 @@ function TransactionList ({
             type={transaction.type}
             amount={transaction.amount}
             tokenSymbol={transaction.tokenSymbol}
-            tokenFiatExchangeRate={getTokenFiatExchangeRate(
+            fiatAmount={getTokenAmountInPreferredCurrency(
               transaction.tokenSymbol,
               preferredCurrency,
-              usdTokenExchangeRate,
+              transaction.historicUSD,
               fiatExchangeRates
             )}
             date={new Date().toLocaleDateString()}
@@ -49,7 +48,6 @@ function TransactionList ({
 TransactionList.propTypes = {
   transactions: PropTypes.array,
   preferredCurrency: PropTypes.string.isRequired,
-  usdTokenExchangeRate: PropTypes.object,
   fiatExchangeRates: PropTypes.object,
   onTransactionClick: PropTypes.func.isRequired
 }

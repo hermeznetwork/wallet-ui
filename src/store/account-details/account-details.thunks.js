@@ -11,16 +11,6 @@ function fetchAccount (accountIndex) {
   }
 }
 
-function fetchUSDTokenExchangeRate (tokenId) {
-  return (dispatch) => {
-    dispatch(accountDetailsActionTypes.loadUSDTokenExchangeRate())
-
-    return rollupApi.getToken(tokenId)
-      .then(res => dispatch(accountDetailsActionTypes.loadUSDTokenExchangeRateSuccess({ [res.symbol]: res.USD })))
-      .catch(err => dispatch(accountDetailsActionTypes.loadUSDTokenExchangeRateFailure(err)))
-  }
-}
-
 function fetchTransactions (ethereumAddress, tokenId) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadTransactions())
@@ -31,4 +21,4 @@ function fetchTransactions (ethereumAddress, tokenId) {
   }
 }
 
-export { fetchAccount, fetchUSDTokenExchangeRate, fetchTransactions }
+export { fetchAccount, fetchTransactions }

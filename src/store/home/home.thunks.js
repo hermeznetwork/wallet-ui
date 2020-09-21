@@ -11,22 +11,4 @@ function fetchAccounts (hermezEthereumAddress) {
   }
 }
 
-function fetchUSDTokenExchangeRates (tokenIds) {
-  return (dispatch) => {
-    dispatch(homeActions.loadUSDTokenExchangeRates())
-
-    return rollupApi.getTokens(tokenIds)
-      .then(res => {
-        const usdTokenExchangeRates = res.tokens
-          .reduce((exchangeRatesMap, token) => ({
-            ...exchangeRatesMap,
-            [token.symbol]: token.USD
-          }), {})
-
-        dispatch(homeActions.loadUSDTokenExchangeRatesSuccess(usdTokenExchangeRates))
-      })
-      .catch(err => dispatch(homeActions.loadUSDTokenExchangeRatesFailure(err)))
-  }
-}
-
-export { fetchAccounts, fetchUSDTokenExchangeRates }
+export { fetchAccounts }

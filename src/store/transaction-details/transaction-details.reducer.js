@@ -3,9 +3,6 @@ import { transactionDetailsActionTypes } from './transaction-details.actions'
 const initialTransactionDetailsReducer = {
   transactionTask: {
     status: 'pending'
-  },
-  usdTokenExchangeRateTask: {
-    status: 'pending'
   }
 }
 
@@ -34,32 +31,6 @@ function transactionDetailsReducer (state = initialTransactionDetailsReducer, ac
         transactionTask: {
           status: 'failed',
           error: 'An error ocurred loading the transaction'
-        }
-      }
-    }
-    case transactionDetailsActionTypes.LOAD_USD_TOKEN_EXCHANGE_RATE: {
-      return {
-        ...state,
-        usdTokenExchangeRateTask: {
-          status: 'loading'
-        }
-      }
-    }
-    case transactionDetailsActionTypes.LOAD_USD_TOKEN_EXCHANGE_RATE_SUCCESS: {
-      return {
-        ...state,
-        usdTokenExchangeRateTask: {
-          status: 'successful',
-          data: action.usdTokenExchangeRate
-        }
-      }
-    }
-    case transactionDetailsActionTypes.LOAD_USD_TOKEN_EXCHANGE_RATE_FAILURE: {
-      return {
-        ...state,
-        usdTokenExchangeRateTask: {
-          status: 'failed',
-          error: 'An error ocurred loading the USD token exchange rate'
         }
       }
     }

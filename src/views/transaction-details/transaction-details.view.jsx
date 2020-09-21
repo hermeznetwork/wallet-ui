@@ -5,20 +5,18 @@ import { useParams } from 'react-router-dom'
 import { push } from 'connected-react-router'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
-import { fetchTransaction, fetchUSDTokenExchangeRate } from '../../store/transaction-details/transaction-details.thunks'
+import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { getTokenFiatExchangeRate } from '../../utils/currencies'
+import { getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 
 function TransactionDetails ({
   transactionTask,
-  usdTokenExchangeRateTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   onLoadTransaction,
-  onNavigateToAccountDetails,
-  onLoadUSDTokenExchangeRate
+  onNavigateToAccountDetails
 }) {
   const classes = useTransactionDetailsStyles()
   const { accountIndex, transactionId } = useParams()
@@ -27,24 +25,15 @@ function TransactionDetails ({
     onLoadTransaction(transactionId)
   }, [transactionId, onLoadTransaction])
 
-  React.useEffect(() => {
-    if (transactionTask.status === 'successful') {
-      onLoadUSDTokenExchangeRate(transactionTask.data.tokenId)
-    }
-  }, [transactionTask, onLoadUSDTokenExchangeRate])
-
-  function getAmountInFiat (amount) {
-    if (
-      usdTokenExchangeRateTask.status !== 'successful' ||
-      fiatExchangeRatesTask.status !== 'successful'
-    ) {
+  function getAmountInFiat (tokenSymbol, amount) {
+    if (fiatExchangeRatesTask.status !== 'successful') {
       return '-'
     }
 
-    const tokenFiatExchangeRate = getTokenFiatExchangeRate(
-      transactionTask.data.tokenSymbol,
+    const tokenFiatExchangeRate = getTokenAmountInPreferredCurrency(
+      tokenSymbol,
       preferredCurrency,
-      usdTokenExchangeRateTask.data,
+      amount,
       fiatExchangeRatesTask.data
     )
 
@@ -79,7 +68,7 @@ function TransactionDetails ({
                     </a>
                   </div>
                   <div className={classes.transactionInfoContainer}>
-                    <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.amount)} {preferredCurrency}</h1>
+                    <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.tokenSymbol, transactionTask.data.amount)} {preferredCurrency}</h1>
                     <p>{transactionTask.data.amount} {transactionTask.data.tokenSymbol}</p>
                     <ul className={classes.transactionInfoList}>
                       <li className={classes.transactionInfoListItem}>
@@ -91,7 +80,7 @@ function TransactionDetails ({
                         Fee
                         </p>
                         <div>
-                          <p>{getAmountInFiat(transactionTask.data.fee)} {preferredCurrency}</p>
+                          <p>{getAmountInFiat(transactionTask.data.tokenSymbol, transactionTask.data.fee)} {preferredCurrency}</p>
                           <p>{transactionTask.data.fee} {transactionTask.data.tokenSymbol}</p>
                         </div>
                       </li>
@@ -119,23 +108,19 @@ function TransactionDetails ({
 TransactionDetails.propTypes = {
   preferredCurrency: PropTypes.string.isRequired,
   transactionTask: PropTypes.object.isRequired,
-  usdTokenExchangeRateTask: PropTypes.object.isRequired,
   fiatExchangeRatesTask: PropTypes.object.isRequired,
   onLoadTransaction: PropTypes.func.isRequired,
-  onNavigateToAccountDetails: PropTypes.func.isRequired,
-  onLoadUSDTokenExchangeRate: PropTypes.func.isRequired
+  onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
   preferredCurrency: state.settings.preferredCurrency,
   transactionTask: state.transactionDetails.transactionTask,
-  usdTokenExchangeRateTask: state.transactionDetails.usdTokenExchangeRateTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionId) => dispatch(fetchTransaction(transactionId)),
-  onLoadUSDTokenExchangeRate: (tokenId) => dispatch(fetchUSDTokenExchangeRate(tokenId)),
   onNavigateToAccountDetails: (accountIndex) => dispatch(push(`/accounts/${accountIndex}`))
 })
 

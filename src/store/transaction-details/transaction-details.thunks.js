@@ -20,14 +20,4 @@ function fetchTransaction (transactionId) {
   }
 }
 
-function fetchUSDTokenExchangeRate (tokenId) {
-  return (dispatch) => {
-    dispatch(transactionDetailsActionTypes.loadUSDTokenExchangeRate())
-
-    return rollupApi.getToken(tokenId)
-      .then(res => dispatch(transactionDetailsActionTypes.loadUSDTokenExchangeRateSuccess({ [res.symbol]: res.USD })))
-      .catch(err => dispatch(transactionDetailsActionTypes.loadUSDTokenExchangeRateFailure(err)))
-  }
-}
-
-export { fetchTransaction, fetchUSDTokenExchangeRate }
+export { fetchTransaction }

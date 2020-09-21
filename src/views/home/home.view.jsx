@@ -5,12 +5,12 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
-import { fetchAccounts, fetchUSDTokenExchangeRates } from '../../store/home/home.thunks'
+import { fetchAccounts } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
-import { getTokenFiatExchangeRate } from '../../utils/currencies'
+import { getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { copyToClipboard } from '../../utils/dom'
 import Snackbar from '../shared/snackbar/snackbar.view'
@@ -21,12 +21,10 @@ import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 function Home ({
   metaMaskWalletTask,
   accountsTask,
-  usdTokenExchangeRatesTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   onChangeHeader,
   onLoadAccounts,
-  onLoadUSDTokenExchangeRates,
   onNavigateToAccountDetails
 }) {
   const theme = useTheme()
@@ -43,27 +41,18 @@ function Home ({
     }
   }, [metaMaskWalletTask, onLoadAccounts])
 
-  React.useEffect(() => {
-    if (accountsTask.status === 'successful') {
-      onLoadUSDTokenExchangeRates(
-        accountsTask.data.accounts.map(account => account.tokenId)
-      )
-    }
-  }, [accountsTask, onLoadUSDTokenExchangeRates])
-
   function getTotalBalance (accounts) {
     if (
-      usdTokenExchangeRatesTask.status !== 'successful' ||
       fiatExchangeRatesTask.status !== 'successful'
     ) {
       return undefined
     }
 
     return accounts.reduce((amount, account) => {
-      const tokenFiatExchangeRate = getTokenFiatExchangeRate(
+      const tokenFiatExchangeRate = getTokenAmountInPreferredCurrency(
         account.tokenSymbol,
         preferredCurrency,
-        usdTokenExchangeRatesTask.data,
+        account.balanceUSD,
         fiatExchangeRatesTask.data
       )
 
@@ -146,11 +135,6 @@ function Home ({
                   <AccountList
                     accounts={accountsTask.data.accounts}
                     preferredCurrency={preferredCurrency}
-                    usdTokenExchangeRates={
-                      usdTokenExchangeRatesTask.status === 'successful'
-                        ? usdTokenExchangeRatesTask.data
-                        : undefined
-                    }
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
                         ? fiatExchangeRatesTask.data
@@ -180,10 +164,8 @@ Home.propTypes = {
   accountsTask: PropTypes.object,
   metaMaskWalletTask: PropTypes.object,
   preferredCurrency: PropTypes.string.isRequired,
-  usdTokenExchangeRatesTask: PropTypes.object,
   fiatExchangeRatesTask: PropTypes.object,
   onLoadAccounts: PropTypes.func.isRequired,
-  onLoadUSDTokenExchangeRates: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
@@ -191,7 +173,6 @@ const mapStateToProps = (state) => ({
   tokensTask: state.global.tokensTask,
   metaMaskWalletTask: state.account.metaMaskWalletTask,
   accountsTask: state.home.accountsTask,
-  usdTokenExchangeRatesTask: state.home.usdTokenExchangeRatesTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.settings.preferredCurrency
 })
@@ -200,8 +181,6 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () => dispatch(changeHeader({ type: 'main' })),
   onLoadAccounts: (hermezEthereumAddress) =>
     dispatch(fetchAccounts(hermezEthereumAddress)),
-  onLoadUSDTokenExchangeRates: (tokenIds) =>
-    dispatch(fetchUSDTokenExchangeRates(tokenIds)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`))
 })

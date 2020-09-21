@@ -9,22 +9,21 @@ const CurrencySymbol = {
   }
 }
 
-function getTokenFiatExchangeRate (
+function getTokenAmountInPreferredCurrency (
   tokenSymbol,
   preferredCurrency,
-  usdTokenExchangeRates,
+  amountInUSD,
   fiatExchangeRatesTask
 ) {
-  if (!usdTokenExchangeRates || !fiatExchangeRatesTask) {
+  if (!fiatExchangeRatesTask) {
     return undefined
   }
 
-  const tokenRateInUSD = usdTokenExchangeRates[tokenSymbol]
-  const tokenRateInPreferredCurrency = fiatExchangeRatesTask[preferredCurrency]
+  if (preferredCurrency === CurrencySymbol.USD.code) {
+    return amountInUSD
+  }
 
-  return preferredCurrency === CurrencySymbol.USD.code
-    ? tokenRateInUSD
-    : tokenRateInPreferredCurrency
+  return Number(amountInUSD) * fiatExchangeRatesTask[preferredCurrency]
 }
 
-export { CurrencySymbol, getTokenFiatExchangeRate }
+export { CurrencySymbol, getTokenAmountInPreferredCurrency }
