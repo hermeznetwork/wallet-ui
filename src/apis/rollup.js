@@ -43,7 +43,7 @@ async function getToken (tokenId) {
 }
 
 async function getFees () {
-  return extractJSON(axios.get(`${baseApiUrl}/recommendedFee`))
+  return extractJSON(axios.get(`${baseApiUrl}/recommended-fee`))
 }
 
 export {
