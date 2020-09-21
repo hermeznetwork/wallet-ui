@@ -88,7 +88,7 @@ function TransactionDetails ({
                         <p className={classes.transactionInfoListItemTitle}>
                         Date
                         </p>
-                        <p>{transactionTask.data.timestamp.toLocaleString()}</p>
+                        <p>{new Date(transactionTask.data.timestamp).toLocaleString()}</p>
                       </li>
                     </ul>
                   </div>

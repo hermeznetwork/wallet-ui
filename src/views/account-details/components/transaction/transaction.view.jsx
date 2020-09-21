@@ -30,7 +30,7 @@ function Transaction ({
           <p className={classes.preferredCurrency}>{fiatAmount.toFixed(2)}</p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
-          <p>{timestamp.toLocaleDateString()}</p>
+          <p>{new Date(timestamp).toLocaleDateString()}</p>
           <p>{amount} {tokenSymbol}</p>
         </div>
       </div>
