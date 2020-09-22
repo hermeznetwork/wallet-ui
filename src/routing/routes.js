@@ -33,12 +33,12 @@ const routes = [
     renderLayout: true
   },
   {
-    path: '/accounts/:tokenId',
+    path: '/accounts/:accountIndex',
     component: AccountDetails,
     renderLayout: true
   },
   {
-    path: '/accounts/:tokenId/transactions/:transactionId',
+    path: '/accounts/:accountIndex/transactions/:transactionId',
     component: TransactionDetails,
     renderLayout: true
   }

@@ -1,11 +1,11 @@
 import * as accountDetailsActionTypes from './account-details.actions'
 import * as rollupApi from '../../apis/rollup'
 
-function fetchAccount (ethereumAddress, tokenId) {
+function fetchAccount (accountIndex) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadAccount())
 
-    return rollupApi.getAccount(ethereumAddress, tokenId)
+    return rollupApi.getAccount(accountIndex)
       .then(res => dispatch(accountDetailsActionTypes.loadAccountSuccess(res)))
       .catch(err => dispatch(accountDetailsActionTypes.loadAccountFailure(err)))
   }
