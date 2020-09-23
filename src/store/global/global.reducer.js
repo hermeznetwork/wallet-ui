@@ -3,7 +3,7 @@ import { TRANSACTION_POOL_KEY } from '../../constants'
 
 function getInitialTransactionPool () {
   if (!localStorage.getItem(TRANSACTION_POOL_KEY)) {
-    const emptyTransactionPool = []
+    const emptyTransactionPool = {}
 
     localStorage.setItem(TRANSACTION_POOL_KEY, JSON.stringify(emptyTransactionPool))
 
@@ -158,16 +158,28 @@ function globalReducer (state = initialGlobalState, action) {
         }
       }
     case globalActionTypes.ADD_POOL_TRANSACTION: {
+      const accountTransactionPool = state.transactionPool[action.hermezEthereumAddress]
+
       return {
         ...state,
-        transactionPool: [...state.transactionPool, action.transaction]
+        transactionPool: {
+          ...state.transactionPool,
+          [action.hermezEthereumAddress]: accountTransactionPool === undefined
+            ? [action.transaction]
+            : [...accountTransactionPool, action.transaction]
+        }
       }
     }
     case globalActionTypes.REMOVE_POOL_TRANSACTION: {
+      const accountTransactionPool = state.transactionPool[action.hermezEthereumAddress]
+
       return {
         ...state,
-        transactionPool: state.transactionPool
-          .filter(transaction => transaction.id !== action.transactionId)
+        transactionPool: {
+          ...state.transactionPool,
+          [action.hermezEthereumAddress]: accountTransactionPool
+            .filter(transaction => transaction.id !== action.transactionId)
+        }
       }
     }
     default: {

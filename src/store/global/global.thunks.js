@@ -90,21 +90,33 @@ function fetchCurrentBatch (urlOperator) {
   }
 }
 
-function addPoolTransaction (transaction) {
+function addPoolTransaction (hermezEthereumAddress, transaction) {
   return (dispatch) => {
     const transactionPool = JSON.parse(localStorage.getItem(TRANSACTION_POOL_KEY))
-    const newTransactionPool = [...transactionPool, transaction]
+    const accountTransactionPool = transactionPool[hermezEthereumAddress]
+    const newAccountTransactionPool = accountTransactionPool === undefined
+      ? [transaction]
+      : [...accountTransactionPool, transaction]
+    const newTransactionPool = {
+      ...transactionPool,
+      [hermezEthereumAddress]: newAccountTransactionPool
+    }
 
     localStorage.setItem(TRANSACTION_POOL_KEY, JSON.stringify(newTransactionPool))
     dispatch(globalActions.addPoolTransaction(newTransactionPool))
   }
 }
 
-function removePoolTransaction (transactionId) {
+function removePoolTransaction (hermezEthereumAddress, transactionId) {
   return (dispatch) => {
     const transactionPool = JSON.parse(localStorage.getItem(TRANSACTION_POOL_KEY))
-    const newTransactionPool = transactionPool
+    const accountTransactionPool = transactionPool[hermezEthereumAddress]
+    const newAccountTransactionPool = accountTransactionPool
       .filter((transaction) => transaction.id !== transactionId)
+    const newTransactionPool = {
+      ...transactionPool,
+      [hermezEthereumAddress]: newAccountTransactionPool
+    }
 
     localStorage.setItem(TRANSACTION_POOL_KEY, JSON.stringify(newTransactionPool))
     dispatch(globalActions.removePoolTransaction(transactionId))

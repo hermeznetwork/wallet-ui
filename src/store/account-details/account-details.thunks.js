@@ -17,26 +17,38 @@ function fetchPoolTransactions (accountIndex) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadPoolTransactions())
 
-    const { global: { transactionPool } } = getState()
-    const accountTransactionsPromises = transactionPool
-      .filter(transaction => transaction.fromAccountIndex === accountIndex)
-      .map(({ id: transactionId }) =>
-        rollupApi
-          .getPoolTransaction(transactionId)
-          .catch(err => {
-            if (err.response.status === HttpStatusCode.NOT_FOUND) {
-              dispatch(removePoolTransaction(transactionId))
-            }
-          })
-      )
+    const { global: { transactionPool }, account: { metaMaskWalletTask } } = getState()
 
-    return Promise.all(accountTransactionsPromises)
-      .then((transactions) => {
-        const successfulTransactions = transactions.filter(transaction => transaction !== undefined)
+    if (metaMaskWalletTask.status === 'successful') {
+      const { hermezEthereumAddress } = metaMaskWalletTask.data
+      const accountTransactionPool = transactionPool[hermezEthereumAddress]
 
-        dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(successfulTransactions))
-      })
-      .catch(err => dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure(err)))
+      if (accountTransactionPool === undefined) {
+        return dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess([]))
+      }
+
+      const accountTransactionsPromises = accountTransactionPool
+        .filter(transaction => transaction.fromAccountIndex === accountIndex)
+        .map(({ id: transactionId }) =>
+          rollupApi
+            .getPoolTransaction(transactionId)
+            .catch(err => {
+              if (err.response.status === HttpStatusCode.NOT_FOUND) {
+                dispatch(removePoolTransaction(hermezEthereumAddress, transactionId))
+              }
+            })
+        )
+
+      return Promise.all(accountTransactionsPromises)
+        .then((transactions) => {
+          const successfulTransactions = transactions.filter(transaction => transaction !== undefined)
+
+          dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(successfulTransactions))
+        })
+        .catch(err => dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure(err)))
+    } else {
+      dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure('MetaMask wallet is not available'))
+    }
   }
 }
 

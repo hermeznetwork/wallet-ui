@@ -119,16 +119,18 @@ function loadCurrentBatchFailure () {
   }
 }
 
-function addPoolTransaction (transaction) {
+function addPoolTransaction (hermezEthereumAddress, transaction) {
   return {
     type: globalActionTypes.ADD_POOL_TRANSACTION,
+    hermezEthereumAddress,
     transaction
   }
 }
 
-function removePoolTransaction (transactionId) {
+function removePoolTransaction (hermezEthereumAddress, transactionId) {
   return {
     type: globalActionTypes.REMOVE_POOL_TRANSACTION,
+    hermezEthereumAddress,
     transactionId
   }
 }

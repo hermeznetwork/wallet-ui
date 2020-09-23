@@ -16,7 +16,6 @@ import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 
 function AccountDetails ({
-  metaMaskWalletTask,
   preferredCurrency,
   accountTask,
   poolTransactionsTask,
@@ -182,7 +181,6 @@ AccountDetails.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.account.metaMaskWalletTask,
   preferredCurrency: state.settings.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
   poolTransactionsTask: state.accountDetails.poolTransactionsTask,
