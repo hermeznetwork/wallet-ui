@@ -30,7 +30,7 @@ function Settings ({
         <div className={classes.ethereumAddress}>
           {
             metaMaskWalletTask.status === 'successful'
-              ? metaMaskWalletTask.data.ethereumAddress
+              ? metaMaskWalletTask.data.hermezEthereumAddress
               : '-'
           }
         </div>
@@ -48,7 +48,7 @@ function Settings ({
             metaMaskWalletTask.status === 'successful'
               ? (
                 <QRCode
-                  value={metaMaskWalletTask.data.ethereumAddress}
+                  value={metaMaskWalletTask.data.hermezEthereumAddress}
                   className={classes.qrCode}
                   size={256}
                 />

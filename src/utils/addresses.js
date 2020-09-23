@@ -15,13 +15,13 @@ function getHermezAddress (ethereumAddress) {
  * @returns {string}
  */
 function getPartiallyHiddenHermezAddress (ethereumAddress) {
-  const firstAddressSlice = ethereumAddress.slice(0, 6)
+  const firstAddressSlice = ethereumAddress.slice(0, 10)
   const secondAddressSlice = ethereumAddress.slice(
     ethereumAddress.length - 4,
     ethereumAddress.length
   )
 
-  return `${hermezPrefix}${firstAddressSlice} *** ${secondAddressSlice}`
+  return `${firstAddressSlice} *** ${secondAddressSlice}`
 }
 
 export {

@@ -14,17 +14,17 @@ function TransactionType ({ type, amount }) {
         return depositedIcon
       }
       case TxType.Transfer: {
-        if (amount >= 0) {
+        if (Number(amount) >= 0) {
           return sentIcon
         } else {
           return receivedIcon
         }
       }
-      case TxType.Withdraw: {
+      case TxType.Withdraw:
+      case TxType.Exit: {
         return withdrawnIcon
       }
       default: {
-        console.log(type)
         return undefined
       }
     }
@@ -35,7 +35,7 @@ function TransactionType ({ type, amount }) {
 
 TransactionType.propTypes = {
   type: PropTypes.string.isRequired,
-  amount: PropTypes.number.isRequired
+  amount: PropTypes.string.isRequired
 }
 
 export default TransactionType

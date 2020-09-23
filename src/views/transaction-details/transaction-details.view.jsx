@@ -8,11 +8,10 @@ import useTransactionDetailsStyles from './transaction-details.styles'
 import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { CurrencySymbol } from '../../utils/currencies'
+import { getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 
 function TransactionDetails ({
-  tokensTask,
   transactionTask,
   fiatExchangeRatesTask,
   preferredCurrency,
@@ -20,39 +19,29 @@ function TransactionDetails ({
   onNavigateToAccountDetails
 }) {
   const classes = useTransactionDetailsStyles()
-  const { tokenId, transactionId } = useParams()
+  const { accountIndex, transactionId } = useParams()
 
   React.useEffect(() => {
     onLoadTransaction(transactionId)
   }, [transactionId, onLoadTransaction])
 
-  function getTokenSymbol (tokenId) {
-    if (tokensTask.status !== 'successful') {
+  function getAmountInFiat (tokenSymbol, amount) {
+    if (fiatExchangeRatesTask.status !== 'successful') {
       return '-'
     }
 
-    return tokensTask.data.find((token) => token.tokenId === tokenId).symbol
-  }
+    const tokenFiatExchangeRate = getTokenAmountInPreferredCurrency(
+      tokenSymbol,
+      preferredCurrency,
+      amount,
+      fiatExchangeRatesTask.data
+    )
 
-  function getAmountInFiat (tokenId, amount) {
-    if (
-      tokensTask.status !== 'successful' ||
-      fiatExchangeRatesTask.status !== 'successful'
-    ) {
-      return '-'
-    }
-
-    const tokenRateInUSD = tokensTask.data
-      .find((token) => token.tokenId === tokenId).USD
-    const tokenFiatRate = preferredCurrency === CurrencySymbol.USD.code
-      ? tokenRateInUSD
-      : tokenRateInUSD * fiatExchangeRatesTask.data[preferredCurrency]
-
-    return amount * tokenFiatRate
+    return (amount * tokenFiatExchangeRate).toFixed(2)
   }
 
   function handleNavigationToAccountDetails () {
-    onNavigateToAccountDetails(tokenId)
+    onNavigateToAccountDetails(accountIndex)
   }
 
   return (
@@ -79,27 +68,27 @@ function TransactionDetails ({
                     </a>
                   </div>
                   <div className={classes.transactionInfoContainer}>
-                    <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.tokenId, transactionTask.data.amount)} {preferredCurrency}</h1>
-                    <p>{transactionTask.data.amount} {getTokenSymbol(transactionTask.data.tokenId)}</p>
+                    <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.tokenSymbol, transactionTask.data.amount)} {preferredCurrency}</h1>
+                    <p>{transactionTask.data.amount} {transactionTask.data.tokenSymbol}</p>
                     <ul className={classes.transactionInfoList}>
                       <li className={classes.transactionInfoListItem}>
                         <p className={classes.transactionInfoListItemTitle}>To</p>
-                        <p>{transactionTask.data.toEthAddr}</p>
+                        <p>{transactionTask.data.toEthereumAddress}</p>
                       </li>
                       <li className={classes.transactionInfoListItem}>
                         <p className={classes.transactionInfoListItemTitle}>
                         Fee
                         </p>
                         <div>
-                          <p>{getAmountInFiat(transactionTask.data.tokenId, transactionTask.data.fee)} {preferredCurrency}</p>
-                          <p>{transactionTask.data.fee} {getTokenSymbol(transactionTask.data.tokenId)}</p>
+                          <p>{getAmountInFiat(transactionTask.data.tokenSymbol, transactionTask.data.fee)} {preferredCurrency}</p>
+                          <p>{transactionTask.data.fee} {transactionTask.data.tokenSymbol}</p>
                         </div>
                       </li>
                       <li className={classes.transactionInfoListItem}>
                         <p className={classes.transactionInfoListItemTitle}>
                         Date
                         </p>
-                        <p>{new Date().toLocaleString()}</p>
+                        <p>{new Date(transactionTask.data.timestamp).toLocaleString()}</p>
                       </li>
                     </ul>
                   </div>
@@ -117,38 +106,14 @@ function TransactionDetails ({
 }
 
 TransactionDetails.propTypes = {
-  tokensTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired
-      })
-    )
-  }),
   preferredCurrency: PropTypes.string.isRequired,
-  transactionTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.shape({
-      type: PropTypes.string.isRequired,
-      toEthAddr: PropTypes.string.isRequired,
-      amount: PropTypes.number.isRequired,
-      fee: PropTypes.number.isRequired,
-      tokenId: PropTypes.number.isRequired
-    }),
-    error: PropTypes.string
-  }),
-  fiatExchangeRatesTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.object
-  }),
+  transactionTask: PropTypes.object.isRequired,
+  fiatExchangeRatesTask: PropTypes.object.isRequired,
   onLoadTransaction: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
-  tokensTask: state.global.tokensTask,
   preferredCurrency: state.settings.preferredCurrency,
   transactionTask: state.transactionDetails.transactionTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
@@ -156,7 +121,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionId) => dispatch(fetchTransaction(transactionId)),
-  onNavigateToAccountDetails: (tokenId) => dispatch(push(`/accounts/${tokenId}`))
+  onNavigateToAccountDetails: (accountIndex) => dispatch(push(`/accounts/${accountIndex}`))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(TransactionDetails))

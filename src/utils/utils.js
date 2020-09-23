@@ -207,7 +207,7 @@ export const getNullifier = async (wallet, info, contractRollup, batch) => {
     info.data.state.coin,
     ax.toString(16),
     ay.toString(16),
-    wallet.ethereumAddress,
+    wallet.hermezEthereumAddress,
     0
   )
   const valueExitTree = hashState(exitEntry)
