@@ -1,7 +1,6 @@
 import ethers from 'ethers'
 
 import * as globalActions from './global.actions'
-import * as rollupApi from '../../apis/rollup'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import config from '../../utils/config.json'
 import { CliExternalOperator } from '../../utils/cli-external-operator'
@@ -9,16 +8,6 @@ import { CliExternalOperator } from '../../utils/cli-external-operator'
 function changeRedirectRoute (redirecRoute) {
   return (dispatch) => {
     dispatch(globalActions.changeRedirectRoute(redirecRoute))
-  }
-}
-
-function fetchTokens () {
-  return (dispatch) => {
-    dispatch(globalActions.loadTokens())
-
-    return rollupApi.getTokens()
-      .then(res => dispatch(globalActions.loadTokensSuccess(res)))
-      .catch(err => dispatch(globalActions.loadTokensFailure(err)))
   }
 }
 
@@ -91,7 +80,6 @@ function fetchCurrentBatch (urlOperator) {
 
 export {
   changeRedirectRoute,
-  fetchTokens,
   fetchConfig,
   fetchFiatExchangeRates,
   fetchGasMultiplier,

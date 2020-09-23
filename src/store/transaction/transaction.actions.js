@@ -1,10 +1,32 @@
 export const transactionActionTypes = {
+  LOAD_TOKENS: '[TRANSACTION] LOAD TOKENS',
+  LOAD_TOKENS_SUCCESS: '[TRANSACTION] LOAD TOKENS SUCCESS',
+  LOAD_TOKENS_FAILURE: '[TRANSACTION] LOAD TOKENS FAILURE',
   LOAD_METAMASK_TOKENS: '[TRANSACTION] LOAD METAMASK TOKENS',
   LOAD_METAMASK_TOKENS_SUCCESS: '[TRANSACTION] LOAD METAMASK TOKENS SUCCESS',
   LOAD_METAMASK_TOKENS_FAILURE: '[TRANSACTION] LOAD METAMASK TOKENS FAILURE',
   LOAD_FEES: '[TRANSACTION] LOAD FEES',
   LOAD_FEES_SUCCESS: '[TRANSACTION] LOAD FEES SUCCESS',
   LOAD_FEES_FAILURE: '[TRANSACTION] LOAD FEESFAILURE'
+}
+
+function loadTokens () {
+  return {
+    type: transactionActionTypes.LOAD_TOKENS
+  }
+}
+
+function loadTokensSuccess (tokens) {
+  return {
+    type: transactionActionTypes.LOAD_TOKENS_SUCCESS,
+    tokens
+  }
+}
+
+function loadTokensFailure () {
+  return {
+    type: transactionActionTypes.LOAD_TOKENS_FAILURE
+  }
 }
 
 function loadMetaMaskTokens () {
@@ -48,6 +70,9 @@ function loadFeesFailure (error) {
 }
 
 export {
+  loadTokens,
+  loadTokensSuccess,
+  loadTokensFailure,
   loadMetaMaskTokens,
   loadMetaMaskTokensSuccess,
   loadMetaMaskTokensFailure,

@@ -4,7 +4,7 @@ import clsx from 'clsx'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { getAccounts } from '../../../../apis/rollup'
-import { CurrencySymbol } from '../../../../utils/currencies'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
 import swapIcon from '../../../../images/icons/swap.svg'
 import errorIcon from '../../../../images/icons/error.svg'
 import closeIcon from '../../../../images/icons/close.svg'
@@ -24,15 +24,28 @@ function TransactionForm ({
   const [isAmountInvalid, setIsAmountInvalid] = React.useState()
   const [isReceiverInvalid, setIsReceiverInvalid] = React.useState()
 
+  function getAccountBalance () {
+    return Number(account.balance)
+  }
+
   /**
    * Returns the conversion rate from the selected token to the selected preffered currency.
    *
    * @returns {Number} Conversion rate from the selected token to fiat
    */
   function getAccountFiatRate () {
+    const USDRate = account.balanceUSD / getAccountBalance()
     return preferredCurrency === CurrencySymbol.USD.code
-      ? account.token.USD
-      : account.token.USD * fiatExchangeRates[preferredCurrency]
+      ? USDRate
+      : USDRate * fiatExchangeRates[preferredCurrency]
+  }
+
+  function getBalanceinFiat () {
+    return getTokenAmountInPreferredCurrency(
+      preferredCurrency,
+      account.balanceUSD,
+      fiatExchangeRates
+    )
   }
 
   /**
@@ -41,7 +54,7 @@ function TransactionForm ({
    * and converts it to token value.
    */
   function getFee () {
-    return fees.existingAccount / account.token.USD
+    return fees.existingAccount / account.balanceUSD
   }
 
   /**
@@ -50,7 +63,7 @@ function TransactionForm ({
    * @param {string} address - Hermez address e.g. hez:0x9294cD558F2Db6ca403191Ae3502cD0c2251E995
    */
   function isValidHermezAddress (address) {
-    return /^0x[a-fA-F0-9]{40}$/.test(address)
+    return /^hez:0x[a-fA-F0-9]{40}$/.test(address)
   }
 
   /**
@@ -81,7 +94,7 @@ function TransactionForm ({
   function handleAmountInputChange (event) {
     const newAmount = Number(event.target.value)
     const newAmountInToken = (showInFiat) ? (newAmount / getAccountFiatRate()) : newAmount
-    if (newAmountInToken >= 0 && newAmountInToken <= account.balance) {
+    if (newAmountInToken >= 0 && newAmountInToken <= getAccountBalance()) {
       setIsAmountInvalid(false)
     } else {
       setIsAmountInvalid(true)
@@ -96,7 +109,7 @@ function TransactionForm ({
    * Check if the continue button should be disabled.
    */
   function handleSendAllButtonClick () {
-    const inputAmount = showInFiat ? account.balance * getAccountFiatRate() : account.balance
+    const inputAmount = showInFiat ? getBalanceinFiat() : getAccountBalance()
     setIsAmountInvalid(false)
     setAmount(inputAmount)
   }
@@ -155,8 +168,8 @@ function TransactionForm ({
 
     if (type !== 'deposit') {
       try {
-        const accounts = await getAccounts(receiver)
-        if (accounts.length > 0) {
+        const accountsData = await getAccounts(receiver)
+        if (accountsData.accounts.length > 0) {
           onSubmit({
             amount: selectedAmount,
             to: receiver,
@@ -165,7 +178,8 @@ function TransactionForm ({
         } else {
           throw new Error()
         }
-      } catch {
+      } catch (error) {
+        console.log(error)
         setIsReceiverInvalid(true)
       }
     } else {
@@ -221,7 +235,7 @@ function TransactionForm ({
           </div>
 
           <p className={clsx({
-            [classes.receiverErrorMessage]: true,
+            [classes.errorMessage]: true,
             [classes.receiverErrorMessageVisible]: isReceiverInvalid
           })}
           >
@@ -247,7 +261,7 @@ function TransactionForm ({
       return (
         <div className={classes.feeWrapper}>
           <p className={classes.fee}>
-            Fee {Number(getFee()).toFixed(6)} {account.token.symbol}
+            Fee {Number(getFee()).toFixed(6)} {account.tokenSymbol}
           </p>
         </div>
       )
@@ -257,11 +271,11 @@ function TransactionForm ({
   return (
     <section className={classes.transaction}>
       <div className={classes.token}>
-        <p className={classes.tokenName}>{account.token.name}</p>
+        <p className={classes.tokenName}>{account.tokenName}</p>
         {
           (showInFiat)
-            ? <p><span>{preferredCurrency}</span> <span>{(account.balance * getAccountFiatRate()).toFixed(2)}</span></p>
-            : <p><span>{account.token.symbol}</span> <span>{account.balance.toFixed(2)}</span></p>
+            ? <p><span>{preferredCurrency}</span> <span>{getBalanceinFiat().toFixed(2)}</span></p>
+            : <p><span>{account.tokenSymbol}</span> <span>{getAccountBalance().toFixed(2)}</span></p>
         }
       </div>
 
@@ -271,7 +285,7 @@ function TransactionForm ({
       })}
       >
         <div className={classes.amount}>
-          <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
+          <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.tokenSymbol}</p>
           <input
             className={classes.amountInput}
             type='number'
@@ -287,12 +301,12 @@ function TransactionForm ({
               src={swapIcon}
               alt='Swap Icon'
             />
-            <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
+            <p>{(showInFiat) ? account.tokenSymbol : preferredCurrency}</p>
           </button>
         </div>
       </div>
       <p className={clsx({
-        [classes.selectAmountErrorMessage]: true,
+        [classes.errorMessage]: true,
         [classes.selectAmountErrorMessageVisible]: isAmountInvalid
       })}
       >
@@ -321,18 +335,7 @@ function TransactionForm ({
 
 TransactionForm.propTypes = {
   type: PropTypes.string.isRequired,
-  account: PropTypes.shape({
-    balance: PropTypes.number.isRequired,
-    token: PropTypes.shape({
-      tokenId: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      symbol: PropTypes.string.isRequired,
-      decimals: PropTypes.number.isRequired,
-      ethAddr: PropTypes.string.isRequired,
-      ethBlockNum: PropTypes.number.isRequired,
-      USD: PropTypes.number.isRequired
-    })
-  }),
+  account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired,
   fees: PropTypes.shape({

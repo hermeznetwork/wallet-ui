@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom'
 import clsx from 'clsx'
 
 import { fetchAccounts } from '../../store/home/home.thunks'
-import { fetchMetaMaskTokens, fetchFees } from '../../store/transaction/transaction.thunks'
+import { fetchTokens, fetchMetaMaskTokens, fetchFees } from '../../store/transaction/transaction.thunks'
 import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
 import TransactionOverview from './components/transaction-overview/transaction-overview.view'
@@ -25,6 +25,7 @@ function Transaction ({
   preferredCurrency,
   fiatExchangeRatesTask,
   transactionType,
+  onLoadTokens,
   onLoadMetaMaskTokens,
   onLoadAccounts,
   onLoadFees
@@ -35,14 +36,18 @@ function Transaction ({
   const [transaction, setTransaction] = useState()
 
   React.useEffect(() => {
-    if (transactionType === 'deposit') {
-      onLoadMetaMaskTokens()
+    onLoadTokens()
+  }, [onLoadTokens])
+
+  React.useEffect(() => {
+    if (transactionType === 'deposit' && tokensTask.status === 'successful') {
+      onLoadMetaMaskTokens(tokensTask.data.tokens)
     }
-  }, [transactionType, onLoadMetaMaskTokens])
+  }, [transactionType, tokensTask, onLoadMetaMaskTokens])
 
   React.useEffect(() => {
     if (transactionType !== 'deposit' && metaMaskWalletTask.status === 'successful' && tokensTask.status === 'successful') {
-      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress, tokensTask.data)
+      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress, tokensTask.data.tokens)
     }
   }, [transactionType, metaMaskWalletTask, tokensTask, onLoadAccounts])
 
@@ -175,7 +180,7 @@ function Transaction ({
               case 'successful': {
                 return (
                   <AccountList
-                    accounts={accountsTask.data}
+                    accounts={accountsTask.data.accounts}
                     preferredCurrency={preferredCurrency}
                     fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
                     onAccountClick={handleAccountListClick}
@@ -229,8 +234,8 @@ function Transaction ({
           type={transactionType}
           preferredCurrency={preferredCurrency}
           fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
-          token={token?.token}
-          from={metaMaskWalletTask.data.ethereumAddress}
+          token={token}
+          from={metaMaskWalletTask.data.hermezEthereumAddress}
           to={transaction.to}
           amount={transaction.amount}
           fee={transaction.fee}
@@ -270,74 +275,29 @@ function Transaction ({
 }
 
 Transaction.propTypes = {
-  metaMaskWalletTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.object,
-    error: PropTypes.string
-  }),
-  metaMaskTokensTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        balance: PropTypes.number.isRequired,
-        token: PropTypes.shape({
-          tokenId: PropTypes.number.isRequired,
-          name: PropTypes.string.isRequired,
-          symbol: PropTypes.string.isRequired,
-          decimals: PropTypes.number.isRequired,
-          ethAddr: PropTypes.string.isRequired,
-          ethBlockNum: PropTypes.number.isRequired,
-          USD: PropTypes.number.isRequired
-        })
-      })
-    )
-  }),
-  accountsTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        balance: PropTypes.number.isRequired,
-        tokenId: PropTypes.number.isRequired
-      })
-    ),
-    error: PropTypes.string
-  }),
-  tokensTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired
-      })
-    ),
-    error: PropTypes.string
-  }),
-  feesTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.shape({
-      existingAccount: PropTypes.number.isRequired,
-      createAccount: PropTypes.number.isRequired,
-      createAccountInternal: PropTypes.number.isRequired
-    })
-  }),
+  metaMaskWalletTask: PropTypes.object,
+  metaMaskTokensTask: PropTypes.object,
+  accountsTask: PropTypes.object,
+  tokensTask: PropTypes.object,
+  feesTask: PropTypes.object,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRatesTask: PropTypes.object.isRequired,
   transactionType: PropTypes.string.isRequired
 }
 
 const mapStateToProps = (state) => ({
-  tokensTask: state.global.tokensTask,
   metaMaskWalletTask: state.account.metaMaskWalletTask,
-  accountsTask: state.home.accountsTask,
   metaMaskTokensTask: state.transaction.metaMaskTokensTask,
+  accountsTask: state.home.accountsTask,
+  tokensTask: state.transaction.tokensTask,
   feesTask: state.transaction.feesTask,
-  preferredCurrency: state.settings.preferredCurrency,
-  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
+  preferredCurrency: state.settings.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadMetaMaskTokens: () => dispatch(fetchMetaMaskTokens()),
+  onLoadTokens: () => dispatch(fetchTokens()),
+  onLoadMetaMaskTokens: (hermezTokens) => dispatch(fetchMetaMaskTokens(hermezTokens)),
   onLoadAccounts: (ethereumAddress, tokens) =>
     dispatch(fetchAccounts(ethereumAddress, tokens)),
   onLoadFees: () => dispatch(fetchFees())

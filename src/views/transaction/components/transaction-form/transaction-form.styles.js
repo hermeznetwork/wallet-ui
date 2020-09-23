@@ -1,16 +1,5 @@
 import { createUseStyles } from 'react-jss'
 
-function errorMessage (theme) {
-  return {
-    display: 'none',
-    alignItems: 'center',
-    marginTop: `${theme.spacing(1.5)}px`,
-    fontSize: `${theme.spacing(2)}px`,
-    fontWeight: theme.fontWeights.medium,
-    color: theme.palette.red
-  }
-}
-
 const useAccountListStyles = createUseStyles(theme => ({
   transaction: {},
   token: {
@@ -88,7 +77,14 @@ const useAccountListStyles = createUseStyles(theme => ({
   changeCurrencyIcon: {
     marginRight: `${theme.spacing(1)}px`
   },
-  selectAmountErrorMessage: errorMessage(theme),
+  errorMessage: {
+    display: 'none',
+    alignItems: 'center',
+    marginTop: `${theme.spacing(1.5)}px`,
+    fontSize: `${theme.spacing(2)}px`,
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.red
+  },
   selectAmountErrorMessageVisible: {
     display: 'flex'
   },
@@ -119,7 +115,6 @@ const useAccountListStyles = createUseStyles(theme => ({
   receiverError: {
     borderColor: theme.palette.red
   },
-  receiverErrorMessage: errorMessage(theme),
   receiverErrorMessageVisible: {
     display: 'flex'
   },

@@ -1,5 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import useTransactionConfirmationStyles from './transaction-confirmation.styles'
@@ -22,4 +21,4 @@ function TransactionConfirmation () {
   )
 }
 
-export default withAuthGuard(connect()(TransactionConfirmation))
+export default withAuthGuard(TransactionConfirmation)

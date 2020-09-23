@@ -16,15 +16,20 @@ function TransactionOverview ({
 }) {
   const classes = useTransactionOverviewStyles()
 
+  function getAccountBalance () {
+    return Number(token.balance)
+  }
+
   /**
    * Returns the conversion rate from the selected token to the selected preffered currency.
    *
    * @returns {Number} Conversion rate from the selected token to fiat
    */
   function getAccountFiatRate () {
+    const USDRate = token.balanceUSD / getAccountBalance()
     return preferredCurrency === CurrencySymbol.USD.code
-      ? token.USD
-      : token.USD * fiatExchangeRates[preferredCurrency]
+      ? USDRate
+      : USDRate * fiatExchangeRates[preferredCurrency]
   }
 
   /**
@@ -80,7 +85,7 @@ function TransactionOverview ({
           <p className={classes.rowName}>Fee</p>
           <div className={classes.rowValues}>
             <p className={classes.valueTop}>{CurrencySymbol[preferredCurrency].symbol} {fee * getAccountFiatRate()}</p>
-            <p className={classes.valueBottom}>{fee} {token.symbol}</p>
+            <p className={classes.valueBottom}>{fee} {token.tokenSymbol}</p>
           </div>
         </div>
       )
@@ -117,15 +122,7 @@ TransactionOverview.propTypes = {
   to: PropTypes.string,
   amount: PropTypes.number.isRequired,
   fee: PropTypes.number,
-  token: PropTypes.shape({
-    tokenId: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    symbol: PropTypes.string.isRequired,
-    decimals: PropTypes.number.isRequired,
-    ethAddr: PropTypes.string.isRequired,
-    ethBlockNum: PropTypes.number.isRequired,
-    USD: PropTypes.number.isRequired
-  }),
+  token: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired
 }

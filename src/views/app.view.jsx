@@ -12,7 +12,6 @@ import { CurrencySymbol } from '../utils/currencies'
 
 function App ({
   configTask,
-  tokensTask,
   fiatExchangeRatesTask,
   onLoadConfig,
   onLoadFiatExchangeRates
@@ -66,16 +65,6 @@ function App ({
 }
 
 App.propTypes = {
-  tokensTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired
-      })
-    )
-  }),
   fiatExchangeRatesTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.object
