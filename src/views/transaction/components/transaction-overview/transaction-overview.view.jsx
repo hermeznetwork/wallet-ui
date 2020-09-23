@@ -27,6 +27,11 @@ function TransactionOverview ({
       : token.USD * fiatExchangeRates[preferredCurrency]
   }
 
+  /**
+   * Depending on the transaction type, show the appropriate button text
+   *
+   * @returns {string}
+   */
   function getTitle () {
     switch (type) {
       case 'deposit':
@@ -40,6 +45,16 @@ function TransactionOverview ({
     }
   }
 
+  /**
+   * Prepares the transaction and sends it
+   */
+  function handleClickTxButton () {
+
+  }
+
+  /**
+   * If the transaction has a receiver, display that information.
+   */
   function renderTo () {
     if (to) {
       return (
@@ -55,14 +70,17 @@ function TransactionOverview ({
     }
   }
 
+  /**
+   * If it's a Layer 2 transaction, show the fee.
+   */
   function renderFee () {
     if (fee) {
       return (
         <div className={classes.row}>
           <p className={classes.rowName}>Fee</p>
           <div className={classes.rowValues}>
-            <p className={classes.valueTop}>{preferredCurrency} {fee * getAccountFiatRate()}</p>
-            <p className={classes.valueTop}>{fee} {token.symbol}</p>
+            <p className={classes.valueTop}>{CurrencySymbol[preferredCurrency].symbol} {fee * getAccountFiatRate()}</p>
+            <p className={classes.valueBottom}>{fee} {token.symbol}</p>
           </div>
         </div>
       )
@@ -73,17 +91,22 @@ function TransactionOverview ({
 
   return (
     <div className={classes.wrapper}>
-      {amount}
-      <div className={classes.row}>
-        <p className={classes.rowName}>From</p>
-        <div className={classes.rowValues}>
-          <p className={classes.valueTop}>My Hermez Address</p>
-          <p className={classes.valueBottom}>{from}</p>
-        </div>
+      <div className={classes.amountWrapper}>
+        <p className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol} {amount * getAccountFiatRate()}</p>
+        <p className={classes.amountToken}>{amount}</p>
       </div>
-      {renderTo()}
-      {renderFee()}
-      <button>{getTitle()}</button>
+      <div className={classes.txTable}>
+        <div className={classes.row}>
+          <p className={classes.rowName}>From</p>
+          <div className={classes.rowValues}>
+            <p className={classes.valueTop}>My Hermez Address</p>
+            <p className={classes.valueBottom}>{from}</p>
+          </div>
+        </div>
+        {renderTo()}
+        {renderFee()}
+      </div>
+      <button className={classes.txButton} onClick={handleClickTxButton}>{getTitle()}</button>
     </div>
   )
 }

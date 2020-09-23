@@ -11,10 +11,10 @@ const useContainerStyles = createUseStyles(theme => ({
     maxWidth: 700,
     margin: 'auto',
     padding: ({ disableVerticalGutters, disableTopGutter }) => disableVerticalGutters
-      ? `0 ${theme.spacing(4)}px`
+      ? `0 ${theme.spacing(3.5)}px`
       : disableTopGutter
-        ? `0 ${theme.spacing(4)}px ${theme.spacing(5)}px`
-        : `${theme.spacing(5)}px ${theme.spacing(4)}px`
+        ? `0 ${theme.spacing(3.5)}px ${theme.spacing(5)}px`
+        : `${theme.spacing(5)}px ${theme.spacing(3.5)}px`
   }
 }))
 

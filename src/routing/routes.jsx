@@ -6,6 +6,7 @@ import Settings from '../views/settings/settings.view'
 import AccountDetails from '../views/account-details/account-details.view'
 import TransactionDetails from '../views/transaction-details/transaction-details.view'
 import Login from '../views/login/login.view'
+import TransactionConfirmation from '../views/transaction-confirmation/transaction-confirmation.view'
 
 const routes = [
   {
@@ -42,6 +43,11 @@ const routes = [
     path: '/accounts/:tokenId/transactions/:transactionId',
     render: () => <TransactionDetails />,
     renderLayout: true
+  },
+  {
+    path: '/transaction-confirmation',
+    render: () => <TransactionConfirmation />,
+    renderLayout: false
   }
 ]
 

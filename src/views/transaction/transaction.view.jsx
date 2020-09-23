@@ -2,9 +2,11 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
+import clsx from 'clsx'
 
+import { fetchAccounts } from '../../store/home/home.thunks'
 import { fetchMetaMaskTokens, fetchFees } from '../../store/transaction/transaction.thunks'
-import useTransactionLayoutStyles from './transaction.styles'
+import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
 import TransactionOverview from './components/transaction-overview/transaction-overview.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -17,21 +19,32 @@ import closeIcon from '../../images/icons/close.svg'
 function Transaction ({
   metaMaskWalletTask,
   metaMaskTokensTask,
+  accountsTask,
+  tokensTask,
   feesTask,
   preferredCurrency,
   fiatExchangeRatesTask,
   transactionType,
   onLoadMetaMaskTokens,
+  onLoadAccounts,
   onLoadFees
 }) {
-  const classes = useTransactionLayoutStyles()
+  const classes = useTransactionStyles()
   const { tokenId } = useParams()
   const [token, setToken] = useState()
   const [transaction, setTransaction] = useState()
 
   React.useEffect(() => {
-    onLoadMetaMaskTokens()
-  }, [onLoadMetaMaskTokens])
+    if (transactionType === 'deposit') {
+      onLoadMetaMaskTokens()
+    }
+  }, [transactionType, onLoadMetaMaskTokens])
+
+  React.useEffect(() => {
+    if (transactionType !== 'deposit' && metaMaskWalletTask.status === 'successful' && tokensTask.status === 'successful') {
+      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress, tokensTask.data)
+    }
+  }, [transactionType, metaMaskWalletTask, tokensTask, onLoadAccounts])
 
   React.useEffect(() => {
     onLoadFees()
@@ -65,6 +78,32 @@ function Transaction ({
   }
 
   /**
+   * Depending on the state of the view, get the correct Header Title.
+   *
+   * @returns {string}
+   */
+  function getTitle () {
+    if (token) {
+      if (transaction) {
+        switch (transactionType) {
+          case 'deposit':
+            return 'Deposit'
+          case 'transfer':
+            return 'Send'
+          case 'withdraw':
+            return 'Withdraw'
+          default:
+            return ''
+        }
+      } else {
+        return 'Amount'
+      }
+    } else {
+      return 'Token'
+    }
+  }
+
+  /**
    * If the view is in a step that's not the AccountList, render the back button element.
    *
    * @returns {ReactElement} The back button element
@@ -85,8 +124,81 @@ function Transaction ({
     }
   }
 
+  /**
+   * If it's a deposit, show valid token accounts from Ethereum (Layer 1).
+   * Otherwise, show token accounts from Hermez (Layer 2).
+   */
+  function renderAccountList () {
+    if (transactionType === 'deposit') {
+      return (
+        <div className={classes.accountListWrapper}>
+          {(() => {
+            switch (metaMaskTokensTask.status) {
+              case 'loading': {
+                return <Spinner />
+              }
+              case 'failed': {
+                return (
+                  <p>{metaMaskTokensTask.error}</p>
+                )
+              }
+              case 'successful': {
+                return (
+                  <AccountList
+                    accounts={metaMaskTokensTask.data}
+                    preferredCurrency={preferredCurrency}
+                    fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
+                    onAccountClick={handleAccountListClick}
+                  />
+                )
+              }
+              default: {
+                return <></>
+              }
+            }
+          })()}
+        </div>
+      )
+    } else {
+      return (
+        <div className={classes.accountListWrapper}>
+          {(() => {
+            switch (accountsTask.status) {
+              case 'loading': {
+                return <Spinner />
+              }
+              case 'failed': {
+                return (
+                  <p>{accountsTask.error}</p>
+                )
+              }
+              case 'successful': {
+                return (
+                  <AccountList
+                    accounts={accountsTask.data}
+                    preferredCurrency={preferredCurrency}
+                    fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
+                    onAccountClick={handleAccountListClick}
+                  />
+                )
+              }
+              default: {
+                return <></>
+              }
+            }
+          })()}
+        </div>
+      )
+    }
+  }
+
+  /**
+   * Prepares the transaction object and stores it.
+   * That then displays the <TransactionOverview> component.
+   *
+   * @param {Objec} tx
+   */
   function handleSubmit (tx) {
-    console.log(tx)
     setTransaction(tx)
   }
 
@@ -117,7 +229,7 @@ function Transaction ({
           type={transactionType}
           preferredCurrency={preferredCurrency}
           fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
-          token={token.token}
+          token={token?.token}
           from={metaMaskWalletTask.data.ethereumAddress}
           to={transaction.to}
           amount={transaction.amount}
@@ -125,55 +237,35 @@ function Transaction ({
         />
       )
     } else {
-      return (
-        <div>
-          {(() => {
-            switch (metaMaskTokensTask.status) {
-              case 'loading': {
-                return <Spinner />
-              }
-              case 'failed': {
-                return (
-                  <p>{metaMaskTokensTask.error}</p>
-                )
-              }
-              case 'successful': {
-                return (
-                  <AccountList
-                    accounts={metaMaskTokensTask.data}
-                    preferredCurrency={preferredCurrency}
-                    fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
-                    onAccountClick={handleAccountListClick}
-                  />
-                )
-              }
-              default: {
-                return <></>
-              }
-            }
-          })()}
-        </div>
-      )
+      return renderAccountList()
     }
   }
 
   return (
-    <Container disableTopGutter>
-      <section className={classes.wrapper}>
-        <header className={classes.header}>
-          {renderBackButton()}
-          <h2 className={classes.heading}>{token ? 'Amount' : 'Token'}</h2>
-          <Link to='/' className={classes.closeButtonLink}>
-            <img
-              className={classes.closeButton}
-              src={closeIcon}
-              alt='Close Transaction Icon'
-            />
-          </Link>
-        </header>
+    <section className={classes.wrapper}>
+      <header className={clsx({
+        [classes.header]: true,
+        [classes.headerPage]: !!transaction
+      })}
+      >
+        <Container disableVerticalGutters>
+          <div className={classes.headerContent}>
+            {renderBackButton()}
+            <h2 className={classes.heading}>{getTitle()}</h2>
+            <Link to='/' className={classes.closeButtonLink}>
+              <img
+                className={classes.closeButton}
+                src={closeIcon}
+                alt='Close Transaction Icon'
+              />
+            </Link>
+          </div>
+        </Container>
+      </header>
+      <Container disableVerticalGutters>
         {renderContent()}
-      </section>
-    </Container>
+      </Container>
+    </section>
   )
 }
 
@@ -200,6 +292,27 @@ Transaction.propTypes = {
       })
     )
   }),
+  accountsTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        balance: PropTypes.number.isRequired,
+        tokenId: PropTypes.number.isRequired
+      })
+    ),
+    error: PropTypes.string
+  }),
+  tokensTask: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        tokenId: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        symbol: PropTypes.string.isRequired
+      })
+    ),
+    error: PropTypes.string
+  }),
   feesTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.shape({
@@ -214,7 +327,9 @@ Transaction.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
+  tokensTask: state.global.tokensTask,
   metaMaskWalletTask: state.account.metaMaskWalletTask,
+  accountsTask: state.home.accountsTask,
   metaMaskTokensTask: state.transaction.metaMaskTokensTask,
   feesTask: state.transaction.feesTask,
   preferredCurrency: state.settings.preferredCurrency,
@@ -223,6 +338,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadMetaMaskTokens: () => dispatch(fetchMetaMaskTokens()),
+  onLoadAccounts: (ethereumAddress, tokens) =>
+    dispatch(fetchAccounts(ethereumAddress, tokens)),
   onLoadFees: () => dispatch(fetchFees())
 })
 
