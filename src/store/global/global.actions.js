@@ -91,32 +91,6 @@ function loadFiatExchangeRatesFailure (error) {
   }
 }
 
-function loadGasMultiplier (num) {
-  return {
-    type: globalActionTypes.LOAD_GAS_MULTIPLIER,
-    gasMultiplier: num
-  }
-}
-
-function loadCurrentBatch () {
-  return {
-    type: globalActionTypes.LOAD_CURRENT_BATCH
-  }
-}
-
-function loadCurrentBatchSuccess (currentBatch) {
-  return {
-    type: globalActionTypes.LOAD_CURRENT_BATCH_SUCCESS,
-    currentBatch: currentBatch
-  }
-}
-
-function loadCurrentBatchFailure () {
-  return {
-    type: globalActionTypes.LOAD_CURRENT_BATCH_FAILURE
-  }
-}
-
 export {
   changeHeader,
   changeRedirectRoute,
@@ -128,9 +102,5 @@ export {
   loadConfigFailure,
   loadFiatExchangeRates,
   loadFiatExchangeRatesSuccess,
-  loadFiatExchangeRatesFailure,
-  loadGasMultiplier,
-  loadCurrentBatch,
-  loadCurrentBatchSuccess,
-  loadCurrentBatchFailure
+  loadFiatExchangeRatesFailure
 }

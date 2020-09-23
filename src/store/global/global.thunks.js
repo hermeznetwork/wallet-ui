@@ -4,7 +4,6 @@ import * as globalActions from './global.actions'
 import * as rollupApi from '../../apis/rollup'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import config from '../../utils/config.json'
-import { CliExternalOperator } from '../../utils/cli-external-operator'
 
 function changeRedirectRoute (redirecRoute) {
   return (dispatch) => {
@@ -68,32 +67,9 @@ function fetchConfig () {
   }
 }
 
-function fetchGasMultiplier (num) {
-  return function (dispatch) {
-    dispatch(globalActions.loadGasMultiplier(num))
-  }
-}
-
-function fetchCurrentBatch (urlOperator) {
-  return async function (dispatch) {
-    dispatch(globalActions.loadCurrentBatch())
-    let currentBatch
-    try {
-      const apiOperator = new CliExternalOperator(urlOperator)
-      const resOperator = await apiOperator.getState()
-      currentBatch = resOperator.data.rollupSynch.lastBatchSynched
-      dispatch(globalActions.loadCurrentBatchSuccess(currentBatch))
-    } catch (err) {
-      dispatch(globalActions.loadCurrentBatchFailure())
-    }
-  }
-}
-
 export {
   changeRedirectRoute,
   fetchTokens,
   fetchConfig,
-  fetchFiatExchangeRates,
-  fetchGasMultiplier,
-  fetchCurrentBatch
+  fetchFiatExchangeRates
 }

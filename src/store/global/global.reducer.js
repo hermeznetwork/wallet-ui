@@ -13,10 +13,6 @@ const initialGlobalState = {
   },
   fiatExchangeRatesTask: {
     status: 'pending'
-  },
-  gasMultiplierTask: {},
-  currentBatchTask: {
-    status: 'pending'
   }
 }
 
@@ -114,35 +110,6 @@ function globalReducer (state = initialGlobalState, action) {
         }
       }
     }
-    case globalActionTypes.LOAD_GAS_MULTIPLIER:
-      return {
-        ...state,
-        gasMultiplierTask: {
-          data: action.gasMultiplier
-        }
-      }
-    case globalActionTypes.LOAD_CURRENT_BATCH:
-      return {
-        ...state,
-        currentBatchTask: {
-          status: 'loading'
-        }
-      }
-    case globalActionTypes.LOAD_CURRENT_BATCH_SUCCESS:
-      return {
-        ...state,
-        currentBatchTask: {
-          status: 'successful',
-          data: state.currentBatch
-        }
-      }
-    case globalActionTypes.LOAD_CURRENT_BATCH_FAILURE:
-      return {
-        ...state,
-        currentBatchTask: {
-          status: 'failed'
-        }
-      }
     default: {
       return state
     }
