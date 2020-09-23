@@ -24,7 +24,6 @@ function fetchPoolTransactions (accountIndex) {
         rollupApi
           .getPoolTransaction(transactionId)
           .catch(err => {
-            console.log(err)
             if (err.response.status === HttpStatusCode.NOT_FOUND) {
               dispatch(removePoolTransaction(transactionId))
             }
@@ -33,9 +32,8 @@ function fetchPoolTransactions (accountIndex) {
 
     return Promise.all(accountTransactionsPromises)
       .then((transactions) => {
-        console.log(transactions)
         const successfulTransactions = transactions.filter(transaction => transaction !== undefined)
-        console.log(successfulTransactions)
+
         dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(successfulTransactions))
       })
       .catch(err => dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure(err)))
