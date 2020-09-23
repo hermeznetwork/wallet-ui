@@ -13,7 +13,9 @@ export const globalActionTypes = {
   LOAD_GAS_MULTIPLIER: '[GLOBAL] LOAD GAS MULTIPLIER',
   LOAD_CURRENT_BATCH: '[GLOBAL] LOAD CURRENT BATCH',
   LOAD_CURRENT_BATCH_SUCCESS: '[GLOBAL] LOAD CURRENT BATCH SUCCESS',
-  LOAD_CURRENT_BATCH_FAILURE: '[GLOBAL] LOAD CURRENT BATCH FAILURE'
+  LOAD_CURRENT_BATCH_FAILURE: '[GLOBAL] LOAD CURRENT BATCH FAILURE',
+  ADD_POOL_TRANSACTION: '[GLOBAL] ADD POOL TRANSACTION',
+  REMOVE_POOL_TRANSACTION: '[GLOBAL] REMOVE POOL TRANSACTION'
 }
 
 function changeHeader (header) {
@@ -91,6 +93,22 @@ function loadFiatExchangeRatesFailure (error) {
   }
 }
 
+function addPoolTransaction (hermezEthereumAddress, transaction) {
+  return {
+    type: globalActionTypes.ADD_POOL_TRANSACTION,
+    hermezEthereumAddress,
+    transaction
+  }
+}
+
+function removePoolTransaction (hermezEthereumAddress, transactionId) {
+  return {
+    type: globalActionTypes.REMOVE_POOL_TRANSACTION,
+    hermezEthereumAddress,
+    transactionId
+  }
+}
+
 export {
   changeHeader,
   changeRedirectRoute,
@@ -102,5 +120,7 @@ export {
   loadConfigFailure,
   loadFiatExchangeRates,
   loadFiatExchangeRatesSuccess,
-  loadFiatExchangeRatesFailure
+  loadFiatExchangeRatesFailure,
+  addPoolTransaction,
+  removePoolTransaction
 }

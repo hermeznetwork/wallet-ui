@@ -13,10 +13,9 @@ async function getAccount (accountIndex) {
   return extractJSON(axios.get(`${baseApiUrl}/accounts/${accountIndex}`))
 }
 
-async function getTransactions (hermezEthereumAddress, tokenId) {
+async function getTransactions (accountIndex) {
   const params = {
-    ...(hermezEthereumAddress ? { hermezEthereumAddress } : {}),
-    ...(tokenId ? { tokenId } : {})
+    ...(accountIndex ? { accountIndex } : {})
   }
 
   return extractJSON(axios.get(`${baseApiUrl}/transactions-history`, { params }))

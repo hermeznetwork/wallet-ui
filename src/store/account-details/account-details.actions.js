@@ -2,9 +2,12 @@ export const accountDetailsActionTypes = {
   LOAD_ACCOUNT: '[ACCOUNT DETAILS] LOAD ACCOUNT',
   LOAD_ACCOUNT_SUCCESS: '[ACCOUNT DETAILS] LOAD ACCOUNT SUCCESS',
   LOAD_ACCOUNT_FAILURE: '[ACCOUNT DETAILS] LOAD ACCOUNT FAILURE',
-  LOAD_TRANSACTIONS: '[ACCOUNT DETAILS] LOAD TRANSACTIONS',
-  LOAD_TRANSACTIONS_SUCCESS: '[ACCOUNT DETAILS] LOAD TRANSACTIONS SUCCESS',
-  LOAD_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD TRANSACTIONS FAILURE'
+  LOAD_POOL_TRANSACTIONS: '[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS',
+  LOAD_POOL_TRANSACTIONS_SUCCESS: '[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS SUCCESS',
+  LOAD_POOL_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS FAILURE',
+  LOAD_HISTORY_TRANSACTIONS: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS',
+  LOAD_HISTORY_TRANSACTIONS_SUCCESS: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS SUCCESS',
+  LOAD_HISTORY_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS FAILURE'
 }
 
 function loadAccount () {
@@ -26,22 +29,41 @@ function loadAccountFailure () {
   }
 }
 
-function loadTransactions () {
+function loadPoolTransactions () {
   return {
-    type: accountDetailsActionTypes.LOAD_TRANSACTIONS
+    type: accountDetailsActionTypes.LOAD_POOL_TRANSACTIONS
   }
 }
 
-function loadTransactionsSuccess (transactions) {
+function loadPoolTransactionsSuccess (transactions) {
   return {
-    type: accountDetailsActionTypes.LOAD_TRANSACTIONS_SUCCESS,
+    type: accountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
     transactions
   }
 }
 
-function loadTransactionsFailure () {
+function loadPoolTransactionsFailure () {
   return {
-    type: accountDetailsActionTypes.LOAD_TRANSACTIONS_FAILURE
+    type: accountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE
+  }
+}
+
+function loadHistoryTransactions () {
+  return {
+    type: accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS
+  }
+}
+
+function loadHistoryTransactionsSuccess (transactions) {
+  return {
+    type: accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
+    transactions
+  }
+}
+
+function loadHistoryTransactionsFailure () {
+  return {
+    type: accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE
   }
 }
 
@@ -49,7 +71,10 @@ export {
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,
-  loadTransactions,
-  loadTransactionsSuccess,
-  loadTransactionsFailure
+  loadPoolTransactions,
+  loadPoolTransactionsSuccess,
+  loadPoolTransactionsFailure,
+  loadHistoryTransactions,
+  loadHistoryTransactionsSuccess,
+  loadHistoryTransactionsFailure
 }

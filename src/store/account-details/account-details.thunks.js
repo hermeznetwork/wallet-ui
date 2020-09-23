@@ -1,6 +1,13 @@
 import * as accountDetailsActionTypes from './account-details.actions'
 import * as rollupApi from '../../apis/rollup'
+import { HttpStatusCode } from '../../utils/http'
+import { removePoolTransaction } from '../global/global.thunks'
 
+/**
+ * Fetches the account details for the specified account index
+ * @param {string} accountIndex - The account index
+ * @returns {void}
+ */
 function fetchAccount (accountIndex) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadAccount())
@@ -11,14 +18,63 @@ function fetchAccount (accountIndex) {
   }
 }
 
-function fetchTransactions (ethereumAddress, tokenId) {
-  return (dispatch) => {
-    dispatch(accountDetailsActionTypes.loadTransactions())
+/**
+ * Fetches the transaction details for each transaction in the pool for the specified account index
+ * @param {string} accountIndex - The account index
+ * @returns {void}
+ */
+function fetchPoolTransactions (accountIndex) {
+  return (dispatch, getState) => {
+    dispatch(accountDetailsActionTypes.loadPoolTransactions())
 
-    return rollupApi.getTransactions(ethereumAddress, tokenId)
-      .then(res => dispatch(accountDetailsActionTypes.loadTransactionsSuccess(res)))
-      .catch(err => dispatch(accountDetailsActionTypes.loadTransactionsFailure(err)))
+    const { global: { transactionPool }, account: { metaMaskWalletTask } } = getState()
+
+    if (metaMaskWalletTask.status === 'successful') {
+      const { hermezEthereumAddress } = metaMaskWalletTask.data
+      const accountTransactionPool = transactionPool[hermezEthereumAddress]
+
+      if (accountTransactionPool === undefined) {
+        return dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess([]))
+      }
+
+      const accountTransactionsPromises = accountTransactionPool
+        .filter(transaction => transaction.fromAccountIndex === accountIndex)
+        .map(({ id: transactionId }) =>
+          rollupApi
+            .getPoolTransaction(transactionId)
+            .catch(err => {
+              if (err.response.status === HttpStatusCode.NOT_FOUND) {
+                dispatch(removePoolTransaction(hermezEthereumAddress, transactionId))
+              }
+            })
+        )
+
+      return Promise.all(accountTransactionsPromises)
+        .then((transactions) => {
+          const successfulTransactions = transactions.filter(transaction => transaction !== undefined)
+
+          dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(successfulTransactions))
+        })
+        .catch(err => dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure(err)))
+    } else {
+      dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure('MetaMask wallet is not available'))
+    }
   }
 }
 
-export { fetchAccount, fetchTransactions }
+/**
+ * Fetches the transactions details for the specified account index
+ * @param {string} accountIndex - The account index
+ * @returns {void}
+ */
+function fetchHistoryTransactions (accountIndex) {
+  return (dispatch) => {
+    dispatch(accountDetailsActionTypes.loadHistoryTransactions())
+
+    return rollupApi.getTransactions(accountIndex)
+      .then(res => dispatch(accountDetailsActionTypes.loadHistoryTransactionsSuccess(res)))
+      .catch(err => dispatch(accountDetailsActionTypes.loadHistoryTransactionsFailure(err)))
+  }
+}
+
+export { fetchAccount, fetchPoolTransactions, fetchHistoryTransactions }
