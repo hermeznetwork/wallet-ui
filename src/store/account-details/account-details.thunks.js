@@ -3,6 +3,11 @@ import * as rollupApi from '../../apis/rollup'
 import { HttpStatusCode } from '../../utils/http'
 import { removePoolTransaction } from '../global/global.thunks'
 
+/**
+ * Fetches the account details for the specified account index
+ * @param {string} accountIndex The account index
+ * @returns {void}
+ */
 function fetchAccount (accountIndex) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadAccount())
@@ -13,6 +18,12 @@ function fetchAccount (accountIndex) {
   }
 }
 
+/**
+ * Fetches the transaction details for each transaction in the pool for the
+ * specified account index
+ * @param {string} accountIndex The accountIndex
+ * @returns {void}
+ */
 function fetchPoolTransactions (accountIndex) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadPoolTransactions())
@@ -52,6 +63,11 @@ function fetchPoolTransactions (accountIndex) {
   }
 }
 
+/**
+ * Fetches the transactions details for the specified account index
+ * @param {string} accountIndex The accountIndex
+ * @returns {void}
+ */
 function fetchHistoryTransactions (accountIndex) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadHistoryTransactions())
