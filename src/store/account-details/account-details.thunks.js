@@ -1,5 +1,7 @@
 import * as accountDetailsActionTypes from './account-details.actions'
 import * as rollupApi from '../../apis/rollup'
+import { HttpStatusCode } from '../../utils/http'
+import { removePoolTransaction } from '../global/global.thunks'
 
 function fetchAccount (accountIndex) {
   return (dispatch) => {
@@ -11,14 +13,43 @@ function fetchAccount (accountIndex) {
   }
 }
 
-function fetchTransactions (ethereumAddress, tokenId) {
-  return (dispatch) => {
-    dispatch(accountDetailsActionTypes.loadTransactions())
+function fetchPoolTransactions (accountIndex) {
+  return (dispatch, getState) => {
+    dispatch(accountDetailsActionTypes.loadPoolTransactions())
 
-    return rollupApi.getTransactions(ethereumAddress, tokenId)
-      .then(res => dispatch(accountDetailsActionTypes.loadTransactionsSuccess(res)))
-      .catch(err => dispatch(accountDetailsActionTypes.loadTransactionsFailure(err)))
+    const { global: { transactionPool } } = getState()
+    const accountTransactionsPromises = transactionPool
+      .filter(transaction => transaction.fromAccountIndex === accountIndex)
+      .map(({ id: transactionId }) =>
+        rollupApi
+          .getPoolTransaction(transactionId)
+          .catch(err => {
+            console.log(err)
+            if (err.response.status === HttpStatusCode.NOT_FOUND) {
+              dispatch(removePoolTransaction(transactionId))
+            }
+          })
+      )
+
+    return Promise.all(accountTransactionsPromises)
+      .then((transactions) => {
+        console.log(transactions)
+        const successfulTransactions = transactions.filter(transaction => transaction !== undefined)
+        console.log(successfulTransactions)
+        dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(successfulTransactions))
+      })
+      .catch(err => dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure(err)))
   }
 }
 
-export { fetchAccount, fetchTransactions }
+function fetchHistoryTransactions (accountIndex) {
+  return (dispatch) => {
+    dispatch(accountDetailsActionTypes.loadHistoryTransactions())
+
+    return rollupApi.getTransactions(accountIndex)
+      .then(res => dispatch(accountDetailsActionTypes.loadHistoryTransactionsSuccess(res)))
+      .catch(err => dispatch(accountDetailsActionTypes.loadHistoryTransactionsFailure(err)))
+  }
+}
+
+export { fetchAccount, fetchPoolTransactions, fetchHistoryTransactions }

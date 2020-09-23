@@ -13,7 +13,9 @@ export const globalActionTypes = {
   LOAD_GAS_MULTIPLIER: '[GLOBAL] LOAD GAS MULTIPLIER',
   LOAD_CURRENT_BATCH: '[GLOBAL] LOAD CURRENT BATCH',
   LOAD_CURRENT_BATCH_SUCCESS: '[GLOBAL] LOAD CURRENT BATCH SUCCESS',
-  LOAD_CURRENT_BATCH_FAILURE: '[GLOBAL] LOAD CURRENT BATCH FAILURE'
+  LOAD_CURRENT_BATCH_FAILURE: '[GLOBAL] LOAD CURRENT BATCH FAILURE',
+  ADD_POOL_TRANSACTION: '[GLOBAL] ADD POOL TRANSACTION',
+  REMOVE_POOL_TRANSACTION: '[GLOBAL] REMOVE POOL TRANSACTION'
 }
 
 function changeHeader (header) {
@@ -117,6 +119,20 @@ function loadCurrentBatchFailure () {
   }
 }
 
+function addPoolTransaction (transaction) {
+  return {
+    type: globalActionTypes.ADD_POOL_TRANSACTION,
+    transaction
+  }
+}
+
+function removePoolTransaction (transactionId) {
+  return {
+    type: globalActionTypes.REMOVE_POOL_TRANSACTION,
+    transactionId
+  }
+}
+
 export {
   changeHeader,
   changeRedirectRoute,
@@ -132,5 +148,7 @@ export {
   loadGasMultiplier,
   loadCurrentBatch,
   loadCurrentBatchSuccess,
-  loadCurrentBatchFailure
+  loadCurrentBatchFailure,
+  addPoolTransaction,
+  removePoolTransaction
 }

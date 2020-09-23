@@ -11,6 +11,10 @@ export const TxType = {
   Exit: 'Exit'
 }
 
+export const TxState = {
+  Pending: 'pend'
+}
+
 /**
  * Get current average gas price from the last ethereum blocks and multiply it
  * @param {Number} multiplier - multiply the average gas price by this parameter

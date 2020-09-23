@@ -30,7 +30,15 @@ function Transaction ({
           <p className={classes.preferredCurrency}>{fiatAmount.toFixed(2)}</p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
-          <p>{new Date(timestamp).toLocaleDateString()}</p>
+          {
+            timestamp
+              ? <p>{new Date(timestamp).toLocaleDateString()}</p>
+              : (
+                <div className={classes.pendingLabelContainer}>
+                  <p className={classes.pendingLabelText}>Pending</p>
+                </div>
+              )
+          }
           <p>{amount} {tokenSymbol}</p>
         </div>
       </div>
@@ -43,7 +51,7 @@ Transaction.propTypes = {
   amount: PropTypes.string.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
   fiatAmount: PropTypes.number.isRequired,
-  timestamp: PropTypes.string.isRequired,
+  timestamp: PropTypes.string,
   preferredCurrency: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired
 }

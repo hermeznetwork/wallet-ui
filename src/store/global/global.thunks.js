@@ -5,6 +5,7 @@ import * as rollupApi from '../../apis/rollup'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import config from '../../utils/config.json'
 import { CliExternalOperator } from '../../utils/cli-external-operator'
+import { TRANSACTION_POOL_KEY } from '../../constants'
 
 function changeRedirectRoute (redirecRoute) {
   return (dispatch) => {
@@ -89,11 +90,34 @@ function fetchCurrentBatch (urlOperator) {
   }
 }
 
+function addPoolTransaction (transaction) {
+  return (dispatch) => {
+    const transactionPool = JSON.parse(localStorage.getItem(TRANSACTION_POOL_KEY))
+    const newTransactionPool = [...transactionPool, transaction]
+
+    localStorage.setItem(TRANSACTION_POOL_KEY, JSON.stringify(newTransactionPool))
+    dispatch(globalActions.addPoolTransaction(newTransactionPool))
+  }
+}
+
+function removePoolTransaction (transactionId) {
+  return (dispatch) => {
+    const transactionPool = JSON.parse(localStorage.getItem(TRANSACTION_POOL_KEY))
+    const newTransactionPool = transactionPool
+      .filter((transaction) => transaction.id !== transactionId)
+
+    localStorage.setItem(TRANSACTION_POOL_KEY, JSON.stringify(newTransactionPool))
+    dispatch(globalActions.removePoolTransaction(transactionId))
+  }
+}
+
 export {
   changeRedirectRoute,
   fetchTokens,
   fetchConfig,
   fetchFiatExchangeRates,
   fetchGasMultiplier,
-  fetchCurrentBatch
+  fetchCurrentBatch,
+  addPoolTransaction,
+  removePoolTransaction
 }

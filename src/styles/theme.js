@@ -4,7 +4,11 @@ const theme = {
       main: '#faf4ea',
       dark: '#f6e9d3'
     },
-    secondary: '#e75a2b',
+    secondary: {
+      light: '#fef5ed',
+      main: '#e75a2b',
+      dark: '#d8853b'
+    },
     white: '#ffffff',
     black: {
       light: '#333333',

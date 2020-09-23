@@ -98,7 +98,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     width: '100%',
     marginTop: `${theme.spacing(14.5)}px`,
     padding: `${theme.spacing(3.5)}px 0`,
-    backgroundColor: theme.palette.secondary,
+    backgroundColor: theme.palette.secondary.main,
     border: 0,
     outline: 'none',
     borderRadius: 20,

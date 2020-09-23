@@ -5,9 +5,9 @@ export const SETTINGS = {
   DEFAULT_PREFERRED_CURRENCY: CurrencySymbol.USD.code
 }
 
-export const SNACKBAR = {
-  AUTO_HIDE_DURATION: 5000
-}
+export const SNACKBAR_AUTO_HIDE_DURATION = 5000
+
+export const TRANSACTION_POOL_KEY = 'transactionPool'
 
 export const METAMASK_MESSAGE = 'HERMEZ_ACCOUNT. Don\'t share this signature with anyone as this would reveal your Hermez private key. Unless you are in a trusted application, DO NOT SIGN THIS'
 

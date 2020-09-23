@@ -4,7 +4,10 @@ const initialAccountDetailsReducer = {
   accountTask: {
     status: 'pending'
   },
-  transactionsTask: {
+  poolTransactionsTask: {
+    status: 'pending'
+  },
+  historyTransactionsTask: {
     status: 'pending'
   }
 }
@@ -37,29 +40,55 @@ function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_TRANSACTIONS: {
+    case accountDetailsActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
-        transactionsTask: {
+        poolTransactionsTask: {
           status: 'loading'
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_TRANSACTIONS_SUCCESS: {
+    case accountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
-        transactionsTask: {
+        poolTransactionsTask: {
           status: 'successful',
           data: action.transactions
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_TRANSACTIONS_FAILURE: {
+    case accountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
       return {
         ...state,
-        transactionsTask: {
+        poolTransactionsTask: {
           status: 'failed',
-          error: 'An error ocurred loading the transactions'
+          error: 'An error ocurred loading the transactions from the pool'
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS: {
+      return {
+        ...state,
+        historyTransactionsTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
+      return {
+        ...state,
+        historyTransactionsTask: {
+          status: 'successful',
+          data: action.transactions
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE: {
+      return {
+        ...state,
+        historyTransactionsTask: {
+          status: 'failed',
+          error: 'An error ocurred loading the transactions from the history'
         }
       }
     }
