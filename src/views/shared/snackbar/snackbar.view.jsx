@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import Container from '../container/container.view'
 import useSnackbarStyles from './snackbar.styles'
-import { SNACKBAR } from '../../../constants'
+import { SNACKBAR_AUTO_HIDE_DURATION } from '../../../constants'
 
 function Snackbar ({ show, message, onClose }) {
   const classes = useSnackbarStyles()
@@ -12,7 +12,7 @@ function Snackbar ({ show, message, onClose }) {
     if (show) {
       setTimeout(() => {
         onClose()
-      }, SNACKBAR.AUTO_HIDE_DURATION)
+      }, SNACKBAR_AUTO_HIDE_DURATION)
     }
   }, [show, onClose])
 

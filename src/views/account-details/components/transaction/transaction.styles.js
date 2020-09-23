@@ -30,6 +30,16 @@ const useTransactionStyles = createUseStyles(theme => ({
     fontSize: theme.spacing(1.75),
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main
+  },
+  pendingLabelContainer: {
+    background: theme.palette.secondary.light,
+    padding: theme.spacing(1),
+    borderRadius: theme.spacing(1),
+    margin: `-${theme.spacing(1)}px 0`
+  },
+  pendingLabelText: {
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.secondary.dark
   }
 }))
 
