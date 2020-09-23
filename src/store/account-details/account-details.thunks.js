@@ -5,7 +5,7 @@ import { removePoolTransaction } from '../global/global.thunks'
 
 /**
  * Fetches the account details for the specified account index
- * @param {string} accountIndex The account index
+ * @param {string} accountIndex - The account index
  * @returns {void}
  */
 function fetchAccount (accountIndex) {
@@ -19,9 +19,8 @@ function fetchAccount (accountIndex) {
 }
 
 /**
- * Fetches the transaction details for each transaction in the pool for the
- * specified account index
- * @param {string} accountIndex The accountIndex
+ * Fetches the transaction details for each transaction in the pool for the specified account index
+ * @param {string} accountIndex - The account index
  * @returns {void}
  */
 function fetchPoolTransactions (accountIndex) {
@@ -65,7 +64,7 @@ function fetchPoolTransactions (accountIndex) {
 
 /**
  * Fetches the transactions details for the specified account index
- * @param {string} accountIndex The accountIndex
+ * @param {string} accountIndex - The account index
  * @returns {void}
  */
 function fetchHistoryTransactions (accountIndex) {

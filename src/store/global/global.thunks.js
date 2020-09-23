@@ -92,8 +92,8 @@ function fetchCurrentBatch (urlOperator) {
 
 /**
  * Adds a transaction to the transaction pool
- * @param {string} hermezEthereumAddress The account with which the transaction was made
- * @param {string} transaction The transaction to add to the pool
+ * @param {string} hermezEthereumAddress - The account with which the transaction was made
+ * @param {string} transaction - The transaction to add to the pool
  * @returns {void}
  */
 function addPoolTransaction (hermezEthereumAddress, transaction) {
@@ -115,8 +115,8 @@ function addPoolTransaction (hermezEthereumAddress, transaction) {
 
 /**
  * Removes a transaction from the transaction pool
- * @param {string} hermezEthereumAddress The account with which the transaction was originally made
- * @param {string} transactionId The transaction identifier to remove from the pool
+ * @param {string} hermezEthereumAddress - The account with which the transaction was originally made
+ * @param {string} transactionId - The transaction identifier to remove from the pool
  * @returns {void}
  */
 function removePoolTransaction (hermezEthereumAddress, transactionId) {
