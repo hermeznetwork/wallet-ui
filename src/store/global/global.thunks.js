@@ -4,7 +4,6 @@ import * as globalActions from './global.actions'
 import * as rollupApi from '../../apis/rollup'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import config from '../../utils/config.json'
-import { CliExternalOperator } from '../../utils/cli-external-operator'
 import { TRANSACTION_POOL_KEY } from '../../constants'
 
 function changeRedirectRoute (redirecRoute) {
@@ -69,27 +68,6 @@ function fetchConfig () {
   }
 }
 
-function fetchGasMultiplier (num) {
-  return function (dispatch) {
-    dispatch(globalActions.loadGasMultiplier(num))
-  }
-}
-
-function fetchCurrentBatch (urlOperator) {
-  return async function (dispatch) {
-    dispatch(globalActions.loadCurrentBatch())
-    let currentBatch
-    try {
-      const apiOperator = new CliExternalOperator(urlOperator)
-      const resOperator = await apiOperator.getState()
-      currentBatch = resOperator.data.rollupSynch.lastBatchSynched
-      dispatch(globalActions.loadCurrentBatchSuccess(currentBatch))
-    } catch (err) {
-      dispatch(globalActions.loadCurrentBatchFailure())
-    }
-  }
-}
-
 /**
  * Adds a transaction to the transaction pool
  * @param {string} hermezEthereumAddress - The account with which the transaction was made
@@ -140,8 +118,6 @@ export {
   fetchTokens,
   fetchConfig,
   fetchFiatExchangeRates,
-  fetchGasMultiplier,
-  fetchCurrentBatch,
   addPoolTransaction,
   removePoolTransaction
 }

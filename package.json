@@ -16,7 +16,6 @@
     "@testing-library/user-event": "^7.2.1",
     "abi-decoder": "^2.3.0",
     "axios": "^0.19.2",
-    "axios-mock-adapter": "^1.18.2",
     "big-integer": "^1.6.48",
     "bip39": "^3.0.2",
     "blake-hash": "^2.0.0",
@@ -39,8 +38,6 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
-    "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.2",
     "truffle-hdwallet-provider": "^1.0.17"
   },
   "devDependencies": {
