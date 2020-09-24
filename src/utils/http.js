@@ -3,9 +3,7 @@ const HttpStatusCode = {
 }
 
 async function extractJSON (request) {
-  const response = await request
-
-  return response.data
+  return request.then(response => response.data)
 }
 
 export { HttpStatusCode, extractJSON }

@@ -1,4 +1,17 @@
 import { globalActionTypes } from './global.actions'
+import { TRANSACTION_POOL_KEY } from '../../constants'
+
+function getInitialTransactionPool () {
+  if (!localStorage.getItem(TRANSACTION_POOL_KEY)) {
+    const emptyTransactionPool = {}
+
+    localStorage.setItem(TRANSACTION_POOL_KEY, JSON.stringify(emptyTransactionPool))
+
+    return emptyTransactionPool
+  } else {
+    return JSON.parse(localStorage.getItem(TRANSACTION_POOL_KEY))
+  }
+}
 
 const initialGlobalState = {
   header: {
@@ -11,10 +24,7 @@ const initialGlobalState = {
   fiatExchangeRatesTask: {
     status: 'pending'
   },
-  gasMultiplierTask: {},
-  currentBatchTask: {
-    status: 'pending'
-  }
+  transactionPool: getInitialTransactionPool()
 }
 
 function globalReducer (state = initialGlobalState, action) {
@@ -85,35 +95,31 @@ function globalReducer (state = initialGlobalState, action) {
         }
       }
     }
-    case globalActionTypes.LOAD_GAS_MULTIPLIER:
+    case globalActionTypes.ADD_POOL_TRANSACTION: {
+      const accountTransactionPool = state.transactionPool[action.hermezEthereumAddress]
+
       return {
         ...state,
-        gasMultiplierTask: {
-          data: action.gasMultiplier
+        transactionPool: {
+          ...state.transactionPool,
+          [action.hermezEthereumAddress]: accountTransactionPool === undefined
+            ? [action.transaction]
+            : [...accountTransactionPool, action.transaction]
         }
       }
-    case globalActionTypes.LOAD_CURRENT_BATCH:
+    }
+    case globalActionTypes.REMOVE_POOL_TRANSACTION: {
+      const accountTransactionPool = state.transactionPool[action.hermezEthereumAddress]
+
       return {
         ...state,
-        currentBatchTask: {
-          status: 'loading'
+        transactionPool: {
+          ...state.transactionPool,
+          [action.hermezEthereumAddress]: accountTransactionPool
+            .filter(transaction => transaction.id !== action.transactionId)
         }
       }
-    case globalActionTypes.LOAD_CURRENT_BATCH_SUCCESS:
-      return {
-        ...state,
-        currentBatchTask: {
-          status: 'successful',
-          data: state.currentBatch
-        }
-      }
-    case globalActionTypes.LOAD_CURRENT_BATCH_FAILURE:
-      return {
-        ...state,
-        currentBatchTask: {
-          status: 'failed'
-        }
-      }
+    }
     default: {
       return state
     }

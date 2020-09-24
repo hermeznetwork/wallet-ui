@@ -6,7 +6,7 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
-import { fetchAccount, fetchTransactions } from '../../store/account-details/account-details.thunks'
+import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -16,14 +16,15 @@ import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 
 function AccountDetails ({
-  metaMaskWalletTask,
   preferredCurrency,
   accountTask,
-  transactionsTask,
+  poolTransactionsTask,
+  historyTransactionsTask,
   fiatExchangeRatesTask,
   onChangeHeader,
   onLoadAccount,
-  onLoadTransactions,
+  onLoadPoolTransactions,
+  onLoadHistoryTransactions,
   onNavigateToTransactionDetails
 }) {
   const theme = useTheme()
@@ -32,19 +33,15 @@ function AccountDetails ({
 
   React.useEffect(() => {
     onLoadAccount(accountIndex)
-  }, [accountIndex, onLoadAccount])
+    onLoadPoolTransactions(accountIndex)
+    onLoadHistoryTransactions(accountIndex)
+  }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadHistoryTransactions])
 
   React.useEffect(() => {
     if (accountTask.status === 'successful') {
       onChangeHeader(accountTask.data.tokenName)
     }
   }, [accountTask, onChangeHeader])
-
-  React.useEffect(() => {
-    if (metaMaskWalletTask.status === 'successful') {
-      onLoadTransactions(metaMaskWalletTask.data.hermezEthereumAddress)
-    }
-  }, [metaMaskWalletTask, onLoadTransactions])
 
   /**
    * Returns the total balance of the account in the preferred currency
@@ -104,17 +101,41 @@ function AccountDetails ({
       <Container>
         <section className={classes.section}>
           {(() => {
-            switch (transactionsTask.status) {
-              case 'loading': {
-                return <Spinner />
-              }
-              case 'failed': {
-                return <p>{transactionsTask.error}</p>
-              }
-              case 'successful': {
-                return (
+            if (
+              poolTransactionsTask.status === 'loading' ||
+              historyTransactionsTask.status === 'loading'
+            ) {
+              return <Spinner />
+            }
+
+            if (
+              poolTransactionsTask.status === 'failed' ||
+              historyTransactionsTask.status === 'failed'
+            ) {
+              return (
+                <>
+                  {
+                    poolTransactionsTask.status === 'failed'
+                      ? <p>{poolTransactionsTask.error}</p>
+                      : <></>
+                  }
+                  {
+                    historyTransactionsTask.status === 'failed'
+                      ? <p>{historyTransactionsTask.error}</p>
+                      : <></>
+                  }
+                </>
+              )
+            }
+
+            if (
+              poolTransactionsTask.status === 'successful' &&
+              historyTransactionsTask.status === 'successful'
+            ) {
+              return (
+                <>
                   <TransactionList
-                    transactions={transactionsTask.data.transactions}
+                    transactions={poolTransactionsTask.data}
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
                         ? fiatExchangeRatesTask.data
@@ -123,12 +144,21 @@ function AccountDetails ({
                     preferredCurrency={preferredCurrency}
                     onTransactionClick={handleTransactionClick}
                   />
-                )
-              }
-              default: {
-                return <></>
-              }
+                  <TransactionList
+                    transactions={historyTransactionsTask.data.transactions}
+                    fiatExchangeRates={
+                      fiatExchangeRatesTask.status === 'successful'
+                        ? fiatExchangeRatesTask.data
+                        : undefined
+                    }
+                    preferredCurrency={preferredCurrency}
+                    onTransactionClick={handleTransactionClick}
+                  />
+                </>
+              )
             }
+
+            return <></>
           })()}
         </section>
       </Container>
@@ -139,19 +169,21 @@ function AccountDetails ({
 AccountDetails.propTypes = {
   preferredCurrency: PropTypes.string.isRequired,
   accountTask: PropTypes.object.isRequired,
-  transactionsTask: PropTypes.object.isRequired,
+  poolTransactionsTask: PropTypes.object.isRequired,
+  historyTransactionsTask: PropTypes.object.isRequired,
   fiatExchangeRatesTask: PropTypes.object.isRequired,
   onLoadAccount: PropTypes.func.isRequired,
   onChangeHeader: PropTypes.func.isRequired,
-  onLoadTransactions: PropTypes.func.isRequired,
+  onLoadPoolTransactions: PropTypes.func.isRequired,
+  onLoadHistoryTransactions: PropTypes.func.isRequired,
   onNavigateToTransactionDetails: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.account.metaMaskWalletTask,
   preferredCurrency: state.settings.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
-  transactionsTask: state.accountDetails.transactionsTask,
+  poolTransactionsTask: state.accountDetails.poolTransactionsTask,
+  historyTransactionsTask: state.accountDetails.historyTransactionsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
@@ -159,7 +191,9 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadAccount: (accountIndex) => dispatch(fetchAccount(accountIndex)),
   onChangeHeader: (tokenName) =>
     dispatch(changeHeader({ type: 'page', data: { title: tokenName, previousRoute: '/' } })),
-  onLoadTransactions: (ethereumAddress, tokenId) => dispatch(fetchTransactions(ethereumAddress, tokenId)),
+  onLoadPoolTransactions: (accountIndex) => dispatch(fetchPoolTransactions(accountIndex)),
+  onLoadHistoryTransactions: (accountIndex) =>
+    dispatch(fetchHistoryTransactions(accountIndex)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`))
 })

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
 import { getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
+import { TxState } from '../../../../utils/tx'
 
 function TransactionList ({
   transactions,
@@ -31,10 +32,14 @@ function TransactionList ({
             tokenSymbol={transaction.tokenSymbol}
             fiatAmount={getTokenAmountInPreferredCurrency(
               preferredCurrency,
-              transaction.historicUSD,
+              transaction.historicUSD || (transaction.amount * transaction.USD),
               fiatExchangeRates
             )}
-            timestamp={transaction.timestamp}
+            timestamp={
+              transaction.state === TxState.Pending
+                ? undefined
+                : transaction.timestamp
+            }
             preferredCurrency={preferredCurrency}
             onClick={() => handleTransactionClick(transaction)}
           />
