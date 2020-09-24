@@ -1,7 +1,6 @@
 import ethers from 'ethers'
 
 import * as globalActions from './global.actions'
-import * as rollupApi from '../../apis/rollup'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import config from '../../utils/config.json'
 import { TRANSACTION_POOL_KEY } from '../../constants'
@@ -9,16 +8,6 @@ import { TRANSACTION_POOL_KEY } from '../../constants'
 function changeRedirectRoute (redirecRoute) {
   return (dispatch) => {
     dispatch(globalActions.changeRedirectRoute(redirecRoute))
-  }
-}
-
-function fetchTokens () {
-  return (dispatch) => {
-    dispatch(globalActions.loadTokens())
-
-    return rollupApi.getTokens()
-      .then(res => dispatch(globalActions.loadTokensSuccess(res)))
-      .catch(err => dispatch(globalActions.loadTokensFailure(err)))
   }
 }
 
@@ -115,7 +104,6 @@ function removePoolTransaction (hermezEthereumAddress, transactionId) {
 
 export {
   changeRedirectRoute,
-  fetchTokens,
   fetchConfig,
   fetchFiatExchangeRates,
   addPoolTransaction,

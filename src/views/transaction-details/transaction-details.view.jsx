@@ -31,7 +31,6 @@ function TransactionDetails ({
     }
 
     const tokenFiatExchangeRate = getTokenAmountInPreferredCurrency(
-      tokenSymbol,
       preferredCurrency,
       amount,
       fiatExchangeRatesTask.data

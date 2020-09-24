@@ -1,9 +1,6 @@
 export const globalActionTypes = {
   CHANGE_HEADER: '[GLOBAL] CHANGE HEADER',
   CHANGE_REDIRECT_ROUTE: '[GLOBAL] CHANGE REDIRECT ROUTE',
-  LOAD_TOKENS: '[GLOBAL] LOAD TOKENS',
-  LOAD_TOKENS_SUCCESS: '[GLOBAL] LOAD TOKENS SUCCESS',
-  LOAD_TOKENS_FAILURE: '[GLOBAL] LOAD TOKENS FAILURE',
   LOAD_CONFIG: '[GLOBAL] LOAD CONFIG',
   LOAD_CONFIG_SUCCESS: '[GLOBAL] LOAD CONFIG SUCCESS',
   LOAD_CONFIG_FAILURE: '[GLOBAL] LOAD CONFIG FAILURE',
@@ -29,25 +26,6 @@ function changeRedirectRoute (redirectRoute) {
   return {
     type: globalActionTypes.CHANGE_REDIRECT_ROUTE,
     redirectRoute
-  }
-}
-
-function loadTokens () {
-  return {
-    type: globalActionTypes.LOAD_TOKENS
-  }
-}
-
-function loadTokensSuccess (accounts) {
-  return {
-    type: globalActionTypes.LOAD_TOKENS_SUCCESS,
-    accounts
-  }
-}
-
-function loadTokensFailure () {
-  return {
-    type: globalActionTypes.LOAD_TOKENS_FAILURE
   }
 }
 
@@ -112,9 +90,6 @@ function removePoolTransaction (hermezEthereumAddress, transactionId) {
 export {
   changeHeader,
   changeRedirectRoute,
-  loadTokens,
-  loadTokensSuccess,
-  loadTokensFailure,
   loadConfig,
   loadConfigSuccess,
   loadConfigFailure,

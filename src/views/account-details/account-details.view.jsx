@@ -54,7 +54,6 @@ function AccountDetails ({
     }
 
     const tokenFiatExchangeRate = getTokenAmountInPreferredCurrency(
-      account.tokenSymbol,
       preferredCurrency,
       account.balanceUSD,
       fiatExchangeRatesTask.data
