@@ -21,7 +21,7 @@ const usePageHeaderStyles = createUseStyles(theme => ({
     transform: 'translateY(-50%)',
     display: 'flex',
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    marginLeft: -(theme.spacing(1)),
+    marginLeft: -(theme.spacing(2)),
     cursor: 'pointer',
     border: 'none',
     background: 'transparent',

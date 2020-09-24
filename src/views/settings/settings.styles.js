@@ -26,7 +26,15 @@ const useSettingsStyles = createUseStyles(theme => ({
   settingContainer: {
     display: 'flex',
     flexDirection: 'column',
-    marginBottom: theme.spacing(6)
+    padding: theme.spacing(1),
+    marginBottom: theme.spacing(4),
+    marginLeft: `-${theme.spacing(1)}px`,
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    '&:focus': {
+      outline: 'none'
+    }
   },
   settingHeader: {
     display: 'flex',
@@ -39,9 +47,6 @@ const useSettingsStyles = createUseStyles(theme => ({
   settingContent: {
     marginTop: theme.spacing(1.75),
     marginLeft: theme.spacing(4.5)
-  },
-  preferredCurrencySelector: {
-
   }
 }))
 

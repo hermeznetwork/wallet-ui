@@ -5,7 +5,7 @@ import { useTheme } from 'react-jss'
 
 import useSettingsStyles from './settings.styles'
 import { changeHeader } from '../../store/global/global.actions'
-import { changePreferredCurrency } from '../../store/settings/settings.thunks'
+import { changePreferredCurrency, disconnectMetaMaskWallet } from '../../store/settings/settings.thunks'
 import Container from '../shared/container/container.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import exchangeIcon from '../../images/icons/exchange.svg'
@@ -24,7 +24,8 @@ function Settings ({
   metaMaskWalletTask,
   preferredCurrency,
   onChangeHeader,
-  onChangePreferredCurrency
+  onChangePreferredCurrency,
+  onDisconnectWallet
 }) {
   const theme = useTheme()
   const classes = useSettingsStyles()
@@ -41,6 +42,10 @@ function Settings ({
 
   function handleAddressCopiedSnackbarClose () {
     setShowAddressCopiedSnackbar(false)
+  }
+
+  function handleOnDisconnectWallet () {
+    onDisconnectWallet()
   }
 
   return (
@@ -86,18 +91,26 @@ function Settings ({
               <p className={classes.settingTitle}>Force withdrawal</p>
             </div>
           </div>
-          <div className={classes.settingContainer}>
+          <a
+            className={classes.settingContainer}
+            href='https://etherscan.io/'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
             <div className={classes.settingHeader}>
               <img src={openInNewTabIcon} alt='View in batch explorer' />
               <p className={classes.settingTitle}>View in batch explorer</p>
             </div>
-          </div>
-          <div className={classes.settingContainer}>
+          </a>
+          <button
+            className={classes.settingContainer}
+            onClick={handleOnDisconnectWallet}
+          >
             <div className={classes.settingHeader}>
               <img src={powerOffIcon} alt='Disconnect wallet' />
               <p className={classes.settingTitle}>Disconnect wallet</p>
             </div>
-          </div>
+          </button>
         </section>
       </Container>
       <Snackbar
@@ -121,7 +134,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: (tokenName) =>
     dispatch(changeHeader({ type: 'page', data: { title: 'Settings', previousRoute: '/' } })),
-  onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency))
+  onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
+  onDisconnectWallet: () => dispatch(disconnectMetaMaskWallet())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Settings))

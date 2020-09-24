@@ -2,6 +2,7 @@ export const accountActionTypes = {
   LOAD_METAMASK_WALLET: '[ACCOUNT] LOAD METAMASK WALLET',
   LOAD_METAMASK_WALLET_SUCCESS: '[ACCOUNT] LOAD METAMASK WALLET SUCCESS',
   LOAD_METAMASK_WALLET_FAILURE: '[ACCOUNT] LOAD METAMASK WALLET FAILURE',
+  UNLOAD_METAMASK_WALLET: '[ACCOUNT] UNLOAD METAMASK WALLET',
   ACCOUNT_INFO: '[ACCOUNT] ACCOUNT INFO',
   ACCOUNT_INFO_SUCCESS: '[ACCOUNT] ACCOUNT INFO SUCCESS',
   ACCOUNT_INFO_FAILURE: '[ACCOUNT] ACCOUNT INFO FAILURE'
@@ -24,6 +25,12 @@ function loadMetamaskWalletFailure (error) {
   return {
     type: accountActionTypes.LOAD_METAMASK_WALLET_FAILURE,
     error
+  }
+}
+
+function unloadMetaMaskWallet () {
+  return {
+    type: accountActionTypes.UNLOAD_METAMASK_WALLET
   }
 }
 
@@ -64,6 +71,7 @@ export {
   loadMetamaskWallet,
   loadMetamaskWalletSuccess,
   loadMetamaskWalletFailure,
+  unloadMetaMaskWallet,
   loadAccountInfo,
   loadAccountInfoSuccess,
   loadAccountInfoFailure

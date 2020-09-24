@@ -9,6 +9,4 @@ function changePreferredCurrency (preferredCurrency) {
   }
 }
 
-export {
-  changePreferredCurrency
-}
+export { changePreferredCurrency }
