@@ -17,6 +17,7 @@ import Snackbar from '../shared/snackbar/snackbar.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
+import Button from '../shared/button/button.view'
 
 function Home ({
   metaMaskWalletTask,
@@ -81,12 +82,10 @@ function Home ({
             metaMaskWalletTask.status !== 'successful'
               ? <></>
               : (
-                <div
-                  className={classes.hermezAddress}
+                <Button
+                  text={getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
                   onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
-                >
-                  <p>{getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}</p>
-                </div>
+                />
               )
           }
           <div className={classes.totalBalance}>

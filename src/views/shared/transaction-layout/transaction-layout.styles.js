@@ -20,7 +20,7 @@ const useTransactionLayoutStyles = createUseStyles(theme => ({
     fontSize: 24,
     lineHeight: '24px',
     fontWeight: theme.fontWeights.extraBold,
-    color: theme.palette.black.light
+    color: theme.palette.black
   },
   backButton: {
     position: 'absolute',
