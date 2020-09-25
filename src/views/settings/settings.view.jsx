@@ -91,17 +91,23 @@ function Settings ({
               <p className={classes.settingTitle}>Force withdrawal</p>
             </div>
           </div>
-          <a
-            className={classes.settingContainer}
-            href='https://etherscan.io/'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            <div className={classes.settingHeader}>
-              <img src={openInNewTabIcon} alt='View in batch explorer' />
-              <p className={classes.settingTitle}>View in batch explorer</p>
-            </div>
-          </a>
+          {
+            metaMaskWalletTask.status === 'successful'
+              ? (
+                <a
+                  className={classes.settingContainer}
+                  href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/address/${metaMaskWalletTask.data.hermezEthereumAddress}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <div className={classes.settingHeader}>
+                    <img src={openInNewTabIcon} alt='View in batch explorer' />
+                    <p className={classes.settingTitle}>View in batch explorer</p>
+                  </div>
+                </a>
+              )
+              : <></>
+          }
           <button
             className={classes.settingContainer}
             onClick={handleOnDisconnectWallet}
