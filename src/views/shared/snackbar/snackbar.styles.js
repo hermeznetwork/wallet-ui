@@ -12,7 +12,7 @@ const useSnackbarStyles = createUseStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: theme.palette.black.dark,
+    background: theme.palette.black,
     padding: theme.spacing(2.5),
     borderRadius: theme.spacing(1),
     color: theme.palette.white,

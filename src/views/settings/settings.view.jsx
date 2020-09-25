@@ -1,63 +1,130 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import QRCode from 'qrcode.react'
+import { useTheme } from 'react-jss'
 
 import useSettingsStyles from './settings.styles'
-import CurrencyList from './components/currency-list/currency-list.view'
-import { changePreferredCurrency } from '../../store/settings/settings.thunks'
-import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { CurrencySymbol } from '../../utils/currencies'
+import { changeHeader } from '../../store/global/global.actions'
+import { changePreferredCurrency, disconnectMetaMaskWallet } from '../../store/settings/settings.thunks'
 import Container from '../shared/container/container.view'
+import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
+import exchangeIcon from '../../images/icons/exchange.svg'
+import exitIcon from '../../images/icons/exit.svg'
+import openInNewTabIcon from '../../images/icons/open-in-new-tab.svg'
+import powerOffIcon from '../../images/icons/power-off.svg'
+import { CurrencySymbol } from '../../utils/currencies'
+import PreferredCurrencySelector from './components/preferred-currency-selector/preferred-currency-selector.view'
+import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
+import { ReactComponent as CopyIcon } from '../../images/icons/copy.svg'
+import Button from '../shared/button/button.view'
+import { copyToClipboard } from '../../utils/dom'
+import Snackbar from '../shared/snackbar/snackbar.view'
 
 function Settings ({
   metaMaskWalletTask,
   preferredCurrency,
-  onChangePreferredCurrency
+  onChangeHeader,
+  onChangePreferredCurrency,
+  onDisconnectWallet
 }) {
+  const theme = useTheme()
   const classes = useSettingsStyles()
+  const [showAddressCopiedSnackbar, setShowAddressCopiedSnackbar] = React.useState(false)
 
-  function handlePreferredCurrencySelection (selectedCurrency) {
-    if (selectedCurrency !== preferredCurrency) {
-      onChangePreferredCurrency(selectedCurrency)
-    }
+  React.useEffect(() => {
+    onChangeHeader()
+  }, [onChangeHeader])
+
+  function handleEthereumAddressClick (hermezEthereumAddress) {
+    copyToClipboard(hermezEthereumAddress)
+    setShowAddressCopiedSnackbar(true)
+  }
+
+  function handleAddressCopiedSnackbarClose () {
+    setShowAddressCopiedSnackbar(false)
+  }
+
+  function handleOnDisconnectWallet () {
+    onDisconnectWallet()
   }
 
   return (
-    <Container>
-      <div className={classes.root}>
-        <h4 className={classes.title}>Settings</h4>
-        <div className={classes.ethereumAddress}>
-          {
-            metaMaskWalletTask.status === 'successful'
-              ? metaMaskWalletTask.data.hermezEthereumAddress
-              : '-'
-          }
-        </div>
-        <section>
-          <div>
-            <CurrencyList
-              currencies={Object.values(CurrencySymbol)}
-              selectedCurrency={preferredCurrency}
-              onSelectCurrency={handlePreferredCurrencySelection}
-            />
-          </div>
-        </section>
-        <div>
+    <div className={classes.root}>
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+        <section className={classes.topSection}>
           {
             metaMaskWalletTask.status === 'successful'
               ? (
-                <QRCode
-                  value={metaMaskWalletTask.data.hermezEthereumAddress}
-                  className={classes.qrCode}
-                  size={256}
-                />
+                <>
+                  <h1 className={classes.hermezEthereumAddress}>
+                    {getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
+                  </h1>
+                  <Button
+                    text='Copy'
+                    Icon={<CopyIcon />}
+                    onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
+                  />
+                </>
               )
               : <></>
           }
-        </div>
-      </div>
-    </Container>
+        </section>
+      </Container>
+      <Container>
+        <section className={classes.bottomSection}>
+          <div className={classes.settingContainer}>
+            <div className={classes.settingHeader}>
+              <img src={exchangeIcon} alt='Currency conversion' />
+              <p className={classes.settingTitle}>Currency conversion</p>
+            </div>
+            <div className={classes.settingContent}>
+              <PreferredCurrencySelector
+                preferredCurrency={preferredCurrency}
+                currencies={Object.values(CurrencySymbol)}
+                onChange={onChangePreferredCurrency}
+              />
+            </div>
+          </div>
+          <div className={classes.settingContainer}>
+            <div className={classes.settingHeader}>
+              <img src={exitIcon} alt='Force withdrawal' />
+              <p className={classes.settingTitle}>Force withdrawal</p>
+            </div>
+          </div>
+          {
+            metaMaskWalletTask.status === 'successful'
+              ? (
+                <a
+                  className={classes.settingContainer}
+                  href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/address/${metaMaskWalletTask.data.hermezEthereumAddress}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <div className={classes.settingHeader}>
+                    <img src={openInNewTabIcon} alt='View in batch explorer' />
+                    <p className={classes.settingTitle}>View in batch explorer</p>
+                  </div>
+                </a>
+              )
+              : <></>
+          }
+          <button
+            className={classes.settingContainer}
+            onClick={handleOnDisconnectWallet}
+          >
+            <div className={classes.settingHeader}>
+              <img src={powerOffIcon} alt='Disconnect wallet' />
+              <p className={classes.settingTitle}>Disconnect wallet</p>
+            </div>
+          </button>
+        </section>
+      </Container>
+      <Snackbar
+        show={showAddressCopiedSnackbar}
+        message='The Hermez address has been copied to the clipboard!'
+        onClose={handleAddressCopiedSnackbarClose}
+      />
+    </div>
   )
 }
 
@@ -71,7 +138,10 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangePreferredCurrency: (selectedTokenId) => dispatch(changePreferredCurrency(selectedTokenId))
+  onChangeHeader: (tokenName) =>
+    dispatch(changeHeader({ type: 'page', data: { title: 'Settings', previousRoute: '/' } })),
+  onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
+  onDisconnectWallet: () => dispatch(disconnectMetaMaskWallet())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Settings))

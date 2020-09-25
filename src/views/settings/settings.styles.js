@@ -4,21 +4,49 @@ const useSettingsStyles = createUseStyles(theme => ({
   root: {
     width: '100%'
   },
-  title: {
-    marginBottom: 16
+  hermezEthereumAddress: {
+    fontSize: theme.spacing(2.5),
+    fontWeight: theme.fontWeights.medium,
+    textAlign: 'center',
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2.5)
   },
-  ethereumAddress: {
+  topSection: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  bottomSection: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start'
+  },
+  settingContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(1),
+    marginBottom: theme.spacing(4),
+    marginLeft: `-${theme.spacing(1)}px`,
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    '&:focus': {
+      outline: 'none'
+    }
+  },
+  settingHeader: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  settingTitle: {
     fontWeight: theme.fontWeights.bold,
-    marginBottom: 16
+    marginLeft: theme.spacing(2)
   },
-  preferredCurrency: {
-    marginBottom: 16
-  },
-  qrCode: {
-    width: '100% !important',
-    // important added in order to be able to overwrite inner styles and be
-    // able to fit its own container completely
-    height: '100% !important'
+  settingContent: {
+    marginTop: theme.spacing(1.75),
+    marginLeft: theme.spacing(4.5)
   }
 }))
 

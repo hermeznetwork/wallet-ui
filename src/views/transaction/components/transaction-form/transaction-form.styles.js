@@ -13,7 +13,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
     fontSize: `${theme.spacing(2.5)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black.dark
+    color: theme.palette.black
   },
   selectAmount: {
     border: `solid 2px ${theme.palette.grey.veryLight}`,
@@ -33,7 +33,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     margin: `0 0 ${theme.spacing(1.5)}px`,
     fontSize: `${theme.spacing(3)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black.light
+    color: theme.palette.black
   },
   amountInput: {
     border: 0,
@@ -41,7 +41,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     caretColor: theme.palette.orange,
     fontSize: `${theme.spacing(6)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black.dark,
+    color: theme.palette.black,
     textAlign: 'center',
     '&::-webkit-outer-spin-button,&::-webkit-inner-spin-button': {
       '-webkit-appearance': 'none',

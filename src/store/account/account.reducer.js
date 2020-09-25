@@ -34,6 +34,14 @@ function accountReducer (state = initialAccountState, action) {
           error: action.error
         }
       }
+    case accountActionTypes.UNLOAD_METAMASK_WALLET: {
+      return {
+        ...state,
+        metaMaskWalletTask: {
+          status: 'pending'
+        }
+      }
+    }
     case accountActionTypes.ACCOUNT_INFO:
       return {
         ...state,

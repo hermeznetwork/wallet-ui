@@ -1,5 +1,5 @@
 export const settingsActionTypes = {
-  CHANGE_PREFERRED_CURRENCY: '[SETTINGS] LOAD DEFAULT CURRENCY'
+  CHANGE_PREFERRED_CURRENCY: '[SETTINGS] CHANGE DEFAULT CURRENCY'
 }
 
 function changePreferredCurrency (preferredCurrency) {
@@ -9,6 +9,4 @@ function changePreferredCurrency (preferredCurrency) {
   }
 }
 
-export {
-  changePreferredCurrency
-}
+export { changePreferredCurrency }

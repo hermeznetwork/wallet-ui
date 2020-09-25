@@ -13,8 +13,8 @@ function MainHeader () {
     <header className={classes.root}>
       <Container disableVerticalGutters>
         <Link to='/settings' className={classes.link}>
-          <img src={userAccountIcon} alt='My account' className={classes.myAccountIcon} />
-          <p className={classes.linkText}>My account</p>
+          <img src={userAccountIcon} alt='Settings' className={classes.myAccountIcon} />
+          <p className={classes.linkText}>Settings</p>
         </Link>
         <div className={classes.headerContent}>
           <h1>

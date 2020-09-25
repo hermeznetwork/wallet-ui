@@ -1,4 +1,7 @@
+import { push } from 'connected-react-router'
+
 import * as settingsActions from './settings.actions'
+import * as accountActions from '../account/account.actions'
 import { SETTINGS } from '../../constants'
 
 function changePreferredCurrency (selectedTokenId) {
@@ -8,4 +11,11 @@ function changePreferredCurrency (selectedTokenId) {
   }
 }
 
-export { changePreferredCurrency }
+function disconnectMetaMaskWallet () {
+  return (dispatch) => {
+    dispatch(accountActions.unloadMetaMaskWallet())
+    dispatch(push('/login'))
+  }
+}
+
+export { changePreferredCurrency, disconnectMetaMaskWallet }
