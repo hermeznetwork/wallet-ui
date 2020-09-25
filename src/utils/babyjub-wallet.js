@@ -4,7 +4,7 @@ import { poseidon, eddsa } from 'circomlib'
 import * as eddsaBabyJub from './eddsa-babyjub'
 import { hashBuffer, buildTxData } from './utils'
 
-const hash = poseidon.createHash(6, 8, 57)
+const hash = poseidon([6, 8, 57])
 
 /**
  * Manage Babyjubjub keys

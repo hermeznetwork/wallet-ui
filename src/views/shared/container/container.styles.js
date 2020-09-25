@@ -1,4 +1,4 @@
-const { createUseStyles } = require('react-jss')
+import { createUseStyles } from 'react-jss'
 
 const useContainerStyles = createUseStyles(theme => ({
   root: {
