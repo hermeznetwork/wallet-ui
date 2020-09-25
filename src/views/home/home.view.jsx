@@ -51,7 +51,6 @@ function Home ({
 
     return accounts.reduce((amount, account) => {
       const tokenFiatExchangeRate = getTokenAmountInPreferredCurrency(
-        account.tokenSymbol,
         preferredCurrency,
         account.balanceUSD,
         fiatExchangeRatesTask.data
@@ -169,7 +168,6 @@ Home.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  tokensTask: state.global.tokensTask,
   metaMaskWalletTask: state.account.metaMaskWalletTask,
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,

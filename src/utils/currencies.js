@@ -10,7 +10,6 @@ const CurrencySymbol = {
 }
 
 function getTokenAmountInPreferredCurrency (
-  tokenSymbol,
   preferredCurrency,
   amountInUSD,
   fiatExchangeRatesTask

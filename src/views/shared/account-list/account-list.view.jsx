@@ -39,7 +39,6 @@ function AccountList ({
             tokenSymbol={account.tokenSymbol}
             preferredCurrency={preferredCurrency}
             fiatBalance={getTokenAmountInPreferredCurrency(
-              account.tokenSymbol,
               preferredCurrency,
               account.balanceUSD,
               fiatExchangeRates

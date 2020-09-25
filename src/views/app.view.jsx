@@ -8,12 +8,10 @@ import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
 import { fetchConfig, fetchFiatExchangeRates } from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
-import Login from './login/login.view'
 import { CurrencySymbol } from '../utils/currencies'
 
 function App ({
   configTask,
-  tokensTask,
   fiatExchangeRatesTask,
   onLoadConfig,
   onLoadFiatExchangeRates
@@ -42,10 +40,9 @@ function App ({
             exact
             key={route.path}
             path={route.path}
-            component={route.component}
+            render={route.render}
           />
         )}
-      <Route path='/login' exact component={Login} />
       <Route>
         <Layout>
           <Switch>
@@ -56,7 +53,7 @@ function App ({
                   exact
                   key={route.path}
                   path={route.path}
-                  component={route.component}
+                  render={route.render}
                 />
               )}
             <Redirect to='/' />
@@ -68,16 +65,6 @@ function App ({
 }
 
 App.propTypes = {
-  tokensTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        tokenId: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        symbol: PropTypes.string.isRequired
-      })
-    )
-  }),
   fiatExchangeRatesTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.object

@@ -54,11 +54,17 @@ const useAppStyles = createUseStyles({
     '#root': {
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center'
+      alignItems: 'center',
+      height: '100vh'
+    },
+    html: {
+      minHeight: '100vh',
+      height: '100%'
     },
     body: {
       fontFamily: 'Modern Era',
-      fontSize: 16
+      fontSize: 16,
+      minHeight: '100vh'
     },
     a: {
       textDecoration: 'none',
