@@ -1,4 +1,4 @@
-const { createUseStyles } = require('react-jss')
+import { createUseStyles } from 'react-jss'
 
 const usePreferredCurrencySelectorStyles = createUseStyles(theme => ({
   root: {

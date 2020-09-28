@@ -1,9 +1,9 @@
 /* global BigInt */
 import { Scalar, utils as ffUtils } from 'ffjavascript'
 import ethers from 'ethers'
-const { babyJub, poseidon } = require('circomlib')
+import { babyJub, poseidon } from 'circomlib'
 
-const hash = poseidon.createHash(6, 8, 57)
+const hash = poseidon([6, 8, 57])
 const F = poseidon.F
 
 /**
