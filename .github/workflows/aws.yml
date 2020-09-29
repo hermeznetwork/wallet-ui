@@ -35,3 +35,9 @@ jobs:
         with:
           push: true
           tags: hermeznet/wallet-ui:latest
+
+      - name: Branch name
+        run: echo ${{ github.event.release.tag_name }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

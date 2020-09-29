@@ -1,0 +1,46 @@
+{
+  "requiresCompatibilities": [
+      "EC2"
+  ],
+  "inferenceAccelerators": [],
+  "containerDefinitions": [
+      {
+          "name": "react-app",
+          "image": "hermeznet/wallet-ui:latest",
+          "memory": "300",
+          "resourceRequirements": null,
+          "essential": true,
+          "portMappings": [
+              {
+                  "hostPort": "80",
+                  "containerPort": "80",
+                  "protocol": "tcp"
+              }
+          ],
+          "environment": null,
+          "environmentFiles": [],
+          "secrets": null,
+          "mountPoints": null,
+          "volumesFrom": null,
+          "hostname": null,
+          "user": null,
+          "workingDirectory": null,
+          "extraHosts": null,
+          "logConfiguration": null,
+          "ulimits": null,
+          "dockerLabels": null,
+          "dependsOn": null,
+          "repositoryCredentials": {
+              "credentialsParameter": "arn:aws:secretsmanager:us-east-2:811278125247:secret:dockerhubAccessToken-DI3Sqs"
+          }
+      }
+  ],
+  "volumes": [],
+  "networkMode": null,
+  "memory": null,
+  "cpu": null,
+  "placementConstraints": [],
+  "family": "wallet-ui",
+  "taskRoleArn": "",
+  "tags": []
+}
