@@ -51,3 +51,4 @@ jobs:
           task-definition: task-definition.json
           service: wallet-ui
           cluster: wallet-ui
+          wait-for-service-stability: true
