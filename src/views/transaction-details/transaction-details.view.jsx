@@ -8,7 +8,7 @@ import useTransactionDetailsStyles from './transaction-details.styles'
 import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 
 function TransactionDetails ({
@@ -25,18 +25,20 @@ function TransactionDetails ({
     onLoadTransaction(transactionId)
   }, [transactionId, onLoadTransaction])
 
-  function getAmountInFiat (tokenSymbol, amount) {
+  function getAmountInFiat (amount, token) {
     if (fiatExchangeRatesTask.status !== 'successful') {
       return '-'
     }
 
-    const tokenFiatExchangeRate = getTokenAmountInPreferredCurrency(
+    const fixedTokenAmount = getFixedTokenAmount(amount, token.decimals)
+    const fiatTokenAmount = getTokenAmountInPreferredCurrency(
+      fixedTokenAmount,
+      token.USD,
       preferredCurrency,
-      amount,
       fiatExchangeRatesTask.data
     )
 
-    return (amount * tokenFiatExchangeRate).toFixed(2)
+    return fiatTokenAmount.toFixed(2)
   }
 
   function handleNavigationToAccountDetails () {
@@ -67,20 +69,20 @@ function TransactionDetails ({
                     </a>
                   </div>
                   <div className={classes.transactionInfoContainer}>
-                    <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.tokenSymbol, transactionTask.data.amount)} {preferredCurrency}</h1>
-                    <p>{transactionTask.data.amount} {transactionTask.data.tokenSymbol}</p>
+                    <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.amount, transactionTask.data.token)} {preferredCurrency}</h1>
+                    <p>{getFixedTokenAmount(transactionTask.data.fee, transactionTask.data.token.decimals)} {transactionTask.data.token.symbol}</p>
                     <ul className={classes.transactionInfoList}>
                       <li className={classes.transactionInfoListItem}>
                         <p className={classes.transactionInfoListItemTitle}>To</p>
-                        <p>{transactionTask.data.toEthereumAddress}</p>
+                        <p>{transactionTask.data.toHezEthereumAddress}</p>
                       </li>
                       <li className={classes.transactionInfoListItem}>
                         <p className={classes.transactionInfoListItemTitle}>
                         Fee
                         </p>
                         <div>
-                          <p>{getAmountInFiat(transactionTask.data.tokenSymbol, transactionTask.data.fee)} {preferredCurrency}</p>
-                          <p>{transactionTask.data.fee} {transactionTask.data.tokenSymbol}</p>
+                          <p>{getAmountInFiat(transactionTask.data.fee, transactionTask.data.token)} {preferredCurrency}</p>
+                          <p>{getFixedTokenAmount(transactionTask.data.fee, transactionTask.data.token.decimals)} {transactionTask.data.token.symbol}</p>
                         </div>
                       </li>
                       <li className={classes.transactionInfoListItem}>
