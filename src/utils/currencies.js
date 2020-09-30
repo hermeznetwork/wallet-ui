@@ -9,20 +9,31 @@ const CurrencySymbol = {
   }
 }
 
+function getFixedTokenAmount (balance, decimals) {
+  return (Number(balance) / Math.pow(10, decimals)).toFixed(decimals)
+}
+
 function getTokenAmountInPreferredCurrency (
+  amount,
+  usdTokenExchangeRate,
   preferredCurrency,
-  amountInUSD,
   fiatExchangeRatesTask
 ) {
+  const usdAmount = Number(amount) * usdTokenExchangeRate
+
   if (!fiatExchangeRatesTask) {
     return undefined
   }
 
   if (preferredCurrency === CurrencySymbol.USD.code) {
-    return amountInUSD
+    return usdAmount
   }
 
-  return Number(amountInUSD) * fiatExchangeRatesTask[preferredCurrency]
+  return usdAmount * fiatExchangeRatesTask[preferredCurrency]
 }
 
-export { CurrencySymbol, getTokenAmountInPreferredCurrency }
+export {
+  CurrencySymbol,
+  getFixedTokenAmount,
+  getTokenAmountInPreferredCurrency
+}
