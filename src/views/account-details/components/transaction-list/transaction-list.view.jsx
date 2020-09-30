@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
-import { getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
 import { TxState } from '../../../../utils/tx'
 
 function TransactionList ({
@@ -20,30 +20,39 @@ function TransactionList ({
 
   return (
     <>
-      {transactions.map((transaction, index) =>
-        <div
-          key={transaction.id}
-          className={classes.transaction}
-        >
-          <Transaction
-            id={transaction.id}
-            type={transaction.type}
-            amount={transaction.amount}
-            tokenSymbol={transaction.tokenSymbol}
-            fiatAmount={getTokenAmountInPreferredCurrency(
-              preferredCurrency,
-              transaction.historicUSD || (transaction.amount * transaction.USD),
-              fiatExchangeRates
-            )}
-            timestamp={
-              transaction.state === TxState.Pending
-                ? undefined
-                : transaction.timestamp
-            }
-            preferredCurrency={preferredCurrency}
-            onClick={() => handleTransactionClick(transaction)}
-          />
-        </div>
+      {transactions.map((transaction, index) => {
+        const fixedTokenAmount = getFixedTokenAmount(
+          transaction.amount,
+          transaction.token.decimals
+        )
+
+        return (
+          <div
+            key={transaction.id}
+            className={classes.transaction}
+          >
+            <Transaction
+              id={transaction.id}
+              type={transaction.type}
+              amount={fixedTokenAmount}
+              tokenSymbol={transaction.token.symbol}
+              fiatAmount={getTokenAmountInPreferredCurrency(
+                fixedTokenAmount,
+                transaction.historicUSD || transaction.USD,
+                preferredCurrency,
+                fiatExchangeRates
+              )}
+              timestamp={
+                transaction.state === TxState.Pending
+                  ? undefined
+                  : transaction.timestamp
+              }
+              preferredCurrency={preferredCurrency}
+              onClick={() => handleTransactionClick(transaction)}
+            />
+          </div>
+        )
+      }
       )}
     </>
   )
