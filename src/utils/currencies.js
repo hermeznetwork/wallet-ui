@@ -10,7 +10,13 @@ const CurrencySymbol = {
 }
 
 function getFixedTokenAmount (balance, decimals) {
-  return (Number(balance) / Math.pow(10, decimals)).toFixed(decimals)
+  const balanceWithDecimals = Number(balance) / Math.pow(10, decimals)
+
+  if (balanceWithDecimals < 10 / (Math.pow(10, 7))) {
+    return '0'
+  }
+
+  return balanceWithDecimals.toFixed(decimals)
 }
 
 function getTokenAmountInPreferredCurrency (

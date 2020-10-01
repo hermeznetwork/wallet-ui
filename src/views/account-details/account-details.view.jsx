@@ -90,7 +90,7 @@ function AccountDetails ({
                       {preferredCurrency} {getAccountBalance(accountTask.data)}
                     </h1>
                     <p className={classes.tokenBalance}>
-                      {getFixedTokenAmount(accountTask.data.balance, accountTask.data.token.decimals)} {accountTask.data.tokenSymbol}
+                      {getFixedTokenAmount(accountTask.data.balance, accountTask.data.token.decimals)} {accountTask.data.token.symbol}
                     </p>
                   </div>
                 )
