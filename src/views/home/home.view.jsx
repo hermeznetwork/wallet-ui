@@ -10,7 +10,7 @@ import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
-import { getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { copyToClipboard } from '../../utils/dom'
 import Snackbar from '../shared/snackbar/snackbar.view'
@@ -43,20 +43,23 @@ function Home ({
   }, [metaMaskWalletTask, onLoadAccounts])
 
   function getTotalBalance (accounts) {
-    if (
-      fiatExchangeRatesTask.status !== 'successful'
-    ) {
+    if (fiatExchangeRatesTask.status !== 'successful') {
       return undefined
     }
 
     return accounts.reduce((amount, account) => {
-      const tokenFiatExchangeRate = getTokenAmountInPreferredCurrency(
+      const fixedAccountBalance = getFixedTokenAmount(
+        account.balance,
+        account.token.decimals
+      )
+      const fiatBalance = getTokenAmountInPreferredCurrency(
+        fixedAccountBalance,
+        account.token.USD,
         preferredCurrency,
-        account.balanceUSD,
         fiatExchangeRatesTask.data
       )
 
-      return amount + account.balance * tokenFiatExchangeRate
+      return amount + fiatBalance
     }, 0)
   }
 

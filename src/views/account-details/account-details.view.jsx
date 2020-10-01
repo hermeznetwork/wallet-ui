@@ -10,7 +10,7 @@ import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions } from '.
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
@@ -39,7 +39,7 @@ function AccountDetails ({
 
   React.useEffect(() => {
     if (accountTask.status === 'successful') {
-      onChangeHeader(accountTask.data.tokenName)
+      onChangeHeader(accountTask.data.token.name)
     }
   }, [accountTask, onChangeHeader])
 
@@ -53,13 +53,18 @@ function AccountDetails ({
       return '-'
     }
 
-    const tokenFiatExchangeRate = getTokenAmountInPreferredCurrency(
+    const fixedAccountBalance = getFixedTokenAmount(
+      account.balance,
+      account.token.decimals
+    )
+    const fiatBalance = getTokenAmountInPreferredCurrency(
+      fixedAccountBalance,
+      account.token.USD,
       preferredCurrency,
-      account.balanceUSD,
       fiatExchangeRatesTask.data
     )
 
-    return (account.balance * tokenFiatExchangeRate).toFixed(2)
+    return fiatBalance.toFixed(2)
   }
 
   function handleTransactionClick (transaction) {
@@ -85,7 +90,7 @@ function AccountDetails ({
                       {preferredCurrency} {getAccountBalance(accountTask.data)}
                     </h1>
                     <p className={classes.tokenBalance}>
-                      {accountTask.data.balance} {accountTask.data.tokenSymbol}
+                      {getFixedTokenAmount(accountTask.data.balance, accountTask.data.token.decimals)} {accountTask.data.token.symbol}
                     </p>
                   </div>
                 )

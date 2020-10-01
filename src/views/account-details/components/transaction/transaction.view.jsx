@@ -27,7 +27,9 @@ function Transaction ({
       <div className={classes.info}>
         <div className={`${classes.row} ${classes.topRow}`}>
           <p>{type}</p>
-          <p className={classes.preferredCurrency}>{fiatAmount.toFixed(2)}</p>
+          <p className={classes.preferredCurrency}>
+            {preferredCurrency} {fiatAmount.toFixed(2)}
+          </p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
           {

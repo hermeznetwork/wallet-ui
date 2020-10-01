@@ -29,9 +29,26 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
+      - name: Create production .env file
+        run: |
+          touch .env
+          echo REACT_APP_ROLLUP_API_URL=${{ secrets.REACT_APP_ROLLUP_API_URL }} >> .env
+          echo REACT_APP_FIAT_EXCHANGE_RATES_API_URL=${{ secrets.REACT_APP_FIAT_EXCHANGE_RATES_API_URL }} >> .env
+          echo REACT_APP_BATCH_EXPLORER_URL=${{ secrets.REACT_APP_BATCH_EXPLORER_URL }} >> .env
+
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: hermeznet/wallet-ui:latest
+          tags: |
+            hermeznet/wallet-ui:${{ github.event.release.tag_name }}
+            hermeznet/wallet-ui:latest
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ecs-task-definition.json
+          service: wallet-ui
+          cluster: wallet-ui
+          wait-for-service-stability: true

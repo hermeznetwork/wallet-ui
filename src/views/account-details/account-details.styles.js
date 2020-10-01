@@ -18,6 +18,7 @@ const useAccountDetailsStyles = createUseStyles(theme => ({
     marginBottom: theme.spacing(2)
   },
   fiatBalance: {
+    textAlign: 'center',
     fontSize: theme.spacing(5),
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import useAccountListStyles from './account-list.styles'
 import Account from '../account/account.view'
-import { getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
 import clsx from 'clsx'
 
 function AccountList ({
@@ -23,30 +23,38 @@ function AccountList ({
 
   return (
     <div className={classes.root}>
-      {accounts.map((account, index) => (
-        <div
-          key={account.accountIndex}
-          className={
-            clsx({
-              [classes.account]: true,
-              [classes.accountSpacer]: index > 0
-            })
-          }
-        >
-          <Account
-            balance={account.balance}
-            tokenName={account.tokenName}
-            tokenSymbol={account.tokenSymbol}
-            preferredCurrency={preferredCurrency}
-            fiatBalance={getTokenAmountInPreferredCurrency(
-              preferredCurrency,
-              account.balanceUSD,
-              fiatExchangeRates
-            )}
-            onClick={() => handleAccountListItemClick(account)}
-          />
-        </div>
-      ))}
+      {accounts.map((account, index) => {
+        const fixedAccountBalance = getFixedTokenAmount(
+          account.balance,
+          account.token.decimals
+        )
+
+        return (
+          <div
+            key={account.accountIndex}
+            className={
+              clsx({
+                [classes.account]: true,
+                [classes.accountSpacer]: index > 0
+              })
+            }
+          >
+            <Account
+              balance={fixedAccountBalance}
+              tokenName={account.token.name}
+              tokenSymbol={account.token.symbol}
+              preferredCurrency={preferredCurrency}
+              fiatBalance={getTokenAmountInPreferredCurrency(
+                fixedAccountBalance,
+                account.token.USD,
+                preferredCurrency,
+                fiatExchangeRates
+              )}
+              onClick={() => handleAccountListItemClick(account)}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }
