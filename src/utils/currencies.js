@@ -25,4 +25,12 @@ function getTokenAmountInPreferredCurrency (
   return Number(amountInUSD) * fiatExchangeRatesTask[preferredCurrency]
 }
 
-export { CurrencySymbol, getTokenAmountInPreferredCurrency }
+function getTokenAmount (amountBigInt, decimals) {
+  return Number(amountBigInt) / Math.pow(10, decimals)
+}
+
+export {
+  CurrencySymbol,
+  getTokenAmountInPreferredCurrency,
+  getTokenAmount
+}

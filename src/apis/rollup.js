@@ -29,6 +29,10 @@ async function getPoolTransaction (transactionId) {
   return extractJSON(axios.get(`${baseApiUrl}/transactions-pool/${transactionId}`))
 }
 
+async function postPoolTransaction (transaction) {
+  return extractJSON(axios.post(`${baseApiUrl}/transactions-pool`, transaction))
+}
+
 async function getTokens (tokenIds) {
   const params = {
     ...(tokenIds ? { ids: tokenIds.join(',') } : {})
@@ -51,6 +55,7 @@ export {
   getTransactions,
   getHistoryTransaction,
   getPoolTransaction,
+  postPoolTransaction,
   getTokens,
   getToken,
   getFees

@@ -24,6 +24,7 @@ export class BabyJubWallet {
     this.publicKey = [pub.p[0].toString(), pub.p[1].toString()]
     this.publicKeyHex = [pub.p[0].toString(16), pub.p[1].toString(16)]
     this.publicKeyCompressed = pub.compress()
+    this.publicKeyCompressedHex = this.publicKeyCompressed.toString(16)
     this.hermezEthereumAddress = hermezEthereumAddress
   }
 

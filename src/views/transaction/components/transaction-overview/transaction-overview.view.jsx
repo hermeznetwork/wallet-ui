@@ -1,8 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import BigInt from 'big-integer'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { CurrencySymbol } from '../../../../utils/currencies'
+import { fix2Float, float2Fix } from '../../../../utils/float16'
+// import { deposit, depositOnTop, withdraw, send } from '../../../../utils/tx'
 
 function TransactionOverview ({
   type,
@@ -10,15 +13,11 @@ function TransactionOverview ({
   to,
   amount,
   fee,
-  token,
+  account,
   preferredCurrency,
   fiatExchangeRates
 }) {
   const classes = useTransactionOverviewStyles()
-
-  function getAccountBalance () {
-    return Number(token.balance)
-  }
 
   /**
    * Returns the conversion rate from the selected token to the selected preffered currency.
@@ -26,10 +25,9 @@ function TransactionOverview ({
    * @returns {Number} Conversion rate from the selected token to fiat
    */
   function getAccountFiatRate () {
-    const USDRate = token.balanceUSD / getAccountBalance()
     return preferredCurrency === CurrencySymbol.USD.code
-      ? USDRate
-      : USDRate * fiatExchangeRates[preferredCurrency]
+      ? account.token.USD
+      : account.token.USD * fiatExchangeRates[preferredCurrency]
   }
 
   /**
@@ -54,7 +52,28 @@ function TransactionOverview ({
    * Prepares the transaction and sends it
    */
   function handleClickTxButton () {
+    console.log(account)
+    const transaction = {
+      from,
+      to,
+      amount: float2Fix(fix2Float(BigInt(amount * Math.pow(10, account.token.decimals)))),
+      fee,
+      nonce: account.nonce,
+      tokenId: account.token.id
+    }
+    console.log(transaction)
 
+    switch (type) {
+      case 'deposit':
+        return 'Deposit'
+      case 'transfer':
+        // send(transaction)
+        break
+      case 'withdraw':
+        return 'Withdraw'
+      default:
+        return ''
+    }
   }
 
   /**
@@ -85,7 +104,7 @@ function TransactionOverview ({
           <p className={classes.rowName}>Fee</p>
           <div className={classes.rowValues}>
             <p className={classes.valueTop}>{CurrencySymbol[preferredCurrency].symbol} {fee * getAccountFiatRate()}</p>
-            <p className={classes.valueBottom}>{fee} {token.tokenSymbol}</p>
+            <p className={classes.valueBottom}>{fee} {account.token.symbol}</p>
           </div>
         </div>
       )
@@ -122,7 +141,7 @@ TransactionOverview.propTypes = {
   to: PropTypes.string,
   amount: PropTypes.number.isRequired,
   fee: PropTypes.number,
-  token: PropTypes.object.isRequired,
+  account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired
 }

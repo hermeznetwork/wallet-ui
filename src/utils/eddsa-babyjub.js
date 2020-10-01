@@ -1,4 +1,5 @@
 import { babyJub, eddsa } from 'circomlib'
+import { utils } from 'ffjavascript'
 
 /**
  * Class representing EdDSA Baby Jub signature
@@ -44,16 +45,19 @@ class PublicKey {
   }
 
   /**
-     * Create a PublicKey from a compressed PublicKey Buffer
-     * @param {Buffer} buff - compressed public key in a buffer
+     * Create a PublicKey from a bigInt compressed pubKey
+     *
+     * @param {BigInt} compressedBigInt - compressed public key in a bigInt
+     *
      * @returns {PublicKey} public key class
      */
-  static newFromCompressed (buf) {
-    if (buf.length !== 32) {
+  static newFromCompressed (compressedBigInt) {
+    const compressedBuffLE = utils.leInt2Buff(compressedBigInt, 32)
+    if (compressedBuffLE.length !== 32) {
       throw new Error('buf must be 32 bytes')
     }
-    // const bufLE = utils.swapEndianness(buf);
-    const p = babyJub.unpackPoint(buf)
+
+    const p = babyJub.unpackPoint(compressedBuffLE)
     if (p == null) {
       throw new Error('unpackPoint failed')
     }
@@ -65,7 +69,7 @@ class PublicKey {
      * @returns {Buffer} - point compressed into a buffer
      */
   compress () {
-    return babyJub.packPoint(this.p)
+    return utils.leBuff2int(babyJub.packPoint(this.p))
   }
 }
 
