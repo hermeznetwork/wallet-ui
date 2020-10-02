@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import useMainHeaderStyles from './main-header.styles'
-import logo from '../../../images/logo.svg'
+import hermezLogo from '../../../images/hermez-logo.svg'
 import userAccountIcon from '../../../images/icons/user-account.svg'
 import Container from '../container/container.view'
 
@@ -22,7 +22,7 @@ function MainHeader () {
               to='/'
               className={classes.logo}
             >
-              <img src={logo} alt='Hermez logo' />
+              <img src={hermezLogo} alt='Hermez logo' />
             </Link>
           </h1>
         </div>
