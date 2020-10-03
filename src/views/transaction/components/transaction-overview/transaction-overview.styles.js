@@ -67,11 +67,12 @@ const useTransactionOverviewStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.white,
     padding: `${theme.spacing(3.5)}px 0`,
-    backgroundColor: theme.palette.secondary,
+    backgroundColor: theme.palette.secondary.main,
     borderRadius: 20,
     border: 0,
     marginBottom: `${theme.spacing(5)}px`,
-    cursor: 'pointer'
+    cursor: 'pointer',
+    outline: 0
   }
 }))
 

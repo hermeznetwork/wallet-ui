@@ -3,8 +3,6 @@ import { Scalar, utils as ffUtils } from 'ffjavascript'
 import ethers from 'ethers'
 import { babyJub, poseidon } from 'circomlib'
 
-import { fix2Float } from './float16'
-
 const hash = poseidon([6, 8, 57])
 const F = poseidon.F
 
@@ -157,27 +155,6 @@ export const getWei = (ether) => {
 
 export const hexToBuffer = (hexString) => {
   return Buffer.from(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
-}
-
-/**
- * Encode tx Data
- * @param {String} tx - Transaction object
- * @returns {Scalar} Encoded TxData
- */
-export function buildTxData (tx) {
-  const IDEN3_ROLLUP_TX = Scalar.fromString('4839017969649077913')
-  let res = Scalar.e(0)
-
-  res = Scalar.add(res, IDEN3_ROLLUP_TX)
-  res = Scalar.add(res, Scalar.shl(fix2Float(tx.amount || 0), 64))
-  res = Scalar.add(res, Scalar.shl(tx.coin || 0, 80))
-  res = Scalar.add(res, Scalar.shl(tx.nonce || 0, 112))
-  res = Scalar.add(res, Scalar.shl(tx.fee || 0, 160))
-  res = Scalar.add(res, Scalar.shl(tx.rqOffset || 0, 164))
-  res = Scalar.add(res, Scalar.shl(tx.onChain ? 1 : 0, 167))
-  res = Scalar.add(res, Scalar.shl(tx.newAccount ? 1 : 0, 168))
-
-  return res
 }
 
 export const exitAx =

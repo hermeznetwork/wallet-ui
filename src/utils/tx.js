@@ -134,19 +134,15 @@ export const forceWithdraw = async (addressSC, tokenId, amount, walletRollup, ab
  * @returns {Object} - return a object with the response status, current batch, current nonce and nonceObject
 */
 export async function send (transaction) {
-  const tx = txUtils.generateL2Transaction(transaction)
+  const result = await postPoolTransaction(transaction)
+  console.log(result)
 
-  const resTx = await postPoolTransaction(tx)
-
-  if (resTx.status.toString() === '200') {
-    txUtils.storeL2Transaction(resTx)
+  if (result.status === 200) {
+    txUtils.storeL2Transaction(transaction)
   }
-  const res = {
-    status: resTx.status
-    // currentBatch,
-    // nonce: nonceToSend,
-    // nonceObject: nonceObjectToWrite
+  return {
+    status: result.status,
+    id: result.data,
+    nonce: transaction.nonce
   }
-
-  return res
 }

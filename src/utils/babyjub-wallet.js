@@ -1,10 +1,8 @@
-import { Scalar } from 'ffjavascript'
-import { poseidon, eddsa } from 'circomlib'
+import { eddsa } from 'circomlib'
 
 import * as eddsaBabyJub from './eddsa-babyjub'
-import { hashBuffer, buildTxData } from './utils'
-
-const hash = poseidon([6, 8, 57])
+import { buildTransactionHashMessage } from './tx-utils'
+import { hashBuffer } from './utils'
 
 /**
  * Manage Babyjubjub keys
@@ -45,24 +43,13 @@ export class BabyJubWallet {
    * To sign transaction with babyjubjub keys
    * @param {Object} tx -transaction
    */
-  signRollupTx (tx) {
-    const data = buildTxData(tx)
-
-    const h = hash([
-      data,
-      Scalar.e(tx.rqTxData || 0),
-      Scalar.fromString(tx.toAx, 16),
-      Scalar.fromString(tx.toAy, 16),
-      Scalar.fromString(tx.toEthAddr, 16)
-    ])
-
-    const signature = eddsa.signPoseidon(this.privateKey, h)
-    tx.r8x = signature.R8[0]
-    tx.r8y = signature.R8[1]
-    tx.s = signature.S
-    tx.fromAx = this.publicKeyHex[0]
-    tx.fromAy = this.publicKeyHex[1]
-    tx.fromEthAddr = this.hermezEthereumAddress
+  signTransaction (transaction, encodedTransaction) {
+    const hashMessage = buildTransactionHashMessage(encodedTransaction)
+    const signature = eddsa.signPoseidon(this.privateKey, hashMessage)
+    console.log(hashMessage)
+    console.log(signature)
+    transaction.signature = signature.S.toString()
+    return transaction
   }
 }
 

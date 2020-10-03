@@ -30,7 +30,7 @@ async function getPoolTransaction (transactionId) {
 }
 
 async function postPoolTransaction (transaction) {
-  return extractJSON(axios.post(`${baseApiUrl}/transactions-pool`, transaction))
+  return axios.post(`${baseApiUrl}/transactions-pool`, transaction)
 }
 
 async function getTokens (tokenIds) {

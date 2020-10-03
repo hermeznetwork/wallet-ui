@@ -4,7 +4,7 @@ import clsx from 'clsx'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { getAccounts } from '../../../../apis/rollup'
-import { CurrencySymbol, getTokenAmountInPreferredCurrency, getTokenAmount } from '../../../../utils/currencies'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency, getTokenAmountString, getFixedTokenAmount } from '../../../../utils/currencies'
 import swapIcon from '../../../../images/icons/swap.svg'
 import errorIcon from '../../../../images/icons/error.svg'
 import closeIcon from '../../../../images/icons/close.svg'
@@ -24,8 +24,13 @@ function TransactionForm ({
   const [isAmountInvalid, setIsAmountInvalid] = React.useState()
   const [isReceiverInvalid, setIsReceiverInvalid] = React.useState()
 
+  /**
+   * Uses helper function to convert balance to a float
+   *
+   * @returns {Numbr}
+   */
   function getAccountBalance () {
-    return getTokenAmount(account.balance, account.token.decimals)
+    return getTokenAmountString(account.balance, account.token.decimals)
   }
 
   /**
@@ -39,10 +44,16 @@ function TransactionForm ({
       : account.token.USD * fiatExchangeRates[preferredCurrency]
   }
 
+  /**
+   * Uses helper function to convert amount to Fiat in the preferred currency
+   *
+   * @returns {Number}
+   */
   function getBalanceinFiat () {
     return getTokenAmountInPreferredCurrency(
+      Number(account.balance) / Math.pow(10, account.token.decimals),
+      account.token.USD,
       preferredCurrency,
-      getAccountBalance() * account.token.USD,
       fiatExchangeRates
     )
   }
@@ -156,6 +167,7 @@ function TransactionForm ({
 
   function handleDeleteClick () {
     setReceiver('')
+    setIsReceiverInvalid(true)
   }
 
   /**
@@ -168,11 +180,11 @@ function TransactionForm ({
     if (type !== 'deposit') {
       try {
         const accountsData = await getAccounts(receiver)
-        console.log(accountsData)
-        if (accountsData.accounts.length > 0) {
+        const receiverAccount = accountsData.accounts.find((receiverAccount) => receiverAccount.token.id === account.token.id)
+        if (receiverAccount) {
           onSubmit({
-            amount: selectedAmount,
-            to: receiver,
+            amount: selectedAmount.toString(),
+            to: receiverAccount,
             fee: getFee()
           })
         } else {
@@ -275,7 +287,7 @@ function TransactionForm ({
         {
           (showInFiat)
             ? <p><span>{preferredCurrency}</span> <span>{getBalanceinFiat().toFixed(2)}</span></p>
-            : <p><span>{account.token.symbol}</span> <span>{getAccountBalance().toFixed(2)}</span></p>
+            : <p><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
         }
       </div>
 

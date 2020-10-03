@@ -233,11 +233,11 @@ function Transaction ({
     } else if (transaction) {
       return (
         <TransactionOverview
+          metaMaskWallet={metaMaskWalletTask.status === 'successful' ? metaMaskWalletTask.data : {}}
           type={transactionType}
           preferredCurrency={preferredCurrency}
           fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
           account={account}
-          from={metaMaskWalletTask.data.hermezEthereumAddress}
           to={transaction.to}
           amount={transaction.amount}
           fee={transaction.fee}
