@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
-import { CurrencySymbol, getFixedTokenAmount, getTokenAmountInPreferredCurrency, getTokenAmountBigInt } from '../../../../utils/currencies'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency, getTokenAmountBigInt } from '../../../../utils/currencies'
 import { floorFix2Float, float2Fix } from '../../../../utils/float16'
 import { generateL2Transaction } from '../../../../utils/tx-utils'
 import { send } from '../../../../utils/tx'
@@ -129,8 +129,8 @@ function TransactionOverview ({
   return (
     <div className={classes.wrapper}>
       <div className={classes.amountWrapper}>
-        <p className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol} {getAmountinFiat(amount)}</p>
-        <p className={classes.amountToken}>{getFixedTokenAmount(getAmountInBigInt())} {account.token.symbol}</p>
+        <p className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol} {getAmountinFiat(amount).toFixed(2)}</p>
+        <p className={classes.amountToken}>{amount} {account.token.symbol}</p>
       </div>
       <div className={classes.txTable}>
         <div className={classes.row}>

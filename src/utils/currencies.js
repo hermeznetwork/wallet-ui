@@ -19,6 +19,7 @@ const CurrencySymbol = {
  * @returns {string}
  */
 function getFixedTokenAmount (amount, decimals) {
+  // We can lose precision as there will never be more than MAX_DECIMALS_UNTIL_ZERO_AMOUNT significant digits
   const balanceWithDecimals = Number(amount) / Math.pow(10, decimals)
   const amountSignificantDigits = amount.length - 1
   const significantDigits = decimals - amountSignificantDigits
@@ -32,7 +33,7 @@ function getFixedTokenAmount (amount, decimals) {
 }
 
 /**
- * Converts an amount in BigInt and decimals to a Float
+ * Converts an amount in BigInt and decimals to a String with correct decimal point placement
  *
  * @param {String} amountBigInt - String representing the amount as a BigInt with no decimals
  * @param {Number} decimals - Number of decimal points the amount actually has
