@@ -1,41 +1,47 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-
-import { fetchMetamaskWallet } from '../../store/account/account.thunks'
-import Spinner from '../shared/spinner/spinner.view'
 import { Redirect } from 'react-router-dom'
 
+import useLoginStyles from './login.styles'
+import { fetchMetamaskWallet } from '../../store/account/account.thunks'
+import hermezLogoAlternative from '../../images/hermez-logo-alternative.svg'
+import metaMaskLogo from '../../images/metamask-logo.svg'
+
 function Login ({
-  metaMaskWallet,
+  metaMaskWalletTask,
   redirectRoute,
   onLoadMetaMaskWallet
 }) {
+  const classes = useLoginStyles()
+
   function handleMetamaskLogin () {
     onLoadMetaMaskWallet()
   }
 
   return (
-    <div>
+    <div className={classes.root}>
+      <img src={hermezLogoAlternative} alt='Hermez logo' className={classes.logo} />
+      {
+        metaMaskWalletTask.status === 'pending' || metaMaskWalletTask.status === 'failed'
+          ? <h2 className={classes.connectText}>Connect with</h2>
+          : <h2 className={classes.connectedText}>Connected to MetaMask</h2>
+      }
+      <button className={classes.walletButton} onClick={handleMetamaskLogin}>
+        <img src={metaMaskLogo} alt='MetaMask logo' className={classes.walletButtonImage} />
+      </button>
       {(() => {
-        switch (metaMaskWallet.status) {
+        switch (metaMaskWalletTask.status) {
           case 'pending':
           case 'failed': {
-            return (
-              <>
-                {
-                  metaMaskWallet.status === 'failed'
-                    ? <p>{metaMaskWallet.error}</p>
-                    : <></>
-                }
-                <button onClick={handleMetamaskLogin}>
-                    Log In with Metamask
-                </button>
-              </>
-            )
+            return <p className={classes.walletName}>MetaMask</p>
           }
           case 'loading': {
-            return <Spinner />
+            return (
+              <p className={classes.helperText}>
+                Follow the instructions in the pop up.
+              </p>
+            )
           }
           case 'successful': {
             return <Redirect to={redirectRoute} />
@@ -54,7 +60,7 @@ Login.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWallet: state.account.metaMaskWalletTask,
+  metaMaskWalletTask: state.account.metaMaskWalletTask,
   redirectRoute: state.global.redirectRoute
 })
 
