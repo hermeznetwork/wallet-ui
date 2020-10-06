@@ -26,7 +26,7 @@ function getPoolTransactions (accountIndex, bJJ) {
   const accountTransactionPool = transactionPool[bJJ]
 
   if (typeof accountTransactionPool === 'undefined') {
-    return []
+    return Promise.resolve([])
   }
 
   const accountTransactionsPromises = accountTransactionPool
