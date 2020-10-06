@@ -74,7 +74,6 @@ function TransactionOverview ({
       case 'deposit':
         return 'Deposit'
       case 'transfer':
-        console.log(transaction)
         send(transaction, metaMaskWallet.publicKeyCompressedHex)
           .then((res) => {
             console.log(res)

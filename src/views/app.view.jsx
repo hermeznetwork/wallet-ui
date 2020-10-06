@@ -24,7 +24,9 @@ function App ({
     onLoadFiatExchangeRates()
   }, [onLoadConfig, onLoadFiatExchangeRates])
 
-  initializeTransactionPool()
+  React.useEffect(() => {
+    initializeTransactionPool()
+  }, [])
 
   if (configTask.status === 'loading' || fiatExchangeRatesTask.status === 'loading') {
     return <Spinner />
