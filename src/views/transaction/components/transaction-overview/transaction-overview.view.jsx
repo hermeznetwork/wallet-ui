@@ -16,7 +16,8 @@ function TransactionOverview ({
   fee,
   account,
   preferredCurrency,
-  fiatExchangeRates
+  fiatExchangeRates,
+  onNavigateToTransactionConfirmation
 }) {
   const classes = useTransactionOverviewStyles()
 
@@ -66,17 +67,18 @@ function TransactionOverview ({
       amount: float2Fix(floorFix2Float(getAmountInBigInt())),
       fee,
       nonce: account.nonce
-    }, account.token)
+    }, metaMaskWallet.publicKeyCompressedHex, account.token)
     metaMaskWallet.signTransaction(transaction, encodedTransaction)
-    console.log(transaction)
 
     switch (type) {
       case 'deposit':
         return 'Deposit'
       case 'transfer':
-        send(transaction)
+        console.log(transaction)
+        send(transaction, metaMaskWallet.publicKeyCompressedHex)
           .then((res) => {
             console.log(res)
+            onNavigateToTransactionConfirmation()
           })
           .catch((error) => {
             console.log(error)
@@ -158,7 +160,8 @@ TransactionOverview.propTypes = {
   fee: PropTypes.number,
   account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
-  fiatExchangeRates: PropTypes.object.isRequired
+  fiatExchangeRates: PropTypes.object.isRequired,
+  onNavigateToTransactionConfirmation: PropTypes.func.isRequired
 }
 
 export default TransactionOverview

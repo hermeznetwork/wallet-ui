@@ -46,9 +46,8 @@ export class BabyJubWallet {
   signTransaction (transaction, encodedTransaction) {
     const hashMessage = buildTransactionHashMessage(encodedTransaction)
     const signature = eddsa.signPoseidon(this.privateKey, hashMessage)
-    console.log(hashMessage)
-    console.log(signature)
-    transaction.signature = signature.S.toString()
+    const packedSignature = eddsa.packSignature(signature)
+    transaction.signature = packedSignature.toString('hex')
     return transaction
   }
 }

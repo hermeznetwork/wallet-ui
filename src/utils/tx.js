@@ -4,7 +4,7 @@ import ethers from 'ethers'
 import { postPoolTransaction } from '../apis/rollup'
 import { fix2Float } from './float16'
 import { CliExternalOperator } from './cli-external-operator'
-import * as txUtils from './tx-utils'
+import { addPoolTransaction } from './tx-pool'
 
 export const TxType = {
   Deposit: 'Deposit',
@@ -123,22 +123,18 @@ export const forceWithdraw = async (addressSC, tokenId, amount, walletRollup, ab
 // const exitEthAddr = '0x0000000000000000000000000000000000000000'
 
 /**
- * send off-chain transaction
+ * Sends a L2 transaction to the Coordinator
  *
- * @param {Object} transaction - ethAddress and babyPubKey together
- * @param {Number} tokenId - token type identifier, the sender and the receive must use the same token
- * @param {String} fee - % of th amount that the user is willing to pay in fees
- * @param {String} nonce - hardcoded from user
- * @param {Object} nonceObject - stored object wich keep tracking of the last transaction nonce sent by the client
- * @param {String} ethAddress - Ethereum address enconded as hexadecimal string to be used in deposit off-chains
- * @returns {Object} - return a object with the response status, current batch, current nonce and nonceObject
+ * @param {Object} transaction - Transaction object prepared by TxUtils.generateL2Transaction
+ * @param {String} bJJ - The compressed BabyJubJub in hexadecimal format of the transaction sender.
+ *
+ * @return {Object} - Object with the response status, transaction id and the transaction nonce
 */
-export async function send (transaction) {
+export async function send (transaction, bJJ) {
   const result = await postPoolTransaction(transaction)
-  console.log(result)
 
   if (result.status === 200) {
-    txUtils.storeL2Transaction(transaction)
+    addPoolTransaction(transaction, bJJ)
   }
   return {
     status: result.status,

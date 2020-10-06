@@ -71,22 +71,6 @@ function loadFiatExchangeRatesFailure (error) {
   }
 }
 
-function addPoolTransaction (hermezEthereumAddress, transaction) {
-  return {
-    type: globalActionTypes.ADD_POOL_TRANSACTION,
-    hermezEthereumAddress,
-    transaction
-  }
-}
-
-function removePoolTransaction (hermezEthereumAddress, transactionId) {
-  return {
-    type: globalActionTypes.REMOVE_POOL_TRANSACTION,
-    hermezEthereumAddress,
-    transactionId
-  }
-}
-
 export {
   changeHeader,
   changeRedirectRoute,
@@ -95,7 +79,5 @@ export {
   loadConfigFailure,
   loadFiatExchangeRates,
   loadFiatExchangeRatesSuccess,
-  loadFiatExchangeRatesFailure,
-  addPoolTransaction,
-  removePoolTransaction
+  loadFiatExchangeRatesFailure
 }

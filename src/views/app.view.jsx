@@ -3,6 +3,7 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 
+import { initializeTransactionPool } from '../utils/tx-pool'
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
@@ -22,6 +23,8 @@ function App ({
     onLoadConfig()
     onLoadFiatExchangeRates()
   }, [onLoadConfig, onLoadFiatExchangeRates])
+
+  initializeTransactionPool()
 
   if (configTask.status === 'loading' || fiatExchangeRatesTask.status === 'loading') {
     return <Spinner />

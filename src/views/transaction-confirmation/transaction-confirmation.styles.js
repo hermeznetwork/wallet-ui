@@ -24,7 +24,7 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
   },
   done: {
     cursor: 'pointer',
-    backgroundColor: theme.palette.secondary,
+    backgroundColor: theme.palette.secondary.main,
     borderRadius: 18,
     border: 0,
     outline: 'none',

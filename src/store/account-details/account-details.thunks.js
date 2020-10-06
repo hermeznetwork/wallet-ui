@@ -1,7 +1,6 @@
 import * as accountDetailsActionTypes from './account-details.actions'
 import * as rollupApi from '../../apis/rollup'
-import { HttpStatusCode } from '../../utils/http'
-import { removePoolTransaction } from '../global/global.thunks'
+import { getPoolTransactions } from '../../utils/tx-pool'
 
 /**
  * Fetches the account details for the specified account index
@@ -27,34 +26,12 @@ function fetchPoolTransactions (accountIndex) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadPoolTransactions())
 
-    const { global: { transactionPool }, account: { metaMaskWalletTask } } = getState()
+    const { account: { metaMaskWalletTask } } = getState()
 
     if (metaMaskWalletTask.status === 'successful') {
-      const { hermezEthereumAddress } = metaMaskWalletTask.data
-      const accountTransactionPool = transactionPool[hermezEthereumAddress]
-
-      if (accountTransactionPool === undefined) {
-        return dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess([]))
-      }
-
-      const accountTransactionsPromises = accountTransactionPool
-        .filter(transaction => transaction.fromAccountIndex === accountIndex)
-        .map(({ id: transactionId }) =>
-          rollupApi
-            .getPoolTransaction(transactionId)
-            .catch(err => {
-              if (err.response.status === HttpStatusCode.NOT_FOUND) {
-                dispatch(removePoolTransaction(hermezEthereumAddress, transactionId))
-              }
-            })
-        )
-
-      return Promise.all(accountTransactionsPromises)
-        .then((transactions) => {
-          const successfulTransactions = transactions.filter(transaction => transaction !== undefined)
-
-          dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(successfulTransactions))
-        })
+      const { publicKeyCompressedHex } = metaMaskWalletTask.data
+      getPoolTransactions(accountIndex, publicKeyCompressedHex)
+        .then((transactions) => dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(transactions)))
         .catch(err => dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure(err)))
     } else {
       dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure('MetaMask wallet is not available'))

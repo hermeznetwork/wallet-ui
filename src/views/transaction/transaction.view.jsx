@@ -15,6 +15,7 @@ import Spinner from '../shared/spinner/spinner.view'
 import Container from '../shared/container/container.view'
 import backIcon from '../../images/icons/back.svg'
 import closeIcon from '../../images/icons/close.svg'
+import { push } from 'connected-react-router'
 
 function Transaction ({
   metaMaskWalletTask,
@@ -28,7 +29,8 @@ function Transaction ({
   onLoadTokens,
   onLoadMetaMaskTokens,
   onLoadAccounts,
-  onLoadFees
+  onLoadFees,
+  onNavigateToTransactionConfirmation
 }) {
   const classes = useTransactionStyles()
   const { tokenId } = useParams()
@@ -241,6 +243,7 @@ function Transaction ({
           to={transaction.to}
           amount={transaction.amount}
           fee={transaction.fee}
+          onNavigateToTransactionConfirmation={onNavigateToTransactionConfirmation}
         />
       )
     } else {
@@ -302,7 +305,8 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadMetaMaskTokens: (hermezTokens) => dispatch(fetchMetaMaskTokens(hermezTokens)),
   onLoadAccounts: (ethereumAddress, tokens) =>
     dispatch(fetchAccounts(ethereumAddress, tokens)),
-  onLoadFees: () => dispatch(fetchFees())
+  onLoadFees: () => dispatch(fetchFees()),
+  onNavigateToTransactionConfirmation: () => dispatch(push('/transaction-confirmation'))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Transaction))
