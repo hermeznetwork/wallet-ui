@@ -15,6 +15,7 @@ import Spinner from '../shared/spinner/spinner.view'
 import Container from '../shared/container/container.view'
 import backIcon from '../../images/icons/back.svg'
 import closeIcon from '../../images/icons/close.svg'
+import { push } from 'connected-react-router'
 
 function Transaction ({
   metaMaskWalletTask,
@@ -28,11 +29,12 @@ function Transaction ({
   onLoadTokens,
   onLoadMetaMaskTokens,
   onLoadAccounts,
-  onLoadFees
+  onLoadFees,
+  onNavigateToTransactionConfirmation
 }) {
   const classes = useTransactionStyles()
   const { tokenId } = useParams()
-  const [token, setToken] = useState()
+  const [account, setAccount] = useState()
   const [transaction, setTransaction] = useState()
 
   React.useEffect(() => {
@@ -55,19 +57,21 @@ function Transaction ({
     onLoadFees()
   }, [onLoadFees])
 
-  // If the prop tokenId is set, find and store the token to show the Transaction component
+  // If the prop tokenId is set, find and store the account to show the Transaction component
   if (tokenId && metaMaskTokensTask.status === 'success') {
-    const selectedToken = metaMaskTokensTask.data.find((token) => token.Id === tokenId)
-    setToken(selectedToken)
+    const selectedToken = transactionType === 'deposit'
+      ? metaMaskTokensTask.data.find((account) => account.id === tokenId)
+      : accountsTask.data.find((account) => account.token.id === tokenId)
+    setAccount(selectedToken)
   }
 
   /**
-   * When an account is selected, store the corresponding token to show the Transaction component
+   * When an account is selected, store the corresponding account to show the Transaction component
    *
-   * @param {Token} token
+   * @param {Account} account
    */
-  function handleAccountListClick (token) {
-    setToken(token)
+  function handleAccountListClick (account) {
+    setAccount(account)
   }
 
   /**
@@ -75,10 +79,10 @@ function Transaction ({
    * Depending on the step, unset the corresponding state to go back a step.
    */
   function handleBackButtonClick () {
-    if (token) {
-      setToken(undefined)
-    } else if (transaction) {
+    if (transaction) {
       setTransaction(undefined)
+    } else if (account) {
+      setAccount(undefined)
     }
   }
 
@@ -88,7 +92,7 @@ function Transaction ({
    * @returns {string}
    */
   function getTitle () {
-    if (token) {
+    if (account) {
       if (transaction) {
         switch (transactionType) {
           case 'deposit':
@@ -114,7 +118,7 @@ function Transaction ({
    * @returns {ReactElement} The back button element
    */
   function renderBackButton () {
-    if (token || transaction) {
+    if (account || transaction) {
       return (
         <button className={classes.backButton} onClick={handleBackButtonClick}>
           <img
@@ -130,8 +134,8 @@ function Transaction ({
   }
 
   /**
-   * If it's a deposit, show valid token accounts from Ethereum (Layer 1).
-   * Otherwise, show token accounts from Hermez (Layer 2).
+   * If it's a deposit, show valid account from Ethereum (Layer 1).
+   * Otherwise, show account from Hermez (Layer 2).
    */
   function renderAccountList () {
     if (transactionType === 'deposit') {
@@ -217,10 +221,10 @@ function Transaction ({
    * @returns {ReactElement} The correct component depending on the step the user is on
    */
   function renderContent () {
-    if (token && !transaction) {
+    if (account && !transaction) {
       return (
         <TransactionForm
-          account={token}
+          account={account}
           type={transactionType}
           preferredCurrency={preferredCurrency}
           fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
@@ -231,14 +235,15 @@ function Transaction ({
     } else if (transaction) {
       return (
         <TransactionOverview
+          metaMaskWallet={metaMaskWalletTask.status === 'successful' ? metaMaskWalletTask.data : {}}
           type={transactionType}
           preferredCurrency={preferredCurrency}
           fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
-          token={token}
-          from={metaMaskWalletTask.data.hermezEthereumAddress}
+          account={account}
           to={transaction.to}
           amount={transaction.amount}
           fee={transaction.fee}
+          onNavigateToTransactionConfirmation={onNavigateToTransactionConfirmation}
         />
       )
     } else {
@@ -300,7 +305,8 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadMetaMaskTokens: (hermezTokens) => dispatch(fetchMetaMaskTokens(hermezTokens)),
   onLoadAccounts: (ethereumAddress, tokens) =>
     dispatch(fetchAccounts(ethereumAddress, tokens)),
-  onLoadFees: () => dispatch(fetchFees())
+  onLoadFees: () => dispatch(fetchFees()),
+  onNavigateToTransactionConfirmation: () => dispatch(push('/transaction-confirmation'))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Transaction))

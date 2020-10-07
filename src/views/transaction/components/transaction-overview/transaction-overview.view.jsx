@@ -2,34 +2,41 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
-import { CurrencySymbol } from '../../../../utils/currencies'
+import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency, getTokenAmountBigInt } from '../../../../utils/currencies'
+import { floorFix2Float, float2Fix } from '../../../../utils/float16'
+import { generateL2Transaction } from '../../../../utils/tx-utils'
+import { send } from '../../../../utils/tx'
 
 function TransactionOverview ({
+  metaMaskWallet,
   type,
-  from,
   to,
   amount,
   fee,
-  token,
+  account,
   preferredCurrency,
-  fiatExchangeRates
+  fiatExchangeRates,
+  onNavigateToTransactionConfirmation
 }) {
   const classes = useTransactionOverviewStyles()
 
-  function getAccountBalance () {
-    return Number(token.balance)
+  /**
+   * Uses helper function to convert amount to Fiat in the preferred currency
+   *
+   * @returns {Number}
+   */
+  function getAmountinFiat (value) {
+    return getTokenAmountInPreferredCurrency(
+      value,
+      account.token.USD,
+      preferredCurrency,
+      fiatExchangeRates
+    )
   }
 
-  /**
-   * Returns the conversion rate from the selected token to the selected preffered currency.
-   *
-   * @returns {Number} Conversion rate from the selected token to fiat
-   */
-  function getAccountFiatRate () {
-    const USDRate = token.balanceUSD / getAccountBalance()
-    return preferredCurrency === CurrencySymbol.USD.code
-      ? USDRate
-      : USDRate * fiatExchangeRates[preferredCurrency]
+  function getAmountInBigInt () {
+    return getTokenAmountBigInt(amount, account.token.decimals)
   }
 
   /**
@@ -53,8 +60,34 @@ function TransactionOverview ({
   /**
    * Prepares the transaction and sends it
    */
-  function handleClickTxButton () {
+  async function handleClickTxButton () {
+    const { transaction, encodedTransaction } = await generateL2Transaction({
+      from: account.accountIndex,
+      to: to.accountIndex,
+      amount: float2Fix(floorFix2Float(getAmountInBigInt())),
+      fee,
+      nonce: account.nonce
+    }, metaMaskWallet.publicKeyCompressedHex, account.token)
+    metaMaskWallet.signTransaction(transaction, encodedTransaction)
 
+    switch (type) {
+      case 'deposit':
+        return 'Deposit'
+      case 'transfer':
+        send(transaction, metaMaskWallet.publicKeyCompressedHex)
+          .then((res) => {
+            console.log(res)
+            onNavigateToTransactionConfirmation()
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+        break
+      case 'withdraw':
+        return 'Withdraw'
+      default:
+        return ''
+    }
   }
 
   /**
@@ -66,7 +99,7 @@ function TransactionOverview ({
         <div className={classes.row}>
           <p className={classes.rowName}>To</p>
           <div className={classes.rowValues}>
-            <p className={classes.valueTop}>{to}</p>
+            <p className={classes.valueTop}>{getPartiallyHiddenHermezAddress(to.hezEthereumAddress)}</p>
           </div>
         </div>
       )
@@ -84,8 +117,8 @@ function TransactionOverview ({
         <div className={classes.row}>
           <p className={classes.rowName}>Fee</p>
           <div className={classes.rowValues}>
-            <p className={classes.valueTop}>{CurrencySymbol[preferredCurrency].symbol} {fee * getAccountFiatRate()}</p>
-            <p className={classes.valueBottom}>{fee} {token.tokenSymbol}</p>
+            <p className={classes.valueTop}>{CurrencySymbol[preferredCurrency].symbol} {getAmountinFiat(fee)}</p>
+            <p className={classes.valueBottom}>{fee} {account.token.symbol}</p>
           </div>
         </div>
       )
@@ -97,15 +130,15 @@ function TransactionOverview ({
   return (
     <div className={classes.wrapper}>
       <div className={classes.amountWrapper}>
-        <p className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol} {amount * getAccountFiatRate()}</p>
-        <p className={classes.amountToken}>{amount}</p>
+        <p className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol} {getAmountinFiat(amount).toFixed(2)}</p>
+        <p className={classes.amountToken}>{amount} {account.token.symbol}</p>
       </div>
       <div className={classes.txTable}>
         <div className={classes.row}>
           <p className={classes.rowName}>From</p>
           <div className={classes.rowValues}>
             <p className={classes.valueTop}>My Hermez Address</p>
-            <p className={classes.valueBottom}>{from}</p>
+            <p className={classes.valueBottom}>{getPartiallyHiddenHermezAddress(account.hezEthereumAddress)}</p>
           </div>
         </div>
         {renderTo()}
@@ -117,14 +150,17 @@ function TransactionOverview ({
 }
 
 TransactionOverview.propTypes = {
+  metaMaskWallet: PropTypes.shape({
+    signTransaction: PropTypes.func.isRequired
+  }),
   type: PropTypes.string.isRequired,
-  from: PropTypes.string.isRequired,
-  to: PropTypes.string,
-  amount: PropTypes.number.isRequired,
+  to: PropTypes.object.isRequired,
+  amount: PropTypes.string.isRequired,
   fee: PropTypes.number,
-  token: PropTypes.object.isRequired,
+  account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
-  fiatExchangeRates: PropTypes.object.isRequired
+  fiatExchangeRates: PropTypes.object.isRequired,
+  onNavigateToTransactionConfirmation: PropTypes.func.isRequired
 }
 
 export default TransactionOverview

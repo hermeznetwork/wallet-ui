@@ -1,17 +1,4 @@
 import { globalActionTypes } from './global.actions'
-import { TRANSACTION_POOL_KEY } from '../../constants'
-
-function getInitialTransactionPool () {
-  if (!localStorage.getItem(TRANSACTION_POOL_KEY)) {
-    const emptyTransactionPool = {}
-
-    localStorage.setItem(TRANSACTION_POOL_KEY, JSON.stringify(emptyTransactionPool))
-
-    return emptyTransactionPool
-  } else {
-    return JSON.parse(localStorage.getItem(TRANSACTION_POOL_KEY))
-  }
-}
 
 const initialGlobalState = {
   header: {
@@ -23,8 +10,7 @@ const initialGlobalState = {
   },
   fiatExchangeRatesTask: {
     status: 'pending'
-  },
-  transactionPool: getInitialTransactionPool()
+  }
 }
 
 function globalReducer (state = initialGlobalState, action) {
@@ -92,31 +78,6 @@ function globalReducer (state = initialGlobalState, action) {
         fiatExchangeRatesTask: {
           status: 'failure',
           error: action.error
-        }
-      }
-    }
-    case globalActionTypes.ADD_POOL_TRANSACTION: {
-      const accountTransactionPool = state.transactionPool[action.hermezEthereumAddress]
-
-      return {
-        ...state,
-        transactionPool: {
-          ...state.transactionPool,
-          [action.hermezEthereumAddress]: accountTransactionPool === undefined
-            ? [action.transaction]
-            : [...accountTransactionPool, action.transaction]
-        }
-      }
-    }
-    case globalActionTypes.REMOVE_POOL_TRANSACTION: {
-      const accountTransactionPool = state.transactionPool[action.hermezEthereumAddress]
-
-      return {
-        ...state,
-        transactionPool: {
-          ...state.transactionPool,
-          [action.hermezEthereumAddress]: accountTransactionPool
-            .filter(transaction => transaction.id !== action.transactionId)
         }
       }
     }

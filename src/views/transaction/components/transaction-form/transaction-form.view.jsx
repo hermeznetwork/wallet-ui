@@ -4,7 +4,7 @@ import clsx from 'clsx'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { getAccounts } from '../../../../apis/rollup'
-import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency, getTokenAmountString, getFixedTokenAmount } from '../../../../utils/currencies'
 import swapIcon from '../../../../images/icons/swap.svg'
 import errorIcon from '../../../../images/icons/error.svg'
 import closeIcon from '../../../../images/icons/close.svg'
@@ -24,26 +24,36 @@ function TransactionForm ({
   const [isAmountInvalid, setIsAmountInvalid] = React.useState()
   const [isReceiverInvalid, setIsReceiverInvalid] = React.useState()
 
+  /**
+   * Uses helper function to convert balance to a float
+   *
+   * @returns {Numbr}
+   */
   function getAccountBalance () {
-    return Number(account.balance)
+    return getTokenAmountString(account.balance, account.token.decimals)
   }
 
   /**
-   * Returns the conversion rate from the selected token to the selected preffered currency.
+   * Returns the conversion rate from the selected token to the selected preferred currency.
    *
    * @returns {Number} Conversion rate from the selected token to fiat
    */
   function getAccountFiatRate () {
-    const USDRate = account.balanceUSD / getAccountBalance()
     return preferredCurrency === CurrencySymbol.USD.code
-      ? USDRate
-      : USDRate * fiatExchangeRates[preferredCurrency]
+      ? account.token.USD
+      : account.token.USD * fiatExchangeRates[preferredCurrency]
   }
 
+  /**
+   * Uses helper function to convert amount to Fiat in the preferred currency
+   *
+   * @returns {Number}
+   */
   function getBalanceinFiat () {
     return getTokenAmountInPreferredCurrency(
+      Number(account.balance) / Math.pow(10, account.token.decimals),
+      account.token.USD,
       preferredCurrency,
-      account.balanceUSD,
       fiatExchangeRates
     )
   }
@@ -54,7 +64,7 @@ function TransactionForm ({
    * and converts it to token value.
    */
   function getFee () {
-    return fees.existingAccount / account.balanceUSD
+    return fees.existingAccount / account.token.USD
   }
 
   /**
@@ -157,6 +167,7 @@ function TransactionForm ({
 
   function handleDeleteClick () {
     setReceiver('')
+    setIsReceiverInvalid(true)
   }
 
   /**
@@ -169,10 +180,11 @@ function TransactionForm ({
     if (type !== 'deposit') {
       try {
         const accountsData = await getAccounts(receiver)
-        if (accountsData.accounts.length > 0) {
+        const receiverAccount = accountsData.accounts.find((receiverAccount) => receiverAccount.token.id === account.token.id)
+        if (receiverAccount) {
           onSubmit({
-            amount: selectedAmount,
-            to: receiver,
+            amount: selectedAmount.toString(),
+            to: receiverAccount,
             fee: getFee()
           })
         } else {
@@ -261,7 +273,7 @@ function TransactionForm ({
       return (
         <div className={classes.feeWrapper}>
           <p className={classes.fee}>
-            Fee {Number(getFee()).toFixed(6)} {account.tokenSymbol}
+            Fee {Number(getFee()).toFixed(6)} {account.token.symbol}
           </p>
         </div>
       )
@@ -271,11 +283,11 @@ function TransactionForm ({
   return (
     <section className={classes.transaction}>
       <div className={classes.token}>
-        <p className={classes.tokenName}>{account.tokenName}</p>
+        <p className={classes.tokenName}>{account.token.name}</p>
         {
           (showInFiat)
             ? <p><span>{preferredCurrency}</span> <span>{getBalanceinFiat().toFixed(2)}</span></p>
-            : <p><span>{account.tokenSymbol}</span> <span>{getAccountBalance().toFixed(2)}</span></p>
+            : <p><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
         }
       </div>
 
@@ -285,7 +297,7 @@ function TransactionForm ({
       })}
       >
         <div className={classes.amount}>
-          <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.tokenSymbol}</p>
+          <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
           <input
             className={classes.amountInput}
             type='number'
@@ -301,7 +313,7 @@ function TransactionForm ({
               src={swapIcon}
               alt='Swap Icon'
             />
-            <p>{(showInFiat) ? account.tokenSymbol : preferredCurrency}</p>
+            <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
           </button>
         </div>
       </div>
