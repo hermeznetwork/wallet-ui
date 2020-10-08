@@ -43,7 +43,39 @@ function Transaction ({
 
   React.useEffect(() => {
     if (transactionType === 'deposit' && tokensTask.status === 'successful') {
-      onLoadMetaMaskTokens(tokensTask.data.tokens)
+      const tokens = [...tokensTask.data.tokens]
+      // TODO: Remove once the hermez-node is ready
+      tokens.push({
+        USD: 1.5,
+        decimals: 18,
+        ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB',
+        ethereumBlockNum: 539847538,
+        fiatUpdate: null,
+        id: 1,
+        name: 'Token',
+        symbol: 'TKN'
+      })
+      tokens.push({
+        USD: 2,
+        decimals: 18,
+        ethereumAddress: '0x3619DbE27d7c1e7E91aA738697Ae7Bc5FC3eACA5',
+        ethereumBlockNum: 539847538,
+        fiatUpdate: null,
+        id: 2,
+        name: 'Token 1',
+        symbol: 'TKN1'
+      })
+      tokens.push({
+        USD: 350,
+        decimals: 18,
+        ethereumAddress: '0x0000000000000000000000000000000000000000',
+        ethereumBlockNum: 539847538,
+        fiatUpdate: null,
+        id: 0,
+        name: 'Ethereum',
+        symbol: 'Eth'
+      })
+      onLoadMetaMaskTokens(tokens)
     }
   }, [transactionType, tokensTask, onLoadMetaMaskTokens])
 

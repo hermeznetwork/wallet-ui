@@ -5,6 +5,7 @@ import ethers from 'ethers'
 
 import { feeFactors } from './fee-factors'
 import { bufToHex } from './utils'
+import { getAccountIndex } from './addresses'
 import { fix2Float } from './float16'
 import { getPoolTransactions } from './tx-pool'
 
@@ -22,11 +23,8 @@ async function encodeTransaction (transaction) {
   const provider = new ethers.providers.Web3Provider(window.ethereum)
   encodedTransaction.chainId = await provider.getNetwork().chainId
 
-  const fromColonIndex = transaction.fromAccountIndex.lastIndexOf(':') + 1
-  encodedTransaction.fromAccountIndex = transaction.fromAccountIndex.substring(fromColonIndex)
-
-  const toColonIndex = transaction.toAccountIndex.lastIndexOf(':') + 1
-  encodedTransaction.toAccountIndex = transaction.toAccountIndex.substring(toColonIndex)
+  encodedTransaction.fromAccountIndex = getAccountIndex(transaction.fromAccountIndex)
+  encodedTransaction.toAccountIndex = getAccountIndex(transaction.toAccountIndex)
 
   return encodedTransaction
 }

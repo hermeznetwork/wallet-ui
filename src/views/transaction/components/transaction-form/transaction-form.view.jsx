@@ -196,7 +196,9 @@ function TransactionForm ({
       }
     } else {
       onSubmit({
-        amount: selectedAmount
+        amount: selectedAmount.toString(),
+        to: {},
+        fee: 0
       })
     }
   }
