@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-To set up a local blockcain with the Hermez smart contracts for testing, follow these steps:
+To set up a local blockchain with the Hermez smart contracts for testing, follow these steps:
 
 1. Clone https://github.com/hermeznetwork/contracts
 2. `cd contracts && npm i`
