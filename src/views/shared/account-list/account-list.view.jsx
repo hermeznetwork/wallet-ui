@@ -31,7 +31,7 @@ function AccountList ({
 
         return (
           <div
-            key={account.accountIndex}
+            key={account.token.id}
             className={
               clsx({
                 [classes.account]: true,

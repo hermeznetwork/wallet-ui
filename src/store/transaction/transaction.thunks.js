@@ -3,6 +3,7 @@ import ethers from 'ethers'
 import * as transactionActions from './transaction.actions'
 import * as rollupApi from '../../apis/rollup'
 import { ETHER_TOKEN_ID } from '../../constants'
+import { getEthereumAddress } from '../../utils/addresses'
 
 /**
  * Fetches all registered tokens in Hermez.
@@ -51,7 +52,7 @@ function fetchMetaMaskTokens (hermezTokens) {
       }]
       const balancePromises = []
       for (const token of hermezTokens) {
-        if (token.tokenId === ETHER_TOKEN_ID) {
+        if (token.id === ETHER_TOKEN_ID) {
           // tokenID 0 is for Ether
           const signer = provider.getSigner()
           balancePromises.push(
@@ -59,9 +60,9 @@ function fetchMetaMaskTokens (hermezTokens) {
           )
         } else {
           // For ERC 20 tokens, check the balance from the smart contract
-          const contract = new ethers.Contract(token.ethAddr, partialERC20ABI, provider)
+          const contract = new ethers.Contract(token.ethereumAddress, partialERC20ABI, provider)
           balancePromises.push(
-            contract.balanceOf(metaMaskWalletTask.data.hermezEthereumAddress)
+            contract.balanceOf(getEthereumAddress(metaMaskWalletTask.data.hermezEthereumAddress))
               // We can ignore if a call to the contract of a specific token fails.
               .catch(() => {})
           )
@@ -73,11 +74,11 @@ function fetchMetaMaskTokens (hermezTokens) {
           .map((tokenBalance, index) => {
             const tokenData = hermezTokens[index]
             return {
-              balance: Number(tokenBalance) / (Math.pow(10, tokenData.decimals)),
+              balance: tokenBalance,
               token: tokenData
             }
           })
-          .filter((account) => Number(account.balance) > 0)
+          .filter((account) => account.balance > 0)
 
         if (balances.length === 0) {
           dispatch(transactionActions.loadMetaMaskTokensFailure('You don\'t have any ERC 20 tokens in your MetaMask account that are registered in Hermez.'))

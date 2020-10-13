@@ -6,7 +6,7 @@ import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getTokenAmountBigInt } from '../../../../utils/currencies'
 import { floorFix2Float, float2Fix } from '../../../../utils/float16'
 import { generateL2Transaction } from '../../../../utils/tx-utils'
-import { send } from '../../../../utils/tx'
+import { deposit, send } from '../../../../utils/tx'
 
 function TransactionOverview ({
   metaMaskWallet,
@@ -58,9 +58,9 @@ function TransactionOverview ({
   }
 
   /**
-   * Prepares the transaction and sends it
+   * Prepares an L2 transfer object, signs it and send it
    */
-  async function handleClickTxButton () {
+  async function sendTransfer () {
     const { transaction, encodedTransaction } = await generateL2Transaction({
       from: account.accountIndex,
       to: to.accountIndex,
@@ -70,11 +70,25 @@ function TransactionOverview ({
     }, metaMaskWallet.publicKeyCompressedHex, account.token)
     metaMaskWallet.signTransaction(transaction, encodedTransaction)
 
+    return send(transaction, metaMaskWallet.publicKeyCompressedHex)
+  }
+
+  /**
+   * Prepares the transaction and sends it
+   */
+  async function handleClickTxButton () {
     switch (type) {
       case 'deposit':
+        deposit(getAmountInBigInt(), metaMaskWallet.hermezEthereumAddress, account.token, metaMaskWallet.publicKeyCompressedHex)
+          .then((res) => {
+            console.log(res)
+          })
+          .catch((error) => {
+            console.log(error)
+          })
         return 'Deposit'
       case 'transfer':
-        send(transaction, metaMaskWallet.publicKeyCompressedHex)
+        sendTransfer()
           .then((res) => {
             console.log(res)
             onNavigateToTransactionConfirmation()
@@ -94,7 +108,7 @@ function TransactionOverview ({
    * If the transaction has a receiver, display that information.
    */
   function renderTo () {
-    if (to) {
+    if (Object.keys(to).length !== 0) {
       return (
         <div className={classes.row}>
           <p className={classes.rowName}>To</p>
@@ -138,7 +152,7 @@ function TransactionOverview ({
           <p className={classes.rowName}>From</p>
           <div className={classes.rowValues}>
             <p className={classes.valueTop}>My Hermez Address</p>
-            <p className={classes.valueBottom}>{getPartiallyHiddenHermezAddress(account.hezEthereumAddress)}</p>
+            <p className={classes.valueBottom}>{getPartiallyHiddenHermezAddress(metaMaskWallet.hermezEthereumAddress)}</p>
           </div>
         </div>
         {renderTo()}
