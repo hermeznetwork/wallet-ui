@@ -15,7 +15,7 @@ function Snackbar ({ message, onClose }) {
     return () => {
       clearTimeout(closingTimeoutId)
     }
-  }, [onClose])
+  }, [closingTimeoutId, onClose])
 
   return (
     <div className={classes.root}>
