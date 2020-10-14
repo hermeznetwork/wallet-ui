@@ -10,9 +10,7 @@ function Snackbar ({ message, onClose }) {
   const [closingTimeoutId, setClosingTimeoutId] = useState()
 
   React.useEffect(() => {
-    setClosingTimeoutId(
-      setTimeout(onClose, SNACKBAR_AUTO_HIDE_DURATION)
-    )
+    setClosingTimeoutId(setTimeout(onClose, SNACKBAR_AUTO_HIDE_DURATION))
 
     return () => {
       clearTimeout(closingTimeoutId)
