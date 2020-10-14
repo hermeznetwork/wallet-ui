@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 
 import useSettingsStyles from './settings.styles'
-import { changeHeader } from '../../store/global/global.actions'
+import { changeHeader, openSnackbar } from '../../store/global/global.actions'
 import { changePreferredCurrency, disconnectMetaMaskWallet } from '../../store/settings/settings.thunks'
 import Container from '../shared/container/container.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -18,18 +18,17 @@ import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import { ReactComponent as CopyIcon } from '../../images/icons/copy.svg'
 import Button from '../shared/button/button.view'
 import { copyToClipboard } from '../../utils/dom'
-import Snackbar from '../shared/snackbar/snackbar.view'
 
 function Settings ({
   metaMaskWalletTask,
   preferredCurrency,
   onChangeHeader,
   onChangePreferredCurrency,
-  onDisconnectWallet
+  onDisconnectWallet,
+  onOpenSnackbar
 }) {
   const theme = useTheme()
   const classes = useSettingsStyles()
-  const [showAddressCopiedSnackbar, setShowAddressCopiedSnackbar] = React.useState(false)
 
   React.useEffect(() => {
     onChangeHeader()
@@ -37,11 +36,7 @@ function Settings ({
 
   function handleEthereumAddressClick (hermezEthereumAddress) {
     copyToClipboard(hermezEthereumAddress)
-    setShowAddressCopiedSnackbar(true)
-  }
-
-  function handleAddressCopiedSnackbarClose () {
-    setShowAddressCopiedSnackbar(false)
+    onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
 
   function handleOnDisconnectWallet () {
@@ -119,11 +114,6 @@ function Settings ({
           </button>
         </section>
       </Container>
-      <Snackbar
-        show={showAddressCopiedSnackbar}
-        message='The Hermez address has been copied to the clipboard!'
-        onClose={handleAddressCopiedSnackbarClose}
-      />
     </div>
   )
 }
@@ -141,7 +131,8 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: (tokenName) =>
     dispatch(changeHeader({ type: 'page', data: { title: 'Settings', previousRoute: '/' } })),
   onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
-  onDisconnectWallet: () => dispatch(disconnectMetaMaskWallet())
+  onDisconnectWallet: () => dispatch(disconnectMetaMaskWallet()),
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Settings))

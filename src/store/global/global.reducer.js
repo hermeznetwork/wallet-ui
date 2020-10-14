@@ -10,6 +10,9 @@ const initialGlobalState = {
   },
   fiatExchangeRatesTask: {
     status: 'pending'
+  },
+  snackbar: {
+    status: 'closed'
   }
 }
 
@@ -78,6 +81,23 @@ function globalReducer (state = initialGlobalState, action) {
         fiatExchangeRatesTask: {
           status: 'failure',
           error: action.error
+        }
+      }
+    }
+    case globalActionTypes.OPEN_SNACKBAR: {
+      return {
+        ...state,
+        snackbar: {
+          status: 'open',
+          message: action.message
+        }
+      }
+    }
+    case globalActionTypes.CLOSE_SNACKBAR: {
+      return {
+        ...state,
+        snackbar: {
+          status: 'closed'
         }
       }
     }

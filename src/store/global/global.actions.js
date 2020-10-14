@@ -12,7 +12,9 @@ export const globalActionTypes = {
   LOAD_CURRENT_BATCH_SUCCESS: '[GLOBAL] LOAD CURRENT BATCH SUCCESS',
   LOAD_CURRENT_BATCH_FAILURE: '[GLOBAL] LOAD CURRENT BATCH FAILURE',
   ADD_POOL_TRANSACTION: '[GLOBAL] ADD POOL TRANSACTION',
-  REMOVE_POOL_TRANSACTION: '[GLOBAL] REMOVE POOL TRANSACTION'
+  REMOVE_POOL_TRANSACTION: '[GLOBAL] REMOVE POOL TRANSACTION',
+  OPEN_SNACKBAR: '[GLOBAL] OPEN SNACKBAR',
+  CLOSE_SNACKBAR: '[GLOBAL] CLOSE SNACKBAR'
 }
 
 function changeHeader (header) {
@@ -71,6 +73,19 @@ function loadFiatExchangeRatesFailure (error) {
   }
 }
 
+function openSnackbar (message) {
+  return {
+    type: globalActionTypes.OPEN_SNACKBAR,
+    message
+  }
+}
+
+function closeSnackbar () {
+  return {
+    type: globalActionTypes.CLOSE_SNACKBAR
+  }
+}
+
 export {
   changeHeader,
   changeRedirectRoute,
@@ -79,5 +94,7 @@ export {
   loadConfigFailure,
   loadFiatExchangeRates,
   loadFiatExchangeRatesSuccess,
-  loadFiatExchangeRatesFailure
+  loadFiatExchangeRatesFailure,
+  openSnackbar,
+  closeSnackbar
 }
