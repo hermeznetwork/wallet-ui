@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 
 import Container from '../container/container.view'
@@ -7,15 +7,14 @@ import { SNACKBAR_AUTO_HIDE_DURATION } from '../../../constants'
 
 function Snackbar ({ message, onClose }) {
   const classes = useSnackbarStyles()
-  const [closingTimeoutId, setClosingTimeoutId] = useState()
 
   React.useEffect(() => {
-    setClosingTimeoutId(setTimeout(onClose, SNACKBAR_AUTO_HIDE_DURATION))
+    const closingTimeoutId = setTimeout(onClose, SNACKBAR_AUTO_HIDE_DURATION)
 
     return () => {
       clearTimeout(closingTimeoutId)
     }
-  }, [closingTimeoutId, onClose])
+  }, [onClose])
 
   return (
     <div className={classes.root}>
