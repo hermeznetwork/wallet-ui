@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import useMainHeaderStyles from './main-header.styles'
 import hermezLogo from '../../../images/hermez-logo.svg'
 import userAccountIcon from '../../../images/icons/user-account.svg'
+import qrCodeIcon from '../../../images/icons/qr-code.svg'
 import Container from '../container/container.view'
 
 function MainHeader () {
@@ -12,8 +13,8 @@ function MainHeader () {
   return (
     <header className={classes.root}>
       <Container disableVerticalGutters>
-        <Link to='/settings' className={classes.link}>
-          <img src={userAccountIcon} alt='Settings' className={classes.myAccountIcon} />
+        <Link to='/settings' className={`${classes.link} ${classes.settingsLink}`}>
+          <img src={userAccountIcon} alt='Settings' className={classes.settingsIcon} />
           <p className={classes.linkText}>Settings</p>
         </Link>
         <div className={classes.headerContent}>
@@ -26,6 +27,10 @@ function MainHeader () {
             </Link>
           </h1>
         </div>
+        <Link to='/my-address' className={`${classes.link} ${classes.addressLink}`}>
+          <p className={classes.linkText}>My address</p>
+          <img src={qrCodeIcon} alt='Settings' className={classes.addressIcon} />
+        </Link>
       </Container>
     </header>
   )
