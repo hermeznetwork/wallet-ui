@@ -10,7 +10,7 @@ import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions } from '.
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { CurrencySymbol, getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
@@ -87,7 +87,7 @@ function AccountDetails ({
                 return (
                   <div>
                     <h1 className={classes.fiatBalance}>
-                      {preferredCurrency} {getAccountBalance(accountTask.data)}
+                      {CurrencySymbol[preferredCurrency].symbol} {getAccountBalance(accountTask.data)}
                     </h1>
                     <p className={classes.tokenBalance}>
                       {getFixedTokenAmount(accountTask.data.balance, accountTask.data.token.decimals)} {accountTask.data.token.symbol}

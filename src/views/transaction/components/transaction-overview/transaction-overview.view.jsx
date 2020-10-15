@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useTheme } from 'react-jss'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
@@ -7,6 +8,8 @@ import { CurrencySymbol, getTokenAmountInPreferredCurrency, getTokenAmountBigInt
 import { floorFix2Float, float2Fix } from '../../../../utils/float16'
 import { generateL2Transaction } from '../../../../utils/tx-utils'
 import { deposit, send } from '../../../../utils/tx'
+import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
+import Container from '../../../shared/container/container.view'
 
 function TransactionOverview ({
   metaMaskWallet,
@@ -19,6 +22,7 @@ function TransactionOverview ({
   fiatExchangeRates,
   onNavigateToTransactionConfirmation
 }) {
+  const theme = useTheme()
   const classes = useTransactionOverviewStyles()
 
   /**
@@ -104,61 +108,37 @@ function TransactionOverview ({
     }
   }
 
-  /**
-   * If the transaction has a receiver, display that information.
-   */
-  function renderTo () {
-    if (Object.keys(to).length !== 0) {
-      return (
-        <div className={classes.row}>
-          <p className={classes.rowName}>To</p>
-          <div className={classes.rowValues}>
-            <p className={classes.valueTop}>{getPartiallyHiddenHermezAddress(to.hezEthereumAddress)}</p>
-          </div>
-        </div>
-      )
-    } else {
-      return <></>
-    }
-  }
-
-  /**
-   * If it's a Layer 2 transaction, show the fee.
-   */
-  function renderFee () {
-    if (fee) {
-      return (
-        <div className={classes.row}>
-          <p className={classes.rowName}>Fee</p>
-          <div className={classes.rowValues}>
-            <p className={classes.valueTop}>{CurrencySymbol[preferredCurrency].symbol} {getAmountinFiat(fee)}</p>
-            <p className={classes.valueBottom}>{fee} {account.token.symbol}</p>
-          </div>
-        </div>
-      )
-    } else {
-      return <></>
-    }
-  }
-
   return (
-    <div className={classes.wrapper}>
-      <div className={classes.amountWrapper}>
-        <p className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol} {getAmountinFiat(amount).toFixed(2)}</p>
-        <p className={classes.amountToken}>{amount} {account.token.symbol}</p>
+    <div className={classes.root}>
+      <div className={classes.amountsSection}>
+        <Container backgroundColor={theme.palette.primary.main}>
+          <section className={classes.section}>
+            <h1 className={classes.fiatAmount}>
+              {CurrencySymbol[preferredCurrency].symbol} {getAmountinFiat(amount).toFixed(2)}
+            </h1>
+            <p className={classes.tokenAmount}>
+              {amount} {account.token.symbol}
+            </p>
+          </section>
+        </Container>
       </div>
-      <div className={classes.txTable}>
-        <div className={classes.row}>
-          <p className={classes.rowName}>From</p>
-          <div className={classes.rowValues}>
-            <p className={classes.valueTop}>My Hermez Address</p>
-            <p className={classes.valueBottom}>{getPartiallyHiddenHermezAddress(metaMaskWallet.hermezEthereumAddress)}</p>
-          </div>
-        </div>
-        {renderTo()}
-        {renderFee()}
+      <div className={classes.transactionInfoSection}>
+        <Container>
+          <section className={classes.section}>
+            <TransactionInfo
+              from={getPartiallyHiddenHermezAddress(metaMaskWallet.hermezEthereumAddress)}
+              to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
+              fee={{
+                fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountinFiat(fee)}`,
+                tokens: `${fee} ${account.token.symbol}`
+              }}
+            />
+            <button className={classes.txButton} onClick={handleClickTxButton}>
+              {getTitle()}
+            </button>
+          </section>
+        </Container>
       </div>
-      <button className={classes.txButton} onClick={handleClickTxButton}>{getTitle()}</button>
     </div>
   )
 }

@@ -1,41 +1,34 @@
 import { createUseStyles } from 'react-jss'
 
-const useTransactionDetailsStyles = createUseStyles({
-  root: {
-    width: '100%'
-  },
-  closeButton: {
-    display: 'flex',
-    marginLeft: 'auto',
-    marginBottom: 16
-  },
-  statusContainer: {
+const useTransactionDetailsStyles = createUseStyles(theme => ({
+  section: {
+    width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'gainsboro',
-    borderRadius: 8,
-    padding: 32
+    alignItems: 'center'
   },
-  transactionInfoContainer: {
-    marginTop: 16,
-    padding: 32,
-    border: '2px solid gainsboro',
-    borderRadius: 8
+  fiatAmount: {
+    fontSize: `${theme.spacing(5)}px`,
+    color: theme.palette.black.light,
+    fontWeight: theme.fontWeights.extraBold,
+    marginBottom: `${theme.spacing(1)}px`
   },
-  transactionInfoList: {
-    listStyle: 'none',
-    paddingLeft: 0
+  tokenAmount: {
+    fontSize: `${theme.spacing(2.5)}px`,
+    color: theme.palette.grey.dark,
+    fontWeight: theme.fontWeights.medium
   },
-  transactionInfoListItem: {
+  link: {
+    fontWeight: theme.fontWeights.bold,
     display: 'flex',
-    padding: 16,
-    borderTop: '1px solid gainsboro'
+    alignItems: 'center',
+    color: theme.palette.grey.main,
+    padding: theme.spacing(1),
+    marginTop: theme.spacing(6)
   },
-  transactionInfoListItemTitle: {
-    width: '20%'
+  linkIcon: {
+    marginRight: theme.spacing(1.5)
   }
-})
+}))
 
 export default useTransactionDetailsStyles
