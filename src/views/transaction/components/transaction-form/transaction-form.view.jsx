@@ -84,7 +84,7 @@ function TransactionForm ({
   function isContinueDisabled () {
     const amountValid = isAmountInvalid === false && amount > 0
     const receiverValid = isReceiverInvalid === false
-    if (type === 'deposit' && amountValid) {
+    if (type !== 'transfer' && amountValid) {
       return false
     } else if (amountValid && receiverValid) {
       return false
@@ -177,7 +177,7 @@ function TransactionForm ({
   async function handleContinueButton () {
     const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
 
-    if (type !== 'deposit') {
+    if (type === 'transfer') {
       try {
         const accountsData = await getAccounts(receiver)
         const receiverAccount = accountsData.accounts.find((receiverAccount) => receiverAccount.token.id === account.token.id)
@@ -194,11 +194,17 @@ function TransactionForm ({
         console.log(error)
         setIsReceiverInvalid(true)
       }
-    } else {
+    } else if (type === 'deposit') {
       onSubmit({
         amount: selectedAmount.toString(),
         to: {},
         fee: 0
+      })
+    } else if (type === 'withdraw') {
+      onSubmit({
+        amount: selectedAmount.toString(),
+        to: {},
+        fee: getFee()
       })
     }
   }
@@ -209,7 +215,7 @@ function TransactionForm ({
    * @returns {ReactElement} The receiver input field
    */
   function renderReceiver () {
-    if (type !== 'deposit') {
+    if (type === 'transfer') {
       return (
         <div className={classes.receiverWrapper}>
           <div className={classes.receiverInputWrapper}>
@@ -266,7 +272,7 @@ function TransactionForm ({
   }
 
   /**
-   * Renders the fee selector if its a Layer 2 transaction.
+   * Renders the fee selector if it' s a Layer 2 transaction.
    *
    * @returns {ReactElement} The fee selector component
    */

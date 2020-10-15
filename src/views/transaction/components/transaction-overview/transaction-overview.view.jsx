@@ -63,11 +63,12 @@ function TransactionOverview ({
   async function sendTransfer () {
     const { transaction, encodedTransaction } = await generateL2Transaction({
       from: account.accountIndex,
-      to: to.accountIndex,
+      to: type === 'transfer' ? to.accountIndex : null,
       amount: float2Fix(floorFix2Float(getAmountInBigInt())),
       fee,
       nonce: account.nonce
     }, metaMaskWallet.publicKeyCompressedHex, account.token)
+    console.log(encodedTransaction)
     metaMaskWallet.signTransaction(transaction, encodedTransaction)
 
     return send(transaction, metaMaskWallet.publicKeyCompressedHex)
@@ -77,30 +78,24 @@ function TransactionOverview ({
    * Prepares the transaction and sends it
    */
   async function handleClickTxButton () {
-    switch (type) {
-      case 'deposit':
-        deposit(getAmountInBigInt(), metaMaskWallet.hermezEthereumAddress, account.token, metaMaskWallet.publicKeyCompressedHex)
-          .then((res) => {
-            console.log(res)
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-        return 'Deposit'
-      case 'transfer':
-        sendTransfer()
-          .then((res) => {
-            console.log(res)
-            onNavigateToTransactionConfirmation()
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-        break
-      case 'withdraw':
-        return 'Withdraw'
-      default:
-        return ''
+    if (type === 'deposit') {
+      deposit(getAmountInBigInt(), metaMaskWallet.hermezEthereumAddress, account.token, metaMaskWallet.publicKeyCompressedHex)
+        .then((res) => {
+          console.log(res)
+          onNavigateToTransactionConfirmation(type)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    } else {
+      sendTransfer()
+        .then((res) => {
+          console.log(res)
+          onNavigateToTransactionConfirmation(type)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     }
   }
 

@@ -7,16 +7,17 @@ import sendIcon from '../../../images/icons/send.svg'
 import depositIcon from '../../../images/icons/deposit.svg'
 import withdrawIcon from '../../../images/icons/withdraw.svg'
 
-function TransactionActions ({ hideWithdraw }) {
+function TransactionActions ({ hideWithdraw, tokenId }) {
   const classes = useTransactionActionsStyles()
+  const queryParam = tokenId ? `?tokenId=${tokenId}` : ''
 
   return (
     <div className={classes.root}>
-      <Link to='/transfer' className={classes.button}>
+      <Link to={`/transfer${queryParam}`} className={classes.button}>
         <img src={sendIcon} alt='Send' />
         <p className={classes.buttonText}>Send</p>
       </Link>
-      <Link to='/deposit' className={classes.button}>
+      <Link to={`/deposit${queryParam}`} className={classes.button}>
         <img src={depositIcon} alt='Deposit' />
         <p className={classes.buttonText}>Deposit</p>
       </Link>
@@ -24,7 +25,7 @@ function TransactionActions ({ hideWithdraw }) {
         hideWithdraw
           ? <></>
           : (
-            <Link to='/withdraw' className={classes.button}>
+            <Link to={`/withdraw${queryParam}`} className={classes.button}>
               <img src={withdrawIcon} alt='Deposit' />
               <p className={classes.buttonText}>Withdraw</p>
             </Link>
@@ -35,7 +36,8 @@ function TransactionActions ({ hideWithdraw }) {
 }
 
 TransactionActions.propTypes = {
-  hideWithdraw: PropTypes.bool
+  hideWithdraw: PropTypes.bool,
+  tokenId: PropTypes.number
 }
 
 export default TransactionActions

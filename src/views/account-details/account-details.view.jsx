@@ -14,6 +14,7 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../ut
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
+import ExitList from '../shared/exit-list/exit-list.view'
 
 function AccountDetails ({
   preferredCurrency,
@@ -67,6 +68,23 @@ function AccountDetails ({
     return fiatBalance.toFixed(2)
   }
 
+  function getPendingExits () {
+    console.log(poolTransactionsTask.data.filter((transaction) => transaction.type === 'Exit'))
+    return poolTransactionsTask.data.filter((transaction) => transaction.type === 'Exit')
+  }
+
+  function getPendingTransactions () {
+    return poolTransactionsTask.data.filter((transaction) => transaction.type !== 'Exit')
+  }
+
+  function getHistoryExits () {
+    return historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === 'Exit')
+  }
+
+  function getHistoryTransactions () {
+    return historyTransactionsTask.data.transactions.filter((transaction) => transaction.type !== 'Exit')
+  }
+
   function handleTransactionClick (transaction) {
     onNavigateToTransactionDetails(accountIndex, transaction.id)
   }
@@ -92,6 +110,7 @@ function AccountDetails ({
                     <p className={classes.tokenBalance}>
                       {getFixedTokenAmount(accountTask.data.balance, accountTask.data.token.decimals)} {accountTask.data.token.symbol}
                     </p>
+                    <TransactionActions tokenId={accountTask.data.token.id} />
                   </div>
                 )
               }
@@ -100,7 +119,6 @@ function AccountDetails ({
               }
             }
           })()}
-          <TransactionActions />
         </section>
       </Container>
       <Container>
@@ -139,8 +157,26 @@ function AccountDetails ({
             ) {
               return (
                 <>
+                  <ExitList
+                    transactions={getPendingExits()}
+                    fiatExchangeRates={
+                      fiatExchangeRatesTask.status === 'successful'
+                        ? fiatExchangeRatesTask.data
+                        : undefined
+                    }
+                    preferredCurrency={preferredCurrency}
+                  />
+                  <ExitList
+                    transactions={getHistoryExits()}
+                    fiatExchangeRates={
+                      fiatExchangeRatesTask.status === 'successful'
+                        ? fiatExchangeRatesTask.data
+                        : undefined
+                    }
+                    preferredCurrency={preferredCurrency}
+                  />
                   <TransactionList
-                    transactions={poolTransactionsTask.data}
+                    transactions={getPendingTransactions()}
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
                         ? fiatExchangeRatesTask.data
@@ -150,7 +186,7 @@ function AccountDetails ({
                     onTransactionClick={handleTransactionClick}
                   />
                   <TransactionList
-                    transactions={historyTransactionsTask.data.transactions}
+                    transactions={getHistoryTransactions()}
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
                         ? fiatExchangeRatesTask.data

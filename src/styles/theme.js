@@ -18,7 +18,11 @@ const theme = {
       dark: '#7a7c89'
     },
     red: '#ff4b40',
-    orange: '#ffa600'
+    orange: {
+      light: 'rgba(242, 153, 74, 0.1)',
+      main: '#ffa600',
+      dark: '#d8853b'
+    }
   },
   fontWeights: {
     normal: '400',
