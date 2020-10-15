@@ -13,8 +13,7 @@ import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { copyToClipboard } from '../../utils/dom'
-import Snackbar from '../shared/snackbar/snackbar.view'
-import { changeHeader } from '../../store/global/global.actions'
+import { changeHeader, openSnackbar } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import Button from '../shared/button/button.view'
@@ -26,11 +25,11 @@ function Home ({
   preferredCurrency,
   onChangeHeader,
   onLoadAccounts,
-  onNavigateToAccountDetails
+  onNavigateToAccountDetails,
+  onOpenSnackbar
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
-  const [showAddressCopiedSnackbar, setShowAddressCopiedSnackbar] = React.useState(false)
 
   React.useEffect(() => {
     onChangeHeader()
@@ -69,11 +68,7 @@ function Home ({
 
   function handleEthereumAddressClick (hermezEthereumAddress) {
     copyToClipboard(hermezEthereumAddress)
-    setShowAddressCopiedSnackbar(true)
-  }
-
-  function handleAddressCopiedSnackbarClose () {
-    setShowAddressCopiedSnackbar(false)
+    onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
 
   return (
@@ -152,11 +147,6 @@ function Home ({
           })()}
         </section>
       </Container>
-      <Snackbar
-        show={showAddressCopiedSnackbar}
-        message='The Hermez address has been copied to the clipboard!'
-        onClose={handleAddressCopiedSnackbarClose}
-      />
     </div>
   )
 }
@@ -182,7 +172,8 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadAccounts: (hermezEthereumAddress) =>
     dispatch(fetchAccounts(hermezEthereumAddress)),
   onNavigateToAccountDetails: (accountIndex) =>
-    dispatch(push(`/accounts/${accountIndex}`))
+    dispatch(push(`/accounts/${accountIndex}`)),
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))

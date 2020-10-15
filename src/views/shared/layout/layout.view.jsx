@@ -6,8 +6,10 @@ import useLayoutStyles from './layout.styles'
 import MainHeader from '../main-header/main-header.view'
 import Main from '../main/main.view'
 import PageHeader from '../page-header/page-header.view'
+import Snackbar from '../snackbar/snackbar.view'
+import { closeSnackbar } from '../../../store/global/global.actions'
 
-function Layout ({ header, children }) {
+function Layout ({ header, snackbar, onCloseSnackbar, children }) {
   const classes = useLayoutStyles()
 
   return (
@@ -25,6 +27,16 @@ function Layout ({ header, children }) {
       <Main>
         {children}
       </Main>
+      {
+        snackbar.status === 'open'
+          ? (
+            <Snackbar
+              message={snackbar.message}
+              onClose={onCloseSnackbar}
+            />
+          )
+          : <></>
+      }
     </div>
   )
 }
@@ -34,7 +46,12 @@ Layout.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  header: state.global.header
+  header: state.global.header,
+  snackbar: state.global.snackbar
 })
 
-export default connect(mapStateToProps)(Layout)
+const mapDispatchToProps = (dispatch) => ({
+  onCloseSnackbar: () => dispatch(closeSnackbar())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Layout)
