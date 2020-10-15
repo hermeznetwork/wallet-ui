@@ -13,6 +13,7 @@ import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionInfo from '../shared/transaction-info/transaction-info.view'
 import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
+import { beautifyTransactionState } from '../../utils/tx'
 
 function TransactionDetails ({
   transactionTask,
@@ -93,7 +94,7 @@ function TransactionDetails ({
               case 'successful': {
                 return (
                   <TransactionInfo
-                    status={transactionTask.data.state}
+                    status={beautifyTransactionState(transactionTask.data.state)}
                     from={transactionTask.data.fromAccountIndex}
                     to={transactionTask.data.toAccountIndex}
                     date={new Date(transactionTask.data.timestamp).toLocaleString()}
