@@ -27,7 +27,10 @@ const useTransactionDetailsStyles = createUseStyles(theme => ({
     marginTop: theme.spacing(6)
   },
   linkIcon: {
-    marginRight: theme.spacing(1.5)
+    marginRight: theme.spacing(1.5),
+    '& > path': {
+      fill: theme.palette.grey.main
+    }
   }
 }))
 

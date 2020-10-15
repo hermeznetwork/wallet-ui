@@ -12,7 +12,7 @@ import { CurrencySymbol, getFixedTokenAmount, getTokenAmountInPreferredCurrency 
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionInfo from '../shared/transaction-info/transaction-info.view'
-import openInNewTabIcon from '../../images/icons/open-in-new-tab.svg'
+import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
 
 function TransactionDetails ({
   transactionTask,
@@ -114,11 +114,7 @@ function TransactionDetails ({
                   target='__blank'
                   rel='noopener noreferrer'
                 >
-                  <img
-                    src={openInNewTabIcon}
-                    alt='View in batch explorer'
-                    className={classes.linkIcon}
-                  />
+                  <OpenInNewTabIcon className={classes.linkIcon} />
                   View in Explorer
                 </a>
               )
