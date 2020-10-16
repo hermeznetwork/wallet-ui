@@ -68,7 +68,6 @@ function TransactionOverview ({
       fee,
       nonce: account.nonce
     }, metaMaskWallet.publicKeyCompressedHex, account.token)
-    console.log(encodedTransaction)
     metaMaskWallet.signTransaction(transaction, encodedTransaction)
 
     return send(transaction, metaMaskWallet.publicKeyCompressedHex)

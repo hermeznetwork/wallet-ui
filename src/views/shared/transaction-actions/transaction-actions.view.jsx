@@ -9,15 +9,15 @@ import withdrawIcon from '../../../images/icons/withdraw.svg'
 
 function TransactionActions ({ hideWithdraw, tokenId }) {
   const classes = useTransactionActionsStyles()
-  const queryParam = tokenId ? `?tokenId=${tokenId}` : ''
+  const queryString = tokenId ? `?tokenId=${tokenId}` : ''
 
   return (
     <div className={classes.root}>
-      <Link to={`/transfer${queryParam}`} className={classes.button}>
+      <Link to={`/transfer${queryString}`} className={classes.button}>
         <img src={sendIcon} alt='Send' />
         <p className={classes.buttonText}>Send</p>
       </Link>
-      <Link to={`/deposit${queryParam}`} className={classes.button}>
+      <Link to={`/deposit${queryString}`} className={classes.button}>
         <img src={depositIcon} alt='Deposit' />
         <p className={classes.buttonText}>Deposit</p>
       </Link>
@@ -25,7 +25,7 @@ function TransactionActions ({ hideWithdraw, tokenId }) {
         hideWithdraw
           ? <></>
           : (
-            <Link to={`/withdraw${queryParam}`} className={classes.button}>
+            <Link to={`/withdraw${queryString}`} className={classes.button}>
               <img src={withdrawIcon} alt='Deposit' />
               <p className={classes.buttonText}>Withdraw</p>
             </Link>

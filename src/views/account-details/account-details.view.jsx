@@ -69,7 +69,6 @@ function AccountDetails ({
   }
 
   function getPendingExits () {
-    console.log(poolTransactionsTask.data.filter((transaction) => transaction.type === 'Exit'))
     return poolTransactionsTask.data.filter((transaction) => transaction.type === 'Exit')
   }
 

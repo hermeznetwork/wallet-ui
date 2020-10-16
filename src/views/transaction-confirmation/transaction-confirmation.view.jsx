@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import useTransactionConfirmationStyles from './transaction-confirmation.styles'
-import handsTransaction from '../../images/transaction-confirmation.png'
+import transactionConfirmation from '../../images/transaction-confirmation.png'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 
 function TransactionConfirmation ({ transactionType }) {
@@ -26,7 +26,7 @@ function TransactionConfirmation ({ transactionType }) {
     <section className={classes.wrapper}>
       <img
         className={classes.image}
-        src={handsTransaction}
+        src={transactionConfirmation}
         alt='Hermez transaction confirmed'
       />
       <p className={classes.text}>{getExplanation()}</p>
