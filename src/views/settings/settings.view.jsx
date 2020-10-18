@@ -60,8 +60,7 @@ function Settings ({
                     onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
                   />
                 </>
-              )
-              : <></>
+              ) : <></>
           }
         </section>
       </Container>
