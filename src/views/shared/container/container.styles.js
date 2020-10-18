@@ -2,11 +2,14 @@ import { createUseStyles } from 'react-jss'
 
 const useContainerStyles = createUseStyles(theme => ({
   root: {
+    flex: ({ fullHeight }) => fullHeight ? 1 : 'auto',
     width: '100%',
     background: ({ backgroundColor }) => backgroundColor || theme.white
   },
   wrapper: {
+    position: 'relative',
     width: '100%',
+    height: '100%',
     display: 'flex',
     maxWidth: 700,
     margin: 'auto',

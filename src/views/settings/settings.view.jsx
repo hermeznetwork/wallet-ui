@@ -31,7 +31,7 @@ function Settings ({
   const classes = useSettingsStyles()
 
   React.useEffect(() => {
-    onChangeHeader()
+    onChangeHeader({ type: 'page', data: { title: 'Settings', previousRoute: '/' } })
   }, [onChangeHeader])
 
   function handleEthereumAddressClick (hermezEthereumAddress) {
@@ -128,8 +128,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (tokenName) =>
-    dispatch(changeHeader({ type: 'page', data: { title: 'Settings', previousRoute: '/' } })),
+  onChangeHeader: (headerData) => dispatch(changeHeader(headerData)),
   onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
   onDisconnectWallet: () => dispatch(disconnectMetaMaskWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message))
