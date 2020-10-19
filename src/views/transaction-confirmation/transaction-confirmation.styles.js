@@ -10,8 +10,8 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
     flexDirection: 'column'
   },
   image: {
-    marginTop: `${theme.spacing(15)}px`,
-    width: `${theme.spacing(51)}px`
+    marginTop: `${theme.spacing(13.5)}px`,
+    width: `${theme.spacing(32)}px`
   },
   text: {
     fontSize: `${theme.spacing(3)}px`,
@@ -20,7 +20,7 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
     marginTop: `${theme.spacing(6)}px`
   },
   doneWrapper: {
-    marginTop: `${theme.spacing(25)}px`
+    marginTop: `${theme.spacing(18)}px`
   },
   done: {
     cursor: 'pointer',

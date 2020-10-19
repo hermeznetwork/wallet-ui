@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import clsx from 'clsx'
 
 import { fetchAccounts } from '../../store/home/home.thunks'
@@ -33,9 +33,12 @@ function Transaction ({
   onNavigateToTransactionConfirmation
 }) {
   const classes = useTransactionStyles()
-  const { tokenId } = useParams()
+  const { search } = useLocation()
   const [account, setAccount] = useState()
   const [transaction, setTransaction] = useState()
+
+  const urlParams = new URLSearchParams(search)
+  const tokenId = Number(urlParams.get('tokenId'))
 
   React.useEffect(() => {
     onLoadTokens()
@@ -338,7 +341,7 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadAccounts: (ethereumAddress, tokens) =>
     dispatch(fetchAccounts(ethereumAddress, tokens)),
   onLoadFees: () => dispatch(fetchFees()),
-  onNavigateToTransactionConfirmation: () => dispatch(push('/transaction-confirmation'))
+  onNavigateToTransactionConfirmation: (type) => dispatch(push(`/${type}-confirmation`))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Transaction))

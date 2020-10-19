@@ -31,6 +31,11 @@ const routes = [
     renderLayout: false
   },
   {
+    path: '/withdraw',
+    render: () => <Transaction transactionType='withdraw' />,
+    renderLayout: false
+  },
+  {
     path: '/settings',
     render: () => <Settings />,
     renderLayout: true
@@ -51,8 +56,18 @@ const routes = [
     renderLayout: true
   },
   {
-    path: '/transaction-confirmation',
-    render: () => <TransactionConfirmation />,
+    path: '/deposit-confirmation',
+    render: () => <TransactionConfirmation transactionType='deposit' />,
+    renderLayout: false
+  },
+  {
+    path: '/transfer-confirmation',
+    render: () => <TransactionConfirmation transactionType='transfer' />,
+    renderLayout: false
+  },
+  {
+    path: '/withdraw-confirmation',
+    render: () => <TransactionConfirmation transactionType='withdraw' />,
     renderLayout: false
   }
 ]

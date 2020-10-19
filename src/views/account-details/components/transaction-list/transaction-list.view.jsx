@@ -20,7 +20,7 @@ function TransactionList ({
 
   return (
     <>
-      {transactions.map((transaction, index) => {
+      {transactions.map((transaction) => {
         const fixedTokenAmount = getFixedTokenAmount(
           transaction.amount,
           transaction.token.decimals

@@ -38,7 +38,7 @@ const useAccountListStyles = createUseStyles(theme => ({
   amountInput: {
     border: 0,
     outline: 'none',
-    caretColor: theme.palette.orange,
+    caretColor: theme.palette.orange.main,
     fontSize: `${theme.spacing(6)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
