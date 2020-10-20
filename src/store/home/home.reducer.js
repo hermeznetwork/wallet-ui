@@ -11,9 +11,9 @@ function homeReducer (state = initialHomeState, action) {
     case homeActionTypes.LOAD_ACCOUNTS: {
       return {
         ...state,
-        accountsTask: {
-          status: 'loading'
-        }
+        accountsTask: state.accountsTask.status === 'pending'
+          ? { status: 'loading' }
+          : { status: 'reloading', data: state.accountsTask.data }
       }
     }
     case homeActionTypes.LOAD_ACCOUNTS_SUCCESS: {

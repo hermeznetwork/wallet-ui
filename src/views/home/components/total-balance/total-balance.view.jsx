@@ -10,7 +10,7 @@ function TotalBalance ({ amount, currency }) {
   return (
     <div className={classes.root}>
       <h1 className={classes.amount}>
-        {CurrencySymbol[currency].symbol} {amount?.toFixed(2) || '-'}
+        {CurrencySymbol[currency].symbol} {amount?.toFixed(2) || '--'}
       </h1>
     </div>
   )

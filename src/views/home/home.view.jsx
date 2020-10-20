@@ -88,9 +88,7 @@ function Home ({
           <div className={classes.totalBalance}>
             {(() => {
               switch (accountsTask.status) {
-                case 'loading': {
-                  return <Spinner />
-                }
+                case 'loading':
                 case 'failed': {
                   return (
                     <TotalBalance
@@ -99,6 +97,7 @@ function Home ({
                     />
                   )
                 }
+                case 'reloading':
                 case 'successful': {
                   return (
                     <TotalBalance
@@ -120,12 +119,11 @@ function Home ({
         <section className={classes.section}>
           {(() => {
             switch (accountsTask.status) {
-              case 'loading': {
-                return <Spinner />
-              }
+              case 'loading':
               case 'failed': {
-                return <p>{accountsTask.error}</p>
+                return <Spinner size={theme.spacing(6)} />
               }
+              case 'reloading':
               case 'successful': {
                 return (
                   <AccountList

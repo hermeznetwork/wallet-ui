@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 import useTransactionActionsStyles from './transaction-actions.styles'
-import sendIcon from '../../../images/icons/send.svg'
-import depositIcon from '../../../images/icons/deposit.svg'
-import withdrawIcon from '../../../images/icons/withdraw.svg'
+import { ReactComponent as SendIcon } from '../../../images/icons/send.svg'
+import { ReactComponent as DepositIcon } from '../../../images/icons/deposit.svg'
+import { ReactComponent as WithdrawIcon } from '../../../images/icons/withdraw.svg'
 
 function TransactionActions ({ hideWithdraw, tokenId }) {
   const classes = useTransactionActionsStyles()
@@ -14,11 +14,11 @@ function TransactionActions ({ hideWithdraw, tokenId }) {
   return (
     <div className={classes.root}>
       <Link to={`/transfer${queryString}`} className={classes.button}>
-        <img src={sendIcon} alt='Send' />
+        <SendIcon />
         <p className={classes.buttonText}>Send</p>
       </Link>
       <Link to={`/deposit${queryString}`} className={classes.button}>
-        <img src={depositIcon} alt='Deposit' />
+        <DepositIcon />
         <p className={classes.buttonText}>Deposit</p>
       </Link>
       {
@@ -26,7 +26,7 @@ function TransactionActions ({ hideWithdraw, tokenId }) {
           ? <></>
           : (
             <Link to={`/withdraw${queryString}`} className={classes.button}>
-              <img src={withdrawIcon} alt='Deposit' />
+              <WithdrawIcon />
               <p className={classes.buttonText}>Withdraw</p>
             </Link>
           )
