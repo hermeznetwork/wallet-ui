@@ -8,10 +8,10 @@ import { changeHeader, openSnackbar } from '../../store/global/global.actions'
 import { changePreferredCurrency, disconnectMetaMaskWallet } from '../../store/settings/settings.thunks'
 import Container from '../shared/container/container.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import exchangeIcon from '../../images/icons/exchange.svg'
-import exitIcon from '../../images/icons/exit.svg'
-import openInNewTabIcon from '../../images/icons/open-in-new-tab.svg'
-import powerOffIcon from '../../images/icons/power-off.svg'
+import { ReactComponent as ExchangeIcon } from '../../images/icons/exchange.svg'
+import { ReactComponent as ExitIcon } from '../../images/icons/exit.svg'
+import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
+import { ReactComponent as PowerOffIcon } from '../../images/icons/power-off.svg'
 import { CurrencySymbol } from '../../utils/currencies'
 import PreferredCurrencySelector from './components/preferred-currency-selector/preferred-currency-selector.view'
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
@@ -68,7 +68,7 @@ function Settings ({
         <section className={classes.bottomSection}>
           <div className={classes.settingContainer}>
             <div className={classes.settingHeader}>
-              <img src={exchangeIcon} alt='Currency conversion' />
+              <ExchangeIcon />
               <p className={classes.settingTitle}>Currency conversion</p>
             </div>
             <div className={classes.settingContent}>
@@ -81,7 +81,7 @@ function Settings ({
           </div>
           <div className={classes.settingContainer}>
             <div className={classes.settingHeader}>
-              <img src={exitIcon} alt='Force withdrawal' />
+              <ExitIcon />
               <p className={classes.settingTitle}>Force withdrawal</p>
             </div>
           </div>
@@ -95,7 +95,7 @@ function Settings ({
                   rel='noopener noreferrer'
                 >
                   <div className={classes.settingHeader}>
-                    <img src={openInNewTabIcon} alt='View in batch explorer' />
+                    <OpenInNewTabIcon />
                     <p className={classes.settingTitle}>View in batch explorer</p>
                   </div>
                 </a>
@@ -107,7 +107,7 @@ function Settings ({
             onClick={handleOnDisconnectWallet}
           >
             <div className={classes.settingHeader}>
-              <img src={powerOffIcon} alt='Disconnect wallet' />
+              <PowerOffIcon />
               <p className={classes.settingTitle}>Disconnect wallet</p>
             </div>
           </button>
