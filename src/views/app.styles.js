@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useAppStyles = createUseStyles({
+const useAppStyles = createUseStyles(theme => ({
   '@font-face': [
     {
       fontFamily: 'Modern Era',
@@ -76,7 +76,15 @@ const useAppStyles = createUseStyles({
     h1: {
       margin: 0
     }
+  },
+  root: {
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: theme.palette.primary.main
   }
-})
+}))
 
 export default useAppStyles

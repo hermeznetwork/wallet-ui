@@ -2,6 +2,7 @@ import React from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
+import { useTheme } from 'react-jss'
 
 import { initializeTransactionPool } from '../utils/tx-pool'
 import useAppStyles from './app.styles'
@@ -17,7 +18,8 @@ function App ({
   onLoadConfig,
   onLoadFiatExchangeRates
 }) {
-  useAppStyles()
+  const theme = useTheme()
+  const classes = useAppStyles()
 
   React.useEffect(() => {
     onLoadConfig()
@@ -29,7 +31,11 @@ function App ({
   }, [])
 
   if (configTask.status === 'loading' || fiatExchangeRatesTask.status === 'loading') {
-    return <Spinner />
+    return (
+      <div className={classes.root}>
+        <Spinner size={theme.spacing(8)} />
+      </div>
+    )
   }
 
   if (configTask.status === 'failed' || fiatExchangeRatesTask.status === 'failed') {
