@@ -10,8 +10,7 @@ const useAppStyles = createUseStyles(theme => ({
         { src: "url('./fonts/modern-era/ModernEra-Regular.ttf') format('truetype')" }
       ],
       fontWeight: 400,
-      fontStyle: 'normal',
-      fontDisplay: 'swap'
+      fontStyle: 'normal'
     },
     {
       fontFamily: 'Modern Era',
@@ -21,8 +20,7 @@ const useAppStyles = createUseStyles(theme => ({
         { src: "url('./fonts/modern-era/ModernEra-Medium.ttf') format('truetype')" }
       ],
       fontWeight: 500,
-      fontStyle: 'normal',
-      fontDisplay: 'swap'
+      fontStyle: 'normal'
     },
     {
       fontFamily: 'Modern Era',
@@ -32,8 +30,7 @@ const useAppStyles = createUseStyles(theme => ({
         { src: "url('./fonts/modern-era/ModernEra-Bold.ttf') format('truetype')" }
       ],
       fontWeight: 700,
-      fontStyle: 'normal',
-      fontDisplay: 'swap'
+      fontStyle: 'normal'
     },
     {
       fontFamily: 'Modern Era',
@@ -43,8 +40,7 @@ const useAppStyles = createUseStyles(theme => ({
         { src: "url('./fonts/modern-era/ModernEra-ExtraBold.ttf') format('truetype')" }
       ],
       fontWeight: 800,
-      fontStyle: 'normal',
-      fontDisplay: 'swap'
+      fontStyle: 'normal'
     }
   ],
   '@global': {
