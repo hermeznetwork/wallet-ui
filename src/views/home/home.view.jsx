@@ -6,7 +6,7 @@ import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
 import { fetchAccounts } from '../../store/home/home.thunks'
-import TotalBalance from './components/total-balance/total-balance.view'
+import AccountBalance from '../shared/account-balance/account-balance.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
@@ -41,25 +41,35 @@ function Home ({
     }
   }, [metaMaskWalletTask, onLoadAccounts])
 
-  function getTotalBalance (accounts) {
-    if (fiatExchangeRatesTask.status !== 'successful') {
-      return undefined
+  function getTotalBalance (accountsTask) {
+    switch (accountsTask.status) {
+      case 'reloading':
+      case 'successful': {
+        if (fiatExchangeRatesTask.status !== 'successful') {
+          return undefined
+        }
+
+        const { accounts } = accountsTask.data
+
+        return accounts.reduce((amount, account) => {
+          const fixedAccountBalance = getFixedTokenAmount(
+            account.balance,
+            account.token.decimals
+          )
+          const fiatBalance = getTokenAmountInPreferredCurrency(
+            fixedAccountBalance,
+            account.token.USD,
+            preferredCurrency,
+            fiatExchangeRatesTask.data
+          )
+
+          return amount + fiatBalance
+        }, 0)
+      }
+      default: {
+        return undefined
+      }
     }
-
-    return accounts.reduce((amount, account) => {
-      const fixedAccountBalance = getFixedTokenAmount(
-        account.balance,
-        account.token.decimals
-      )
-      const fiatBalance = getTokenAmountInPreferredCurrency(
-        fixedAccountBalance,
-        account.token.USD,
-        preferredCurrency,
-        fiatExchangeRatesTask.data
-      )
-
-      return amount + fiatBalance
-    }, 0)
   }
 
   function handleAccountClick (account) {
@@ -85,32 +95,11 @@ function Home ({
                 />
               )
           }
-          <div className={classes.totalBalance}>
-            {(() => {
-              switch (accountsTask.status) {
-                case 'loading':
-                case 'failed': {
-                  return (
-                    <TotalBalance
-                      amount={undefined}
-                      currency={preferredCurrency}
-                    />
-                  )
-                }
-                case 'reloading':
-                case 'successful': {
-                  return (
-                    <TotalBalance
-                      amount={getTotalBalance(accountsTask.data.accounts)}
-                      currency={preferredCurrency}
-                    />
-                  )
-                }
-                default: {
-                  return <></>
-                }
-              }
-            })()}
+          <div className={classes.accountBalance}>
+            <AccountBalance
+              amount={getTotalBalance(accountsTask)}
+              currency={preferredCurrency}
+            />
           </div>
           <TransactionActions hideWithdraw />
         </section>
@@ -121,7 +110,7 @@ function Home ({
             switch (accountsTask.status) {
               case 'loading':
               case 'failed': {
-                return <Spinner size={theme.spacing(6)} />
+                return <Spinner />
               }
               case 'reloading':
               case 'successful': {

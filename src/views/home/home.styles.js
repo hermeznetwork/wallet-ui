@@ -21,7 +21,7 @@ const useHomeStyles = createUseStyles(theme => ({
     cursor: 'pointer',
     fontWeight: theme.fontWeights.medium
   },
-  totalBalance: {
+  accountBalance: {
     marginTop: `${theme.spacing(4)}px`,
     marginBottom: `${theme.spacing(2)}px`
   },

@@ -37,7 +37,7 @@ function TransactionActions ({ hideWithdraw, tokenId }) {
 
 TransactionActions.propTypes = {
   hideWithdraw: PropTypes.bool,
-  tokenId: PropTypes.number
+  tokenId: PropTypes.string
 }
 
 export default TransactionActions

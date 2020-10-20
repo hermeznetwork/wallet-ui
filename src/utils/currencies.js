@@ -19,6 +19,10 @@ const CurrencySymbol = {
  * @returns {string}
  */
 function getFixedTokenAmount (amount, decimals) {
+  if (!amount || !decimals) {
+    return undefined
+  }
+
   // We can lose precision as there will never be more than MAX_DECIMALS_UNTIL_ZERO_AMOUNT significant digits
   const balanceWithDecimals = Number(amount) / Math.pow(10, decimals)
   const amountSignificantDigits = amount.length - 1

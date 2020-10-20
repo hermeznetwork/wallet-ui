@@ -16,7 +16,7 @@ function PageHeader ({ title, goBackRoute }) {
           <ArrowBackIcon className={classes.arrowBackIcon} />
         </Link>
         <div className={classes.headerContent}>
-          <h1 className={classes.title}>{title}</h1>
+          <h1 className={classes.title}>{title || <></>}</h1>
         </div>
       </Container>
     </header>
@@ -24,7 +24,7 @@ function PageHeader ({ title, goBackRoute }) {
 }
 
 PageHeader.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   goBackRoute: PropTypes.string.isRequired
 }
 

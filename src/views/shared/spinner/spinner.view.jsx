@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useTheme } from 'react-jss'
 
 import useSpinnerStyles from './spinner.styles'
 
@@ -7,7 +8,8 @@ const SIZE = 44
 const THICKNESS = 6
 
 function Spinner ({ size }) {
-  const classes = useSpinnerStyles({ size })
+  const theme = useTheme()
+  const classes = useSpinnerStyles({ size: size !== undefined ? size : theme.spacing(6) })
 
   return (
     <svg
@@ -35,7 +37,7 @@ function Spinner ({ size }) {
 }
 
 Spinner.propTypes = {
-  size: PropTypes.number.isRequired
+  size: PropTypes.number
 }
 
 export default Spinner

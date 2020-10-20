@@ -10,11 +10,14 @@ import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions } from '.
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { CurrencySymbol, getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 import ExitList from '../shared/exit-list/exit-list.view'
+import AccountBalance from '../shared/account-balance/account-balance.view'
+import TokenBalance from './components/token-balance/token-balance.view'
+import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 
 function AccountDetails ({
   preferredCurrency,
@@ -31,6 +34,7 @@ function AccountDetails ({
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
   const { accountIndex } = useParams()
+  const [, accountTokenSymbol, accountTokenId] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
 
   React.useEffect(() => {
     onLoadAccount(accountIndex)
@@ -39,7 +43,7 @@ function AccountDetails ({
   }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadHistoryTransactions])
 
   React.useEffect(() => {
-    if (accountTask.status === 'successful') {
+    if (accountTask.status === 'successful' || accountTask.status === 'reloading') {
       onChangeHeader(accountTask.data.token.name)
     }
   }, [accountTask, onChangeHeader])
@@ -49,23 +53,31 @@ function AccountDetails ({
    *
    * @returns {Number} The balance of the account in the preferred currency
    */
-  function getAccountBalance (account) {
-    if (fiatExchangeRatesTask.status !== 'successful') {
-      return '-'
+  function getAccountBalance (accountTask) {
+    switch (accountTask.status) {
+      case 'reloading':
+      case 'successful': {
+        if (fiatExchangeRatesTask.status !== 'successful') {
+          return undefined
+        }
+
+        const account = accountTask.data
+        const fixedAccountBalance = getFixedTokenAmount(
+          account.balance,
+          account.token.decimals
+        )
+
+        return getTokenAmountInPreferredCurrency(
+          fixedAccountBalance,
+          account.token.USD,
+          preferredCurrency,
+          fiatExchangeRatesTask.data
+        )
+      }
+      default: {
+        return undefined
+      }
     }
-
-    const fixedAccountBalance = getFixedTokenAmount(
-      account.balance,
-      account.token.decimals
-    )
-    const fiatBalance = getTokenAmountInPreferredCurrency(
-      fixedAccountBalance,
-      account.token.USD,
-      preferredCurrency,
-      fiatExchangeRatesTask.data
-    )
-
-    return fiatBalance.toFixed(2)
   }
 
   function getPendingExits () {
@@ -92,32 +104,19 @@ function AccountDetails ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
-          {(() => {
-            switch (accountTask.status) {
-              case 'loading': {
-                return <Spinner />
-              }
-              case 'failed': {
-                return <p>{accountTask.error}</p>
-              }
-              case 'successful': {
-                return (
-                  <div>
-                    <h1 className={classes.fiatBalance}>
-                      {CurrencySymbol[preferredCurrency].symbol} {getAccountBalance(accountTask.data)}
-                    </h1>
-                    <p className={classes.tokenBalance}>
-                      {getFixedTokenAmount(accountTask.data.balance, accountTask.data.token.decimals)} {accountTask.data.token.symbol}
-                    </p>
-                    <TransactionActions tokenId={accountTask.data.token.id} />
-                  </div>
-                )
-              }
-              default: {
-                return <></>
-              }
-            }
-          })()}
+          <div className={classes.fiatBalance}>
+            <AccountBalance
+              amount={getAccountBalance(accountTask)}
+              currency={preferredCurrency}
+            />
+          </div>
+          <div className={classes.tokenBalance}>
+            <TokenBalance
+              amount={getFixedTokenAmount(accountTask.data?.balance, accountTask.data?.token.decimals)}
+              symbol={accountTokenSymbol}
+            />
+          </div>
+          <TransactionActions tokenId={accountTokenId} />
         </section>
       </Container>
       <Container>
@@ -125,34 +124,18 @@ function AccountDetails ({
           {(() => {
             if (
               poolTransactionsTask.status === 'loading' ||
-              historyTransactionsTask.status === 'loading'
+              poolTransactionsTask.status === 'failed' ||
+              historyTransactionsTask.status === 'loading' ||
+              historyTransactionsTask.status === 'failed'
             ) {
               return <Spinner />
             }
 
             if (
-              poolTransactionsTask.status === 'failed' ||
-              historyTransactionsTask.status === 'failed'
-            ) {
-              return (
-                <>
-                  {
-                    poolTransactionsTask.status === 'failed'
-                      ? <p>{poolTransactionsTask.error}</p>
-                      : <></>
-                  }
-                  {
-                    historyTransactionsTask.status === 'failed'
-                      ? <p>{historyTransactionsTask.error}</p>
-                      : <></>
-                  }
-                </>
-              )
-            }
-
-            if (
-              poolTransactionsTask.status === 'successful' &&
-              historyTransactionsTask.status === 'successful'
+              (poolTransactionsTask.status === 'successful' ||
+              poolTransactionsTask.status === 'reloading') &&
+              (historyTransactionsTask.status === 'successful' ||
+              historyTransactionsTask.status === 'reloading')
             ) {
               return (
                 <>

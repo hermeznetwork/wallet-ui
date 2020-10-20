@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import useTotalBalanceStyles from './total-balance.styles'
-import { CurrencySymbol } from '../../../../utils/currencies'
+import useAccountBalanceStyles from './account-balance.styles'
+import { CurrencySymbol } from '../../../utils/currencies'
 
-function TotalBalance ({ amount, currency }) {
-  const classes = useTotalBalanceStyles()
+function AccountBalance ({ amount, currency }) {
+  const classes = useAccountBalanceStyles()
 
   return (
     <div className={classes.root}>
@@ -16,9 +16,9 @@ function TotalBalance ({ amount, currency }) {
   )
 }
 
-TotalBalance.propTypes = {
+AccountBalance.propTypes = {
   amount: PropTypes.number,
   currency: PropTypes.string.isRequired
 }
 
-export default TotalBalance
+export default AccountBalance
