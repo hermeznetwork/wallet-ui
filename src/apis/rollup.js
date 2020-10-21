@@ -6,7 +6,7 @@ const baseApiUrl = process.env.REACT_APP_ROLLUP_API_URL
 async function getAccounts (hermezEthereumAddress, tokenIds) {
   const params = {
     ...(hermezEthereumAddress ? { hermezEthereumAddress } : {}),
-    tokenIds: tokenIds ? { tokenIds: tokenIds.join(',') } : ''
+    ...(tokenIds ? { tokenIds: tokenIds.join(',') } : {})
   }
 
   return extractJSON(axios.get(`${baseApiUrl}/accounts`, { params }))
