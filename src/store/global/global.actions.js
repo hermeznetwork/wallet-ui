@@ -1,9 +1,6 @@
 export const globalActionTypes = {
   CHANGE_HEADER: '[GLOBAL] CHANGE HEADER',
   CHANGE_REDIRECT_ROUTE: '[GLOBAL] CHANGE REDIRECT ROUTE',
-  LOAD_CONFIG: '[GLOBAL] LOAD CONFIG',
-  LOAD_CONFIG_SUCCESS: '[GLOBAL] LOAD CONFIG SUCCESS',
-  LOAD_CONFIG_FAILURE: '[GLOBAL] LOAD CONFIG FAILURE',
   LOAD_FIAT_EXCHANGE_RATES: '[GLOBAL] LOAD FIAT EXCHANGE RATES',
   LOAD_FIAT_EXCHANGE_RATES_SUCCESS: '[GLOBAL] LOAD FIAT EXCHANGE RATES SUCCESS',
   LOAD_FIAT_EXCHANGE_RATES_FAILURE: '[GLOBAL] LOAD FIAT EXCHANGE RATES FAILURE',
@@ -28,28 +25,6 @@ function changeRedirectRoute (redirectRoute) {
   return {
     type: globalActionTypes.CHANGE_REDIRECT_ROUTE,
     redirectRoute
-  }
-}
-
-function loadConfig () {
-  return {
-    type: globalActionTypes.LOAD_CONFIG
-  }
-}
-
-function loadConfigSuccess (config, abiRollup, abiTokens, chainId, error) {
-  return {
-    type: globalActionTypes.LOAD_CONFIG_SUCCESS,
-    config: { config, abiRollup, abiTokens, chainId },
-    error
-  }
-}
-
-function loadConfigFailure (config, error) {
-  return {
-    type: globalActionTypes.LOAD_CONFIG_FAILURE,
-    config: { config },
-    error
   }
 }
 
@@ -89,9 +64,6 @@ function closeSnackbar () {
 export {
   changeHeader,
   changeRedirectRoute,
-  loadConfig,
-  loadConfigSuccess,
-  loadConfigFailure,
   loadFiatExchangeRates,
   loadFiatExchangeRatesSuccess,
   loadFiatExchangeRatesFailure,

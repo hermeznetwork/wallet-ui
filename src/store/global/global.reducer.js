@@ -5,9 +5,6 @@ const initialGlobalState = {
     type: 'main'
   },
   redirectRoute: '/',
-  configTask: {
-    status: 'pending'
-  },
   fiatExchangeRatesTask: {
     status: 'pending'
   },
@@ -30,34 +27,6 @@ function globalReducer (state = initialGlobalState, action) {
         redirectRoute: action.redirectRoute
       }
     }
-    case globalActionTypes.LOAD_CONFIG:
-      return {
-        ...state,
-        configTask: {
-          status: 'loading'
-        }
-      }
-    case globalActionTypes.LOAD_CONFIG_SUCCESS:
-      return {
-        ...state,
-        configTask: {
-          status: 'successful',
-          data: action.config,
-          error: action.error
-        }
-      }
-    case globalActionTypes.LOAD_CONFIG_FAILURE:
-      return {
-        ...state,
-        configTask: {
-          status: 'failed',
-          data: {
-            chainId: -1,
-            config: action.config
-          },
-          error: action.error
-        }
-      }
     case globalActionTypes.LOAD_FIAT_EXCHANGE_RATES: {
       return {
         ...state,

@@ -8,12 +8,11 @@ import { initializeTransactionPool } from '../utils/tx-pool'
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
-import { fetchConfig, fetchFiatExchangeRates } from '../store/global/global.thunks'
+import { fetchFiatExchangeRates } from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
 import { CurrencySymbol } from '../utils/currencies'
 
 function App ({
-  configTask,
   fiatExchangeRatesTask,
   onLoadConfig,
   onLoadFiatExchangeRates
@@ -30,16 +29,15 @@ function App ({
     initializeTransactionPool()
   }, [])
 
-  if (configTask.status === 'loading' || fiatExchangeRatesTask.status === 'loading') {
+  if (
+    fiatExchangeRatesTask.status === 'loading' ||
+    fiatExchangeRatesTask.status === 'failed'
+  ) {
     return (
       <div className={classes.root}>
         <Spinner size={theme.spacing(8)} />
       </div>
     )
-  }
-
-  if (configTask.status === 'failed' || fiatExchangeRatesTask.status === 'failed') {
-    return <p>{configTask.error || fiatExchangeRatesTask.error}</p>
   }
 
   return (
@@ -84,12 +82,10 @@ App.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  configTask: state.global.configTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadConfig: () => dispatch(fetchConfig()),
   onLoadFiatExchangeRates: () => dispatch(
     fetchFiatExchangeRates(
       Object.values(CurrencySymbol)
