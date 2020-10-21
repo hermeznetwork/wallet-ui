@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 
 import useLoginStyles from './login.styles'
-import { fetchMetamaskWallet } from '../../store/account/account.thunks'
+import { fetchMetamaskWallet } from '../../store/global/global.thunks'
 import { ReactComponent as HermezLogoAlternative } from '../../images/hermez-logo-alternative.svg'
 import { ReactComponent as MetaMaskLogo } from '../../images/metamask-logo.svg'
 import Container from '../shared/container/container.view'
@@ -75,7 +75,7 @@ Login.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.account.metaMaskWalletTask,
+  metaMaskWalletTask: state.global.metaMaskWalletTask,
   redirectRoute: state.global.redirectRoute
 })
 

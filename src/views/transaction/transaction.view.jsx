@@ -326,7 +326,7 @@ Transaction.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.account.metaMaskWalletTask,
+  metaMaskWalletTask: state.global.metaMaskWalletTask,
   metaMaskTokensTask: state.transaction.metaMaskTokensTask,
   accountsTask: state.home.accountsTask,
   tokensTask: state.transaction.tokensTask,

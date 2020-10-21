@@ -14,7 +14,7 @@ const withAuth = (Component) => ({ metaMaskWalletTask, onChangeRedirectRoute, ..
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.account.metaMaskWalletTask
+  metaMaskWalletTask: state.global.metaMaskWalletTask
 })
 
 const mapDispatchToProps = (dispatch) => ({

@@ -122,7 +122,7 @@ Settings.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.account.metaMaskWalletTask,
+  metaMaskWalletTask: state.global.metaMaskWalletTask,
   preferredCurrency: state.settings.preferredCurrency
 })
 

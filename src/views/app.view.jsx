@@ -14,16 +14,14 @@ import { CurrencySymbol } from '../utils/currencies'
 
 function App ({
   fiatExchangeRatesTask,
-  onLoadConfig,
   onLoadFiatExchangeRates
 }) {
   const theme = useTheme()
   const classes = useAppStyles()
 
   React.useEffect(() => {
-    onLoadConfig()
     onLoadFiatExchangeRates()
-  }, [onLoadConfig, onLoadFiatExchangeRates])
+  }, [onLoadFiatExchangeRates])
 
   React.useEffect(() => {
     initializeTransactionPool()
@@ -77,8 +75,7 @@ App.propTypes = {
   fiatExchangeRatesTask: PropTypes.shape({
     status: PropTypes.string.isRequired,
     data: PropTypes.object
-  }),
-  onLoadConfig: PropTypes.func.isRequired
+  })
 }
 
 const mapStateToProps = (state) => ({

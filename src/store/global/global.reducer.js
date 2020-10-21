@@ -1,6 +1,9 @@
 import { globalActionTypes } from './global.actions'
 
 const initialGlobalState = {
+  metaMaskWalletTask: {
+    status: 'pending'
+  },
   header: {
     type: 'main'
   },
@@ -15,6 +18,37 @@ const initialGlobalState = {
 
 function globalReducer (state = initialGlobalState, action) {
   switch (action.type) {
+    case globalActionTypes.LOAD_METAMASK_WALLET:
+      return {
+        ...state,
+        metaMaskWalletTask: {
+          status: 'loading'
+        }
+      }
+    case globalActionTypes.LOAD_METAMASK_WALLET_SUCCESS:
+      return {
+        ...state,
+        metaMaskWalletTask: {
+          status: 'successful',
+          data: action.metaMaskWallet
+        }
+      }
+    case globalActionTypes.LOAD_METAMASK_WALLET_FAILURE:
+      return {
+        ...state,
+        metaMaskWalletTask: {
+          status: 'failed',
+          error: action.error
+        }
+      }
+    case globalActionTypes.UNLOAD_METAMASK_WALLET: {
+      return {
+        ...state,
+        metaMaskWalletTask: {
+          status: 'pending'
+        }
+      }
+    }
     case globalActionTypes.CHANGE_HEADER: {
       return {
         ...state,

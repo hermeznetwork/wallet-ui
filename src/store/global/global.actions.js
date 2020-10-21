@@ -1,4 +1,8 @@
 export const globalActionTypes = {
+  LOAD_METAMASK_WALLET: '[GLOBAL] LOAD METAMASK WALLET',
+  LOAD_METAMASK_WALLET_SUCCESS: '[GLOBAL] LOAD METAMASK WALLET SUCCESS',
+  LOAD_METAMASK_WALLET_FAILURE: '[GLOBAL] LOAD METAMASK WALLET FAILURE',
+  UNLOAD_METAMASK_WALLET: '[GLOBAL] UNLOAD METAMASK WALLET',
   CHANGE_HEADER: '[GLOBAL] CHANGE HEADER',
   CHANGE_REDIRECT_ROUTE: '[GLOBAL] CHANGE REDIRECT ROUTE',
   LOAD_FIAT_EXCHANGE_RATES: '[GLOBAL] LOAD FIAT EXCHANGE RATES',
@@ -12,6 +16,32 @@ export const globalActionTypes = {
   REMOVE_POOL_TRANSACTION: '[GLOBAL] REMOVE POOL TRANSACTION',
   OPEN_SNACKBAR: '[GLOBAL] OPEN SNACKBAR',
   CLOSE_SNACKBAR: '[GLOBAL] CLOSE SNACKBAR'
+}
+
+function loadMetamaskWallet () {
+  return {
+    type: globalActionTypes.LOAD_METAMASK_WALLET
+  }
+}
+
+function loadMetamaskWalletSuccess (metaMaskWallet) {
+  return {
+    type: globalActionTypes.LOAD_METAMASK_WALLET_SUCCESS,
+    metaMaskWallet
+  }
+}
+
+function loadMetamaskWalletFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_METAMASK_WALLET_FAILURE,
+    error
+  }
+}
+
+function unloadMetaMaskWallet () {
+  return {
+    type: globalActionTypes.UNLOAD_METAMASK_WALLET
+  }
 }
 
 function changeHeader (header) {
@@ -62,6 +92,10 @@ function closeSnackbar () {
 }
 
 export {
+  loadMetamaskWallet,
+  loadMetamaskWalletSuccess,
+  loadMetamaskWalletFailure,
+  unloadMetaMaskWallet,
   changeHeader,
   changeRedirectRoute,
   loadFiatExchangeRates,
