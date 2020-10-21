@@ -24,7 +24,10 @@ export const TxType = {
 }
 
 export const TxState = {
-  Pending: 'pend'
+  Forged: 'fged',
+  Forging: 'fing',
+  Pending: 'pend',
+  Invalid: 'invl'
 }
 
 /**
@@ -208,4 +211,15 @@ export async function send (transaction, bJJ) {
     id: result.data,
     nonce: transaction.nonce
   }
+}
+
+/**
+ * Gets the beautified name of a transaction state
+ *
+ * @param {String} transactionState - The original transaction state from the API
+ *
+ * @return {String} - The beautified transaction state
+*/
+export function beautifyTransactionState (transactionState) {
+  return Object.keys(TxState).find(key => TxState[key] === transactionState)
 }

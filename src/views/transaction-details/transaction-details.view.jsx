@@ -2,28 +2,39 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { push } from 'connected-react-router'
+import { useTheme } from 'react-jss'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { CurrencySymbol, getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
+import { changeHeader } from '../../store/global/global.actions'
+import TransactionInfo from '../shared/transaction-info/transaction-info.view'
+import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
+import { beautifyTransactionState } from '../../utils/tx'
 
 function TransactionDetails ({
   transactionTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   onLoadTransaction,
-  onNavigateToAccountDetails
+  onChangeHeader
 }) {
+  const theme = useTheme()
   const classes = useTransactionDetailsStyles()
   const { accountIndex, transactionId } = useParams()
 
   React.useEffect(() => {
     onLoadTransaction(transactionId)
   }, [transactionId, onLoadTransaction])
+
+  React.useEffect(() => {
+    if (transactionTask.status === 'successful') {
+      onChangeHeader(transactionTask.data.type, accountIndex)
+    }
+  }, [transactionTask, accountIndex, onChangeHeader])
 
   function getAmountInFiat (amount, token) {
     if (fiatExchangeRatesTask.status !== 'successful') {
@@ -41,13 +52,9 @@ function TransactionDetails ({
     return fiatTokenAmount.toFixed(2)
   }
 
-  function handleNavigationToAccountDetails () {
-    onNavigateToAccountDetails(accountIndex)
-  }
-
   return (
-    <Container>
-      <div className={classes.root}>
+    <div>
+      <Container backgroundColor={theme.palette.primary.main}>
         {(() => {
           switch (transactionTask.status) {
             case 'loading': {
@@ -58,42 +65,14 @@ function TransactionDetails ({
             }
             case 'successful': {
               return (
-                <>
-                  <button className={classes.closeButton} onClick={handleNavigationToAccountDetails}>
-                  Close
-                  </button>
-                  <div className={classes.statusContainer}>
-                    <h2>{transactionTask.data.Status || 'Completed'}</h2>
-                    <a href='https://hermez.io' target='_blank' rel='noopener noreferrer'>
-                    View in network explorer
-                    </a>
-                  </div>
-                  <div className={classes.transactionInfoContainer}>
-                    <h1>{transactionTask.data.type} {getAmountInFiat(transactionTask.data.amount, transactionTask.data.token)} {preferredCurrency}</h1>
-                    <p>{getFixedTokenAmount(transactionTask.data.fee, transactionTask.data.token.decimals)} {transactionTask.data.token.symbol}</p>
-                    <ul className={classes.transactionInfoList}>
-                      <li className={classes.transactionInfoListItem}>
-                        <p className={classes.transactionInfoListItemTitle}>To</p>
-                        <p>{transactionTask.data.toHezEthereumAddress}</p>
-                      </li>
-                      <li className={classes.transactionInfoListItem}>
-                        <p className={classes.transactionInfoListItemTitle}>
-                        Fee
-                        </p>
-                        <div>
-                          <p>{getAmountInFiat(transactionTask.data.fee, transactionTask.data.token)} {preferredCurrency}</p>
-                          <p>{getFixedTokenAmount(transactionTask.data.fee, transactionTask.data.token.decimals)} {transactionTask.data.token.symbol}</p>
-                        </div>
-                      </li>
-                      <li className={classes.transactionInfoListItem}>
-                        <p className={classes.transactionInfoListItemTitle}>
-                        Date
-                        </p>
-                        <p>{new Date(transactionTask.data.timestamp).toLocaleString()}</p>
-                      </li>
-                    </ul>
-                  </div>
-                </>
+                <section className={classes.section}>
+                  <h1 className={classes.fiatAmount}>
+                    {CurrencySymbol[preferredCurrency].symbol} {getAmountInFiat(transactionTask.data.amount, transactionTask.data.token)}
+                  </h1>
+                  <p className={classes.tokenAmount}>
+                    {transactionTask.data.amount} {transactionTask.data.token.symbol}
+                  </p>
+                </section>
               )
             }
             default: {
@@ -101,8 +80,50 @@ function TransactionDetails ({
             }
           }
         })()}
-      </div>
-    </Container>
+      </Container>
+      <Container>
+        <section className={classes.section}>
+          {(() => {
+            switch (transactionTask.status) {
+              case 'loading': {
+                return <Spinner />
+              }
+              case 'failed': {
+                return <p>{transactionTask.error}</p>
+              }
+              case 'successful': {
+                return (
+                  <TransactionInfo
+                    status={beautifyTransactionState(transactionTask.data.state)}
+                    from={transactionTask.data.fromAccountIndex}
+                    to={transactionTask.data.toAccountIndex}
+                    date={new Date(transactionTask.data.timestamp).toLocaleString()}
+                  />
+                )
+              }
+              default: {
+                return <></>
+              }
+            }
+          })()}
+          {
+            transactionTask.status === 'successful'
+              ? (
+                <a
+                  className={classes.link}
+                  href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}`}
+                  target='__blank'
+                  rel='noopener noreferrer'
+                >
+                  <OpenInNewTabIcon className={classes.linkIcon} />
+                  View in Explorer
+                </a>
+              )
+              : <></>
+          }
+        </section>
+      </Container>
+    </div>
   )
 }
 
@@ -111,7 +132,7 @@ TransactionDetails.propTypes = {
   transactionTask: PropTypes.object.isRequired,
   fiatExchangeRatesTask: PropTypes.object.isRequired,
   onLoadTransaction: PropTypes.func.isRequired,
-  onNavigateToAccountDetails: PropTypes.func.isRequired
+  onChangeHeader: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -122,7 +143,15 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionId) => dispatch(fetchTransaction(transactionId)),
-  onNavigateToAccountDetails: (accountIndex) => dispatch(push(`/accounts/${accountIndex}`))
+  onChangeHeader: (transactionType, accountIndex) => dispatch(
+    changeHeader({
+      type: 'page',
+      data: {
+        title: transactionType,
+        previousRoute: `/accounts/${accountIndex}`
+      }
+    })
+  )
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(TransactionDetails))

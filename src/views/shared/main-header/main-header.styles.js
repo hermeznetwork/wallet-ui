@@ -7,6 +7,7 @@ const useMainHeaderStyles = createUseStyles(theme => ({
     height: theme.headerHeight,
     display: 'flex',
     alignItems: 'center',
+    zIndex: 999,
     background: theme.palette.primary.main
   },
   headerContent: {
@@ -28,13 +29,23 @@ const useMainHeaderStyles = createUseStyles(theme => ({
     top: '50%',
     transform: 'translateY(-50%)'
   },
+  settingsLink: {
+    left: 0,
+    marginLeft: -(theme.spacing(1))
+  },
+  addressLink: {
+    right: 0,
+    marginRight: -(theme.spacing(1))
+  },
   linkText: {
     fontWeight: theme.fontWeights.bold,
     whiteSpace: 'nowrap'
   },
-  myAccountIcon: {
-    marginLeft: -(theme.spacing(1)),
+  settingsIcon: {
     marginRight: theme.spacing(1.5)
+  },
+  addressIcon: {
+    marginLeft: theme.spacing(1.5)
   }
 }))
 

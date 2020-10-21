@@ -2,8 +2,10 @@ import { createUseStyles } from 'react-jss'
 
 const useMainStyles = createUseStyles(theme => ({
   main: {
+    flex: 1,
+    display: 'flex',
     width: '100%',
-    marginTop: theme.spacing(9)
+    marginTop: theme.headerHeight
   }
 }))
 
