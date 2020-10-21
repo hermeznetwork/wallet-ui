@@ -1,13 +1,13 @@
 import { globalActionTypes } from './global.actions'
 
 const initialGlobalState = {
+  metaMaskWalletTask: {
+    status: 'pending'
+  },
   header: {
     type: 'main'
   },
   redirectRoute: '/',
-  configTask: {
-    status: 'pending'
-  },
   fiatExchangeRatesTask: {
     status: 'pending'
   },
@@ -18,6 +18,37 @@ const initialGlobalState = {
 
 function globalReducer (state = initialGlobalState, action) {
   switch (action.type) {
+    case globalActionTypes.LOAD_METAMASK_WALLET:
+      return {
+        ...state,
+        metaMaskWalletTask: {
+          status: 'loading'
+        }
+      }
+    case globalActionTypes.LOAD_METAMASK_WALLET_SUCCESS:
+      return {
+        ...state,
+        metaMaskWalletTask: {
+          status: 'successful',
+          data: action.metaMaskWallet
+        }
+      }
+    case globalActionTypes.LOAD_METAMASK_WALLET_FAILURE:
+      return {
+        ...state,
+        metaMaskWalletTask: {
+          status: 'failed',
+          error: action.error
+        }
+      }
+    case globalActionTypes.UNLOAD_METAMASK_WALLET: {
+      return {
+        ...state,
+        metaMaskWalletTask: {
+          status: 'pending'
+        }
+      }
+    }
     case globalActionTypes.CHANGE_HEADER: {
       return {
         ...state,
@@ -30,34 +61,6 @@ function globalReducer (state = initialGlobalState, action) {
         redirectRoute: action.redirectRoute
       }
     }
-    case globalActionTypes.LOAD_CONFIG:
-      return {
-        ...state,
-        configTask: {
-          status: 'loading'
-        }
-      }
-    case globalActionTypes.LOAD_CONFIG_SUCCESS:
-      return {
-        ...state,
-        configTask: {
-          status: 'successful',
-          data: action.config,
-          error: action.error
-        }
-      }
-    case globalActionTypes.LOAD_CONFIG_FAILURE:
-      return {
-        ...state,
-        configTask: {
-          status: 'failed',
-          data: {
-            chainId: -1,
-            config: action.config
-          },
-          error: action.error
-        }
-      }
     case globalActionTypes.LOAD_FIAT_EXCHANGE_RATES: {
       return {
         ...state,

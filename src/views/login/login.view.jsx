@@ -5,9 +5,9 @@ import { Redirect } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 
 import useLoginStyles from './login.styles'
-import { fetchMetamaskWallet } from '../../store/account/account.thunks'
-import hermezLogoAlternative from '../../images/hermez-logo-alternative.svg'
-import metaMaskLogo from '../../images/metamask-logo.svg'
+import { fetchMetamaskWallet } from '../../store/global/global.thunks'
+import { ReactComponent as HermezLogoAlternative } from '../../images/hermez-logo-alternative.svg'
+import { ReactComponent as MetaMaskLogo } from '../../images/metamask-logo.svg'
 import Container from '../shared/container/container.view'
 
 function Login ({
@@ -25,15 +25,25 @@ function Login ({
   return (
     <Container backgroundColor={theme.palette.primary.main} fullHeight>
       <div className={classes.root}>
-        <img src={hermezLogoAlternative} alt='Hermez logo' className={classes.logo} />
+        <HermezLogoAlternative className={classes.logo} />
         {
           metaMaskWalletTask.status === 'pending' || metaMaskWalletTask.status === 'failed'
             ? <h2 className={classes.connectText}>Connect with</h2>
             : <h2 className={classes.connectedText}>Connected to MetaMask</h2>
         }
-        <button className={classes.walletButton} onClick={handleMetamaskLogin}>
-          <img src={metaMaskLogo} alt='MetaMask logo' className={classes.walletButtonImage} />
-        </button>
+        {
+          metaMaskWalletTask.status === 'loading'
+            ? (
+              <div className={classes.walletContainer}>
+                <MetaMaskLogo className={classes.walletButtonImage} />
+              </div>
+            )
+            : (
+              <button className={classes.walletButtonContainer} onClick={handleMetamaskLogin}>
+                <MetaMaskLogo className={classes.walletButtonImage} />
+              </button>
+            )
+        }
         {(() => {
           switch (metaMaskWalletTask.status) {
             case 'pending':
@@ -65,7 +75,7 @@ Login.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.account.metaMaskWalletTask,
+  metaMaskWalletTask: state.global.metaMaskWalletTask,
   redirectRoute: state.global.redirectRoute
 })
 
