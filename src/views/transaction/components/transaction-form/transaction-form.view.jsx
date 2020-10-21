@@ -200,11 +200,17 @@ function TransactionForm ({
         to: {},
         fee: 0
       })
-    } else if (type === 'withdraw') {
+    } else if (type === 'exit') {
       onSubmit({
         amount: selectedAmount.toString(),
         to: {},
         fee: getFee()
+      })
+    } else if (type === 'forceExit') {
+      onSubmit({
+        amount: selectedAmount.toString(),
+        to: {},
+        fee: 0
       })
     }
   }
@@ -277,7 +283,7 @@ function TransactionForm ({
    * @returns {ReactElement} The fee selector component
    */
   function renderFeeSelector () {
-    if (type !== 'deposit') {
+    if (type !== 'deposit' && type !== 'forceExit') {
       return (
         <div className={classes.feeWrapper}>
           <p className={classes.fee}>
@@ -358,11 +364,7 @@ TransactionForm.propTypes = {
   account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired,
-  fees: PropTypes.shape({
-    existingAccount: PropTypes.number.isRequired,
-    createAccount: PropTypes.number.isRequired,
-    createAccountInternal: PropTypes.number.isRequired
-  }),
+  fees: PropTypes.object,
   onSubmit: PropTypes.func.isRequired
 }
 

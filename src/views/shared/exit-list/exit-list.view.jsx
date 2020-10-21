@@ -13,15 +13,15 @@ function ExitList ({
     <>
       {transactions.map((transaction) => {
         const fixedTokenAmount = getFixedTokenAmount(
-          transaction.amount,
+          transaction.amount || transaction.balance,
           transaction.token.decimals
         )
 
         return (
           <Exit
-            key={transaction.id}
+            key={transaction.id || transaction.itemId}
             amount={fixedTokenAmount}
-            tokenSymbol={transaction.token.symbol}
+            token={transaction.token}
             fiatAmount={getTokenAmountInPreferredCurrency(
               fixedTokenAmount,
               transaction.historicUSD || transaction.token.USD,
@@ -29,6 +29,9 @@ function ExitList ({
               fiatExchangeRates
             )}
             preferredCurrency={preferredCurrency}
+            merkleProof={transaction.merkleProof}
+            batchNum={transaction.batchNum}
+            accountIndex={transaction.accountIndex}
           />
         )
       })}

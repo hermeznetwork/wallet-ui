@@ -7,7 +7,10 @@ export const accountDetailsActionTypes = {
   LOAD_POOL_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS FAILURE',
   LOAD_HISTORY_TRANSACTIONS: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS',
   LOAD_HISTORY_TRANSACTIONS_SUCCESS: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS SUCCESS',
-  LOAD_HISTORY_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS FAILURE'
+  LOAD_HISTORY_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS FAILURE',
+  LOAD_EXITS: '[ACCOUNT DETAILS] LOAD EXITS',
+  LOAD_EXITS_SUCCESS: '[ACCOUNT DETAILS] LOAD EXITS SUCCESS',
+  LOAD_EXITS_FAILURE: '[ACCOUNT DETAILS] LOAD EXITS FAILURE'
 }
 
 function loadAccount () {
@@ -67,6 +70,26 @@ function loadHistoryTransactionsFailure () {
   }
 }
 
+function loadExits () {
+  return {
+    type: accountDetailsActionTypes.LOAD_EXITS
+  }
+}
+
+function loadExitsSuccess (exits) {
+  return {
+    type: accountDetailsActionTypes.LOAD_EXITS_SUCCESS,
+    exits
+  }
+}
+
+function loadExitsFailure (error) {
+  return {
+    type: accountDetailsActionTypes.LOAD_EXITS_FAILURE,
+    error
+  }
+}
+
 export {
   loadAccount,
   loadAccountSuccess,
@@ -76,5 +99,8 @@ export {
   loadPoolTransactionsFailure,
   loadHistoryTransactions,
   loadHistoryTransactionsSuccess,
-  loadHistoryTransactionsFailure
+  loadHistoryTransactionsFailure,
+  loadExits,
+  loadExitsSuccess,
+  loadExitsFailure
 }

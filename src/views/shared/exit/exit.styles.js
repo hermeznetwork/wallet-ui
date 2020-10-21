@@ -40,15 +40,53 @@ const useExitStyles = createUseStyles(theme => ({
     backgroundColor: theme.palette.orange.light,
     padding: `${theme.spacing(1)}px`
   },
+  stepTagWrapperTwo: {
+    backgroundColor: theme.palette.red.light
+  },
   stepTag: {
     color: theme.palette.orange.dark,
     fontSize: theme.spacing(1.75),
     fontWeight: theme.fontWeights.medium
   },
+  stepTagTwo: {
+    color: theme.palette.red.main
+  },
   tokenAmount: {
     color: theme.palette.grey.dark,
     fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.medium
+  },
+  withdraw: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    borderTop: `1px solid ${theme.palette.grey.dark}`,
+    paddingTop: theme.spacing(1.5),
+    marginTop: theme.spacing(2.5),
+    marginBottom: -theme.spacing(0.5)
+  },
+  withdrawInfo: {
+    display: 'flex'
+  },
+  infoIcon: {
+    width: theme.spacing(2),
+    height: theme.spacing(2),
+    marginRight: theme.spacing(1)
+  },
+  infoText: {
+    color: theme.palette.grey.dark,
+    fontSize: theme.spacing(2),
+    fontWeight: theme.fontWeights.medium
+  },
+  withdrawButton: {
+    cursor: 'pointer',
+    border: 0,
+    outline: 'none',
+    borderRadius: 100,
+    backgroundColor: theme.palette.secondary.main,
+    padding: `${theme.spacing(1.5)}px ${theme.spacing(4)}px`,
+    color: theme.palette.white,
+    fontSize: theme.spacing(2),
+    fontWeight: theme.fontWeights.bold
   }
 }))
 

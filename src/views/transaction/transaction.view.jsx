@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom'
 import clsx from 'clsx'
 
 import { fetchAccounts } from '../../store/home/home.thunks'
-import { fetchTokens, fetchMetaMaskTokens, fetchFees } from '../../store/transaction/transaction.thunks'
+import { fetchTokens, fetchMetaMaskTokens, fetchFees, fetchExit } from '../../store/transaction/transaction.thunks'
 import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
 import TransactionOverview from './components/transaction-overview/transaction-overview.view'
@@ -23,6 +23,7 @@ function Transaction ({
   accountsTask,
   tokensTask,
   feesTask,
+  exitTask,
   preferredCurrency,
   fiatExchangeRatesTask,
   transactionType,
@@ -30,6 +31,7 @@ function Transaction ({
   onLoadMetaMaskTokens,
   onLoadAccounts,
   onLoadFees,
+  onLoadExit,
   onNavigateToTransactionConfirmation
 }) {
   const classes = useTransactionStyles()
@@ -39,13 +41,15 @@ function Transaction ({
 
   const urlParams = new URLSearchParams(search)
   const tokenId = Number(urlParams.get('tokenId'))
+  const batchNum = Number(urlParams.get('batchNum'))
+  const accountIndex = urlParams.get('accountIndex')
 
   React.useEffect(() => {
     onLoadTokens()
   }, [onLoadTokens])
 
   React.useEffect(() => {
-    if (transactionType === 'deposit' && tokensTask.status === 'successful') {
+    if ((transactionType === 'deposit' || transactionType === 'forceExit') && tokensTask.status === 'successful') {
       const tokens = [...tokensTask.data.tokens]
       // TODO: Remove once the hermez-node is ready
       tokens.push({
@@ -93,12 +97,37 @@ function Transaction ({
   }, [onLoadFees])
 
   // If the prop tokenId is set, find and store the account to show the Transaction component
-  if (tokenId && metaMaskTokensTask.status === 'success') {
-    const selectedToken = transactionType === 'deposit'
-      ? metaMaskTokensTask.data.find((account) => account.id === tokenId)
-      : accountsTask.data.find((account) => account.token.id === tokenId)
-    setAccount(selectedToken)
-  }
+  React.useEffect(() => {
+    if (tokenId) {
+      if (transactionType === 'deposit' && metaMaskTokensTask.status === 'successful') {
+        const account = metaMaskTokensTask.data.find((account) => account.id === tokenId)
+        setAccount(account)
+      } else if (accountsTask.status === 'successful') {
+        const account = accountsTask.data.accounts.find((account) => account.token.id === tokenId)
+        setAccount(account)
+      }
+    }
+  }, [tokenId, transactionType, metaMaskTokensTask, accountsTask])
+
+  // If we have a batchNum and accountIndex, we need to fetch the corresponding exit transaction
+  React.useEffect(() => {
+    onLoadExit(batchNum, accountIndex)
+      .then(() => {
+        console.log('exit loaded')
+      })
+  }, [batchNum, accountIndex, onLoadExit])
+
+  React.useEffect(() => {
+    if (exitTask.status === 'successful') {
+      console.log(exitTask.data)
+      setTransaction({
+        exit: exitTask.data,
+        amount: exitTask.data.balance,
+        token: exitTask.data.token,
+        to: {}
+      })
+    }
+  }, [exitTask])
 
   /**
    * When an account is selected, store the corresponding account to show the Transaction component
@@ -134,8 +163,12 @@ function Transaction ({
             return 'Deposit'
           case 'transfer':
             return 'Send'
+          case 'exit':
+            return 'Withdraw'
           case 'withdraw':
             return 'Withdraw'
+          case 'forceExit':
+            return 'Force Withdrawal'
           default:
             return ''
         }
@@ -173,7 +206,7 @@ function Transaction ({
    * Otherwise, show account from Hermez (Layer 2).
    */
   function renderAccountList () {
-    if (transactionType === 'deposit') {
+    if (transactionType === 'deposit' || transactionType === 'forceExit') {
       return (
         <div className={classes.accountListWrapper}>
           {(() => {
@@ -256,6 +289,7 @@ function Transaction ({
    * @returns {ReactElement} The correct component depending on the step the user is on
    */
   function renderContent () {
+    console.log(transaction)
     if (account && !transaction) {
       return (
         <TransactionForm
@@ -278,6 +312,7 @@ function Transaction ({
           to={transaction.to}
           amount={transaction.amount}
           fee={transaction.fee}
+          exit={transaction.exit}
           onNavigateToTransactionConfirmation={onNavigateToTransactionConfirmation}
         />
       )
@@ -320,6 +355,7 @@ Transaction.propTypes = {
   accountsTask: PropTypes.object,
   tokensTask: PropTypes.object,
   feesTask: PropTypes.object,
+  exitTask: PropTypes.object,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRatesTask: PropTypes.object.isRequired,
   transactionType: PropTypes.string.isRequired
@@ -331,6 +367,7 @@ const mapStateToProps = (state) => ({
   accountsTask: state.home.accountsTask,
   tokensTask: state.transaction.tokensTask,
   feesTask: state.transaction.feesTask,
+  exitTask: state.transaction.exitTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.settings.preferredCurrency
 })
@@ -341,6 +378,7 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadAccounts: (ethereumAddress, tokens) =>
     dispatch(fetchAccounts(ethereumAddress, tokens)),
   onLoadFees: () => dispatch(fetchFees()),
+  onLoadExit: (batchNum, accountIndex) => dispatch(fetchExit(batchNum, accountIndex)),
   onNavigateToTransactionConfirmation: (type) => dispatch(push(`/${type}-confirmation`))
 })
 

@@ -36,7 +36,7 @@ async function postPoolTransaction (transaction) {
   return axios.post(`${baseApiUrl}/transactions-pool`, transaction)
 }
 
-async function getExits (batchNum, accountIndex) {
+async function getExits () {
   return extractJSON(axios.get(`${baseApiUrl}/exits`))
 }
 

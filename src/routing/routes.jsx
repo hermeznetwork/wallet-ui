@@ -31,7 +31,17 @@ const routes = [
   },
   {
     path: '/withdraw',
+    render: () => <Transaction transactionType='exit' />,
+    renderLayout: false
+  },
+  {
+    path: '/withdraw-complete',
     render: () => <Transaction transactionType='withdraw' />,
+    renderLayout: false
+  },
+  {
+    path: '/force-withdrawal',
+    render: () => <Transaction transactionType='forceExit' />,
     renderLayout: false
   },
   {

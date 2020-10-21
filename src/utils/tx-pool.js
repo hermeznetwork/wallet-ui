@@ -29,20 +29,22 @@ function getPoolTransactions (accountIndex, bJJ) {
     return Promise.resolve([])
   }
 
-  const accountTransactionsPromises = accountTransactionPool
-    .filter(transaction => transaction.fromAccountIndex === accountIndex)
-    .map(({ id: transactionId }) => {
-      return getPoolTransaction(transactionId)
-        .then((transaction) => {
-          return transaction
-        })
-        .catch(err => {
-          if (err.response.status === HttpStatusCode.NOT_FOUND) {
-            removePoolTransaction(bJJ, transactionId)
-          }
-        })
-    }
-    )
+  const accountTransactionsFiltered = accountIndex
+    ? accountTransactionPool.filter(transaction => transaction.fromAccountIndex === accountIndex)
+    : accountTransactionPool
+
+  const accountTransactionsPromises = accountTransactionsFiltered.map(({ id: transactionId }) => {
+    return getPoolTransaction(transactionId)
+      .then((transaction) => {
+        return transaction
+      })
+      .catch(err => {
+        if (err.response.status === HttpStatusCode.NOT_FOUND) {
+          removePoolTransaction(bJJ, transactionId)
+        }
+      })
+  }
+  )
 
   return Promise.all(accountTransactionsPromises)
     .then((transactions) => {

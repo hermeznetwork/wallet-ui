@@ -5,7 +5,7 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
-import { fetchAccounts } from '../../store/home/home.thunks'
+import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/home/home.thunks'
 import TotalBalance from './components/total-balance/total-balance.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
@@ -14,19 +14,28 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../ut
 import Container from '../shared/container/container.view'
 import { copyToClipboard } from '../../utils/dom'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
+
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
+import ExitList from '../shared/exit-list/exit-list.view'
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import Button from '../shared/button/button.view'
 
 function Home ({
   metaMaskWalletTask,
   accountsTask,
+  poolTransactionsTask,
+  historyTransactionsTask,
+  exitsTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   onChangeHeader,
   onLoadAccounts,
+  onLoadPoolTransactions,
+  onLoadHistoryTransactions,
+  onLoadExits,
   onNavigateToAccountDetails,
-  onOpenSnackbar
+  onOpenSnackbar,
+  onNavigateTest
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
@@ -40,6 +49,19 @@ function Home ({
       onLoadAccounts(metaMaskWalletTask.data.hermezEthereumAddress)
     }
   }, [metaMaskWalletTask, onLoadAccounts])
+
+  React.useEffect(() => {
+    onLoadPoolTransactions()
+    onLoadHistoryTransactions()
+  }, [onLoadPoolTransactions, onLoadHistoryTransactions])
+
+  React.useEffect(() => {
+    if (historyTransactionsTask.status === 'successful') {
+      const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === 'Exit')
+      console.log(2, exitTransactions)
+      onLoadExits(exitTransactions)
+    }
+  }, [historyTransactionsTask, onLoadExits])
 
   function getTotalBalance (accounts) {
     if (fiatExchangeRatesTask.status !== 'successful') {
@@ -62,6 +84,10 @@ function Home ({
     }, 0)
   }
 
+  function getPendingExits () {
+    return poolTransactionsTask.data.filter((transaction) => transaction.type === 'Exit')
+  }
+
   function handleAccountClick (account) {
     onNavigateToAccountDetails(account.accountIndex)
   }
@@ -69,6 +95,37 @@ function Home ({
   function handleEthereumAddressClick (hermezEthereumAddress) {
     copyToClipboard(hermezEthereumAddress)
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
+  }
+
+  function renderExits () {
+    if (
+      poolTransactionsTask.status === 'successful' &&
+      historyTransactionsTask.status === 'successful'
+    ) {
+      return (
+        <>
+          <ExitList
+            transactions={getPendingExits()}
+            fiatExchangeRates={
+              fiatExchangeRatesTask.status === 'successful'
+                ? fiatExchangeRatesTask.data
+                : undefined
+            }
+            preferredCurrency={preferredCurrency}
+          />
+          {exitsTask.status === 'successful' &&
+            <ExitList
+              transactions={exitsTask.data}
+              fiatExchangeRates={
+                fiatExchangeRatesTask.status === 'successful'
+                  ? fiatExchangeRatesTask.data
+                  : undefined
+              }
+              preferredCurrency={preferredCurrency}
+            />}
+        </>
+      )
+    }
   }
 
   return (
@@ -118,6 +175,7 @@ function Home ({
       </Container>
       <Container>
         <section className={classes.section}>
+          {renderExits()}
           {(() => {
             switch (accountsTask.status) {
               case 'loading': {
@@ -156,7 +214,13 @@ Home.propTypes = {
   metaMaskWalletTask: PropTypes.object,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRatesTask: PropTypes.object,
+  poolTransactionsTask: PropTypes.object.isRequired,
+  historyTransactionsTask: PropTypes.object.isRequired,
+  exitsTask: PropTypes.object.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
+  onLoadPoolTransactions: PropTypes.func.isRequired,
+  onLoadHistoryTransactions: PropTypes.func.isRequired,
+  onLoadExits: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
@@ -164,13 +228,21 @@ const mapStateToProps = (state) => ({
   metaMaskWalletTask: state.account.metaMaskWalletTask,
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  preferredCurrency: state.settings.preferredCurrency
+  preferredCurrency: state.settings.preferredCurrency,
+  poolTransactionsTask: state.home.poolTransactionsTask,
+  historyTransactionsTask: state.home.historyTransactionsTask,
+  exitsTask: state.home.exitsTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () => dispatch(changeHeader({ type: 'main' })),
   onLoadAccounts: (hermezEthereumAddress) =>
     dispatch(fetchAccounts(hermezEthereumAddress)),
+  onLoadPoolTransactions: () => dispatch(fetchPoolTransactions()),
+  onLoadHistoryTransactions: () =>
+    dispatch(fetchHistoryTransactions()),
+  onLoadExits: (exitTransactions) =>
+    dispatch(fetchExits(exitTransactions)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message))

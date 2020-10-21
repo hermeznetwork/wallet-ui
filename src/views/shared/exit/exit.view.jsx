@@ -1,32 +1,61 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
+import { Redirect } from 'react-router-dom'
 
 import useExitStyles from './exit.styles'
 import { CurrencySymbol } from '../../../utils/currencies'
+import infoIcon from '../../../images/icons/info.svg'
+
+const STEPS = {
+  first: 1,
+  second: 2,
+  third: 3
+}
 
 function Exit ({
   amount,
-  tokenSymbol,
+  token,
   fiatAmount,
-  preferredCurrency
+  preferredCurrency,
+  merkleProof,
+  batchNum,
+  accountIndex
 }) {
   const classes = useExitStyles()
+  const [isWithdrawClicked, setIsWithdrawClicked] = useState(false)
 
   function getStep () {
-    return 1
+    if (!merkleProof) {
+      return STEPS.first
+    } else {
+      return STEPS.second
+    }
   }
 
   function getTag () {
     switch (getStep()) {
-      case 1:
+      case STEPS.first:
         return 'Initiated'
-      case 2:
+      case STEPS.second:
         return 'On hold'
-      case 3:
+      case STEPS.third:
         return 'Pending'
       default:
         return ''
     }
+  }
+
+  function onWithdrawClick () {
+    setIsWithdrawClicked(true)
+  }
+
+  function renderRedirect () {
+    return <Redirect to={`/withdraw-complete?tokenId=${token.id}&batchNum=${batchNum}&accountIndex=${accountIndex}`} />
+  }
+
+  if (isWithdrawClicked) {
+    return renderRedirect()
   }
 
   return (
@@ -34,21 +63,43 @@ function Exit ({
       <p className={classes.step}>Step {getStep()}/3</p>
       <div className={classes.rowTop}>
         <span className={classes.txType}>Withdrawal</span>
-        <span className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol}{fiatAmount}</span>
+        <span className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol}{fiatAmount.toFixed(2)}</span>
       </div>
       <div className={classes.rowBottom}>
-        <div className={classes.stepTagWrapper}><span className={classes.stepTag}>{getTag()}</span></div>
-        <span className={classes.tokenAmount}>{amount} {tokenSymbol}</span>
+        <div className={clsx({
+          [classes.stepTagWrapper]: true,
+          [classes.stepTagWrapperTwo]: getStep() === STEPS.second
+        })}
+        >
+          <span className={clsx({
+            [classes.stepTag]: true,
+            [classes.stepTagTwo]: getStep() === STEPS.second
+          })}
+          >{getTag()}
+          </span>
+        </div>
+        <span className={classes.tokenAmount}>{amount} {token.symbol}</span>
       </div>
+      {getStep() === STEPS.second &&
+        <div className={classes.withdraw}>
+          <div className={classes.withdrawInfo}>
+            <img src={infoIcon} alt='Info Icon' className={classes.infoIcon} />
+            <span className={classes.infoText}>Sign required to finalize withdraw.</span>
+          </div>
+          <button className={classes.withdrawButton} onClick={onWithdrawClick}>Finalise</button>
+        </div>}
     </div>
   )
 }
 
 Exit.propTypes = {
   amount: PropTypes.string.isRequired,
-  tokenSymbol: PropTypes.string.isRequired,
+  token: PropTypes.object.isRequired,
   fiatAmount: PropTypes.number.isRequired,
-  preferredCurrency: PropTypes.string.isRequired
+  preferredCurrency: PropTypes.string.isRequired,
+  merkleProof: PropTypes.object,
+  batchNum: PropTypes.number,
+  accountIndex: PropTypes.string
 }
 
 export default Exit

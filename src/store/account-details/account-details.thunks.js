@@ -54,4 +54,33 @@ function fetchHistoryTransactions (accountIndex) {
   }
 }
 
-export { fetchAccount, fetchPoolTransactions, fetchHistoryTransactions }
+/**
+ * Fetches the exit data for transactions of type Exit
+ *
+ * @param {Array} exitTransactions - Array of transactions of type Exit
+ */
+function fetchExits (exitTransactions) {
+  return (dispatch) => {
+    dispatch(accountDetailsActionTypes.loadExits())
+
+    const exitTransactionsPromises = []
+    for (const exitTransaction of exitTransactions) {
+      exitTransactionsPromises.push(rollupApi.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
+    }
+
+    return Promise.all(exitTransactionsPromises)
+      .then((exits) => {
+        // TODO: Remove once we have hermez-node
+        // const pendingWithdraws = exits.filter(exit => !exit.instantWithdrawn)
+        dispatch(accountDetailsActionTypes.loadExitsSuccess(exits))
+      })
+      .catch(err => dispatch(accountDetailsActionTypes.loadExitsFailure(err)))
+  }
+}
+
+export {
+  fetchAccount,
+  fetchPoolTransactions,
+  fetchHistoryTransactions,
+  fetchExits
+}

@@ -9,6 +9,9 @@ const initialTransactionState = {
   },
   feesTask: {
     status: 'pending'
+  },
+  exitTask: {
+    status: 'pending'
   }
 }
 
@@ -82,6 +85,29 @@ function transactionReducer (state = initialTransactionState, action) {
       return {
         ...state,
         feesTask: {
+          status: 'failed',
+          error: action.error
+        }
+      }
+    case transactionActionTypes.LOAD_EXIT:
+      return {
+        ...state,
+        exitTask: {
+          status: 'loading'
+        }
+      }
+    case transactionActionTypes.LOAD_EXIT_SUCCESS:
+      return {
+        ...state,
+        exitTask: {
+          status: 'successful',
+          data: action.exit
+        }
+      }
+    case transactionActionTypes.LOAD_EXIT_FAILURE:
+      return {
+        ...state,
+        exitTask: {
           status: 'failed',
           error: action.error
         }

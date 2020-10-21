@@ -1,9 +1,8 @@
 import { Scalar } from 'ffjavascript'
 import ethers from 'ethers'
 
-import { postPoolTransaction, getAccounts } from '../apis/rollup'
+import { postPoolTransaction, getAccounts, getAccount } from '../apis/rollup'
 import { fix2Float } from './float16'
-import { CliExternalOperator } from './cli-external-operator'
 import { addPoolTransaction } from './tx-pool'
 import { contractAddresses } from './constants'
 import { tokenTypes, detectTokenType, approve } from './tokens'
@@ -57,9 +56,7 @@ export async function getGasPrice (multiplier) {
  * @returns {Promise} transaction
  */
 export const deposit = async (amount, hezEthereumAddress, token, babyJubJub, gasLimit = 5000000, gasMultiplier = 1) => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
-  const signer = provider.getSigner()
-  const hermezContract = new ethers.Contract(contractAddresses.Hermez, HermezABI, signer)
+  const hermezContract = getContract(contractAddresses.Hermez, HermezABI)
 
   const ethereumAddress = getEthereumAddress(hezEthereumAddress)
   let account = (await getAccounts(ethereumAddress, [token.id])).accounts[0]
@@ -98,56 +95,99 @@ export const deposit = async (amount, hezEthereumAddress, token, babyJubJub, gas
   }
 }
 
-export const withdraw = async (addressSC, tokenId, walletRollup, abi, urlOperator,
-  numExitRoot, gasLimit = 5000000, gasMultiplier = 1) => {
-  const { publicKey, publicKeyHex } = walletRollup
-  const apiOperator = new CliExternalOperator(urlOperator)
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
-  const signer = provider.getSigner()
-  const contractWithSigner = new ethers.Contract(addressSC, abi, signer)
+/**
+ * Makes a force Exit. This is the L1 transaction equivalent of Exit.
+ *
+ * @param {BigInt} amount - The amount to be withdrawn
+ * @param {String} accountIndex - The account index in hez address format e.g. hez:DAI:4444
+ * @param {Object} token - The token information object as returned from the API
+ * @param {Number} gasLimit - Optional gas limit
+ * @param {Bumber} gasMultiplier - Optional gas multiplier
+ */
+export const forceExit = async (amount, accountIndex, token, gasLimit = 5000000, gasMultiplier = 1) => {
+  const hermezContract = getContract(contractAddresses.Hermez, HermezABI)
+
+  const account = await getAccount(accountIndex)
+  const ethereumAddress = getEthereumAddress(account.hezEthereumAddress)
 
   const overrides = {
     gasLimit,
-    gasPrice: await getGasPrice(gasMultiplier, provider)
+    gasPrice: await getGasPrice(gasMultiplier)
   }
 
-  try {
-    const res = await apiOperator.getExitInfo(tokenId, publicKeyHex[0], publicKeyHex[1], numExitRoot)
-    const infoExitTree = res.data
-    if (infoExitTree.found) {
-      return await contractWithSigner.withdraw(infoExitTree.state.amount, numExitRoot,
-        infoExitTree.siblings, publicKey, tokenId, overrides)
-    }
-    throw new Error(`No exit tree leaf was found in batch: ${numExitRoot} with babyjub: ${publicKeyHex}`)
-  } catch (error) {
-    throw new Error(`Message error: ${error.message}`)
+  const transactionParameters = [
+    0,
+    getAccountIndex(accountIndex),
+    0,
+    fix2Float(amount),
+    token.id,
+    1
+  ]
+
+  if (token.id === 0) {
+    overrides.value = amount
+    return hermezContract.addL1Transaction(...transactionParameters, overrides)
+      .then(() => {
+        return transactionParameters
+      })
   }
+
+  await approve(amount, ethereumAddress, token.ethereumAddress)
+  return hermezContract.addL1Transaction(...transactionParameters, overrides)
+    .then(() => {
+      return transactionParameters
+    })
 }
 
-export const forceWithdraw = async (addressSC, tokenId, amount, walletRollup, abi,
-  gasLimit = 5000000, gasMultiplier = 1) => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
-  const signer = provider.getSigner()
-  const contractWithSigner = new ethers.Contract(addressSC, abi, signer)
+/**
+ * Finalise the withdraw. This a L1 transaction.
+ *
+ * @param {BigInt} amount - The amount to be withdrawn
+ * @param {String} accountIndex - The account index in hez address format e.g. hez:DAI:4444
+ * @param {Object} token - The token information object as returned from the API
+ * @param {String} babyJubJub - The compressed BabyJubJub in hexadecimal format of the transaction sender.
+ * @param {BigInt} merkleRoot -
+ * @param {Array} merkleSiblings -
+ * @param {Number} gasLimit - Optional gas limit
+ * @param {Bumber} gasMultiplier - Optional gas multiplier
+ */
+export const withdraw = async (amount, accountIndex, token, babyJubJub, merkleRoot, merkleSiblings, gasLimit = 5000000, gasMultiplier = 1) => {
+  const hermezContract = getContract(contractAddresses.Hermez, HermezABI)
 
-  const feeOnchainTx = await contractWithSigner.feeOnchainTx()
+  const account = await getAccount(accountIndex)
+  const ethereumAddress = getEthereumAddress(account.hezEthereumAddress)
+
   const overrides = {
     gasLimit,
-    gasPrice: await getGasPrice(gasMultiplier, provider),
-    value: feeOnchainTx
+    gasPrice: await getGasPrice(gasMultiplier)
   }
 
-  const amountF = fix2Float(amount)
-  try {
-    return await contractWithSigner.forceWithdraw(walletRollup.publicKey, tokenId, amountF, overrides)
-  } catch (error) {
-    throw new Error(`Message error: ${error.message}`)
+  const transactionParameters = [
+    token.id,
+    amount,
+    `0x${babyJubJub}`,
+    merkleRoot,
+    merkleSiblings,
+    getAccountIndex(accountIndex),
+    true
+  ]
+
+  console.log(transactionParameters)
+
+  if (token.id === 0) {
+    overrides.value = amount
+    return hermezContract.withdrawMerkleProof(...transactionParameters, overrides)
+      .then(() => {
+        return transactionParameters
+      })
   }
+
+  await approve(amount, ethereumAddress, token.ethereumAddress)
+  return hermezContract.withdrawMerkleProof(...transactionParameters, overrides)
+    .then(() => {
+      return transactionParameters
+    })
 }
-
-// const exitAx = '0x0000000000000000000000000000000000000000000000000000000000000000'
-// const exitAy = '0x0000000000000000000000000000000000000000000000000000000000000000'
-// const exitEthAddr = '0x0000000000000000000000000000000000000000'
 
 /**
  * Sends a L2 transaction to the Coordinator
