@@ -28,7 +28,7 @@ function fetchTokens () {
 function fetchMetaMaskTokens (hermezTokens) {
   return async function (dispatch, getState) {
     dispatch(transactionActions.loadMetaMaskTokens())
-    const { account: { metaMaskWalletTask } } = getState()
+    const { global: { metaMaskWalletTask } } = getState()
 
     if (metaMaskWalletTask.status === 'successful') {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
