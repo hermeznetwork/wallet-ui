@@ -57,10 +57,7 @@ function fetchExits (exitTransactions) {
   return (dispatch) => {
     dispatch(homeActions.loadExits())
 
-    const exitTransactionsPromises = []
-    for (const exitTransaction of exitTransactions) {
-      exitTransactionsPromises.push(rollupApi.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
-    }
+    const exitTransactionsPromises = exitTransactions.map(exitTransaction => rollupApi.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
 
     return Promise.all(exitTransactionsPromises)
       .then((exits) => {

@@ -4,7 +4,7 @@ import ethers from 'ethers'
 import { postPoolTransaction, getAccounts, getAccount } from '../apis/rollup'
 import { fix2Float } from './float16'
 import { addPoolTransaction } from './tx-pool'
-import { contractAddresses } from './constants'
+import { contractAddresses, GAS_LIMIT, GAS_MULTIPLIER } from './constants'
 import { tokenTypes, detectTokenType, approve } from './tokens'
 import { getEthereumAddress, getAccountIndex } from './addresses'
 import { getContract } from './contracts'
@@ -58,7 +58,7 @@ export async function getGasPrice (multiplier) {
  *
  * @returns {Promise} transaction
  */
-export const deposit = async (amount, hezEthereumAddress, token, babyJubJub, gasLimit = 5000000, gasMultiplier = 1) => {
+export const deposit = async (amount, hezEthereumAddress, token, babyJubJub, gasLimit = GAS_LIMIT, gasMultiplier = GAS_MULTIPLIER) => {
   const hermezContract = getContract(contractAddresses.Hermez, HermezABI)
 
   const ethereumAddress = getEthereumAddress(hezEthereumAddress)
@@ -107,7 +107,7 @@ export const deposit = async (amount, hezEthereumAddress, token, babyJubJub, gas
  * @param {Number} gasLimit - Optional gas limit
  * @param {Bumber} gasMultiplier - Optional gas multiplier
  */
-export const forceExit = async (amount, accountIndex, token, gasLimit = 5000000, gasMultiplier = 1) => {
+export const forceExit = async (amount, accountIndex, token, gasLimit = GAS_LIMIT, gasMultiplier = GAS_MULTIPLIER) => {
   const hermezContract = getContract(contractAddresses.Hermez, HermezABI)
 
   const account = await getAccount(accountIndex)
@@ -154,7 +154,7 @@ export const forceExit = async (amount, accountIndex, token, gasLimit = 5000000,
  * @param {Number} gasLimit - Optional gas limit
  * @param {Bumber} gasMultiplier - Optional gas multiplier
  */
-export const withdraw = async (amount, accountIndex, token, babyJubJub, merkleRoot, merkleSiblings, gasLimit = 5000000, gasMultiplier = 1) => {
+export const withdraw = async (amount, accountIndex, token, babyJubJub, merkleRoot, merkleSiblings, gasLimit = GAS_LIMIT, gasMultiplier = GAS_MULTIPLIER) => {
   const hermezContract = getContract(contractAddresses.Hermez, HermezABI)
 
   const account = await getAccount(accountIndex)

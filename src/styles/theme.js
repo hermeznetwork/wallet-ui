@@ -12,7 +12,6 @@ const theme = {
     white: '#ffffff',
     black: '#2b2b2b',
     grey: {
-      soLight: 'rgba(122, 124, 137, 0.46)',
       veryLight: '#e1e1f1',
       light: '#f3f3f8',
       main: '#888baa',
