@@ -1,8 +1,36 @@
 import ethers from 'ethers'
+import { keccak256 } from 'js-sha3'
 
 import * as globalActions from './global.actions'
+import { hexToBuffer } from '../../utils/utils'
+import { getHermezAddress } from '../../utils/addresses'
+import { BabyJubWallet } from '../../utils/babyjub-wallet'
+import { METAMASK_MESSAGE } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
-import config from '../../utils/config.json'
+
+function fetchMetamaskWallet () {
+  return async function (dispatch) {
+    dispatch(globalActions.loadMetamaskWallet())
+    try {
+      const { ethereum } = window
+      if (!ethereum || !ethereum.isMetaMask) {
+        dispatch(globalActions.loadMetamaskWalletFailure('MetaMask is not available'))
+      }
+      await ethereum.request({ method: 'eth_requestAccounts' })
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const ethereumAddress = await signer.getAddress()
+      const hermezEthereumAddress = getHermezAddress(ethereumAddress)
+      const signature = await signer.signMessage(METAMASK_MESSAGE)
+      const hashedSignature = keccak256(signature)
+      const bufferSignature = hexToBuffer(hashedSignature)
+      const wallet = new BabyJubWallet(bufferSignature, hermezEthereumAddress)
+      dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
+    } catch (error) {
+      dispatch(globalActions.loadMetamaskWalletFailure(error.message))
+    }
+  }
+}
 
 function changeRedirectRoute (redirecRoute) {
   return (dispatch) => {
@@ -20,44 +48,8 @@ function fetchFiatExchangeRates (symbols) {
   }
 }
 
-function fetchConfig () {
-  return async (dispatch) => {
-    dispatch(globalActions.loadConfig())
-    try {
-      let chainId
-      let errorMessage = ''
-
-      if (config.nodeEth) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const networkInfo = await provider.getNetwork()
-        chainId = networkInfo.chainId
-      } else {
-        chainId = -1
-        errorMessage = 'No Node Ethereum'
-      }
-      if (!config.operator) errorMessage = 'No operator'
-      if (!config.address) errorMessage = 'No Rollup Address'
-      if (!config.abiRollup) errorMessage = 'No Rollup ABI'
-      if (!config.abiTokens) errorMessage = 'No Tokens ABI'
-      if (!config.tokensAddress) errorMessage = 'No Tokens Address'
-
-      dispatch(globalActions.loadConfigSuccess(config, config.abiRollup, config.abiTokens, chainId, errorMessage))
-      if (errorMessage !== '') {
-        return false
-      } else {
-        return true
-      }
-    } catch (error) {
-      const newConfig = config
-      newConfig.nodeEth = undefined
-      dispatch(globalActions.loadConfigFailure(newConfig, 'Failure Configuration'))
-      return false
-    }
-  }
-}
-
 export {
+  fetchMetamaskWallet,
   changeRedirectRoute,
-  fetchConfig,
   fetchFiatExchangeRates
 }

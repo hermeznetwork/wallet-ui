@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 import Container from '../container/container.view'
 import usePageHeaderStyles from './page-header.styles'
-import arrowBackIcon from '../../../images/icons/arrow-back.svg'
+import { ReactComponent as ArrowBackIcon } from '../../../images/icons/arrow-back.svg'
 
 function PageHeader ({ title, goBackRoute }) {
   const classes = usePageHeaderStyles()
@@ -13,10 +13,10 @@ function PageHeader ({ title, goBackRoute }) {
     <header className={classes.root}>
       <Container disableVerticalGutters>
         <Link to={goBackRoute} className={classes.goBackButton}>
-          <img src={arrowBackIcon} alt='Go back' className={classes.arrowBackIcon} />
+          <ArrowBackIcon className={classes.arrowBackIcon} />
         </Link>
         <div className={classes.headerContent}>
-          <h1 className={classes.title}>{title}</h1>
+          <h1 className={classes.title}>{title || <></>}</h1>
         </div>
       </Container>
     </header>
@@ -24,7 +24,7 @@ function PageHeader ({ title, goBackRoute }) {
 }
 
 PageHeader.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   goBackRoute: PropTypes.string.isRequired
 }
 

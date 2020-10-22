@@ -26,7 +26,6 @@ function TransactionOverview ({
 }) {
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
-  console.log(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
 
   /**
    * Uses helper function to convert amount to Fiat in the preferred currency

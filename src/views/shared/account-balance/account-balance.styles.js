@@ -1,9 +1,10 @@
 import { createUseStyles } from 'react-jss'
 
-const useTotalBalanceStyles = createUseStyles({
+const useAccountBalanceStyles = createUseStyles({
   root: {
     display: 'flex',
-    alignItems: 'baseline'
+    alignItems: 'baseline',
+    justifyContent: 'center'
   },
   amount: {
     margin: 0
@@ -14,4 +15,4 @@ const useTotalBalanceStyles = createUseStyles({
   }
 })
 
-export default useTotalBalanceStyles
+export default useAccountBalanceStyles

@@ -1,5 +1,17 @@
 import { createUseStyles } from 'react-jss'
 
+const metaMaskIconWrapperStyles = (theme) => ({
+  border: 0,
+  borderRadius: theme.spacing(4),
+  background: theme.palette.white,
+  width: theme.spacing(12),
+  height: theme.spacing(12),
+  padding: theme.spacing(1.5),
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center'
+})
+
 const useLoginStyles = createUseStyles(theme => ({
   root: {
     width: '100%',
@@ -24,16 +36,11 @@ const useLoginStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.bold,
     marginBottom: theme.spacing(6)
   },
-  walletButton: {
-    border: 0,
-    borderRadius: theme.spacing(4),
-    background: theme.palette.white,
-    width: theme.spacing(12),
-    height: theme.spacing(12),
-    padding: theme.spacing(1.5),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+  walletContainer: {
+    ...metaMaskIconWrapperStyles(theme)
+  },
+  walletButtonContainer: {
+    ...metaMaskIconWrapperStyles(theme),
     cursor: 'pointer',
     '&:focus': {
       outline: 'none'

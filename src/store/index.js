@@ -4,7 +4,6 @@ import { connectRouter, routerMiddleware } from 'connected-react-router'
 import thunk from 'redux-thunk'
 
 import globalReducer from './global/global.reducer'
-import accountReducer from './account/account.reducer'
 import homeReducer from './home/home.reducer'
 import settingsReducer from './settings/settings.reducer'
 import accountDetailsReducer from './account-details/account-details.reducer'
@@ -15,7 +14,6 @@ function createRootReducer (history) {
   return combineReducers({
     router: connectRouter(history),
     global: globalReducer,
-    account: accountReducer,
     home: homeReducer,
     accountDetails: accountDetailsReducer,
     settings: settingsReducer,

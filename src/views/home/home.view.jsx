@@ -6,7 +6,7 @@ import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
 import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/home/home.thunks'
-import TotalBalance from './components/total-balance/total-balance.view'
+import AccountBalance from '../shared/account-balance/account-balance.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
@@ -63,25 +63,35 @@ function Home ({
     }
   }, [historyTransactionsTask, onLoadExits])
 
-  function getTotalBalance (accounts) {
-    if (fiatExchangeRatesTask.status !== 'successful') {
-      return undefined
+  function getTotalBalance (accountsTask) {
+    switch (accountsTask.status) {
+      case 'reloading':
+      case 'successful': {
+        if (fiatExchangeRatesTask.status !== 'successful') {
+          return undefined
+        }
+
+        const { accounts } = accountsTask.data
+
+        return accounts.reduce((amount, account) => {
+          const fixedAccountBalance = getFixedTokenAmount(
+            account.balance,
+            account.token.decimals
+          )
+          const fiatBalance = getTokenAmountInPreferredCurrency(
+            fixedAccountBalance,
+            account.token.USD,
+            preferredCurrency,
+            fiatExchangeRatesTask.data
+          )
+
+          return amount + fiatBalance
+        }, 0)
+      }
+      default: {
+        return undefined
+      }
     }
-
-    return accounts.reduce((amount, account) => {
-      const fixedAccountBalance = getFixedTokenAmount(
-        account.balance,
-        account.token.decimals
-      )
-      const fiatBalance = getTokenAmountInPreferredCurrency(
-        fixedAccountBalance,
-        account.token.USD,
-        preferredCurrency,
-        fiatExchangeRatesTask.data
-      )
-
-      return amount + fiatBalance
-    }, 0)
   }
 
   function getPendingExits () {
@@ -142,33 +152,11 @@ function Home ({
                 />
               )
           }
-          <div className={classes.totalBalance}>
-            {(() => {
-              switch (accountsTask.status) {
-                case 'loading': {
-                  return <Spinner />
-                }
-                case 'failed': {
-                  return (
-                    <TotalBalance
-                      amount={undefined}
-                      currency={preferredCurrency}
-                    />
-                  )
-                }
-                case 'successful': {
-                  return (
-                    <TotalBalance
-                      amount={getTotalBalance(accountsTask.data.accounts)}
-                      currency={preferredCurrency}
-                    />
-                  )
-                }
-                default: {
-                  return <></>
-                }
-              }
-            })()}
+          <div className={classes.accountBalance}>
+            <AccountBalance
+              amount={getTotalBalance(accountsTask)}
+              currency={preferredCurrency}
+            />
           </div>
           <TransactionActions hideWithdraw />
         </section>
@@ -178,12 +166,11 @@ function Home ({
           {renderExits()}
           {(() => {
             switch (accountsTask.status) {
-              case 'loading': {
+              case 'loading':
+              case 'failed': {
                 return <Spinner />
               }
-              case 'failed': {
-                return <p>{accountsTask.error}</p>
-              }
+              case 'reloading':
               case 'successful': {
                 return (
                   <AccountList
@@ -225,7 +212,7 @@ Home.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.account.metaMaskWalletTask,
+  metaMaskWalletTask: state.global.metaMaskWalletTask,
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.settings.preferredCurrency,

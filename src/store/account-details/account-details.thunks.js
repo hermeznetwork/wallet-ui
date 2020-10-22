@@ -26,7 +26,7 @@ function fetchPoolTransactions (accountIndex) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadPoolTransactions())
 
-    const { account: { metaMaskWalletTask } } = getState()
+    const { global: { metaMaskWalletTask } } = getState()
 
     if (metaMaskWalletTask.status === 'successful') {
       const { publicKeyCompressedHex } = metaMaskWalletTask.data

@@ -111,11 +111,10 @@ function Transaction ({
 
   // If we have a batchNum and accountIndex, we need to fetch the corresponding exit transaction
   React.useEffect(() => {
-    onLoadExit(batchNum, accountIndex)
-      .then(() => {
-        console.log('exit loaded')
-      })
-  }, [batchNum, accountIndex, onLoadExit])
+    if (transactionType === 'withdraw' && batchNum && accountIndex) {
+      onLoadExit(batchNum, accountIndex)
+    }
+  }, [transactionType, batchNum, accountIndex, onLoadExit])
 
   React.useEffect(() => {
     if (exitTask.status === 'successful') {
@@ -362,7 +361,7 @@ Transaction.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.account.metaMaskWalletTask,
+  metaMaskWalletTask: state.global.metaMaskWalletTask,
   metaMaskTokensTask: state.transaction.metaMaskTokensTask,
   accountsTask: state.home.accountsTask,
   tokensTask: state.transaction.tokensTask,
