@@ -6,7 +6,7 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
-import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions } from '../../store/account-details/account-details.thunks'
+import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -15,6 +15,7 @@ import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 import ExitList from '../shared/exit-list/exit-list.view'
+import { TxType } from '../../utils/tx'
 import AccountBalance from '../shared/account-balance/account-balance.view'
 import TokenBalance from './components/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
@@ -24,11 +25,13 @@ function AccountDetails ({
   accountTask,
   poolTransactionsTask,
   historyTransactionsTask,
+  exitsTask,
   fiatExchangeRatesTask,
   onChangeHeader,
   onLoadAccount,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
+  onLoadExits,
   onNavigateToTransactionDetails
 }) {
   const theme = useTheme()
@@ -41,6 +44,14 @@ function AccountDetails ({
     onLoadPoolTransactions(accountIndex)
     onLoadHistoryTransactions(accountIndex)
   }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadHistoryTransactions])
+
+  React.useEffect(() => {
+    if (historyTransactionsTask.status === 'successful') {
+      const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
+      console.log(2, exitTransactions)
+      onLoadExits(exitTransactions)
+    }
+  }, [historyTransactionsTask, onLoadExits])
 
   React.useEffect(() => {
     if (accountTask.status === 'successful' || accountTask.status === 'reloading') {
@@ -88,11 +99,8 @@ function AccountDetails ({
     return poolTransactionsTask.data.filter((transaction) => transaction.type !== 'Exit')
   }
 
-  function getHistoryExits () {
-    return historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === 'Exit')
-  }
-
   function getHistoryTransactions () {
+    console.log(historyTransactionsTask)
     return historyTransactionsTask.data.transactions.filter((transaction) => transaction.type !== 'Exit')
   }
 
@@ -148,15 +156,16 @@ function AccountDetails ({
                     }
                     preferredCurrency={preferredCurrency}
                   />
-                  <ExitList
-                    transactions={getHistoryExits()}
-                    fiatExchangeRates={
-                      fiatExchangeRatesTask.status === 'successful'
-                        ? fiatExchangeRatesTask.data
-                        : undefined
-                    }
-                    preferredCurrency={preferredCurrency}
-                  />
+                  {exitsTask.status === 'successful' &&
+                    <ExitList
+                      transactions={exitsTask.data}
+                      fiatExchangeRates={
+                        fiatExchangeRatesTask.status === 'successful'
+                          ? fiatExchangeRatesTask.data
+                          : undefined
+                      }
+                      preferredCurrency={preferredCurrency}
+                    />}
                   <TransactionList
                     transactions={getPendingTransactions()}
                     fiatExchangeRates={
@@ -194,11 +203,13 @@ AccountDetails.propTypes = {
   accountTask: PropTypes.object.isRequired,
   poolTransactionsTask: PropTypes.object.isRequired,
   historyTransactionsTask: PropTypes.object.isRequired,
+  exitsTask: PropTypes.object.isRequired,
   fiatExchangeRatesTask: PropTypes.object.isRequired,
   onLoadAccount: PropTypes.func.isRequired,
   onChangeHeader: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadHistoryTransactions: PropTypes.func.isRequired,
+  onLoadExits: PropTypes.func.isRequired,
   onNavigateToTransactionDetails: PropTypes.func.isRequired
 }
 
@@ -207,6 +218,7 @@ const mapStateToProps = (state) => ({
   accountTask: state.accountDetails.accountTask,
   poolTransactionsTask: state.accountDetails.poolTransactionsTask,
   historyTransactionsTask: state.accountDetails.historyTransactionsTask,
+  exitsTask: state.accountDetails.exitsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
@@ -217,6 +229,8 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadPoolTransactions: (accountIndex) => dispatch(fetchPoolTransactions(accountIndex)),
   onLoadHistoryTransactions: (accountIndex) =>
     dispatch(fetchHistoryTransactions(accountIndex)),
+  onLoadExits: (exitTransactions) =>
+    dispatch(fetchExits(exitTransactions)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`))
 })

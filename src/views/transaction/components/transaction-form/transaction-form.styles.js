@@ -20,7 +20,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     borderRadius: 12
   },
   selectAmountError: {
-    borderColor: theme.palette.red
+    borderColor: theme.palette.red.main
   },
   amount: {
     display: 'flex',
@@ -83,7 +83,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     marginTop: `${theme.spacing(1.5)}px`,
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.medium,
-    color: theme.palette.red
+    color: theme.palette.red.main
   },
   selectAmountErrorMessageVisible: {
     display: 'flex'
@@ -113,7 +113,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     }
   },
   receiverError: {
-    borderColor: theme.palette.red
+    borderColor: theme.palette.red.main
   },
   receiverErrorMessageVisible: {
     display: 'flex'

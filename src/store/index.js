@@ -3,7 +3,6 @@ import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly'
 import { connectRouter, routerMiddleware } from 'connected-react-router'
 import thunk from 'redux-thunk'
 
-import transactionsReducer from './tx/tx.reducer'
 import globalReducer from './global/global.reducer'
 import homeReducer from './home/home.reducer'
 import settingsReducer from './settings/settings.reducer'
@@ -18,7 +17,6 @@ function createRootReducer (history) {
     home: homeReducer,
     accountDetails: accountDetailsReducer,
     settings: settingsReducer,
-    transactions: transactionsReducer,
     transactionDetails: transactionDetailsReducer,
     transaction: transactionReducer
   })

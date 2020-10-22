@@ -9,6 +9,9 @@ const initialAccountDetailsReducer = {
   },
   historyTransactionsTask: {
     status: 'pending'
+  },
+  exitsTask: {
+    status: 'pending'
   }
 }
 
@@ -89,6 +92,32 @@ function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
         historyTransactionsTask: {
           status: 'failed',
           error: 'An error ocurred loading the transactions from the history'
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_EXITS: {
+      return {
+        ...state,
+        exitsTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_EXITS_SUCCESS: {
+      return {
+        ...state,
+        exitsTask: {
+          status: 'successful',
+          data: action.exits
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_EXITS_FAILURE: {
+      return {
+        ...state,
+        exitsTask: {
+          status: 'failed',
+          error: action.error
         }
       }
     }

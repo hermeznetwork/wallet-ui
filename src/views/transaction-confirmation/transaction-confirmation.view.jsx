@@ -15,7 +15,9 @@ function TransactionConfirmation ({ transactionType }) {
         return 'Your transaction is awaiting verification.'
       case 'transfer':
         return 'Your transaction is completed.'
-      case 'withdraw':
+      case 'exit':
+        return 'Withdrawal has been initiated and will require additional confirmation in a few minutes.'
+      case 'forceExit':
         return 'Withdrawal has been initiated and will require additional confirmation in a few minutes.'
       default:
         return ''

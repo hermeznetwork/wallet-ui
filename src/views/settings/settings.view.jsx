@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
+import { push } from 'connected-react-router'
 
 import useSettingsStyles from './settings.styles'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
@@ -25,7 +26,8 @@ function Settings ({
   onChangeHeader,
   onChangePreferredCurrency,
   onDisconnectWallet,
-  onOpenSnackbar
+  onOpenSnackbar,
+  onNavigateToForceExit
 }) {
   const theme = useTheme()
   const classes = useSettingsStyles()
@@ -82,7 +84,7 @@ function Settings ({
           <div className={classes.settingContainer}>
             <div className={classes.settingHeader}>
               <ExitIcon />
-              <p className={classes.settingTitle}>Force withdrawal</p>
+              <p className={classes.settingTitle} onClick={onNavigateToForceExit}>Force withdrawal</p>
             </div>
           </div>
           {
@@ -130,7 +132,8 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: (headerData) => dispatch(changeHeader(headerData)),
   onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
   onDisconnectWallet: () => dispatch(disconnectMetaMaskWallet()),
-  onOpenSnackbar: (message) => dispatch(openSnackbar(message))
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
+  onNavigateToForceExit: () => dispatch(push('/force-withdrawal'))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Settings))

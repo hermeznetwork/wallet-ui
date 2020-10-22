@@ -94,6 +94,9 @@ function fetchMetaMaskTokens (hermezTokens) {
   }
 }
 
+/**
+ * Fetches the recommended fees from the Coordinator
+ */
 function fetchFees () {
   return async function (dispatch) {
     dispatch(transactionActions.loadFees())
@@ -104,8 +107,19 @@ function fetchFees () {
   }
 }
 
+function fetchExit (batchNum, accountIndex) {
+  return async function (dispatch) {
+    dispatch(transactionActions.loadExit())
+
+    return rollupApi.getExit(batchNum, accountIndex)
+      .then(res => dispatch(transactionActions.loadExitSuccess(res)))
+      .catch(err => dispatch(transactionActions.loadExitFailure(err)))
+  }
+}
+
 export {
   fetchTokens,
   fetchMetaMaskTokens,
-  fetchFees
+  fetchFees,
+  fetchExit
 }
