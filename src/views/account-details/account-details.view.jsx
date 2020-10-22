@@ -15,6 +15,7 @@ import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 import ExitList from '../shared/exit-list/exit-list.view'
+import { TxType } from '../../utils/tx'
 
 function AccountDetails ({
   preferredCurrency,
@@ -42,7 +43,7 @@ function AccountDetails ({
 
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
-      const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === 'Exit')
+      const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
       console.log(2, exitTransactions)
       onLoadExits(exitTransactions)
     }

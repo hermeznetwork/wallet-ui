@@ -14,11 +14,11 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../ut
 import Container from '../shared/container/container.view'
 import { copyToClipboard } from '../../utils/dom'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
-
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 import ExitList from '../shared/exit-list/exit-list.view'
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import Button from '../shared/button/button.view'
+import { TxType } from '../../utils/tx'
 
 function Home ({
   metaMaskWalletTask,
@@ -57,7 +57,7 @@ function Home ({
 
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
-      const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === 'Exit')
+      const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
       console.log(2, exitTransactions)
       onLoadExits(exitTransactions)
     }
