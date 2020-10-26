@@ -46,7 +46,7 @@ const useTransactionOverviewStyles = createUseStyles(theme => ({
     marginTop: `${theme.spacing(5)}px`,
     cursor: 'pointer',
     outline: 0,
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(3)}px 0`
     }

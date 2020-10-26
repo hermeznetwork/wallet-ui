@@ -25,7 +25,7 @@ const useLoginStyles = createUseStyles(theme => ({
   logo: {
     marginTop: theme.spacing(6),
     marginBottom: theme.spacing(12),
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       marginTop: theme.spacing(9)
     }
   },

@@ -34,7 +34,7 @@ const theme = {
     extraBold: '800'
   },
   breakpoints: {
-    sm: '@media (min-width: 576px)'
+    upSm: '@media (min-width: 576px)'
   },
   spacing: (value) => value * 8,
   headerHeight: 72

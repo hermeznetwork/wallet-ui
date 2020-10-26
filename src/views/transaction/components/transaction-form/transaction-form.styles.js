@@ -16,7 +16,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     fontSize: `${theme.spacing(2.5)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       marginBottom: `${theme.spacing(6)}px`
     }
   },
@@ -33,7 +33,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     justifyContent: 'center',
     flexDirection: 'column',
     padding: theme.spacing(2),
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       padding: theme.spacing(5.5)
     }
   },
@@ -41,7 +41,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       marginBottom: theme.spacing(1.5)
     }
@@ -77,7 +77,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     color: theme.palette.grey.main,
     flex: 1,
     padding: `${theme.spacing(2)}px 0`,
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(3.5)}px 0`
     }
@@ -131,7 +131,7 @@ const useAccountListStyles = createUseStyles(theme => ({
       color: theme.palette.grey.main,
       opacity: 1
     },
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(5.5)}px ${theme.spacing(2)}px ${theme.spacing(5.5)}px ${theme.spacing(5)}px`
     }
@@ -155,7 +155,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     color: theme.palette.black.dark,
     cursor: 'pointer',
     display: 'none',
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(2.5)}px`,
       marginRight: theme.spacing(3)
     }
@@ -173,7 +173,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     marginRight: theme.spacing(0.5),
     cursor: 'pointer',
     display: 'none',
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(2.5)}px`,
       marginRight: theme.spacing(3)
     }
@@ -201,7 +201,7 @@ const useAccountListStyles = createUseStyles(theme => ({
       backgroundColor: theme.palette.grey.main,
       cursor: 'default'
     },
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(3)}px 0`,
       marginTop: `${theme.spacing(14.5)}px`
@@ -214,7 +214,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     cursor: 'pointer',
     marginTop: `${theme.spacing(2.5)}px`,
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       marginTop: `${theme.spacing(4.5)}px`
     }
   },
@@ -223,7 +223,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
     marginBottom: `${theme.spacing(1)}px`,
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(2.25)}px 0`
     }

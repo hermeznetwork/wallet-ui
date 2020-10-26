@@ -10,7 +10,7 @@ const useTransactionLayoutStyles = createUseStyles(theme => ({
     height: 24,
     marginTop: `${theme.spacing(4)}px`,
     marginBottom: `${theme.spacing(4.5)}px`,
-    [theme.breakpoints.sm]: {
+    [theme.breakpoints.upSm]: {
       marginBottom: `${theme.spacing(9.5)}px`
     }
   },
