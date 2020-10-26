@@ -12,10 +12,10 @@ function PageHeader ({ title, goBackRoute }) {
   return (
     <header className={classes.root}>
       <Container disableVerticalGutters>
-        <Link to={goBackRoute} className={classes.goBackButton}>
-          <ArrowBackIcon className={classes.arrowBackIcon} />
-        </Link>
         <div className={classes.headerContent}>
+          <Link to={goBackRoute} className={classes.goBackButton}>
+            <ArrowBackIcon className={classes.arrowBackIcon} />
+          </Link>
           <h1 className={classes.title}>{title || <></>}</h1>
         </div>
       </Container>

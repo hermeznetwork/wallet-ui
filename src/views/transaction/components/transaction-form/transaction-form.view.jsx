@@ -295,7 +295,7 @@ function TransactionForm ({
   }
 
   return (
-    <section className={classes.transaction}>
+    <section className={classes.root}>
       <div className={classes.token}>
         <p className={classes.tokenName}>{account.token.name}</p>
         {

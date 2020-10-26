@@ -1,7 +1,9 @@
 import { createUseStyles } from 'react-jss'
 
 const useAccountListStyles = createUseStyles(theme => ({
-  transaction: {},
+  root: {
+    width: '100%'
+  },
   token: {
     display: 'flex',
     alignItems: 'center',
@@ -36,6 +38,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     color: theme.palette.black
   },
   amountInput: {
+    width: '100%',
     border: 0,
     outline: 'none',
     caretColor: theme.palette.orange.main,
@@ -96,17 +99,21 @@ const useAccountListStyles = createUseStyles(theme => ({
   receiverInputWrapper: {
     width: '100%',
     position: 'relative',
-    marginTop: `${theme.spacing(5)}px`
+    marginTop: `${theme.spacing(5)}px`,
+    borderRadius: 12,
+    border: `solid 2px ${theme.palette.grey.veryLight}`,
+    display: 'flex',
+    alignItems: 'center',
+    overflow: 'hidden'
   },
   receiver: {
     width: '100%',
-    borderRadius: 12,
-    border: `solid 2px ${theme.palette.grey.veryLight}`,
-    padding: `${theme.spacing(5.5)}px ${theme.spacing(5) + 30}px ${theme.spacing(5.5)}px ${theme.spacing(5)}px`,
+    padding: `${theme.spacing(5.5)}px ${theme.spacing(2)}px ${theme.spacing(5.5)}px ${theme.spacing(5)}px`,
     fontSize: `${theme.spacing(3)}px`,
     color: theme.palette.black.dark,
     fontWeight: theme.fontWeights.medium,
     outline: 0,
+    border: 'none',
     '&::placeholder': {
       color: theme.palette.grey.main,
       opacity: 1
@@ -119,15 +126,13 @@ const useAccountListStyles = createUseStyles(theme => ({
     display: 'flex'
   },
   receiverPaste: {
-    position: 'absolute',
-    right: `${theme.spacing(5)}px`,
-    top: 0,
     height: '100%',
     alignItems: 'center',
     border: 0,
     background: 0,
     outline: 'none',
-    padding: 0,
+    padding: theme.spacing(2),
+    marginRight: theme.spacing(3),
     fontSize: `${theme.spacing(2.5)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black.dark,
@@ -138,15 +143,13 @@ const useAccountListStyles = createUseStyles(theme => ({
     display: 'flex'
   },
   receiverDelete: {
-    position: 'absolute',
-    right: `${theme.spacing(5)}px`,
-    top: 0,
     height: '100%',
     alignItems: 'center',
     border: 0,
     background: 0,
     outline: 'none',
-    padding: 0,
+    padding: theme.spacing(2),
+    marginRight: theme.spacing(3),
     cursor: 'pointer',
     display: 'none'
   },
