@@ -11,11 +11,14 @@ const useAccountListStyles = createUseStyles(theme => ({
     backgroundColor: theme.palette.grey.light,
     borderRadius: 12,
     height: `${theme.spacing(10)}px`,
-    marginBottom: `${theme.spacing(6)}px`,
+    marginBottom: `${theme.spacing(2.4)}px`,
     padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
     fontSize: `${theme.spacing(2.5)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black
+    color: theme.palette.black,
+    [theme.breakpoints.sm]: {
+      marginBottom: `${theme.spacing(6)}px`
+    }
   },
   selectAmount: {
     border: `solid 2px ${theme.palette.grey.veryLight}`,
@@ -29,13 +32,19 @@ const useAccountListStyles = createUseStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    padding: `${theme.spacing(5.5)}px`
+    padding: theme.spacing(2),
+    [theme.breakpoints.sm]: {
+      padding: theme.spacing(5.5)
+    }
   },
   amountCurrency: {
-    margin: `0 0 ${theme.spacing(1.5)}px`,
-    fontSize: `${theme.spacing(3)}px`,
+    fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black
+    color: theme.palette.black,
+    [theme.breakpoints.sm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      marginBottom: theme.spacing(1.5)
+    }
   },
   amountInput: {
     width: '100%',
@@ -63,11 +72,15 @@ const useAccountListStyles = createUseStyles(theme => ({
     outline: 'none',
     border: '0',
     borderTop: `solid 2px ${theme.palette.grey.veryLight}`,
-    fontSize: `${theme.spacing(3)}px`,
+    fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.grey.main,
     flex: 1,
-    padding: `${theme.spacing(3.5)}px 0`
+    padding: `${theme.spacing(2)}px 0`,
+    [theme.breakpoints.sm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      padding: `${theme.spacing(3.5)}px 0`
+    }
   },
   sendAll: {
     borderRight: `solid 2px ${theme.palette.grey.veryLight}`
@@ -108,8 +121,8 @@ const useAccountListStyles = createUseStyles(theme => ({
   },
   receiver: {
     width: '100%',
-    padding: `${theme.spacing(5.5)}px ${theme.spacing(2)}px ${theme.spacing(5.5)}px ${theme.spacing(5)}px`,
-    fontSize: `${theme.spacing(3)}px`,
+    padding: `${theme.spacing(3)}px ${theme.spacing(1)}px ${theme.spacing(3)}px ${theme.spacing(2.5)}px`,
+    fontSize: `${theme.spacing(2)}px`,
     color: theme.palette.black.dark,
     fontWeight: theme.fontWeights.medium,
     outline: 0,
@@ -117,6 +130,10 @@ const useAccountListStyles = createUseStyles(theme => ({
     '&::placeholder': {
       color: theme.palette.grey.main,
       opacity: 1
+    },
+    [theme.breakpoints.sm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      padding: `${theme.spacing(5.5)}px ${theme.spacing(2)}px ${theme.spacing(5.5)}px ${theme.spacing(5)}px`
     }
   },
   receiverError: {
@@ -132,12 +149,16 @@ const useAccountListStyles = createUseStyles(theme => ({
     background: 0,
     outline: 'none',
     padding: theme.spacing(2),
-    marginRight: theme.spacing(3),
-    fontSize: `${theme.spacing(2.5)}px`,
+    marginRight: theme.spacing(0.5),
+    fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black.dark,
     cursor: 'pointer',
-    display: 'none'
+    display: 'none',
+    [theme.breakpoints.sm]: {
+      fontSize: `${theme.spacing(2.5)}px`,
+      marginRight: theme.spacing(3)
+    }
   },
   receiverPasteVisible: {
     display: 'flex'
@@ -149,9 +170,13 @@ const useAccountListStyles = createUseStyles(theme => ({
     background: 0,
     outline: 'none',
     padding: theme.spacing(2),
-    marginRight: theme.spacing(3),
+    marginRight: theme.spacing(0.5),
     cursor: 'pointer',
-    display: 'none'
+    display: 'none',
+    [theme.breakpoints.sm]: {
+      fontSize: `${theme.spacing(2.5)}px`,
+      marginRight: theme.spacing(3)
+    }
   },
   receiverDeleteVisible: {
     display: 'flex'
@@ -163,18 +188,23 @@ const useAccountListStyles = createUseStyles(theme => ({
   continue: {
     cursor: 'pointer',
     width: '100%',
-    marginTop: `${theme.spacing(14.5)}px`,
-    padding: `${theme.spacing(3.5)}px 0`,
+    marginTop: `${theme.spacing(8)}px`,
+    padding: `${theme.spacing(2.25)}px 0`,
     backgroundColor: theme.palette.secondary.main,
     border: 0,
     outline: 'none',
     borderRadius: 14,
-    fontSize: `${theme.spacing(3)}px`,
+    fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.white,
     '&[disabled]': {
       backgroundColor: theme.palette.grey.main,
-      cursor: 'normal'
+      cursor: 'default'
+    },
+    [theme.breakpoints.sm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      padding: `${theme.spacing(3)}px 0`,
+      marginTop: `${theme.spacing(14.5)}px`
     }
   },
   feeWrapper: {
@@ -183,13 +213,20 @@ const useAccountListStyles = createUseStyles(theme => ({
     justifyContent: 'center',
     flexDirection: 'column',
     cursor: 'pointer',
-    marginTop: `${theme.spacing(4.5)}px`
+    marginTop: `${theme.spacing(2.5)}px`,
+    [theme.breakpoints.sm]: {
+      marginTop: `${theme.spacing(4.5)}px`
+    }
   },
   fee: {
-    fontSize: `${theme.spacing(3)}px`,
+    fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
-    marginBottom: `${theme.spacing(1)}px`
+    marginBottom: `${theme.spacing(1)}px`,
+    [theme.breakpoints.sm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      padding: `${theme.spacing(2.25)}px 0`
+    }
   },
   feeIcon: {
     width: `${theme.spacing(2)}px`,

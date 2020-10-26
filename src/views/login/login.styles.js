@@ -23,8 +23,11 @@ const useLoginStyles = createUseStyles(theme => ({
     alignItems: 'center'
   },
   logo: {
-    marginTop: theme.spacing(9),
-    marginBottom: theme.spacing(12)
+    marginTop: theme.spacing(6),
+    marginBottom: theme.spacing(12),
+    [theme.breakpoints.sm]: {
+      marginTop: theme.spacing(9)
+    }
   },
   connectText: {
     fontSize: theme.spacing(2.5),

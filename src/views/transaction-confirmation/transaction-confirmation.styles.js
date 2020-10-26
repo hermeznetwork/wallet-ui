@@ -20,7 +20,11 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
     marginTop: `${theme.spacing(6)}px`
   },
   doneWrapper: {
-    marginTop: `${theme.spacing(18)}px`
+    marginTop: `${theme.spacing(9)}px`,
+    [theme.breakpoints.sm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      marginTop: `${theme.spacing(18)}px`
+    }
   },
   done: {
     cursor: 'pointer',
@@ -29,10 +33,14 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
     border: 0,
     outline: 'none',
     color: theme.palette.white,
-    fontSize: `${theme.spacing(3)}px`,
+    fontSize: `${theme.spacing(2.5)}px`,
     fontWeight: theme.fontWeights.bold,
-    padding: `${theme.spacing(3)}px 0`,
-    width: `${theme.spacing(24)}px`
+    padding: `${theme.spacing(2.25)}px 0`,
+    width: `${theme.spacing(24)}px`,
+    [theme.breakpoints.sm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      padding: `${theme.spacing(3)}px 0`
+    }
   }
 }))
 

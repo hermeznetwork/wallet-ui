@@ -9,7 +9,10 @@ const useTransactionLayoutStyles = createUseStyles(theme => ({
     position: 'relative',
     height: 24,
     marginTop: `${theme.spacing(4)}px`,
-    marginBottom: `${theme.spacing(9.5)}px`
+    marginBottom: `${theme.spacing(4.5)}px`,
+    [theme.breakpoints.sm]: {
+      marginBottom: `${theme.spacing(9.5)}px`
+    }
   },
   headerPage: {
     position: 'fixed',
