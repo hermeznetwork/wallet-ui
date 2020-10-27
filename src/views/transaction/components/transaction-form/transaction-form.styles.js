@@ -10,14 +10,14 @@ const useAccountListStyles = createUseStyles(theme => ({
     justifyContent: 'space-between',
     backgroundColor: theme.palette.grey.light,
     borderRadius: 12,
-    height: `${theme.spacing(10)}px`,
-    marginBottom: `${theme.spacing(2.4)}px`,
+    height: theme.spacing(10),
+    marginBottom: theme.spacing(2.5),
     padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
     fontSize: `${theme.spacing(2.5)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
     [theme.breakpoints.upSm]: {
-      marginBottom: `${theme.spacing(6)}px`
+      marginBottom: theme.spacing(6)
     }
   },
   selectAmount: {
@@ -91,12 +91,12 @@ const useAccountListStyles = createUseStyles(theme => ({
     justifyContent: 'center'
   },
   changeCurrencyIcon: {
-    marginRight: `${theme.spacing(1)}px`
+    marginRight: theme.spacing(1)
   },
   errorMessage: {
     display: 'none',
     alignItems: 'center',
-    marginTop: `${theme.spacing(1.5)}px`,
+    marginTop: theme.spacing(1.5),
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.red.main
@@ -105,14 +105,14 @@ const useAccountListStyles = createUseStyles(theme => ({
     display: 'flex'
   },
   errorIcon: {
-    marginRight: `${theme.spacing(1)}px`,
-    width: `${theme.spacing(2.5)}px`,
-    height: `${theme.spacing(2.5)}px`
+    marginRight: theme.spacing(1),
+    width: theme.spacing(2.5),
+    height: theme.spacing(2.5)
   },
   receiverInputWrapper: {
     width: '100%',
     position: 'relative',
-    marginTop: `${theme.spacing(5)}px`,
+    marginTop: theme.spacing(5),
     borderRadius: 12,
     border: `solid 2px ${theme.palette.grey.veryLight}`,
     display: 'flex',
@@ -188,8 +188,8 @@ const useAccountListStyles = createUseStyles(theme => ({
   continue: {
     cursor: 'pointer',
     width: '100%',
-    marginTop: `${theme.spacing(8)}px`,
-    padding: `${theme.spacing(2.25)}px 0`,
+    marginTop: theme.spacing(8),
+    padding: `${theme.spacing(2)}px 0`,
     backgroundColor: theme.palette.secondary.main,
     border: 0,
     outline: 'none',
@@ -204,7 +204,7 @@ const useAccountListStyles = createUseStyles(theme => ({
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(3)}px 0`,
-      marginTop: `${theme.spacing(14.5)}px`
+      marginTop: theme.spacing(14.5)
     }
   },
   feeWrapper: {
@@ -213,24 +213,24 @@ const useAccountListStyles = createUseStyles(theme => ({
     justifyContent: 'center',
     flexDirection: 'column',
     cursor: 'pointer',
-    marginTop: `${theme.spacing(2.5)}px`,
+    marginTop: theme.spacing(2.5),
     [theme.breakpoints.upSm]: {
-      marginTop: `${theme.spacing(4.5)}px`
+      marginTop: theme.spacing(4.5)
     }
   },
   fee: {
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
-    marginBottom: `${theme.spacing(1)}px`,
+    marginBottom: theme.spacing(1),
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(2.25)}px 0`
+      padding: `${theme.spacing(2)}px 0`
     }
   },
   feeIcon: {
-    width: `${theme.spacing(2)}px`,
-    height: `${theme.spacing(2)}px`
+    width: theme.spacing(2),
+    height: theme.spacing(2)
   }
 }))
 
