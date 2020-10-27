@@ -14,7 +14,8 @@ const usePageHeaderStyles = createUseStyles(theme => ({
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    position: 'relative'
   },
   goBackButton: {
     position: 'absolute',

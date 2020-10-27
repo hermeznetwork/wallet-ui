@@ -13,11 +13,11 @@ function MainHeader () {
   return (
     <header className={classes.root}>
       <Container disableVerticalGutters>
-        <Link to='/settings' className={`${classes.link} ${classes.settingsLink}`}>
-          <UserAccountIcon className={classes.settingsIcon} />
-          <p className={classes.linkText}>Settings</p>
-        </Link>
         <div className={classes.headerContent}>
+          <Link to='/settings' className={`${classes.link} ${classes.settingsLink}`}>
+            <UserAccountIcon className={classes.settingsIcon} />
+            <p className={classes.linkText}>Settings</p>
+          </Link>
           <h1>
             <Link
               to='/'
@@ -26,11 +26,11 @@ function MainHeader () {
               <HermezLogo />
             </Link>
           </h1>
-        </div>
-        {/* <Link to='/my-address' className={`${classes.link} ${classes.addressLink}`}>
+          {/* <Link to='/my-address' className={`${classes.link} ${classes.addressLink}`}>
           <p className={classes.linkText}>My address</p>
           <img src={qrCodeIcon} alt='Settings' className={classes.addressIcon} />
         </Link> */}
+        </div>
       </Container>
     </header>
   )
