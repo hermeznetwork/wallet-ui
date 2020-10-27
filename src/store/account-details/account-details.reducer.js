@@ -1,4 +1,5 @@
 import { accountDetailsActionTypes } from './account-details.actions'
+import { getPaginationData } from '../../utils/api'
 
 const initialAccountDetailsReducer = {
   accountTask: {
@@ -78,11 +79,19 @@ function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
       }
     }
     case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
+      const transactions = state.historyTransactionsTask.status === 'reloading'
+        ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
+        : action.data.transactions
+      const pagination = getPaginationData(
+        action.data.transactions,
+        action.data.pagination
+      )
+
       return {
         ...state,
         historyTransactionsTask: {
           status: 'successful',
-          data: action.transactions
+          data: { transactions, pagination }
         }
       }
     }

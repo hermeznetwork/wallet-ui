@@ -1,7 +1,16 @@
 import axios from 'axios'
+
 import { extractJSON } from '../utils/http'
+import { DEFAULT_PAGE_SIZE } from '../constants'
 
 const baseApiUrl = process.env.REACT_APP_ROLLUP_API_URL
+
+function getPageData (fromItem) {
+  return {
+    ...(fromItem !== undefined ? { fromItem } : {}),
+    limit: DEFAULT_PAGE_SIZE
+  }
+}
 
 async function getAccounts (hermezEthereumAddress, tokenIds) {
   const params = {
@@ -16,9 +25,10 @@ async function getAccount (accountIndex) {
   return extractJSON(axios.get(`${baseApiUrl}/accounts/${accountIndex}`))
 }
 
-async function getTransactions (accountIndex) {
+async function getTransactions (accountIndex, fromItem) {
   const params = {
-    ...(accountIndex ? { accountIndex } : {})
+    ...(accountIndex ? { accountIndex } : {}),
+    ...getPageData(fromItem)
   }
 
   return extractJSON(axios.get(`${baseApiUrl}/transactions-history`, { params }))

@@ -57,10 +57,10 @@ function loadHistoryTransactions () {
   }
 }
 
-function loadHistoryTransactionsSuccess (transactions) {
+function loadHistoryTransactionsSuccess (data) {
   return {
     type: accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
-    transactions
+    data
   }
 }
 

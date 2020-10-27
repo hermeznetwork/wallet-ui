@@ -44,13 +44,13 @@ function fetchPoolTransactions (accountIndex) {
  * @param {string} accountIndex - The account index
  * @returns {void}
  */
-function fetchHistoryTransactions (accountIndex) {
+function fetchHistoryTransactions (accountIndex, fromItem) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadHistoryTransactions())
 
-    return rollupApi.getTransactions(accountIndex)
+    return rollupApi.getTransactions(accountIndex, fromItem)
       .then(res => dispatch(accountDetailsActionTypes.loadHistoryTransactionsSuccess(res)))
-      .catch(err => dispatch(accountDetailsActionTypes.loadHistoryTransactionsFailure(err)))
+      .catch(console.log)
   }
 }
 
