@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
+import { getAccounts } from 'hermezjs/src/api'
+import { getTokenAmountString } from 'hermezjs/src/utils'
 
 import useTransactionFormStyles from './transaction-form.styles'
-import { getAccounts } from '../../../../apis/rollup'
-import { CurrencySymbol, getTokenAmountInPreferredCurrency, getTokenAmountString, getFixedTokenAmount } from '../../../../utils/currencies'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
 import swapIcon from '../../../../images/icons/swap.svg'
 import errorIcon from '../../../../images/icons/error.svg'
 import closeIcon from '../../../../images/icons/close.svg'

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
+import { TxType } from 'hermezjs/src/tx'
 
 import useHomeStyles from './home.styles'
 import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/home/home.thunks'
@@ -18,7 +19,6 @@ import TransactionActions from '../shared/transaction-actions/transaction-action
 import ExitList from '../shared/exit-list/exit-list.view'
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import Button from '../shared/button/button.view'
-import { TxType } from '../../utils/tx'
 
 function Home ({
   metaMaskWalletTask,

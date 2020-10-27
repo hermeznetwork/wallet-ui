@@ -1,16 +1,16 @@
 import * as transactionDetailsActionTypes from './transaction-details.actions'
-import * as rollupApi from '../../apis/rollup'
-import { HttpStatusCode } from '../../utils/http'
+import { CoordinatorAPI } from 'hermezjs'
+import { HttpStatusCode } from 'hermezjs/src/http'
 
 function fetchTransaction (transactionId) {
   return (dispatch) => {
     dispatch(transactionDetailsActionTypes.loadTransaction())
 
-    return rollupApi.getPoolTransaction(transactionId)
+    return CoordinatorAPI.getPoolTransaction(transactionId)
       .then(res => dispatch(transactionDetailsActionTypes.loadTransactionSuccess(res)))
       .catch(err => {
         if (err.response.status === HttpStatusCode.NOT_FOUND) {
-          return rollupApi.getHistoryTransaction(transactionId)
+          return CoordinatorAPI.getHistoryTransaction(transactionId)
             .then(res => dispatch(transactionDetailsActionTypes.loadTransactionSuccess(res)))
             .catch(() => dispatch(transactionDetailsActionTypes.loadTransactionFailure()))
         } else {

@@ -1,4 +1,3 @@
-import ethers from 'ethers'
 import { MAX_DECIMALS_UNTIL_ZERO_AMOUNT } from '../constants'
 
 const CurrencySymbol = {
@@ -37,30 +36,6 @@ function getFixedTokenAmount (amount, decimals) {
 }
 
 /**
- * Converts an amount in BigInt and decimals to a String with correct decimal point placement
- *
- * @param {String} amountBigInt - String representing the amount as a BigInt with no decimals
- * @param {Number} decimals - Number of decimal points the amount actually has
- *
- * @returns {String}
- */
-function getTokenAmountString (amountBigInt, decimals) {
-  return ethers.utils.formatUnits(amountBigInt, decimals)
-}
-
-/**
- * Converts an amount in Float with the appropriate decimals to a BigInt
- *
- * @param {Number} amountString - String representing the amount as a Float
- * @param {Number} decimals - Number of decimal points the amount has
- *
- * @returns {BigInt}
- */
-function getTokenAmountBigInt (amountString, decimals) {
-  return ethers.utils.parseUnits(amountString, decimals)
-}
-
-/**
  * Converts a token amount to a new amount but in the user preferred currency
  *
  * @param {String} amount - The amount to be be converted
@@ -92,7 +67,5 @@ function getTokenAmountInPreferredCurrency (
 export {
   CurrencySymbol,
   getFixedTokenAmount,
-  getTokenAmountString,
-  getTokenAmountBigInt,
   getTokenAmountInPreferredCurrency
 }
