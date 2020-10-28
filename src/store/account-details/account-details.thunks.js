@@ -1,6 +1,7 @@
+import { CoordinatorAPI } from 'hermezjs'
+import { getPoolTransactions } from 'hermezjs/src/tx-pool'
+
 import * as accountDetailsActionTypes from './account-details.actions'
-import * as rollupApi from '../../apis/rollup'
-import { getPoolTransactions } from '../../utils/tx-pool'
 
 /**
  * Fetches the account details for the specified account index
@@ -11,7 +12,7 @@ function fetchAccount (accountIndex) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadAccount())
 
-    return rollupApi.getAccount(accountIndex)
+    return CoordinatorAPI.getAccount(accountIndex)
       .then(res => dispatch(accountDetailsActionTypes.loadAccountSuccess(res)))
       .catch(err => dispatch(accountDetailsActionTypes.loadAccountFailure(err)))
   }
@@ -48,7 +49,7 @@ function fetchHistoryTransactions (accountIndex) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadHistoryTransactions())
 
-    return rollupApi.getTransactions(accountIndex)
+    return CoordinatorAPI.getTransactions(accountIndex)
       .then(res => dispatch(accountDetailsActionTypes.loadHistoryTransactionsSuccess(res)))
       .catch(err => dispatch(accountDetailsActionTypes.loadHistoryTransactionsFailure(err)))
   }
@@ -63,7 +64,7 @@ function fetchExits (exitTransactions) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadExits())
 
-    const exitTransactionsPromises = exitTransactions.map(exitTransaction => rollupApi.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
+    const exitTransactionsPromises = exitTransactions.map(exitTransaction => CoordinatorAPI.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
 
     return Promise.all(exitTransactionsPromises)
       .then((exits) => {

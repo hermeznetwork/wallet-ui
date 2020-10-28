@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { TxState } from 'hermezjs/src/tx'
 
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
-import { TxState } from '../../../../utils/tx'
 
 function TransactionList ({
   transactions,

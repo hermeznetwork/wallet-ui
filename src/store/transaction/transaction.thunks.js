@@ -1,9 +1,9 @@
 import ethers from 'ethers'
+import { CoordinatorAPI } from 'hermezjs'
+import { getEthereumAddress } from 'hermezjs/src/addresses'
 
 import * as transactionActions from './transaction.actions'
-import * as rollupApi from '../../apis/rollup'
 import { ETHER_TOKEN_ID } from '../../constants'
-import { getEthereumAddress } from '../../utils/addresses'
 
 /**
  * Fetches all registered tokens in Hermez.
@@ -12,7 +12,7 @@ function fetchTokens () {
   return (dispatch) => {
     dispatch(transactionActions.loadTokens())
 
-    return rollupApi.getTokens()
+    return CoordinatorAPI.getTokens()
       .then(res => dispatch(transactionActions.loadTokensSuccess(res)))
       .catch(err => dispatch(transactionActions.loadTokensFailure(err)))
   }
@@ -101,8 +101,8 @@ function fetchFees () {
   return async function (dispatch) {
     dispatch(transactionActions.loadFees())
 
-    return rollupApi.getFees()
-      .then(res => dispatch(transactionActions.loadFeesSuccess(res)))
+    return CoordinatorAPI.getState()
+      .then(res => dispatch(transactionActions.loadFeesSuccess(res.recommendedFee)))
       .catch(err => dispatch(transactionActions.loadFeesFailure(err)))
   }
 }
@@ -111,7 +111,7 @@ function fetchExit (batchNum, accountIndex) {
   return async function (dispatch) {
     dispatch(transactionActions.loadExit())
 
-    return rollupApi.getExit(batchNum, accountIndex)
+    return CoordinatorAPI.getExit(batchNum, accountIndex)
       .then(res => dispatch(transactionActions.loadExitSuccess(res)))
       .catch(err => dispatch(transactionActions.loadExitFailure(err)))
   }

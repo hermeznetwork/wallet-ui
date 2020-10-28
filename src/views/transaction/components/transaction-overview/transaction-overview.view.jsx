@@ -2,13 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ethers from 'ethers'
 import { useTheme } from 'react-jss'
+import hermezjs from 'hermezjs'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
-import { CurrencySymbol, getTokenAmountInPreferredCurrency, getTokenAmountBigInt } from '../../../../utils/currencies'
-import { floorFix2Float, float2Fix } from '../../../../utils/float16'
-import { generateL2Transaction } from '../../../../utils/tx-utils'
-import { deposit, send, forceExit, withdraw } from '../../../../utils/tx'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
 import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
 import Container from '../../../shared/container/container.view'
 
@@ -42,7 +40,7 @@ function TransactionOverview ({
   }
 
   function getAmountInBigInt () {
-    return getTokenAmountBigInt(amount, account.token.decimals)
+    return hermezjs.Utils.getTokenAmountBigInt(amount, account.token.decimals)
   }
 
   /**
@@ -71,16 +69,16 @@ function TransactionOverview ({
    * Prepares an L2 transfer object, signs it and send it
    */
   async function sendTransfer () {
-    const { transaction, encodedTransaction } = await generateL2Transaction({
+    const { transaction, encodedTransaction } = await hermezjs.TxUtils.generateL2Transaction({
       from: account.accountIndex,
       to: type === 'transfer' ? to.accountIndex : null,
-      amount: float2Fix(floorFix2Float(getAmountInBigInt())),
+      amount: hermezjs.Float16.float2Fix(hermezjs.Float16.floorFix2Float(getAmountInBigInt())),
       fee,
       nonce: account.nonce
     }, metaMaskWallet.publicKeyCompressedHex, account.token)
     metaMaskWallet.signTransaction(transaction, encodedTransaction)
 
-    return send(transaction, metaMaskWallet.publicKeyCompressedHex)
+    return hermezjs.Tx.send(transaction, metaMaskWallet.publicKeyCompressedHex)
   }
 
   /**
@@ -88,7 +86,7 @@ function TransactionOverview ({
    */
   async function handleClickTxButton () {
     if (type === 'deposit') {
-      deposit(getAmountInBigInt(), metaMaskWallet.hermezEthereumAddress, account.token, metaMaskWallet.publicKeyCompressedHex)
+      hermezjs.Tx.deposit(getAmountInBigInt(), metaMaskWallet.hermezEthereumAddress, account.token, metaMaskWallet.publicKeyCompressedHex)
         .then((res) => {
           console.log(res)
           onNavigateToTransactionConfirmation(type)
@@ -98,7 +96,7 @@ function TransactionOverview ({
         })
     } else if (type === 'forceExit') {
       console.log(account)
-      forceExit(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token)
+      hermezjs.Tx.forceExit(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token)
         .then((res) => {
           console.log(res)
           onNavigateToTransactionConfirmation(type)
@@ -109,7 +107,7 @@ function TransactionOverview ({
     } else if (type === 'withdraw') {
       // Todo: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
       // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
-      withdraw(ethers.BigNumber.from(300000000000000000000n), 'hez:TKN:256', { id: 1, ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB' }, metaMaskWallet.publicKeyCompressedHex, ethers.BigNumber.from('4'), [])
+      hermezjs.Tx.withdraw(ethers.BigNumber.from(300000000000000000000n), 'hez:TKN:256', { id: 1, ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB' }, metaMaskWallet.publicKeyCompressedHex, ethers.BigNumber.from('4'), [])
         .then((res) => {
           console.log(res)
           onNavigateToTransactionConfirmation(type)

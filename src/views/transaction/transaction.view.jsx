@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 import clsx from 'clsx'
+import { push } from 'connected-react-router'
+import { getAccountIndex } from 'hermezjs/src/addresses'
 
 import { fetchAccounts } from '../../store/home/home.thunks'
 import { fetchTokens, fetchMetaMaskTokens, fetchFees, fetchExit } from '../../store/transaction/transaction.thunks'
@@ -15,7 +17,6 @@ import Spinner from '../shared/spinner/spinner.view'
 import Container from '../shared/container/container.view'
 import backIcon from '../../images/icons/back.svg'
 import closeIcon from '../../images/icons/close.svg'
-import { push } from 'connected-react-router'
 
 function Transaction ({
   metaMaskWalletTask,
@@ -103,7 +104,8 @@ function Transaction ({
         const account = metaMaskTokensTask.data.find((account) => account.id === tokenId)
         setAccount(account)
       } else if (accountsTask.status === 'successful') {
-        const account = accountsTask.data.accounts.find((account) => account.token.id === tokenId)
+        console.log(accountsTask)
+        const account = accountsTask.data.accounts.find((account) => getAccountIndex(account.accountIndex) === tokenId)
         setAccount(account)
       }
     }
