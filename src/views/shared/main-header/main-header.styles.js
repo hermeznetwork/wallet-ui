@@ -14,7 +14,8 @@ const useMainHeaderStyles = createUseStyles(theme => ({
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    position: 'relative'
   },
   logo: {
     textDecoration: 'none',

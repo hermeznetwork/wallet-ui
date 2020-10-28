@@ -36,16 +36,20 @@ const useTransactionOverviewStyles = createUseStyles(theme => ({
   },
   txButton: {
     width: '100%',
-    fontSize: `${theme.spacing(3)}px`,
+    fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.white,
-    padding: `${theme.spacing(3.5)}px 0`,
+    padding: `${theme.spacing(2.25)}px 0`,
     backgroundColor: theme.palette.secondary.main,
     borderRadius: 20,
     border: 0,
     marginTop: `${theme.spacing(5)}px`,
     cursor: 'pointer',
-    outline: 0
+    outline: 0,
+    [theme.breakpoints.upSm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      padding: `${theme.spacing(3)}px 0`
+    }
   }
 }))
 
