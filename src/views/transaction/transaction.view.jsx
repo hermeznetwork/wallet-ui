@@ -89,7 +89,7 @@ function Transaction ({
 
   React.useEffect(() => {
     if (transactionType !== 'deposit' && metaMaskWalletTask.status === 'successful' && tokensTask.status === 'successful') {
-      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress, tokensTask.data.tokens)
+      onLoadAccounts(metaMaskWalletTask.data.hermezEthereumAddress, tokensTask.data.tokens)
     }
   }, [transactionType, metaMaskWalletTask, tokensTask, onLoadAccounts])
 
@@ -104,7 +104,6 @@ function Transaction ({
         const account = metaMaskTokensTask.data.find((account) => account.id === tokenId)
         setAccount(account)
       } else if (accountsTask.status === 'successful') {
-        console.log(accountsTask)
         const account = accountsTask.data.accounts.find((account) => getAccountIndex(account.accountIndex) === tokenId)
         setAccount(account)
       }
@@ -119,16 +118,17 @@ function Transaction ({
   }, [transactionType, batchNum, accountIndex, onLoadExit])
 
   React.useEffect(() => {
-    if (exitTask.status === 'successful') {
-      console.log(exitTask.data)
+    if (exitTask.status === 'successful' && metaMaskWalletTask.status === 'successful') {
       setTransaction({
         exit: exitTask.data,
         amount: exitTask.data.balance,
         token: exitTask.data.token,
-        to: {}
+        to: {
+          hezEthereumAddress: metaMaskWalletTask.data.hermezEthereumAddress
+        }
       })
     }
-  }, [exitTask])
+  }, [exitTask, metaMaskWalletTask])
 
   /**
    * When an account is selected, store the corresponding account to show the Transaction component
@@ -290,7 +290,6 @@ function Transaction ({
    * @returns {ReactElement} The correct component depending on the step the user is on
    */
   function renderContent () {
-    console.log(transaction)
     if (account && !transaction) {
       return (
         <TransactionForm

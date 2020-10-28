@@ -22,6 +22,7 @@ function TransactionOverview ({
   fiatExchangeRates,
   onNavigateToTransactionConfirmation
 }) {
+  console.log(to)
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
 
@@ -147,10 +148,10 @@ function TransactionOverview ({
             <TransactionInfo
               from={getPartiallyHiddenHermezAddress(metaMaskWallet.hermezEthereumAddress)}
               to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
-              fee={{
+              fee={fee ? {
                 fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountinFiat(fee)}`,
                 tokens: `${fee} ${account.token.symbol}`
-              }}
+              } : undefined}
             />
             <button className={classes.txButton} onClick={handleClickTxButton}>
               {getTitle()}

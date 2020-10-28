@@ -48,7 +48,6 @@ function AccountDetails ({
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
       const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
-      console.log(2, exitTransactions)
       onLoadExits(exitTransactions)
     }
   }, [historyTransactionsTask, onLoadExits])
@@ -100,7 +99,6 @@ function AccountDetails ({
   }
 
   function getHistoryTransactions () {
-    console.log(historyTransactionsTask)
     return historyTransactionsTask.data.transactions.filter((transaction) => transaction.type !== 'Exit')
   }
 
