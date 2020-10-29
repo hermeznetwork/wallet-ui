@@ -5,7 +5,7 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
-import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits, fetchMoreAccounts } from '../../store/home/home.thunks'
+import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/home/home.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
@@ -20,6 +20,7 @@ import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import Button from '../shared/button/button.view'
 import { TxType } from '../../utils/tx'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
+import { resetState } from '../../store/home/home.actions'
 
 function Home ({
   metaMaskWalletTask,
@@ -31,13 +32,13 @@ function Home ({
   preferredCurrency,
   onChangeHeader,
   onLoadAccounts,
-  onLoadMoreAccounts,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
   onNavigateToAccountDetails,
   onOpenSnackbar,
-  onNavigateTest
+  onNavigateTest,
+  onCleanup
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
@@ -64,6 +65,8 @@ function Home ({
       onLoadExits(exitTransactions)
     }
   }, [historyTransactionsTask, onLoadExits])
+
+  React.useEffect(() => onCleanup, [onCleanup])
 
   function getTotalBalance (accountsTask) {
     switch (accountsTask.status) {
@@ -179,7 +182,7 @@ function Home ({
                     asyncTaskStatus={accountsTask.status}
                     paginationData={accountsTask.data.pagination}
                     onLoadNextPage={(fromItem) => {
-                      onLoadMoreAccounts(
+                      onLoadAccounts(
                         metaMaskWalletTask.data.hermezEthereumAddress,
                         fromItem
                       )
@@ -236,10 +239,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () => dispatch(changeHeader({ type: 'main' })),
-  onLoadAccounts: (hermezEthereumAddress) =>
-    dispatch(fetchAccounts(hermezEthereumAddress)),
-  onLoadMoreAccounts: (hermezEthereumAddress, fromItem) =>
-    dispatch(fetchMoreAccounts(hermezEthereumAddress, fromItem)),
+  onLoadAccounts: (hermezEthereumAddress, fromItem) =>
+    dispatch(fetchAccounts(hermezEthereumAddress, fromItem)),
   onLoadPoolTransactions: () => dispatch(fetchPoolTransactions()),
   onLoadHistoryTransactions: () =>
     dispatch(fetchHistoryTransactions()),
@@ -247,7 +248,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchExits(exitTransactions)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
-  onOpenSnackbar: (message) => dispatch(openSnackbar(message))
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
+  onCleanup: () => dispatch(resetState())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))

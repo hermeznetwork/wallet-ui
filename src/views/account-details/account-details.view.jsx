@@ -6,7 +6,7 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
-import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions, fetchExits, fetchMoreHistoryTransactions } from '../../store/account-details/account-details.thunks'
+import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -20,6 +20,7 @@ import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
+import { resetState } from '../../store/account-details/account-details.actions'
 
 function AccountDetails ({
   preferredCurrency,
@@ -32,9 +33,9 @@ function AccountDetails ({
   onLoadAccount,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
-  onLoadMoreHistoryTransactions,
   onLoadExits,
-  onNavigateToTransactionDetails
+  onNavigateToTransactionDetails,
+  onCleanup
 }) {
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
@@ -60,6 +61,10 @@ function AccountDetails ({
       onChangeHeader(accountTask.data.token.name)
     }
   }, [accountTask, onChangeHeader])
+
+  React.useEffect(() => {
+    return onCleanup
+  }, [onCleanup])
 
   /**
    * Returns the total balance of the account in the preferred currency
@@ -180,7 +185,7 @@ function AccountDetails ({
                   <InfiniteScroll
                     asyncTaskStatus={historyTransactionsTask.status}
                     paginationData={historyTransactionsTask.data.pagination}
-                    onLoadNextPage={(fromItem) => onLoadMoreHistoryTransactions(accountIndex, fromItem)}
+                    onLoadNextPage={(fromItem) => onLoadHistoryTransactions(accountIndex, fromItem)}
                   >
                     <TransactionList
                       transactions={getHistoryTransactions(historyTransactionsTask.data.transactions)}
@@ -234,14 +239,13 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: (tokenName) =>
     dispatch(changeHeader({ type: 'page', data: { title: tokenName, previousRoute: '/' } })),
   onLoadPoolTransactions: (accountIndex) => dispatch(fetchPoolTransactions(accountIndex)),
-  onLoadHistoryTransactions: (accountIndex) =>
-    dispatch(fetchHistoryTransactions(accountIndex)),
-  onLoadMoreHistoryTransactions: (accountIndex, fromItem) =>
-    dispatch(fetchMoreHistoryTransactions(accountIndex, fromItem)),
+  onLoadHistoryTransactions: (accountIndex, fromItem) =>
+    dispatch(fetchHistoryTransactions(accountIndex, fromItem)),
   onLoadExits: (exitTransactions) =>
     dispatch(fetchExits(exitTransactions)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
-    dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`))
+    dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
+  onCleanup: () => dispatch(resetState())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))

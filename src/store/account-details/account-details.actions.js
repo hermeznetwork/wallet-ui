@@ -8,12 +8,10 @@ export const accountDetailsActionTypes = {
   LOAD_HISTORY_TRANSACTIONS: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS',
   LOAD_HISTORY_TRANSACTIONS_SUCCESS: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS SUCCESS',
   LOAD_HISTORY_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS FAILURE',
-  LOAD_MORE_HISTORY_TRANSACTIONS: '[ACCOUNT DETAILS] LOAD MORE HISTORY TRANSACTIONS',
-  LOAD_MORE_HISTORY_TRANSACTIONS_SUCCESS: '[ACCOUNT DETAILS] LOAD MORE HISTORY TRANSACTIONS SUCCESS',
-  LOAD_MORE_HISTORY_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD MORE HISTORY TRANSACTIONS FAILURE',
   LOAD_EXITS: '[ACCOUNT DETAILS] LOAD EXITS',
   LOAD_EXITS_SUCCESS: '[ACCOUNT DETAILS] LOAD EXITS SUCCESS',
-  LOAD_EXITS_FAILURE: '[ACCOUNT DETAILS] LOAD EXITS FAILURE'
+  LOAD_EXITS_FAILURE: '[ACCOUNT DETAILS] LOAD EXITS FAILURE',
+  RESET_STATE: '[ACCOUNT DETAILS] RESET STATE'
 }
 
 function loadAccount () {
@@ -73,25 +71,6 @@ function loadHistoryTransactionsFailure () {
   }
 }
 
-function loadMoreHistoryTransactions () {
-  return {
-    type: accountDetailsActionTypes.LOAD_MORE_HISTORY_TRANSACTIONS
-  }
-}
-
-function loadMoreHistoryTransactionsSuccess (data) {
-  return {
-    type: accountDetailsActionTypes.LOAD_MORE_HISTORY_TRANSACTIONS_SUCCESS,
-    data
-  }
-}
-
-function loadMoreHistoryTransactionsFailure () {
-  return {
-    type: accountDetailsActionTypes.LOAD_MORE_HISTORY_TRANSACTIONS_FAILURE
-  }
-}
-
 function loadExits () {
   return {
     type: accountDetailsActionTypes.LOAD_EXITS
@@ -112,6 +91,12 @@ function loadExitsFailure (error) {
   }
 }
 
+function resetState () {
+  return {
+    type: accountDetailsActionTypes.RESET_STATE
+  }
+}
+
 export {
   loadAccount,
   loadAccountSuccess,
@@ -122,10 +107,8 @@ export {
   loadHistoryTransactions,
   loadHistoryTransactionsSuccess,
   loadHistoryTransactionsFailure,
-  loadMoreHistoryTransactions,
-  loadMoreHistoryTransactionsSuccess,
-  loadMoreHistoryTransactionsFailure,
   loadExits,
   loadExitsSuccess,
-  loadExitsFailure
+  loadExitsFailure,
+  resetState
 }

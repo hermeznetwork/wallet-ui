@@ -21,13 +21,15 @@ function homeReducer (state = initialHomeState, action) {
     case homeActionTypes.LOAD_ACCOUNTS: {
       return {
         ...state,
-        accountsTask: {
-          status: 'loading'
-        }
+        accountsTask: state.accountsTask.status === 'successful'
+          ? { status: 'reloading', data: state.accountsTask.data }
+          : { status: 'loading' }
       }
     }
     case homeActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      const accounts = action.data.accounts
+      const accounts = state.accountsTask.status === 'pending'
+        ? action.data.accounts
+        : [...state.accountsTask.data.accounts, ...action.data.accounts]
       const pagination = getPaginationData(
         action.data.accounts,
         action.data.pagination
@@ -47,41 +49,6 @@ function homeReducer (state = initialHomeState, action) {
         accountsTask: {
           status: 'failed',
           error: 'An error ocurred loading the accounts'
-        }
-      }
-    }
-    case homeActionTypes.LOAD_MORE_ACCOUNTS: {
-      return {
-        ...state,
-        accountsTask: {
-          status: 'reloading',
-          data: state.accountsTask.data
-        }
-      }
-    }
-    case homeActionTypes.LOAD_MORE_ACCOUNTS_SUCCESS: {
-      const accounts = state.accountsTask.status === 'reloading'
-        ? [...state.accountsTask.data.accounts, ...action.data.accounts]
-        : action.data.accounts
-      const pagination = getPaginationData(
-        action.data.accounts,
-        action.data.pagination
-      )
-
-      return {
-        ...state,
-        accountsTask: {
-          status: 'successful',
-          data: { accounts, pagination }
-        }
-      }
-    }
-    case homeActionTypes.LOAD_MORE_ACCOUNTS_FAILURE: {
-      return {
-        ...state,
-        accountsTask: {
-          status: 'failed',
-          error: 'An error ocurred loading more accounts'
         }
       }
     }
@@ -154,6 +121,9 @@ function homeReducer (state = initialHomeState, action) {
           error: action.error
         }
       }
+    }
+    case homeActionTypes.RESET_STATE: {
+      return initialHomeState
     }
     default: {
       return state

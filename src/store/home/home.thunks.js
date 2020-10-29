@@ -12,16 +12,6 @@ function fetchAccounts (hermezEthereumAddress) {
   }
 }
 
-function fetchMoreAccounts (hermezEthereumAddress, fromItem) {
-  return (dispatch) => {
-    dispatch(homeActions.loadMoreAccounts())
-
-    return rollupApi.getAccounts(hermezEthereumAddress, fromItem)
-      .then(res => dispatch(homeActions.loadMoreAccountsSuccess(res)))
-      .catch(err => dispatch(homeActions.loadMoreAccountsFailure(err)))
-  }
-}
-
 /**
  * Fetches the transaction details for each transaction in the pool
  *
@@ -81,7 +71,6 @@ function fetchExits (exitTransactions) {
 
 export {
   fetchAccounts,
-  fetchMoreAccounts,
   fetchPoolTransactions,
   fetchHistoryTransactions,
   fetchExits
