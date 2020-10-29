@@ -17,7 +17,7 @@ import TransactionActions from '../shared/transaction-actions/transaction-action
 import ExitList from '../shared/exit-list/exit-list.view'
 import { TxType } from '../../utils/tx'
 import AccountBalance from '../shared/account-balance/account-balance.view'
-import TokenBalance from './components/token-balance/token-balance.view'
+import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 

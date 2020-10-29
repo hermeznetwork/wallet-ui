@@ -8,12 +8,15 @@ import useTransactionDetailsStyles from './transaction-details.styles'
 import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { CurrencySymbol, getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionInfo from '../shared/transaction-info/transaction-info.view'
 import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
 import { beautifyTransactionState } from '../../utils/tx'
+import AccountBalance from '../shared/account-balance/account-balance.view'
+import TokenBalance from '../shared/token-balance/token-balance.view'
+import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 
 function TransactionDetails ({
   transactionTask,
@@ -25,6 +28,7 @@ function TransactionDetails ({
   const theme = useTheme()
   const classes = useTransactionDetailsStyles()
   const { accountIndex, transactionId } = useParams()
+  const [, accountTokenSymbol] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
 
   React.useEffect(() => {
     onLoadTransaction(transactionId)
@@ -36,49 +40,48 @@ function TransactionDetails ({
     }
   }, [transactionTask, accountIndex, onChangeHeader])
 
-  function getAmountInFiat (amount, token) {
-    if (fiatExchangeRatesTask.status !== 'successful') {
-      return '-'
+  function getTransactionAmount (transactionTask) {
+    switch (transactionTask.status) {
+      case 'reloading':
+      case 'successful': {
+        if (fiatExchangeRatesTask.status !== 'successful') {
+          return undefined
+        }
+
+        const transaction = transactionTask.data
+        const fixedAccountBalance = getFixedTokenAmount(
+          transaction.amount,
+          transaction.token.decimals
+        )
+
+        return getTokenAmountInPreferredCurrency(
+          fixedAccountBalance,
+          transaction.token.USD,
+          preferredCurrency,
+          fiatExchangeRatesTask.data
+        )
+      }
+      default: {
+        return undefined
+      }
     }
-
-    const fixedTokenAmount = getFixedTokenAmount(amount, token.decimals)
-    const fiatTokenAmount = getTokenAmountInPreferredCurrency(
-      fixedTokenAmount,
-      token.USD,
-      preferredCurrency,
-      fiatExchangeRatesTask.data
-    )
-
-    return fiatTokenAmount.toFixed(2)
   }
 
   return (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main}>
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
-          {(() => {
-            switch (transactionTask.status) {
-              case 'loading':
-              case 'failed': {
-                return <Spinner />
-              }
-              case 'successful': {
-                return (
-                  <>
-                    <h1 className={classes.fiatAmount}>
-                      {CurrencySymbol[preferredCurrency].symbol} {getAmountInFiat(transactionTask.data.amount, transactionTask.data.token)}
-                    </h1>
-                    <p className={classes.tokenAmount}>
-                      {getFixedTokenAmount(transactionTask.data.amount, transactionTask.data.token.decimals)} {transactionTask.data.token.symbol}
-                    </p>
-                  </>
-                )
-              }
-              default: {
-                return <></>
-              }
-            }
-          })()}
+          <div className={classes.fiatAmount}>
+            <AccountBalance
+              amount={getTransactionAmount(transactionTask)}
+              currency={preferredCurrency}
+              size='big'
+            />
+          </div>
+          <TokenBalance
+            amount={getFixedTokenAmount(transactionTask.data?.amount, transactionTask.data?.token.decimals)}
+            symbol={accountTokenSymbol}
+          />
         </section>
       </Container>
       <Container>
