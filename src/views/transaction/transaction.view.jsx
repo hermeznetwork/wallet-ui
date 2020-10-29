@@ -4,8 +4,7 @@ import { connect } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 import clsx from 'clsx'
 
-import { fetchAccounts } from '../../store/home/home.thunks'
-import { fetchTokens, fetchMetaMaskTokens, fetchFees, fetchExit } from '../../store/transaction/transaction.thunks'
+import { fetchTokens, fetchAccounts, fetchMetaMaskTokens, fetchFees, fetchExit } from '../../store/transaction/transaction.thunks'
 import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
 import TransactionOverview from './components/transaction-overview/transaction-overview.view'
@@ -288,7 +287,6 @@ function Transaction ({
    * @returns {ReactElement} The correct component depending on the step the user is on
    */
   function renderContent () {
-    console.log(transaction)
     if (account && !transaction) {
       return (
         <TransactionForm
@@ -363,7 +361,7 @@ Transaction.propTypes = {
 const mapStateToProps = (state) => ({
   metaMaskWalletTask: state.global.metaMaskWalletTask,
   metaMaskTokensTask: state.transaction.metaMaskTokensTask,
-  accountsTask: state.home.accountsTask,
+  accountsTask: state.transaction.accountsTask,
   tokensTask: state.transaction.tokensTask,
   feesTask: state.transaction.feesTask,
   exitTask: state.transaction.exitTask,
