@@ -53,33 +53,33 @@ function TransactionDetails ({
   }
 
   return (
-    <div>
+    <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main}>
-        {(() => {
-          switch (transactionTask.status) {
-            case 'loading': {
-              return <Spinner />
+        <section className={classes.section}>
+          {(() => {
+            switch (transactionTask.status) {
+              case 'loading':
+              case 'failed': {
+                return <Spinner />
+              }
+              case 'successful': {
+                return (
+                  <>
+                    <h1 className={classes.fiatAmount}>
+                      {CurrencySymbol[preferredCurrency].symbol} {getAmountInFiat(transactionTask.data.amount, transactionTask.data.token)}
+                    </h1>
+                    <p className={classes.tokenAmount}>
+                      {getFixedTokenAmount(transactionTask.data.amount, transactionTask.data.token.decimals)} {transactionTask.data.token.symbol}
+                    </p>
+                  </>
+                )
+              }
+              default: {
+                return <></>
+              }
             }
-            case 'failed': {
-              return <p>{transactionTask.error}</p>
-            }
-            case 'successful': {
-              return (
-                <section className={classes.section}>
-                  <h1 className={classes.fiatAmount}>
-                    {CurrencySymbol[preferredCurrency].symbol} {getAmountInFiat(transactionTask.data.amount, transactionTask.data.token)}
-                  </h1>
-                  <p className={classes.tokenAmount}>
-                    {transactionTask.data.amount} {transactionTask.data.token.symbol}
-                  </p>
-                </section>
-              )
-            }
-            default: {
-              return <></>
-            }
-          }
-        })()}
+          })()}
+        </section>
       </Container>
       <Container>
         <section className={classes.section}>
