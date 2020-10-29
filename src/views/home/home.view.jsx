@@ -19,6 +19,7 @@ import ExitList from '../shared/exit-list/exit-list.view'
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import Button from '../shared/button/button.view'
 import { TxType } from '../../utils/tx'
+import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 
 function Home ({
   metaMaskWalletTask,
@@ -58,7 +59,7 @@ function Home ({
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
       const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
-      console.log(2, exitTransactions)
+
       onLoadExits(exitTransactions)
     }
   }, [historyTransactionsTask, onLoadExits])
@@ -107,37 +108,6 @@ function Home ({
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
 
-  function renderExits () {
-    if (
-      poolTransactionsTask.status === 'successful' &&
-      historyTransactionsTask.status === 'successful'
-    ) {
-      return (
-        <>
-          <ExitList
-            transactions={getPendingExits()}
-            fiatExchangeRates={
-              fiatExchangeRatesTask.status === 'successful'
-                ? fiatExchangeRatesTask.data
-                : undefined
-            }
-            preferredCurrency={preferredCurrency}
-          />
-          {exitsTask.status === 'successful' &&
-            <ExitList
-              transactions={exitsTask.data}
-              fiatExchangeRates={
-                fiatExchangeRatesTask.status === 'successful'
-                  ? fiatExchangeRatesTask.data
-                  : undefined
-              }
-              preferredCurrency={preferredCurrency}
-            />}
-        </>
-      )
-    }
-  }
-
   return (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
@@ -163,8 +133,39 @@ function Home ({
       </Container>
       <Container>
         <section className={classes.section}>
-          {renderExits()}
+          {
+            (poolTransactionsTask.status === 'successful' &&
+            historyTransactionsTask.status === 'successful')
+              ? (
+                <>
+                  <ExitList
+                    transactions={getPendingExits()}
+                    fiatExchangeRates={
+                      fiatExchangeRatesTask.status === 'successful'
+                        ? fiatExchangeRatesTask.data
+                        : undefined
+                    }
+                    preferredCurrency={preferredCurrency}
+                  />
+                  {exitsTask.status === 'successful' &&
+                    <ExitList
+                      transactions={exitsTask.data}
+                      fiatExchangeRates={
+                        fiatExchangeRatesTask.status === 'successful'
+                          ? fiatExchangeRatesTask.data
+                          : undefined
+                      }
+                      preferredCurrency={preferredCurrency}
+                    />}
+                </>
+              )
+              : <></>
+          }
           {(() => {
+            if (metaMaskWalletTask.status !== 'successful') {
+              return <></>
+            }
+
             switch (accountsTask.status) {
               case 'loading':
               case 'failed': {
@@ -173,16 +174,27 @@ function Home ({
               case 'reloading':
               case 'successful': {
                 return (
-                  <AccountList
-                    accounts={accountsTask.data.accounts}
-                    preferredCurrency={preferredCurrency}
-                    fiatExchangeRates={
-                      fiatExchangeRatesTask.status === 'successful'
-                        ? fiatExchangeRatesTask.data
-                        : undefined
-                    }
-                    onAccountClick={handleAccountClick}
-                  />
+                  <InfiniteScroll
+                    asyncTaskStatus={accountsTask.status}
+                    paginationData={accountsTask.data.pagination}
+                    onLoadNextPage={(fromItem) => {
+                      onLoadAccounts(
+                        metaMaskWalletTask.data.hermezEthereumAddress,
+                        fromItem
+                      )
+                    }}
+                  >
+                    <AccountList
+                      accounts={accountsTask.data.accounts}
+                      preferredCurrency={preferredCurrency}
+                      fiatExchangeRates={
+                        fiatExchangeRatesTask.status === 'successful'
+                          ? fiatExchangeRatesTask.data
+                          : undefined
+                      }
+                      onAccountClick={handleAccountClick}
+                    />
+                  </InfiniteScroll>
                 )
               }
               default: {
@@ -223,8 +235,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () => dispatch(changeHeader({ type: 'main' })),
-  onLoadAccounts: (hermezEthereumAddress) =>
-    dispatch(fetchAccounts(hermezEthereumAddress)),
+  onLoadAccounts: (hermezEthereumAddress, fromItem) =>
+    dispatch(fetchAccounts(hermezEthereumAddress, fromItem)),
   onLoadPoolTransactions: () => dispatch(fetchPoolTransactions()),
   onLoadHistoryTransactions: () =>
     dispatch(fetchHistoryTransactions()),

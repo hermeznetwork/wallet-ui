@@ -19,10 +19,10 @@ function loadAccounts () {
   }
 }
 
-function loadAccountsSuccess (accounts) {
+function loadAccountsSuccess (data) {
   return {
     type: homeActionTypes.LOAD_ACCOUNTS_SUCCESS,
-    accounts
+    data
   }
 }
 
