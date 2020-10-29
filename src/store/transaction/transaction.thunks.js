@@ -18,6 +18,9 @@ function fetchTokens () {
   }
 }
 
+/**
+ * Fetches all accounts for a hermezEthereumAddress
+ */
 function fetchAccounts (hermezEthereumAddress) {
   return (dispatch) => {
     dispatch(transactionActions.loadAccounts())

@@ -13,7 +13,8 @@ export const transactionActionTypes = {
   LOAD_FEES_FAILURE: '[TRANSACTION] LOAD FEES FAILURE',
   LOAD_EXIT: '[TRANSACTION] LOAD EXIT',
   LOAD_EXIT_SUCCESS: '[TRANSACTION] LOAD EXIT SUCCESS',
-  LOAD_EXIT_FAILURE: '[TRANSACTION] LOAD EXIT FAILURE'
+  LOAD_EXIT_FAILURE: '[TRANSACTION] LOAD EXIT FAILURE',
+  RESET_STATE: '[TRANSACTION] RESET STATE'
 }
 
 function loadTokens () {
@@ -114,6 +115,12 @@ function loadExitFailure (error) {
   }
 }
 
+function resetState () {
+  return {
+    type: transactionActionTypes.RESET_STATE
+  }
+}
+
 export {
   loadTokens,
   loadTokensSuccess,
@@ -129,5 +136,6 @@ export {
   loadFeesFailure,
   loadExit,
   loadExitSuccess,
-  loadExitFailure
+  loadExitFailure,
+  resetState
 }

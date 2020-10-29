@@ -15,6 +15,8 @@ import Container from '../shared/container/container.view'
 import backIcon from '../../images/icons/back.svg'
 import closeIcon from '../../images/icons/close.svg'
 import { push } from 'connected-react-router'
+import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
+import { resetState } from '../../store/transaction/transaction.actions'
 
 function Transaction ({
   metaMaskWalletTask,
@@ -31,7 +33,8 @@ function Transaction ({
   onLoadAccounts,
   onLoadFees,
   onLoadExit,
-  onNavigateToTransactionConfirmation
+  onNavigateToTransactionConfirmation,
+  onCleanup
 }) {
   const classes = useTransactionStyles()
   const { search } = useLocation()
@@ -86,10 +89,10 @@ function Transaction ({
   }, [transactionType, tokensTask, onLoadMetaMaskTokens])
 
   React.useEffect(() => {
-    if (transactionType !== 'deposit' && metaMaskWalletTask.status === 'successful' && tokensTask.status === 'successful') {
-      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress, tokensTask.data.tokens)
+    if (transactionType !== 'deposit' && metaMaskWalletTask.status === 'successful') {
+      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress)
     }
-  }, [transactionType, metaMaskWalletTask, tokensTask, onLoadAccounts])
+  }, [transactionType, metaMaskWalletTask, onLoadAccounts])
 
   React.useEffect(() => {
     onLoadFees()
@@ -126,6 +129,8 @@ function Transaction ({
       })
     }
   }, [exitTask])
+
+  React.useEffect(() => onCleanup, [onCleanup])
 
   /**
    * When an account is selected, store the corresponding account to show the Transaction component
@@ -239,22 +244,31 @@ function Transaction ({
         <div className={classes.accountListWrapper}>
           {(() => {
             switch (accountsTask.status) {
-              case 'loading': {
-                return <Spinner />
-              }
+              case 'loading':
               case 'failed': {
-                return (
-                  <p>{accountsTask.error}</p>
-                )
+                return <Spinner />
               }
               case 'successful': {
                 return (
-                  <AccountList
-                    accounts={accountsTask.data.accounts}
-                    preferredCurrency={preferredCurrency}
-                    fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
-                    onAccountClick={handleAccountListClick}
-                  />
+                  <InfiniteScroll
+                    asyncTaskStatus={accountsTask.status}
+                    paginationData={accountsTask.data.pagination}
+                    onLoadNextPage={(fromItem) => {
+                      if (metaMaskWalletTask.status === 'successful') {
+                        onLoadAccounts(
+                          metaMaskWalletTask.data.ethereumAddress,
+                          fromItem
+                        )
+                      }
+                    }}
+                  >
+                    <AccountList
+                      accounts={accountsTask.data.accounts}
+                      preferredCurrency={preferredCurrency}
+                      fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
+                      onAccountClick={handleAccountListClick}
+                    />
+                  </InfiniteScroll>
                 )
               }
               default: {
@@ -372,11 +386,12 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLoadTokens: () => dispatch(fetchTokens()),
   onLoadMetaMaskTokens: (hermezTokens) => dispatch(fetchMetaMaskTokens(hermezTokens)),
-  onLoadAccounts: (ethereumAddress, tokens) =>
-    dispatch(fetchAccounts(ethereumAddress, tokens)),
+  onLoadAccounts: (ethereumAddress, fromItem) =>
+    dispatch(fetchAccounts(ethereumAddress, fromItem)),
   onLoadFees: () => dispatch(fetchFees()),
   onLoadExit: (batchNum, accountIndex) => dispatch(fetchExit(batchNum, accountIndex)),
-  onNavigateToTransactionConfirmation: (type) => dispatch(push(`/${type}-confirmation`))
+  onNavigateToTransactionConfirmation: (type) => dispatch(push(`/${type}-confirmation`)),
+  onCleanup: () => dispatch(resetState())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Transaction))
