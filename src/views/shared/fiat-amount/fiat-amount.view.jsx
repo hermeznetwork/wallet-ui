@@ -4,8 +4,8 @@ import PropTypes from 'prop-types'
 import useFiatAmountStyles from './fiat-amount.styles'
 import { CurrencySymbol } from '../../../utils/currencies'
 
-function FiatAmount ({ amount, currency, size }) {
-  const classes = useFiatAmountStyles({ size })
+function FiatAmount ({ amount, currency }) {
+  const classes = useFiatAmountStyles()
 
   return (
     <div className={classes.root}>
@@ -18,8 +18,7 @@ function FiatAmount ({ amount, currency, size }) {
 
 FiatAmount.propTypes = {
   amount: PropTypes.number,
-  currency: PropTypes.string.isRequired,
-  size: PropTypes.oneOf('normal', 'big')
+  currency: PropTypes.string.isRequired
 }
 
 export default FiatAmount

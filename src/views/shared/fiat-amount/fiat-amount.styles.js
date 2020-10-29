@@ -8,9 +8,7 @@ const useFiatAmountStyles = createUseStyles(theme => ({
   },
   amount: ({ size }) => ({
     margin: 0,
-    fontSize: size === 'big'
-      ? `${theme.spacing(5)}px`
-      : `${theme.spacing(4)}px`
+    fontSize: `${theme.spacing(5)}px`
   }),
   currency: {
     margin: 0,

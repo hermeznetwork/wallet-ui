@@ -75,7 +75,6 @@ function TransactionDetails ({
             <FiatAmount
               amount={getTransactionAmount(transactionTask)}
               currency={preferredCurrency}
-              size='big'
             />
           </div>
           <TokenBalance
