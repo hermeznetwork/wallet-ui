@@ -14,7 +14,7 @@ import { changeHeader } from '../../store/global/global.actions'
 import TransactionInfo from '../shared/transaction-info/transaction-info.view'
 import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
 import { beautifyTransactionState } from '../../utils/tx'
-import AccountBalance from '../shared/account-balance/account-balance.view'
+import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 
@@ -72,7 +72,7 @@ function TransactionDetails ({
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
           <div className={classes.fiatAmount}>
-            <AccountBalance
+            <FiatAmount
               amount={getTransactionAmount(transactionTask)}
               currency={preferredCurrency}
               size='big'

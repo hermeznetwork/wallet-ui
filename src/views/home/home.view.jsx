@@ -6,7 +6,7 @@ import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
 import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits, fetchMoreAccounts } from '../../store/home/home.thunks'
-import AccountBalance from '../shared/account-balance/account-balance.view'
+import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
@@ -124,7 +124,7 @@ function Home ({
               )
           }
           <div className={classes.accountBalance}>
-            <AccountBalance
+            <FiatAmount
               amount={getTotalBalance(accountsTask)}
               currency={preferredCurrency}
             />

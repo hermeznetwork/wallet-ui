@@ -16,7 +16,7 @@ import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 import ExitList from '../shared/exit-list/exit-list.view'
 import { TxType } from '../../utils/tx'
-import AccountBalance from '../shared/account-balance/account-balance.view'
+import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
@@ -114,7 +114,7 @@ function AccountDetails ({
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
           <div className={classes.fiatBalance}>
-            <AccountBalance
+            <FiatAmount
               amount={getAccountBalance(accountTask)}
               currency={preferredCurrency}
             />

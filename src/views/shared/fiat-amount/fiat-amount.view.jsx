@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import useAccountBalanceStyles from './account-balance.styles'
+import useFiatAmountStyles from './fiat-amount.styles'
 import { CurrencySymbol } from '../../../utils/currencies'
 
-function AccountBalance ({ amount, currency, size }) {
-  const classes = useAccountBalanceStyles({ size })
+function FiatAmount ({ amount, currency, size }) {
+  const classes = useFiatAmountStyles({ size })
 
   return (
     <div className={classes.root}>
@@ -16,10 +16,10 @@ function AccountBalance ({ amount, currency, size }) {
   )
 }
 
-AccountBalance.propTypes = {
+FiatAmount.propTypes = {
   amount: PropTypes.number,
   currency: PropTypes.string.isRequired,
   size: PropTypes.oneOf('normal', 'big')
 }
 
-export default AccountBalance
+export default FiatAmount
