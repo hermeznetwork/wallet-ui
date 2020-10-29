@@ -248,6 +248,7 @@ function Transaction ({
               case 'failed': {
                 return <Spinner />
               }
+              case 'reloading':
               case 'successful': {
                 return (
                   <InfiniteScroll
