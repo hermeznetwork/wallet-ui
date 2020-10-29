@@ -12,10 +12,11 @@ function getPageData (fromItem) {
   }
 }
 
-async function getAccounts (hermezEthereumAddress, tokenIds) {
+async function getAccounts (hermezEthereumAddress, tokenIds, fromItem) {
   const params = {
     ...(hermezEthereumAddress ? { hermezEthereumAddress } : {}),
-    ...(tokenIds ? { tokenIds: tokenIds.join(',') } : {})
+    ...(tokenIds ? { tokenIds: tokenIds.join(',') } : {}),
+    ...getPageData(fromItem)
   }
 
   return extractJSON(axios.get(`${baseApiUrl}/accounts`, { params }))

@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
 
 import useAccountListStyles from './account-list.styles'
 import Account from '../account/account.view'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
-import clsx from 'clsx'
 
 function AccountList ({
   accounts,
@@ -32,12 +32,7 @@ function AccountList ({
         return (
           <div
             key={account.token.id}
-            className={
-              clsx({
-                [classes.account]: true,
-                [classes.accountSpacer]: index > 0
-              })
-            }
+            className={clsx({ [classes.accountSpacer]: index > 0 })}
           >
             <Account
               balance={fixedAccountBalance}
