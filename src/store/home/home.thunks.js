@@ -2,11 +2,11 @@ import * as homeActions from './home.actions'
 import * as rollupApi from '../../apis/rollup'
 import { getPoolTransactions } from '../../utils/tx-pool'
 
-function fetchAccounts (hermezEthereumAddress) {
+function fetchAccounts (hermezEthereumAddress, fromItem) {
   return (dispatch) => {
     dispatch(homeActions.loadAccounts())
 
-    return rollupApi.getAccounts(hermezEthereumAddress)
+    return rollupApi.getAccounts(hermezEthereumAddress, fromItem)
       .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
   }

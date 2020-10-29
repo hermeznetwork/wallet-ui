@@ -27,9 +27,10 @@ function homeReducer (state = initialHomeState, action) {
       }
     }
     case homeActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      const accounts = state.accountsTask.status === 'pending'
-        ? action.data.accounts
-        : [...state.accountsTask.data.accounts, ...action.data.accounts]
+      console.log(action.data)
+      const accounts = state.accountsTask.status === 'reloading'
+        ? [...state.accountsTask.data.accounts, ...action.data.accounts]
+        : action.data.accounts
       const pagination = getPaginationData(
         action.data.accounts,
         action.data.pagination

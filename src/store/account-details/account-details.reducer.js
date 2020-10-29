@@ -79,9 +79,9 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
       }
     }
     case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
-      const transactions = state.historyTransactionsTask.status === 'loading'
-        ? action.data.transactions
-        : [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
+      const transactions = state.historyTransactionsTask.status === 'reloading'
+        ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
+        : action.data.transactions
       const pagination = getPaginationData(
         action.data.transactions,
         action.data.pagination
