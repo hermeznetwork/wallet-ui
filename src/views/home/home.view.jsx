@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
+import { TxType } from 'hermezjs/src/tx'
 
 import useHomeStyles from './home.styles'
 import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/home/home.thunks'
@@ -18,7 +19,6 @@ import TransactionActions from '../shared/transaction-actions/transaction-action
 import ExitList from '../shared/exit-list/exit-list.view'
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import Button from '../shared/button/button.view'
-import { TxType } from '../../utils/tx'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/home/home.actions'
 
@@ -44,7 +44,7 @@ function Home ({
   const classes = useHomeStyles()
 
   React.useEffect(() => {
-    onChangeHeader()
+    onChangeHeader({ type: 'main' })
   }, [onChangeHeader])
 
   React.useEffect(() => {
@@ -230,7 +230,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: () => dispatch(changeHeader({ type: 'main' })),
+  onChangeHeader: (headerData) => dispatch(changeHeader(headerData)),
   onLoadAccounts: (hermezEthereumAddress, fromItem) =>
     dispatch(fetchAccounts(hermezEthereumAddress, fromItem)),
   onLoadPoolTransactions: () => dispatch(fetchPoolTransactions()),

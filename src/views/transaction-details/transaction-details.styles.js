@@ -14,11 +14,6 @@ const useTransactionDetailsStyles = createUseStyles(theme => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1)
   },
-  tokenAmount: {
-    fontSize: `${theme.spacing(2.5)}px`,
-    color: theme.palette.grey.dark,
-    fontWeight: theme.fontWeights.medium
-  },
   link: {
     fontWeight: theme.fontWeights.bold,
     display: 'flex',

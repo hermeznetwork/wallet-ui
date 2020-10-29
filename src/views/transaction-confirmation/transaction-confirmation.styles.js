@@ -10,17 +10,21 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
     flexDirection: 'column'
   },
   image: {
-    marginTop: `${theme.spacing(13.5)}px`,
-    width: `${theme.spacing(32)}px`
+    marginTop: theme.spacing(13.5),
+    width: theme.spacing(32)
   },
   text: {
     fontSize: `${theme.spacing(3)}px`,
     color: theme.palette.black.light,
     fontWeight: theme.fontWeights.bold,
-    marginTop: `${theme.spacing(6)}px`
+    marginTop: theme.spacing(6)
   },
   doneWrapper: {
-    marginTop: `${theme.spacing(18)}px`
+    marginTop: theme.spacing(9),
+    [theme.breakpoints.upSm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      marginTop: theme.spacing(18)
+    }
   },
   done: {
     cursor: 'pointer',
@@ -29,10 +33,14 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
     border: 0,
     outline: 'none',
     color: theme.palette.white,
-    fontSize: `${theme.spacing(3)}px`,
+    fontSize: `${theme.spacing(2.5)}px`,
     fontWeight: theme.fontWeights.bold,
-    padding: `${theme.spacing(3)}px 0`,
-    width: `${theme.spacing(24)}px`
+    padding: `${theme.spacing(2)}px 0`,
+    width: theme.spacing(24),
+    [theme.breakpoints.upSm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      padding: `${theme.spacing(3)}px 0`
+    }
   }
 }))
 

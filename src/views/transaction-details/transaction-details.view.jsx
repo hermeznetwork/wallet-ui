@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
+import { beautifyTransactionState } from 'hermezjs/src/tx'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
@@ -13,7 +14,6 @@ import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionInfo from '../shared/transaction-info/transaction-info.view'
 import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
-import { beautifyTransactionState } from '../../utils/tx'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
@@ -48,15 +48,15 @@ function TransactionDetails ({
           return undefined
         }
 
-        const transaction = transactionTask.data
+        const { amount, token } = transactionTask.data
         const fixedAccountBalance = getFixedTokenAmount(
-          transaction.amount,
-          transaction.token.decimals
+          amount,
+          token.decimals
         )
 
         return getTokenAmountInPreferredCurrency(
           fixedAccountBalance,
-          transaction.token.USD,
+          token.USD,
           preferredCurrency,
           fiatExchangeRatesTask.data
         )
@@ -87,11 +87,9 @@ function TransactionDetails ({
         <section className={classes.section}>
           {(() => {
             switch (transactionTask.status) {
-              case 'loading': {
-                return <Spinner />
-              }
+              case 'loading':
               case 'failed': {
-                return <p>{transactionTask.error}</p>
+                return <Spinner />
               }
               case 'successful': {
                 return (

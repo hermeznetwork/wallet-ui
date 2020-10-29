@@ -1,12 +1,12 @@
 import * as homeActions from './home.actions'
-import * as rollupApi from '../../apis/rollup'
-import { getPoolTransactions } from '../../utils/tx-pool'
+import { CoordinatorAPI } from 'hermezjs'
+import { getPoolTransactions } from 'hermezjs/src/tx-pool'
 
 function fetchAccounts (hermezEthereumAddress, fromItem) {
   return (dispatch) => {
     dispatch(homeActions.loadAccounts())
 
-    return rollupApi.getAccounts(hermezEthereumAddress, fromItem)
+    return CoordinatorAPI.getAccounts(hermezEthereumAddress, fromItem)
       .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
   }
@@ -42,7 +42,7 @@ function fetchHistoryTransactions () {
   return (dispatch) => {
     dispatch(homeActions.loadHistoryTransactions())
 
-    return rollupApi.getTransactions()
+    return CoordinatorAPI.getTransactions()
       .then(res => dispatch(homeActions.loadHistoryTransactionsSuccess(res)))
       .catch(err => dispatch(homeActions.loadHistoryTransactionsFailure(err)))
   }
@@ -57,7 +57,7 @@ function fetchExits (exitTransactions) {
   return (dispatch) => {
     dispatch(homeActions.loadExits())
 
-    const exitTransactionsPromises = exitTransactions.map(exitTransaction => rollupApi.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
+    const exitTransactionsPromises = exitTransactions.map(exitTransaction => CoordinatorAPI.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
 
     return Promise.all(exitTransactionsPromises)
       .then((exits) => {
