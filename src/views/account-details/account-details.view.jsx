@@ -6,7 +6,7 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
-import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/account-details/account-details.thunks'
+import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions, fetchExits, fetchMoreHistoryTransactions } from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -32,6 +32,7 @@ function AccountDetails ({
   onLoadAccount,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
+  onLoadMoreHistoryTransactions,
   onLoadExits,
   onNavigateToTransactionDetails
 }) {
@@ -55,7 +56,7 @@ function AccountDetails ({
   }, [historyTransactionsTask, onLoadExits])
 
   React.useEffect(() => {
-    if (accountTask.status === 'successful' || accountTask.status === 'reloading') {
+    if (accountTask.status === 'successful') {
       onChangeHeader(accountTask.data.token.name)
     }
   }, [accountTask, onChangeHeader])
@@ -179,7 +180,7 @@ function AccountDetails ({
                   <InfiniteScroll
                     asyncTaskStatus={historyTransactionsTask.status}
                     paginationData={historyTransactionsTask.data.pagination}
-                    onLoadNextPage={(fromItem) => onLoadHistoryTransactions(accountIndex, fromItem)}
+                    onLoadNextPage={(fromItem) => onLoadMoreHistoryTransactions(accountIndex, fromItem)}
                   >
                     <TransactionList
                       transactions={getHistoryTransactions(historyTransactionsTask.data.transactions)}
@@ -233,8 +234,10 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: (tokenName) =>
     dispatch(changeHeader({ type: 'page', data: { title: tokenName, previousRoute: '/' } })),
   onLoadPoolTransactions: (accountIndex) => dispatch(fetchPoolTransactions(accountIndex)),
-  onLoadHistoryTransactions: (accountIndex, fromItem) =>
-    dispatch(fetchHistoryTransactions(accountIndex, fromItem)),
+  onLoadHistoryTransactions: (accountIndex) =>
+    dispatch(fetchHistoryTransactions(accountIndex)),
+  onLoadMoreHistoryTransactions: (accountIndex, fromItem) =>
+    dispatch(fetchMoreHistoryTransactions(accountIndex, fromItem)),
   onLoadExits: (exitTransactions) =>
     dispatch(fetchExits(exitTransactions)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>

@@ -44,13 +44,23 @@ function fetchPoolTransactions (accountIndex) {
  * @param {string} accountIndex - The account index
  * @returns {void}
  */
-function fetchHistoryTransactions (accountIndex, fromItem) {
+function fetchHistoryTransactions (accountIndex) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadHistoryTransactions())
 
-    return rollupApi.getTransactions(accountIndex, fromItem)
+    return rollupApi.getTransactions(accountIndex)
       .then(res => dispatch(accountDetailsActionTypes.loadHistoryTransactionsSuccess(res)))
-      .catch(console.log)
+      .catch(err => dispatch(accountDetailsActionTypes.loadHistoryTransactionsFailure(err)))
+  }
+}
+
+function fetchMoreHistoryTransactions (accountIndex, fromItem) {
+  return (dispatch) => {
+    dispatch(accountDetailsActionTypes.loadMoreHistoryTransactions())
+
+    return rollupApi.getTransactions(accountIndex, fromItem)
+      .then(res => dispatch(accountDetailsActionTypes.loadMoreHistoryTransactionsSuccess(res)))
+      .catch(err => dispatch(accountDetailsActionTypes.loadMoreHistoryTransactionsFailure(err)))
   }
 }
 
@@ -79,5 +89,6 @@ export {
   fetchAccount,
   fetchPoolTransactions,
   fetchHistoryTransactions,
+  fetchMoreHistoryTransactions,
   fetchExits
 }

@@ -73,12 +73,45 @@ function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
     case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS: {
       return {
         ...state,
-        historyTransactionsTask: state.historyTransactionsTask.status === 'pending'
-          ? { status: 'loading' }
-          : { status: 'reloading', data: state.historyTransactionsTask.data }
+        historyTransactionsTask: {
+          status: 'loading'
+        }
       }
     }
     case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
+      const transactions = action.data.transactions
+      const pagination = getPaginationData(
+        action.data.transactions,
+        action.data.pagination
+      )
+
+      return {
+        ...state,
+        historyTransactionsTask: {
+          status: 'successful',
+          data: { transactions, pagination }
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE: {
+      return {
+        ...state,
+        historyTransactionsTask: {
+          status: 'failed',
+          error: 'An error ocurred loading the transactions from the history'
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_MORE_HISTORY_TRANSACTIONS: {
+      return {
+        ...state,
+        historyTransactionsTask: {
+          status: 'reloading',
+          data: state.historyTransactionsTask.data
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_MORE_HISTORY_TRANSACTIONS_SUCCESS: {
       const transactions = state.historyTransactionsTask.status === 'reloading'
         ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
         : action.data.transactions
@@ -95,7 +128,7 @@ function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE: {
+    case accountDetailsActionTypes.LOAD_MORE_HISTORY_TRANSACTIONS_FAILURE: {
       return {
         ...state,
         historyTransactionsTask: {
