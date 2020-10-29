@@ -2,6 +2,9 @@ export const transactionActionTypes = {
   LOAD_TOKENS: '[TRANSACTION] LOAD TOKENS',
   LOAD_TOKENS_SUCCESS: '[TRANSACTION] LOAD TOKENS SUCCESS',
   LOAD_TOKENS_FAILURE: '[TRANSACTION] LOAD TOKENS FAILURE',
+  LOAD_ACCOUNTS: '[TRANSACTION] LOAD ACCOUNTS',
+  LOAD_ACCOUNTS_SUCCESS: '[TRANSACTION] LOAD ACCOUNTS SUCCESS',
+  LOAD_ACCOUNTS_FAILURE: '[TRANSACTION] LOAD ACCOUNTS FAILURE',
   LOAD_METAMASK_TOKENS: '[TRANSACTION] LOAD METAMASK TOKENS',
   LOAD_METAMASK_TOKENS_SUCCESS: '[TRANSACTION] LOAD METAMASK TOKENS SUCCESS',
   LOAD_METAMASK_TOKENS_FAILURE: '[TRANSACTION] LOAD METAMASK TOKENS FAILURE',
@@ -29,6 +32,25 @@ function loadTokensSuccess (tokens) {
 function loadTokensFailure () {
   return {
     type: transactionActionTypes.LOAD_TOKENS_FAILURE
+  }
+}
+
+function loadAccounts () {
+  return {
+    type: transactionActionTypes.LOAD_ACCOUNTS
+  }
+}
+
+function loadAccountsSuccess (data) {
+  return {
+    type: transactionActionTypes.LOAD_ACCOUNTS_SUCCESS,
+    data
+  }
+}
+
+function loadAccountsFailure () {
+  return {
+    type: transactionActionTypes.LOAD_ACCOUNTS_FAILURE
   }
 }
 
@@ -96,6 +118,9 @@ export {
   loadTokens,
   loadTokensSuccess,
   loadTokensFailure,
+  loadAccounts,
+  loadAccountsSuccess,
+  loadAccountsFailure,
   loadMetaMaskTokens,
   loadMetaMaskTokensSuccess,
   loadMetaMaskTokensFailure,

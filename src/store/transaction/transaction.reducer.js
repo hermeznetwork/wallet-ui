@@ -4,6 +4,9 @@ const initialTransactionState = {
   tokensTask: {
     status: 'pending'
   },
+  accountsTask: {
+    status: 'pending'
+  },
   metaMaskTokensTask: {
     status: 'pending'
   },
@@ -31,6 +34,32 @@ function transactionReducer (state = initialTransactionState, action) {
         tokensTask: {
           status: 'successful',
           data: action.tokens
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNTS: {
+      return {
+        ...state,
+        accountsTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+      return {
+        ...state,
+        accountsTask: {
+          status: 'successful',
+          data: action.data
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNTS_FAILURE: {
+      return {
+        ...state,
+        accountsTask: {
+          status: 'failed',
+          error: 'An error ocurred loading the accounts'
         }
       }
     }

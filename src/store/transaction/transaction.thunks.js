@@ -18,6 +18,16 @@ function fetchTokens () {
   }
 }
 
+function fetchAccounts (hermezEthereumAddress) {
+  return (dispatch) => {
+    dispatch(transactionActions.loadAccounts())
+
+    return rollupApi.getAccounts(hermezEthereumAddress)
+      .then(res => dispatch(transactionActions.loadAccountsSuccess(res)))
+      .catch(err => dispatch(transactionActions.loadAccountsFailure(err)))
+  }
+}
+
 /**
  * Fetches token balances in the user's MetaMask account. Only for those tokens registered in Hermez and Ether.
  * Dispatch an array of { balance, token } where balance is a Number and token is the Token schema returned from the API.
@@ -119,6 +129,7 @@ function fetchExit (batchNum, accountIndex) {
 
 export {
   fetchTokens,
+  fetchAccounts,
   fetchMetaMaskTokens,
   fetchFees,
   fetchExit
