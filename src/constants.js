@@ -19,4 +19,4 @@ export const ETHER_TOKEN_ID = 0
 
 export const MAX_DECIMALS_UNTIL_ZERO_AMOUNT = 6
 
-export const DEFAULT_PAGE_SIZE = 10
+export const DEFAULT_PAGE_SIZE = 20
