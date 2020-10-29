@@ -112,19 +112,15 @@ function Home ({
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
 
-  return (
+  return metaMaskWalletTask.status === 'successful' && (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
           {
-            metaMaskWalletTask.status !== 'successful'
-              ? <></>
-              : (
-                <Button
-                  text={getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
-                  onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
-                />
-              )
+            <Button
+              text={getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
+              onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
+            />
           }
           <div className={classes.accountBalance}>
             <FiatAmount
@@ -166,10 +162,6 @@ function Home ({
               : <></>
           }
           {(() => {
-            if (metaMaskWalletTask.status !== 'successful') {
-              return <></>
-            }
-
             switch (accountsTask.status) {
               case 'loading':
               case 'failed': {

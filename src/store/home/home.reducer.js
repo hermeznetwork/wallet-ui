@@ -27,7 +27,6 @@ function homeReducer (state = initialHomeState, action) {
       }
     }
     case homeActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      console.log(action.data)
       const accounts = state.accountsTask.status === 'reloading'
         ? [...state.accountsTask.data.accounts, ...action.data.accounts]
         : action.data.accounts
