@@ -2,6 +2,9 @@ export const homeActionTypes = {
   LOAD_ACCOUNTS: '[HOME] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[HOME] LOAD ACCOUNTS SUCCESS',
   LOAD_ACCOUNTS_FAILURE: '[HOME] LOAD ACCOUNTS FAILURE',
+  LOAD_MORE_ACCOUNTS: '[HOME] LOAD MORE ACCOUNTS',
+  LOAD_MORE_ACCOUNTS_SUCCESS: '[HOME] LOAD MORE ACCOUNTS SUCCESS',
+  LOAD_MORE_ACCOUNTS_FAILURE: '[HOME] LOAD MORE ACCOUNTS FAILURE',
   LOAD_POOL_TRANSACTIONS: '[HOME] LOAD POOL TRANSACTIONS',
   LOAD_POOL_TRANSACTIONS_SUCCESS: '[HOME] LOAD POOL TRANSACTIONS SUCCESS',
   LOAD_POOL_TRANSACTIONS_FAILURE: '[HOME] LOAD POOL TRANSACTIONS FAILURE',
@@ -29,6 +32,25 @@ function loadAccountsSuccess (data) {
 function loadAccountsFailure () {
   return {
     type: homeActionTypes.LOAD_ACCOUNTS_FAILURE
+  }
+}
+
+function loadMoreAccounts () {
+  return {
+    type: homeActionTypes.LOAD_MORE_ACCOUNTS
+  }
+}
+
+function loadMoreAccountsSuccess (data) {
+  return {
+    type: homeActionTypes.LOAD_MORE_ACCOUNTS_SUCCESS,
+    data
+  }
+}
+
+function loadMoreAccountsFailure () {
+  return {
+    type: homeActionTypes.LOAD_MORE_ACCOUNTS_FAILURE
   }
 }
 
@@ -94,6 +116,9 @@ export {
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
+  loadMoreAccounts,
+  loadMoreAccountsSuccess,
+  loadMoreAccountsFailure,
   loadPoolTransactions,
   loadPoolTransactionsSuccess,
   loadPoolTransactionsFailure,

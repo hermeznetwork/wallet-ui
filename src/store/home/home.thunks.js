@@ -2,13 +2,23 @@ import * as homeActions from './home.actions'
 import * as rollupApi from '../../apis/rollup'
 import { getPoolTransactions } from '../../utils/tx-pool'
 
-function fetchAccounts (hermezEthereumAddress, fromItem) {
+function fetchAccounts (hermezEthereumAddress) {
   return (dispatch) => {
     dispatch(homeActions.loadAccounts())
 
-    return rollupApi.getAccounts(hermezEthereumAddress, fromItem)
+    return rollupApi.getAccounts(hermezEthereumAddress)
       .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
+  }
+}
+
+function fetchMoreAccounts (hermezEthereumAddress, fromItem) {
+  return (dispatch) => {
+    dispatch(homeActions.loadMoreAccounts())
+
+    return rollupApi.getAccounts(hermezEthereumAddress, fromItem)
+      .then(res => dispatch(homeActions.loadMoreAccountsSuccess(res)))
+      .catch(err => dispatch(homeActions.loadMoreAccountsFailure(err)))
   }
 }
 
@@ -71,6 +81,7 @@ function fetchExits (exitTransactions) {
 
 export {
   fetchAccounts,
+  fetchMoreAccounts,
   fetchPoolTransactions,
   fetchHistoryTransactions,
   fetchExits

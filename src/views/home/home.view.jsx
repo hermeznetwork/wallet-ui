@@ -5,7 +5,7 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
-import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/home/home.thunks'
+import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits, fetchMoreAccounts } from '../../store/home/home.thunks'
 import AccountBalance from '../shared/account-balance/account-balance.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
@@ -31,6 +31,7 @@ function Home ({
   preferredCurrency,
   onChangeHeader,
   onLoadAccounts,
+  onLoadMoreAccounts,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
@@ -178,7 +179,7 @@ function Home ({
                     asyncTaskStatus={accountsTask.status}
                     paginationData={accountsTask.data.pagination}
                     onLoadNextPage={(fromItem) => {
-                      onLoadAccounts(
+                      onLoadMoreAccounts(
                         metaMaskWalletTask.data.hermezEthereumAddress,
                         fromItem
                       )
@@ -235,8 +236,10 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () => dispatch(changeHeader({ type: 'main' })),
-  onLoadAccounts: (hermezEthereumAddress, fromItem) =>
-    dispatch(fetchAccounts(hermezEthereumAddress, fromItem)),
+  onLoadAccounts: (hermezEthereumAddress) =>
+    dispatch(fetchAccounts(hermezEthereumAddress)),
+  onLoadMoreAccounts: (hermezEthereumAddress, fromItem) =>
+    dispatch(fetchMoreAccounts(hermezEthereumAddress, fromItem)),
   onLoadPoolTransactions: () => dispatch(fetchPoolTransactions()),
   onLoadHistoryTransactions: () =>
     dispatch(fetchHistoryTransactions()),
