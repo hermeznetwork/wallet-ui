@@ -6,10 +6,10 @@ const useFiatAmountStyles = createUseStyles(theme => ({
     alignItems: 'baseline',
     justifyContent: 'center'
   },
-  amount: ({ size }) => ({
+  amount: {
     margin: 0,
     fontSize: `${theme.spacing(5)}px`
-  }),
+  },
   currency: {
     margin: 0,
     marginLeft: 8
