@@ -33,6 +33,9 @@ const theme = {
     bold: '700',
     extraBold: '800'
   },
+  breakpoints: {
+    upSm: '@media (min-width: 576px)'
+  },
   spacing: (value) => value * 8,
   headerHeight: 72
 }

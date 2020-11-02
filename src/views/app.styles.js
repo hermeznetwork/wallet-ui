@@ -59,7 +59,7 @@ const useAppStyles = createUseStyles(theme => ({
     },
     body: {
       fontFamily: 'Modern Era',
-      fontSize: 16,
+      fontSize: theme.spacing(2),
       minHeight: '100vh'
     },
     a: {

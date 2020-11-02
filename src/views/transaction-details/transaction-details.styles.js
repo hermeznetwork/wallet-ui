@@ -1,6 +1,9 @@
 import { createUseStyles } from 'react-jss'
 
 const useTransactionDetailsStyles = createUseStyles(theme => ({
+  root: {
+    width: '100%'
+  },
   section: {
     width: '100%',
     display: 'flex',
@@ -8,15 +11,8 @@ const useTransactionDetailsStyles = createUseStyles(theme => ({
     alignItems: 'center'
   },
   fiatAmount: {
-    fontSize: `${theme.spacing(5)}px`,
-    color: theme.palette.black.light,
-    fontWeight: theme.fontWeights.extraBold,
-    marginBottom: `${theme.spacing(1)}px`
-  },
-  tokenAmount: {
-    fontSize: `${theme.spacing(2.5)}px`,
-    color: theme.palette.grey.dark,
-    fontWeight: theme.fontWeights.medium
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1)
   },
   link: {
     fontWeight: theme.fontWeights.bold,

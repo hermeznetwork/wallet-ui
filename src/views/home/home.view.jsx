@@ -42,7 +42,7 @@ function Home ({
   const classes = useHomeStyles()
 
   React.useEffect(() => {
-    onChangeHeader()
+    onChangeHeader({ type: 'main' })
   }, [onChangeHeader])
 
   React.useEffect(() => {
@@ -228,7 +228,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: () => dispatch(changeHeader({ type: 'main' })),
+  onChangeHeader: (headerData) => dispatch(changeHeader(headerData)),
   onLoadAccounts: (hermezEthereumAddress) =>
     dispatch(fetchAccounts(hermezEthereumAddress)),
   onLoadPoolTransactions: () => dispatch(fetchPoolTransactions()),
