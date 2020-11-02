@@ -7,6 +7,7 @@ import { push } from 'connected-react-router'
 import { getAccountIndex } from 'hermezjs/src/addresses'
 
 import { fetchAccounts } from '../../store/home/home.thunks'
+import { addPendingWithdraw } from '../../store/global/global.thunks'
 import { fetchTokens, fetchMetaMaskTokens, fetchFees, fetchExit } from '../../store/transaction/transaction.thunks'
 import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
@@ -33,6 +34,7 @@ function Transaction ({
   onLoadAccounts,
   onLoadFees,
   onLoadExit,
+  onAddPendingWithdraw,
   onNavigateToTransactionConfirmation
 }) {
   const classes = useTransactionStyles()
@@ -313,6 +315,7 @@ function Transaction ({
           amount={transaction.amount}
           fee={transaction.fee}
           exit={transaction.exit}
+          onAddPendingWithdraw={onAddPendingWithdraw}
           onNavigateToTransactionConfirmation={onNavigateToTransactionConfirmation}
         />
       )
@@ -379,6 +382,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchAccounts(ethereumAddress, tokens)),
   onLoadFees: () => dispatch(fetchFees()),
   onLoadExit: (batchNum, accountIndex) => dispatch(fetchExit(batchNum, accountIndex)),
+  onAddPendingWithdraw: (hermezAddress, pendingWithdraw) => dispatch(addPendingWithdraw(hermezAddress, pendingWithdraw)),
   onNavigateToTransactionConfirmation: (type) => dispatch(push(`/${type}-confirmation`))
 })
 

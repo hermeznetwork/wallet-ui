@@ -28,6 +28,7 @@ function Home ({
   exitsTask,
   fiatExchangeRatesTask,
   preferredCurrency,
+  pendingWithdraws,
   onChangeHeader,
   onLoadAccounts,
   onLoadPoolTransactions,
@@ -58,7 +59,6 @@ function Home ({
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
       const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
-      console.log(2, exitTransactions)
       onLoadExits(exitTransactions)
     }
   }, [historyTransactionsTask, onLoadExits])
@@ -110,7 +110,9 @@ function Home ({
   function renderExits () {
     if (
       poolTransactionsTask.status === 'successful' &&
-      historyTransactionsTask.status === 'successful'
+      historyTransactionsTask.status === 'successful' &&
+      (exitsTask.status === 'successful' ||
+      exitsTask.status === 'reloading')
     ) {
       return (
         <>
@@ -122,6 +124,7 @@ function Home ({
                 : undefined
             }
             preferredCurrency={preferredCurrency}
+            pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
           />
           {exitsTask.status === 'successful' &&
             <ExitList
@@ -132,6 +135,7 @@ function Home ({
                   : undefined
               }
               preferredCurrency={preferredCurrency}
+              pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
             />}
         </>
       )
@@ -204,6 +208,7 @@ Home.propTypes = {
   poolTransactionsTask: PropTypes.object.isRequired,
   historyTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
+  pendingWithdraws: PropTypes.object.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadHistoryTransactions: PropTypes.func.isRequired,
@@ -218,7 +223,8 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.settings.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
   historyTransactionsTask: state.home.historyTransactionsTask,
-  exitsTask: state.home.exitsTask
+  exitsTask: state.home.exitsTask,
+  pendingWithdraws: state.global.pendingWithdraws
 })
 
 const mapDispatchToProps = (dispatch) => ({

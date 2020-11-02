@@ -21,7 +21,8 @@ function Exit ({
   preferredCurrency,
   merkleProof,
   batchNum,
-  accountIndex
+  accountIndex,
+  pendingWithdraws
 }) {
   const classes = useExitStyles()
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false)
@@ -29,8 +30,10 @@ function Exit ({
   function getStep () {
     if (!merkleProof) {
       return STEPS.first
-    } else {
+    } else if (!pendingWithdraws || (pendingWithdraws && !pendingWithdraws.includes(accountIndex + merkleProof.Root))) {
       return STEPS.second
+    } else {
+      return STEPS.third
     }
   }
 
@@ -100,7 +103,8 @@ Exit.propTypes = {
   preferredCurrency: PropTypes.string.isRequired,
   merkleProof: PropTypes.object,
   batchNum: PropTypes.number,
-  accountIndex: PropTypes.string
+  accountIndex: PropTypes.string,
+  pendingWithdraws: PropTypes.array.isRequired
 }
 
 export default Exit

@@ -6,7 +6,7 @@ import hermezjs from 'hermezjs'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
-import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
 import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
 import Container from '../../../shared/container/container.view'
 
@@ -20,9 +20,9 @@ function TransactionOverview ({
   account,
   preferredCurrency,
   fiatExchangeRates,
+  onAddPendingWithdraw,
   onNavigateToTransactionConfirmation
 }) {
-  console.log(to)
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
 
@@ -33,7 +33,7 @@ function TransactionOverview ({
    */
   function getAmountinFiat (value) {
     return getTokenAmountInPreferredCurrency(
-      value,
+      Number(value) / Math.pow(10, account.token.decimals),
       account.token.USD,
       preferredCurrency,
       fiatExchangeRates
@@ -86,20 +86,20 @@ function TransactionOverview ({
    * Prepares the transaction and sends it
    */
   async function handleClickTxButton () {
+    // ToDo: Remove once we have hermez-node. This is how we test the withdraw flow.
+    // onAddPendingWithdraw(metaMaskWallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
+    // return
     if (type === 'deposit') {
       hermezjs.Tx.deposit(getAmountInBigInt(), metaMaskWallet.hermezEthereumAddress, account.token, metaMaskWallet.publicKeyCompressedHex)
-        .then((res) => {
-          console.log(res)
+        .then(() => {
           onNavigateToTransactionConfirmation(type)
         })
         .catch((error) => {
           console.log(error)
         })
     } else if (type === 'forceExit') {
-      console.log(account)
       hermezjs.Tx.forceExit(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token)
-        .then((res) => {
-          console.log(res)
+        .then(() => {
           onNavigateToTransactionConfirmation(type)
         })
         .catch((error) => {
@@ -109,8 +109,8 @@ function TransactionOverview ({
       // Todo: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
       // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
       hermezjs.Tx.withdraw(ethers.BigNumber.from(300000000000000000000n), 'hez:TKN:256', { id: 1, ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB' }, metaMaskWallet.publicKeyCompressedHex, ethers.BigNumber.from('4'), [])
-        .then((res) => {
-          console.log(res)
+        .then(() => {
+          onAddPendingWithdraw(account.accountIndex + exit.merkleProof.Root)
           onNavigateToTransactionConfirmation(type)
         })
         .catch((error) => {
@@ -118,8 +118,7 @@ function TransactionOverview ({
         })
     } else {
       sendTransfer()
-        .then((res) => {
-          console.log(res)
+        .then(() => {
           onNavigateToTransactionConfirmation(type)
         })
         .catch((error) => {
@@ -137,7 +136,7 @@ function TransactionOverview ({
               {CurrencySymbol[preferredCurrency].symbol} {getAmountinFiat(amount).toFixed(2)}
             </h1>
             <p className={classes.tokenAmount}>
-              {amount} {account.token.symbol}
+              {getFixedTokenAmount(amount, account.token.decimals)} {account.token.symbol}
             </p>
           </section>
         </Container>
@@ -175,6 +174,7 @@ TransactionOverview.propTypes = {
   account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired,
+  onAddPendingWithdraw: PropTypes.func.isRequired,
   onNavigateToTransactionConfirmation: PropTypes.func.isRequired
 }
 
