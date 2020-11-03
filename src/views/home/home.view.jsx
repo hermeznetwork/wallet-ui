@@ -6,7 +6,7 @@ import { push } from 'connected-react-router'
 import { TxType } from 'hermezjs/src/tx'
 
 import useHomeStyles from './home.styles'
-import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/home/home.thunks'
+import * as homeThunks from '../../store/home/home.thunks'
 import AccountBalance from '../shared/account-balance/account-balance.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
@@ -41,7 +41,7 @@ function Home ({
   const classes = useHomeStyles()
 
   React.useEffect(() => {
-    onChangeHeader({ type: 'main' })
+    onChangeHeader()
   }, [onChangeHeader])
 
   React.useEffect(() => {
@@ -58,7 +58,7 @@ function Home ({
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
       const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
-      console.log(2, exitTransactions)
+
       onLoadExits(exitTransactions)
     }
   }, [historyTransactionsTask, onLoadExits])
@@ -222,17 +222,20 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (headerData) => dispatch(changeHeader(headerData)),
+  onChangeHeader: () =>
+    dispatch(changeHeader({ type: 'main' })),
   onLoadAccounts: (hermezEthereumAddress) =>
-    dispatch(fetchAccounts(hermezEthereumAddress)),
-  onLoadPoolTransactions: () => dispatch(fetchPoolTransactions()),
+    dispatch(homeThunks.fetchAccounts(hermezEthereumAddress)),
+  onLoadPoolTransactions: () =>
+    dispatch(homeThunks.fetchPoolTransactions()),
   onLoadHistoryTransactions: () =>
-    dispatch(fetchHistoryTransactions()),
+    dispatch(homeThunks.fetchHistoryTransactions()),
   onLoadExits: (exitTransactions) =>
-    dispatch(fetchExits(exitTransactions)),
+    dispatch(homeThunks.fetchExits(exitTransactions)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
-  onOpenSnackbar: (message) => dispatch(openSnackbar(message))
+  onOpenSnackbar: (message) =>
+    dispatch(openSnackbar(message))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))
