@@ -14,9 +14,9 @@ import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionInfo from '../shared/transaction-info/transaction-info.view'
 import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
+import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
+import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
-import AccountBalance from '../shared/account-balance/account-balance.view'
-import TokenBalance from '../account-details/components/token-balance/token-balance.view'
 import { push } from 'connected-react-router'
 
 function TransactionDetails ({
@@ -39,7 +39,7 @@ function TransactionDetails ({
     onLoadTransaction(transactionId)
   }, [transactionId, onLoadTransaction])
 
-  function getAmountInFiat (transactionTask) {
+  function getTransactionAmount (transactionTask) {
     switch (transactionTask.status) {
       case 'reloading':
       case 'successful': {
@@ -48,15 +48,17 @@ function TransactionDetails ({
         }
 
         const { amount, token } = transactionTask.data
-        const fixedTokenAmount = getFixedTokenAmount(amount, token.decimals)
-        const fiatTokenAmount = getTokenAmountInPreferredCurrency(
-          fixedTokenAmount,
+        const fixedAccountBalance = getFixedTokenAmount(
+          amount,
+          token.decimals
+        )
+
+        return getTokenAmountInPreferredCurrency(
+          fixedAccountBalance,
           token.USD,
           preferredCurrency,
           fiatExchangeRatesTask.data
         )
-
-        return fiatTokenAmount
       }
       default: {
         return undefined
@@ -69,8 +71,8 @@ function TransactionDetails ({
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.section}>
           <div className={classes.fiatAmount}>
-            <AccountBalance
-              amount={getAmountInFiat(transactionTask)}
+            <FiatAmount
+              amount={getTransactionAmount(transactionTask)}
               currency={preferredCurrency}
             />
           </div>
@@ -103,21 +105,17 @@ function TransactionDetails ({
               }
             }
           })()}
-          {
-            transactionTask.status === 'successful'
-              ? (
-                <a
-                  className={classes.link}
-                  href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}`}
-                  target='__blank'
-                  rel='noopener noreferrer'
-                >
-                  <OpenInNewTabIcon className={classes.linkIcon} />
+          {transactionTask.status === 'successful' && (
+            <a
+              className={classes.link}
+              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}`}
+              target='__blank'
+              rel='noopener noreferrer'
+            >
+              <OpenInNewTabIcon className={classes.linkIcon} />
                   View in Explorer
-                </a>
-              )
-              : <></>
-          }
+            </a>
+          )}
         </section>
       </Container>
     </div>

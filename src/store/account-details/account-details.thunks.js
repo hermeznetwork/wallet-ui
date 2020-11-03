@@ -45,11 +45,11 @@ function fetchPoolTransactions (accountIndex) {
  * @param {string} accountIndex - The account index
  * @returns {void}
  */
-function fetchHistoryTransactions (accountIndex) {
+function fetchHistoryTransactions (accountIndex, fromItem) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadHistoryTransactions())
 
-    return CoordinatorAPI.getTransactions(accountIndex)
+    return CoordinatorAPI.getTransactions(accountIndex, fromItem)
       .then(res => dispatch(accountDetailsActionTypes.loadHistoryTransactionsSuccess(res)))
       .catch(err => dispatch(accountDetailsActionTypes.loadHistoryTransactionsFailure(err)))
   }

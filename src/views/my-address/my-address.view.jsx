@@ -19,7 +19,7 @@ function MyAddress ({ metaMaskWalletTask, onChangeHeader }) {
   }, [theme, onChangeHeader])
 
   return (
-    <Container backgroundColor={theme.palette.primary.main} fullHeight>
+    <Container backgroundColor={theme.palette.primary.main} addHeaderPadding fullHeight>
       <div className={classes.root}>
         {metaMaskWalletTask.status === 'successful' && (
           <>

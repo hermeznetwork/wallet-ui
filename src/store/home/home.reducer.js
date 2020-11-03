@@ -1,3 +1,4 @@
+import { getPaginationData } from '../../utils/api'
 import { homeActionTypes } from './home.actions'
 
 const initialHomeState = {
@@ -20,17 +21,25 @@ function homeReducer (state = initialHomeState, action) {
     case homeActionTypes.LOAD_ACCOUNTS: {
       return {
         ...state,
-        accountsTask: state.accountsTask.status === 'pending'
-          ? { status: 'loading' }
-          : { status: 'reloading', data: state.accountsTask.data }
+        accountsTask: state.accountsTask.status === 'successful'
+          ? { status: 'reloading', data: state.accountsTask.data }
+          : { status: 'loading' }
       }
     }
     case homeActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+      const accounts = state.accountsTask.status === 'reloading'
+        ? [...state.accountsTask.data.accounts, ...action.data.accounts]
+        : action.data.accounts
+      const pagination = getPaginationData(
+        action.data.accounts,
+        action.data.pagination
+      )
+
       return {
         ...state,
         accountsTask: {
           status: 'successful',
-          data: action.accounts
+          data: { accounts, pagination }
         }
       }
     }
@@ -112,6 +121,9 @@ function homeReducer (state = initialHomeState, action) {
           error: action.error
         }
       }
+    }
+    case homeActionTypes.RESET_STATE: {
+      return initialHomeState
     }
     default: {
       return state

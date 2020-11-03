@@ -8,8 +8,11 @@ const useSpinnerStyles = createUseStyles(theme => ({
   root: ({ size }) => ({
     width: size,
     height: size,
-    animation: '$spin 0.8s linear infinite'
+    overflow: 'hidden'
   }),
+  svg: {
+    animation: '$spin 0.8s linear infinite'
+  },
   topCircle: {
     stroke: theme.palette.orange.main,
     strokeLinecap: 'round',

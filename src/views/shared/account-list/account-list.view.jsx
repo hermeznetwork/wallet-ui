@@ -32,12 +32,7 @@ function AccountList ({
         return (
           <div
             key={account.token.id}
-            className={
-              clsx({
-                [classes.account]: true,
-                [classes.accountSpacer]: index > 0
-              })
-            }
+            className={clsx({ [classes.accountSpacer]: index > 0 })}
           >
             <Account
               balance={fixedAccountBalance}

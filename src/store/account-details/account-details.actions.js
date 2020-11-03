@@ -10,7 +10,8 @@ export const accountDetailsActionTypes = {
   LOAD_HISTORY_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS FAILURE',
   LOAD_EXITS: '[ACCOUNT DETAILS] LOAD EXITS',
   LOAD_EXITS_SUCCESS: '[ACCOUNT DETAILS] LOAD EXITS SUCCESS',
-  LOAD_EXITS_FAILURE: '[ACCOUNT DETAILS] LOAD EXITS FAILURE'
+  LOAD_EXITS_FAILURE: '[ACCOUNT DETAILS] LOAD EXITS FAILURE',
+  RESET_STATE: '[ACCOUNT DETAILS] RESET STATE'
 }
 
 function loadAccount () {
@@ -57,10 +58,10 @@ function loadHistoryTransactions () {
   }
 }
 
-function loadHistoryTransactionsSuccess (transactions) {
+function loadHistoryTransactionsSuccess (data) {
   return {
     type: accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
-    transactions
+    data
   }
 }
 
@@ -90,6 +91,12 @@ function loadExitsFailure (error) {
   }
 }
 
+function resetState () {
+  return {
+    type: accountDetailsActionTypes.RESET_STATE
+  }
+}
+
 export {
   loadAccount,
   loadAccountSuccess,
@@ -102,5 +109,6 @@ export {
   loadHistoryTransactionsFailure,
   loadExits,
   loadExitsSuccess,
-  loadExitsFailure
+  loadExitsFailure,
+  resetState
 }

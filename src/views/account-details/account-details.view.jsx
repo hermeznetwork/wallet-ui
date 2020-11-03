@@ -16,9 +16,11 @@ import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 import ExitList from '../shared/exit-list/exit-list.view'
-import AccountBalance from '../shared/account-balance/account-balance.view'
-import TokenBalance from './components/token-balance/token-balance.view'
+import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
+import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
+import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
+import { resetState } from '../../store/account-details/account-details.actions'
 
 function AccountDetails ({
   preferredCurrency,
@@ -32,7 +34,8 @@ function AccountDetails ({
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
-  onNavigateToTransactionDetails
+  onNavigateToTransactionDetails,
+  onCleanup
 }) {
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
@@ -57,6 +60,10 @@ function AccountDetails ({
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name, theme.palette.primary.main)
   }, [accountTask, theme, onChangeHeader])
+
+  React.useEffect(() => {
+    return onCleanup
+  }, [onCleanup])
 
   /**
    * Returns the total balance of the account in the preferred currency
@@ -90,16 +97,16 @@ function AccountDetails ({
     }
   }
 
-  function getPendingExits () {
-    return poolTransactionsTask.data.filter((transaction) => transaction.type === 'Exit')
+  function getPendingExits (poolTransactions) {
+    return poolTransactions.filter((transaction) => transaction.type === 'Exit')
   }
 
-  function getPendingTransactions () {
-    return poolTransactionsTask.data.filter((transaction) => transaction.type !== 'Exit')
+  function getPendingTransactions (poolTransactions) {
+    return poolTransactions.filter((transaction) => transaction.type !== 'Exit')
   }
 
-  function getHistoryTransactions () {
-    return historyTransactionsTask.data.transactions.filter((transaction) => transaction.type !== 'Exit')
+  function getHistoryTransactions (historyTransactions) {
+    return historyTransactions.filter((transaction) => transaction.type !== 'Exit')
   }
 
   function handleTransactionClick (transaction) {
@@ -111,7 +118,7 @@ function AccountDetails ({
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.section}>
           <div className={classes.fiatBalance}>
-            <AccountBalance
+            <FiatAmount
               amount={getAccountBalance(accountTask)}
               currency={preferredCurrency}
             />
@@ -146,7 +153,7 @@ function AccountDetails ({
               return (
                 <>
                   <ExitList
-                    transactions={getPendingExits()}
+                    transactions={getPendingExits(poolTransactionsTask.data)}
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
                         ? fiatExchangeRatesTask.data
@@ -165,7 +172,7 @@ function AccountDetails ({
                       preferredCurrency={preferredCurrency}
                     />}
                   <TransactionList
-                    transactions={getPendingTransactions()}
+                    transactions={getPendingTransactions(poolTransactionsTask.data)}
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
                         ? fiatExchangeRatesTask.data
@@ -174,16 +181,22 @@ function AccountDetails ({
                     preferredCurrency={preferredCurrency}
                     onTransactionClick={handleTransactionClick}
                   />
-                  <TransactionList
-                    transactions={getHistoryTransactions()}
-                    fiatExchangeRates={
-                      fiatExchangeRatesTask.status === 'successful'
-                        ? fiatExchangeRatesTask.data
-                        : undefined
-                    }
-                    preferredCurrency={preferredCurrency}
-                    onTransactionClick={handleTransactionClick}
-                  />
+                  <InfiniteScroll
+                    asyncTaskStatus={historyTransactionsTask.status}
+                    paginationData={historyTransactionsTask.data.pagination}
+                    onLoadNextPage={(fromItem) => onLoadHistoryTransactions(accountIndex, fromItem)}
+                  >
+                    <TransactionList
+                      transactions={getHistoryTransactions(historyTransactionsTask.data.transactions)}
+                      fiatExchangeRates={
+                        fiatExchangeRatesTask.status === 'successful'
+                          ? fiatExchangeRatesTask.data
+                          : undefined
+                      }
+                      preferredCurrency={preferredCurrency}
+                      onTransactionClick={handleTransactionClick}
+                    />
+                  </InfiniteScroll>
                 </>
               )
             }
@@ -234,12 +247,14 @@ const mapDispatchToProps = (dispatch) => ({
     })),
   onLoadPoolTransactions: (accountIndex) =>
     dispatch(accountDetailsThunks.fetchPoolTransactions(accountIndex)),
-  onLoadHistoryTransactions: (accountIndex) =>
-    dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex)),
+  onLoadHistoryTransactions: (accountIndex, fromItem) =>
+    dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem)),
   onLoadExits: (exitTransactions) =>
     dispatch(accountDetailsThunks.fetchExits(exitTransactions)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
-    dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`))
+    dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
+  onCleanup: () =>
+    dispatch(resetState())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))
