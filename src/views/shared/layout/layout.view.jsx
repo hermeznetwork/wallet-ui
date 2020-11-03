@@ -9,7 +9,14 @@ import PageHeader from '../page-header/page-header.view'
 import Snackbar from '../snackbar/snackbar.view'
 import { closeSnackbar } from '../../../store/global/global.actions'
 
-function Layout ({ header, snackbar, onCloseSnackbar, children }) {
+function Layout ({
+  header,
+  snackbar,
+  children,
+  onGoBack,
+  onClose,
+  onCloseSnackbar
+}) {
   const classes = useLayoutStyles()
 
   return (
@@ -20,7 +27,10 @@ function Layout ({ header, snackbar, onCloseSnackbar, children }) {
           : (
             <PageHeader
               title={header.data.title}
-              goBackRoute={header.data.previousRoute}
+              goBackAction={header.data.goBackAction}
+              closeAction={header.data.closeAction}
+              onGoBack={onGoBack}
+              onClose={onClose}
             />
           )
       }
@@ -51,7 +61,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onCloseSnackbar: () => dispatch(closeSnackbar())
+  onCloseSnackbar: () => dispatch(closeSnackbar()),
+  onGoBack: (action) => dispatch(action),
+  onClose: (action) => dispatch(action)
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Layout)

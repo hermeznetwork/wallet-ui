@@ -7,7 +7,7 @@ import { push } from 'connected-react-router'
 import { TxType } from 'hermezjs/src/tx'
 
 import useAccountDetailsStyles from './account-details.styles'
-import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/account-details/account-details.thunks'
+import * as accountDetailsThunks from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -47,8 +47,9 @@ function AccountDetails ({
 
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
-      const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
-      console.log(2, exitTransactions)
+      const exitTransactions = historyTransactionsTask.data.transactions
+        .filter((transaction) => transaction.type === TxType.Exit)
+
       onLoadExits(exitTransactions)
     }
   }, [historyTransactionsTask, onLoadExits])
@@ -100,7 +101,6 @@ function AccountDetails ({
   }
 
   function getHistoryTransactions () {
-    console.log(historyTransactionsTask)
     return historyTransactionsTask.data.transactions.filter((transaction) => transaction.type !== 'Exit')
   }
 
@@ -223,14 +223,22 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccount: (accountIndex) => dispatch(fetchAccount(accountIndex)),
+  onLoadAccount: (accountIndex) =>
+    dispatch(accountDetailsThunks.fetchAccount(accountIndex)),
   onChangeHeader: (tokenName) =>
-    dispatch(changeHeader({ type: 'page', data: { title: tokenName, previousRoute: '/' } })),
-  onLoadPoolTransactions: (accountIndex) => dispatch(fetchPoolTransactions(accountIndex)),
+    dispatch(changeHeader({
+      type: 'page',
+      data: {
+        title: tokenName,
+        goBackAction: push('/')
+      }
+    })),
+  onLoadPoolTransactions: (accountIndex) =>
+    dispatch(accountDetailsThunks.fetchPoolTransactions(accountIndex)),
   onLoadHistoryTransactions: (accountIndex) =>
-    dispatch(fetchHistoryTransactions(accountIndex)),
+    dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex)),
   onLoadExits: (exitTransactions) =>
-    dispatch(fetchExits(exitTransactions)),
+    dispatch(accountDetailsThunks.fetchExits(exitTransactions)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`))
 })

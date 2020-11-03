@@ -17,18 +17,24 @@ const usePageHeaderStyles = createUseStyles(theme => ({
     justifyContent: 'center',
     position: 'relative'
   },
-  goBackButton: {
+  buttonBase: {
     position: 'absolute',
     top: '50%',
     transform: 'translateY(-50%)',
-    left: 0,
     display: 'flex',
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    marginLeft: -(theme.spacing(2)),
     cursor: 'pointer',
     border: 'none',
     background: 'transparent',
     outline: 'none'
+  },
+  goBackButton: {
+    left: 0,
+    marginLeft: -(theme.spacing(2))
+  },
+  closeButton: {
+    right: 0,
+    marginRight: -(theme.spacing(2))
   },
   title: {
     fontSize: theme.spacing(2.5),
