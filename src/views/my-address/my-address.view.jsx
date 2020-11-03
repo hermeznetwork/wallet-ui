@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import QRCode from 'qrcode.react'
+import { push } from 'connected-react-router'
 
 import useMyAddressStyles from './my-address.styles'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -14,30 +15,26 @@ function MyAddress ({ metaMaskWalletTask, onChangeHeader }) {
   const classes = useMyAddressStyles()
 
   React.useEffect(() => {
-    onChangeHeader({ type: 'page', data: { title: 'My address', previousRoute: '/' } })
-  }, [onChangeHeader])
+    onChangeHeader(theme.palette.primary.main)
+  }, [theme, onChangeHeader])
 
   return (
     <Container backgroundColor={theme.palette.primary.main} fullHeight>
       <div className={classes.root}>
-        {
-          metaMaskWalletTask.status === 'successful'
-            ? (
-              <>
-                <QRCode
-                  value={metaMaskWalletTask.data.hermezEthereumAddress}
-                  size={MY_ADDRESS.QR_CODE_SIZE}
-                  bgColor='transparent'
-                  fgColor={theme.palette.black}
-                  className={classes.qrCode}
-                />
-                <p className={classes.address}>
-                  {metaMaskWalletTask.data.hermezEthereumAddress}
-                </p>
-              </>
-            )
-            : <></>
-        }
+        {metaMaskWalletTask.status === 'successful' && (
+          <>
+            <QRCode
+              value={metaMaskWalletTask.data.hermezEthereumAddress}
+              size={MY_ADDRESS.QR_CODE_SIZE}
+              bgColor='transparent'
+              fgColor={theme.palette.black}
+              className={classes.qrCode}
+            />
+            <p className={classes.address}>
+              {metaMaskWalletTask.data.hermezEthereumAddress}
+            </p>
+          </>
+        )}
       </div>
     </Container>
   )
@@ -48,7 +45,15 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (headerData) => dispatch(changeHeader(headerData))
+  onChangeHeader: (backgroundColor) =>
+    dispatch(changeHeader({
+      type: 'page',
+      data: {
+        title: 'My address',
+        backgroundColor,
+        closeAction: push('/')
+      }
+    }))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(MyAddress))
