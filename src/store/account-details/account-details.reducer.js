@@ -1,6 +1,7 @@
 import { accountDetailsActionTypes } from './account-details.actions'
+import { getPaginationData } from '../../utils/api'
 
-const initialAccountDetailsReducer = {
+const initialAccountDetailsState = {
   accountTask: {
     status: 'pending'
   },
@@ -15,7 +16,7 @@ const initialAccountDetailsReducer = {
   }
 }
 
-function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
+function accountDetailsReducer (state = initialAccountDetailsState, action) {
   switch (action.type) {
     case accountDetailsActionTypes.LOAD_ACCOUNT: {
       return {
@@ -72,17 +73,25 @@ function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
     case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS: {
       return {
         ...state,
-        historyTransactionsTask: state.historyTransactionsTask.status === 'pending'
-          ? { status: 'loading' }
-          : { status: 'reloading', data: state.historyTransactionsTask.data }
+        historyTransactionsTask: state.historyTransactionsTask.status === 'successful'
+          ? { status: 'reloading', data: state.historyTransactionsTask.data }
+          : { status: 'loading' }
       }
     }
     case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
+      const transactions = state.historyTransactionsTask.status === 'reloading'
+        ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
+        : action.data.transactions
+      const pagination = getPaginationData(
+        action.data.transactions,
+        action.data.pagination
+      )
+
       return {
         ...state,
         historyTransactionsTask: {
           status: 'successful',
-          data: action.transactions
+          data: { transactions, pagination }
         }
       }
     }
@@ -120,6 +129,9 @@ function accountDetailsReducer (state = initialAccountDetailsReducer, action) {
           error: action.error
         }
       }
+    }
+    case accountDetailsActionTypes.RESET_STATE: {
+      return initialAccountDetailsState
     }
     default: {
       return state

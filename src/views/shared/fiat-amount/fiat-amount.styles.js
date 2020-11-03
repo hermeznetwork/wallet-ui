@@ -1,14 +1,14 @@
 import { createUseStyles } from 'react-jss'
 
-const useAccountBalanceStyles = createUseStyles(theme => ({
+const useFiatAmountStyles = createUseStyles(theme => ({
   root: {
     display: 'flex',
     alignItems: 'baseline',
     justifyContent: 'center'
   },
   amount: {
-    fontSize: theme.spacing(5),
-    margin: 0
+    margin: 0,
+    fontSize: `${theme.spacing(5)}px`
   },
   currency: {
     margin: 0,
@@ -16,4 +16,4 @@ const useAccountBalanceStyles = createUseStyles(theme => ({
   }
 }))
 
-export default useAccountBalanceStyles
+export default useFiatAmountStyles

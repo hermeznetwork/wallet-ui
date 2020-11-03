@@ -7,7 +7,7 @@ import { TxType } from 'hermezjs/src/tx'
 
 import useHomeStyles from './home.styles'
 import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/home/home.thunks'
-import AccountBalance from '../shared/account-balance/account-balance.view'
+import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
@@ -19,6 +19,8 @@ import TransactionActions from '../shared/transaction-actions/transaction-action
 import ExitList from '../shared/exit-list/exit-list.view'
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import Button from '../shared/button/button.view'
+import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
+import { resetState } from '../../store/home/home.actions'
 
 function Home ({
   metaMaskWalletTask,
@@ -35,7 +37,8 @@ function Home ({
   onLoadExits,
   onNavigateToAccountDetails,
   onOpenSnackbar,
-  onNavigateTest
+  onNavigateTest,
+  onCleanup
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
@@ -58,10 +61,12 @@ function Home ({
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
       const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
-      console.log(2, exitTransactions)
+
       onLoadExits(exitTransactions)
     }
   }, [historyTransactionsTask, onLoadExits])
+
+  React.useEffect(() => onCleanup, [onCleanup])
 
   function getTotalBalance (accountsTask) {
     switch (accountsTask.status) {
@@ -107,53 +112,18 @@ function Home ({
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
 
-  function renderExits () {
-    if (
-      poolTransactionsTask.status === 'successful' &&
-      historyTransactionsTask.status === 'successful'
-    ) {
-      return (
-        <>
-          <ExitList
-            transactions={getPendingExits()}
-            fiatExchangeRates={
-              fiatExchangeRatesTask.status === 'successful'
-                ? fiatExchangeRatesTask.data
-                : undefined
-            }
-            preferredCurrency={preferredCurrency}
-          />
-          {exitsTask.status === 'successful' &&
-            <ExitList
-              transactions={exitsTask.data}
-              fiatExchangeRates={
-                fiatExchangeRatesTask.status === 'successful'
-                  ? fiatExchangeRatesTask.data
-                  : undefined
-              }
-              preferredCurrency={preferredCurrency}
-            />}
-        </>
-      )
-    }
-  }
-
-  return (
+  return metaMaskWalletTask.status === 'successful' && (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
           {
-            metaMaskWalletTask.status !== 'successful'
-              ? <></>
-              : (
-                <Button
-                  text={getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
-                  onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
-                />
-              )
+            <Button
+              text={getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
+              onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
+            />
           }
           <div className={classes.accountBalance}>
-            <AccountBalance
+            <FiatAmount
               amount={getTotalBalance(accountsTask)}
               currency={preferredCurrency}
             />
@@ -163,7 +133,34 @@ function Home ({
       </Container>
       <Container>
         <section className={classes.section}>
-          {renderExits()}
+          {
+            (poolTransactionsTask.status === 'successful' &&
+            historyTransactionsTask.status === 'successful')
+              ? (
+                <>
+                  <ExitList
+                    transactions={getPendingExits()}
+                    fiatExchangeRates={
+                      fiatExchangeRatesTask.status === 'successful'
+                        ? fiatExchangeRatesTask.data
+                        : undefined
+                    }
+                    preferredCurrency={preferredCurrency}
+                  />
+                  {exitsTask.status === 'successful' &&
+                    <ExitList
+                      transactions={exitsTask.data}
+                      fiatExchangeRates={
+                        fiatExchangeRatesTask.status === 'successful'
+                          ? fiatExchangeRatesTask.data
+                          : undefined
+                      }
+                      preferredCurrency={preferredCurrency}
+                    />}
+                </>
+              )
+              : <></>
+          }
           {(() => {
             switch (accountsTask.status) {
               case 'loading':
@@ -173,16 +170,27 @@ function Home ({
               case 'reloading':
               case 'successful': {
                 return (
-                  <AccountList
-                    accounts={accountsTask.data.accounts}
-                    preferredCurrency={preferredCurrency}
-                    fiatExchangeRates={
-                      fiatExchangeRatesTask.status === 'successful'
-                        ? fiatExchangeRatesTask.data
-                        : undefined
-                    }
-                    onAccountClick={handleAccountClick}
-                  />
+                  <InfiniteScroll
+                    asyncTaskStatus={accountsTask.status}
+                    paginationData={accountsTask.data.pagination}
+                    onLoadNextPage={(fromItem) => {
+                      onLoadAccounts(
+                        metaMaskWalletTask.data.hermezEthereumAddress,
+                        fromItem
+                      )
+                    }}
+                  >
+                    <AccountList
+                      accounts={accountsTask.data.accounts}
+                      preferredCurrency={preferredCurrency}
+                      fiatExchangeRates={
+                        fiatExchangeRatesTask.status === 'successful'
+                          ? fiatExchangeRatesTask.data
+                          : undefined
+                      }
+                      onAccountClick={handleAccountClick}
+                    />
+                  </InfiniteScroll>
                 )
               }
               default: {
@@ -223,8 +231,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: (headerData) => dispatch(changeHeader(headerData)),
-  onLoadAccounts: (hermezEthereumAddress) =>
-    dispatch(fetchAccounts(hermezEthereumAddress)),
+  onLoadAccounts: (hermezEthereumAddress, fromItem) =>
+    dispatch(fetchAccounts(hermezEthereumAddress, fromItem)),
   onLoadPoolTransactions: () => dispatch(fetchPoolTransactions()),
   onLoadHistoryTransactions: () =>
     dispatch(fetchHistoryTransactions()),
@@ -232,7 +240,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchExits(exitTransactions)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
-  onOpenSnackbar: (message) => dispatch(openSnackbar(message))
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
+  onCleanup: () => dispatch(resetState())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))
