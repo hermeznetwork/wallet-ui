@@ -6,7 +6,7 @@ import { useTheme } from 'react-jss'
 import { beautifyTransactionState } from 'hermezjs/src/tx'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
-import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
+import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
@@ -17,6 +17,7 @@ import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-n
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import AccountBalance from '../shared/account-balance/account-balance.view'
 import TokenBalance from '../account-details/components/token-balance/token-balance.view'
+import { push } from 'connected-react-router'
 
 function TransactionDetails ({
   transactionTask,
@@ -31,14 +32,12 @@ function TransactionDetails ({
   const [, accountTokenSymbol] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
 
   React.useEffect(() => {
-    onLoadTransaction(transactionId)
-  }, [transactionId, onLoadTransaction])
+    onChangeHeader(transactionTask.data?.type, accountIndex)
+  }, [transactionTask, accountIndex, onChangeHeader])
 
   React.useEffect(() => {
-    if (transactionTask.status === 'successful') {
-      onChangeHeader(transactionTask.data.type, accountIndex)
-    }
-  }, [transactionTask, accountIndex, onChangeHeader])
+    onLoadTransaction(transactionId)
+  }, [transactionId, onLoadTransaction])
 
   function getAmountInFiat (transactionTask) {
     switch (transactionTask.status) {
@@ -140,13 +139,14 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadTransaction: (transactionId) => dispatch(fetchTransaction(transactionId)),
+  onLoadTransaction: (transactionId) =>
+    dispatch(transactionDetailsThunks.fetchTransaction(transactionId)),
   onChangeHeader: (transactionType, accountIndex) => dispatch(
     changeHeader({
       type: 'page',
       data: {
         title: transactionType,
-        previousRoute: `/accounts/${accountIndex}`
+        closeAction: push(`/accounts/${accountIndex}`)
       }
     })
   )
