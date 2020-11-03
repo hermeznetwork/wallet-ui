@@ -32,8 +32,8 @@ function TransactionDetails ({
   const [, accountTokenSymbol] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
 
   React.useEffect(() => {
-    onChangeHeader(transactionTask.data?.type, accountIndex)
-  }, [transactionTask, accountIndex, onChangeHeader])
+    onChangeHeader(transactionTask.data?.type, accountIndex, theme.palette.primary.main)
+  }, [transactionTask, accountIndex, theme, onChangeHeader])
 
   React.useEffect(() => {
     onLoadTransaction(transactionId)
@@ -66,7 +66,7 @@ function TransactionDetails ({
 
   return (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.section}>
           <div className={classes.fiatAmount}>
             <AccountBalance
@@ -141,15 +141,17 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionId) =>
     dispatch(transactionDetailsThunks.fetchTransaction(transactionId)),
-  onChangeHeader: (transactionType, accountIndex) => dispatch(
-    changeHeader({
-      type: 'page',
-      data: {
-        title: transactionType,
-        closeAction: push(`/accounts/${accountIndex}`)
-      }
-    })
-  )
+  onChangeHeader: (transactionType, accountIndex, backgroundColor) =>
+    dispatch(
+      changeHeader({
+        type: 'page',
+        data: {
+          title: transactionType,
+          backgroundColor,
+          closeAction: push(`/accounts/${accountIndex}`)
+        }
+      })
+    )
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(TransactionDetails))

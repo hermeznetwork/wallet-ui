@@ -8,7 +8,7 @@ const usePageHeaderStyles = createUseStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     zIndex: 999,
-    background: theme.palette.primary.main
+    background: ({ backgroundColor }) => backgroundColor
   },
   headerContent: {
     width: '100%',

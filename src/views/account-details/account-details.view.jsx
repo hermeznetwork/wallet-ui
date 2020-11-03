@@ -55,10 +55,8 @@ function AccountDetails ({
   }, [historyTransactionsTask, onLoadExits])
 
   React.useEffect(() => {
-    if (accountTask.status === 'successful' || accountTask.status === 'reloading') {
-      onChangeHeader(accountTask.data.token.name)
-    }
-  }, [accountTask, onChangeHeader])
+    onChangeHeader(accountTask.data?.token.name, theme.palette.primary.main)
+  }, [accountTask, theme, onChangeHeader])
 
   /**
    * Returns the total balance of the account in the preferred currency
@@ -110,7 +108,7 @@ function AccountDetails ({
 
   return (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.section}>
           <div className={classes.fiatBalance}>
             <AccountBalance
@@ -225,11 +223,12 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccount: (accountIndex) =>
     dispatch(accountDetailsThunks.fetchAccount(accountIndex)),
-  onChangeHeader: (tokenName) =>
+  onChangeHeader: (tokenName, backgroundColor) =>
     dispatch(changeHeader({
       type: 'page',
       data: {
         title: tokenName,
+        backgroundColor,
         goBackAction: push('/')
       }
     })),

@@ -21,19 +21,17 @@ function Layout ({
 
   return (
     <div className={classes.root}>
-      {
-        header.type === 'main'
-          ? <MainHeader />
-          : (
-            <PageHeader
-              title={header.data.title}
-              goBackAction={header.data.goBackAction}
-              closeAction={header.data.closeAction}
-              onGoBack={onGoBack}
-              onClose={onClose}
-            />
-          )
-      }
+      {header.type === 'main' && <MainHeader />}
+      {header.type === 'page' && (
+        <PageHeader
+          title={header.data.title}
+          backgroundColor={header.data.backgroundColor}
+          goBackAction={header.data.goBackAction}
+          closeAction={header.data.closeAction}
+          onGoBack={onGoBack}
+          onClose={onClose}
+        />
+      )}
       <Main>
         {children}
       </Main>

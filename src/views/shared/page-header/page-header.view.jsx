@@ -7,8 +7,15 @@ import usePageHeaderStyles from './page-header.styles'
 import { ReactComponent as ArrowBackIcon } from '../../../images/icons/arrow-back.svg'
 import { ReactComponent as CloseIcon } from '../../../images/icons/close.svg'
 
-function PageHeader ({ title, goBackAction, closeAction, onGoBack, onClose }) {
-  const classes = usePageHeaderStyles()
+function PageHeader ({
+  title,
+  backgroundColor,
+  goBackAction,
+  closeAction,
+  onGoBack,
+  onClose
+}) {
+  const classes = usePageHeaderStyles({ backgroundColor })
 
   return (
     <header className={classes.root}>

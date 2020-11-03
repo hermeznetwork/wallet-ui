@@ -41,8 +41,8 @@ function Home ({
   const classes = useHomeStyles()
 
   React.useEffect(() => {
-    onChangeHeader()
-  }, [onChangeHeader])
+    onChangeHeader(theme.palette.primary.main)
+  }, [theme, onChangeHeader])
 
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
@@ -140,7 +140,7 @@ function Home ({
 
   return (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+      <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
           {
             metaMaskWalletTask.status !== 'successful'
@@ -222,8 +222,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: () =>
-    dispatch(changeHeader({ type: 'main' })),
+  onChangeHeader: (backgroundColor) =>
+    dispatch(changeHeader({ type: 'main', data: { backgroundColor } })),
   onLoadAccounts: (hermezEthereumAddress) =>
     dispatch(homeThunks.fetchAccounts(hermezEthereumAddress)),
   onLoadPoolTransactions: () =>

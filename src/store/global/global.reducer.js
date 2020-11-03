@@ -5,7 +5,7 @@ const initialGlobalState = {
     status: 'pending'
   },
   header: {
-    type: 'main'
+    type: undefined
   },
   redirectRoute: '/',
   fiatExchangeRatesTask: {
