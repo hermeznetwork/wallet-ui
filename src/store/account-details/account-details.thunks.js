@@ -62,7 +62,6 @@ function fetchHistoryTransactions (accountIndex) {
             )
             if (exitTx) {
               if (exitTx.instantWithdrawn) {
-                console.log('removing', metaMaskWalletTask.data.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
                 removePendingWithdraw(metaMaskWalletTask.data.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
                 return true
               } else {

@@ -33,7 +33,7 @@ function TransactionOverview ({
    */
   function getAmountinFiat (value) {
     return getTokenAmountInPreferredCurrency(
-      Number(value) / Math.pow(10, account.token.decimals),
+      getFixedTokenAmount(value, account.token.decimals),
       account.token.USD,
       preferredCurrency,
       fiatExchangeRates

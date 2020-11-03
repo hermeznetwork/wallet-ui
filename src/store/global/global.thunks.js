@@ -79,7 +79,6 @@ function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
   return (dispatch) => {
     const pendingWithdrawPool = JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
     const accountPendingWithdrawPool = pendingWithdrawPool[hermezEthereumAddress]
-    console.log(accountPendingWithdrawPool, pendingWithdrawId)
     const newAccountPendingWithdrawPool = accountPendingWithdrawPool
       .filter((pendingWithdraw) => pendingWithdraw !== pendingWithdrawId)
     const newPendingWithdrawPool = {
