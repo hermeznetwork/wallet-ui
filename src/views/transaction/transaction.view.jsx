@@ -6,9 +6,8 @@ import clsx from 'clsx'
 import { push } from 'connected-react-router'
 import { getAccountIndex } from 'hermezjs/src/addresses'
 
-import { fetchAccounts } from '../../store/home/home.thunks'
 import { addPendingWithdraw } from '../../store/global/global.thunks'
-import { fetchTokens, fetchMetaMaskTokens, fetchFees, fetchExit } from '../../store/transaction/transaction.thunks'
+import { fetchTokens, fetchAccounts, fetchMetaMaskTokens, fetchFees, fetchExit } from '../../store/transaction/transaction.thunks'
 import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
 import TransactionOverview from './components/transaction-overview/transaction-overview.view'
@@ -18,6 +17,8 @@ import Spinner from '../shared/spinner/spinner.view'
 import Container from '../shared/container/container.view'
 import backIcon from '../../images/icons/back.svg'
 import closeIcon from '../../images/icons/close.svg'
+import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
+import { resetState } from '../../store/transaction/transaction.actions'
 
 function Transaction ({
   metaMaskWalletTask,
@@ -35,7 +36,8 @@ function Transaction ({
   onLoadFees,
   onLoadExit,
   onAddPendingWithdraw,
-  onNavigateToTransactionConfirmation
+  onNavigateToTransactionConfirmation,
+  onCleanup
 }) {
   const classes = useTransactionStyles()
   const { search } = useLocation()
@@ -90,10 +92,10 @@ function Transaction ({
   }, [transactionType, tokensTask, onLoadMetaMaskTokens])
 
   React.useEffect(() => {
-    if (transactionType !== 'deposit' && metaMaskWalletTask.status === 'successful' && tokensTask.status === 'successful') {
-      onLoadAccounts(metaMaskWalletTask.data.hermezEthereumAddress, tokensTask.data.tokens)
+    if (transactionType !== 'deposit' && metaMaskWalletTask.status === 'successful') {
+      onLoadAccounts(metaMaskWalletTask.data.hermezEthereumAddress)
     }
-  }, [transactionType, metaMaskWalletTask, tokensTask, onLoadAccounts])
+  }, [transactionType, metaMaskWalletTask, onLoadAccounts])
 
   React.useEffect(() => {
     onLoadFees()
@@ -131,6 +133,8 @@ function Transaction ({
       })
     }
   }, [exitTask, metaMaskWalletTask])
+
+  React.useEffect(() => onCleanup, [onCleanup])
 
   /**
    * When an account is selected, store the corresponding account to show the Transaction component
@@ -244,22 +248,32 @@ function Transaction ({
         <div className={classes.accountListWrapper}>
           {(() => {
             switch (accountsTask.status) {
-              case 'loading': {
+              case 'loading':
+              case 'failed': {
                 return <Spinner />
               }
-              case 'failed': {
-                return (
-                  <p>{accountsTask.error}</p>
-                )
-              }
+              case 'reloading':
               case 'successful': {
                 return (
-                  <AccountList
-                    accounts={accountsTask.data.accounts}
-                    preferredCurrency={preferredCurrency}
-                    fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
-                    onAccountClick={handleAccountListClick}
-                  />
+                  <InfiniteScroll
+                    asyncTaskStatus={accountsTask.status}
+                    paginationData={accountsTask.data.pagination}
+                    onLoadNextPage={(fromItem) => {
+                      if (metaMaskWalletTask.status === 'successful') {
+                        onLoadAccounts(
+                          metaMaskWalletTask.data.ethereumAddress,
+                          fromItem
+                        )
+                      }
+                    }}
+                  >
+                    <AccountList
+                      accounts={accountsTask.data.accounts}
+                      preferredCurrency={preferredCurrency}
+                      fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
+                      onAccountClick={handleAccountListClick}
+                    />
+                  </InfiniteScroll>
                 )
               }
               default: {
@@ -367,7 +381,7 @@ Transaction.propTypes = {
 const mapStateToProps = (state) => ({
   metaMaskWalletTask: state.global.metaMaskWalletTask,
   metaMaskTokensTask: state.transaction.metaMaskTokensTask,
-  accountsTask: state.home.accountsTask,
+  accountsTask: state.transaction.accountsTask,
   tokensTask: state.transaction.tokensTask,
   feesTask: state.transaction.feesTask,
   exitTask: state.transaction.exitTask,
@@ -378,12 +392,13 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLoadTokens: () => dispatch(fetchTokens()),
   onLoadMetaMaskTokens: (hermezTokens) => dispatch(fetchMetaMaskTokens(hermezTokens)),
-  onLoadAccounts: (ethereumAddress, tokens) =>
-    dispatch(fetchAccounts(ethereumAddress, tokens)),
+  onLoadAccounts: (ethereumAddress, fromItem) =>
+    dispatch(fetchAccounts(ethereumAddress, fromItem)),
   onLoadFees: () => dispatch(fetchFees()),
   onLoadExit: (batchNum, accountIndex) => dispatch(fetchExit(batchNum, accountIndex)),
   onAddPendingWithdraw: (hermezAddress, pendingWithdraw) => dispatch(addPendingWithdraw(hermezAddress, pendingWithdraw)),
-  onNavigateToTransactionConfirmation: (type) => dispatch(push(`/${type}-confirmation`))
+  onNavigateToTransactionConfirmation: (type) => dispatch(push(`/${type}-confirmation`)),
+  onCleanup: () => dispatch(resetState())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Transaction))

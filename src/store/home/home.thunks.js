@@ -2,11 +2,11 @@ import * as homeActions from './home.actions'
 import { CoordinatorAPI } from 'hermezjs'
 import { getPoolTransactions } from 'hermezjs/src/tx-pool'
 
-function fetchAccounts (hermezEthereumAddress) {
+function fetchAccounts (hermezEthereumAddress, fromItem) {
   return (dispatch) => {
     dispatch(homeActions.loadAccounts())
 
-    return CoordinatorAPI.getAccounts(hermezEthereumAddress)
+    return CoordinatorAPI.getAccounts(hermezEthereumAddress, fromItem)
       .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
   }

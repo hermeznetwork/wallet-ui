@@ -12,27 +12,29 @@ function Spinner ({ size }) {
   const classes = useSpinnerStyles({ size: size !== undefined ? size : theme.spacing(6) })
 
   return (
-    <svg
-      className={classes.root}
-      viewBox={`${SIZE / 2} ${SIZE / 2} ${SIZE} ${SIZE}`}
-    >
-      <circle
-        className={classes.bottomCircle}
-        cx={SIZE}
-        cy={SIZE}
-        r={(SIZE - THICKNESS) / 2}
-        fill='none'
-        strokeWidth={THICKNESS}
-      />
-      <circle
-        className={classes.topCircle}
-        cx={SIZE}
-        cy={SIZE}
-        r={(SIZE - THICKNESS) / 2}
-        fill='none'
-        strokeWidth={THICKNESS}
-      />
-    </svg>
+    <div className={classes.root}>
+      <svg
+        className={classes.svg}
+        viewBox={`${SIZE / 2} ${SIZE / 2} ${SIZE} ${SIZE}`}
+      >
+        <circle
+          className={classes.bottomCircle}
+          cx={SIZE}
+          cy={SIZE}
+          r={(SIZE - THICKNESS) / 2}
+          fill='none'
+          strokeWidth={THICKNESS}
+        />
+        <circle
+          className={classes.topCircle}
+          cx={SIZE}
+          cy={SIZE}
+          r={(SIZE - THICKNESS) / 2}
+          fill='none'
+          strokeWidth={THICKNESS}
+        />
+      </svg>
+    </div>
   )
 }
 

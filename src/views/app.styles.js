@@ -47,20 +47,18 @@ const useAppStyles = createUseStyles(theme => ({
     '*': {
       boxSizing: 'border-box'
     },
+    body: {
+      fontFamily: 'Modern Era',
+      fontSize: 16,
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column'
+    },
     '#root': {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      height: '100vh'
-    },
-    html: {
-      minHeight: '100vh',
-      height: '100%'
-    },
-    body: {
-      fontFamily: 'Modern Era',
-      fontSize: theme.spacing(2),
-      minHeight: '100vh'
+      flex: 1
     },
     a: {
       textDecoration: 'none',
@@ -76,6 +74,7 @@ const useAppStyles = createUseStyles(theme => ({
   root: {
     height: '100%',
     width: '100%',
+    flex: 1,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

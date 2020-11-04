@@ -16,9 +16,11 @@ import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 import ExitList from '../shared/exit-list/exit-list.view'
-import AccountBalance from '../shared/account-balance/account-balance.view'
-import TokenBalance from './components/token-balance/token-balance.view'
+import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
+import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
+import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
+import { resetState } from '../../store/account-details/account-details.actions'
 
 function AccountDetails ({
   preferredCurrency,
@@ -35,7 +37,8 @@ function AccountDetails ({
   onLoadHistoryTransactions,
   onLoadExits,
   onRemovePendingWithdraw,
-  onNavigateToTransactionDetails
+  onNavigateToTransactionDetails,
+  onCleanup
 }) {
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
@@ -55,10 +58,14 @@ function AccountDetails ({
   }, [exitsTask, accountIndex, onLoadHistoryTransactions])
 
   React.useEffect(() => {
-    if (accountTask.status === 'successful' || accountTask.status === 'reloading') {
+    if (accountTask.status === 'successful') {
       onChangeHeader(accountTask.data.token.name)
     }
   }, [accountTask, onChangeHeader])
+
+  React.useEffect(() => {
+    return onCleanup
+  }, [onCleanup])
 
   /**
    * Returns the total balance of the account in the preferred currency
@@ -92,12 +99,12 @@ function AccountDetails ({
     }
   }
 
-  function getPendingExits () {
-    return poolTransactionsTask.data.filter((transaction) => transaction.type === 'Exit')
+  function getPendingExits (poolTransactions) {
+    return poolTransactions.filter((transaction) => transaction.type === 'Exit')
   }
 
-  function getPendingTransactions () {
-    return poolTransactionsTask.data.filter((transaction) => transaction.type !== 'Exit')
+  function getPendingTransactions (poolTransactions) {
+    return poolTransactions.filter((transaction) => transaction.type !== 'Exit')
   }
 
   function handleTransactionClick (transaction) {
@@ -109,7 +116,7 @@ function AccountDetails ({
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
         <section className={classes.section}>
           <div className={classes.fiatBalance}>
-            <AccountBalance
+            <FiatAmount
               amount={getAccountBalance(accountTask)}
               currency={preferredCurrency}
             />
@@ -148,7 +155,7 @@ function AccountDetails ({
               return (
                 <>
                   <ExitList
-                    transactions={getPendingExits()}
+                    transactions={getPendingExits(poolTransactionsTask.data)}
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
                         ? fiatExchangeRatesTask.data
@@ -169,7 +176,7 @@ function AccountDetails ({
                       pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
                     />}
                   <TransactionList
-                    transactions={getPendingTransactions()}
+                    transactions={getPendingTransactions(poolTransactionsTask.data)}
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
                         ? fiatExchangeRatesTask.data
@@ -178,16 +185,22 @@ function AccountDetails ({
                     preferredCurrency={preferredCurrency}
                     onTransactionClick={handleTransactionClick}
                   />
-                  <TransactionList
-                    transactions={historyTransactionsTask.data.transactions}
-                    fiatExchangeRates={
-                      fiatExchangeRatesTask.status === 'successful'
-                        ? fiatExchangeRatesTask.data
-                        : undefined
-                    }
-                    preferredCurrency={preferredCurrency}
-                    onTransactionClick={handleTransactionClick}
-                  />
+                  <InfiniteScroll
+                    asyncTaskStatus={historyTransactionsTask.status}
+                    paginationData={historyTransactionsTask.data.pagination}
+                    onLoadNextPage={(fromItem) => onLoadHistoryTransactions(accountIndex, fromItem)}
+                  >
+                    <TransactionList
+                      transactions={historyTransactionsTask.data.transactions}
+                      fiatExchangeRates={
+                        fiatExchangeRatesTask.status === 'successful'
+                          ? fiatExchangeRatesTask.data
+                          : undefined
+                      }
+                      preferredCurrency={preferredCurrency}
+                      onTransactionClick={handleTransactionClick}
+                    />
+                  </InfiniteScroll>
                 </>
               )
             }
@@ -233,13 +246,14 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: (tokenName) =>
     dispatch(changeHeader({ type: 'page', data: { title: tokenName, previousRoute: '/' } })),
   onLoadPoolTransactions: (accountIndex) => dispatch(fetchPoolTransactions(accountIndex)),
-  onLoadHistoryTransactions: (accountIndex) =>
-    dispatch(fetchHistoryTransactions(accountIndex)),
+  onLoadHistoryTransactions: (accountIndex, fromItem) =>
+    dispatch(fetchHistoryTransactions(accountIndex, fromItem)),
   onLoadExits: (exitTransactions) =>
     dispatch(fetchExits(exitTransactions)),
   onRemovePendingWithdraw: (hermezEthereumAddress, pendingWithdrawId) => dispatch(removePendingWithdraw(hermezEthereumAddress, pendingWithdrawId)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
-    dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`))
+    dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
+  onCleanup: () => dispatch(resetState())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))

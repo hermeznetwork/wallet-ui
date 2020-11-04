@@ -1,7 +1,11 @@
+import { getPaginationData } from '../../utils/api'
 import { transactionActionTypes } from './transaction.actions'
 
 const initialTransactionState = {
   tokensTask: {
+    status: 'pending'
+  },
+  accountsTask: {
     status: 'pending'
   },
   metaMaskTokensTask: {
@@ -31,6 +35,40 @@ function transactionReducer (state = initialTransactionState, action) {
         tokensTask: {
           status: 'successful',
           data: action.tokens
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNTS: {
+      return {
+        ...state,
+        accountsTask: state.accountsTask.status === 'successful'
+          ? { status: 'reloading', data: state.accountsTask.data }
+          : { status: 'loading' }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+      const accounts = state.accountsTask.status === 'reloading'
+        ? [...state.accountsTask.data.accounts, ...action.data.accounts]
+        : action.data.accounts
+      const pagination = getPaginationData(
+        action.data.accounts,
+        action.data.pagination
+      )
+
+      return {
+        ...state,
+        accountsTask: {
+          status: 'successful',
+          data: { accounts, pagination }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNTS_FAILURE: {
+      return {
+        ...state,
+        accountsTask: {
+          status: 'failed',
+          error: 'An error ocurred loading the accounts'
         }
       }
     }
@@ -112,6 +150,9 @@ function transactionReducer (state = initialTransactionState, action) {
           error: action.error
         }
       }
+    case transactionActionTypes.RESET_STATE: {
+      return initialTransactionState
+    }
     default: {
       return state
     }
