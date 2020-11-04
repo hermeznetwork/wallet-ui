@@ -1,4 +1,17 @@
 import { globalActionTypes } from './global.actions'
+import { PENDING_WITHDRAWS_KEY } from '../../constants'
+
+function getInitialPendingWithdraws () {
+  if (!localStorage.getItem(PENDING_WITHDRAWS_KEY)) {
+    const emptyPendingWithdraws = {}
+
+    localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(emptyPendingWithdraws))
+
+    return emptyPendingWithdraws
+  } else {
+    return JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
+  }
+}
 
 const initialGlobalState = {
   metaMaskWalletTask: {
@@ -13,7 +26,8 @@ const initialGlobalState = {
   },
   snackbar: {
     status: 'closed'
-  }
+  },
+  pendingWithdraws: getInitialPendingWithdraws()
 }
 
 function globalReducer (state = initialGlobalState, action) {
@@ -101,6 +115,31 @@ function globalReducer (state = initialGlobalState, action) {
         ...state,
         snackbar: {
           status: 'closed'
+        }
+      }
+    }
+    case globalActionTypes.ADD_PENDING_WITHDRAW: {
+      const accountPendingWithdraws = state.pendingWithdraws[action.hermezEthereumAddress]
+
+      return {
+        ...state,
+        pendingWithdraws: {
+          ...state.pendingWithdraws,
+          [action.hermezEthereumAddress]: accountPendingWithdraws === undefined
+            ? [action.pendingWithdraw]
+            : [...accountPendingWithdraws, action.pendingWithdraw]
+        }
+      }
+    }
+    case globalActionTypes.REMOVE_PENDING_WITHDRAW: {
+      const accountPendingWithdraws = state.pendingWithdraws[action.hermezEthereumAddress]
+
+      return {
+        ...state,
+        pendingWithdraws: {
+          ...state.pendingWithdraws,
+          [action.hermezEthereumAddress]: accountPendingWithdraws
+            .filter(pendingWithdraw => pendingWithdraw.id !== action.pendingWithdrawId)
         }
       }
     }

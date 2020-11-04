@@ -15,7 +15,9 @@ export const globalActionTypes = {
   ADD_POOL_TRANSACTION: '[GLOBAL] ADD POOL TRANSACTION',
   REMOVE_POOL_TRANSACTION: '[GLOBAL] REMOVE POOL TRANSACTION',
   OPEN_SNACKBAR: '[GLOBAL] OPEN SNACKBAR',
-  CLOSE_SNACKBAR: '[GLOBAL] CLOSE SNACKBAR'
+  CLOSE_SNACKBAR: '[GLOBAL] CLOSE SNACKBAR',
+  ADD_PENDING_WITHDRAW: '[GLOBAL] ADD PENDING WITHRAW',
+  REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW'
 }
 
 function loadMetamaskWallet () {
@@ -91,6 +93,21 @@ function closeSnackbar () {
   }
 }
 
+function addPendingWithdraw (hermezEthereumAdress, pendingWithdraw) {
+  return {
+    type: globalActionTypes.ADD_PENDING_WITHDRAW,
+    hermezEthereumAdress,
+    pendingWithdraw
+  }
+}
+
+function removePendingWithdraw (hermezEthereumAdress, withdrawId) {
+  return {
+    type: globalActionTypes.REMOVE_PENDING_WITHDRAW,
+    hermezEthereumAdress,
+    withdrawId
+  }
+}
 export {
   loadMetamaskWallet,
   loadMetamaskWalletSuccess,
@@ -102,5 +119,7 @@ export {
   loadFiatExchangeRatesSuccess,
   loadFiatExchangeRatesFailure,
   openSnackbar,
-  closeSnackbar
+  closeSnackbar,
+  addPendingWithdraw,
+  removePendingWithdraw
 }

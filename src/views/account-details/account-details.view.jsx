@@ -4,10 +4,10 @@ import { useParams } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import { TxType } from 'hermezjs/src/tx'
 
 import useAccountDetailsStyles from './account-details.styles'
 import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/account-details/account-details.thunks'
+import { removePendingWithdraw } from '../../store/global/global.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -29,11 +29,14 @@ function AccountDetails ({
   historyTransactionsTask,
   exitsTask,
   fiatExchangeRatesTask,
+  metaMaskWalletTask,
+  pendingWithdraws,
   onChangeHeader,
   onLoadAccount,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
+  onRemovePendingWithdraw,
   onNavigateToTransactionDetails,
   onCleanup
 }) {
@@ -45,16 +48,14 @@ function AccountDetails ({
   React.useEffect(() => {
     onLoadAccount(accountIndex)
     onLoadPoolTransactions(accountIndex)
-    onLoadHistoryTransactions(accountIndex)
-  }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadHistoryTransactions])
+    onLoadExits()
+  }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadExits])
 
   React.useEffect(() => {
-    if (historyTransactionsTask.status === 'successful') {
-      const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
-
-      onLoadExits(exitTransactions)
+    if (exitsTask.status === 'successful') {
+      onLoadHistoryTransactions(accountIndex)
     }
-  }, [historyTransactionsTask, onLoadExits])
+  }, [exitsTask, accountIndex, onLoadHistoryTransactions])
 
   React.useEffect(() => {
     if (accountTask.status === 'successful') {
@@ -106,10 +107,6 @@ function AccountDetails ({
     return poolTransactions.filter((transaction) => transaction.type !== 'Exit')
   }
 
-  function getHistoryTransactions (historyTransactions) {
-    return historyTransactions.filter((transaction) => transaction.type !== 'Exit')
-  }
-
   function handleTransactionClick (transaction) {
     onNavigateToTransactionDetails(accountIndex, transaction.id)
   }
@@ -140,7 +137,9 @@ function AccountDetails ({
               poolTransactionsTask.status === 'loading' ||
               poolTransactionsTask.status === 'failed' ||
               historyTransactionsTask.status === 'loading' ||
-              historyTransactionsTask.status === 'failed'
+              historyTransactionsTask.status === 'failed' ||
+              exitsTask.status === 'loading' ||
+              exitsTask.status === 'failed'
             ) {
               return <Spinner />
             }
@@ -149,7 +148,9 @@ function AccountDetails ({
               (poolTransactionsTask.status === 'successful' ||
               poolTransactionsTask.status === 'reloading') &&
               (historyTransactionsTask.status === 'successful' ||
-              historyTransactionsTask.status === 'reloading')
+              historyTransactionsTask.status === 'reloading') &&
+              (exitsTask.status === 'successful' ||
+              exitsTask.status === 'reloading')
             ) {
               return (
                 <>
@@ -161,16 +162,18 @@ function AccountDetails ({
                         : undefined
                     }
                     preferredCurrency={preferredCurrency}
+                    pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
-                      transactions={exitsTask.data}
+                      transactions={exitsTask.data.exits}
                       fiatExchangeRates={
                         fiatExchangeRatesTask.status === 'successful'
                           ? fiatExchangeRatesTask.data
                           : undefined
                       }
                       preferredCurrency={preferredCurrency}
+                      pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
                     />}
                   <TransactionList
                     transactions={getPendingTransactions(poolTransactionsTask.data)}
@@ -188,7 +191,7 @@ function AccountDetails ({
                     onLoadNextPage={(fromItem) => onLoadHistoryTransactions(accountIndex, fromItem)}
                   >
                     <TransactionList
-                      transactions={getHistoryTransactions(historyTransactionsTask.data.transactions)}
+                      transactions={historyTransactionsTask.data.transactions}
                       fiatExchangeRates={
                         fiatExchangeRatesTask.status === 'successful'
                           ? fiatExchangeRatesTask.data
@@ -217,6 +220,8 @@ AccountDetails.propTypes = {
   historyTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
   fiatExchangeRatesTask: PropTypes.object.isRequired,
+  metaMaskWalletTask: PropTypes.object.isRequired,
+  pendingWithdraws: PropTypes.object.isRequired,
   onLoadAccount: PropTypes.func.isRequired,
   onChangeHeader: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
@@ -231,7 +236,9 @@ const mapStateToProps = (state) => ({
   poolTransactionsTask: state.accountDetails.poolTransactionsTask,
   historyTransactionsTask: state.accountDetails.historyTransactionsTask,
   exitsTask: state.accountDetails.exitsTask,
-  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
+  metaMaskWalletTask: state.global.metaMaskWalletTask,
+  pendingWithdraws: state.global.pendingWithdraws
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -243,6 +250,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchHistoryTransactions(accountIndex, fromItem)),
   onLoadExits: (exitTransactions) =>
     dispatch(fetchExits(exitTransactions)),
+  onRemovePendingWithdraw: (hermezEthereumAddress, pendingWithdrawId) => dispatch(removePendingWithdraw(hermezEthereumAddress, pendingWithdrawId)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
   onCleanup: () => dispatch(resetState())

@@ -60,11 +60,7 @@ function fetchExits (exitTransactions) {
     const exitTransactionsPromises = exitTransactions.map(exitTransaction => CoordinatorAPI.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
 
     return Promise.all(exitTransactionsPromises)
-      .then((exits) => {
-        // TODO: Remove once we have hermez-node
-        // const pendingWithdraws = exits.filter(exit => !exit.instantWithdrawn)
-        dispatch(homeActions.loadExitsSuccess(exits))
-      })
+      .then(exits => dispatch(homeActions.loadExitsSuccess(exits)))
       .catch(err => dispatch(homeActions.loadExitsFailure(err)))
   }
 }

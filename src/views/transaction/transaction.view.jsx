@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import { push } from 'connected-react-router'
 import { getAccountIndex } from 'hermezjs/src/addresses'
 
+import { addPendingWithdraw } from '../../store/global/global.thunks'
 import { fetchTokens, fetchAccounts, fetchMetaMaskTokens, fetchFees, fetchExit } from '../../store/transaction/transaction.thunks'
 import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
@@ -34,6 +35,7 @@ function Transaction ({
   onLoadAccounts,
   onLoadFees,
   onLoadExit,
+  onAddPendingWithdraw,
   onNavigateToTransactionConfirmation,
   onCleanup
 }) {
@@ -91,7 +93,7 @@ function Transaction ({
 
   React.useEffect(() => {
     if (transactionType !== 'deposit' && metaMaskWalletTask.status === 'successful') {
-      onLoadAccounts(metaMaskWalletTask.data.ethereumAddress)
+      onLoadAccounts(metaMaskWalletTask.data.hermezEthereumAddress)
     }
   }, [transactionType, metaMaskWalletTask, onLoadAccounts])
 
@@ -106,7 +108,6 @@ function Transaction ({
         const account = metaMaskTokensTask.data.find((account) => account.id === tokenId)
         setAccount(account)
       } else if (accountsTask.status === 'successful') {
-        console.log(accountsTask)
         const account = accountsTask.data.accounts.find((account) => getAccountIndex(account.accountIndex) === tokenId)
         setAccount(account)
       }
@@ -121,16 +122,17 @@ function Transaction ({
   }, [transactionType, batchNum, accountIndex, onLoadExit])
 
   React.useEffect(() => {
-    if (exitTask.status === 'successful') {
-      console.log(exitTask.data)
+    if (exitTask.status === 'successful' && metaMaskWalletTask.status === 'successful') {
       setTransaction({
         exit: exitTask.data,
         amount: exitTask.data.balance,
         token: exitTask.data.token,
-        to: {}
+        to: {
+          hezEthereumAddress: metaMaskWalletTask.data.hermezEthereumAddress
+        }
       })
     }
-  }, [exitTask])
+  }, [exitTask, metaMaskWalletTask])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -327,6 +329,7 @@ function Transaction ({
           amount={transaction.amount}
           fee={transaction.fee}
           exit={transaction.exit}
+          onAddPendingWithdraw={onAddPendingWithdraw}
           onNavigateToTransactionConfirmation={onNavigateToTransactionConfirmation}
         />
       )
@@ -393,6 +396,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchAccounts(ethereumAddress, fromItem)),
   onLoadFees: () => dispatch(fetchFees()),
   onLoadExit: (batchNum, accountIndex) => dispatch(fetchExit(batchNum, accountIndex)),
+  onAddPendingWithdraw: (hermezAddress, pendingWithdraw) => dispatch(addPendingWithdraw(hermezAddress, pendingWithdraw)),
   onNavigateToTransactionConfirmation: (type) => dispatch(push(`/${type}-confirmation`)),
   onCleanup: () => dispatch(resetState())
 })
