@@ -50,17 +50,17 @@ function TransactionOverview ({
    *
    * @returns {string}
    */
-  function getTitle () {
+  function getButtonLabel () {
     switch (type) {
-      case 'deposit':
+      case TransactionType.Deposit:
         return 'Deposit'
-      case 'transfer':
+      case TransactionType.Transfer:
         return 'Send'
-      case 'exit':
+      case TransactionType.Exit:
         return 'Withdraw'
-      case 'withdraw':
+      case TransactionType.Withdraw:
         return 'Withdraw'
-      case 'forceExit':
+      case TransactionType.ForceExit:
         return 'Force Withdrawal'
       default:
         return ''
@@ -137,7 +137,7 @@ function TransactionOverview ({
               } : undefined}
             />
             <button className={classes.txButton} onClick={handleClickTxButton}>
-              {getTitle()}
+              {getButtonLabel()}
             </button>
           </section>
         </Container>
