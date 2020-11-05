@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { Redirect } from 'react-router-dom'
+import { getAccountIndex } from 'hermezjs/src/addresses'
 
 import useExitStyles from './exit.styles'
 import { CurrencySymbol } from '../../../utils/currencies'
@@ -20,7 +21,8 @@ function Exit ({
   preferredCurrency,
   merkleProof,
   batchNum,
-  accountIndex
+  accountIndex,
+  pendingWithdraws
 }) {
   const classes = useExitStyles()
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false)
@@ -28,8 +30,10 @@ function Exit ({
   function getStep () {
     if (!merkleProof) {
       return STEPS.first
-    } else {
+    } else if (!pendingWithdraws || (pendingWithdraws && !pendingWithdraws.includes(accountIndex + merkleProof.Root))) {
       return STEPS.second
+    } else {
+      return STEPS.third
     }
   }
 
@@ -51,7 +55,7 @@ function Exit ({
   }
 
   function renderRedirect () {
-    return <Redirect to={`/withdraw-complete?tokenId=${token.id}&batchNum=${batchNum}&accountIndex=${accountIndex}`} />
+    return <Redirect to={`/withdraw-complete?tokenId=${getAccountIndex(accountIndex)}&batchNum=${batchNum}&accountIndex=${accountIndex}`} />
   }
 
   if (isWithdrawClicked) {
@@ -99,7 +103,8 @@ Exit.propTypes = {
   preferredCurrency: PropTypes.string.isRequired,
   merkleProof: PropTypes.object,
   batchNum: PropTypes.number,
-  accountIndex: PropTypes.string
+  accountIndex: PropTypes.string,
+  pendingWithdraws: PropTypes.array.isRequired
 }
 
 export default Exit

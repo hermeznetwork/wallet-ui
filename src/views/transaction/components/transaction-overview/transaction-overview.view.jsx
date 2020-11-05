@@ -6,7 +6,7 @@ import hermezjs from 'hermezjs'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
-import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
 import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
 import Container from '../../../shared/container/container.view'
 import { TransactionType } from '../../transaction.view'
@@ -21,7 +21,8 @@ function TransactionOverview ({
   account,
   preferredCurrency,
   fiatExchangeRates,
-  onGoToFinishTransactionStep
+  onGoToFinishTransactionStep,
+  onAddPendingWithdraw
 }) {
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
@@ -33,7 +34,7 @@ function TransactionOverview ({
    */
   function getAmountinFiat (value) {
     return getTokenAmountInPreferredCurrency(
-      value,
+      getFixedTokenAmount(value, account.token.decimals),
       account.token.USD,
       preferredCurrency,
       fiatExchangeRates
@@ -91,7 +92,6 @@ function TransactionOverview ({
         .then((res) => onGoToFinishTransactionStep(type))
         .catch((error) => console.log(error))
     } else if (type === TransactionType.ForceExit) {
-      console.log(account)
       hermezjs.Tx.forceExit(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token)
         .then((res) => onGoToFinishTransactionStep(type))
         .catch((error) => console.log(error))
@@ -99,10 +99,14 @@ function TransactionOverview ({
       // Todo: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
       // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
       hermezjs.Tx.withdraw(ethers.BigNumber.from(300000000000000000000n), 'hez:TKN:256', { id: 1, ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB' }, metaMaskWallet.publicKeyCompressedHex, ethers.BigNumber.from('4'), [])
-        .then((res) => onGoToFinishTransactionStep(type))
+        .then((res) => {
+          onAddPendingWithdraw(account.accountIndex + exit.merkleProof.Root)
+          onGoToFinishTransactionStep(type)
+        })
         .catch((error) => console.log(error))
     } else {
-      sendTransfer().then((res) => onGoToFinishTransactionStep(type))
+      sendTransfer()
+        .then((res) => onGoToFinishTransactionStep(type))
         .catch((error) => console.log(error))
     }
   }
@@ -116,7 +120,7 @@ function TransactionOverview ({
               {CurrencySymbol[preferredCurrency].symbol} {getAmountinFiat(amount).toFixed(2)}
             </h1>
             <p className={classes.tokenAmount}>
-              {amount} {account.token.symbol}
+              {getFixedTokenAmount(amount, account.token.decimals)} {account.token.symbol}
             </p>
           </section>
         </Container>
@@ -127,10 +131,10 @@ function TransactionOverview ({
             <TransactionInfo
               from={getPartiallyHiddenHermezAddress(metaMaskWallet.hermezEthereumAddress)}
               to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
-              fee={{
+              fee={fee ? {
                 fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountinFiat(fee)}`,
                 tokens: `${fee} ${account.token.symbol}`
-              }}
+              } : undefined}
             />
             <button className={classes.txButton} onClick={handleClickTxButton}>
               {getTitle()}
@@ -154,7 +158,8 @@ TransactionOverview.propTypes = {
   account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired,
-  onGoToFinishTransactionStep: PropTypes.func.isRequired
+  onGoToFinishTransactionStep: PropTypes.func.isRequired,
+  onAddPendingWithdraw: PropTypes.func.isRequired
 }
 
 export default TransactionOverview

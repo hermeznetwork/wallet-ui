@@ -7,7 +7,8 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../..
 function ExitList ({
   transactions,
   preferredCurrency,
-  fiatExchangeRates
+  fiatExchangeRates,
+  pendingWithdraws
 }) {
   return (
     <>
@@ -32,6 +33,7 @@ function ExitList ({
             merkleProof={transaction.merkleProof}
             batchNum={transaction.batchNum}
             accountIndex={transaction.accountIndex}
+            pendingWithdraws={pendingWithdraws}
           />
         )
       })}
@@ -42,7 +44,8 @@ function ExitList ({
 ExitList.propTypes = {
   transactions: PropTypes.array,
   preferredCurrency: PropTypes.string.isRequired,
-  fiatExchangeRates: PropTypes.object
+  fiatExchangeRates: PropTypes.object,
+  pendingWithdraws: PropTypes.array.isRequired
 }
 
 export default ExitList

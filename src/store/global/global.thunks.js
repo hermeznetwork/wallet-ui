@@ -3,7 +3,7 @@ import { keccak256 } from 'js-sha3'
 import hermezjs from 'hermezjs'
 
 import * as globalActions from './global.actions'
-import { METAMASK_MESSAGE } from '../../constants'
+import { METAMASK_MESSAGE, PENDING_WITHDRAWS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 
 function fetchMetamaskWallet () {
@@ -46,8 +46,55 @@ function fetchFiatExchangeRates (symbols) {
   }
 }
 
+/**
+ * Adds a pendingWithdraw to the pendingWithdraw pool
+ * @param {string} hermezEthereumAddress - The account with which the pendingWithdraw was made
+ * @param {string} pendingWithdraw - The pendingWithdraw to add to the pool
+ * @returns {void}
+ */
+function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
+  return (dispatch) => {
+    const pendingWithdrawPool = JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
+    const accountPendingWithdrawPool = pendingWithdrawPool[hermezEthereumAddress]
+    const newAccountPendingWithdrawPool = accountPendingWithdrawPool === undefined
+      ? [pendingWithdraw]
+      : [...accountPendingWithdrawPool, pendingWithdraw]
+    const newPendingWithdrawPool = {
+      ...pendingWithdrawPool,
+      [hermezEthereumAddress]: newAccountPendingWithdrawPool
+    }
+
+    localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdrawPool))
+    dispatch(globalActions.addPendingWithdraw(newPendingWithdrawPool))
+  }
+}
+
+/**
+ * Removes a pendingWithdraw from the pendingWithdraw pool
+ * @param {string} hermezEthereumAddress - The account with which the pendingWithdraw was originally made
+ * @param {string} pendingWithdrawId - The pendingWithdraw identifier to remove from the pool
+ * @returns {void}
+ */
+function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
+  return (dispatch) => {
+    const pendingWithdrawPool = JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
+    const accountPendingWithdrawPool = pendingWithdrawPool[hermezEthereumAddress]
+    const newAccountPendingWithdrawPool = accountPendingWithdrawPool
+      .filter((pendingWithdraw) => pendingWithdraw !== pendingWithdrawId)
+    const newPendingWithdrawPool = {
+      ...pendingWithdrawPool,
+      [hermezEthereumAddress]: newAccountPendingWithdrawPool
+    }
+
+    localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdrawPool))
+    dispatch(globalActions.removePendingWithdraw(pendingWithdrawId))
+  }
+}
+
 export {
   fetchMetamaskWallet,
   changeRedirectRoute,
-  fetchFiatExchangeRates
+  fetchFiatExchangeRates,
+  addPendingWithdraw,
+  removePendingWithdraw
 }

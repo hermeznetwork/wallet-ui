@@ -2,6 +2,7 @@ import { CoordinatorAPI } from 'hermezjs'
 import { getPoolTransactions } from 'hermezjs/src/tx-pool'
 
 import * as accountDetailsActionTypes from './account-details.actions'
+import { removePendingWithdraw } from '../global/global.thunks'
 
 /**
  * Fetches the account details for the specified account index
@@ -45,33 +46,51 @@ function fetchPoolTransactions (accountIndex) {
  * @param {string} accountIndex - The account index
  * @returns {void}
  */
-function fetchHistoryTransactions (accountIndex, fromItem) {
-  return (dispatch) => {
+function fetchHistoryTransactions (accountIndex) {
+  return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadHistoryTransactions())
 
-    return CoordinatorAPI.getTransactions(accountIndex, fromItem)
+    const { accountDetails: { exitsTask }, global: { metaMaskWalletTask } } = getState()
+
+    return CoordinatorAPI.getTransactions(accountIndex)
+      .then((res) => {
+        res.transactions = res.transactions.filter((transaction) => {
+          if (transaction.type === 'Exit') {
+            const exitTx = exitsTask.data.exits.find((exit) =>
+              exit.batchNum === transaction.batchNum &&
+              exit.accountIndex === transaction.fromAccountIndex
+            )
+            if (exitTx) {
+              if (exitTx.instantWithdrawn) {
+                removePendingWithdraw(metaMaskWalletTask.data.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
+                return true
+              } else {
+                return false
+              }
+            } else {
+              return true
+            }
+          } else {
+            return true
+          }
+        })
+
+        return res
+      })
       .then(res => dispatch(accountDetailsActionTypes.loadHistoryTransactionsSuccess(res)))
       .catch(err => dispatch(accountDetailsActionTypes.loadHistoryTransactionsFailure(err)))
   }
 }
 
 /**
- * Fetches the exit data for transactions of type Exit
- *
- * @param {Array} exitTransactions - Array of transactions of type Exit
+ * Fetches the exit data for transactions of type Exit that are still pending a withdraw
  */
-function fetchExits (exitTransactions) {
+function fetchExits () {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadExits())
 
-    const exitTransactionsPromises = exitTransactions.map(exitTransaction => CoordinatorAPI.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
-
-    return Promise.all(exitTransactionsPromises)
-      .then((exits) => {
-        // TODO: Remove once we have hermez-node
-        // const pendingWithdraws = exits.filter(exit => !exit.instantWithdrawn)
-        dispatch(accountDetailsActionTypes.loadExitsSuccess(exits))
-      })
+    return CoordinatorAPI.getExits(true)
+      .then(exits => dispatch(accountDetailsActionTypes.loadExitsSuccess(exits)))
       .catch(err => dispatch(accountDetailsActionTypes.loadExitsFailure(err)))
   }
 }

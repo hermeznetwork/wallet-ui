@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom'
 
 import * as transactionThunks from '../../store/transaction/transaction.thunks'
 import * as transactionActions from '../../store/transaction/transaction.actions'
+import * as globalThunks from '../../store/global/global.thunks'
 import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
 import TransactionOverview from './components/transaction-overview/transaction-overview.view'
@@ -48,6 +49,7 @@ function Transaction ({
   onGoToTransactionOverviewStep,
   onGoToFinishTransactionStep,
   onFinishTransaction,
+  onAddPendingWithdraw,
   onCleanup
 }) {
   const theme = useTheme()
@@ -127,6 +129,7 @@ function Transaction ({
                   fee={stepData.transaction.fee}
                   exit={stepData.transaction.exit}
                   onGoToFinishTransactionStep={onGoToFinishTransactionStep}
+                  onAddPendingWithdraw={onAddPendingWithdraw}
                 />
               )
             }
@@ -247,6 +250,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionActions.goToReviewTransactionStep(transaction)),
   onGoToFinishTransactionStep: (type) =>
     dispatch(transactionActions.goToFinishTransactionStep()),
+  onAddPendingWithdraw: (hermezAddress, pendingWithdraw) =>
+    dispatch(globalThunks.addPendingWithdraw(hermezAddress, pendingWithdraw)),
   onFinishTransaction: () =>
     dispatch(push('/')),
   onCleanup: () =>
