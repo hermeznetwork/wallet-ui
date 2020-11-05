@@ -77,12 +77,12 @@ function fetchAccounts (transactionType, fromItem) {
         .then((res) => {
           getMetaMaskTokens(metaMaskWalletTask.data, res.tokens)
             .then(metaMaskTokens => dispatch(transactionActions.loadAccountsSuccess(transactionType, metaMaskTokens)))
-            .catch(err => console.log(err))
+            .catch(err => transactionActions.loadAccountsFailure(err.message))
         })
     } else {
       return CoordinatorAPI.getAccounts(metaMaskWalletTask.data.hermezEthereumAddress, fromItem)
         .then(res => dispatch(transactionActions.loadAccountsSuccess(transactionType, res)))
-        .catch(err => console.log(err))
+        .catch(err => transactionActions.loadAccountsFailure(err.message))
     }
   }
 }

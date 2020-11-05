@@ -2,13 +2,6 @@ import { getPaginationData } from '../../utils/api'
 import { TransactionType } from '../../views/transaction/transaction.view'
 import { transactionActionTypes } from './transaction.actions'
 
-// step: {
-//   name: "choose-account", "set-transaction-data", "check-transaction-data",
-//   data: {
-
-//   }
-// },
-
 export const STEP_NAME = {
   LOAD_INITIAL_DATA: 'load-initial-data',
   CHOOSE_ACCOUNT: 'choose-account',
