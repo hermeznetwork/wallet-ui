@@ -94,6 +94,70 @@ function transactionReducer (state = initialTransactionState, action) {
         currentStep: action.nextStep
       }
     }
+    case transactionActionTypes.LOAD_ACCOUNTS: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.CHOOSE_ACCOUNT]: {
+            accountsTask: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'successful'
+              ? { status: 'reloading', data: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data }
+              : { status: 'loading' }
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+      if (action.transactionType === TransactionType.Deposit) {
+        return {
+          ...state,
+          steps: {
+            ...state.steps,
+            [STEP_NAME.CHOOSE_ACCOUNT]: {
+              accountsTask: {
+                status: 'successful',
+                data: action.data
+              }
+            }
+          }
+        }
+      } else {
+        const accounts = state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'reloading'
+          ? [...state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data.accounts, ...action.data.accounts]
+          : action.data.accounts
+        const pagination = getPaginationData(
+          action.data.accounts,
+          action.data.pagination
+        )
+
+        return {
+          ...state,
+          steps: {
+            ...state.steps,
+            [STEP_NAME.CHOOSE_ACCOUNT]: {
+              accountsTask: {
+                status: 'successful',
+                data: { accounts, pagination }
+              }
+            }
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNTS_FAILURE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.CHOOSE_ACCOUNT]: {
+            accountsTask: {
+              status: 'failed',
+              error: action.error
+            }
+          }
+        }
+      }
+    }
     case transactionActionTypes.LOAD_ACCOUNT:
     case transactionActionTypes.LOAD_EXIT: {
       return {
@@ -198,70 +262,6 @@ function transactionReducer (state = initialTransactionState, action) {
           }
         }
       }
-    case transactionActionTypes.LOAD_ACCOUNTS: {
-      return {
-        ...state,
-        steps: {
-          ...state.steps,
-          [STEP_NAME.CHOOSE_ACCOUNT]: {
-            accountsTask: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'successful'
-              ? { status: 'reloading', data: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data }
-              : { status: 'loading' }
-          }
-        }
-      }
-    }
-    case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      if (action.transactionType === TransactionType.Deposit) {
-        return {
-          ...state,
-          steps: {
-            ...state.steps,
-            [STEP_NAME.CHOOSE_ACCOUNT]: {
-              accountsTask: {
-                status: 'successful',
-                data: action.data
-              }
-            }
-          }
-        }
-      } else {
-        const accounts = state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'reloading'
-          ? [...state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data.accounts, ...action.data.accounts]
-          : action.data.accounts
-        const pagination = getPaginationData(
-          action.data.accounts,
-          action.data.pagination
-        )
-
-        return {
-          ...state,
-          steps: {
-            ...state.steps,
-            [STEP_NAME.CHOOSE_ACCOUNT]: {
-              accountsTask: {
-                status: 'successful',
-                data: { accounts, pagination }
-              }
-            }
-          }
-        }
-      }
-    }
-    case transactionActionTypes.LOAD_ACCOUNTS_FAILURE: {
-      return {
-        ...state,
-        steps: {
-          ...state.steps,
-          [STEP_NAME.CHOOSE_ACCOUNT]: {
-            accountsTask: {
-              status: 'failed',
-              error: action.error
-            }
-          }
-        }
-      }
-    }
     case transactionActionTypes.RESET_STATE: {
       return initialTransactionState
     }

@@ -52,6 +52,26 @@ function changeCurrentStep (nextStep) {
   }
 }
 
+function loadAccounts () {
+  return {
+    type: transactionActionTypes.LOAD_ACCOUNTS
+  }
+}
+
+function loadAccountsSuccess (transactionType, data) {
+  return {
+    type: transactionActionTypes.LOAD_ACCOUNTS_SUCCESS,
+    transactionType,
+    data
+  }
+}
+
+function loadAccountsFailure () {
+  return {
+    type: transactionActionTypes.LOAD_ACCOUNTS_FAILURE
+  }
+}
+
 function loadAccount () {
   return {
     type: transactionActionTypes.LOAD_ACCOUNT
@@ -113,26 +133,6 @@ function loadFeesFailure (error) {
   }
 }
 
-function loadAccounts () {
-  return {
-    type: transactionActionTypes.LOAD_ACCOUNTS
-  }
-}
-
-function loadAccountsSuccess (transactionType, data) {
-  return {
-    type: transactionActionTypes.LOAD_ACCOUNTS_SUCCESS,
-    transactionType,
-    data
-  }
-}
-
-function loadAccountsFailure () {
-  return {
-    type: transactionActionTypes.LOAD_ACCOUNTS_FAILURE
-  }
-}
-
 function resetState () {
   return {
     type: transactionActionTypes.RESET_STATE
@@ -145,6 +145,9 @@ export {
   goToReviewTransactionStep,
   goToFinishTransactionStep,
   changeCurrentStep,
+  loadAccounts,
+  loadAccountsSuccess,
+  loadAccountsFailure,
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,
@@ -154,8 +157,5 @@ export {
   loadFees,
   loadFeesSuccess,
   loadFeesFailure,
-  loadAccounts,
-  loadAccountsSuccess,
-  loadAccountsFailure,
   resetState
 }
