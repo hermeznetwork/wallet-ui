@@ -39,35 +39,21 @@ function App ({
   }
 
   return (
-    <Switch>
-      {routes
-        .filter(route => !route.renderLayout)
-        .map(route =>
-          <Route
-            exact
-            key={route.path}
-            path={route.path}
-            render={route.render}
-          />
-        )}
-      <Route>
-        <Layout>
-          <Switch>
-            {routes
-              .filter(route => route.renderLayout)
-              .map(route =>
-                <Route
-                  exact
-                  key={route.path}
-                  path={route.path}
-                  render={route.render}
-                />
-              )}
-            <Redirect to='/' />
-          </Switch>
-        </Layout>
-      </Route>
-    </Switch>
+    <Layout>
+      <Switch>
+        {routes
+          .filter(route => !route.renderLayout)
+          .map(route =>
+            <Route
+              exact
+              key={route.path}
+              path={route.path}
+              render={route.render}
+            />
+          )}
+        <Redirect to='/' />
+      </Switch>
+    </Layout>
   )
 }
 

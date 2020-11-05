@@ -9,13 +9,15 @@ import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount 
 import swapIcon from '../../../../images/icons/swap.svg'
 import errorIcon from '../../../../images/icons/error.svg'
 import closeIcon from '../../../../images/icons/close.svg'
+import { TransactionType } from '../../transaction.view'
 
 function TransactionForm ({
   type,
   account,
   preferredCurrency,
   fiatExchangeRates,
-  fees,
+  feesTask,
+  onLoadFees,
   onSubmit
 }) {
   const classes = useTransactionFormStyles()
@@ -24,6 +26,10 @@ function TransactionForm ({
   const [receiver, setReceiver] = useState('')
   const [isAmountInvalid, setIsAmountInvalid] = React.useState()
   const [isReceiverInvalid, setIsReceiverInvalid] = React.useState()
+
+  React.useEffect(() => {
+    onLoadFees()
+  }, [onLoadFees])
 
   /**
    * Uses helper function to convert balance to a float
@@ -64,7 +70,7 @@ function TransactionForm ({
    * It takes the appropriate recomended fee in USD from the coordinator
    * and converts it to token value.
    */
-  function getFee () {
+  function getFee (fees) {
     return fees.existingAccount / account.token.USD
   }
 
@@ -85,7 +91,8 @@ function TransactionForm ({
   function isContinueDisabled () {
     const amountValid = isAmountInvalid === false && amount > 0
     const receiverValid = isReceiverInvalid === false
-    if (type !== 'transfer' && amountValid) {
+
+    if (type !== TransactionType.Transfer && amountValid) {
       return false
     } else if (amountValid && receiverValid) {
       return false
@@ -105,6 +112,7 @@ function TransactionForm ({
   function handleAmountInputChange (event) {
     const newAmount = Number(event.target.value)
     const newAmountInToken = (showInFiat) ? (newAmount / getAccountFiatRate()) : newAmount
+
     if (newAmountInToken >= 0 && newAmountInToken <= getAccountBalance()) {
       setIsAmountInvalid(false)
     } else {
@@ -175,44 +183,49 @@ function TransactionForm ({
    * Based on the type of transaction, prepares the necessary values (amount, receiver and fee).
    * Communicate to TransactionLayout to display TransactionOverview.
    */
-  async function handleContinueButton () {
+  function handleContinueButton (fees) {
     const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
 
-    if (type === 'transfer') {
-      try {
-        const accountsData = await getAccounts(receiver)
-        const receiverAccount = accountsData.accounts.find((receiverAccount) => receiverAccount.token.id === account.token.id)
-        if (receiverAccount) {
-          onSubmit({
-            amount: selectedAmount.toString(),
-            to: receiverAccount,
-            fee: getFee()
+    switch (type) {
+      case TransactionType.Transfer: {
+        return getAccounts(receiver, [account.tokenId])
+          .then((res) => {
+            const receiverAccount = res.accounts[0]
+
+            if (receiverAccount) {
+              onSubmit({
+                amount: selectedAmount.toString(),
+                to: receiverAccount,
+                fee: getFee(fees)
+              })
+            } else {
+              setIsReceiverInvalid(true)
+            }
           })
-        } else {
-          throw new Error()
-        }
-      } catch (error) {
-        console.log(error)
-        setIsReceiverInvalid(true)
+          .catch(() => setIsReceiverInvalid(true))
       }
-    } else if (type === 'deposit') {
-      onSubmit({
-        amount: selectedAmount.toString(),
-        to: {},
-        fee: 0
-      })
-    } else if (type === 'exit') {
-      onSubmit({
-        amount: selectedAmount.toString(),
-        to: {},
-        fee: getFee()
-      })
-    } else if (type === 'forceExit') {
-      onSubmit({
-        amount: selectedAmount.toString(),
-        to: {},
-        fee: 0
-      })
+      case TransactionType.Deposit: {
+        return onSubmit({
+          amount: selectedAmount.toString(),
+          to: {},
+          fee: 0
+        })
+      }
+      case TransactionType.Exit: {
+        return onSubmit({
+          amount: selectedAmount.toString(),
+          to: {},
+          fee: getFee(fees)
+        })
+      }
+      case TransactionType.ForceExit: {
+        return onSubmit({
+          amount: selectedAmount.toString(),
+          to: {},
+          fee: 0
+        })
+      }
+      default: {}
     }
   }
 
@@ -222,7 +235,7 @@ function TransactionForm ({
    * @returns {ReactElement} The receiver input field
    */
   function renderReceiver () {
-    if (type === 'transfer') {
+    if (type === TransactionType.Transfer) {
       return (
         <div className={classes.receiverWrapper}>
           <div className={classes.receiverInputWrapper}>
@@ -283,12 +296,12 @@ function TransactionForm ({
    *
    * @returns {ReactElement} The fee selector component
    */
-  function renderFeeSelector () {
-    if (type !== 'deposit' && type !== 'forceExit') {
+  function renderFeeSelector (fees) {
+    if (type !== TransactionType.Deposit && type !== TransactionType.ForceExit) {
       return (
         <div className={classes.feeWrapper}>
           <p className={classes.fee}>
-            Fee {Number(getFee()).toFixed(6)} {account.token.symbol}
+            Fee {Number(getFee(fees)).toFixed(6)} {account.token.symbol}
           </p>
         </div>
       )
@@ -300,12 +313,11 @@ function TransactionForm ({
       <div className={classes.token}>
         <p className={classes.tokenName}>{account.token.name}</p>
         {
-          (showInFiat)
+          showInFiat
             ? <p><span>{preferredCurrency}</span> <span>{getBalanceinFiat().toFixed(2)}</span></p>
             : <p><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
         }
       </div>
-
       <div className={clsx({
         [classes.selectAmount]: true,
         [classes.selectAmountError]: isAmountInvalid
@@ -344,18 +356,19 @@ function TransactionForm ({
         />
         You don't have enough funds
       </p>
-
       {renderReceiver()}
-
       <button
         className={classes.continue}
-        onClick={handleContinueButton}
+        onClick={() => {
+          if (feesTask.status === 'successful') {
+            handleContinueButton(feesTask.data)
+          }
+        }}
         disabled={isContinueDisabled()}
       >
         Continue
       </button>
-
-      {renderFeeSelector()}
+      {feesTask.status === 'successful' && renderFeeSelector(feesTask.data)}
     </section>
   )
 }
@@ -365,7 +378,7 @@ TransactionForm.propTypes = {
   account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired,
-  fees: PropTypes.object,
+  feesTask: PropTypes.object,
   onSubmit: PropTypes.func.isRequired
 }
 

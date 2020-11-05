@@ -1,7 +1,43 @@
 import { getPaginationData } from '../../utils/api'
+import { TransactionType } from '../../views/transaction/transaction.view'
 import { transactionActionTypes } from './transaction.actions'
 
+// step: {
+//   name: "choose-account", "set-transaction-data", "check-transaction-data",
+//   data: {
+
+//   }
+// },
+
+export const STEP_NAME = {
+  LOAD_INITIAL_DATA: 'load-initial-data',
+  CHOOSE_ACCOUNT: 'choose-account',
+  BUILD_TRANSACTION: 'build-transaction',
+  REVIEW_TRANSACTION: 'review-transaction',
+  FINISH_TRANSACTION: 'finish-transaction'
+}
+
 const initialTransactionState = {
+  currentStep: STEP_NAME.LOAD_INITIAL_DATA,
+  steps: {
+    [STEP_NAME.LOAD_INITIAL_DATA]: {
+      status: 'pending'
+    },
+    [STEP_NAME.CHOOSE_ACCOUNT]: {
+      accountsTask: {
+        status: 'pending'
+      }
+    },
+    [STEP_NAME.BUILD_TRANSACTION]: {
+      feesTask: {
+        status: 'pending'
+      },
+      account: undefined
+    },
+    [STEP_NAME.REVIEW_TRANSACTION]: {
+      transaction: undefined
+    }
+  },
   tokensTask: {
     status: 'pending'
   },
@@ -10,146 +46,222 @@ const initialTransactionState = {
   },
   metaMaskTokensTask: {
     status: 'pending'
-  },
-  feesTask: {
-    status: 'pending'
-  },
-  exitTask: {
-    status: 'pending'
   }
 }
 
 function transactionReducer (state = initialTransactionState, action) {
   switch (action.type) {
-    case transactionActionTypes.LOAD_TOKENS: {
+    case transactionActionTypes.GO_TO_CHOOSE_ACCOUNT_STEP: {
       return {
         ...state,
-        tokensTask: {
-          status: 'loading'
+        currentStep: STEP_NAME.CHOOSE_ACCOUNT
+      }
+    }
+    case transactionActionTypes.GO_TO_BUILD_TRANSACTION_STEP: {
+      return {
+        ...state,
+        currentStep: STEP_NAME.BUILD_TRANSACTION,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            account: action.account
+          }
         }
       }
     }
-    case transactionActionTypes.LOAD_TOKENS_SUCCESS: {
+    case transactionActionTypes.GO_TO_REVIEW_TRANSACTION_STEP: {
       return {
         ...state,
-        tokensTask: {
-          status: 'successful',
-          data: action.tokens
+        currentStep: STEP_NAME.REVIEW_TRANSACTION,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.REVIEW_TRANSACTION]: {
+            transaction: action.transaction
+          }
         }
       }
     }
+    case transactionActionTypes.GO_TO_FINISH_TRANSACTION_STEP: {
+      return {
+        ...state,
+        currentStep: STEP_NAME.FINISH_TRANSACTION
+      }
+    }
+    case transactionActionTypes.CHANGE_CURRENT_STEP: {
+      return {
+        ...state,
+        currentStep: action.nextStep
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNT:
+    case transactionActionTypes.LOAD_EXIT: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.LOAD_INITIAL_DATA]: {
+            status: 'loading'
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNT_SUCCESS: {
+      return {
+        ...state,
+        currentStep: STEP_NAME.BUILD_TRANSACTION,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.LOAD_INITIAL_DATA]: {
+            status: 'successful'
+          },
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            account: action.account
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_EXIT_SUCCESS:
+      return {
+        ...state,
+        currentStep: STEP_NAME.REVIEW_TRANSACTION,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.LOAD_INITIAL_DATA]: {
+            status: 'successful'
+          },
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            account: action.account
+          },
+          [STEP_NAME.REVIEW_TRANSACTION]: {
+            transaction: {
+              exit: action.exit,
+              mount: action.exit.balance,
+              token: action.exit.token,
+              to: {}
+            }
+          }
+        }
+      }
+    case transactionActionTypes.LOAD_ACCOUNT_FAILURE:
+    case transactionActionTypes.LOAD_EXIT_FAILURE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.LOAD_INITIAL_DATA]: {
+            status: 'failed',
+            error: action.error
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_FEES:
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            feesTask: {
+              status: 'loading'
+            }
+          }
+        }
+      }
+    case transactionActionTypes.LOAD_FEES_SUCCESS:
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            feesTask: {
+              status: 'successful',
+              data: action.fees
+            }
+          }
+        }
+      }
+    case transactionActionTypes.LOAD_FEES_FAILURE:
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            feesTask: {
+              status: 'failed',
+              error: action.error
+            }
+          }
+        }
+      }
     case transactionActionTypes.LOAD_ACCOUNTS: {
       return {
         ...state,
-        accountsTask: state.accountsTask.status === 'successful'
-          ? { status: 'reloading', data: state.accountsTask.data }
-          : { status: 'loading' }
+        steps: {
+          ...state.steps,
+          [STEP_NAME.CHOOSE_ACCOUNT]: {
+            accountsTask: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'successful'
+              ? { status: 'reloading', data: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data }
+              : { status: 'loading' }
+          }
+        }
       }
     }
     case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      const accounts = state.accountsTask.status === 'reloading'
-        ? [...state.accountsTask.data.accounts, ...action.data.accounts]
-        : action.data.accounts
-      const pagination = getPaginationData(
-        action.data.accounts,
-        action.data.pagination
-      )
+      if (action.transactionType === TransactionType.Deposit) {
+        return {
+          ...state,
+          steps: {
+            ...state.steps,
+            [STEP_NAME.CHOOSE_ACCOUNT]: {
+              accountsTask: {
+                status: 'successful',
+                data: action.data
+              }
+            }
+          }
+        }
+      } else {
+        const accounts = state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'reloading'
+          ? [...state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data.accounts, ...action.data.accounts]
+          : action.data.accounts
+        const pagination = getPaginationData(
+          action.data.accounts,
+          action.data.pagination
+        )
 
-      return {
-        ...state,
-        accountsTask: {
-          status: 'successful',
-          data: { accounts, pagination }
+        return {
+          ...state,
+          steps: {
+            ...state.steps,
+            [STEP_NAME.CHOOSE_ACCOUNT]: {
+              accountsTask: {
+                status: 'successful',
+                data: { accounts, pagination }
+              }
+            }
+          }
         }
       }
     }
     case transactionActionTypes.LOAD_ACCOUNTS_FAILURE: {
       return {
         ...state,
-        accountsTask: {
-          status: 'failed',
-          error: 'An error ocurred loading the accounts'
+        steps: {
+          ...state.steps,
+          [STEP_NAME.CHOOSE_ACCOUNT]: {
+            accountsTask: {
+              status: 'failed',
+              error: action.error
+            }
+          }
         }
       }
     }
-    case transactionActionTypes.LOAD_TOKENS_FAILURE: {
-      return {
-        ...state,
-        tokensTask: {
-          status: 'failed',
-          error: 'An error ocurred loading the tokens'
-        }
-      }
-    }
-    case transactionActionTypes.LOAD_METAMASK_TOKENS:
-      return {
-        ...state,
-        metaMaskTokensTask: {
-          status: 'loading'
-        }
-      }
-    case transactionActionTypes.LOAD_METAMASK_TOKENS_SUCCESS:
-      return {
-        ...state,
-        metaMaskTokensTask: {
-          status: 'successful',
-          data: action.metaMaskTokens
-        }
-      }
-    case transactionActionTypes.LOAD_METAMASK_TOKENS_FAILURE:
-      return {
-        ...state,
-        metaMaskTokensTask: {
-          status: 'failed',
-          error: action.error
-        }
-      }
-    case transactionActionTypes.LOAD_FEES:
-      return {
-        ...state,
-        feesTask: {
-          status: 'loading'
-        }
-      }
-    case transactionActionTypes.LOAD_FEES_SUCCESS:
-      return {
-        ...state,
-        feesTask: {
-          status: 'successful',
-          data: action.fees
-        }
-      }
-    case transactionActionTypes.LOAD_FEES_FAILURE:
-      return {
-        ...state,
-        feesTask: {
-          status: 'failed',
-          error: action.error
-        }
-      }
-    case transactionActionTypes.LOAD_EXIT:
-      return {
-        ...state,
-        exitTask: {
-          status: 'loading'
-        }
-      }
-    case transactionActionTypes.LOAD_EXIT_SUCCESS:
-      return {
-        ...state,
-        exitTask: {
-          status: 'successful',
-          data: action.exit
-        }
-      }
-    case transactionActionTypes.LOAD_EXIT_FAILURE:
-      return {
-        ...state,
-        exitTask: {
-          status: 'failed',
-          error: action.error
-        }
-      }
     case transactionActionTypes.RESET_STATE: {
       return initialTransactionState
     }

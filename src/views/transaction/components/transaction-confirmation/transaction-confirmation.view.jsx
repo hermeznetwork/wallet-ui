@@ -1,23 +1,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
 
 import useTransactionConfirmationStyles from './transaction-confirmation.styles'
-import transactionConfirmation from '../../images/transaction-confirmation.png'
-import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
+import transactionConfirmation from '../../../../images/transaction-confirmation.png'
+import { TransactionType } from '../../transaction.view'
 
-function TransactionConfirmation ({ transactionType }) {
+function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
   const classes = useTransactionConfirmationStyles()
 
   function getExplanation () {
     switch (transactionType) {
-      case 'deposit':
+      case TransactionType.Deposit:
         return 'Your transaction is awaiting verification.'
-      case 'transfer':
+      case TransactionType.Transfer:
         return 'Your transaction is completed.'
-      case 'exit':
+      case TransactionType.Exit:
         return 'Withdrawal has been initiated and will require additional confirmation in a few minutes.'
-      case 'forceExit':
+      case TransactionType.ForceExit:
         return 'Withdrawal has been initiated and will require additional confirmation in a few minutes.'
       default:
         return ''
@@ -32,13 +31,16 @@ function TransactionConfirmation ({ transactionType }) {
         alt='Hermez transaction confirmed'
       />
       <p className={classes.text}>{getExplanation()}</p>
-      <Link to='/' className={classes.doneWrapper}><button className={classes.done}>Done</button></Link>
+      <button className={classes.done} click={onFinishTransaction}>
+        Done
+      </button>
     </section>
   )
 }
 
 TransactionConfirmation.propTypes = {
-  transactionType: PropTypes.string.isRequired
+  transactionType: PropTypes.string.isRequired,
+  onFinishTransaction: PropTypes.func.isRequired
 }
 
-export default withAuthGuard(TransactionConfirmation)
+export default TransactionConfirmation

@@ -35,16 +35,12 @@ function Layout ({
       <Main>
         {children}
       </Main>
-      {
-        snackbar.status === 'open'
-          ? (
-            <Snackbar
-              message={snackbar.message}
-              onClose={onCloseSnackbar}
-            />
-          )
-          : <></>
-      }
+      {snackbar.status === 'open' && (
+        <Snackbar
+          message={snackbar.message}
+          onClose={onCloseSnackbar}
+        />
+      )}
     </div>
   )
 }

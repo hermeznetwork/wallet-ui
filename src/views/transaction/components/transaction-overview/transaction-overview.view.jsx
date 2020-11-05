@@ -9,6 +9,7 @@ import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
 import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
 import Container from '../../../shared/container/container.view'
+import { TransactionType } from '../../transaction.view'
 
 function TransactionOverview ({
   metaMaskWallet,
@@ -20,7 +21,7 @@ function TransactionOverview ({
   account,
   preferredCurrency,
   fiatExchangeRates,
-  onNavigateToTransactionConfirmation
+  onGoToFinishTransactionStep
 }) {
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
@@ -71,7 +72,7 @@ function TransactionOverview ({
   async function sendTransfer () {
     const { transaction, encodedTransaction } = await hermezjs.TxUtils.generateL2Transaction({
       from: account.accountIndex,
-      to: type === 'transfer' ? to.accountIndex : null,
+      to: type === TransactionType.Transfer ? to.accountIndex : null,
       amount: hermezjs.Float16.float2Fix(hermezjs.Float16.floorFix2Float(getAmountInBigInt())),
       fee,
       nonce: account.nonce
@@ -85,45 +86,24 @@ function TransactionOverview ({
    * Prepares the transaction and sends it
    */
   async function handleClickTxButton () {
-    if (type === 'deposit') {
+    if (type === TransactionType.Deposit) {
       hermezjs.Tx.deposit(getAmountInBigInt(), metaMaskWallet.hermezEthereumAddress, account.token, metaMaskWallet.publicKeyCompressedHex)
-        .then((res) => {
-          console.log(res)
-          onNavigateToTransactionConfirmation(type)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    } else if (type === 'forceExit') {
+        .then((res) => onGoToFinishTransactionStep(type))
+        .catch((error) => console.log(error))
+    } else if (type === TransactionType.ForceExit) {
       console.log(account)
       hermezjs.Tx.forceExit(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token)
-        .then((res) => {
-          console.log(res)
-          onNavigateToTransactionConfirmation(type)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    } else if (type === 'withdraw') {
+        .then((res) => onGoToFinishTransactionStep(type))
+        .catch((error) => console.log(error))
+    } else if (type === TransactionType.Withdraw) {
       // Todo: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
       // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
       hermezjs.Tx.withdraw(ethers.BigNumber.from(300000000000000000000n), 'hez:TKN:256', { id: 1, ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB' }, metaMaskWallet.publicKeyCompressedHex, ethers.BigNumber.from('4'), [])
-        .then((res) => {
-          console.log(res)
-          onNavigateToTransactionConfirmation(type)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
+        .then((res) => onGoToFinishTransactionStep(type))
+        .catch((error) => console.log(error))
     } else {
-      sendTransfer()
-        .then((res) => {
-          console.log(res)
-          onNavigateToTransactionConfirmation(type)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
+      sendTransfer().then((res) => onGoToFinishTransactionStep(type))
+        .catch((error) => console.log(error))
     }
   }
 
@@ -174,7 +154,7 @@ TransactionOverview.propTypes = {
   account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired,
-  onNavigateToTransactionConfirmation: PropTypes.func.isRequired
+  onGoToFinishTransactionStep: PropTypes.func.isRequired
 }
 
 export default TransactionOverview
