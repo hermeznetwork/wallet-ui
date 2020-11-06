@@ -27,7 +27,10 @@ const initialGlobalState = {
   snackbar: {
     status: 'closed'
   },
-  pendingWithdraws: getInitialPendingWithdraws()
+  pendingWithdraws: getInitialPendingWithdraws(),
+  coordinatorStateTask: {
+    status: 'pending'
+  }
 }
 
 function globalReducer (state = initialGlobalState, action) {
@@ -140,6 +143,32 @@ function globalReducer (state = initialGlobalState, action) {
           ...state.pendingWithdraws,
           [action.hermezEthereumAddress]: accountPendingWithdraws
             .filter(pendingWithdraw => pendingWithdraw.id !== action.pendingWithdrawId)
+        }
+      }
+    }
+    case globalActionTypes.LOAD_COORDINATOR_STATE: {
+      return {
+        ...state,
+        coordinatorStateTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case globalActionTypes.LOAD_COORDINATOR_STATE_SUCCESS: {
+      return {
+        ...state,
+        coordinatorStateTask: {
+          status: 'successful',
+          data: action.coordinatorState
+        }
+      }
+    }
+    case globalActionTypes.LOAD_COORDINATOR_STATE_FAILURE: {
+      return {
+        ...state,
+        coordinatorStateTask: {
+          status: 'failure',
+          error: action.error
         }
       }
     }

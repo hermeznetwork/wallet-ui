@@ -7,6 +7,7 @@ import { TxType } from 'hermezjs/src/tx'
 
 import useHomeStyles from './home.styles'
 import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/home/home.thunks'
+import { removePendingWithdraw, fetchCoordinatorState } from '../../store/global/global.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
@@ -31,11 +32,13 @@ function Home ({
   fiatExchangeRatesTask,
   preferredCurrency,
   pendingWithdraws,
+  coordinatorStateTask,
   onChangeHeader,
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
+  onLoadCoordinatorState,
   onNavigateToAccountDetails,
   onOpenSnackbar,
   onNavigateTest,
@@ -57,7 +60,8 @@ function Home ({
   React.useEffect(() => {
     onLoadPoolTransactions()
     onLoadHistoryTransactions()
-  }, [onLoadPoolTransactions, onLoadHistoryTransactions])
+    onLoadCoordinatorState()
+  }, [onLoadPoolTransactions, onLoadHistoryTransactions, onLoadCoordinatorState])
 
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
@@ -146,6 +150,8 @@ function Home ({
                         : undefined
                     }
                     preferredCurrency={preferredCurrency}
+                    pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                    coordinatorState={coordinatorStateTask.status === 'successful' ? coordinatorStateTask.data : undefined}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
@@ -156,6 +162,8 @@ function Home ({
                           : undefined
                       }
                       preferredCurrency={preferredCurrency}
+                      pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                      coordinatorState={coordinatorStateTask.status === 'successful' ? coordinatorStateTask.data : undefined}
                     />}
                 </>
               )
@@ -217,6 +225,8 @@ Home.propTypes = {
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
+  onLoadCoordinatorState: PropTypes.func.isRequired,
+  onRemovePendingWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
@@ -228,7 +238,8 @@ const mapStateToProps = (state) => ({
   poolTransactionsTask: state.home.poolTransactionsTask,
   historyTransactionsTask: state.home.historyTransactionsTask,
   exitsTask: state.home.exitsTask,
-  pendingWithdraws: state.global.pendingWithdraws
+  pendingWithdraws: state.global.pendingWithdraws,
+  coordinatorStateTask: state.global.coordinatorStateTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -240,6 +251,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchHistoryTransactions()),
   onLoadExits: (exitTransactions) =>
     dispatch(fetchExits(exitTransactions)),
+  onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
+  onRemovePendingWithdraw: (hermezEthereumAddress, pendingWithdrawId) => dispatch(removePendingWithdraw(hermezEthereumAddress, pendingWithdrawId)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),

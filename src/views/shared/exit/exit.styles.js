@@ -58,14 +58,20 @@ const useExitStyles = createUseStyles(theme => ({
   },
   withdraw: {
     display: 'flex',
+    alignItems: 'start',
     justifyContent: 'space-between',
+    flexDirection: 'column',
     borderTop: `1px solid ${theme.palette.grey.dark}`,
     paddingTop: theme.spacing(1.5),
     marginTop: theme.spacing(2.5),
     marginBottom: -theme.spacing(0.5)
   },
   withdrawInfo: {
-    display: 'flex'
+    display: 'flex',
+    marginBottom: theme.spacing(2),
+    '&:last-child': {
+      marginBottom: 0
+    }
   },
   infoIcon: {
     width: theme.spacing(2),
@@ -78,6 +84,7 @@ const useExitStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.medium
   },
   withdrawButton: {
+    marginLeft: 'auto',
     cursor: 'pointer',
     border: 0,
     outline: 'none',
@@ -87,6 +94,10 @@ const useExitStyles = createUseStyles(theme => ({
     color: theme.palette.white,
     fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.bold
+  },
+  withdrawDelayerButton: {
+    marginLeft: 0,
+    backgroundColor: theme.palette.grey.dark
   }
 }))
 

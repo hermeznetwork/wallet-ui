@@ -7,7 +7,7 @@ import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
 import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/account-details/account-details.thunks'
-import { removePendingWithdraw } from '../../store/global/global.thunks'
+import { removePendingWithdraw, fetchCoordinatorState } from '../../store/global/global.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -31,11 +31,13 @@ function AccountDetails ({
   fiatExchangeRatesTask,
   metaMaskWalletTask,
   pendingWithdraws,
+  coordinatorStateTask,
   onChangeHeader,
   onLoadAccount,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
+  onLoadCoordinatorState,
   onRemovePendingWithdraw,
   onNavigateToTransactionDetails,
   onCleanup
@@ -49,7 +51,8 @@ function AccountDetails ({
     onLoadAccount(accountIndex)
     onLoadPoolTransactions(accountIndex)
     onLoadExits()
-  }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadExits])
+    onLoadCoordinatorState()
+  }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadExits, onLoadCoordinatorState])
 
   React.useEffect(() => {
     if (exitsTask.status === 'successful') {
@@ -163,6 +166,7 @@ function AccountDetails ({
                     }
                     preferredCurrency={preferredCurrency}
                     pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                    coordinatorState={coordinatorStateTask.state === 'successful' ? coordinatorStateTask.data : undefined}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
@@ -174,6 +178,7 @@ function AccountDetails ({
                       }
                       preferredCurrency={preferredCurrency}
                       pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                      coordinatorState={coordinatorStateTask.state === 'successful' ? coordinatorStateTask.data : undefined}
                     />}
                   <TransactionList
                     transactions={getPendingTransactions(poolTransactionsTask.data)}
@@ -222,11 +227,14 @@ AccountDetails.propTypes = {
   fiatExchangeRatesTask: PropTypes.object.isRequired,
   metaMaskWalletTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
+  coordinatorStateTask: PropTypes.object.isRequired,
   onLoadAccount: PropTypes.func.isRequired,
   onChangeHeader: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
+  onLoadCoordinatorState: PropTypes.func.isRequired,
+  onRemovePendingWithdraw: PropTypes.func.isRequired,
   onNavigateToTransactionDetails: PropTypes.func.isRequired
 }
 
@@ -238,7 +246,8 @@ const mapStateToProps = (state) => ({
   exitsTask: state.accountDetails.exitsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   metaMaskWalletTask: state.global.metaMaskWalletTask,
-  pendingWithdraws: state.global.pendingWithdraws
+  pendingWithdraws: state.global.pendingWithdraws,
+  coordinatorStateTask: state.global.coordinatorStateTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -250,6 +259,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchHistoryTransactions(accountIndex, fromItem)),
   onLoadExits: (exitTransactions) =>
     dispatch(fetchExits(exitTransactions)),
+  onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
   onRemovePendingWithdraw: (hermezEthereumAddress, pendingWithdrawId) => dispatch(removePendingWithdraw(hermezEthereumAddress, pendingWithdrawId)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
