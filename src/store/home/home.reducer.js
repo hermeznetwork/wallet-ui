@@ -30,10 +30,7 @@ function homeReducer (state = initialHomeState, action) {
       const accounts = state.accountsTask.status === 'reloading'
         ? [...state.accountsTask.data.accounts, ...action.data.accounts]
         : action.data.accounts
-      const pagination = getPaginationData(
-        action.data.accounts,
-        action.data.pagination
-      )
+      const pagination = getPaginationData(action.data.pendingItems)
 
       return {
         ...state,
