@@ -130,39 +130,35 @@ function TransactionOverview ({
 
   return (
     <div className={classes.root}>
-      <div className={classes.amountsSection}>
-        <Container backgroundColor={theme.palette.primary.main}>
-          <section className={classes.section}>
-            <div className={classes.fiatAmount}>
-              <FiatAmount
-                amount={getAmountInFiat(amount)}
-                currency={preferredCurrency}
-              />
-            </div>
-            <TokenBalance
-              amount={getTokenAmount(amount)}
-              symbol={account.token.symbol}
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+        <section className={classes.section}>
+          <div className={classes.fiatAmount}>
+            <FiatAmount
+              amount={getAmountInFiat(amount)}
+              currency={preferredCurrency}
             />
-          </section>
-        </Container>
-      </div>
-      <div className={classes.transactionInfoSection}>
-        <Container>
-          <section className={classes.section}>
-            <TransactionInfo
-              from={getPartiallyHiddenHermezAddress(metaMaskWallet.hermezEthereumAddress)}
-              to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
-              fee={fee ? {
-                fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(2)}`,
-                tokens: `${getTokenAmount(fee)} ${account.token.symbol}`
-              } : undefined}
-            />
-            <button className={classes.txButton} onClick={handleClickTxButton}>
-              {getButtonLabel()}
-            </button>
-          </section>
-        </Container>
-      </div>
+          </div>
+          <TokenBalance
+            amount={getTokenAmount(amount)}
+            symbol={account.token.symbol}
+          />
+        </section>
+      </Container>
+      <Container>
+        <section className={classes.section}>
+          <TransactionInfo
+            from={getPartiallyHiddenHermezAddress(metaMaskWallet.hermezEthereumAddress)}
+            to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
+            fee={fee ? {
+              fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
+              tokens: `${getTokenAmount(fee)} ${account.token.symbol}`
+            } : undefined}
+          />
+          <button className={classes.txButton} onClick={handleClickTxButton}>
+            {getButtonLabel()}
+          </button>
+        </section>
+      </Container>
     </div>
   )
 }

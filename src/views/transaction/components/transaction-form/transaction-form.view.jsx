@@ -10,6 +10,7 @@ import swapIcon from '../../../../images/icons/swap.svg'
 import errorIcon from '../../../../images/icons/error.svg'
 import closeIcon from '../../../../images/icons/close.svg'
 import { TransactionType } from '../../transaction.view'
+import Container from '../../../shared/container/container.view'
 
 function TransactionForm ({
   type,
@@ -309,67 +310,72 @@ function TransactionForm ({
   }
 
   return (
-    <section className={classes.root}>
-      <div className={classes.token}>
-        <p className={classes.tokenName}>{account.token.name}</p>
-        {
-          showInFiat
-            ? <p><span>{preferredCurrency}</span> <span>{getBalanceinFiat().toFixed(2)}</span></p>
-            : <p><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
-        }
-      </div>
-      <div className={clsx({
-        [classes.selectAmount]: true,
-        [classes.selectAmountError]: isAmountInvalid
-      })}
-      >
-        <div className={classes.amount}>
-          <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
-          <input
-            className={classes.amountInput}
-            type='number'
-            value={amount}
-            onChange={handleAmountInputChange}
-          />
-        </div>
-        <div className={classes.amountButtons}>
-          <button className={`${classes.amountButton} ${classes.sendAll}`} onClick={handleSendAllButtonClick}>Send All</button>
-          <button className={`${classes.amountButton} ${classes.changeCurrency}`} onClick={handleChangeCurrencyButtonClick}>
+    <div className={classes.root}>
+
+      <Container disableTopGutter>
+        <section className={classes.sectionWrapper}>
+          <div className={classes.token}>
+            <p className={classes.tokenName}>{account.token.name}</p>
+            {
+              showInFiat
+                ? <p><span>{preferredCurrency}</span> <span>{getBalanceinFiat().toFixed(2)}</span></p>
+                : <p><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
+            }
+          </div>
+          <div className={clsx({
+            [classes.selectAmount]: true,
+            [classes.selectAmountError]: isAmountInvalid
+          })}
+          >
+            <div className={classes.amount}>
+              <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
+              <input
+                className={classes.amountInput}
+                type='number'
+                value={amount}
+                onChange={handleAmountInputChange}
+              />
+            </div>
+            <div className={classes.amountButtons}>
+              <button className={`${classes.amountButton} ${classes.sendAll}`} onClick={handleSendAllButtonClick}>Send All</button>
+              <button className={`${classes.amountButton} ${classes.changeCurrency}`} onClick={handleChangeCurrencyButtonClick}>
+                <img
+                  className={classes.changeCurrencyIcon}
+                  src={swapIcon}
+                  alt='Swap Icon'
+                />
+                <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
+              </button>
+            </div>
+          </div>
+          <p className={clsx({
+            [classes.errorMessage]: true,
+            [classes.selectAmountErrorMessageVisible]: isAmountInvalid
+          })}
+          >
             <img
-              className={classes.changeCurrencyIcon}
-              src={swapIcon}
-              alt='Swap Icon'
+              className={classes.errorIcon}
+              src={errorIcon}
+              alt='Error Icon'
             />
-            <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
+            You don't have enough funds
+          </p>
+          {renderReceiver()}
+          <button
+            className={classes.continue}
+            onClick={() => {
+              if (feesTask.status === 'successful') {
+                handleContinueButton(feesTask.data)
+              }
+            }}
+            disabled={isContinueDisabled()}
+          >
+            Continue
           </button>
-        </div>
-      </div>
-      <p className={clsx({
-        [classes.errorMessage]: true,
-        [classes.selectAmountErrorMessageVisible]: isAmountInvalid
-      })}
-      >
-        <img
-          className={classes.errorIcon}
-          src={errorIcon}
-          alt='Error Icon'
-        />
-        You don't have enough funds
-      </p>
-      {renderReceiver()}
-      <button
-        className={classes.continue}
-        onClick={() => {
-          if (feesTask.status === 'successful') {
-            handleContinueButton(feesTask.data)
-          }
-        }}
-        disabled={isContinueDisabled()}
-      >
-        Continue
-      </button>
-      {feesTask.status === 'successful' && renderFeeSelector(feesTask.data)}
-    </section>
+          {feesTask.status === 'successful' && renderFeeSelector(feesTask.data)}
+        </section>
+      </Container>
+    </div>
   )
 }
 

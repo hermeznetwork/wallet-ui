@@ -11,7 +11,6 @@ import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
 import TransactionOverview from './components/transaction-overview/transaction-overview.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import Container from '../shared/container/container.view'
 import { STEP_NAME } from '../../store/transaction/transaction.reducer'
 import AccountSelector from './components/account-selector/account-selector.view'
 import TransactionConfirmation from './components/transaction-confirmation/transaction-confirmation.view'
@@ -19,6 +18,7 @@ import { push } from 'connected-react-router'
 import { changeHeader } from '../../store/global/global.actions'
 import { useTheme } from 'react-jss'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
+import Spinner from '../shared/spinner/spinner.view'
 
 export const TransactionType = {
   Deposit: 'deposit',
@@ -81,77 +81,79 @@ function Transaction ({
   React.useEffect(() => onCleanup, [onCleanup])
 
   return (
-    <section className={classes.wrapper}>
-      <Container disableVerticalGutters>
-        {(() => {
-          switch (currentStep) {
-            case STEP_NAME.LOAD_INITIAL_DATA: {
-              return <p>Loading</p>
-            }
-            case STEP_NAME.CHOOSE_ACCOUNT: {
-              const stepData = steps[STEP_NAME.CHOOSE_ACCOUNT]
-
-              return (
-                <AccountSelector
-                  transactionType={transactionType}
-                  accountsTask={stepData.accountsTask}
-                  preferredCurrency={preferredCurrency}
-                  fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
-                  onLoadAccounts={onLoadAccounts}
-                  onAccountClick={onGoToBuildTransactionStep}
-                />
-              )
-            }
-            case STEP_NAME.BUILD_TRANSACTION: {
-              const stepData = steps[STEP_NAME.BUILD_TRANSACTION]
-
-              return (
-                <TransactionForm
-                  account={stepData.account}
-                  type={transactionType}
-                  preferredCurrency={preferredCurrency}
-                  fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
-                  feesTask={stepData.feesTask}
-                  onLoadFees={onLoadFees}
-                  onSubmit={onGoToTransactionOverviewStep}
-                />
-              )
-            }
-            case STEP_NAME.REVIEW_TRANSACTION: {
-              const stepData = steps[STEP_NAME.REVIEW_TRANSACTION]
-              const buildTransactionStepData = steps[STEP_NAME.BUILD_TRANSACTION]
-
-              return (
-                <TransactionOverview
-                  metaMaskWallet={metaMaskWalletTask.status === 'successful' ? metaMaskWalletTask.data : {}}
-                  type={transactionType}
-                  preferredCurrency={preferredCurrency}
-                  fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
-                  account={buildTransactionStepData.account}
-                  to={stepData.transaction.to}
-                  amount={stepData.transaction.amount}
-                  fee={stepData.transaction.fee}
-                  exit={stepData.transaction.exit}
-                  onGoToFinishTransactionStep={onGoToFinishTransactionStep}
-                  onAddPendingWithdraw={onAddPendingWithdraw}
-                />
-              )
-            }
-            case STEP_NAME.FINISH_TRANSACTION: {
-              return (
-                <TransactionConfirmation
-                  transactionType={transactionType}
-                  onFinishTransaction={() => onFinishTransaction(accountIndex)}
-                />
-              )
-            }
-            default: {
-              return <></>
-            }
+    <div className={classes.root}>
+      {(() => {
+        switch (currentStep) {
+          case STEP_NAME.LOAD_INITIAL_DATA: {
+            return (
+              <div className={classes.spinnerWrapper}>
+                <Spinner />
+              </div>
+            )
           }
-        })()}
-      </Container>
-    </section>
+          case STEP_NAME.CHOOSE_ACCOUNT: {
+            const stepData = steps[STEP_NAME.CHOOSE_ACCOUNT]
+
+            return (
+              <AccountSelector
+                transactionType={transactionType}
+                accountsTask={stepData.accountsTask}
+                preferredCurrency={preferredCurrency}
+                fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
+                onLoadAccounts={onLoadAccounts}
+                onAccountClick={onGoToBuildTransactionStep}
+              />
+            )
+          }
+          case STEP_NAME.BUILD_TRANSACTION: {
+            const stepData = steps[STEP_NAME.BUILD_TRANSACTION]
+
+            return (
+              <TransactionForm
+                account={stepData.account}
+                type={transactionType}
+                preferredCurrency={preferredCurrency}
+                fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
+                feesTask={stepData.feesTask}
+                onLoadFees={onLoadFees}
+                onSubmit={onGoToTransactionOverviewStep}
+              />
+            )
+          }
+          case STEP_NAME.REVIEW_TRANSACTION: {
+            const stepData = steps[STEP_NAME.REVIEW_TRANSACTION]
+            const buildTransactionStepData = steps[STEP_NAME.BUILD_TRANSACTION]
+
+            return (
+              <TransactionOverview
+                metaMaskWallet={metaMaskWalletTask.status === 'successful' ? metaMaskWalletTask.data : {}}
+                type={transactionType}
+                preferredCurrency={preferredCurrency}
+                fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
+                account={buildTransactionStepData.account}
+                to={stepData.transaction.to}
+                amount={stepData.transaction.amount}
+                fee={stepData.transaction.fee}
+                exit={stepData.transaction.exit}
+                onGoToFinishTransactionStep={onGoToFinishTransactionStep}
+                onAddPendingWithdraw={onAddPendingWithdraw}
+              />
+            )
+          }
+          case STEP_NAME.FINISH_TRANSACTION: {
+            return (
+              <TransactionConfirmation
+                transactionType={transactionType}
+                onFinishTransaction={() => onFinishTransaction(accountIndex)}
+              />
+            )
+          }
+          default: {
+            return <></>
+          }
+        }
+      })()}
+    </div>
   )
 }
 

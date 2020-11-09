@@ -1,13 +1,16 @@
 import { createUseStyles } from 'react-jss'
 
 const useTransactionLayoutStyles = createUseStyles(theme => ({
-  wrapper: {
-    width: '100%',
-    paddingTop: theme.headerHeight,
-    marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(3),
+  root: {
+    width: '100%'
+  },
+  spinnerWrapper: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: theme.headerHeight,
+    paddingTop: theme.spacing(4),
     [theme.breakpoints.upSm]: {
-      marginTop: theme.spacing(6)
+      paddingTop: theme.spacing(6)
     }
   }
 }))

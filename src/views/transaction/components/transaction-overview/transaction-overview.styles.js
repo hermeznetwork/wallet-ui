@@ -2,7 +2,8 @@ import { createUseStyles } from 'react-jss'
 
 const useTransactionOverviewStyles = createUseStyles(theme => ({
   root: {
-    width: '100%'
+    marginTop: theme.headerHeight,
+    marginBottom: theme.spacing(3)
   },
   amountsSection: {
     position: 'absolute',
@@ -23,16 +24,8 @@ const useTransactionOverviewStyles = createUseStyles(theme => ({
     alignItems: 'center'
   },
   fiatAmount: {
-    fontSize: `${theme.spacing(5)}px`,
-    color: theme.palette.black.light,
-    fontWeight: theme.fontWeights.extraBold,
     marginTop: `${theme.spacing(2)}px`,
     marginBottom: `${theme.spacing(1)}px`
-  },
-  tokenAmount: {
-    fontSize: `${theme.spacing(2.5)}px`,
-    color: theme.palette.grey.dark,
-    fontWeight: theme.fontWeights.medium
   },
   txButton: {
     width: '100%',
