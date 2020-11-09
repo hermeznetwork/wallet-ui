@@ -25,12 +25,19 @@ function TransactionForm ({
   const [showInFiat, setShowInFiat] = useState(false)
   const [amount, setAmount] = useState(0)
   const [receiver, setReceiver] = useState('')
-  const [isAmountInvalid, setIsAmountInvalid] = React.useState()
-  const [isReceiverInvalid, setIsReceiverInvalid] = React.useState()
+  const [isAmountInvalid, setIsAmountInvalid] = React.useState(undefined)
+  const [isReceiverInvalid, setIsReceiverInvalid] = React.useState(undefined)
+  const amountInput = React.useRef()
 
   React.useEffect(() => {
     onLoadFees()
   }, [onLoadFees])
+
+  React.useEffect(() => {
+    if (amountInput.current) {
+      amountInput.current.focus()
+    }
+  }, [amountInput])
 
   /**
    * Uses helper function to convert balance to a float
@@ -311,7 +318,6 @@ function TransactionForm ({
 
   return (
     <div className={classes.root}>
-
       <Container disableTopGutter>
         <section className={classes.sectionWrapper}>
           <div className={classes.token}>
@@ -322,56 +328,70 @@ function TransactionForm ({
                 : <p><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
             }
           </div>
-          <div className={clsx({
-            [classes.selectAmount]: true,
-            [classes.selectAmountError]: isAmountInvalid
-          })}
+          <form onSubmit={() => {
+            if (feesTask.status === 'successful') {
+              handleContinueButton(feesTask.data)
+            }
+          }}
           >
-            <div className={classes.amount}>
-              <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
-              <input
-                className={classes.amountInput}
-                type='number'
-                value={amount}
-                onChange={handleAmountInputChange}
-              />
-            </div>
-            <div className={classes.amountButtons}>
-              <button className={`${classes.amountButton} ${classes.sendAll}`} onClick={handleSendAllButtonClick}>Send All</button>
-              <button className={`${classes.amountButton} ${classes.changeCurrency}`} onClick={handleChangeCurrencyButtonClick}>
-                <img
-                  className={classes.changeCurrencyIcon}
-                  src={swapIcon}
-                  alt='Swap Icon'
+            <div className={clsx({
+              [classes.selectAmount]: true,
+              [classes.selectAmountError]: isAmountInvalid
+            })}
+            >
+              <div className={classes.amount}>
+                <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
+                <input
+                  ref={amountInput}
+                  className={classes.amountInput}
+                  value={amount}
+                  type='number'
+                  onChange={handleAmountInputChange}
                 />
-                <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
-              </button>
+              </div>
+              <div className={classes.amountButtons}>
+                <button
+                  type='button'
+                  className={`${classes.amountButton} ${classes.sendAll}`}
+                  onClick={handleSendAllButtonClick}
+                >
+                  Send All
+                </button>
+                <button
+                  type='button'
+                  className={`${classes.amountButton} ${classes.changeCurrency}`}
+                  onClick={handleChangeCurrencyButtonClick}
+                >
+                  <img
+                    className={classes.changeCurrencyIcon}
+                    src={swapIcon}
+                    alt='Swap Icon'
+                  />
+                  <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
+                </button>
+              </div>
             </div>
-          </div>
-          <p className={clsx({
-            [classes.errorMessage]: true,
-            [classes.selectAmountErrorMessageVisible]: isAmountInvalid
-          })}
-          >
-            <img
-              className={classes.errorIcon}
-              src={errorIcon}
-              alt='Error Icon'
-            />
-            You don't have enough funds
-          </p>
-          {renderReceiver()}
-          <button
-            className={classes.continue}
-            onClick={() => {
-              if (feesTask.status === 'successful') {
-                handleContinueButton(feesTask.data)
-              }
-            }}
-            disabled={isContinueDisabled()}
-          >
-            Continue
-          </button>
+            <p className={clsx({
+              [classes.errorMessage]: true,
+              [classes.selectAmountErrorMessageVisible]: isAmountInvalid
+            })}
+            >
+              <img
+                className={classes.errorIcon}
+                src={errorIcon}
+                alt='Error Icon'
+              />
+              You don't have enough funds
+            </p>
+            {renderReceiver()}
+            <button
+              type='submit'
+              className={classes.continue}
+              disabled={isContinueDisabled()}
+            >
+              Continue
+            </button>
+          </form>
           {feesTask.status === 'successful' && renderFeeSelector(feesTask.data)}
         </section>
       </Container>
