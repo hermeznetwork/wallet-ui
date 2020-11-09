@@ -109,7 +109,7 @@ function TransactionDetails ({
             <a
               className={classes.link}
               href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}`}
-              target='__blank'
+              target='_blank'
               rel='noopener noreferrer'
             >
               <OpenInNewTabIcon className={classes.linkIcon} />
