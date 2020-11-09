@@ -18,6 +18,7 @@ import TransactionConfirmation from './components/transaction-confirmation/trans
 import { push } from 'connected-react-router'
 import { changeHeader } from '../../store/global/global.actions'
 import { useTheme } from 'react-jss'
+import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 
 export const TransactionType = {
   Deposit: 'deposit',
@@ -56,23 +57,26 @@ function Transaction ({
   const classes = useTransactionStyles()
   const { search } = useLocation()
   const urlSearchParams = new URLSearchParams(search)
-  const tokenId = Number(urlSearchParams.get('tokenId'))
-  const batchNum = Number(urlSearchParams.get('batchNum'))
   const accountIndex = urlSearchParams.get('accountIndex')
+  const batchNum = Number(urlSearchParams.get('batchNum'))
 
   React.useEffect(() => {
-    if (tokenId && batchNum && accountIndex) {
-      onLoadExit(tokenId, batchNum, accountIndex)
-    } else if (tokenId && !batchNum && !accountIndex) {
-      onLoadAccount(tokenId)
+    if (accountIndex) {
+      const [, , tokenId] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
+
+      if (batchNum) {
+        onLoadExit(tokenId, batchNum, accountIndex)
+      } else {
+        onLoadAccount(tokenId)
+      }
     } else {
       onGoToChooseAccountStep()
     }
-  }, [tokenId, batchNum, accountIndex, onLoadExit, onLoadAccount, onGoToChooseAccountStep])
+  }, [batchNum, accountIndex, onLoadExit, onLoadAccount, onGoToChooseAccountStep])
 
   React.useEffect(() => {
-    onChangeHeader(currentStep, transactionType, tokenId, theme)
-  }, [currentStep, transactionType, tokenId, theme, onChangeHeader])
+    onChangeHeader(currentStep, transactionType, accountIndex, theme)
+  }, [currentStep, transactionType, accountIndex, theme, onChangeHeader])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -137,7 +141,7 @@ function Transaction ({
               return (
                 <TransactionConfirmation
                   transactionType={transactionType}
-                  onFinishTransaction={() => onFinishTransaction(tokenId)}
+                  onFinishTransaction={() => onFinishTransaction(accountIndex)}
                 />
               )
             }
@@ -189,7 +193,13 @@ const getTransactionOverviewHeaderTitle = (transactionType) => {
   }
 }
 
-const getHeader = (currentStep, transactionType, tokenId, theme) => {
+const getHeaderCloseAction = (accountIndex) => {
+  return accountIndex
+    ? push(`/accounts/${accountIndex}`)
+    : push('/')
+}
+
+const getHeader = (currentStep, transactionType, accountIndex, theme) => {
   switch (currentStep) {
     case STEP_NAME.CHOOSE_ACCOUNT: {
       return {
@@ -197,7 +207,7 @@ const getHeader = (currentStep, transactionType, tokenId, theme) => {
         data: {
           title: 'Token',
           backgroundColor: theme.palette.white,
-          closeAction: push('/')
+          closeAction: getHeaderCloseAction(accountIndex)
         }
       }
     }
@@ -207,10 +217,10 @@ const getHeader = (currentStep, transactionType, tokenId, theme) => {
         data: {
           title: 'Amount',
           backgroundColor: theme.palette.white,
-          goBackAction: tokenId
-            ? push('/')
+          goBackAction: accountIndex
+            ? push(`/accounts/${accountIndex}`)
             : transactionActions.changeCurrentStep(STEP_NAME.CHOOSE_ACCOUNT),
-          closeAction: push('/')
+          closeAction: getHeaderCloseAction(accountIndex)
         }
       }
     }
@@ -221,7 +231,7 @@ const getHeader = (currentStep, transactionType, tokenId, theme) => {
           title: getTransactionOverviewHeaderTitle(transactionType),
           backgroundColor: theme.palette.primary.main,
           goBackAction: transactionActions.changeCurrentStep(STEP_NAME.BUILD_TRANSACTION),
-          closeAction: push('/')
+          closeAction: getHeaderCloseAction(accountIndex)
         }
       }
     }
@@ -252,8 +262,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionActions.goToFinishTransactionStep()),
   onAddPendingWithdraw: (hermezAddress, pendingWithdraw) =>
     dispatch(globalThunks.addPendingWithdraw(hermezAddress, pendingWithdraw)),
-  onFinishTransaction: () =>
-    dispatch(push('/')),
+  onFinishTransaction: (accountIndex) =>
+    dispatch(accountIndex ? push(`/accounts/${accountIndex}`) : push('/')),
   onCleanup: () =>
     dispatch(transactionActions.resetState())
 })

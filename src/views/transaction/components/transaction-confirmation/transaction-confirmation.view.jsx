@@ -31,7 +31,7 @@ function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
         alt='Hermez transaction confirmed'
       />
       <p className={classes.text}>{getExplanation()}</p>
-      <button className={classes.done} click={onFinishTransaction}>
+      <button className={classes.done} onClick={onFinishTransaction}>
         Done
       </button>
     </section>

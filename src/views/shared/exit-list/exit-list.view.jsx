@@ -45,7 +45,7 @@ ExitList.propTypes = {
   transactions: PropTypes.array,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object,
-  pendingWithdraws: PropTypes.array.isRequired
+  pendingWithdraws: PropTypes.array
 }
 
 export default ExitList

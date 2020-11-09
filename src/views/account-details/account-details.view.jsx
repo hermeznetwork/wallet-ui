@@ -18,7 +18,6 @@ import TransactionActions from '../shared/transaction-actions/transaction-action
 import ExitList from '../shared/exit-list/exit-list.view'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
-import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/account-details/account-details.actions'
 
@@ -43,7 +42,6 @@ function AccountDetails ({
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
   const { accountIndex } = useParams()
-  const [, accountTokenSymbol, accountTokenId] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
 
   React.useEffect(() => {
     onLoadAccount(accountIndex)
@@ -122,10 +120,10 @@ function AccountDetails ({
           <div className={classes.tokenBalance}>
             <TokenBalance
               amount={getFixedTokenAmount(accountTask.data?.balance, accountTask.data?.token.decimals)}
-              symbol={accountTokenSymbol}
+              symbol={accountTask.data?.token.symbol}
             />
           </div>
-          <TransactionActions tokenId={accountTokenId} />
+          <TransactionActions accountIndex={accountIndex} />
         </section>
       </Container>
       <Container>

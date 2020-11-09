@@ -10,6 +10,8 @@ import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount 
 import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
 import Container from '../../../shared/container/container.view'
 import { TransactionType } from '../../transaction.view'
+import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
+import TokenBalance from '../../../shared/token-balance/token-balance.view'
 
 function TransactionOverview ({
   metaMaskWallet,
@@ -32,10 +34,18 @@ function TransactionOverview ({
    *
    * @returns {Number}
    */
-  function getAmountinFiat (value) {
+  function getAmountInFiat (value) {
+    const stringValue = typeof value === 'number' ? value.toString() : value
+    const bigNumberValue = hermezjs.Utils.getTokenAmountBigInt(stringValue).toString()
+    const token = account.token
+    const fixedAccountBalance = getFixedTokenAmount(
+      bigNumberValue,
+      token.decimals
+    )
+
     return getTokenAmountInPreferredCurrency(
-      getFixedTokenAmount(value, account.token.decimals),
-      account.token.USD,
+      fixedAccountBalance,
+      token.USD,
       preferredCurrency,
       fiatExchangeRates
     )
@@ -43,6 +53,13 @@ function TransactionOverview ({
 
   function getAmountInBigInt () {
     return hermezjs.Utils.getTokenAmountBigInt(amount, account.token.decimals)
+  }
+
+  function getTokenAmount (value) {
+    const stringValue = typeof value === 'number' ? value.toString() : value
+    const bigNumberValue = hermezjs.Utils.getTokenAmountBigInt(stringValue).toString()
+
+    return getFixedTokenAmount(bigNumberValue, account.token.decimals)
   }
 
   /**
@@ -116,12 +133,16 @@ function TransactionOverview ({
       <div className={classes.amountsSection}>
         <Container backgroundColor={theme.palette.primary.main}>
           <section className={classes.section}>
-            <h1 className={classes.fiatAmount}>
-              {CurrencySymbol[preferredCurrency].symbol} {getAmountinFiat(amount).toFixed(2)}
-            </h1>
-            <p className={classes.tokenAmount}>
-              {getFixedTokenAmount(amount, account.token.decimals)} {account.token.symbol}
-            </p>
+            <div className={classes.fiatAmount}>
+              <FiatAmount
+                amount={getAmountInFiat(amount)}
+                currency={preferredCurrency}
+              />
+            </div>
+            <TokenBalance
+              amount={getTokenAmount(amount)}
+              symbol={account.token.symbol}
+            />
           </section>
         </Container>
       </div>
@@ -132,8 +153,8 @@ function TransactionOverview ({
               from={getPartiallyHiddenHermezAddress(metaMaskWallet.hermezEthereumAddress)}
               to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
               fee={fee ? {
-                fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountinFiat(fee)}`,
-                tokens: `${fee} ${account.token.symbol}`
+                fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(2)}`,
+                tokens: `${getTokenAmount(fee)} ${account.token.symbol}`
               } : undefined}
             />
             <button className={classes.txButton} onClick={handleClickTxButton}>

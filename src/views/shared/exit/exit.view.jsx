@@ -104,7 +104,7 @@ Exit.propTypes = {
   merkleProof: PropTypes.object,
   batchNum: PropTypes.number,
   accountIndex: PropTypes.string,
-  pendingWithdraws: PropTypes.array.isRequired
+  pendingWithdraws: PropTypes.array
 }
 
 export default Exit
