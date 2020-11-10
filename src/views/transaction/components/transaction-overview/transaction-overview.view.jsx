@@ -110,7 +110,7 @@ function TransactionOverview ({
     } else if (transactionType === TransactionType.Withdraw) {
       // Todo: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
       // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
-      hermezjs.Tx.withdraw(ethers.BigNumber.from(300000000000000000000n), 'hez:TKN:256', { id: 1, ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB' }, metaMaskWallet.publicKeyCompressedHex, ethers.BigNumber.from('4'), [])
+      hermezjs.Tx.withdraw(ethers.BigNumber.from(300000000000000000000n), 'hez:TKN:256', { id: 1, ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c' }, metaMaskWallet.publicKeyCompressedHex, ethers.BigNumber.from('4'), [])
         .then((res) => {
           onAddPendingWithdraw(account.accountIndex + exit.merkleProof.Root)
           onGoToFinishTransactionStep(transactionType)
