@@ -17,7 +17,7 @@ async function getMetaMaskTokens (metaMaskWallet, finalHermezTokens) {
     {
       USD: 1.5,
       decimals: 18,
-      ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB',
+      ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c',
       ethereumBlockNum: 539847538,
       fiatUpdate: null,
       id: 1,
@@ -27,7 +27,7 @@ async function getMetaMaskTokens (metaMaskWallet, finalHermezTokens) {
     {
       USD: 2,
       decimals: 18,
-      ethereumAddress: '0x3619DbE27d7c1e7E91aA738697Ae7Bc5FC3eACA5',
+      ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB',
       ethereumBlockNum: 539847538,
       fiatUpdate: null,
       id: 2,
