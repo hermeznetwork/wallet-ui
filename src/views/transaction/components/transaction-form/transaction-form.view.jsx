@@ -11,7 +11,7 @@ import errorIcon from '../../../../images/icons/error.svg'
 import closeIcon from '../../../../images/icons/close.svg'
 import { TransactionType } from '../../transaction.view'
 import Container from '../../../shared/container/container.view'
-import { readFromClipboard } from '../../../../utils/dom'
+import { readFromClipboard } from '../../../../utils/browser'
 
 function TransactionForm ({
   transactionType,

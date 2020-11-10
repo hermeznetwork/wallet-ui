@@ -18,7 +18,7 @@ import PreferredCurrencySelector from './components/preferred-currency-selector/
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import { ReactComponent as CopyIcon } from '../../images/icons/copy.svg'
 import Button from '../shared/button/button.view'
-import { copyToClipboard } from '../../utils/dom'
+import { copyToClipboard } from '../../utils/browser'
 
 function Settings ({
   metaMaskWalletTask,
