@@ -98,11 +98,12 @@ function loadExit () {
   }
 }
 
-function loadExitSuccess (account, exit) {
+function loadExitSuccess (account, exit, hermezEthereumAddress) {
   return {
     type: transactionActionTypes.LOAD_EXIT_SUCCESS,
     account,
-    exit
+    exit,
+    hermezEthereumAddress
   }
 }
 

@@ -3,7 +3,6 @@ import { CoordinatorAPI } from 'hermezjs'
 import * as transactionActions from './transaction.actions'
 import { TransactionType } from '../../views/transaction/transaction.view'
 import { getMetaMaskTokens } from '../../utils/meta-mask'
-import { getAccountIndex } from 'hermezjs/src/addresses'
 
 function fetchAccount (tokenId, transactionType) {
   return (dispatch, getState) => {
@@ -48,13 +47,10 @@ function fetchExit (tokenId, batchNum, accountIndex) {
     dispatch(transactionActions.loadExit())
 
     Promise.all([
-      CoordinatorAPI.getAccounts(metaMaskWalletTask.data.hermezEthereumAddress),
+      CoordinatorAPI.getAccounts(metaMaskWalletTask.data.hermezEthereumAddress, [tokenId]),
       CoordinatorAPI.getExit(batchNum, accountIndex)
     ]).then(([accountsRes, exit]) => {
-      const account = accountsRes.accounts
-        .find((account) => getAccountIndex(account.accountIndex) === tokenId)
-
-      dispatch(transactionActions.loadExitSuccess(account, exit))
+      dispatch(transactionActions.loadExitSuccess(accountsRes.accounts[0], exit, metaMaskWalletTask.data.hermezEthereumAddress))
     }).catch(err => dispatch(transactionActions.loadExitFailure(err.message)))
   }
 }

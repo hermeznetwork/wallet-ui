@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import useAccountStyles from './account.styles'
+import { CurrencySymbol } from '../../../utils/currencies'
 
 function Account ({
   tokenName,
@@ -17,7 +18,7 @@ function Account ({
     <div className={classes.root} onClick={() => onClick()}>
       <div className={`${classes.values} ${classes.topRow}`}>
         <p className={classes.tokenName}>{tokenName}</p>
-        <p>{preferredCurrency} {fiatBalance.toFixed(2)}</p>
+        <p>{CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}</p>
       </div>
       <div className={`${classes.values} ${classes.bottomRow}`}>
         <p>{tokenSymbol}</p>

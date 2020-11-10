@@ -177,6 +177,7 @@ function transactionReducer (state = initialTransactionState, action) {
       }
     }
     case transactionActionTypes.LOAD_EXIT_SUCCESS:
+      console.log(action)
       return {
         ...state,
         currentStep: STEP_NAME.REVIEW_TRANSACTION,
@@ -191,9 +192,11 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.REVIEW_TRANSACTION]: {
             transaction: {
               exit: action.exit,
-              mount: action.exit.balance,
+              amount: action.exit.balance,
               token: action.exit.token,
-              to: {}
+              to: {
+                hezEthereumAddress: action.hermezEthereumAddress
+              }
             }
           }
         }
