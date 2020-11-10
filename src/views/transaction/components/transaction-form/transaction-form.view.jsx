@@ -182,7 +182,7 @@ function TransactionForm ({
    */
   function handleContinueButton (fees) {
     const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
-    const transactionAmount = selectedAmount.toString()
+    const transactionAmount = getTokenAmountBigInt(selectedAmount.toString(), account.token.decimals).toString()
     const transactionFee =
       transactionType === TransactionType.Deposit || transactionType === TransactionType.ForceExit
         ? undefined

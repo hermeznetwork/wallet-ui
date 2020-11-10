@@ -50,7 +50,7 @@ function TransactionOverview ({
   }
 
   function getAmountInBigInt () {
-    return hermezjs.Utils.getTokenAmountBigInt(amount, account.token.decimals)
+    return ethers.BigNumber.from(amount)
   }
 
   function getTokenAmount (value) {
