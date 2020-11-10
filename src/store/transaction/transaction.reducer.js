@@ -177,7 +177,6 @@ function transactionReducer (state = initialTransactionState, action) {
       }
     }
     case transactionActionTypes.LOAD_EXIT_SUCCESS:
-      console.log(action)
       return {
         ...state,
         currentStep: STEP_NAME.REVIEW_TRANSACTION,

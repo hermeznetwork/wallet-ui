@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { getAccounts } from 'hermezjs/src/api'
-import { getTokenAmountString } from 'hermezjs/src/utils'
+import { getTokenAmountBigInt, getTokenAmountString } from 'hermezjs/src/utils'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -11,9 +11,10 @@ import errorIcon from '../../../../images/icons/error.svg'
 import closeIcon from '../../../../images/icons/close.svg'
 import { TransactionType } from '../../transaction.view'
 import Container from '../../../shared/container/container.view'
+import { readFromClipboard } from '../../../../utils/dom'
 
 function TransactionForm ({
-  type,
+  transactionType,
   account,
   preferredCurrency,
   fiatExchangeRates,
@@ -97,12 +98,12 @@ function TransactionForm ({
    * @returns {Boolean} Whether continue button should be disabled or not
    */
   function isContinueDisabled () {
-    const amountValid = isAmountInvalid === false && amount > 0
-    const receiverValid = isReceiverInvalid === false
+    const isAmountValid = isAmountInvalid === false && amount > 0
+    const isReceiverValid = isReceiverInvalid === false
 
-    if (type !== TransactionType.Transfer && amountValid) {
+    if (transactionType !== TransactionType.Transfer && isAmountValid) {
       return false
-    } else if (amountValid && receiverValid) {
+    } else if (isAmountValid && isReceiverValid) {
       return false
     } else {
       return true
@@ -161,6 +162,7 @@ function TransactionForm ({
    */
   function handleReceiverInputChange (event) {
     const newReceiver = event.target.value.trim()
+
     if (!isValidHermezAddress(newReceiver)) {
       setIsReceiverInvalid(true)
     } else {
@@ -172,7 +174,7 @@ function TransactionForm ({
   }
 
   function handlePasteClick () {
-    navigator.clipboard.readText().then((pastedContent) => {
+    readFromClipboard().then((pastedContent) => {
       if (!isValidHermezAddress(pastedContent)) {
         setIsReceiverInvalid(true)
       } else {
@@ -193,8 +195,13 @@ function TransactionForm ({
    */
   function handleContinueButton (fees) {
     const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
+    const transactionAmount = getTokenAmountBigInt(selectedAmount.toString()).toString()
+    const transactionFee =
+      transactionType === TransactionType.Deposit || transactionType === TransactionType.ForceExit
+        ? undefined
+        : getTokenAmountBigInt(getFee(fees).toString()).toString()
 
-    switch (type) {
+    switch (transactionType) {
       case TransactionType.Transfer: {
         return getAccounts(receiver, [account.tokenId])
           .then((res) => {
@@ -202,9 +209,9 @@ function TransactionForm ({
 
             if (receiverAccount) {
               onSubmit({
-                amount: selectedAmount.toString(),
+                amount: transactionAmount,
                 to: receiverAccount,
-                fee: getFee(fees)
+                fee: transactionFee
               })
             } else {
               setIsReceiverInvalid(true)
@@ -212,28 +219,13 @@ function TransactionForm ({
           })
           .catch(() => setIsReceiverInvalid(true))
       }
-      case TransactionType.Deposit: {
+      default: {
         return onSubmit({
-          amount: selectedAmount.toString(),
+          amount: transactionAmount,
           to: {},
-          fee: 0
+          fee: transactionFee
         })
       }
-      case TransactionType.Exit: {
-        return onSubmit({
-          amount: selectedAmount.toString(),
-          to: {},
-          fee: getFee(fees)
-        })
-      }
-      case TransactionType.ForceExit: {
-        return onSubmit({
-          amount: selectedAmount.toString(),
-          to: {},
-          fee: 0
-        })
-      }
-      default: {}
     }
   }
 
@@ -243,7 +235,7 @@ function TransactionForm ({
    * @returns {ReactElement} The receiver input field
    */
   function renderReceiver () {
-    if (type === TransactionType.Transfer) {
+    if (transactionType === TransactionType.Transfer) {
       return (
         <div className={classes.receiverWrapper}>
           <div className={classes.receiverInputWrapper}>
@@ -307,7 +299,7 @@ function TransactionForm ({
    * @returns {ReactElement} The fee selector component
    */
   function renderFeeSelector (fees) {
-    if (type !== TransactionType.Deposit && type !== TransactionType.ForceExit) {
+    if (transactionType !== TransactionType.Deposit && transactionType !== TransactionType.ForceExit) {
       return (
         <div className={classes.feeWrapper}>
           <p className={classes.fee}>
@@ -403,7 +395,7 @@ function TransactionForm ({
 }
 
 TransactionForm.propTypes = {
-  type: PropTypes.string.isRequired,
+  transactionType: PropTypes.string.isRequired,
   account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired,

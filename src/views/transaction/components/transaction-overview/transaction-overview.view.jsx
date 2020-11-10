@@ -15,7 +15,7 @@ import TokenBalance from '../../../shared/token-balance/token-balance.view'
 
 function TransactionOverview ({
   metaMaskWallet,
-  type,
+  transactionType,
   to,
   amount,
   fee,
@@ -35,11 +35,9 @@ function TransactionOverview ({
    * @returns {Number}
    */
   function getAmountInFiat (value) {
-    const stringValue = typeof value === 'number' ? value.toString() : value
-    const bigNumberValue = hermezjs.Utils.getTokenAmountBigInt(stringValue).toString()
     const token = account.token
     const fixedAccountBalance = getFixedTokenAmount(
-      bigNumberValue,
+      value,
       token.decimals
     )
 
@@ -56,10 +54,7 @@ function TransactionOverview ({
   }
 
   function getTokenAmount (value) {
-    const stringValue = typeof value === 'number' ? value.toString() : value
-    const bigNumberValue = hermezjs.Utils.getTokenAmountBigInt(stringValue).toString()
-
-    return getFixedTokenAmount(bigNumberValue, account.token.decimals)
+    return getFixedTokenAmount(value, account.token.decimals)
   }
 
   /**
@@ -68,7 +63,7 @@ function TransactionOverview ({
    * @returns {string}
    */
   function getButtonLabel () {
-    switch (type) {
+    switch (transactionType) {
       case TransactionType.Deposit:
         return 'Deposit'
       case TransactionType.Transfer:
@@ -90,7 +85,7 @@ function TransactionOverview ({
   async function sendTransfer () {
     const { transaction, encodedTransaction } = await hermezjs.TxUtils.generateL2Transaction({
       from: account.accountIndex,
-      to: type === TransactionType.Transfer ? to.accountIndex : null,
+      to: transactionType === TransactionType.Transfer ? to.accountIndex : null,
       amount: hermezjs.Float16.float2Fix(hermezjs.Float16.floorFix2Float(getAmountInBigInt())),
       fee,
       nonce: account.nonce
@@ -104,26 +99,26 @@ function TransactionOverview ({
    * Prepares the transaction and sends it
    */
   async function handleClickTxButton () {
-    if (type === TransactionType.Deposit) {
+    if (transactionType === TransactionType.Deposit) {
       hermezjs.Tx.deposit(getAmountInBigInt(), metaMaskWallet.hermezEthereumAddress, account.token, metaMaskWallet.publicKeyCompressedHex)
-        .then((res) => onGoToFinishTransactionStep(type))
+        .then((res) => onGoToFinishTransactionStep(transactionType))
         .catch((error) => console.log(error))
-    } else if (type === TransactionType.ForceExit) {
+    } else if (transactionType === TransactionType.ForceExit) {
       hermezjs.Tx.forceExit(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token)
-        .then((res) => onGoToFinishTransactionStep(type))
+        .then((res) => onGoToFinishTransactionStep(transactionType))
         .catch((error) => console.log(error))
-    } else if (type === TransactionType.Withdraw) {
+    } else if (transactionType === TransactionType.Withdraw) {
       // Todo: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
       // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
       hermezjs.Tx.withdraw(ethers.BigNumber.from(300000000000000000000n), 'hez:TKN:256', { id: 1, ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB' }, metaMaskWallet.publicKeyCompressedHex, ethers.BigNumber.from('4'), [])
         .then((res) => {
           onAddPendingWithdraw(account.accountIndex + exit.merkleProof.Root)
-          onGoToFinishTransactionStep(type)
+          onGoToFinishTransactionStep(transactionType)
         })
         .catch((error) => console.log(error))
     } else {
       sendTransfer()
-        .then((res) => onGoToFinishTransactionStep(type))
+        .then((res) => onGoToFinishTransactionStep(transactionType))
         .catch((error) => console.log(error))
     }
   }
@@ -167,10 +162,10 @@ TransactionOverview.propTypes = {
   metaMaskWallet: PropTypes.shape({
     signTransaction: PropTypes.func.isRequired
   }),
-  type: PropTypes.string.isRequired,
+  transactionType: PropTypes.string.isRequired,
   to: PropTypes.object.isRequired,
   amount: PropTypes.string.isRequired,
-  fee: PropTypes.number,
+  fee: PropTypes.string,
   exit: PropTypes.object,
   account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,

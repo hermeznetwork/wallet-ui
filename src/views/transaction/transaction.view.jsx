@@ -111,7 +111,7 @@ function Transaction ({
             return (
               <TransactionForm
                 account={stepData.account}
-                type={transactionType}
+                transactionType={transactionType}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
                 feesTask={stepData.feesTask}
@@ -127,7 +127,7 @@ function Transaction ({
             return (
               <TransactionOverview
                 metaMaskWallet={metaMaskWalletTask.status === 'successful' ? metaMaskWalletTask.data : {}}
-                type={transactionType}
+                transactionType={transactionType}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
                 account={buildTransactionStepData.account}
@@ -248,8 +248,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeHeader(getHeader(currentStep, transactionType, tokenId, theme))),
   onLoadAccount: () =>
     dispatch(transactionThunks.fetchAccount()),
-  onLoadExit: (batchNum, accountIndex) =>
-    dispatch(transactionThunks.fetchExit(batchNum, accountIndex)),
+  onLoadExit: (tokenId, batchNum, accountIndex) =>
+    dispatch(transactionThunks.fetchExit(tokenId, batchNum, accountIndex)),
   onLoadFees: () =>
     dispatch(transactionThunks.fetchFees()),
   onLoadAccounts: (transactionType, fromItem) =>
