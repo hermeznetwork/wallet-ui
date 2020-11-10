@@ -259,6 +259,7 @@ function TransactionForm ({
             />
 
             <button
+              type='button'
               className={clsx({
                 [classes.receiverPaste]: true,
                 [classes.receiverPasteVisible]: receiver.length === 0 && !(navigator.userAgent.match(/firefox/i))
@@ -268,6 +269,7 @@ function TransactionForm ({
               Paste
             </button>
             <button
+              type='button'
               className={clsx({
                 [classes.receiverDelete]: true,
                 [classes.receiverDeleteVisible]: receiver.length > 0
@@ -328,7 +330,8 @@ function TransactionForm ({
                 : <p><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
             }
           </div>
-          <form onSubmit={() => {
+          <form onSubmit={(event) => {
+            event.preventDefault()
             if (feesTask.status === 'successful') {
               handleContinueButton(feesTask.data)
             }
