@@ -41,16 +41,14 @@ function App ({
   return (
     <Layout>
       <Switch>
-        {routes
-          .filter(route => !route.renderLayout)
-          .map(route =>
-            <Route
-              exact
-              key={route.path}
-              path={route.path}
-              render={route.render}
-            />
-          )}
+        {routes.map(route =>
+          <Route
+            exact
+            key={route.path}
+            path={route.path}
+            render={route.render}
+          />
+        )}
         <Redirect to='/' />
       </Switch>
     </Layout>

@@ -32,12 +32,12 @@ function TransactionDetails ({
   const [, accountTokenSymbol] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
 
   React.useEffect(() => {
-    onChangeHeader(transactionTask.data?.type, accountIndex, theme.palette.primary.main)
-  }, [transactionTask, accountIndex, theme, onChangeHeader])
-
-  React.useEffect(() => {
     onLoadTransaction(transactionId)
   }, [transactionId, onLoadTransaction])
+
+  React.useEffect(() => {
+    onChangeHeader(transactionTask.data?.type, accountIndex, theme.palette.primary.main)
+  }, [transactionTask, accountIndex, theme, onChangeHeader])
 
   function getTransactionAmount (transactionTask) {
     switch (transactionTask.status) {

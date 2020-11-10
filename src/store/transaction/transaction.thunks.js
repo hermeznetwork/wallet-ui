@@ -2,7 +2,7 @@ import { CoordinatorAPI } from 'hermezjs'
 
 import * as transactionActions from './transaction.actions'
 import { TransactionType } from '../../views/transaction/transaction.view'
-import { getMetaMaskTokens } from '../../utils/meta-mask'
+import { getMetaMaskTokens } from '../../utils/metamask'
 
 function fetchAccount (tokenId, transactionType) {
   return (dispatch, getState) => {
