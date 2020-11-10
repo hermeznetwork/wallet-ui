@@ -26,8 +26,9 @@ function TransactionForm ({
   const [showInFiat, setShowInFiat] = useState(false)
   const [amount, setAmount] = useState(0)
   const [receiver, setReceiver] = useState('')
-  const [isAmountInvalid, setIsAmountInvalid] = React.useState(undefined)
-  const [isReceiverInvalid, setIsReceiverInvalid] = React.useState(undefined)
+  const [isAmountLessThanFunds, setIsAmountLessThanFunds] = React.useState(undefined)
+  const [isAmountPositive, setIsAmountPositive] = React.useState(undefined)
+  const [isReceiverValid, setIsReceiverValid] = React.useState(undefined)
   const amountInput = React.useRef()
 
   React.useEffect(() => {
@@ -98,8 +99,7 @@ function TransactionForm ({
    * @returns {Boolean} Whether continue button should be disabled or not
    */
   function isContinueDisabled () {
-    const isAmountValid = isAmountInvalid === false && amount > 0
-    const isReceiverValid = isReceiverInvalid === false
+    const isAmountValid = isAmountLessThanFunds && isAmountPositive
 
     if (transactionType !== TransactionType.Transfer && isAmountValid) {
       return false
@@ -122,14 +122,9 @@ function TransactionForm ({
     const newAmount = Number(event.target.value)
     const newAmountInToken = (showInFiat) ? (newAmount / getAccountFiatRate()) : newAmount
 
-    if (newAmountInToken >= 0 && newAmountInToken <= getAccountBalance()) {
-      setIsAmountInvalid(false)
-    } else {
-      setIsAmountInvalid(true)
-    }
-
-    event.target.value = newAmount
-    setAmount(newAmount)
+    setIsAmountLessThanFunds(newAmountInToken <= getAccountBalance())
+    setIsAmountPositive(event.target.value === '' ? undefined : newAmountInToken > 0)
+    setAmount(event.target.value)
   }
 
   /**
@@ -138,7 +133,9 @@ function TransactionForm ({
    */
   function handleSendAllButtonClick () {
     const inputAmount = showInFiat ? getBalanceinFiat() : getAccountBalance()
-    setIsAmountInvalid(false)
+
+    setIsAmountLessThanFunds(true)
+    setIsAmountPositive(true)
     setAmount(inputAmount)
   }
 
@@ -163,30 +160,20 @@ function TransactionForm ({
   function handleReceiverInputChange (event) {
     const newReceiver = event.target.value.trim()
 
-    if (!isValidHermezAddress(newReceiver)) {
-      setIsReceiverInvalid(true)
-    } else {
-      setIsReceiverInvalid(false)
-    }
-
-    event.target.value = newReceiver
+    setIsReceiverValid(newReceiver === '' ? undefined : isValidHermezAddress(newReceiver))
     setReceiver(newReceiver)
   }
 
   function handlePasteClick () {
     readFromClipboard().then((pastedContent) => {
-      if (!isValidHermezAddress(pastedContent)) {
-        setIsReceiverInvalid(true)
-      } else {
-        setIsReceiverInvalid(false)
-      }
+      setIsReceiverValid(isValidHermezAddress(pastedContent))
       setReceiver(pastedContent)
     })
   }
 
   function handleDeleteClick () {
     setReceiver('')
-    setIsReceiverInvalid(true)
+    setIsReceiverValid(undefined)
   }
 
   /**
@@ -214,10 +201,10 @@ function TransactionForm ({
                 fee: transactionFee
               })
             } else {
-              setIsReceiverInvalid(true)
+              setIsReceiverValid(false)
             }
           })
-          .catch(() => setIsReceiverInvalid(true))
+          .catch(() => setIsReceiverValid(false))
       }
       default: {
         return onSubmit({
@@ -238,12 +225,13 @@ function TransactionForm ({
     if (transactionType === TransactionType.Transfer) {
       return (
         <div className={classes.receiverWrapper}>
-          <div className={classes.receiverInputWrapper}>
+          <div className={clsx({
+            [classes.receiverInputWrapper]: true,
+            [classes.receiverError]: isReceiverValid === false
+          })}
+          >
             <input
-              className={clsx({
-                [classes.receiver]: true,
-                [classes.receiverError]: isReceiverInvalid
-              })}
+              className={classes.receiver}
               value={receiver}
               onChange={handleReceiverInputChange}
               type='text'
@@ -278,7 +266,7 @@ function TransactionForm ({
 
           <p className={clsx({
             [classes.errorMessage]: true,
-            [classes.receiverErrorMessageVisible]: isReceiverInvalid
+            [classes.receiverErrorMessageVisible]: isReceiverValid === false
           })}
           >
             <img
@@ -331,7 +319,7 @@ function TransactionForm ({
           >
             <div className={clsx({
               [classes.selectAmount]: true,
-              [classes.selectAmountError]: isAmountInvalid
+              [classes.selectAmountError]: isAmountPositive === false || isAmountLessThanFunds === false
             })}
             >
               <div className={classes.amount}>
@@ -368,7 +356,7 @@ function TransactionForm ({
             </div>
             <p className={clsx({
               [classes.errorMessage]: true,
-              [classes.selectAmountErrorMessageVisible]: isAmountInvalid
+              [classes.selectAmountErrorMessageVisible]: isAmountPositive === false || isAmountLessThanFunds === false
             })}
             >
               <img
@@ -376,7 +364,13 @@ function TransactionForm ({
                 src={errorIcon}
                 alt='Error Icon'
               />
-              You don't have enough funds
+              {
+                isAmountPositive === false
+                  ? 'The amount should be positive'
+                  : isAmountLessThanFunds === false
+                    ? "You don't have enough funds"
+                    : ''
+              }
             </p>
             {renderReceiver()}
             <button
