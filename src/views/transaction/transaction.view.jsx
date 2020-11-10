@@ -2,7 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useLocation } from 'react-router-dom'
-// import { push } from 'connected-react-router'
+import { useTheme } from 'react-jss'
+import { push } from 'connected-react-router'
 
 import * as transactionThunks from '../../store/transaction/transaction.thunks'
 import * as transactionActions from '../../store/transaction/transaction.actions'
@@ -14,9 +15,7 @@ import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { STEP_NAME } from '../../store/transaction/transaction.reducer'
 import AccountSelector from './components/account-selector/account-selector.view'
 import TransactionConfirmation from './components/transaction-confirmation/transaction-confirmation.view'
-import { push } from 'connected-react-router'
 import { changeHeader } from '../../store/global/global.actions'
-import { useTheme } from 'react-jss'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import Spinner from '../shared/spinner/spinner.view'
 
@@ -180,7 +179,6 @@ const getTransactionOverviewHeaderTitle = (transactionType) => {
     case TransactionType.Transfer:
       return 'Send'
     case TransactionType.Exit:
-      return 'Withdraw'
     case TransactionType.Withdraw:
       return 'Withdraw'
     case TransactionType.ForceExit:
