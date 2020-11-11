@@ -32,14 +32,16 @@ function Exit ({
   const [isEmergencyMode, setIsEmergencyMode] = useState(false)
 
   React.useEffect(() => {
-    for (const bucket of coordinatorState.rollup.buckets) {
-      if (fiatAmountUSD < bucket.ceilUSD) {
-        setIsWithdrawDelayed(bucket.withdrawals === 0)
-        break
+    if (typeof coordinatorState !== 'undefined') {
+      for (const bucket of coordinatorState.rollup.buckets) {
+        if (fiatAmountUSD < bucket.ceilUSD) {
+          setIsWithdrawDelayed(bucket.withdrawals === 0)
+          break
+        }
       }
-    }
 
-    setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode)
+      setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode)
+    }
   }, [coordinatorState, fiatAmountUSD, setIsWithdrawDelayed, setIsEmergencyMode])
 
   function getStep () {
@@ -177,7 +179,7 @@ Exit.propTypes = {
   batchNum: PropTypes.number,
   accountIndex: PropTypes.string,
   pendingWithdraws: PropTypes.array.isRequired,
-  coordinatorState: PropTypes.object
+  coordinatorState: PropTypes.object.isRequired
 }
 
 export default Exit

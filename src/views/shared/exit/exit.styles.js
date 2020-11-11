@@ -68,6 +68,7 @@ const useExitStyles = createUseStyles(theme => ({
   },
   withdrawInfo: {
     display: 'flex',
+    width: '100%',
     marginBottom: theme.spacing(2),
     '&:last-child': {
       marginBottom: 0
@@ -97,7 +98,7 @@ const useExitStyles = createUseStyles(theme => ({
   },
   withdrawDelayerButton: {
     marginLeft: 0,
-    backgroundColor: theme.palette.grey.dark
+    backgroundColor: theme.palette.grey.dark05
   }
 }))
 
