@@ -12,6 +12,7 @@ import Container from '../../../shared/container/container.view'
 import { TransactionType } from '../../transaction.view'
 import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../../../shared/token-balance/token-balance.view'
+import Spinner from '../../../shared/spinner/spinner.view'
 
 function TransactionOverview ({
   metaMaskWallet,
@@ -28,6 +29,7 @@ function TransactionOverview ({
 }) {
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
+  const [isUserSigningTransaction, setIsUserSigningTransaction] = React.useState(false)
 
   /**
    * Uses helper function to convert amount to Fiat in the preferred currency
@@ -80,48 +82,80 @@ function TransactionOverview ({
   }
 
   /**
-   * Prepares an L2 transfer object, signs it and send it
-   */
-  async function sendTransfer () {
-    const { transaction, encodedTransaction } = await hermezjs.TxUtils.generateL2Transaction({
-      from: account.accountIndex,
-      to: transactionType === TransactionType.Transfer ? to.accountIndex : null,
-      amount: hermezjs.Float16.float2Fix(hermezjs.Float16.floorFix2Float(getAmountInBigInt())),
-      fee,
-      nonce: account.nonce
-    }, metaMaskWallet.publicKeyCompressedHex, account.token)
-    metaMaskWallet.signTransaction(transaction, encodedTransaction)
-
-    return hermezjs.Tx.send(transaction, metaMaskWallet.publicKeyCompressedHex)
-  }
-
-  /**
    * Prepares the transaction and sends it
    */
   async function handleClickTxButton () {
     // TODO: Remove once we have hermez-node. This is how we test the withdraw flow.
     // onAddPendingWithdraw(metaMaskWallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
-    if (transactionType === TransactionType.Deposit) {
-      hermezjs.Tx.deposit(getAmountInBigInt(), metaMaskWallet.hermezEthereumAddress, account.token, metaMaskWallet.publicKeyCompressedHex)
-        .then(() => onGoToFinishTransactionStep(transactionType))
-        .catch((error) => console.log(error))
-    } else if (transactionType === TransactionType.ForceExit) {
-      hermezjs.Tx.forceExit(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token)
-        .then(() => onGoToFinishTransactionStep(transactionType))
-        .catch((error) => console.log(error))
-    } else if (transactionType === TransactionType.Withdraw) {
-      // TODO: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
+    switch (transactionType) {
+      case TransactionType.Deposit: {
+        setIsUserSigningTransaction(true)
+
+        return hermezjs.Tx.deposit(
+          getAmountInBigInt(),
+          metaMaskWallet.hermezEthereumAddress,
+          account.token,
+          metaMaskWallet.publicKeyCompressedHex
+        )
+          .then(() => onGoToFinishTransactionStep(transactionType))
+          .catch((error) => {
+            setIsUserSigningTransaction(false)
+            console.log(error)
+          })
+      }
+      case TransactionType.ForceExit: {
+        setIsUserSigningTransaction(true)
+
+        return hermezjs.Tx.forceExit(
+          getAmountInBigInt(),
+          account.accountIndex || 'hez:TKN:256',
+          account.token
+        )
+          .then(() => onGoToFinishTransactionStep(transactionType))
+          .catch((error) => {
+            setIsUserSigningTransaction(false)
+            console.log(error)
+          })
+      }
+      case TransactionType.Withdraw: {
+        // TODO: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
       // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
-      hermezjs.Tx.withdraw(ethers.BigNumber.from(300000000000000000000n), 'hez:TKN:256', { id: 1, ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c' }, metaMaskWallet.publicKeyCompressedHex, ethers.BigNumber.from('4'), [])
-        .then(() => {
-          onAddPendingWithdraw(account.accountIndex + exit.merkleProof.Root)
-          onGoToFinishTransactionStep(transactionType)
-        })
-        .catch((error) => console.log(error))
-    } else {
-      sendTransfer()
-        .then(() => onGoToFinishTransactionStep(transactionType))
-        .catch((error) => console.log(error))
+        return hermezjs.Tx.withdraw(
+          ethers.BigNumber.from(300000000000000000000n),
+          'hez:TKN:256',
+          {
+            id: 1,
+            ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c'
+          },
+          metaMaskWallet.publicKeyCompressedHex,
+          ethers.BigNumber.from('4'),
+          []
+        )
+          .then(() => {
+            onAddPendingWithdraw(account.accountIndex + exit.merkleProof.Root)
+            onGoToFinishTransactionStep(transactionType)
+          })
+          .catch((error) => console.log(error))
+      }
+      default: {
+        const { transaction, encodedTransaction } = await hermezjs.TxUtils.generateL2Transaction(
+          {
+            from: account.accountIndex,
+            to: transactionType === TransactionType.Transfer ? to.accountIndex : null,
+            amount: hermezjs.Float16.float2Fix(hermezjs.Float16.floorFix2Float(getAmountInBigInt())),
+            fee,
+            nonce: account.nonce
+          },
+          metaMaskWallet.publicKeyCompressedHex,
+          account.token
+        )
+
+        metaMaskWallet.signTransaction(transaction, encodedTransaction)
+
+        return hermezjs.Tx.send(transaction, metaMaskWallet.publicKeyCompressedHex)
+          .then(() => onGoToFinishTransactionStep(transactionType))
+          .catch((error) => console.log(error))
+      }
     }
   }
 
@@ -151,9 +185,22 @@ function TransactionOverview ({
               tokens: `${getTokenAmount(fee)} ${account.token.symbol}`
             } : undefined}
           />
-          <button className={classes.txButton} onClick={handleClickTxButton}>
-            {getButtonLabel()}
-          </button>
+          {
+            isUserSigningTransaction
+              ? (
+                <div className={classes.signingSpinnerWrapper}>
+                  <Spinner />
+                  <p className={classes.signingText}>
+                    Sign in with MetaMask to confirm transaction
+                  </p>
+                </div>
+              )
+              : (
+                <button className={classes.txButton} onClick={handleClickTxButton}>
+                  {getButtonLabel()}
+                </button>
+              )
+          }
         </section>
       </Container>
     </div>
