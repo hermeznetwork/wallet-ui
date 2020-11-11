@@ -118,6 +118,8 @@ function TransactionOverview ({
           })
       }
       case TransactionType.Withdraw: {
+        setIsUserSigningTransaction(true)
+
         // TODO: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
         // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
         return hermezjs.Tx.withdraw(
@@ -135,7 +137,10 @@ function TransactionOverview ({
             onAddPendingWithdraw(account.accountIndex + exit.merkleProof.Root)
             onGoToFinishTransactionStep(transactionType)
           })
-          .catch((error) => console.log(error))
+          .catch((error) => {
+            setIsUserSigningTransaction(false)
+            console.log(error)
+          })
       }
       default: {
         const { transaction, encodedTransaction } = await hermezjs.TxUtils.generateL2Transaction(
