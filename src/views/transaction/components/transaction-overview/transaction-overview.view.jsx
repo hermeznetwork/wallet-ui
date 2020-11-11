@@ -119,7 +119,7 @@ function TransactionOverview ({
       }
       case TransactionType.Withdraw: {
         // TODO: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
-      // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
+        // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
         return hermezjs.Tx.withdraw(
           ethers.BigNumber.from(300000000000000000000n),
           'hez:TKN:256',
