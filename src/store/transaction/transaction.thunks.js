@@ -68,7 +68,7 @@ function fetchAccounts (transactionType, fromItem) {
       return dispatch(transactionActions.loadAccountsFailure('MetaMask wallet is not loaded'))
     }
 
-    if (transactionType === TransactionType.Deposit) {
+    if (transactionType === TransactionType.Deposit || transactionType === TransactionType.ForceExit) {
       return CoordinatorAPI.getTokens()
         .then((res) => {
           getMetaMaskTokens(metaMaskWalletTask.data, res.tokens)

@@ -7,7 +7,8 @@ const useMainHeaderStyles = createUseStyles(theme => ({
     height: theme.headerHeight,
     display: 'flex',
     alignItems: 'center',
-    zIndex: 999
+    zIndex: 999,
+    background: theme.palette.primary.main
   },
   headerContent: {
     width: '100%',

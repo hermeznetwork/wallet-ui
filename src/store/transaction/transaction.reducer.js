@@ -101,7 +101,7 @@ function transactionReducer (state = initialTransactionState, action) {
       }
     }
     case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      if (action.transactionType === TransactionType.Deposit) {
+      if (action.transactionType === TransactionType.Deposit || action.transactionType === TransactionType.ForceExit) {
         return {
           ...state,
           steps: {
