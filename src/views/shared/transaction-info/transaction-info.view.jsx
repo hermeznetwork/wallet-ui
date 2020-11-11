@@ -11,7 +11,7 @@ function TransactionInfo ({ status, from, to, date, fee }) {
     <div className={classes.root}>
       {status && <TransactionInfoRow title='Status' value={status} />}
       <TransactionInfoRow title='From' subtitle='My Ethereum address' value={from} />
-      <TransactionInfoRow title='To' subtitle='To Ethereum address' value={to} />
+      {to && <TransactionInfoRow title='To' subtitle='To Ethereum address' value={to} />}
       {date && <TransactionInfoRow title='Date' value={date} />}
       {fee && <TransactionInfoRow title='Fee' subtitle={fee.fiat} value={fee.tokens} />}
     </div>
@@ -21,7 +21,7 @@ function TransactionInfo ({ status, from, to, date, fee }) {
 TransactionInfo.propTypes = {
   status: PropTypes.string,
   from: PropTypes.string.isRequired,
-  to: PropTypes.string.isRequired,
+  to: PropTypes.string,
   date: PropTypes.string,
   fee: PropTypes.object
 }

@@ -6,14 +6,14 @@ import { push } from 'connected-react-router'
 import { TxType } from 'hermezjs/src/tx'
 
 import useHomeStyles from './home.styles'
-import { fetchAccounts, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/home/home.thunks'
+import * as homeThunks from '../../store/home/home.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
-import { copyToClipboard } from '../../utils/dom'
+import { copyToClipboard } from '../../utils/browser'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
 import ExitList from '../shared/exit-list/exit-list.view'
@@ -45,8 +45,8 @@ function Home ({
   const classes = useHomeStyles()
 
   React.useEffect(() => {
-    onChangeHeader({ type: 'main' })
-  }, [onChangeHeader])
+    onChangeHeader(theme.palette.primary.main)
+  }, [theme, onChangeHeader])
 
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
@@ -114,7 +114,7 @@ function Home ({
 
   return metaMaskWalletTask.status === 'successful' && (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+      <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
           {
             <Button
@@ -232,17 +232,20 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (headerData) => dispatch(changeHeader(headerData)),
+  onChangeHeader: () =>
+    dispatch(changeHeader({ type: 'main' })),
   onLoadAccounts: (hermezEthereumAddress, fromItem) =>
-    dispatch(fetchAccounts(hermezEthereumAddress, fromItem)),
-  onLoadPoolTransactions: () => dispatch(fetchPoolTransactions()),
+    dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem)),
+  onLoadPoolTransactions: () =>
+    dispatch(homeThunks.fetchPoolTransactions()),
   onLoadHistoryTransactions: () =>
-    dispatch(fetchHistoryTransactions()),
+    dispatch(homeThunks.fetchHistoryTransactions()),
   onLoadExits: (exitTransactions) =>
-    dispatch(fetchExits(exitTransactions)),
+    dispatch(homeThunks.fetchExits(exitTransactions)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
-  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
+  onOpenSnackbar: (message) =>
+    dispatch(openSnackbar(message)),
   onCleanup: () => dispatch(resetState())
 })
 

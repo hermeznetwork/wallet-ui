@@ -5,12 +5,14 @@ import PropTypes from 'prop-types'
 
 function Container ({
   backgroundColor,
+  addHeaderPadding,
   disableVerticalGutters,
   disableTopGutter,
   children,
   fullHeight
 }) {
   const classes = useContainerStyles({
+    addHeaderPadding,
     disableVerticalGutters,
     disableTopGutter,
     backgroundColor,

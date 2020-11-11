@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import useTransactionStyles from './transaction.styles'
 import TransactionType from '../transaction-type/transaction-type.view'
+import { CurrencySymbol } from '../../../../utils/currencies'
 
 function Transaction ({
   type,
@@ -28,7 +29,7 @@ function Transaction ({
         <div className={`${classes.row} ${classes.topRow}`}>
           <p>{type}</p>
           <p className={classes.preferredCurrency}>
-            {preferredCurrency} {fiatAmount.toFixed(2)}
+            {CurrencySymbol[preferredCurrency].symbol} {fiatAmount.toFixed(2)}
           </p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>

@@ -11,6 +11,11 @@ function copyToClipboard (text) {
   document.body.removeChild(textArea)
 }
 
+function readFromClipboard () {
+  return navigator.clipboard.readText()
+}
+
 export {
-  copyToClipboard
+  copyToClipboard,
+  readFromClipboard
 }

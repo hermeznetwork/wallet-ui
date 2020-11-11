@@ -39,10 +39,9 @@ function App ({
   }
 
   return (
-    <Switch>
-      {routes
-        .filter(route => !route.renderLayout)
-        .map(route =>
+    <Layout>
+      <Switch>
+        {routes.map(route =>
           <Route
             exact
             key={route.path}
@@ -50,24 +49,9 @@ function App ({
             render={route.render}
           />
         )}
-      <Route>
-        <Layout>
-          <Switch>
-            {routes
-              .filter(route => route.renderLayout)
-              .map(route =>
-                <Route
-                  exact
-                  key={route.path}
-                  path={route.path}
-                  render={route.render}
-                />
-              )}
-            <Redirect to='/' />
-          </Switch>
-        </Layout>
-      </Route>
-    </Switch>
+        <Redirect to='/' />
+      </Switch>
+    </Layout>
   )
 }
 

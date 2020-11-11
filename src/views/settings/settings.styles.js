@@ -21,17 +21,19 @@ const useSettingsStyles = createUseStyles(theme => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    marginTop: -theme.spacing(2)
   },
   settingContainer: {
     display: 'flex',
     flexDirection: 'column',
-    padding: theme.spacing(1),
-    marginBottom: theme.spacing(4),
+    padding: `${theme.spacing(3)}px ${theme.spacing(1)}px`,
     marginLeft: `-${theme.spacing(1)}px`,
     background: 'transparent',
     border: 'none',
-    cursor: 'pointer',
+    '&:not(:first-child)': {
+      cursor: 'pointer'
+    },
     '&:focus': {
       outline: 'none'
     }

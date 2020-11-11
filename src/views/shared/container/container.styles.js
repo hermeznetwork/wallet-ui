@@ -4,7 +4,8 @@ const useContainerStyles = createUseStyles(theme => ({
   root: {
     flex: ({ fullHeight }) => fullHeight ? 1 : 'auto',
     width: '100%',
-    background: ({ backgroundColor }) => backgroundColor || theme.white
+    background: ({ backgroundColor }) => backgroundColor || theme.white,
+    paddingTop: ({ addHeaderPadding }) => addHeaderPadding ? theme.headerHeight : 0
   },
   wrapper: {
     position: 'relative',
