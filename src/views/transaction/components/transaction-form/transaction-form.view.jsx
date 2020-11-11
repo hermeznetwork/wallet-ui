@@ -24,7 +24,7 @@ function TransactionForm ({
 }) {
   const classes = useTransactionFormStyles()
   const [showInFiat, setShowInFiat] = useState(false)
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(undefined)
   const [receiver, setReceiver] = useState('')
   const [isAmountLessThanFunds, setIsAmountLessThanFunds] = React.useState(undefined)
   const [isAmountPositive, setIsAmountPositive] = React.useState(undefined)
@@ -327,7 +327,8 @@ function TransactionForm ({
                 <input
                   ref={amountInput}
                   className={classes.amountInput}
-                  value={amount}
+                  value={amount || ''}
+                  placeholder='0.00'
                   type='number'
                   onChange={handleAmountInputChange}
                 />
