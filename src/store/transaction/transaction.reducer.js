@@ -101,6 +101,7 @@ function transactionReducer (state = initialTransactionState, action) {
       }
     }
     case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+      // TODO: Remove the ForceExit from the if when the Hermez node is ready
       if (action.transactionType === TransactionType.Deposit || action.transactionType === TransactionType.ForceExit) {
         return {
           ...state,

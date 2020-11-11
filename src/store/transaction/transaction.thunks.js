@@ -68,6 +68,7 @@ function fetchAccounts (transactionType, fromItem) {
       return dispatch(transactionActions.loadAccountsFailure('MetaMask wallet is not loaded'))
     }
 
+    // TODO: Remove the ForceExit from the if when the Hermez node is ready
     if (transactionType === TransactionType.Deposit || transactionType === TransactionType.ForceExit) {
       return CoordinatorAPI.getTokens()
         .then((res) => {
