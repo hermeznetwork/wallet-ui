@@ -2,6 +2,14 @@ import { createUseStyles } from 'react-jss'
 
 const useAccountListStyles = createUseStyles(theme => ({
   root: {
+    marginTop: theme.headerHeight,
+    marginBottom: theme.spacing(3),
+    paddingTop: theme.spacing(4),
+    [theme.breakpoints.upSm]: {
+      paddingTop: theme.spacing(6)
+    }
+  },
+  sectionWrapper: {
     width: '100%'
   },
   token: {

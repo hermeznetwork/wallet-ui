@@ -9,14 +9,20 @@ import { fetchMetamaskWallet } from '../../store/global/global.thunks'
 import { ReactComponent as HermezLogoAlternative } from '../../images/hermez-logo-alternative.svg'
 import { ReactComponent as MetaMaskLogo } from '../../images/metamask-logo.svg'
 import Container from '../shared/container/container.view'
+import { changeHeader } from '../../store/global/global.actions'
 
 function Login ({
   metaMaskWalletTask,
   redirectRoute,
-  onLoadMetaMaskWallet
+  onLoadMetaMaskWallet,
+  onChangeHeader
 }) {
   const theme = useTheme()
   const classes = useLoginStyles()
+
+  React.useEffect(() => {
+    onChangeHeader()
+  }, [onChangeHeader])
 
   function handleMetamaskLogin () {
     onLoadMetaMaskWallet()
@@ -80,6 +86,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  onChangeHeader: () => dispatch(changeHeader({ type: undefined })),
   onLoadMetaMaskWallet: () => dispatch(fetchMetamaskWallet())
 })
 

@@ -18,7 +18,7 @@ import PreferredCurrencySelector from './components/preferred-currency-selector/
 import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import { ReactComponent as CopyIcon } from '../../images/icons/copy.svg'
 import Button from '../shared/button/button.view'
-import { copyToClipboard } from '../../utils/dom'
+import { copyToClipboard } from '../../utils/browser'
 
 function Settings ({
   metaMaskWalletTask,
@@ -33,8 +33,8 @@ function Settings ({
   const classes = useSettingsStyles()
 
   React.useEffect(() => {
-    onChangeHeader({ type: 'page', data: { title: 'Settings', previousRoute: '/' } })
-  }, [onChangeHeader])
+    onChangeHeader(theme.palette.primary.main)
+  }, [theme, onChangeHeader])
 
   function handleEthereumAddressClick (hermezEthereumAddress) {
     copyToClipboard(hermezEthereumAddress)
@@ -47,23 +47,20 @@ function Settings ({
 
   return (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.topSection}>
-          {
-            metaMaskWalletTask.status === 'successful'
-              ? (
-                <>
-                  <h1 className={classes.hermezEthereumAddress}>
-                    {getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
-                  </h1>
-                  <Button
-                    text='Copy'
-                    Icon={<CopyIcon />}
-                    onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
-                  />
-                </>
-              ) : <></>
-          }
+          {metaMaskWalletTask.status === 'successful' && (
+            <>
+              <h1 className={classes.hermezEthereumAddress}>
+                {getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
+              </h1>
+              <Button
+                text='Copy'
+                Icon={<CopyIcon />}
+                onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
+              />
+            </>
+          )}
         </section>
       </Container>
       <Container>
@@ -87,23 +84,19 @@ function Settings ({
               <p className={classes.settingTitle} onClick={onNavigateToForceExit}>Force withdrawal</p>
             </div>
           </div>
-          {
-            metaMaskWalletTask.status === 'successful'
-              ? (
-                <a
-                  className={classes.settingContainer}
-                  href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/address/${metaMaskWalletTask.data.hermezEthereumAddress}`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  <div className={classes.settingHeader}>
-                    <OpenInNewTabIcon />
-                    <p className={classes.settingTitle}>View in batch explorer</p>
-                  </div>
-                </a>
-              )
-              : <></>
-          }
+          {metaMaskWalletTask.status === 'successful' && (
+            <a
+              className={classes.settingContainer}
+              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/address/${metaMaskWalletTask.data.hermezEthereumAddress}`}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <div className={classes.settingHeader}>
+                <OpenInNewTabIcon />
+                <p className={classes.settingTitle}>View in batch explorer</p>
+              </div>
+            </a>
+          )}
           <button
             className={classes.settingContainer}
             onClick={handleOnDisconnectWallet}
@@ -129,7 +122,15 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (headerData) => dispatch(changeHeader(headerData)),
+  onChangeHeader: (backgroundColor) =>
+    dispatch(changeHeader({
+      type: 'page',
+      data: {
+        title: 'Settings',
+        backgroundColor,
+        closeAction: push('/')
+      }
+    })),
   onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
   onDisconnectWallet: () => dispatch(disconnectMetaMaskWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),

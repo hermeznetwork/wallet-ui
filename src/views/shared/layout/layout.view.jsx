@@ -9,34 +9,38 @@ import PageHeader from '../page-header/page-header.view'
 import Snackbar from '../snackbar/snackbar.view'
 import { closeSnackbar } from '../../../store/global/global.actions'
 
-function Layout ({ header, snackbar, onCloseSnackbar, children }) {
+function Layout ({
+  header,
+  snackbar,
+  children,
+  onGoBack,
+  onClose,
+  onCloseSnackbar
+}) {
   const classes = useLayoutStyles()
 
   return (
     <div className={classes.root}>
-      {
-        header.type === 'main'
-          ? <MainHeader />
-          : (
-            <PageHeader
-              title={header.data.title}
-              goBackRoute={header.data.previousRoute}
-            />
-          )
-      }
+      {header.type === 'main' && <MainHeader />}
+      {header.type === 'page' && (
+        <PageHeader
+          title={header.data.title}
+          backgroundColor={header.data.backgroundColor}
+          goBackAction={header.data.goBackAction}
+          closeAction={header.data.closeAction}
+          onGoBack={onGoBack}
+          onClose={onClose}
+        />
+      )}
       <Main>
         {children}
       </Main>
-      {
-        snackbar.status === 'open'
-          ? (
-            <Snackbar
-              message={snackbar.message}
-              onClose={onCloseSnackbar}
-            />
-          )
-          : <></>
-      }
+      {snackbar.status === 'open' && (
+        <Snackbar
+          message={snackbar.message}
+          onClose={onCloseSnackbar}
+        />
+      )}
     </div>
   )
 }
@@ -51,7 +55,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onCloseSnackbar: () => dispatch(closeSnackbar())
+  onCloseSnackbar: () => dispatch(closeSnackbar()),
+  onGoBack: (action) => dispatch(action),
+  onClose: (action) => dispatch(action)
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Layout)

@@ -7,9 +7,9 @@ import { ReactComponent as SendIcon } from '../../../images/icons/send.svg'
 import { ReactComponent as DepositIcon } from '../../../images/icons/deposit.svg'
 import { ReactComponent as WithdrawIcon } from '../../../images/icons/withdraw.svg'
 
-function TransactionActions ({ hideWithdraw, tokenId }) {
+function TransactionActions ({ hideWithdraw, accountIndex }) {
   const classes = useTransactionActionsStyles()
-  const queryString = tokenId ? `?tokenId=${tokenId}` : ''
+  const queryString = accountIndex ? `?accountIndex=${accountIndex}` : ''
 
   return (
     <div className={classes.root}>
@@ -37,7 +37,7 @@ function TransactionActions ({ hideWithdraw, tokenId }) {
 
 TransactionActions.propTypes = {
   hideWithdraw: PropTypes.bool,
-  tokenId: PropTypes.string
+  accountIndex: PropTypes.string
 }
 
 export default TransactionActions

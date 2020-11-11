@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { Redirect } from 'react-router-dom'
-import { getAccountIndex } from 'hermezjs/src/addresses'
 
 import useExitStyles from './exit.styles'
 import { CurrencySymbol } from '../../../utils/currencies'
@@ -79,11 +78,11 @@ function Exit ({
   }
 
   function renderWithdrawalRedirect () {
-    return <Redirect to={`/withdraw-complete?tokenId=${getAccountIndex(accountIndex)}&batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`} />
+    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`} />
   }
 
   function renderWithdrawalDelayedRedirect () {
-    return <Redirect to={`/withdraw-complete?tokenId=${getAccountIndex(accountIndex)}&batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`} />
+    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`} />
   }
 
   if (isWithdrawClicked) {

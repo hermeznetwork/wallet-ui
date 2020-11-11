@@ -55,7 +55,7 @@ function InfiniteScroll ({
       {children}
       {isLoading && (
         <div className={classes.spinnerWrapper}>
-          <Spinner size={theme.spacing(3)} />}
+          <Spinner size={theme.spacing(3)} />
         </div>
       )}
     </div>

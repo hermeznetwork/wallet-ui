@@ -6,7 +6,7 @@ import { useTheme } from 'react-jss'
 import { beautifyTransactionState } from 'hermezjs/src/tx'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
-import { fetchTransaction } from '../../store/transaction-details/transaction-details.thunks'
+import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
@@ -17,6 +17,7 @@ import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-n
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
+import { push } from 'connected-react-router'
 
 function TransactionDetails ({
   transactionTask,
@@ -35,10 +36,8 @@ function TransactionDetails ({
   }, [transactionId, onLoadTransaction])
 
   React.useEffect(() => {
-    if (transactionTask.status === 'successful') {
-      onChangeHeader(transactionTask.data.type, accountIndex)
-    }
-  }, [transactionTask, accountIndex, onChangeHeader])
+    onChangeHeader(transactionTask.data?.type, accountIndex, theme.palette.primary.main)
+  }, [transactionTask, accountIndex, theme, onChangeHeader])
 
   function getTransactionAmount (transactionTask) {
     switch (transactionTask.status) {
@@ -69,7 +68,7 @@ function TransactionDetails ({
 
   return (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.section}>
           <div className={classes.fiatAmount}>
             <FiatAmount
@@ -106,21 +105,17 @@ function TransactionDetails ({
               }
             }
           })()}
-          {
-            transactionTask.status === 'successful'
-              ? (
-                <a
-                  className={classes.link}
-                  href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}`}
-                  target='__blank'
-                  rel='noopener noreferrer'
-                >
-                  <OpenInNewTabIcon className={classes.linkIcon} />
+          {transactionTask.status === 'successful' && (
+            <a
+              className={classes.link}
+              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}`}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <OpenInNewTabIcon className={classes.linkIcon} />
                   View in Explorer
-                </a>
-              )
-              : <></>
-          }
+            </a>
+          )}
         </section>
       </Container>
     </div>
@@ -142,16 +137,19 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadTransaction: (transactionId) => dispatch(fetchTransaction(transactionId)),
-  onChangeHeader: (transactionType, accountIndex) => dispatch(
-    changeHeader({
-      type: 'page',
-      data: {
-        title: transactionType,
-        previousRoute: `/accounts/${accountIndex}`
-      }
-    })
-  )
+  onLoadTransaction: (transactionId) =>
+    dispatch(transactionDetailsThunks.fetchTransaction(transactionId)),
+  onChangeHeader: (transactionType, accountIndex, backgroundColor) =>
+    dispatch(
+      changeHeader({
+        type: 'page',
+        data: {
+          title: transactionType,
+          backgroundColor,
+          closeAction: push(`/accounts/${accountIndex}`)
+        }
+      })
+    )
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(TransactionDetails))

@@ -6,8 +6,8 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
-import { fetchAccount, fetchHistoryTransactions, fetchPoolTransactions, fetchExits } from '../../store/account-details/account-details.thunks'
-import { removePendingWithdraw, fetchCoordinatorState } from '../../store/global/global.thunks'
+import * as accountDetailsThunks from '../../store/account-details/account-details.thunks'
+import { fetchCoordinatorState } from '../../store/global/global.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -18,7 +18,6 @@ import TransactionActions from '../shared/transaction-actions/transaction-action
 import ExitList from '../shared/exit-list/exit-list.view'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
-import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/account-details/account-details.actions'
 
@@ -38,14 +37,12 @@ function AccountDetails ({
   onLoadHistoryTransactions,
   onLoadExits,
   onLoadCoordinatorState,
-  onRemovePendingWithdraw,
   onNavigateToTransactionDetails,
   onCleanup
 }) {
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
   const { accountIndex } = useParams()
-  const [, accountTokenSymbol, accountTokenId] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
 
   React.useEffect(() => {
     onLoadAccount(accountIndex)
@@ -61,10 +58,8 @@ function AccountDetails ({
   }, [exitsTask, accountIndex, onLoadHistoryTransactions])
 
   React.useEffect(() => {
-    if (accountTask.status === 'successful') {
-      onChangeHeader(accountTask.data.token.name)
-    }
-  }, [accountTask, onChangeHeader])
+    onChangeHeader(accountTask.data?.token.name, theme.palette.primary.main)
+  }, [accountTask, theme, onChangeHeader])
 
   React.useEffect(() => {
     return onCleanup
@@ -116,7 +111,7 @@ function AccountDetails ({
 
   return (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.section}>
           <div className={classes.fiatBalance}>
             <FiatAmount
@@ -127,10 +122,10 @@ function AccountDetails ({
           <div className={classes.tokenBalance}>
             <TokenBalance
               amount={getFixedTokenAmount(accountTask.data?.balance, accountTask.data?.token.decimals)}
-              symbol={accountTokenSymbol}
+              symbol={accountTask.data?.token.symbol}
             />
           </div>
-          <TransactionActions tokenId={accountTokenId} />
+          <TransactionActions accountIndex={accountIndex} />
         </section>
       </Container>
       <Container>
@@ -234,7 +229,6 @@ AccountDetails.propTypes = {
   onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
   onLoadCoordinatorState: PropTypes.func.isRequired,
-  onRemovePendingWithdraw: PropTypes.func.isRequired,
   onNavigateToTransactionDetails: PropTypes.func.isRequired
 }
 
@@ -251,19 +245,28 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccount: (accountIndex) => dispatch(fetchAccount(accountIndex)),
-  onChangeHeader: (tokenName) =>
-    dispatch(changeHeader({ type: 'page', data: { title: tokenName, previousRoute: '/' } })),
-  onLoadPoolTransactions: (accountIndex) => dispatch(fetchPoolTransactions(accountIndex)),
+  onLoadAccount: (accountIndex) =>
+    dispatch(accountDetailsThunks.fetchAccount(accountIndex)),
+  onChangeHeader: (tokenName, backgroundColor) =>
+    dispatch(changeHeader({
+      type: 'page',
+      data: {
+        title: tokenName,
+        backgroundColor,
+        goBackAction: push('/')
+      }
+    })),
+  onLoadPoolTransactions: (accountIndex) =>
+    dispatch(accountDetailsThunks.fetchPoolTransactions(accountIndex)),
   onLoadHistoryTransactions: (accountIndex, fromItem) =>
-    dispatch(fetchHistoryTransactions(accountIndex, fromItem)),
+    dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem)),
   onLoadExits: (exitTransactions) =>
-    dispatch(fetchExits(exitTransactions)),
+    dispatch(accountDetailsThunks.fetchExits(exitTransactions)),
   onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
-  onRemovePendingWithdraw: (hermezEthereumAddress, pendingWithdrawId) => dispatch(removePendingWithdraw(hermezEthereumAddress, pendingWithdrawId)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
-  onCleanup: () => dispatch(resetState())
+  onCleanup: () =>
+    dispatch(resetState())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))

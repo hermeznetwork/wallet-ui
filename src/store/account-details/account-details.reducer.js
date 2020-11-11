@@ -82,10 +82,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
       const transactions = state.historyTransactionsTask.status === 'reloading'
         ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
         : action.data.transactions
-      const pagination = getPaginationData(
-        action.data.transactions,
-        action.data.pagination
-      )
+      const pagination = getPaginationData(action.data.pendingItems)
 
       return {
         ...state,
