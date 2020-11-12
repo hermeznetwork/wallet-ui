@@ -87,6 +87,7 @@ function TransactionOverview ({
   async function handleClickTxButton () {
     // TODO: Remove once we have hermez-node. This is how we test the withdraw flow.
     // onAddPendingWithdraw(metaMaskWallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
+    // return
     switch (transactionType) {
       case TransactionType.Deposit: {
         setIsUserSigningTransaction(true)
@@ -134,7 +135,7 @@ function TransactionOverview ({
           []
         )
           .then(() => {
-            onAddPendingWithdraw(account.accountIndex + exit.merkleProof.Root)
+            onAddPendingWithdraw(metaMaskWallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
             onGoToFinishTransactionStep(transactionType)
           })
           .catch((error) => {
