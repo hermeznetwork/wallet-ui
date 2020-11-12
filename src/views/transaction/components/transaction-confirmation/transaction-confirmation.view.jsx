@@ -15,8 +15,8 @@ function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
       case TransactionType.Transfer:
         return 'Your transaction is completed.'
       case TransactionType.Exit:
-        return 'Withdrawal has been initiated and will require additional confirmation in a few minutes.'
       case TransactionType.ForceExit:
+      case TransactionType.Withdraw:
         return 'Withdrawal has been initiated and will require additional confirmation in a few minutes.'
       default:
         return ''

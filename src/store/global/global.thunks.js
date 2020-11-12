@@ -107,11 +107,25 @@ function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
   }
 }
 
+/**
+ * Fetches the state of the coordinator
+ */
+function fetchCoordinatorState () {
+  return (dispatch) => {
+    dispatch(globalActions.loadCoordinatorState())
+
+    return hermezjs.CoordinatorAPI.getState()
+      .then(res => dispatch(globalActions.loadCoordinatorStateSuccess(res)))
+      .catch(err => dispatch(globalActions.loadCoordinatorStateFailure(err)))
+  }
+}
+
 export {
   fetchMetamaskWallet,
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,
   addPendingWithdraw,
-  removePendingWithdraw
+  removePendingWithdraw,
+  fetchCoordinatorState
 }

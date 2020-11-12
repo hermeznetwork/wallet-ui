@@ -17,14 +17,32 @@ function Exit ({
   amount,
   token,
   fiatAmount,
+  fiatAmountUSD,
   preferredCurrency,
   merkleProof,
   batchNum,
   accountIndex,
-  pendingWithdraws
+  pendingWithdraws,
+  coordinatorState
 }) {
   const classes = useExitStyles()
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false)
+  const [isWithdrawDelayedClicked, setIsWithdrawDelayedClicked] = useState(false)
+  const [isWithdrawDelayed, setIsWithdrawDelayed] = useState(false)
+  const [isEmergencyMode, setIsEmergencyMode] = useState(false)
+
+  React.useEffect(() => {
+    if (typeof coordinatorState !== 'undefined') {
+      for (const bucket of coordinatorState.rollup.buckets) {
+        if (fiatAmountUSD < bucket.ceilUSD) {
+          setIsWithdrawDelayed(bucket.withdrawals === 0)
+          break
+        }
+      }
+
+      setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode)
+    }
+  }, [coordinatorState, fiatAmountUSD, setIsWithdrawDelayed, setIsEmergencyMode])
 
   function getStep () {
     if (!merkleProof) {
@@ -49,16 +67,32 @@ function Exit ({
     }
   }
 
+  function getWithdrawalDelayerTime () {
+    return Math.round(coordinatorState.withdrawalDelayer.withdrawalDelay / 60 / 60 / 24)
+  }
+
   function onWithdrawClick () {
     setIsWithdrawClicked(true)
   }
 
-  function renderRedirect () {
-    return <Redirect to={`/withdraw-complete?&accountIndex=${accountIndex}&batchNum=${batchNum}`} />
+  function onWithdrawDelayedClick () {
+    setIsWithdrawDelayedClicked(true)
+  }
+
+  function renderWithdrawalRedirect () {
+    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`} />
+  }
+
+  function renderWithdrawalDelayedRedirect () {
+    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`} />
   }
 
   if (isWithdrawClicked) {
-    return renderRedirect()
+    return renderWithdrawalRedirect()
+  }
+
+  if (isWithdrawDelayedClicked) {
+    return renderWithdrawalDelayedRedirect()
   }
 
   return (
@@ -83,14 +117,54 @@ function Exit ({
         </div>
         <span className={classes.tokenAmount}>{amount} {token.symbol}</span>
       </div>
-      {getStep() === STEPS.second &&
-        <div className={classes.withdraw}>
-          <div className={classes.withdrawInfo}>
-            <img src={infoIcon} alt='Info Icon' className={classes.infoIcon} />
-            <span className={classes.infoText}>Sign required to finalize withdraw.</span>
+      {(() => {
+        if (getStep() !== STEPS.second) {
+          return <></>
+        }
+
+        if (isEmergencyMode) {
+          return (
+            <div className={classes.withdraw}>
+              <div className={classes.withdrawInfo}>
+                <img src={infoIcon} alt='Info Icon' className={classes.infoIcon} />
+                <span className={classes.infoText}>Withdrawal will require a manual inspection.</span>
+              </div>
+              <div className={classes.withdrawInfo}>
+                <span className={classes.infoText}>Your funds can stay on hold for a maximum period of 1 year.</span>
+              </div>
+            </div>
+          )
+        }
+
+        if (isWithdrawDelayed) {
+          return (
+            <div className={classes.withdraw}>
+              <div className={classes.withdrawInfo}>
+                <img src={infoIcon} alt='Info Icon' className={classes.infoIcon} />
+                <span className={classes.infoText}>Withdrawal is on hold due to a security mechanism.</span>
+              </div>
+              <div className={classes.withdrawInfo}>
+                <span className={classes.infoText}>You can come back and try again soon.</span>
+              </div>
+              <div className={classes.withdrawInfo}>
+                <span className={classes.infoText}>You can also schedule this transaction with an alternative smart contract. This option will delay the transfer for {getWithdrawalDelayerTime()} days.</span>
+              </div>
+              <button className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`} onClick={onWithdrawDelayedClick}>Schedule Withdrawal</button>
+            </div>
+          )
+        }
+
+        return (
+          <div className={classes.withdraw}>
+            <div className={classes.withdrawInfo}>
+              <img src={infoIcon} alt='Info Icon' className={classes.infoIcon} />
+              <span className={classes.infoText}>Sign required to finalize withdraw.</span>
+              <button className={classes.withdrawButton} onClick={onWithdrawClick}>Finalise</button>
+            </div>
           </div>
-          <button className={classes.withdrawButton} onClick={onWithdrawClick}>Finalise</button>
-        </div>}
+        )
+      })()}
+
     </div>
   )
 }
@@ -99,11 +173,13 @@ Exit.propTypes = {
   amount: PropTypes.string.isRequired,
   token: PropTypes.object.isRequired,
   fiatAmount: PropTypes.number.isRequired,
+  fiatAmountUSD: PropTypes.number.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   merkleProof: PropTypes.object,
   batchNum: PropTypes.number,
   accountIndex: PropTypes.string,
-  pendingWithdraws: PropTypes.array.isRequired
+  pendingWithdraws: PropTypes.array,
+  coordinatorState: PropTypes.object
 }
 
 export default Exit

@@ -7,7 +7,7 @@ import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
 import * as accountDetailsThunks from '../../store/account-details/account-details.thunks'
-import { removePendingWithdraw } from '../../store/global/global.thunks'
+import { fetchCoordinatorState } from '../../store/global/global.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -30,12 +30,13 @@ function AccountDetails ({
   fiatExchangeRatesTask,
   metaMaskWalletTask,
   pendingWithdraws,
+  coordinatorStateTask,
   onChangeHeader,
   onLoadAccount,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
-  onRemovePendingWithdraw,
+  onLoadCoordinatorState,
   onNavigateToTransactionDetails,
   onCleanup
 }) {
@@ -47,7 +48,8 @@ function AccountDetails ({
     onLoadAccount(accountIndex)
     onLoadPoolTransactions(accountIndex)
     onLoadExits()
-  }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadExits])
+    onLoadCoordinatorState()
+  }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadExits, onLoadCoordinatorState])
 
   React.useEffect(() => {
     if (exitsTask.status === 'successful') {
@@ -159,6 +161,7 @@ function AccountDetails ({
                     }
                     preferredCurrency={preferredCurrency}
                     pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                    coordinatorState={coordinatorStateTask.data}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
@@ -170,6 +173,7 @@ function AccountDetails ({
                       }
                       preferredCurrency={preferredCurrency}
                       pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                      coordinatorState={coordinatorStateTask.data}
                     />}
                   <TransactionList
                     transactions={getPendingTransactions(poolTransactionsTask.data)}
@@ -218,11 +222,13 @@ AccountDetails.propTypes = {
   fiatExchangeRatesTask: PropTypes.object.isRequired,
   metaMaskWalletTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
+  coordinatorStateTask: PropTypes.object.isRequired,
   onLoadAccount: PropTypes.func.isRequired,
   onChangeHeader: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
+  onLoadCoordinatorState: PropTypes.func.isRequired,
   onNavigateToTransactionDetails: PropTypes.func.isRequired
 }
 
@@ -234,7 +240,8 @@ const mapStateToProps = (state) => ({
   exitsTask: state.accountDetails.exitsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   metaMaskWalletTask: state.global.metaMaskWalletTask,
-  pendingWithdraws: state.global.pendingWithdraws
+  pendingWithdraws: state.global.pendingWithdraws,
+  coordinatorStateTask: state.global.coordinatorStateTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -255,8 +262,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem)),
   onLoadExits: (exitTransactions) =>
     dispatch(accountDetailsThunks.fetchExits(exitTransactions)),
-  onRemovePendingWithdraw: (hermezEthereumAddress, pendingWithdrawId) =>
-    dispatch(removePendingWithdraw(hermezEthereumAddress, pendingWithdrawId)),
+  onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
   onCleanup: () =>

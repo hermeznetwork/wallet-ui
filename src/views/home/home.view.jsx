@@ -6,6 +6,7 @@ import { push } from 'connected-react-router'
 import { TxType } from 'hermezjs/src/tx'
 
 import useHomeStyles from './home.styles'
+import { fetchCoordinatorState } from '../../store/global/global.thunks'
 import * as homeThunks from '../../store/home/home.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
@@ -31,14 +32,15 @@ function Home ({
   fiatExchangeRatesTask,
   preferredCurrency,
   pendingWithdraws,
+  coordinatorStateTask,
   onChangeHeader,
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
+  onLoadCoordinatorState,
   onNavigateToAccountDetails,
   onOpenSnackbar,
-  onNavigateTest,
   onCleanup
 }) {
   const theme = useTheme()
@@ -57,7 +59,8 @@ function Home ({
   React.useEffect(() => {
     onLoadPoolTransactions()
     onLoadHistoryTransactions()
-  }, [onLoadPoolTransactions, onLoadHistoryTransactions])
+    onLoadCoordinatorState()
+  }, [onLoadPoolTransactions, onLoadHistoryTransactions, onLoadCoordinatorState])
 
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
@@ -146,6 +149,8 @@ function Home ({
                         : undefined
                     }
                     preferredCurrency={preferredCurrency}
+                    pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                    coordinatorState={coordinatorStateTask.data}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
@@ -156,6 +161,8 @@ function Home ({
                           : undefined
                       }
                       preferredCurrency={preferredCurrency}
+                      pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                      coordinatorState={coordinatorStateTask.data}
                     />}
                 </>
               )
@@ -217,6 +224,7 @@ Home.propTypes = {
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
+  onLoadCoordinatorState: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
@@ -228,7 +236,8 @@ const mapStateToProps = (state) => ({
   poolTransactionsTask: state.home.poolTransactionsTask,
   historyTransactionsTask: state.home.historyTransactionsTask,
   exitsTask: state.home.exitsTask,
-  pendingWithdraws: state.global.pendingWithdraws
+  pendingWithdraws: state.global.pendingWithdraws,
+  coordinatorStateTask: state.global.coordinatorStateTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -242,6 +251,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchHistoryTransactions()),
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
+  onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) =>

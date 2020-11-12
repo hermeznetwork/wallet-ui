@@ -15,7 +15,8 @@ const theme = {
       veryLight: '#e1e1f1',
       light: '#f3f3f8',
       main: '#888baa',
-      dark: '#7a7c89'
+      dark: '#7a7c89',
+      dark05: 'rgba(122, 124, 137, 0.5)'
     },
     red: {
       light: 'rgba(255, 75, 64, 0.15)',
