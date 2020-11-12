@@ -150,7 +150,7 @@ function Home ({
                     }
                     preferredCurrency={preferredCurrency}
                     pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
-                    coordinatorState={coordinatorStateTask.status === 'successful' ? coordinatorStateTask.data : undefined}
+                    coordinatorState={coordinatorStateTask.data}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
@@ -162,7 +162,7 @@ function Home ({
                       }
                       preferredCurrency={preferredCurrency}
                       pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
-                      coordinatorState={coordinatorStateTask.status === 'successful' ? coordinatorStateTask.data : undefined}
+                      coordinatorState={coordinatorStateTask.data}
                     />}
                 </>
               )
@@ -225,7 +225,6 @@ Home.propTypes = {
   onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
   onLoadCoordinatorState: PropTypes.func.isRequired,
-  onRemovePendingWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 

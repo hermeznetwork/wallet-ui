@@ -161,7 +161,7 @@ function AccountDetails ({
                     }
                     preferredCurrency={preferredCurrency}
                     pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
-                    coordinatorState={coordinatorStateTask.state === 'successful' ? coordinatorStateTask.data : undefined}
+                    coordinatorState={coordinatorStateTask.data}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
@@ -173,7 +173,7 @@ function AccountDetails ({
                       }
                       preferredCurrency={preferredCurrency}
                       pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
-                      coordinatorState={coordinatorStateTask.state === 'successful' ? coordinatorStateTask.data : undefined}
+                      coordinatorState={coordinatorStateTask.data}
                     />}
                   <TransactionList
                     transactions={getPendingTransactions(poolTransactionsTask.data)}
