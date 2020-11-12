@@ -2,13 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import Exit from '../exit/exit.view'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
+import { CurrencySymbol, getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
 
 function ExitList ({
   transactions,
   preferredCurrency,
   fiatExchangeRates,
-  pendingWithdraws
+  pendingWithdraws,
+  coordinatorState
 }) {
   return (
     <>
@@ -29,11 +30,18 @@ function ExitList ({
               preferredCurrency,
               fiatExchangeRates
             )}
+            fiatAmountUSD={getTokenAmountInPreferredCurrency(
+              fixedTokenAmount,
+              transaction.historicUSD || transaction.token.USD,
+              CurrencySymbol.USD.code,
+              fiatExchangeRates
+            )}
             preferredCurrency={preferredCurrency}
             merkleProof={transaction.merkleProof}
             batchNum={transaction.batchNum}
             accountIndex={transaction.accountIndex}
             pendingWithdraws={pendingWithdraws}
+            coordinatorState={coordinatorState}
           />
         )
       })}
@@ -45,7 +53,8 @@ ExitList.propTypes = {
   transactions: PropTypes.array,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object,
-  pendingWithdraws: PropTypes.array
+  pendingWithdraws: PropTypes.array,
+  coordinatorState: PropTypes.object
 }
 
 export default ExitList
