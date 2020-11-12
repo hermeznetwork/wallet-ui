@@ -17,7 +17,10 @@ export const globalActionTypes = {
   OPEN_SNACKBAR: '[GLOBAL] OPEN SNACKBAR',
   CLOSE_SNACKBAR: '[GLOBAL] CLOSE SNACKBAR',
   ADD_PENDING_WITHDRAW: '[GLOBAL] ADD PENDING WITHRAW',
-  REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW'
+  REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW',
+  LOAD_COORDINATOR_STATE: '[GLOBAL] LOAD COORDINATOR STATE',
+  LOAD_COORDINATOR_STATE_SUCCESS: '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
+  LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE'
 }
 
 function loadMetamaskWallet () {
@@ -60,7 +63,7 @@ function changeRedirectRoute (redirectRoute) {
   }
 }
 
-function loadFiatExchangeRates (symbols) {
+function loadFiatExchangeRates () {
   return {
     type: globalActionTypes.LOAD_FIAT_EXCHANGE_RATES
   }
@@ -108,6 +111,27 @@ function removePendingWithdraw (hermezEthereumAdress, withdrawId) {
     withdrawId
   }
 }
+
+function loadCoordinatorState () {
+  return {
+    type: globalActionTypes.LOAD_COORDINATOR_STATE
+  }
+}
+
+function loadCoordinatorStateSuccess (coordinatorState) {
+  return {
+    type: globalActionTypes.LOAD_COORDINATOR_STATE_SUCCESS,
+    coordinatorState
+  }
+}
+
+function loadCoordinatorStateFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_COORDINATOR_STATE_FAILURE,
+    error: error.message
+  }
+}
+
 export {
   loadMetamaskWallet,
   loadMetamaskWalletSuccess,
@@ -121,5 +145,8 @@ export {
   openSnackbar,
   closeSnackbar,
   addPendingWithdraw,
-  removePendingWithdraw
+  removePendingWithdraw,
+  loadCoordinatorState,
+  loadCoordinatorStateSuccess,
+  loadCoordinatorStateFailure
 }
