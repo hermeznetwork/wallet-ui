@@ -16,6 +16,7 @@ export const globalActionTypes = {
   REMOVE_POOL_TRANSACTION: '[GLOBAL] REMOVE POOL TRANSACTION',
   OPEN_SNACKBAR: '[GLOBAL] OPEN SNACKBAR',
   CLOSE_SNACKBAR: '[GLOBAL] CLOSE SNACKBAR',
+  CHANGE_NETWORK_STATUS: '[GLOBAL] CHANGE NETWORK STATUS',
   ADD_PENDING_WITHDRAW: '[GLOBAL] ADD PENDING WITHRAW',
   REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW'
 }
@@ -80,16 +81,24 @@ function loadFiatExchangeRatesFailure (error) {
   }
 }
 
-function openSnackbar (message) {
+function openSnackbar (message, backgroundColor) {
   return {
     type: globalActionTypes.OPEN_SNACKBAR,
-    message
+    message,
+    backgroundColor
   }
 }
 
 function closeSnackbar () {
   return {
     type: globalActionTypes.CLOSE_SNACKBAR
+  }
+}
+
+function changeNetworkStatus (networkStatus) {
+  return {
+    type: globalActionTypes.CHANGE_NETWORK_STATUS,
+    networkStatus
   }
 }
 
@@ -120,6 +129,7 @@ export {
   loadFiatExchangeRatesFailure,
   openSnackbar,
   closeSnackbar,
+  changeNetworkStatus,
   addPendingWithdraw,
   removePendingWithdraw
 }

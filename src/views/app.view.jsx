@@ -8,13 +8,15 @@ import { initializeTransactionPool } from 'hermezjs/src/tx-pool'
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
-import { fetchFiatExchangeRates } from '../store/global/global.thunks'
+import { fetchFiatExchangeRates, changeNetworkStatus } from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
 import { CurrencySymbol } from '../utils/currencies'
 
 function App ({
   fiatExchangeRatesTask,
-  onLoadFiatExchangeRates
+  onLoadFiatExchangeRates,
+  onChangeNetworkStatus,
+  onOpenSnackbar
 }) {
   const theme = useTheme()
   const classes = useAppStyles()
@@ -26,6 +28,16 @@ function App ({
   React.useEffect(() => {
     initializeTransactionPool()
   }, [])
+
+  React.useEffect(() => {
+    window.addEventListener('online', () => {
+      onChangeNetworkStatus('online', theme.palette.green)
+    })
+  }, [theme, onChangeNetworkStatus])
+
+  React.useEffect(() => {
+    window.addEventListener('offline', () => onChangeNetworkStatus('offline'))
+  }, [theme, onChangeNetworkStatus])
 
   if (
     fiatExchangeRatesTask.status === 'loading' ||
@@ -67,13 +79,16 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadFiatExchangeRates: () => dispatch(
-    fetchFiatExchangeRates(
-      Object.values(CurrencySymbol)
-        .filter(currency => currency.code !== CurrencySymbol.USD.code)
-        .map((currency) => currency.code)
-    )
-  )
+  onLoadFiatExchangeRates: () =>
+    dispatch(
+      fetchFiatExchangeRates(
+        Object.values(CurrencySymbol)
+          .filter(currency => currency.code !== CurrencySymbol.USD.code)
+          .map((currency) => currency.code)
+      )
+    ),
+  onChangeNetworkStatus: (networkStatus, backgroundColor) =>
+    dispatch(changeNetworkStatus(networkStatus, backgroundColor))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
