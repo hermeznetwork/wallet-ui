@@ -58,8 +58,8 @@ function AccountDetails ({
   }, [exitsTask, accountIndex, onLoadHistoryTransactions])
 
   React.useEffect(() => {
-    onChangeHeader(accountTask.data?.token.name, theme.palette.primary.main)
-  }, [accountTask, theme, onChangeHeader])
+    onChangeHeader(accountTask.data?.token.name)
+  }, [accountTask, onChangeHeader])
 
   React.useEffect(() => {
     return onCleanup
@@ -247,12 +247,11 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccount: (accountIndex) =>
     dispatch(accountDetailsThunks.fetchAccount(accountIndex)),
-  onChangeHeader: (tokenName, backgroundColor) =>
+  onChangeHeader: (tokenName) =>
     dispatch(changeHeader({
       type: 'page',
       data: {
         title: tokenName,
-        backgroundColor,
         goBackAction: push('/')
       }
     })),
