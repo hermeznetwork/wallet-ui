@@ -26,7 +26,8 @@ const theme = {
       light: 'rgba(242, 153, 74, 0.1)',
       main: '#ffa600',
       dark: '#d8853b'
-    }
+    },
+    green: '#219653'
   },
   fontWeights: {
     normal: '400',

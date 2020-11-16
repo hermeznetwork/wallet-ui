@@ -46,6 +46,22 @@ function fetchFiatExchangeRates (symbols) {
   }
 }
 
+function changeNetworkStatus (newNetworkStatus, backgroundColor) {
+  return (dispatch, getState) => {
+    const { global: { networkStatus: previousNetworkStatus } } = getState()
+
+    if (previousNetworkStatus === 'online' && newNetworkStatus === 'offline') {
+      dispatch(globalActions.openSnackbar('Connection lost'))
+    }
+
+    if (previousNetworkStatus === 'offline' && newNetworkStatus === 'online') {
+      dispatch(globalActions.openSnackbar('Connection restored', backgroundColor))
+    }
+
+    dispatch(globalActions.changeNetworkStatus(newNetworkStatus))
+  }
+}
+
 /**
  * Adds a pendingWithdraw to the pendingWithdraw pool
  * @param {string} hermezEthereumAddress - The account with which the pendingWithdraw was made
@@ -108,6 +124,7 @@ export {
   fetchMetamaskWallet,
   changeRedirectRoute,
   fetchFiatExchangeRates,
+  changeNetworkStatus,
   addPendingWithdraw,
   removePendingWithdraw,
   fetchCoordinatorState

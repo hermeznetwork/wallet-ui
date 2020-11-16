@@ -38,6 +38,7 @@ function Layout ({
       {snackbar.status === 'open' && (
         <Snackbar
           message={snackbar.message}
+          backgroundColor={snackbar.backgroundColor}
           onClose={onCloseSnackbar}
         />
       )}
