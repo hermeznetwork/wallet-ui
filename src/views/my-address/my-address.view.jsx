@@ -15,8 +15,8 @@ function MyAddress ({ metaMaskWalletTask, onChangeHeader }) {
   const classes = useMyAddressStyles()
 
   React.useEffect(() => {
-    onChangeHeader(theme.palette.primary.main)
-  }, [theme, onChangeHeader])
+    onChangeHeader()
+  }, [onChangeHeader])
 
   return (
     <Container backgroundColor={theme.palette.primary.main} addHeaderPadding fullHeight>
@@ -50,7 +50,6 @@ const mapDispatchToProps = (dispatch) => ({
       type: 'page',
       data: {
         title: 'My address',
-        backgroundColor,
         closeAction: push('/')
       }
     }))

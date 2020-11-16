@@ -25,7 +25,6 @@ function Layout ({
       {header.type === 'page' && (
         <PageHeader
           title={header.data.title}
-          backgroundColor={header.data.backgroundColor}
           goBackAction={header.data.goBackAction}
           closeAction={header.data.closeAction}
           onGoBack={onGoBack}
