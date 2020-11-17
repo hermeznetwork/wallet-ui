@@ -69,10 +69,14 @@ const useExitStyles = createUseStyles(theme => ({
   withdrawInfo: {
     display: 'flex',
     width: '100%',
-    marginBottom: theme.spacing(2),
-    '&:last-child': {
-      marginBottom: 0
-    }
+    color: theme.palette.grey.dark
+  },
+  withdrawInfoDelayed: {
+    flexDirection: 'column',
+    color: theme.palette.white,
+    padding: `${theme.spacing(3.5)}px ${theme.spacing(3)}px`,
+    backgroundColor: theme.palette.grey.dark05,
+    borderRadius: 12
   },
   infoIcon: {
     width: theme.spacing(2),
@@ -80,9 +84,34 @@ const useExitStyles = createUseStyles(theme => ({
     marginRight: theme.spacing(1)
   },
   infoText: {
-    color: theme.palette.grey.dark,
+    marginBottom: theme.spacing(2),
     fontSize: theme.spacing(2),
-    fontWeight: theme.fontWeights.medium
+    fontWeight: theme.fontWeights.medium,
+    '&:last-child': {
+      marginBottom: 0
+    }
+  },
+  withdrawDelayedButtons: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    borderTop: `1px solid ${theme.palette.grey.dark}`,
+    paddingTop: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    '& > button': {
+      width: theme.spacing(34),
+      marginLeft: 0
+    },
+    '& > button:first-child': {
+      marginBottom: theme.spacing(1.5),
+      [theme.breakpoints.upSm]: {
+        marginBottom: 0
+      }
+    },
+    [theme.breakpoints.upSm]: {
+      flexDirection: 'row'
+    }
   },
   withdrawButton: {
     marginLeft: 'auto',

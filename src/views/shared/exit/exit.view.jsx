@@ -79,6 +79,10 @@ function Exit ({
     setIsWithdrawDelayedClicked(true)
   }
 
+  function onCheckAvailabilityClick () {
+
+  }
+
   function renderWithdrawalRedirect () {
     return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`} />
   }
@@ -125,11 +129,8 @@ function Exit ({
         if (isEmergencyMode) {
           return (
             <div className={classes.withdraw}>
-              <div className={classes.withdrawInfo}>
-                <img src={infoIcon} alt='Info Icon' className={classes.infoIcon} />
+              <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
                 <span className={classes.infoText}>Withdrawal will require a manual inspection.</span>
-              </div>
-              <div className={classes.withdrawInfo}>
                 <span className={classes.infoText}>Your funds can stay on hold for a maximum period of 1 year.</span>
               </div>
             </div>
@@ -139,17 +140,14 @@ function Exit ({
         if (isWithdrawDelayed) {
           return (
             <div className={classes.withdraw}>
-              <div className={classes.withdrawInfo}>
-                <img src={infoIcon} alt='Info Icon' className={classes.infoIcon} />
-                <span className={classes.infoText}>Withdrawal is on hold due to a security mechanism.</span>
+              <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
+                <span className={classes.infoText}>Withdrawal is on hold because of the current network capacity.</span>
+                <span className={classes.infoText}>You can try to withdraw your funds later or you can schedule this transaction.</span>
               </div>
-              <div className={classes.withdrawInfo}>
-                <span className={classes.infoText}>You can come back and try again soon.</span>
+              <div className={classes.withdrawDelayedButtons}>
+                <button className={classes.withdrawButton} onClick={onCheckAvailabilityClick}>Check availability in 2 hours</button>
+                <button className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`} onClick={onWithdrawDelayedClick}>Withdraw in {getWithdrawalDelayerTime()} days</button>
               </div>
-              <div className={classes.withdrawInfo}>
-                <span className={classes.infoText}>You can also schedule this transaction with an alternative smart contract. This option will delay the transfer for {getWithdrawalDelayerTime()} days.</span>
-              </div>
-              <button className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`} onClick={onWithdrawDelayedClick}>Schedule Withdrawal</button>
             </div>
           )
         }
