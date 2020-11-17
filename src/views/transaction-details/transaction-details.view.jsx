@@ -36,8 +36,8 @@ function TransactionDetails ({
   }, [transactionId, onLoadTransaction])
 
   React.useEffect(() => {
-    onChangeHeader(transactionTask.data?.type, accountIndex, theme.palette.primary.main)
-  }, [transactionTask, accountIndex, theme, onChangeHeader])
+    onChangeHeader(transactionTask.data?.type, accountIndex)
+  }, [transactionTask, accountIndex, onChangeHeader])
 
   function getTransactionAmount (transactionTask) {
     switch (transactionTask.status) {
@@ -139,13 +139,12 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionId) =>
     dispatch(transactionDetailsThunks.fetchTransaction(transactionId)),
-  onChangeHeader: (transactionType, accountIndex, backgroundColor) =>
+  onChangeHeader: (transactionType, accountIndex) =>
     dispatch(
       changeHeader({
         type: 'page',
         data: {
           title: transactionType,
-          backgroundColor,
           closeAction: push(`/accounts/${accountIndex}`)
         }
       })

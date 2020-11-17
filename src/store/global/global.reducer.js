@@ -27,6 +27,7 @@ const initialGlobalState = {
   snackbar: {
     status: 'closed'
   },
+  networkStatus: 'online',
   pendingWithdraws: getInitialPendingWithdraws(),
   coordinatorStateTask: {
     status: 'pending'
@@ -109,7 +110,8 @@ function globalReducer (state = initialGlobalState, action) {
         ...state,
         snackbar: {
           status: 'open',
-          message: action.message
+          message: action.message,
+          backgroundColor: action.backgroundColor
         }
       }
     }
@@ -119,6 +121,12 @@ function globalReducer (state = initialGlobalState, action) {
         snackbar: {
           status: 'closed'
         }
+      }
+    }
+    case globalActionTypes.CHANGE_NETWORK_STATUS: {
+      return {
+        ...state,
+        networkStatus: action.networkStatus
       }
     }
     case globalActionTypes.ADD_PENDING_WITHDRAW: {

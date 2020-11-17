@@ -3,12 +3,12 @@ import { createUseStyles } from 'react-jss'
 const usePageHeaderStyles = createUseStyles(theme => ({
   root: {
     width: '100%',
-    position: 'fixed',
+    position: 'absolute',
     height: theme.headerHeight,
     display: 'flex',
     alignItems: 'center',
     zIndex: 999,
-    background: ({ backgroundColor }) => backgroundColor
+    background: 'transparent'
   },
   headerContent: {
     width: '100%',

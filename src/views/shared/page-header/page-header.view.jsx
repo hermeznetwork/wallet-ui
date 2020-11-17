@@ -9,13 +9,12 @@ import { ReactComponent as CloseIcon } from '../../../images/icons/close.svg'
 
 function PageHeader ({
   title,
-  backgroundColor,
   goBackAction,
   closeAction,
   onGoBack,
   onClose
 }) {
-  const classes = usePageHeaderStyles({ backgroundColor })
+  const classes = usePageHeaderStyles()
 
   return (
     <header className={classes.root}>

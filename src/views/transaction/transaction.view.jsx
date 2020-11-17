@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useLocation } from 'react-router-dom'
-import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import * as transactionThunks from '../../store/transaction/transaction.thunks'
@@ -47,12 +46,15 @@ function Transaction ({
   onAddPendingWithdraw,
   onCleanup
 }) {
-  const theme = useTheme()
   const classes = useTransactionStyles()
   const { search } = useLocation()
   const urlSearchParams = new URLSearchParams(search)
   const accountIndex = urlSearchParams.get('accountIndex')
   const batchNum = Number(urlSearchParams.get('batchNum'))
+
+  React.useEffect(() => {
+    onChangeHeader(currentStep, transactionType, accountIndex)
+  }, [currentStep, transactionType, accountIndex, onChangeHeader])
 
   React.useEffect(() => {
     if (accountIndex) {
@@ -67,10 +69,6 @@ function Transaction ({
       onGoToChooseAccountStep()
     }
   }, [batchNum, accountIndex, onLoadExit, onLoadAccount, onGoToChooseAccountStep])
-
-  React.useEffect(() => {
-    onChangeHeader(currentStep, transactionType, accountIndex, theme)
-  }, [currentStep, transactionType, accountIndex, theme, onChangeHeader])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -194,14 +192,13 @@ const getHeaderCloseAction = (accountIndex) => {
     : push('/')
 }
 
-const getHeader = (currentStep, transactionType, accountIndex, theme) => {
+const getHeader = (currentStep, transactionType, accountIndex) => {
   switch (currentStep) {
     case STEP_NAME.CHOOSE_ACCOUNT: {
       return {
         type: 'page',
         data: {
           title: 'Token',
-          backgroundColor: theme.palette.white,
           closeAction: getHeaderCloseAction(accountIndex)
         }
       }
@@ -211,7 +208,6 @@ const getHeader = (currentStep, transactionType, accountIndex, theme) => {
         type: 'page',
         data: {
           title: 'Amount',
-          backgroundColor: theme.palette.white,
           goBackAction: accountIndex
             ? push(`/accounts/${accountIndex}`)
             : transactionActions.changeCurrentStep(STEP_NAME.CHOOSE_ACCOUNT),
@@ -224,7 +220,6 @@ const getHeader = (currentStep, transactionType, accountIndex, theme) => {
         type: 'page',
         data: {
           title: getTransactionOverviewHeaderTitle(transactionType),
-          backgroundColor: theme.palette.primary.main,
           goBackAction: transactionActions.changeCurrentStep(STEP_NAME.BUILD_TRANSACTION),
           closeAction: getHeaderCloseAction(accountIndex)
         }
@@ -237,8 +232,8 @@ const getHeader = (currentStep, transactionType, accountIndex, theme) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (currentStep, transactionType, tokenId, theme) =>
-    dispatch(changeHeader(getHeader(currentStep, transactionType, tokenId, theme))),
+  onChangeHeader: (currentStep, transactionType, tokenId) =>
+    dispatch(changeHeader(getHeader(currentStep, transactionType, tokenId))),
   onLoadAccount: () =>
     dispatch(transactionThunks.fetchAccount()),
   onLoadExit: (tokenId, batchNum, accountIndex) =>

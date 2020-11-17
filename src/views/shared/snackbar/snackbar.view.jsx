@@ -5,15 +5,13 @@ import Container from '../container/container.view'
 import useSnackbarStyles from './snackbar.styles'
 import { SNACKBAR_AUTO_HIDE_DURATION } from '../../../constants'
 
-function Snackbar ({ message, onClose }) {
-  const classes = useSnackbarStyles()
+function Snackbar ({ message, backgroundColor, onClose }) {
+  const classes = useSnackbarStyles({ backgroundColor })
 
   React.useEffect(() => {
     const closingTimeoutId = setTimeout(onClose, SNACKBAR_AUTO_HIDE_DURATION)
 
-    return () => {
-      clearTimeout(closingTimeoutId)
-    }
+    return () => clearTimeout(closingTimeoutId)
   }, [onClose])
 
   return (

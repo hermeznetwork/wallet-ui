@@ -3,12 +3,12 @@ import { createUseStyles } from 'react-jss'
 const useMainHeaderStyles = createUseStyles(theme => ({
   root: {
     width: '100%',
-    position: 'fixed',
+    position: 'absolute',
     height: theme.headerHeight,
     display: 'flex',
     alignItems: 'center',
     zIndex: 999,
-    background: theme.palette.primary.main
+    background: 'transparent'
   },
   headerContent: {
     width: '100%',

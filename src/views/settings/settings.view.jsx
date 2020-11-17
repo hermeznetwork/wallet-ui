@@ -33,8 +33,8 @@ function Settings ({
   const classes = useSettingsStyles()
 
   React.useEffect(() => {
-    onChangeHeader(theme.palette.primary.main)
-  }, [theme, onChangeHeader])
+    onChangeHeader()
+  }, [onChangeHeader])
 
   function handleEthereumAddressClick (hermezEthereumAddress) {
     copyToClipboard(hermezEthereumAddress)
@@ -122,12 +122,11 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (backgroundColor) =>
+  onChangeHeader: () =>
     dispatch(changeHeader({
       type: 'page',
       data: {
         title: 'Settings',
-        backgroundColor,
         closeAction: push('/')
       }
     })),
