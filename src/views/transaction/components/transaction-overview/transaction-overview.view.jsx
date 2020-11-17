@@ -167,7 +167,7 @@ function TransactionOverview ({
 
   return (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main} disableTopGutter>
+      <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
           <div className={classes.fiatAmount}>
             <FiatAmount
