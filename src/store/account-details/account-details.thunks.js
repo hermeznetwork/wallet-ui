@@ -52,7 +52,7 @@ function fetchHistoryTransactions (accountIndex) {
 
     const { accountDetails: { exitsTask }, global: { metaMaskWalletTask } } = getState()
 
-    return CoordinatorAPI.getTransactions(accountIndex)
+    return CoordinatorAPI.getTransactions(undefined, undefined, undefined, accountIndex)
       .then((res) => {
         res.transactions = res.transactions.filter((transaction) => {
           if (transaction.type === 'Exit') {
