@@ -2,7 +2,6 @@ import { createUseStyles } from 'react-jss'
 
 const useTransactionOverviewStyles = createUseStyles(theme => ({
   root: {
-    marginTop: theme.headerHeight,
     marginBottom: theme.spacing(3)
   },
   amountsSection: {
