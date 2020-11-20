@@ -32,9 +32,9 @@ function TransactionOverview ({
   const [isUserSigningTransaction, setIsUserSigningTransaction] = React.useState(false)
 
   /**
-   * Uses helper function to convert amount to Fiat in the preferred currency
+   * Converts the transaction amount to fiat in the preferred currency
    *
-   * @returns {Number}
+   * @returns {number} - Token amount in the prefe
    */
   function getAmountInFiat (value) {
     const token = account.token
@@ -51,18 +51,27 @@ function TransactionOverview ({
     )
   }
 
+  /**
+   * Converts the transaction amount from a number to a BigNumber
+   * @returns {BigNumber} - Transaction amount in BigNumber
+   */
   function getAmountInBigInt () {
     return ethers.BigNumber.from(amount)
   }
 
+  /**
+   * Converts the token amount to a fixed amount
+   * @param {string} value - Token amount
+   * @returns {string} - Fixed token amount
+   */
   function getTokenAmount (value) {
     return getFixedTokenAmount(value, account.token.decimals)
   }
 
   /**
-   * Depending on the transaction type, show the appropriate button text
+   * Converts the transaction type to a readable button label
    *
-   * @returns {string}
+   * @returns {string} - Button label
    */
   function getButtonLabel () {
     switch (transactionType) {
@@ -83,6 +92,7 @@ function TransactionOverview ({
 
   /**
    * Prepares the transaction and sends it
+   * @returns {void}
    */
   async function handleClickTxButton () {
     // TODO: Remove once we have hermez-node. This is how we test the withdraw flow.

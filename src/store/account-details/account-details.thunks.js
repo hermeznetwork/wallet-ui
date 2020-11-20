@@ -6,7 +6,7 @@ import { removePendingWithdraw } from '../global/global.thunks'
 
 /**
  * Fetches the account details for the specified account index
- * @param {string} accountIndex - The account index
+ * @param {string} accountIndex - Account index
  * @returns {void}
  */
 function fetchAccount (accountIndex) {
@@ -21,7 +21,7 @@ function fetchAccount (accountIndex) {
 
 /**
  * Fetches the transaction details for each transaction in the pool for the specified account index
- * @param {string} accountIndex - The account index
+ * @param {string} accountIndex - Account index
  * @returns {void}
  */
 function fetchPoolTransactions (accountIndex) {
@@ -43,7 +43,7 @@ function fetchPoolTransactions (accountIndex) {
 
 /**
  * Fetches the transactions details for the specified account index
- * @param {string} accountIndex - The account index
+ * @param {string} accountIndex - Account index
  * @returns {void}
  */
 function fetchHistoryTransactions (accountIndex) {
@@ -84,6 +84,7 @@ function fetchHistoryTransactions (accountIndex) {
 
 /**
  * Fetches the exit data for transactions of type Exit that are still pending a withdraw
+ * @returns {void}
  */
 function fetchExits () {
   return (dispatch) => {

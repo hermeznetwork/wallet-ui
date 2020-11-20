@@ -38,12 +38,12 @@ function getFixedTokenAmount (amount, decimals) {
 /**
  * Converts a token amount to a new amount but in the user preferred currency
  *
- * @param {String} amount - The amount to be be converted
- * @param {String} usdTokenExchangeRate - Current USD exchange rate for the token
- * @param {String} preferredCurrency - User preferred currency
- * @param {String} fiatExchangeRates - Exchange rates for all the supported currencies in the app
+ * @param {string} amount - The amount to be be converted
+ * @param {string} usdTokenExchangeRate - Current USD exchange rate for the token
+ * @param {string} preferredCurrency - User preferred currency
+ * @param {string} fiatExchangeRates - Exchange rates for all the supported currencies in the app
  *
- * @returns {Number}
+ * @returns {number}
  */
 function getTokenAmountInPreferredCurrency (
   amount,

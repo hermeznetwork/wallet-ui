@@ -1,7 +1,7 @@
 /**
  * Get the partially hidden hermez address representation of an ethereum address
- * @param {string} ethereumAddress
- * @returns {string}
+ * @param {string} ethereumAddress - Ethereum address to partially hide
+ * @returns {string} - Partially hidden ethereum address
  */
 function getPartiallyHiddenHermezAddress (ethereumAddress) {
   const firstAddressSlice = ethereumAddress.slice(0, 10)

@@ -7,6 +7,11 @@ import clsx from 'clsx'
 function PreferredCurrencySelector ({ preferredCurrency, currencies, onChange }) {
   const classes = usePreferredCurrencySelectorStyles()
 
+  /**
+   * Bubbles up the preferred currency change event
+   * @param {Event} event - React change event for the input change
+   * @returns {void}
+   */
   function handleOnInputClick (event) {
     onChange(event.currentTarget.value)
   }

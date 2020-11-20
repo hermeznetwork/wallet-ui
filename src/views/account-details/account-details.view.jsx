@@ -66,9 +66,9 @@ function AccountDetails ({
   }, [onCleanup])
 
   /**
-   * Returns the total balance of the account in the preferred currency
-   *
-   * @returns {Number} The balance of the account in the preferred currency
+   * Calculates the total balance of the account in user's preferred currency
+   * @param {*} accountTask - Asynchronous task of the account
+   * @returns {number} The balance of the account in user's preferred currency
    */
   function getAccountBalance (accountTask) {
     switch (accountTask.status) {
@@ -97,14 +97,29 @@ function AccountDetails ({
     }
   }
 
+  /**
+   * Filters the transactions from the pool which are of type Exit
+   * @param {Object[]} poolTransactions - Transactions from the pool
+   * @returns {Object[]} Transactions from the pool which are of type Exit
+   */
   function getPendingExits (poolTransactions) {
     return poolTransactions.filter((transaction) => transaction.type === 'Exit')
   }
 
+  /**
+   * Filters the transactions from the pool which are not of type Exit
+   * @param {Object[]} poolTransactions - Transactions from the pool
+   * @returns {Object[]} Transactions from the pool which are not of type Exit
+   */
   function getPendingTransactions (poolTransactions) {
     return poolTransactions.filter((transaction) => transaction.type !== 'Exit')
   }
 
+  /**
+   * Navigates to the TransactionDetails view when a transaction is clicked
+   * @param {*} transaction - Transaction
+   * @returns {void}
+   */
   function handleTransactionClick (transaction) {
     onNavigateToTransactionDetails(accountIndex, transaction.id)
   }

@@ -68,10 +68,7 @@ function App ({
 }
 
 App.propTypes = {
-  fiatExchangeRatesTask: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    data: PropTypes.object
-  })
+  fiatExchangeRatesTask: PropTypes.object
 }
 
 const mapStateToProps = (state) => ({

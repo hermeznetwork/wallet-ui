@@ -4,6 +4,14 @@ import * as transactionActions from './transaction.actions'
 import { TransactionType } from '../../views/transaction/transaction.view'
 import { getMetaMaskTokens } from '../../utils/metamask'
 
+/**
+ * Fetches the account details for a token id. If the transaciton is a deposit, it will
+ * look for the account details on MetaMask. Otherwise, it will look for the details
+ * on the rollup api
+ * @param {string} tokenId - id of the token of the account
+ * @param {string} transactionType - Transaction type
+ * @returns {void}
+ */
 function fetchAccount (tokenId, transactionType) {
   return (dispatch, getState) => {
     const { global: { metaMaskWalletTask } } = getState()
@@ -36,12 +44,19 @@ function fetchAccount (tokenId, transactionType) {
   }
 }
 
+/**
+ * Fetches the details of an exit
+ * @param {*} tokenId - id of the token of the account
+ * @param {*} batchNum - batch number
+ * @param {*} accountIndex - account index
+ * @returns {void}
+ */
 function fetchExit (tokenId, batchNum, accountIndex) {
   return async function (dispatch, getState) {
     const { global: { metaMaskWalletTask } } = getState()
 
     if (metaMaskWalletTask.status !== 'successful') {
-      return dispatch(transactionActions.loadAccountFailure('MetaMask wallet is not loaded'))
+      return dispatch(transactionActions.loadExitFailure('MetaMask wallet is not loaded'))
     }
 
     dispatch(transactionActions.loadExit())
@@ -56,7 +71,11 @@ function fetchExit (tokenId, batchNum, accountIndex) {
 }
 
 /**
- * Fetches all accounts for a hermezEthereumAddress
+ * Fetches the accounts to use in the transaction. If the transaction is a deposit it will
+ * look for them on MetaMask, otherwise it will look for them on the rollup api
+ * @param {string} transactionType - Transaction type
+ * @param {number} fromItem - id of the first account to be returned from the api
+ * @returns {void}
  */
 function fetchAccounts (transactionType, fromItem) {
   return (dispatch, getState) => {
@@ -86,6 +105,7 @@ function fetchAccounts (transactionType, fromItem) {
 
 /**
  * Fetches the recommended fees from the Coordinator
+ * @returns {void}
  */
 function fetchFees () {
   return async function (dispatch) {

@@ -53,14 +53,14 @@ function Home ({
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
       onLoadAccounts(metaMaskWalletTask.data.hermezEthereumAddress)
+      onLoadHistoryTransactions(metaMaskWalletTask.data.hermezEthereumAddress)
     }
-  }, [metaMaskWalletTask, onLoadAccounts])
+  }, [metaMaskWalletTask, onLoadAccounts, onLoadHistoryTransactions])
 
   React.useEffect(() => {
     onLoadPoolTransactions()
-    onLoadHistoryTransactions()
     onLoadCoordinatorState()
-  }, [onLoadPoolTransactions, onLoadHistoryTransactions, onLoadCoordinatorState])
+  }, [onLoadPoolTransactions, onLoadCoordinatorState])
 
   React.useEffect(() => {
     if (historyTransactionsTask.status === 'successful') {
@@ -71,6 +71,11 @@ function Home ({
 
   React.useEffect(() => onCleanup, [onCleanup])
 
+  /**
+   * Calculates the total balance off the accounts in user's preferred currency
+   * @param {*} accountsTask - Asynchronous task of the accounts
+   * @returns {number} The balance of the account in user's preferred currency
+   */
   function getTotalBalance (accountsTask) {
     switch (accountsTask.status) {
       case 'reloading':
@@ -102,14 +107,28 @@ function Home ({
     }
   }
 
+  /**
+   * Filters the transactions of type exit from the transaction pool
+   * @returns {void}
+   */
   function getPendingExits () {
     return poolTransactionsTask.data.filter((transaction) => transaction.type === 'Exit')
   }
 
+  /**
+   * Navigates to the AccountDetails view when an account is clicked
+   * @param {Object} account - Account
+   * @returns {void}
+   */
   function handleAccountClick (account) {
     onNavigateToAccountDetails(account.accountIndex)
   }
 
+  /**
+   * Copies the hermez ethereum address to the clipboard when it's clicked
+   * @param {string} hermezEthereumAddress - Hermez ethereum address
+   * @returns {void}
+   */
   function handleEthereumAddressClick (hermezEthereumAddress) {
     copyToClipboard(hermezEthereumAddress)
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
@@ -247,8 +266,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem)),
   onLoadPoolTransactions: () =>
     dispatch(homeThunks.fetchPoolTransactions()),
-  onLoadHistoryTransactions: () =>
-    dispatch(homeThunks.fetchHistoryTransactions()),
+  onLoadHistoryTransactions: (hermezEthereumAddress) =>
+    dispatch(homeThunks.fetchHistoryTransactions(hermezEthereumAddress)),
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
   onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),

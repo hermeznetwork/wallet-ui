@@ -11,7 +11,7 @@ const F = poseidon.F
  *
  * @param {ArrayBuffer} buf
  *
- * @returns {String}
+ * @returns {string}
  */
 export function bufToHex (buf) {
   return Array.prototype.map.call(new Uint8Array(buf), x => ('00' + x.toString(16)).slice(-2)).join('')
@@ -19,7 +19,7 @@ export function bufToHex (buf) {
 
 /**
  * Chunks inputs in five elements and hash with Poseidon all them togheter
- * @param {Array} arr - inputs hash
+ * @param {string[]} arr - inputs hash
  * @returns {BigInt} - final hash
  */
 function multiHash (arr) {

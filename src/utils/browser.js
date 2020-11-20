@@ -1,3 +1,8 @@
+/**
+ * Copies a text to the user clipboard
+ * @param {*} text - Text to be copied to the clipboard
+ * @returns {void}
+ */
 function copyToClipboard (text) {
   const textArea = document.createElement('textarea')
 
@@ -11,6 +16,10 @@ function copyToClipboard (text) {
   document.body.removeChild(textArea)
 }
 
+/**
+ * Reads the content of the user clipboard
+ * @returns {string} - Content read from the user clipboard
+ */
 function readFromClipboard () {
   return navigator.clipboard.readText()
 }

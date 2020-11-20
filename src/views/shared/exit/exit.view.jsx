@@ -44,6 +44,10 @@ function Exit ({
     }
   }, [coordinatorState, fiatAmountUSD, setIsWithdrawDelayed, setIsEmergencyMode])
 
+  /**
+   * Calculates in which step is the exit
+   * @returns {number} - Step of the exit
+   */
   function getStep () {
     if (!merkleProof) {
       return STEPS.first
@@ -54,6 +58,10 @@ function Exit ({
     }
   }
 
+  /**
+   * Converts the current step of the exit to a readable label
+   * @returns {string} - Label for the current step of the exit
+   */
   function getTag () {
     switch (getStep()) {
       case STEPS.first:
@@ -67,32 +75,38 @@ function Exit ({
     }
   }
 
+  /**
+   * Converts the withdraw delay from seconds to days
+   * @returns {number} - Withdrawal delay in days
+   */
   function getWithdrawalDelayerTime () {
     return Math.round(coordinatorState.withdrawalDelayer.withdrawalDelay / 60 / 60 / 24)
   }
 
+  /**
+   * Sets to true a local state variable to redirect to the Transaction view with the
+   * withdraw information
+   * @returns {void}
+   */
   function onWithdrawClick () {
     setIsWithdrawClicked(true)
   }
 
+  /**
+   * Sets to true a local state variable to redirect to the Transaction view with the
+   * delayed withdraw information
+   * @returns {void}
+   */
   function onWithdrawDelayedClick () {
     setIsWithdrawDelayedClicked(true)
   }
 
-  function renderWithdrawalRedirect () {
+  if (isWithdrawClicked) {
     return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`} />
   }
 
-  function renderWithdrawalDelayedRedirect () {
-    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`} />
-  }
-
-  if (isWithdrawClicked) {
-    return renderWithdrawalRedirect()
-  }
-
   if (isWithdrawDelayedClicked) {
-    return renderWithdrawalDelayedRedirect()
+    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`} />
   }
 
   return (
