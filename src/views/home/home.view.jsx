@@ -72,9 +72,9 @@ function Home ({
   React.useEffect(() => onCleanup, [onCleanup])
 
   /**
-   * Calculates the total balance off the accounts in user's preferred currency
-   * @param {*} accountsTask - Asynchronous task of the accounts
-   * @returns {number} The balance of the account in user's preferred currency
+   * Calculates the total balance of the accounts in the user's preferred currency
+   * @param {Object} accountsTask - Asynchronous task of the accounts
+   * @returns {number} The balance of the account in the user's preferred currency
    */
   function getTotalBalance (accountsTask) {
     switch (accountsTask.status) {
@@ -125,8 +125,8 @@ function Home ({
   }
 
   /**
-   * Copies the hermez ethereum address to the clipboard when it's clicked
-   * @param {string} hermezEthereumAddress - Hermez ethereum address
+   * Copies the Hermez Ethereum address to the clipboard when it's clicked
+   * @param {string} hermezEthereumAddress - Hermez Ethereum address
    * @returns {void}
    */
   function handleEthereumAddressClick (hermezEthereumAddress) {

@@ -7,7 +7,7 @@ import { METAMASK_MESSAGE, PENDING_WITHDRAWS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 
 /**
- * Asks the user to login using a MetaMask wallet and stores its data on the Redux store
+ * Asks the user to login using a MetaMask wallet and stores its data in the Redux store
  * @returns {void}
  */
 function fetchMetamaskWallet () {

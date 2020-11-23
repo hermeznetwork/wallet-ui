@@ -3,9 +3,9 @@ import { CoordinatorAPI } from 'hermezjs'
 import { getPoolTransactions } from 'hermezjs/src/tx-pool'
 
 /**
- * Fetches the accounts for a hermez ethereum address
+ * Fetches the accounts for a Hermez Ethereum address
  * @param {string} hermezEthereumAddress - Hermez ethereum address
- * @param {number} fromItem - id of the first account to be returned from the api
+ * @param {number} fromItem - id of the first account to be returned from the API
  * @returns {void}
  */
 function fetchAccounts (hermezEthereumAddress, fromItem) {
@@ -40,7 +40,7 @@ function fetchPoolTransactions () {
 }
 
 /**
- * Fetches the history transactions for a hermez ethereum address
+ * Fetches the history transactions for a Hermez Ethereum address
  * @returns {void}
  */
 function fetchHistoryTransactions (hermezEthereumAddress) {

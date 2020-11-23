@@ -66,8 +66,8 @@ function AccountDetails ({
   }, [onCleanup])
 
   /**
-   * Calculates the total balance of the account in user's preferred currency
-   * @param {*} accountTask - Asynchronous task of the account
+   * Calculates the total balance of the account in the user's preferred currency
+   * @param {Object} accountTask - Asynchronous task of the account
    * @returns {number} The balance of the account in user's preferred currency
    */
   function getAccountBalance (accountTask) {
@@ -117,7 +117,7 @@ function AccountDetails ({
 
   /**
    * Navigates to the TransactionDetails view when a transaction is clicked
-   * @param {*} transaction - Transaction
+   * @param {Object} transaction - Transaction
    * @returns {void}
    */
   function handleTransactionClick (transaction) {

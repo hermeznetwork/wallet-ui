@@ -34,7 +34,7 @@ function TransactionOverview ({
   /**
    * Converts the transaction amount to fiat in the preferred currency
    *
-   * @returns {number} - Token amount in the prefe
+   * @returns {number} - Token amount in the user's preferred currency
    */
   function getAmountInFiat (value) {
     const token = account.token

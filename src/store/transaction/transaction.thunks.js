@@ -5,9 +5,9 @@ import { TransactionType } from '../../views/transaction/transaction.view'
 import { getMetaMaskTokens } from '../../utils/metamask'
 
 /**
- * Fetches the account details for a token id. If the transaciton is a deposit, it will
- * look for the account details on MetaMask. Otherwise, it will look for the details
- * on the rollup api
+ * Fetches the account details for a token id. If the transaction is a deposit, it will
+ * look for the account details in MetaMask. Otherwise, it will look for the details
+ * in the API
  * @param {string} tokenId - id of the token of the account
  * @param {string} transactionType - Transaction type
  * @returns {void}
@@ -46,9 +46,9 @@ function fetchAccount (tokenId, transactionType) {
 
 /**
  * Fetches the details of an exit
- * @param {*} tokenId - id of the token of the account
- * @param {*} batchNum - batch number
- * @param {*} accountIndex - account index
+ * @param {number} tokenId - id of the token of the account
+ * @param {number} batchNum - batch number
+ * @param {string} accountIndex - account index
  * @returns {void}
  */
 function fetchExit (tokenId, batchNum, accountIndex) {

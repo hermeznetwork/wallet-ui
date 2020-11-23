@@ -37,7 +37,7 @@ function Settings ({
   }, [onChangeHeader])
 
   /**
-   * Copies the hermez ethereum address to the clipboard when it's clicked
+   * Copies the Hermez Ethereum address to the clipboard when it's clicked
    * @param {string} hermezEthereumAddress - Hermez ethereum address
    * @returns {void}
    */

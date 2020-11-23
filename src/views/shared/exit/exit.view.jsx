@@ -45,7 +45,7 @@ function Exit ({
   }, [coordinatorState, fiatAmountUSD, setIsWithdrawDelayed, setIsEmergencyMode])
 
   /**
-   * Calculates in which step is the exit
+   * Calculates in which step is the Exit process in
    * @returns {number} - Step of the exit
    */
   function getStep () {
@@ -84,7 +84,7 @@ function Exit ({
   }
 
   /**
-   * Sets to true a local state variable to redirect to the Transaction view with the
+   * Sets to true a local state variable called (isWithdrawClicked) to redirect to the Transaction view with the
    * withdraw information
    * @returns {void}
    */
@@ -93,7 +93,7 @@ function Exit ({
   }
 
   /**
-   * Sets to true a local state variable to redirect to the Transaction view with the
+   * Sets to true a local state variable (isWithdrawDelayedClicked) to redirect to the Transaction view with the
    * delayed withdraw information
    * @returns {void}
    */

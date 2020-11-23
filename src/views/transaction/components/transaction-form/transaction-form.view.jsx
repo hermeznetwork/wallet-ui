@@ -94,8 +94,8 @@ function TransactionForm ({
   }
 
   /**
-   * Checks whether continue button should be disabled or not
-   * @returns {boolean} - Whether continue button should be disabled or not
+   * Checks whether the continue button should be disabled or not
+   * @returns {boolean} - Whether the continue button should be disabled or not
    */
   function isContinueDisabled () {
     const isAmountValid = isAmountLessThanFunds && isAmountPositive
