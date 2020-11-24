@@ -4,6 +4,11 @@ import { CurrencySymbol } from '../utils/currencies'
 
 const baseApiUrl = process.env.REACT_APP_FIAT_EXCHANGE_RATES_API_URL
 
+/**
+ * Fetches the USD exchange rates for the requested currency symbols
+ * @param {string[]} symbols - ISO 4217 currency codes
+ * @returns {Object} - USD exchange rates for the requested symbols
+ */
 function getFiatExchangeRates (symbols) {
   const params = { base: CurrencySymbol.USD.code, symbols: symbols.join(',') }
 

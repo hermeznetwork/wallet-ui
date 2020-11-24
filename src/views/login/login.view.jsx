@@ -24,6 +24,10 @@ function Login ({
     onChangeHeader()
   }, [onChangeHeader])
 
+  /**
+   * Handles the click on the MetaMask button
+   * @returns {void}
+   */
   function handleMetamaskLogin () {
     onLoadMetaMaskWallet()
   }

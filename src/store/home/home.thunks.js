@@ -2,6 +2,12 @@ import * as homeActions from './home.actions'
 import { CoordinatorAPI } from 'hermezjs'
 import { getPoolTransactions } from 'hermezjs/src/tx-pool'
 
+/**
+ * Fetches the accounts for a Hermez Ethereum address
+ * @param {string} hermezEthereumAddress - Hermez ethereum address
+ * @param {number} fromItem - id of the first account to be returned from the API
+ * @returns {void}
+ */
 function fetchAccounts (hermezEthereumAddress, fromItem) {
   return (dispatch) => {
     dispatch(homeActions.loadAccounts())
@@ -13,8 +19,7 @@ function fetchAccounts (hermezEthereumAddress, fromItem) {
 }
 
 /**
- * Fetches the transaction details for each transaction in the pool
- *
+ * Fetches the transactions which are in the transactions pool
  * @returns {void}
  */
 function fetchPoolTransactions () {
@@ -35,14 +40,14 @@ function fetchPoolTransactions () {
 }
 
 /**
- * Fetches the transactions details
+ * Fetches the history transactions for a Hermez Ethereum address
  * @returns {void}
  */
-function fetchHistoryTransactions () {
+function fetchHistoryTransactions (hermezEthereumAddress) {
   return (dispatch) => {
     dispatch(homeActions.loadHistoryTransactions())
 
-    return CoordinatorAPI.getTransactions()
+    return CoordinatorAPI.getTransactions(hermezEthereumAddress)
       .then(res => dispatch(homeActions.loadHistoryTransactionsSuccess(res)))
       .catch(err => dispatch(homeActions.loadHistoryTransactionsFailure(err)))
   }
@@ -50,14 +55,15 @@ function fetchHistoryTransactions () {
 
 /**
  * Fetches the exit data for transactions of type Exit
- *
- * @param {Array} exitTransactions - Array of transactions of type Exit
+ * @param {Object[]} exitTransactions - Transactions of type Exit
+ * @returns {void}
  */
 function fetchExits (exitTransactions) {
   return (dispatch) => {
     dispatch(homeActions.loadExits())
 
-    const exitTransactionsPromises = exitTransactions.map(exitTransaction => CoordinatorAPI.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
+    const exitTransactionsPromises = exitTransactions
+      .map(exitTransaction => CoordinatorAPI.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
 
     return Promise.all(exitTransactionsPromises)
       .then(exits => dispatch(homeActions.loadExitsSuccess(exits)))

@@ -7,7 +7,7 @@ import { ETHER_TOKEN_ID } from '../constants'
  * Fetches token balances in the user's MetaMask account. Only for those tokens registered in Hermez and Ether.
  * Throws an error if the user has no balances for any registered token in Hermez or an error comes up from fetching the balances on-chain.
  *
- * @param {Array} hermezTokens - List of registered tokens in Hermez
+ * @param {Object[]} hermezTokens - List of registered tokens in Hermez
  * @returns {Promise} - Array of { balance, token } where balance is a Number and token is the Token schema returned from the API.
  */
 async function getMetaMaskTokens (metaMaskWallet, finalHermezTokens) {

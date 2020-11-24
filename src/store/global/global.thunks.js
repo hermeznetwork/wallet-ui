@@ -6,6 +6,10 @@ import * as globalActions from './global.actions'
 import { METAMASK_MESSAGE, PENDING_WITHDRAWS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 
+/**
+ * Asks the user to login using a MetaMask wallet and stores its data in the Redux store
+ * @returns {void}
+ */
 function fetchMetamaskWallet () {
   return async function (dispatch) {
     dispatch(globalActions.loadMetamaskWallet())
@@ -30,12 +34,23 @@ function fetchMetamaskWallet () {
   }
 }
 
+/**
+ * Changes the route to which the user is going to be redirected to after a successful
+ * login
+ * @param {string} redirecRoute - Route to be redirected to
+ * @returns {void}
+ */
 function changeRedirectRoute (redirecRoute) {
   return (dispatch) => {
     dispatch(globalActions.changeRedirectRoute(redirecRoute))
   }
 }
 
+/**
+ * Fetches the USD exchange rates for the requested currency symbols
+ * @param {string[]} symbols - ISO 4217 currency codes
+ * @returns {void}
+ */
 function fetchFiatExchangeRates (symbols) {
   return (dispatch) => {
     dispatch(globalActions.loadFiatExchangeRates())
@@ -46,6 +61,12 @@ function fetchFiatExchangeRates (symbols) {
   }
 }
 
+/**
+ * Changes the current network status of the application
+ * @param {string} newNetworkStatus - Network status
+ * @param {string} backgroundColor - Background color of the snackbar
+ * @returns {void}
+ */
 function changeNetworkStatus (newNetworkStatus, backgroundColor) {
   return (dispatch, getState) => {
     const { global: { networkStatus: previousNetworkStatus } } = getState()
@@ -109,6 +130,7 @@ function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
 
 /**
  * Fetches the state of the coordinator
+ * @returns {void}
  */
 function fetchCoordinatorState () {
   return (dispatch) => {

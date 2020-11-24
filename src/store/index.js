@@ -10,6 +10,11 @@ import accountDetailsReducer from './account-details/account-details.reducer'
 import transactionDetailsReducer from './transaction-details/transaction-details.reducer'
 import transactionReducer from './transaction/transaction.reducer'
 
+/**
+ * Creates the Redux store root reducer combining all the reducers used in the app
+ * @param {History} history - Browser history
+ * @returns {Object} - Root reducer
+ */
 function createRootReducer (history) {
   return combineReducers({
     router: connectRouter(history),
@@ -22,6 +27,12 @@ function createRootReducer (history) {
   })
 }
 
+/**
+ * Configures the Redux store and all of its tools: Redux Thunk, Connected React Router
+ * and Redux Dev Tools
+ * @param {History} history - Browser history
+ * @returns {Object} - Redux store
+ */
 function configureStore (history) {
   const middlewares = [thunk, routerMiddleware(history)]
   const middlewareEnhancer = applyMiddleware(...middlewares)
