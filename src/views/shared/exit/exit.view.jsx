@@ -49,6 +49,10 @@ function Exit ({
     }
   }, [coordinatorState, fiatAmountUSD, setIsWithdrawDelayed, setIsEmergencyMode])
 
+  /**
+   * Calculates in which step is the Exit process in
+   * @returns {number} - Step of the exit
+   */
   function getStep () {
     if (!merkleProof) {
       return STEPS.first
@@ -59,6 +63,10 @@ function Exit ({
     }
   }
 
+  /**
+   * Converts the current step of the exit to a readable label
+   * @returns {string} - Label for the current step of the exit
+   */
   function getTag () {
     switch (getStep()) {
       case STEPS.first:
@@ -72,6 +80,10 @@ function Exit ({
     }
   }
 
+  /**
+   * Converts the withdraw delay from seconds to days
+   * @returns {number} - Withdrawal delay in days
+   */
   function getWithdrawalDelayerTime () {
     return Math.round(coordinatorState.withdrawalDelayer.withdrawalDelay / 60 / 60 / 24)
   }
@@ -117,6 +129,11 @@ function Exit ({
     }
   }
 
+  /*
+   * Sets to true a local state variable called (isWithdrawClicked or isCompleteDelayedWithdrawalClicked) to redirect to
+   * the Transaction view with the withdraw information depending on whether the withd
+   * @returns {void}
+   */
   function onWithdrawClick () {
     if (isDelayedWithdrawalReady) {
       setIsCompleteDelayedWithdrawalClicked(true)
@@ -125,6 +142,11 @@ function Exit ({
     }
   }
 
+  /**
+   * Sets to true a local state variable (isWithdrawDelayedClicked) to redirect to the Transaction view with the
+   * delayed withdraw information
+   * @returns {void}
+   */
   function onWithdrawDelayedClick () {
     setIsWithdrawDelayedClicked(true)
   }
@@ -137,20 +159,12 @@ function Exit ({
     })
   }
 
-  function renderWithdrawalRedirect () {
+  if (isWithdrawClicked) {
     return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`} />
   }
 
-  function renderWithdrawalDelayedRedirect () {
-    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`} />
-  }
-
-  if (isWithdrawClicked) {
-    return renderWithdrawalRedirect()
-  }
-
   if (isWithdrawDelayedClicked) {
-    return renderWithdrawalDelayedRedirect()
+    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`} />
   }
 
   if (isCompleteDelayedWithdrawalClicked) {
@@ -196,13 +210,11 @@ function Exit ({
         }
 
         if (isWithdrawDelayed && !isDelayedWithdrawalReady) {
-          console.log(pendingDelayedWithdraws, accountIndex + merkleProof.Root)
           // Remove once hermez-node is ready
           const accountIndexTemp = 'hez:SCC:256'
           const pendingDelayedWithdrawal = pendingDelayedWithdraws?.find(
             (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === accountIndexTemp + merkleProof.Root
           )
-          console.log(pendingDelayedWithdrawal)
 
           if (pendingDelayedWithdrawal) {
             return (

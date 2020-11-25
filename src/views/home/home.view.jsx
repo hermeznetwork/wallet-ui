@@ -64,6 +64,11 @@ function Home ({
 
   React.useEffect(() => onCleanup, [onCleanup])
 
+  /**
+   * Calculates the total balance of the accounts in the user's preferred currency
+   * @param {Object} accountsTask - Asynchronous task of the accounts
+   * @returns {number} The balance of the account in the user's preferred currency
+   */
   function getTotalBalance (accountsTask) {
     switch (accountsTask.status) {
       case 'reloading':
@@ -95,14 +100,28 @@ function Home ({
     }
   }
 
+  /**
+   * Filters the transactions of type exit from the transaction pool
+   * @returns {void}
+   */
   function getPendingExits () {
     return poolTransactionsTask.data.filter((transaction) => transaction.type === 'Exit')
   }
 
+  /**
+   * Navigates to the AccountDetails view when an account is clicked
+   * @param {Object} account - Account
+   * @returns {void}
+   */
   function handleAccountClick (account) {
     onNavigateToAccountDetails(account.accountIndex)
   }
 
+  /**
+   * Copies the Hermez Ethereum address to the clipboard when it's clicked
+   * @param {string} hermezEthereumAddress - Hermez Ethereum address
+   * @returns {void}
+   */
   function handleEthereumAddressClick (hermezEthereumAddress) {
     copyToClipboard(hermezEthereumAddress)
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')

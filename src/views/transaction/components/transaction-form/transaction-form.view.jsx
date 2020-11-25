@@ -42,18 +42,18 @@ function TransactionForm ({
   }, [amountInput])
 
   /**
-   * Uses helper function to convert balance to a float
-   *
-   * @returns {Numbr}
+   * Converts the account balance to a number
+   * @returns {number} - Account balance in number
    */
   function getAccountBalance () {
     return getTokenAmountString(account.balance, account.token.decimals)
   }
 
   /**
-   * Returns the conversion rate from the selected token to the selected preferred currency.
+   * Returns the conversion rate from the selected token to the selected preferred
+   * currency
    *
-   * @returns {Number} Conversion rate from the selected token to fiat
+   * @returns {number} - Conversion rate from the selected token to fiat
    */
   function getAccountFiatRate () {
     return preferredCurrency === CurrencySymbol.USD.code
@@ -62,9 +62,8 @@ function TransactionForm ({
   }
 
   /**
-   * Uses helper function to convert amount to Fiat in the preferred currency
-   *
-   * @returns {Number}
+   * Coonverts the account balance to fiat in the preferred currency
+   * @returns {number} - Accont balance in the preferred currency
    */
   function getBalanceinFiat () {
     return getTokenAmountInPreferredCurrency(
@@ -76,9 +75,10 @@ function TransactionForm ({
   }
 
   /**
-   * Calculate the fee for the transaction.
+   * Calculates the fee for the transaction.
    * It takes the appropriate recomended fee in USD from the coordinator
    * and converts it to token value.
+   * @returns {number} - Transaction fee
    */
   function getFee (fees) {
     return fees.existingAccount / account.token.USD
@@ -86,17 +86,16 @@ function TransactionForm ({
 
   /**
    * Checks whether a Hermez address has a valid format
-   *
    * @param {string} address - Hermez address e.g. hez:0x9294cD558F2Db6ca403191Ae3502cD0c2251E995
+   * @returns {boolean} - Result of the test
    */
   function isValidHermezAddress (address) {
     return /^hez:0x[a-fA-F0-9]{40}$/.test(address)
   }
 
   /**
-   * Checks whether continue button should be disabled or not
-   *
-   * @returns {Boolean} Whether continue button should be disabled or not
+   * Checks whether the continue button should be disabled or not
+   * @returns {boolean} - Whether the continue button should be disabled or not
    */
   function isContinueDisabled () {
     const isAmountValid = isAmountLessThanFunds && isAmountPositive
@@ -114,9 +113,9 @@ function TransactionForm ({
    * When the amount changes, check if the Continue button should be enabled or not.
    * Checks if the user has the selected amount in their balance
    * and the receiver is a registered Hermez account.
-   * Check if the continue button should be disabled.
-   *
-   * @param {Event} event
+   * Checks if the continue button should be disabled.
+   * @param {Event} event - Change event of the transaction amount input
+   * @returns {void}
    */
   function handleAmountInputChange (event) {
     const newAmount = Number(event.target.value)
@@ -128,8 +127,10 @@ function TransactionForm ({
   }
 
   /**
-   * Sets the amount to the full balance in the account, whether in the preferred fiat currency or the token value.
-   * Check if the continue button should be disabled.
+   * Sets the amount to the full balance in the account, whether in the preferred fiat
+   * currency or the token value.
+   * Checks if the continue button should be disabled.
+   * @returns {void}
    */
   function handleSendAllButtonClick () {
     const inputAmount = showInFiat ? getBalanceinFiat() : getAccountBalance()
@@ -141,6 +142,7 @@ function TransactionForm ({
 
   /**
    * Change between fiat and the token value.
+   * @returns {void}
    */
   function handleChangeCurrencyButtonClick () {
     if (showInFiat) {
@@ -154,8 +156,8 @@ function TransactionForm ({
   /**
    * Checks if the receiver is a valid Hermez address. Change error state based on that.
    * Check if the continue button should be disabled
-   *
-   * @param {Event} event
+   * @param {Event} event - Change event of the receiver input
+   * @returns {void}
    */
   function handleReceiverInputChange (event) {
     const newReceiver = event.target.value.trim()
@@ -164,6 +166,10 @@ function TransactionForm ({
     setReceiver(newReceiver)
   }
 
+  /**
+   * Sets the receiver to the content read from the clipboard
+   * @returns {void}
+   */
   function handlePasteClick () {
     readFromClipboard().then((pastedContent) => {
       setIsReceiverValid(isValidHermezAddress(pastedContent))
@@ -171,14 +177,20 @@ function TransactionForm ({
     })
   }
 
+  /**
+   * Resets the receiver input when the delete button is clicked
+   * @returns {void}
+   */
   function handleDeleteClick () {
     setReceiver('')
     setIsReceiverValid(undefined)
   }
 
   /**
-   * Based on the type of transaction, prepares the necessary values (amount, receiver and fee).
+   * Based on the type of transaction, prepares the necessary values (amount, receiver and
+   * fee).
    * Communicate to TransactionLayout to display TransactionOverview.
+   * @returns {void}
    */
   function handleContinueButton (fees) {
     const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
@@ -218,8 +230,7 @@ function TransactionForm ({
 
   /**
    * Renders the receiver input field if it's a transfer.
-   *
-   * @returns {ReactElement} The receiver input field
+   * @returns {JSX.Element} The receiver input field
    */
   function renderReceiver () {
     if (transactionType === TransactionType.Transfer) {
@@ -283,8 +294,7 @@ function TransactionForm ({
 
   /**
    * Renders the fee selector if it' s a Layer 2 transaction.
-   *
-   * @returns {ReactElement} The fee selector component
+   * @returns {JSX.Element} The fee selector component
    */
   function renderFeeSelector (fees) {
     if (transactionType !== TransactionType.Deposit && transactionType !== TransactionType.ForceExit) {

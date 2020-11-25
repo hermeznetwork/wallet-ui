@@ -8,6 +8,10 @@ import { TransactionType } from '../../transaction.view'
 function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
   const classes = useTransactionConfirmationStyles()
 
+  /**
+   * Converts the transaction type to a readable explanation of it
+   * @returns {string} - Explanation for the transaction type
+   */
   function getExplanation () {
     switch (transactionType) {
       case TransactionType.Deposit:

@@ -16,12 +16,8 @@ function Transaction ({
 }) {
   const classes = useTransactionStyles()
 
-  function handleClick () {
-    onClick()
-  }
-
   return (
-    <div className={classes.root} onClick={handleClick}>
+    <div className={classes.root} onClick={onClick}>
       <div className={classes.type}>
         <TransactionType type={type} amount={amount} />
       </div>

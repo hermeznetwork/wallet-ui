@@ -15,7 +15,8 @@ function AccountList ({
   const classes = useAccountListStyles()
 
   /**
-   * When an account is selected, bubble it up with the onAccountClick prop function.
+   * Bubbles up the onAccountClick event when an account is clicked
+   * @returns {void}
    */
   function handleAccountListItemClick (account) {
     onAccountClick(account)

@@ -14,6 +14,10 @@ function TransactionList ({
 }) {
   const classes = useTransactionListStyles()
 
+  /**
+   * Bubbles up the onClick event when a transaction is clicked
+   * @param {Object} transaction - The transaction clicked
+   */
   function handleTransactionClick (transaction) {
     onTransactionClick(transaction)
   }

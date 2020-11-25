@@ -8,6 +8,10 @@ import sentIcon from '../../../../images/icons/sent.svg'
 import withdrawnIcon from '../../../../images/icons/withdrawn.svg'
 
 function TransactionType ({ type, amount }) {
+  /**
+   * Returns the icon corresponding to the transaction type
+   * @returns {string} - Icon content encoded in base64
+   */
   function getIcon () {
     switch (type) {
       case TxType.CreateAccountDeposit:

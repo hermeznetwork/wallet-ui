@@ -36,11 +36,21 @@ function Settings ({
     onChangeHeader()
   }, [onChangeHeader])
 
+  /**
+   * Copies the Hermez Ethereum address to the clipboard when it's clicked
+   * @param {string} hermezEthereumAddress - Hermez ethereum address
+   * @returns {void}
+   */
   function handleEthereumAddressClick (hermezEthereumAddress) {
     copyToClipboard(hermezEthereumAddress)
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
 
+  /**
+   * Disconnects the currently connected MetaMask wallet when the disconnect wallet button
+   * is clicked
+   * @returns {void}
+   */
   function handleOnDisconnectWallet () {
     onDisconnectWallet()
   }

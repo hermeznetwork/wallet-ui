@@ -39,6 +39,11 @@ function TransactionDetails ({
     onChangeHeader(transactionTask.data?.type, accountIndex)
   }, [transactionTask, accountIndex, onChangeHeader])
 
+  /**
+   * Converts the transaction amount in USD to an amount in the user's preferred currency
+   * @param {Object} transactionTask - Asynchronous task of the transaction
+   * @returns {number}
+   */
   function getTransactionAmount (transactionTask) {
     switch (transactionTask.status) {
       case 'reloading':
