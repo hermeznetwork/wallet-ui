@@ -16,12 +16,14 @@ import { readFromClipboard } from '../../../../utils/browser'
 function TransactionForm ({
   transactionType,
   account,
+  receiverAddress,
   preferredCurrency,
   fiatExchangeRates,
   feesTask,
   onLoadFees,
   onSubmit
 }) {
+  console.log(receiverAddress)
   const classes = useTransactionFormStyles()
   const [showInFiat, setShowInFiat] = useState(false)
   const [amount, setAmount] = useState(undefined)
@@ -40,6 +42,13 @@ function TransactionForm ({
       amountInput.current.focus()
     }
   }, [amountInput])
+
+  React.useEffect(() => {
+    if (receiverAddress) {
+      setReceiver(receiverAddress)
+      setIsReceiverValid(true)
+    }
+  }, [receiverAddress])
 
   /**
    * Converts the account balance to a number

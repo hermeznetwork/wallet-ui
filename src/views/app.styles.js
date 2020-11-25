@@ -54,11 +54,16 @@ const useAppStyles = createUseStyles(theme => ({
       display: 'flex',
       flexDirection: 'column'
     },
-    '#root': {
+    '#app-root': {
+      zIndex: 0,
+      position: 'relative',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       flex: 1
+    },
+    '#portal-root': {
+      zIndex: 1
     },
     a: {
       textDecoration: 'none',

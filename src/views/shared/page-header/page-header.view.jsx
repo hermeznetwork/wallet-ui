@@ -28,7 +28,7 @@ function PageHeader ({
               })}
               onClick={() => onGoBack(goBackAction)}
             >
-              <ArrowBackIcon className={classes.arrowBackIcon} />
+              <ArrowBackIcon />
             </button>
           )}
           <h1 className={classes.title}>{title || ''}</h1>
@@ -40,7 +40,7 @@ function PageHeader ({
               })}
               onClick={() => onClose(closeAction)}
             >
-              <CloseIcon className={classes.arrowBackIcon} />
+              <CloseIcon />
             </button>
           )}
         </div>

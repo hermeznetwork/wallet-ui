@@ -6,7 +6,7 @@ import Settings from '../views/settings/settings.view'
 import AccountDetails from '../views/account-details/account-details.view'
 import TransactionDetails from '../views/transaction-details/transaction-details.view'
 import Login from '../views/login/login.view'
-// import MyAddress from '../views/my-address/my-address.view'
+import MyAddress from '../views/my-address/my-address.view'
 
 const routes = [
   {
@@ -41,11 +41,10 @@ const routes = [
     path: '/settings',
     render: () => <Settings />
   },
-  // {
-  //   path: '/my-address',
-  //   render: () => <MyAddress />,
-  //   renderLayout: true
-  // },
+  {
+    path: '/my-address',
+    render: () => <MyAddress />
+  },
   {
     path: '/accounts/:accountIndex',
     render: () => <AccountDetails />

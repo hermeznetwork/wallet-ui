@@ -9,14 +9,53 @@ import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import { MY_ADDRESS } from '../../constants'
+import { ReactComponent as QRScannerIcon } from '../../images/icons/qr-scanner.svg'
+import QRScanner from '../shared/qr-scanner/qr-scanner.view'
+import { isAnyVideoDeviceAvailable } from '../../utils/browser'
 
-function MyAddress ({ metaMaskWalletTask, onChangeHeader }) {
+function MyAddress ({ metaMaskWalletTask, onChangeHeader, onQRScanned }) {
   const theme = useTheme()
   const classes = useMyAddressStyles()
+  const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false)
+  const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false)
 
   React.useEffect(() => {
     onChangeHeader()
   }, [onChangeHeader])
+
+  React.useEffect(() => {
+    isAnyVideoDeviceAvailable()
+      .then(setisVideoDeviceAvailable)
+      .catch(() => setisVideoDeviceAvailable(false))
+  }, [])
+
+  /**
+   * Sets the local state variable isQRScannerOpen to true when the user requests to open
+   * the QR Scanner
+   * @returns {void}
+   */
+  function handleOpenQRScanner () {
+    setIsQRScannerOpen(true)
+  }
+
+  /**
+   * Sets the local state variable isQRScannerOpen to false when the user requests to
+   * close the QR Scanner
+   * @returns {void}
+   */
+  function handleCloseQRScanner () {
+    setIsQRScannerOpen(false)
+  }
+
+  /**
+   * Sets the local state variable isQRScannerOpen to false and bubbles up the read value
+   * @param {string} hermezEthereumAddress - Hermez Ethereum address scanned
+   * @returns {void}
+   */
+  function handleQRScanningSuccess (hermezEthereumAddress) {
+    setIsQRScannerOpen(false)
+    onQRScanned(hermezEthereumAddress)
+  }
 
   return (
     <Container backgroundColor={theme.palette.primary.main} addHeaderPadding fullHeight>
@@ -35,7 +74,23 @@ function MyAddress ({ metaMaskWalletTask, onChangeHeader }) {
             </p>
           </>
         )}
+        <div className={classes.qrScannerWrapper}>
+          <button
+            disabled={!isVideoDeviceAvailable}
+            className={classes.qrScannerButton}
+            onClick={handleOpenQRScanner}
+          >
+            <QRScannerIcon />
+          </button>
+          <p className={classes.qrScannerLabel}>Scan</p>
+        </div>
       </div>
+      {isVideoDeviceAvailable && isQRScannerOpen && (
+        <QRScanner
+          onSuccess={handleQRScanningSuccess}
+          onClose={handleCloseQRScanner}
+        />
+      )}
     </Container>
   )
 }
@@ -50,9 +105,11 @@ const mapDispatchToProps = (dispatch) => ({
       type: 'page',
       data: {
         title: 'My address',
-        closeAction: push('/')
+        goBackAction: push('/')
       }
-    }))
+    })),
+  onQRScanned: (hermezEthereumAddress) =>
+    dispatch(push(`/transfer?receiver=${hermezEthereumAddress}`))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(MyAddress))
