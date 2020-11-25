@@ -3,7 +3,7 @@ import { keccak256 } from 'js-sha3'
 import hermezjs from 'hermezjs'
 
 import * as globalActions from './global.actions'
-import { METAMASK_MESSAGE, PENDING_WITHDRAWS_KEY } from '../../constants'
+import { METAMASK_MESSAGE, PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 
 function fetchMetamaskWallet () {
@@ -81,7 +81,7 @@ function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
     }
 
     localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdrawPool))
-    dispatch(globalActions.addPendingWithdraw(newPendingWithdrawPool))
+    dispatch(globalActions.addPendingWithdraw(hermezEthereumAddress, pendingWithdraw))
   }
 }
 
@@ -103,7 +103,56 @@ function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
     }
 
     localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdrawPool))
-    dispatch(globalActions.removePendingWithdraw(pendingWithdrawId))
+    dispatch(globalActions.removePendingWithdraw(hermezEthereumAddress, pendingWithdrawId))
+  }
+}
+
+/**
+ * Adds a pendingWithdraw to the pendingDelayedWithdraw store
+ * @param {string} pendingDelayedWithdraw - The pendingDelayedWithdraw to add to the store
+ * @returns {void}
+ */
+function addPendingDelayedWithdraw (pendingDelayedWithdraw) {
+  return (dispatch, getState) => {
+    const { global: { metaMaskWalletTask } } = getState()
+    const { hermezEthereumAddress } = metaMaskWalletTask.data
+
+    const pendingDelayedWithdrawStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
+    const accountPendingDelayedWithdrawStore = pendingDelayedWithdrawStore[hermezEthereumAddress]
+    const newAccountPendingDelayedWithdrawStore = accountPendingDelayedWithdrawStore === undefined
+      ? [pendingDelayedWithdraw]
+      : [...accountPendingDelayedWithdrawStore, pendingDelayedWithdraw]
+    const newPendingDelayedWithdrawStore = {
+      ...pendingDelayedWithdrawStore,
+      [hermezEthereumAddress]: newAccountPendingDelayedWithdrawStore
+    }
+
+    localStorage.setItem(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newPendingDelayedWithdrawStore))
+    dispatch(globalActions.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw))
+  }
+}
+
+/**
+ * Removes a pendingWithdraw from the pendingDelayedWithdraw store
+ * @param {string} pendingDelayedWithdrawId - The pendingDelayedWithdraw identifier to remove from the store
+ * @returns {void}
+ */
+function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
+  return (dispatch, getState) => {
+    const { global: { metaMaskWalletTask } } = getState()
+    const { hermezEthereumAddress } = metaMaskWalletTask.data
+
+    const pendingDelayedWithdrawStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
+    const accountPendingDelayedWithdrawStore = pendingDelayedWithdrawStore[hermezEthereumAddress]
+    const newAccountPendingDelayedWithdrawStore = accountPendingDelayedWithdrawStore
+      .filter((pendingDelayedWithdraw) => pendingDelayedWithdraw.id !== pendingDelayedWithdrawId)
+    const newPendingDelayedWithdrawStore = {
+      ...pendingDelayedWithdrawStore,
+      [hermezEthereumAddress]: newAccountPendingDelayedWithdrawStore
+    }
+
+    localStorage.setItem(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newPendingDelayedWithdrawStore))
+    dispatch(globalActions.removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId))
   }
 }
 
@@ -127,5 +176,7 @@ export {
   changeNetworkStatus,
   addPendingWithdraw,
   removePendingWithdraw,
+  addPendingDelayedWithdraw,
+  removePendingDelayedWithdraw,
   fetchCoordinatorState
 }

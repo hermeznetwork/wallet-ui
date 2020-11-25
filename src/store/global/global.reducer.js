@@ -1,5 +1,5 @@
 import { globalActionTypes } from './global.actions'
-import { PENDING_WITHDRAWS_KEY } from '../../constants'
+import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
 
 function getInitialPendingWithdraws () {
   if (!localStorage.getItem(PENDING_WITHDRAWS_KEY)) {
@@ -10,6 +10,18 @@ function getInitialPendingWithdraws () {
     return emptyPendingWithdraws
   } else {
     return JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
+  }
+}
+
+function getInitialPendingDelayedWithdraws () {
+  if (!localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY)) {
+    const emptyPendingDelayedWithdraws = {}
+
+    localStorage.setItem(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(emptyPendingDelayedWithdraws))
+
+    return emptyPendingDelayedWithdraws
+  } else {
+    return JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
   }
 }
 
@@ -29,6 +41,7 @@ const initialGlobalState = {
   },
   networkStatus: 'online',
   pendingWithdraws: getInitialPendingWithdraws(),
+  pendingDelayedWithdraws: getInitialPendingDelayedWithdraws(),
   coordinatorStateTask: {
     status: 'pending'
   }
@@ -151,6 +164,31 @@ function globalReducer (state = initialGlobalState, action) {
           ...state.pendingWithdraws,
           [action.hermezEthereumAddress]: accountPendingWithdraws
             .filter(pendingWithdraw => pendingWithdraw.id !== action.pendingWithdrawId)
+        }
+      }
+    }
+    case globalActionTypes.ADD_PENDING_DELAYED_WITHDRAW: {
+      const accountPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.hermezEthereumAddress]
+
+      return {
+        ...state,
+        pendingDelayedWithdraws: {
+          ...state.pendingDelayedWithdraws,
+          [action.hermezEthereumAddress]: accountPendingDelayedWithdraws === undefined
+            ? [action.pendingDelayedWithdraw]
+            : [...accountPendingDelayedWithdraws, action.pendingDelayedWithdraw]
+        }
+      }
+    }
+    case globalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW: {
+      const accountPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.hermezEthereumAddress]
+
+      return {
+        ...state,
+        pendingDelayedWithdraws: {
+          ...state.pendingDelayedWithdraws,
+          [action.hermezEthereumAddress]: accountPendingDelayedWithdraws
+            .filter(pendingDelayedWithdraw => pendingDelayedWithdraw.id !== action.pendingDelayedWithdrawId)
         }
       }
     }

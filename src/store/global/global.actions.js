@@ -19,6 +19,8 @@ export const globalActionTypes = {
   CHANGE_NETWORK_STATUS: '[GLOBAL] CHANGE NETWORK STATUS',
   ADD_PENDING_WITHDRAW: '[GLOBAL] ADD PENDING WITHRAW',
   REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW',
+  ADD_PENDING_DELAYED_WITHDRAW: '[GLOBAL] ADD PENDING DELAYED WITHRAW',
+  REMOVE_PENDING_DELAYED_WITHDRAW: '[GLOBAL] REMOVE PENDING DELAYED WITHRAW',
   LOAD_COORDINATOR_STATE: '[GLOBAL] LOAD COORDINATOR STATE',
   LOAD_COORDINATOR_STATE_SUCCESS: '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
   LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE'
@@ -105,19 +107,35 @@ function changeNetworkStatus (networkStatus) {
   }
 }
 
-function addPendingWithdraw (hermezEthereumAdress, pendingWithdraw) {
+function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
   return {
     type: globalActionTypes.ADD_PENDING_WITHDRAW,
-    hermezEthereumAdress,
+    hermezEthereumAddress,
     pendingWithdraw
   }
 }
 
-function removePendingWithdraw (hermezEthereumAdress, withdrawId) {
+function removePendingWithdraw (hermezEthereumAddress, withdrawId) {
   return {
     type: globalActionTypes.REMOVE_PENDING_WITHDRAW,
-    hermezEthereumAdress,
+    hermezEthereumAddress,
     withdrawId
+  }
+}
+
+function addPendingDelayedWithdraw (hermezEthereumAddress, pendingDelayedWithdraw) {
+  return {
+    type: globalActionTypes.ADD_PENDING_DELAYED_WITHDRAW,
+    hermezEthereumAddress,
+    pendingDelayedWithdraw
+  }
+}
+
+function removePendingDelayedWithdraw (hermezEthereumAddress, pendingDelayedWithdrawId) {
+  return {
+    type: globalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW,
+    hermezEthereumAddress,
+    pendingDelayedWithdrawId
   }
 }
 
@@ -156,6 +174,8 @@ export {
   changeNetworkStatus,
   addPendingWithdraw,
   removePendingWithdraw,
+  addPendingDelayedWithdraw,
+  removePendingDelayedWithdraw,
   loadCoordinatorState,
   loadCoordinatorStateSuccess,
   loadCoordinatorStateFailure

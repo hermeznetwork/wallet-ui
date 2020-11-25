@@ -38,7 +38,7 @@ function TransactionList ({
               tokenSymbol={transaction.token.symbol}
               fiatAmount={getTokenAmountInPreferredCurrency(
                 fixedTokenAmount,
-                transaction.historicUSD || transaction.USD,
+                transaction.historicUSD || transaction.token.USD,
                 preferredCurrency,
                 fiatExchangeRates
               )}

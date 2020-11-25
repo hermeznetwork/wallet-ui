@@ -35,20 +35,6 @@ function fetchPoolTransactions () {
 }
 
 /**
- * Fetches the transactions details
- * @returns {void}
- */
-function fetchHistoryTransactions () {
-  return (dispatch) => {
-    dispatch(homeActions.loadHistoryTransactions())
-
-    return CoordinatorAPI.getTransactions()
-      .then(res => dispatch(homeActions.loadHistoryTransactionsSuccess(res)))
-      .catch(err => dispatch(homeActions.loadHistoryTransactionsFailure(err)))
-  }
-}
-
-/**
  * Fetches the exit data for transactions of type Exit
  *
  * @param {Array} exitTransactions - Array of transactions of type Exit
@@ -57,9 +43,7 @@ function fetchExits (exitTransactions) {
   return (dispatch) => {
     dispatch(homeActions.loadExits())
 
-    const exitTransactionsPromises = exitTransactions.map(exitTransaction => CoordinatorAPI.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
-
-    return Promise.all(exitTransactionsPromises)
+    return CoordinatorAPI.getExits(true)
       .then(exits => dispatch(homeActions.loadExitsSuccess(exits)))
       .catch(err => dispatch(homeActions.loadExitsFailure(err)))
   }
@@ -68,6 +52,5 @@ function fetchExits (exitTransactions) {
 export {
   fetchAccounts,
   fetchPoolTransactions,
-  fetchHistoryTransactions,
   fetchExits
 }

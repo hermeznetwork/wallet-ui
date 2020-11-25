@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom'
 
 import useExitStyles from './exit.styles'
 import { CurrencySymbol } from '../../../utils/currencies'
-import infoIcon from '../../../images/icons/info.svg'
+import { ReactComponent as InfoIcon } from '../../../images/icons/info.svg'
 
 const STEPS = {
   first: 1,
@@ -23,13 +23,18 @@ function Exit ({
   batchNum,
   accountIndex,
   pendingWithdraws,
-  coordinatorState
+  pendingDelayedWithdraws,
+  coordinatorState,
+  onAddPendingDelayedWithdraw,
+  onRemovePendingDelayedWithdraw
 }) {
   const classes = useExitStyles()
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false)
   const [isWithdrawDelayedClicked, setIsWithdrawDelayedClicked] = useState(false)
   const [isWithdrawDelayed, setIsWithdrawDelayed] = useState(false)
   const [isEmergencyMode, setIsEmergencyMode] = useState(false)
+  const [isDelayedWithdrawalReady, setIsDelayedWithdrawalReady] = useState(false)
+  const [isCompleteDelayedWithdrawalClicked, setIsCompleteDelayedWithdrawalClicked] = useState(false)
 
   React.useEffect(() => {
     if (typeof coordinatorState !== 'undefined') {
@@ -71,8 +76,53 @@ function Exit ({
     return Math.round(coordinatorState.withdrawalDelayer.withdrawalDelay / 60 / 60 / 24)
   }
 
+  /**
+   * Calculates the remaining time until the instant or delayed withdrawal can be made
+   * It detects the type and caculates the time accordingly (in hours for instant and days for delayed)
+   * If enough time has already passed, it deletes the pendingDelayedWithdraw from LocalStorage
+   * @param {Object} delayedWithdrawal - The delayed withdrawal object from LocalStorage
+   * @returns {string|void} Returns remaining time as a string, or void if enough time has passed
+   */
+  function getDateString (delayedWithdrawal) {
+    const now = Date.now()
+    const difference = now - delayedWithdrawal.date
+    if (delayedWithdrawal.instant) {
+      const twoHours = 2 * 60 * 60 * 1000
+      if (difference > twoHours) {
+        onRemovePendingDelayedWithdraw(accountIndex + merkleProof.Root)
+      } else {
+        const remainingDifference = twoHours - difference
+        // Extracts the hours and minutes from the remaining difference
+        const hours = remainingDifference / 1000 / 60 / 60
+        const hoursFixed = Math.floor(hours)
+        // Minutes are in a value between 0-1, so we need to convert to 0-60
+        const minutes = Math.round((hours - hoursFixed) * 60)
+
+        return `${hoursFixed}h ${minutes}m`
+      }
+    } else {
+      const delayedTime = coordinatorState.withdrawalDelayer.withdrawalDelay * 1000
+      if (difference > delayedTime) {
+        setIsDelayedWithdrawalReady(true)
+      } else {
+        const remainingDifference = delayedTime - difference
+        // Extracts the days and hours from the remaining difference
+        const days = remainingDifference / 1000 / 60 / 60 / 24
+        const daysFixed = Math.floor(days)
+        // Hours are in a value between 0-1, so we need to convert to 0-24
+        const hours = Math.round((days - daysFixed) * 24)
+
+        return `${daysFixed}d ${hours}h`
+      }
+    }
+  }
+
   function onWithdrawClick () {
-    setIsWithdrawClicked(true)
+    if (isDelayedWithdrawalReady) {
+      setIsCompleteDelayedWithdrawalClicked(true)
+    } else {
+      setIsWithdrawClicked(true)
+    }
   }
 
   function onWithdrawDelayedClick () {
@@ -80,7 +130,11 @@ function Exit ({
   }
 
   function onCheckAvailabilityClick () {
-
+    onAddPendingDelayedWithdraw({
+      id: accountIndex + merkleProof.Root,
+      instant: true,
+      date: Date.now()
+    })
   }
 
   function renderWithdrawalRedirect () {
@@ -97,6 +151,10 @@ function Exit ({
 
   if (isWithdrawDelayedClicked) {
     return renderWithdrawalDelayedRedirect()
+  }
+
+  if (isCompleteDelayedWithdrawalClicked) {
+    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true`} />
   }
 
   return (
@@ -137,26 +195,50 @@ function Exit ({
           )
         }
 
-        if (isWithdrawDelayed) {
-          return (
-            <div className={classes.withdraw}>
-              <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
-                <span className={classes.infoText}>Withdrawal is on hold because of the current network capacity.</span>
-                <span className={classes.infoText}>You can try to withdraw your funds later or you can schedule this transaction.</span>
-              </div>
-              <div className={classes.withdrawDelayedButtons}>
-                <button className={classes.withdrawButton} onClick={onCheckAvailabilityClick}>Check availability in 2 hours</button>
-                <button className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`} onClick={onWithdrawDelayedClick}>Withdraw in {getWithdrawalDelayerTime()} days</button>
-              </div>
-            </div>
+        if (isWithdrawDelayed && !isDelayedWithdrawalReady) {
+          console.log(pendingDelayedWithdraws, accountIndex + merkleProof.Root)
+          // Remove once hermez-node is ready
+          const accountIndexTemp = 'hez:SCC:256'
+          const pendingDelayedWithdrawal = pendingDelayedWithdraws?.find(
+            (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === accountIndexTemp + merkleProof.Root
           )
+          console.log(pendingDelayedWithdrawal)
+
+          if (pendingDelayedWithdrawal) {
+            return (
+              <div className={classes.withdraw}>
+                <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
+                  {pendingDelayedWithdrawal.instant && <span className={classes.infoText}>Your request to withdraw is validating with the network.</span>}
+                  {!pendingDelayedWithdrawal.instant && <span className={classes.infoText}>You have scheduled your withdrawal.</span>}
+
+                  <div className={`${classes.withdrawInfo} ${classes.withdrawInfoIcon}`}>
+                    <InfoIcon className={classes.infoIcon} />
+                    <span className={classes.infoText}>Remaining time: {getDateString(pendingDelayedWithdrawal)}</span>
+                  </div>
+                </div>
+              </div>
+            )
+          } else {
+            return (
+              <div className={classes.withdraw}>
+                <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
+                  <span className={classes.infoText}>Withdrawal is on hold because of the current network capacity.</span>
+                  <span className={classes.infoText}>You can try to withdraw your funds later or you can schedule this transaction.</span>
+                </div>
+                <div className={classes.withdrawDelayedButtons}>
+                  <button className={classes.withdrawButton} onClick={onCheckAvailabilityClick}>Check availability in 2 hours</button>
+                  <button className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`} onClick={onWithdrawDelayedClick}>Withdraw in {getWithdrawalDelayerTime()} days</button>
+                </div>
+              </div>
+            )
+          }
         }
 
         return (
           <div className={classes.withdraw}>
             <div className={classes.withdrawInfo}>
-              <img src={infoIcon} alt='Info Icon' className={classes.infoIcon} />
-              <span className={classes.infoText}>Sign required to finalize withdraw.</span>
+              <InfoIcon className={classes.infoIcon} />
+              <span className={classes.infoText}>Signing required to finalize withdraw.</span>
               <button className={classes.withdrawButton} onClick={onWithdrawClick}>Finalise</button>
             </div>
           </div>
@@ -177,7 +259,10 @@ Exit.propTypes = {
   batchNum: PropTypes.number,
   accountIndex: PropTypes.string,
   pendingWithdraws: PropTypes.array,
-  coordinatorState: PropTypes.object
+  pendingDelayedWithdraws: PropTypes.array,
+  coordinatorState: PropTypes.object,
+  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
+  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired
 }
 
 export default Exit

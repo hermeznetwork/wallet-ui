@@ -78,10 +78,14 @@ const useExitStyles = createUseStyles(theme => ({
     backgroundColor: theme.palette.grey.dark05,
     borderRadius: 12
   },
+  withdrawInfoIcon: {
+    color: theme.palette.white
+  },
   infoIcon: {
     width: theme.spacing(2),
     height: theme.spacing(2),
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    fill: theme.palette.white
   },
   infoText: {
     marginBottom: theme.spacing(2),
