@@ -169,7 +169,7 @@ const mapStateToProps = (state) => ({
   accountsTask: state.transaction.accountsTask,
   tokensTask: state.transaction.tokensTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  preferredCurrency: state.settings.preferredCurrency
+  preferredCurrency: state.myAddress.preferredCurrency
 })
 
 const getTransactionOverviewHeaderTitle = (transactionType) => {

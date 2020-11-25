@@ -3,25 +3,29 @@ import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import QRCode from 'qrcode.react'
 import { push } from 'connected-react-router'
+import { useLocation } from 'react-router-dom'
 
-import useMyAddressStyles from './my-address.styles'
+import useMyCodeStyles from './my-code.styles'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
-import { MY_ADDRESS } from '../../constants'
+import { MY_CODE } from '../../constants'
 import { ReactComponent as QRScannerIcon } from '../../images/icons/qr-scanner.svg'
 import QRScanner from '../shared/qr-scanner/qr-scanner.view'
 import { isAnyVideoDeviceAvailable } from '../../utils/browser'
 
-function MyAddress ({ metaMaskWalletTask, onChangeHeader, onQRScanned }) {
+function MyCode ({ metaMaskWalletTask, onChangeHeader, onNavigateToTransfer }) {
   const theme = useTheme()
-  const classes = useMyAddressStyles()
+  const classes = useMyCodeStyles()
+  const { search } = useLocation()
+  const urlSearchParams = new URLSearchParams(search)
+  const from = urlSearchParams.get('from')
   const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false)
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false)
 
   React.useEffect(() => {
-    onChangeHeader()
-  }, [onChangeHeader])
+    onChangeHeader(from)
+  }, [from, onChangeHeader])
 
   React.useEffect(() => {
     isAnyVideoDeviceAvailable()
@@ -48,13 +52,14 @@ function MyAddress ({ metaMaskWalletTask, onChangeHeader, onQRScanned }) {
   }
 
   /**
-   * Sets the local state variable isQRScannerOpen to false and bubbles up the read value
+   * Sets the local state variable isQRScannerOpen to false and navigates to the transfer
+   * view
    * @param {string} hermezEthereumAddress - Hermez Ethereum address scanned
    * @returns {void}
    */
   function handleQRScanningSuccess (hermezEthereumAddress) {
     setIsQRScannerOpen(false)
-    onQRScanned(hermezEthereumAddress)
+    onNavigateToTransfer(hermezEthereumAddress)
   }
 
   return (
@@ -64,7 +69,7 @@ function MyAddress ({ metaMaskWalletTask, onChangeHeader, onQRScanned }) {
           <>
             <QRCode
               value={metaMaskWalletTask.data.hermezEthereumAddress}
-              size={MY_ADDRESS.QR_CODE_SIZE}
+              size={MY_CODE.QR_CODE_SIZE}
               bgColor='transparent'
               fgColor={theme.palette.black}
               className={classes.qrCode}
@@ -100,16 +105,19 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (backgroundColor) =>
+  onChangeHeader: (from) =>
     dispatch(changeHeader({
       type: 'page',
       data: {
-        title: 'My address',
-        goBackAction: push('/')
+        title: 'My code',
+        goBackAction:
+          from === 'my-account'
+            ? push('/my-account')
+            : push('/')
       }
     })),
-  onQRScanned: (hermezEthereumAddress) =>
+  onNavigateToTransfer: (hermezEthereumAddress) =>
     dispatch(push(`/transfer?receiver=${hermezEthereumAddress}`))
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(MyAddress))
+export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(MyCode))

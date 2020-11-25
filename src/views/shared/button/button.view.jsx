@@ -4,11 +4,16 @@ import clsx from 'clsx'
 
 import useButtonStyles from './button.styles'
 
-function Button ({ Icon, text, onClick }) {
+function Button ({ Icon, text, className, onClick }) {
   const classes = useButtonStyles()
 
   return (
-    <button onClick={onClick} className={classes.root}>
+    <button
+      onClick={onClick} className={clsx({
+        [classes.root]: true,
+        [className]: className
+      })}
+    >
       {Icon || <></>}
       <p className={clsx({ [classes.textSpacer]: Icon !== undefined })}>
         {text}

@@ -23,7 +23,6 @@ function TransactionForm ({
   onLoadFees,
   onSubmit
 }) {
-  console.log(receiverAddress)
   const classes = useTransactionFormStyles()
   const [showInFiat, setShowInFiat] = useState(false)
   const [amount, setAmount] = useState(undefined)

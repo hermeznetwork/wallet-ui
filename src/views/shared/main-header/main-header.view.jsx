@@ -14,9 +14,9 @@ function MainHeader () {
     <header className={classes.root}>
       <Container disableVerticalGutters>
         <div className={classes.headerContent}>
-          <Link to='/settings' className={`${classes.link} ${classes.settingsLink}`}>
-            <UserAccountIcon className={classes.settingsIcon} />
-            <p className={classes.linkText}>Settings</p>
+          <Link to='/my-account' className={`${classes.link} ${classes.myAccountLink}`}>
+            <UserAccountIcon className={classes.myAccountIcon} />
+            <p className={classes.linkText}>My Account</p>
           </Link>
           <h1>
             <Link
@@ -26,9 +26,9 @@ function MainHeader () {
               <HermezLogo />
             </Link>
           </h1>
-          <Link to='/my-address' className={`${classes.link} ${classes.addressLink}`}>
-            <p className={classes.linkText}>My address</p>
-            <QRCodeIcon className={classes.addressIcon} />
+          <Link to='/my-code' className={`${classes.link} ${classes.myCodeLink}`}>
+            <p className={classes.linkText}>My Code</p>
+            <QRCodeIcon className={classes.myCodeIcon} />
           </Link>
         </div>
       </Container>

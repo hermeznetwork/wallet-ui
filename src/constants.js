@@ -1,12 +1,12 @@
 import { CurrencySymbol } from './utils/currencies'
 
-export const SETTINGS = {
+export const MY_ADDRESS = {
   PREFERRED_CURRENCY_KEY: 'preferredCurrency',
   DEFAULT_PREFERRED_CURRENCY: CurrencySymbol.USD.code
 }
 
-export const MY_ADDRESS = {
-  QR_CODE_SIZE: 200
+export const MY_CODE = {
+  QR_CODE_SIZE: 216
 }
 
 export const ACCOUNT_INDEX_SEPARATOR = ':'

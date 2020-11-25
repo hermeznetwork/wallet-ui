@@ -1,4 +1,4 @@
-import ethers from 'ethers'
+import { ethers } from 'ethers'
 import { keccak256 } from 'js-sha3'
 import hermezjs from 'hermezjs'
 

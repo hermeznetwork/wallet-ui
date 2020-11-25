@@ -1,6 +1,8 @@
 import { createUseStyles } from 'react-jss'
 
-const useMyAddressStyles = createUseStyles(theme => ({
+import { MY_CODE } from '../../constants'
+
+const useMyCodeStyles = createUseStyles(theme => ({
   root: {
     width: '100%',
     height: '100%',
@@ -12,8 +14,8 @@ const useMyAddressStyles = createUseStyles(theme => ({
     marginTop: theme.spacing(7)
   },
   address: {
-    maxWidth: 216,
-    lineHeight: `${theme.spacing(2.5)}px`,
+    maxWidth: MY_CODE.QR_CODE_SIZE,
+    lineHeight: 1.6,
     fontWeight: theme.fontWeights.medium,
     marginTop: theme.spacing(4),
     wordBreak: 'break-word',
@@ -43,4 +45,4 @@ const useMyAddressStyles = createUseStyles(theme => ({
   }
 }))
 
-export default useMyAddressStyles
+export default useMyCodeStyles

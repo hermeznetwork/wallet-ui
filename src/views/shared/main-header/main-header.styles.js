@@ -30,11 +30,11 @@ const useMainHeaderStyles = createUseStyles(theme => ({
     top: '50%',
     transform: 'translateY(-50%)'
   },
-  settingsLink: {
+  myAccountLink: {
     left: 0,
     marginLeft: -(theme.spacing(1))
   },
-  addressLink: {
+  myCodeLink: {
     right: 0,
     marginRight: -(theme.spacing(1))
   },
@@ -42,10 +42,10 @@ const useMainHeaderStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.bold,
     whiteSpace: 'nowrap'
   },
-  settingsIcon: {
+  myAccountIcon: {
     marginRight: theme.spacing(1.5)
   },
-  addressIcon: {
+  myCodeIcon: {
     marginLeft: theme.spacing(1.5)
   }
 }))

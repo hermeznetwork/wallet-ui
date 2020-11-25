@@ -5,7 +5,7 @@ import thunk from 'redux-thunk'
 
 import globalReducer from './global/global.reducer'
 import homeReducer from './home/home.reducer'
-import settingsReducer from './settings/settings.reducer'
+import myAddressReducer from './my-address/my-address.reducer'
 import accountDetailsReducer from './account-details/account-details.reducer'
 import transactionDetailsReducer from './transaction-details/transaction-details.reducer'
 import transactionReducer from './transaction/transaction.reducer'
@@ -21,7 +21,7 @@ function createRootReducer (history) {
     global: globalReducer,
     home: homeReducer,
     accountDetails: accountDetailsReducer,
-    settings: settingsReducer,
+    myAddress: myAddressReducer,
     transactionDetails: transactionDetailsReducer,
     transaction: transactionReducer
   })
