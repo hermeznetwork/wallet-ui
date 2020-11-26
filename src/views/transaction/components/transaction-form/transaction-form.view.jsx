@@ -296,6 +296,7 @@ function TransactionForm ({
             />
             <div className={classes.receiverButtons}>
               {
+                // Pasting is not supported in firefox
                 !receiver.length && !(navigator.userAgent.match(/firefox/i)) && (
                   <button
                     type='button'

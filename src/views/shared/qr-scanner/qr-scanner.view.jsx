@@ -18,7 +18,7 @@ function QRScanner ({ hideMyCode, onSuccess, onError, onClose }) {
 
   /**
    * Handles the onLoad event from the QrReader component. It sets the isQRScannerLoaded
-   * to true when the QR Scanner has being loaded on the DOM
+   * to true when the QR Scanner has being loaded in the DOM
    * @returns {void}
    */
   function handleQRScanLoad () {
