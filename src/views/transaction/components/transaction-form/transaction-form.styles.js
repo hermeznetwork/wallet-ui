@@ -150,48 +150,33 @@ const useAccountListStyles = createUseStyles(theme => ({
   receiverErrorMessageVisible: {
     display: 'flex'
   },
-  receiverPaste: {
-    height: '100%',
-    alignItems: 'center',
+  receiverButtons: {
+    display: 'flex'
+  },
+  receiverButton: {
     border: 0,
-    background: 0,
+    background: 'transparent',
     outline: 'none',
+    cursor: 'pointer',
     padding: theme.spacing(2),
     marginRight: theme.spacing(0.5),
-    fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black.dark,
-    cursor: 'pointer',
-    display: 'none',
+    color: theme.palette.black,
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(2.5)}px`,
+      fontSize: theme.spacing(2.5),
       marginRight: theme.spacing(3)
     }
   },
-  receiverPasteVisible: {
-    display: 'flex'
-  },
-  receiverDelete: {
-    height: '100%',
-    alignItems: 'center',
-    border: 0,
-    background: 0,
-    outline: 'none',
-    padding: theme.spacing(2),
-    marginRight: theme.spacing(0.5),
-    cursor: 'pointer',
-    display: 'none',
-    [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(2.5)}px`,
-      marginRight: theme.spacing(3)
+  receiverButtonIcon: {
+    width: 22,
+    height: 22,
+    '& path': {
+      fill: theme.palette.black
     }
   },
-  receiverDeleteVisible: {
-    display: 'flex'
-  },
-  receiverDeleteIcon: {
-    width: 30,
-    height: 30
+  receiverDeleteButtonIcon: {
+    width: 32,
+    height: 32
   },
   continue: {
     cursor: 'pointer',
@@ -220,7 +205,6 @@ const useAccountListStyles = createUseStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    cursor: 'pointer',
     marginTop: theme.spacing(2.5),
     [theme.breakpoints.upSm]: {
       marginTop: theme.spacing(4.5)

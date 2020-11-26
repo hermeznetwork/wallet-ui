@@ -11,7 +11,7 @@ import { ReactComponent as ArrowBackIcon } from '../../../images/icons/arrow-bac
 import { ReactComponent as QRCodeIcon } from '../../../images/icons/qr-code.svg'
 import Spinner from '../spinner/spinner.view'
 
-function QRScanner ({ onSuccess, onError, onClose }) {
+function QRScanner ({ hideMyCode, onSuccess, onError, onClose }) {
   const theme = useTheme()
   const classes = useQRScannerStyles()
   const [isQRScannerLoaded, setIsQRScannerLoaded] = React.useState(false)
@@ -31,6 +31,9 @@ function QRScanner ({ onSuccess, onError, onClose }) {
    * @returns {void}
    */
   function handleQRScan (result) {
+    if (result) {
+      onSuccess(result)
+    }
     if (result && Addresses.isHermezEthereumAddress(result)) {
       onSuccess(result)
     }
@@ -73,13 +76,17 @@ function QRScanner ({ onSuccess, onError, onClose }) {
                   </Container>
                 </div>
                 <div className={classes.myCodeButtonWrapper}>
-                  <button
-                    className={classes.myCodeButton}
-                    onClick={onClose}
-                  >
-                    <QRCodeIcon />
-                  </button>
-                  <p className={classes.myCodeLabel}>My code</p>
+                  {!hideMyCode && (
+                    <>
+                      <button
+                        className={classes.myCodeButton}
+                        onClick={onClose}
+                      >
+                        <QRCodeIcon />
+                      </button>
+                      <p className={classes.myCodeLabel}>My code</p>
+                    </>
+                  )}
                 </div>
               </>
             )}
