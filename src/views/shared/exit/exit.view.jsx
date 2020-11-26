@@ -238,7 +238,7 @@ function Exit ({
                   <span className={classes.infoText}>You can try to withdraw your funds later or you can schedule this transaction.</span>
                 </div>
                 <div className={classes.withdrawDelayedButtons}>
-                  <button className={classes.withdrawButton} onClick={onCheckAvailabilityClick}>Check availability in 2 hours</button>
+                  <button className={`${classes.withdrawButton} ${classes.withdrawDelayerInstantButton}`} onClick={onCheckAvailabilityClick}>Check availability in 2 hours</button>
                   <button className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`} onClick={onWithdrawDelayedClick}>Withdraw in {getWithdrawalDelayerTime()} days</button>
                 </div>
               </div>
