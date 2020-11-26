@@ -1,8 +1,8 @@
 import { push } from 'connected-react-router'
 
-import * as myAddressActions from './my-address.actions'
+import * as myAccountActions from './my-account.actions'
 import * as globalAction from '../global/global.actions'
-import { MY_ADDRESS } from '../../constants'
+import { MY_ACCOUNT } from '../../constants'
 
 /**
  * Changes the preferred currency of the user
@@ -11,8 +11,8 @@ import { MY_ADDRESS } from '../../constants'
  */
 function changePreferredCurrency (selectedTokenId) {
   return (dispatch) => {
-    dispatch(myAddressActions.changePreferredCurrency(selectedTokenId))
-    localStorage.setItem(MY_ADDRESS.PREFERRED_CURRENCY_KEY, selectedTokenId)
+    dispatch(myAccountActions.changePreferredCurrency(selectedTokenId))
+    localStorage.setItem(MY_ACCOUNT.PREFERRED_CURRENCY_KEY, selectedTokenId)
   }
 }
 

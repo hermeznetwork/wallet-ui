@@ -1,6 +1,6 @@
 import { CurrencySymbol } from './utils/currencies'
 
-export const MY_ADDRESS = {
+export const MY_ACCOUNT = {
   PREFERRED_CURRENCY_KEY: 'preferredCurrency',
   DEFAULT_PREFERRED_CURRENCY: CurrencySymbol.USD.code
 }

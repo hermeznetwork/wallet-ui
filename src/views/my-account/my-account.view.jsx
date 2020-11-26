@@ -6,7 +6,7 @@ import { push } from 'connected-react-router'
 
 import useMyAccountStyles from './my-account.styles'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
-import { changePreferredCurrency, disconnectMetaMaskWallet } from '../../store/my-address/my-address.thunks'
+import { changePreferredCurrency, disconnectMetaMaskWallet } from '../../store/my-account/my-account.thunks'
 import Container from '../shared/container/container.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { ReactComponent as ExchangeIcon } from '../../images/icons/exchange.svg'
@@ -138,7 +138,7 @@ MyAccount.propTypes = {
 
 const mapStateToProps = (state) => ({
   metaMaskWalletTask: state.global.metaMaskWalletTask,
-  preferredCurrency: state.myAddress.preferredCurrency
+  preferredCurrency: state.myAccount.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({
