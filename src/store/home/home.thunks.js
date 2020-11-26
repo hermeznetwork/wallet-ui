@@ -41,10 +41,9 @@ function fetchPoolTransactions () {
 
 /**
  * Fetches the exit data for transactions of type Exit
- * @param {Object[]} exitTransactions - Transactions of type Exit
  * @returns {void}
  */
-function fetchExits (exitTransactions) {
+function fetchExits () {
   return (dispatch) => {
     dispatch(homeActions.loadExits())
 
