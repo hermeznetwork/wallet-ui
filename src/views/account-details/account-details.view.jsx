@@ -260,7 +260,7 @@ AccountDetails.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  preferredCurrency: state.settings.preferredCurrency,
+  preferredCurrency: state.myAccount.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
   poolTransactionsTask: state.accountDetails.poolTransactionsTask,
   historyTransactionsTask: state.accountDetails.historyTransactionsTask,

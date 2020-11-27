@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useSettingsStyles = createUseStyles(theme => ({
+const useMyAccountStyles = createUseStyles(theme => ({
   root: {
     width: '100%'
   },
@@ -16,6 +16,19 @@ const useSettingsStyles = createUseStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
+  },
+  buttonsWrapper: {
+    display: 'flex'
+  },
+  qrButton: {
+    marginRight: theme.spacing(2)
+  },
+  qrIcon: {
+    width: 20,
+    height: 20,
+    '& path': {
+      fill: theme.palette.grey.dark
+    }
   },
   bottomSection: {
     width: '100%',
@@ -52,4 +65,4 @@ const useSettingsStyles = createUseStyles(theme => ({
   }
 }))
 
-export default useSettingsStyles
+export default useMyAccountStyles

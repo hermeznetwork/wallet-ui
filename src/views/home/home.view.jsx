@@ -253,7 +253,7 @@ const mapStateToProps = (state) => ({
   metaMaskWalletTask: state.global.metaMaskWalletTask,
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  preferredCurrency: state.settings.preferredCurrency,
+  preferredCurrency: state.myAccount.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
   pendingWithdraws: state.global.pendingWithdraws,

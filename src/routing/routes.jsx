@@ -2,11 +2,11 @@ import React from 'react'
 
 import Home from '../views/home/home.view'
 import Transaction, { TransactionType } from '../views/transaction/transaction.view'
-import Settings from '../views/settings/settings.view'
+import MyAccount from '../views/my-account/my-account.view'
 import AccountDetails from '../views/account-details/account-details.view'
 import TransactionDetails from '../views/transaction-details/transaction-details.view'
 import Login from '../views/login/login.view'
-// import MyAddress from '../views/my-address/my-address.view'
+import MyCode from '../views/my-code/my-code.view'
 
 const routes = [
   {
@@ -38,14 +38,13 @@ const routes = [
     render: () => <Transaction transactionType={TransactionType.ForceExit} />
   },
   {
-    path: '/settings',
-    render: () => <Settings />
+    path: '/my-account',
+    render: () => <MyAccount />
   },
-  // {
-  //   path: '/my-address',
-  //   render: () => <MyAddress />,
-  //   renderLayout: true
-  // },
+  {
+    path: '/my-code',
+    render: () => <MyCode />
+  },
   {
     path: '/accounts/:accountIndex',
     render: () => <AccountDetails />

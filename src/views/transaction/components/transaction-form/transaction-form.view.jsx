@@ -6,16 +6,19 @@ import { getTokenAmountBigInt, getTokenAmountString } from 'hermezjs/src/utils'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
-import swapIcon from '../../../../images/icons/swap.svg'
-import errorIcon from '../../../../images/icons/error.svg'
-import closeIcon from '../../../../images/icons/close.svg'
+import { ReactComponent as SwapIcon } from '../../../../images/icons/swap.svg'
+import { ReactComponent as ErrorIcon } from '../../../../images/icons/error.svg'
+import { ReactComponent as CloseIcon } from '../../../../images/icons/close.svg'
+import { ReactComponent as QRScannerIcon } from '../../../../images/icons/qr-scanner.svg'
 import { TransactionType } from '../../transaction.view'
 import Container from '../../../shared/container/container.view'
-import { readFromClipboard } from '../../../../utils/browser'
+import { isAnyVideoDeviceAvailable, readFromClipboard } from '../../../../utils/browser'
+import QRScanner from '../../../shared/qr-scanner/qr-scanner.view'
 
 function TransactionForm ({
   transactionType,
   account,
+  receiverAddress,
   preferredCurrency,
   fiatExchangeRates,
   feesTask,
@@ -23,6 +26,8 @@ function TransactionForm ({
   onSubmit
 }) {
   const classes = useTransactionFormStyles()
+  const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false)
+  const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false)
   const [showInFiat, setShowInFiat] = useState(false)
   const [amount, setAmount] = useState(undefined)
   const [receiver, setReceiver] = useState('')
@@ -40,6 +45,19 @@ function TransactionForm ({
       amountInput.current.focus()
     }
   }, [amountInput])
+
+  React.useEffect(() => {
+    if (receiverAddress) {
+      setReceiver(receiverAddress)
+      setIsReceiverValid(true)
+    }
+  }, [receiverAddress])
+
+  React.useEffect(() => {
+    isAnyVideoDeviceAvailable()
+      .then(setisVideoDeviceAvailable)
+      .catch(() => setisVideoDeviceAvailable(false))
+  }, [])
 
   /**
    * Converts the account balance to a number
@@ -178,6 +196,34 @@ function TransactionForm ({
   }
 
   /**
+   * Sets the local state variable isQRScannerOpen to true when the user requests to open
+   * the QR Scanner
+   * @returns {void}
+   */
+  function handleOpenQRScanner () {
+    setIsQRScannerOpen(true)
+  }
+
+  /**
+   * Sets the local state variable isQRScannerOpen to false when the user requests to
+   * close the QR Scanner
+   * @returns {void}
+   */
+  function handleCloseQRScanner () {
+    setIsQRScannerOpen(false)
+  }
+
+  /**
+   * Sets the receiver local state variable with the scanned Hermez Ethereum Address
+   * @param {string} hermezEthereumAddress - Scanned Hermez Ethereum Address
+   * @returns {void}
+   */
+  function handleReceiverScanningSuccess (hermezEthereumAddress) {
+    setIsQRScannerOpen(false)
+    setReceiver(hermezEthereumAddress)
+  }
+
+  /**
    * Resets the receiver input when the delete button is clicked
    * @returns {void}
    */
@@ -248,31 +294,41 @@ function TransactionForm ({
               type='text'
               placeholder='To hez:0x2387 ･･･ 5682'
             />
-
-            <button
-              type='button'
-              className={clsx({
-                [classes.receiverPaste]: true,
-                [classes.receiverPasteVisible]: receiver.length === 0 && !(navigator.userAgent.match(/firefox/i))
-              })}
-              onClick={handlePasteClick}
-            >
-              Paste
-            </button>
-            <button
-              type='button'
-              className={clsx({
-                [classes.receiverDelete]: true,
-                [classes.receiverDeleteVisible]: receiver.length > 0
-              })}
-              onClick={handleDeleteClick}
-            >
-              <img
-                className={classes.receiverDeleteIcon}
-                src={closeIcon}
-                alt='Close Icon'
-              />
-            </button>
+            <div className={classes.receiverButtons}>
+              {
+                // Pasting is not supported in firefox
+                !receiver.length && !(navigator.userAgent.match(/firefox/i)) && (
+                  <button
+                    type='button'
+                    className={classes.receiverButton}
+                    onClick={handlePasteClick}
+                  >
+                    Paste
+                  </button>
+                )
+              }
+              {
+                receiver.length > 0 && (
+                  <button
+                    type='button'
+                    className={classes.receiverButton}
+                    onClick={handleDeleteClick}
+                  >
+                    <CloseIcon className={classes.receiverDeleteButtonIcon} />
+                  </button>
+                )
+              }
+              {!receiver.length && (
+                <button
+                  type='button'
+                  className={classes.receiverButton}
+                  onClick={handleOpenQRScanner}
+                  disabled={!isVideoDeviceAvailable}
+                >
+                  <QRScannerIcon className={classes.receiverButtonIcon} />
+                </button>
+              )}
+            </div>
           </div>
 
           <p className={clsx({
@@ -280,11 +336,7 @@ function TransactionForm ({
             [classes.receiverErrorMessageVisible]: isReceiverValid === false
           })}
           >
-            <img
-              className={classes.errorIcon}
-              src={errorIcon}
-              alt='Error Icon'
-            />
+            <ErrorIcon className={classes.errorIcon} />
             Please enter a valid address.
           </p>
         </div>
@@ -356,11 +408,7 @@ function TransactionForm ({
                   className={`${classes.amountButton} ${classes.changeCurrency}`}
                   onClick={handleChangeCurrencyButtonClick}
                 >
-                  <img
-                    className={classes.changeCurrencyIcon}
-                    src={swapIcon}
-                    alt='Swap Icon'
-                  />
+                  <SwapIcon className={classes.changeCurrencyIcon} />
                   <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
                 </button>
               </div>
@@ -370,11 +418,7 @@ function TransactionForm ({
               [classes.selectAmountErrorMessageVisible]: isAmountPositive === false || isAmountLessThanFunds === false
             })}
             >
-              <img
-                className={classes.errorIcon}
-                src={errorIcon}
-                alt='Error Icon'
-              />
+              <ErrorIcon className={classes.errorIcon} />
               {
                 isAmountPositive === false
                   ? 'The amount should be positive'
@@ -394,6 +438,13 @@ function TransactionForm ({
           </form>
           {feesTask.status === 'successful' && renderFeeSelector(feesTask.data)}
         </section>
+        {isVideoDeviceAvailable && isQRScannerOpen && (
+          <QRScanner
+            hideMyCode
+            onSuccess={handleReceiverScanningSuccess}
+            onClose={handleCloseQRScanner}
+          />
+        )}
       </Container>
     </div>
   )

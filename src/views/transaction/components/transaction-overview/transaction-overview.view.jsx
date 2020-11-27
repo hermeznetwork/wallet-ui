@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ethers from 'ethers'
+import { ethers } from 'ethers'
 import { useTheme } from 'react-jss'
 import hermezjs from 'hermezjs'
 

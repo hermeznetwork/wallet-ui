@@ -53,6 +53,7 @@ function Transaction ({
   const urlSearchParams = new URLSearchParams(search)
   const accountIndex = urlSearchParams.get('accountIndex')
   const batchNum = Number(urlSearchParams.get('batchNum'))
+  const receiver = urlSearchParams.get('receiver')
   const instantWithdrawal = urlSearchParams.get('instantWithdrawal') === 'true'
   const completeDelayedWithdrawal = urlSearchParams.get('completeDelayedWithdrawal') === 'true'
 
@@ -95,9 +96,9 @@ function Transaction ({
                 transactionType={transactionType}
                 accountsTask={stepData.accountsTask}
                 preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
+                fiatExchangeRates={fiatExchangeRatesTask.data || {}}
                 onLoadAccounts={onLoadAccounts}
-                onAccountClick={onGoToBuildTransactionStep}
+                onAccountClick={(account) => onGoToBuildTransactionStep(account, receiver)}
               />
             )
           }
@@ -108,8 +109,9 @@ function Transaction ({
               <TransactionForm
                 account={stepData.account}
                 transactionType={transactionType}
+                receiverAddress={stepData.receiver}
                 preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
+                fiatExchangeRates={fiatExchangeRatesTask.data || {}}
                 feesTask={stepData.feesTask}
                 onLoadFees={onLoadFees}
                 onSubmit={onGoToTransactionOverviewStep}
@@ -122,10 +124,10 @@ function Transaction ({
 
             return (
               <TransactionOverview
-                metaMaskWallet={metaMaskWalletTask.status === 'successful' ? metaMaskWalletTask.data : {}}
+                metaMaskWallet={metaMaskWalletTask.data || {}}
                 transactionType={transactionType}
                 preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRatesTask.status === 'successful' ? fiatExchangeRatesTask.data : {}}
+                fiatExchangeRates={fiatExchangeRatesTask.data || {}}
                 account={buildTransactionStepData.account}
                 to={stepData.transaction.to}
                 amount={stepData.transaction.amount}
@@ -175,7 +177,7 @@ const mapStateToProps = (state) => ({
   accountsTask: state.transaction.accountsTask,
   tokensTask: state.transaction.tokensTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  preferredCurrency: state.settings.preferredCurrency
+  preferredCurrency: state.myAccount.preferredCurrency
 })
 
 const getTransactionOverviewHeaderTitle = (transactionType) => {
@@ -252,8 +254,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionThunks.fetchAccounts(transactionType, fromItem)),
   onGoToChooseAccountStep: () =>
     dispatch(transactionActions.goToChooseAccountStep()),
-  onGoToBuildTransactionStep: (account) =>
-    dispatch(transactionActions.goToBuildTransactionStep(account)),
+  onGoToBuildTransactionStep: (account, receiver) =>
+    dispatch(transactionActions.goToBuildTransactionStep(account, receiver)),
   onGoToTransactionOverviewStep: (transaction) =>
     dispatch(transactionActions.goToReviewTransactionStep(transaction)),
   onGoToFinishTransactionStep: (type) =>

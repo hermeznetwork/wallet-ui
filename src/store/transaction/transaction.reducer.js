@@ -58,7 +58,8 @@ function transactionReducer (state = initialTransactionState, action) {
           ...state.steps,
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
-            account: action.account
+            account: action.account,
+            receiver: action.receiver
           }
         }
       }
