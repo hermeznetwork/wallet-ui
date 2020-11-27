@@ -44,6 +44,8 @@ function Transaction ({
   onGoToFinishTransactionStep,
   onFinishTransaction,
   onAddPendingWithdraw,
+  onAddPendingDelayedWithdraw,
+  onRemovePendingDelayedWithdraw,
   onCleanup
 }) {
   const classes = useTransactionStyles()
@@ -52,6 +54,8 @@ function Transaction ({
   const accountIndex = urlSearchParams.get('accountIndex')
   const batchNum = Number(urlSearchParams.get('batchNum'))
   const receiver = urlSearchParams.get('receiver')
+  const instantWithdrawal = urlSearchParams.get('instantWithdrawal') === 'true'
+  const completeDelayedWithdrawal = urlSearchParams.get('completeDelayedWithdrawal') === 'true'
 
   React.useEffect(() => {
     onChangeHeader(currentStep, transactionType, accountIndex)
@@ -129,8 +133,12 @@ function Transaction ({
                 amount={stepData.transaction.amount}
                 fee={stepData.transaction.fee}
                 exit={stepData.transaction.exit}
+                instantWithdrawal={instantWithdrawal}
+                completeDelayedWithdrawal={completeDelayedWithdrawal}
                 onGoToFinishTransactionStep={onGoToFinishTransactionStep}
                 onAddPendingWithdraw={onAddPendingWithdraw}
+                onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
               />
             )
           }
@@ -254,6 +262,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionActions.goToFinishTransactionStep()),
   onAddPendingWithdraw: (hermezAddress, pendingWithdraw) =>
     dispatch(globalThunks.addPendingWithdraw(hermezAddress, pendingWithdraw)),
+  onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
+    dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
+  onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
+    dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onFinishTransaction: (accountIndex) =>
     dispatch(accountIndex ? push(`/accounts/${accountIndex}`) : push('/')),
   onCleanup: () =>

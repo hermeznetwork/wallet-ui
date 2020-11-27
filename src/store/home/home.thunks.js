@@ -40,32 +40,14 @@ function fetchPoolTransactions () {
 }
 
 /**
- * Fetches the history transactions for a Hermez Ethereum address
- * @returns {void}
- */
-function fetchHistoryTransactions (hermezEthereumAddress) {
-  return (dispatch) => {
-    dispatch(homeActions.loadHistoryTransactions())
-
-    return CoordinatorAPI.getTransactions(hermezEthereumAddress)
-      .then(res => dispatch(homeActions.loadHistoryTransactionsSuccess(res)))
-      .catch(err => dispatch(homeActions.loadHistoryTransactionsFailure(err)))
-  }
-}
-
-/**
  * Fetches the exit data for transactions of type Exit
- * @param {Object[]} exitTransactions - Transactions of type Exit
  * @returns {void}
  */
-function fetchExits (exitTransactions) {
+function fetchExits () {
   return (dispatch) => {
     dispatch(homeActions.loadExits())
 
-    const exitTransactionsPromises = exitTransactions
-      .map(exitTransaction => CoordinatorAPI.getExit(exitTransaction.batchNum, exitTransaction.fromAccountIndex))
-
-    return Promise.all(exitTransactionsPromises)
+    return CoordinatorAPI.getExits(true)
       .then(exits => dispatch(homeActions.loadExitsSuccess(exits)))
       .catch(err => dispatch(homeActions.loadExitsFailure(err)))
   }
@@ -74,6 +56,5 @@ function fetchExits (exitTransactions) {
 export {
   fetchAccounts,
   fetchPoolTransactions,
-  fetchHistoryTransactions,
   fetchExits
 }

@@ -14,6 +14,7 @@ function TransactionType ({ type, amount }) {
    */
   function getIcon () {
     switch (type) {
+      case TxType.CreateAccountDeposit:
       case TxType.Deposit: {
         return depositedIcon
       }
