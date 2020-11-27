@@ -21,11 +21,15 @@ function TransactionOverview ({
   amount,
   fee,
   exit,
+  instantWithdrawal,
+  completeDelayedWithdrawal,
   account,
   preferredCurrency,
   fiatExchangeRates,
   onGoToFinishTransactionStep,
-  onAddPendingWithdraw
+  onAddPendingWithdraw,
+  onAddPendingDelayedWithdraw,
+  onRemovePendingDelayedWithdraw
 }) {
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
@@ -131,27 +135,49 @@ function TransactionOverview ({
       case TransactionType.Withdraw: {
         setIsUserSigningTransaction(true)
 
-        // TODO: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
-        // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings)
-        return hermezjs.Tx.withdraw(
-          ethers.BigNumber.from(340000000000000000000n),
-          'hez:TKN:256',
-          {
-            id: 1,
-            ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c'
-          },
-          metaMaskWallet.publicKeyCompressedHex,
-          ethers.BigNumber.from('4'),
-          []
-        )
-          .then(() => {
-            onAddPendingWithdraw(metaMaskWallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
+        // Differentiate between a withdraw on the Hermez SC and the DelayedWithdrawal SC
+        if (!completeDelayedWithdrawal) {
+          // TODO: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
+          // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings, instantWithdrawal)
+          return hermezjs.Tx.withdraw(
+            ethers.BigNumber.from(340000000000000000000n),
+            'hez:TKN:256',
+            {
+              id: 1,
+              ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c'
+            },
+            metaMaskWallet.publicKeyCompressedHex,
+            ethers.BigNumber.from('4'),
+            [],
+            instantWithdrawal
+          ).then(() => {
+            if (instantWithdrawal) {
+              onAddPendingWithdraw(metaMaskWallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
+            } else {
+              onAddPendingDelayedWithdraw({
+                id: account.accountIndex + exit.merkleProof.Root,
+                instant: false,
+                date: Date.now()
+              })
+            }
             onGoToFinishTransactionStep(transactionType)
-          })
-          .catch((error) => {
+          }).catch((error) => {
             setIsUserSigningTransaction(false)
             console.log(error)
           })
+        } else {
+          // Change once hermez-node is ready
+          // return hermezjs.Tx.delayedWithdraw(metaMaskWallet.hermezEthereumAddress, account.token)
+          return hermezjs.Tx.delayedWithdraw(metaMaskWallet.hermezEthereumAddress, { id: 1, ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c' })
+            .then(() => {
+              onRemovePendingDelayedWithdraw(account.accountIndex + exit.merkleProof.Root)
+              onGoToFinishTransactionStep(transactionType)
+            })
+            .catch((error) => {
+              setIsUserSigningTransaction(false)
+              console.log(error)
+            })
+        }
       }
       default: {
         const { transaction, encodedTransaction } = await hermezjs.TxUtils.generateL2Transaction(
@@ -232,6 +258,8 @@ TransactionOverview.propTypes = {
   amount: PropTypes.string.isRequired,
   fee: PropTypes.string,
   exit: PropTypes.object,
+  instantWithdrawal: PropTypes.bool,
+  completeDelayedWithdrawal: PropTypes.bool,
   account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object.isRequired,

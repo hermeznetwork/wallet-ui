@@ -7,7 +7,7 @@ import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
 import * as accountDetailsThunks from '../../store/account-details/account-details.thunks'
-import { fetchCoordinatorState } from '../../store/global/global.thunks'
+import { fetchCoordinatorState, addPendingDelayedWithdraw, removePendingDelayedWithdraw } from '../../store/global/global.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -30,6 +30,7 @@ function AccountDetails ({
   fiatExchangeRatesTask,
   metaMaskWalletTask,
   pendingWithdraws,
+  pendingDelayedWithdraws,
   coordinatorStateTask,
   onChangeHeader,
   onLoadAccount,
@@ -37,6 +38,8 @@ function AccountDetails ({
   onLoadHistoryTransactions,
   onLoadExits,
   onLoadCoordinatorState,
+  onAddPendingDelayedWithdraw,
+  onRemovePendingDelayedWithdraw,
   onNavigateToTransactionDetails,
   onCleanup
 }) {
@@ -176,6 +179,9 @@ function AccountDetails ({
                     }
                     preferredCurrency={preferredCurrency}
                     pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                    pendingDelayedWithdraws={pendingDelayedWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                    onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                    onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                     coordinatorState={coordinatorStateTask.data}
                   />
                   {exitsTask.status === 'successful' &&
@@ -188,6 +194,9 @@ function AccountDetails ({
                       }
                       preferredCurrency={preferredCurrency}
                       pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                      pendingDelayedWithdraws={pendingDelayedWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                       coordinatorState={coordinatorStateTask.data}
                     />}
                   <TransactionList
@@ -237,6 +246,7 @@ AccountDetails.propTypes = {
   fiatExchangeRatesTask: PropTypes.object.isRequired,
   metaMaskWalletTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
+  pendingDelayedWithdraws: PropTypes.object.isRequired,
   coordinatorStateTask: PropTypes.object.isRequired,
   onLoadAccount: PropTypes.func.isRequired,
   onChangeHeader: PropTypes.func.isRequired,
@@ -244,6 +254,8 @@ AccountDetails.propTypes = {
   onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
   onLoadCoordinatorState: PropTypes.func.isRequired,
+  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
+  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToTransactionDetails: PropTypes.func.isRequired
 }
 
@@ -256,6 +268,7 @@ const mapStateToProps = (state) => ({
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   metaMaskWalletTask: state.global.metaMaskWalletTask,
   pendingWithdraws: state.global.pendingWithdraws,
+  pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   coordinatorStateTask: state.global.coordinatorStateTask
 })
 
@@ -277,6 +290,10 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadExits: (exitTransactions) =>
     dispatch(accountDetailsThunks.fetchExits(exitTransactions)),
   onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
+  onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
+    dispatch(addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
+  onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>
+    dispatch(removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
   onCleanup: () =>

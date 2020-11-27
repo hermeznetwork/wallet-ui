@@ -3,10 +3,9 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import { TxType } from 'hermezjs/src/tx'
 
 import useHomeStyles from './home.styles'
-import { fetchCoordinatorState } from '../../store/global/global.thunks'
+import { fetchCoordinatorState, addPendingDelayedWithdraw, removePendingDelayedWithdraw } from '../../store/global/global.thunks'
 import * as homeThunks from '../../store/home/home.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
@@ -27,18 +26,19 @@ function Home ({
   metaMaskWalletTask,
   accountsTask,
   poolTransactionsTask,
-  historyTransactionsTask,
   exitsTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   pendingWithdraws,
+  pendingDelayedWithdraws,
   coordinatorStateTask,
   onChangeHeader,
   onLoadAccounts,
   onLoadPoolTransactions,
-  onLoadHistoryTransactions,
   onLoadExits,
   onLoadCoordinatorState,
+  onAddPendingDelayedWithdraw,
+  onRemovePendingDelayedWithdraw,
   onNavigateToAccountDetails,
   onOpenSnackbar,
   onCleanup
@@ -53,21 +53,14 @@ function Home ({
   React.useEffect(() => {
     if (metaMaskWalletTask.status === 'successful') {
       onLoadAccounts(metaMaskWalletTask.data.hermezEthereumAddress)
-      onLoadHistoryTransactions(metaMaskWalletTask.data.hermezEthereumAddress)
     }
-  }, [metaMaskWalletTask, onLoadAccounts, onLoadHistoryTransactions])
+  }, [metaMaskWalletTask, onLoadAccounts])
 
   React.useEffect(() => {
     onLoadPoolTransactions()
+    onLoadExits()
     onLoadCoordinatorState()
-  }, [onLoadPoolTransactions, onLoadCoordinatorState])
-
-  React.useEffect(() => {
-    if (historyTransactionsTask.status === 'successful') {
-      const exitTransactions = historyTransactionsTask.data.transactions.filter((transaction) => transaction.type === TxType.Exit)
-      onLoadExits(exitTransactions)
-    }
-  }, [historyTransactionsTask, onLoadExits])
+  }, [onLoadPoolTransactions, onLoadExits, onLoadCoordinatorState])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -156,8 +149,10 @@ function Home ({
       <Container>
         <section className={classes.section}>
           {
-            (poolTransactionsTask.status === 'successful' &&
-            historyTransactionsTask.status === 'successful')
+            (poolTransactionsTask.status === 'successful' ||
+            poolTransactionsTask.status === 'reloading') &&
+            (exitsTask.status === 'successful' ||
+            exitsTask.status === 'reloading')
               ? (
                 <>
                   <ExitList
@@ -169,11 +164,14 @@ function Home ({
                     }
                     preferredCurrency={preferredCurrency}
                     pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                    pendingDelayedWithdraws={pendingDelayedWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                    onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                    onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                     coordinatorState={coordinatorStateTask.data}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
-                      transactions={exitsTask.data}
+                      transactions={exitsTask.data.exits}
                       fiatExchangeRates={
                         fiatExchangeRatesTask.status === 'successful'
                           ? fiatExchangeRatesTask.data
@@ -181,6 +179,9 @@ function Home ({
                       }
                       preferredCurrency={preferredCurrency}
                       pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                      pendingDelayedWithdraws={pendingDelayedWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                       coordinatorState={coordinatorStateTask.data}
                     />}
                 </>
@@ -236,14 +237,15 @@ Home.propTypes = {
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRatesTask: PropTypes.object,
   poolTransactionsTask: PropTypes.object.isRequired,
-  historyTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
+  pendingDelayedWithdraws: PropTypes.object.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
-  onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
   onLoadCoordinatorState: PropTypes.func.isRequired,
+  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
+  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
 }
 
@@ -253,9 +255,9 @@ const mapStateToProps = (state) => ({
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.settings.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
-  historyTransactionsTask: state.home.historyTransactionsTask,
   exitsTask: state.home.exitsTask,
   pendingWithdraws: state.global.pendingWithdraws,
+  pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   coordinatorStateTask: state.global.coordinatorStateTask
 })
 
@@ -266,11 +268,13 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem)),
   onLoadPoolTransactions: () =>
     dispatch(homeThunks.fetchPoolTransactions()),
-  onLoadHistoryTransactions: (hermezEthereumAddress) =>
-    dispatch(homeThunks.fetchHistoryTransactions(hermezEthereumAddress)),
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
   onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
+  onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
+    dispatch(addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
+  onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>
+    dispatch(removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) =>

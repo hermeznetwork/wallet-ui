@@ -9,7 +9,10 @@ function ExitList ({
   preferredCurrency,
   fiatExchangeRates,
   pendingWithdraws,
-  coordinatorState
+  pendingDelayedWithdraws,
+  coordinatorState,
+  onAddPendingDelayedWithdraw,
+  onRemovePendingDelayedWithdraw
 }) {
   return (
     <>
@@ -41,6 +44,9 @@ function ExitList ({
             batchNum={transaction.batchNum}
             accountIndex={transaction.accountIndex}
             pendingWithdraws={pendingWithdraws}
+            pendingDelayedWithdraws={pendingDelayedWithdraws}
+            onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+            onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
             coordinatorState={coordinatorState}
           />
         )
@@ -54,7 +60,10 @@ ExitList.propTypes = {
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object,
   pendingWithdraws: PropTypes.array,
-  coordinatorState: PropTypes.object
+  pendingDelayedWithdraws: PropTypes.array,
+  coordinatorState: PropTypes.object,
+  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
+  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired
 }
 
 export default ExitList
