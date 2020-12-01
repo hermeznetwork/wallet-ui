@@ -66,28 +66,25 @@ async function getMetaMaskTokens (metaMaskWallet, finalHermezTokens) {
       payable: false,
       type: 'function'
     }]
-    const balancePromises = []
-    for (const token of hermezTokens) {
+    const balancePromises = hermezTokens.map(token => {
       if (token.id === ETHER_TOKEN_ID) {
         // tokenID 0 is for Ether
         const signer = provider.getSigner()
-        balancePromises.push(
-          signer.getBalance()
-        )
+
+        return signer.getBalance()
       } else {
         // For ERC 20 tokens, check the balance from the smart contract
         const contract = new ethers.Contract(token.ethereumAddress, partialERC20ABI, provider)
-        balancePromises.push(
-          contract.balanceOf(getEthereumAddress(metaMaskWallet.hermezEthereumAddress))
-          // We can ignore if a call to the contract of a specific token fails.
-            .catch(() => {})
-        )
-      }
-    }
 
+        return contract.balanceOf(getEthereumAddress(metaMaskWallet.hermezEthereumAddress))
+          // We can ignore if a call to the contract of a specific token fails.
+          .catch(() => {})
+      }
+    })
     const balances = (await Promise.all(balancePromises))
       .map((tokenBalance, index) => {
         const tokenData = hermezTokens[index]
+
         return {
           balance: tokenBalance,
           token: tokenData
