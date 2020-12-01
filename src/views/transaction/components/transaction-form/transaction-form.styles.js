@@ -85,6 +85,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     color: theme.palette.grey.main,
     flex: 1,
     padding: `${theme.spacing(2)}px 0`,
+    transition: theme.hoverTransition,
     '&:hover': {
       color: theme.palette.black,
       '& path': {

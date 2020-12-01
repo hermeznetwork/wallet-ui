@@ -30,6 +30,7 @@ const theme = {
     },
     green: '#219653'
   },
+  hoverTransition: 'all 100ms',
   fontWeights: {
     normal: '400',
     medium: '500',

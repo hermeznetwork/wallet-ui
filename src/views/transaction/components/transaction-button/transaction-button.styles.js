@@ -13,6 +13,7 @@ const transactionButtonStyles = createUseStyles(theme => ({
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.white,
+    transition: theme.hoverTransition,
     '&:hover': {
       backgroundColor: theme.palette.secondary.hover
     },
