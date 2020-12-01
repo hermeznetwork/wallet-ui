@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useAccountListStyles = createUseStyles(theme => ({
+const useTransactionFormStyles = createUseStyles(theme => ({
   root: {
     marginTop: theme.headerHeight,
     marginBottom: theme.spacing(3),
@@ -85,6 +85,12 @@ const useAccountListStyles = createUseStyles(theme => ({
     color: theme.palette.grey.main,
     flex: 1,
     padding: `${theme.spacing(2)}px 0`,
+    '&:hover': {
+      color: theme.palette.black,
+      '& path': {
+        fill: theme.palette.black
+      }
+    },
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(3.5)}px 0`
@@ -178,28 +184,6 @@ const useAccountListStyles = createUseStyles(theme => ({
     width: 32,
     height: 32
   },
-  continue: {
-    cursor: 'pointer',
-    width: '100%',
-    marginTop: theme.spacing(8),
-    padding: `${theme.spacing(2)}px 0`,
-    backgroundColor: theme.palette.secondary.main,
-    border: 0,
-    outline: 'none',
-    borderRadius: 14,
-    fontSize: `${theme.spacing(2)}px`,
-    fontWeight: theme.fontWeights.bold,
-    color: theme.palette.white,
-    '&[disabled]': {
-      backgroundColor: theme.palette.grey.main,
-      cursor: 'default'
-    },
-    [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(3)}px 0`,
-      marginTop: theme.spacing(14.5)
-    }
-  },
   feeWrapper: {
     display: 'flex',
     alignItems: 'center',
@@ -226,4 +210,4 @@ const useAccountListStyles = createUseStyles(theme => ({
   }
 }))
 
-export default useAccountListStyles
+export default useTransactionFormStyles

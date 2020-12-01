@@ -7,7 +7,8 @@ const theme = {
     secondary: {
       light: '#fef5ed',
       main: '#e75a2b',
-      dark: '#d8853b'
+      dark: '#d8853b',
+      hover: '#d44d20'
     },
     white: '#ffffff',
     black: '#2b2b2b',
