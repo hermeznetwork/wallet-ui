@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 
 import useLoginStyles from './login.styles'
-import { fetchMetamaskWallet } from '../../store/global/global.thunks'
+import * as globalThunks from '../../store/global/global.thunks'
 import { ReactComponent as HermezLogoAlternative } from '../../images/hermez-logo-alternative.svg'
 import { ReactComponent as MetaMaskLogo } from '../../images/metamask-logo.svg'
 import Container from '../shared/container/container.view'
@@ -15,6 +15,7 @@ function Login ({
   metaMaskWalletTask,
   redirectRoute,
   onLoadMetaMaskWallet,
+  onLoadLedgerWallet,
   onChangeHeader
 }) {
   const theme = useTheme()
@@ -54,6 +55,7 @@ function Login ({
               </button>
             )
         }
+        <button onClick={onLoadLedgerWallet}>Log in with Ledger</button>
         {(() => {
           switch (metaMaskWalletTask.status) {
             case 'pending':
@@ -81,7 +83,8 @@ function Login ({
 }
 
 Login.propTypes = {
-  onLoadMetaMaskWallet: PropTypes.func.isRequired
+  onLoadMetaMaskWallet: PropTypes.func.isRequired,
+  onLoadLedgerWallet: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -91,7 +94,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () => dispatch(changeHeader({ type: undefined })),
-  onLoadMetaMaskWallet: () => dispatch(fetchMetamaskWallet())
+  onLoadMetaMaskWallet: () => dispatch(globalThunks.fetchMetamaskWallet()),
+  onLoadLedgerWallet: () => dispatch(globalThunks.fetchLedgerWallet())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)

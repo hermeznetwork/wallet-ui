@@ -1,6 +1,8 @@
 import { ethers } from 'ethers'
 import { keccak256 } from 'js-sha3'
 import hermezjs from 'hermezjs'
+import TransportU2F from '@ledgerhq/hw-transport-u2f'
+import Eth from '@ledgerhq/hw-app-eth'
 
 import * as globalActions from './global.actions'
 import { METAMASK_MESSAGE, PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
@@ -24,11 +26,34 @@ function fetchMetamaskWallet () {
       const ethereumAddress = await signer.getAddress()
       const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(ethereumAddress)
       const signature = await signer.signMessage(METAMASK_MESSAGE)
+      console.log(signature)
       const hashedSignature = keccak256(signature)
       const bufferSignature = hermezjs.Utils.hexToBuffer(hashedSignature)
       const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(bufferSignature, hermezEthereumAddress)
       dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
     } catch (error) {
+      dispatch(globalActions.loadMetamaskWalletFailure(error.message))
+    }
+  }
+}
+
+function fetchLedgerWallet () {
+  return async (dispatch) => {
+    try {
+      const transport = await TransportU2F.create()
+      const ethereum = new Eth(transport)
+      const athereumAddress = await ethereum.getAddress("44'/60'/0'/0/0")
+      const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(athereumAddress.address)
+      const result = await ethereum.signPersonalMessage("44'/60'/0'/0/0", Buffer.from(METAMASK_MESSAGE).toString('hex'))
+      const hexV = (result.v - 27).toString(16)
+      const fixedHexV = hexV.length < 2 ? `0${hexV}` : hexV
+      const signature = `0x${result.r}${result.s}${fixedHexV}`
+      const hashedSignature = keccak256(signature)
+      const bufferSignature = hermezjs.Utils.hexToBuffer(hashedSignature)
+      const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(bufferSignature, hermezEthereumAddress)
+      dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
+    } catch (error) {
+      console.log(error)
       dispatch(globalActions.loadMetamaskWalletFailure(error.message))
     }
   }
@@ -193,6 +218,7 @@ function fetchCoordinatorState () {
 
 export {
   fetchMetamaskWallet,
+  fetchLedgerWallet,
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,
