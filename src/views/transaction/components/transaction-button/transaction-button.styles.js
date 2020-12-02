@@ -17,7 +17,7 @@ const transactionButtonStyles = createUseStyles(theme => ({
     '&:hover': {
       backgroundColor: theme.palette.secondary.hover
     },
-    '&[disabled]': {
+    '&:disabled': {
       backgroundColor: theme.palette.grey.main,
       cursor: 'default'
     },

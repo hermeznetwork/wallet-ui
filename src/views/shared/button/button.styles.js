@@ -19,11 +19,15 @@ const useButtonStyles = createUseStyles(theme => ({
     cursor: 'pointer',
     fontWeight: theme.fontWeights.medium,
     transition: theme.hoverTransition,
-    '&:hover': {
+    '&:hover:not(:disabled)': {
       background: theme.palette.primary.hover
     },
     '&:focus': {
       outline: 'none'
+    },
+    '&:disabled': {
+      opacity: 0.5,
+      cursor: 'default'
     }
   },
   textSpacer: {

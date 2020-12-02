@@ -18,7 +18,8 @@ const theme = {
       light: '#f3f3f8',
       main: '#888baa',
       dark: '#7a7c89',
-      dark05: 'rgba(122, 124, 137, 0.5)'
+      dark05: 'rgba(122, 124, 137, 0.5)',
+      hover: 'rgba(122, 124, 137, 0.2)'
     },
     red: {
       light: 'rgba(255, 75, 64, 0.15)',
