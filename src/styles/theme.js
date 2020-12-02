@@ -2,7 +2,8 @@ const theme = {
   palette: {
     primary: {
       main: '#faf4ea',
-      dark: '#f6e9d3'
+      dark: '#f6e9d3',
+      hover: '#ebdbc1'
     },
     secondary: {
       light: '#fef5ed',
