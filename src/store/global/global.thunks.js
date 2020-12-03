@@ -5,8 +5,9 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f'
 import Eth from '@ledgerhq/hw-app-eth'
 
 import * as globalActions from './global.actions'
-import { METAMASK_MESSAGE, PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
+import { AUTH_MESSAGE, PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
+import { strToHex } from '../../utils/strings'
 
 /**
  * Asks the user to login using a MetaMask wallet and stores its data in the Redux store
@@ -25,8 +26,7 @@ function fetchMetamaskWallet () {
       const signer = provider.getSigner()
       const ethereumAddress = await signer.getAddress()
       const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(ethereumAddress)
-      const signature = await signer.signMessage(METAMASK_MESSAGE)
-      console.log(signature)
+      const signature = await signer.signMessage(AUTH_MESSAGE)
       const hashedSignature = keccak256(signature)
       const bufferSignature = hermezjs.Utils.hexToBuffer(hashedSignature)
       const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(bufferSignature, hermezEthereumAddress)
@@ -44,7 +44,7 @@ function fetchLedgerWallet () {
       const ethereum = new Eth(transport)
       const athereumAddress = await ethereum.getAddress("44'/60'/0'/0/0")
       const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(athereumAddress.address)
-      const result = await ethereum.signPersonalMessage("44'/60'/0'/0/0", Buffer.from(METAMASK_MESSAGE).toString('hex'))
+      const result = await ethereum.signPersonalMessage("44'/60'/0'/0/0", strToHex(AUTH_MESSAGE))
       const hexV = (result.v - 27).toString(16)
       const fixedHexV = hexV.length < 2 ? `0${hexV}` : hexV
       const signature = `0x${result.r}${result.s}${fixedHexV}`

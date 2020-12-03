@@ -55,7 +55,6 @@ function Login ({
               </button>
             )
         }
-        <button onClick={onLoadLedgerWallet}>Log in with Ledger</button>
         {(() => {
           switch (metaMaskWalletTask.status) {
             case 'pending':

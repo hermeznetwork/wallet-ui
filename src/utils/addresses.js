@@ -13,6 +13,17 @@ function getPartiallyHiddenHermezAddress (ethereumAddress) {
   return `${firstAddressSlice} *** ${secondAddressSlice}`
 }
 
+/**
+ * Converts an account and an index to a valid BIP-44 path
+ * @param {string} account - Account level
+ * @param {string} index - Index level
+ * @returns {void} BIP-44 path
+ */
+function getHardwareWalletPath (account, index) {
+  return `44'/60'/${account}'/0/${index}`
+}
+
 export {
-  getPartiallyHiddenHermezAddress
+  getPartiallyHiddenHermezAddress,
+  getHardwareWalletPath
 }
