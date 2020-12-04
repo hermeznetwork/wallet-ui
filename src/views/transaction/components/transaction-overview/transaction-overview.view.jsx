@@ -13,6 +13,7 @@ import { TransactionType } from '../../transaction.view'
 import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../../../shared/token-balance/token-balance.view'
 import Spinner from '../../../shared/spinner/spinner.view'
+import TransactionButton from '../transaction-button/transaction-button.view'
 
 function TransactionOverview ({
   metaMaskWallet,
@@ -238,9 +239,10 @@ function TransactionOverview ({
                 </div>
               )
               : (
-                <button className={classes.txButton} onClick={handleClickTxButton}>
-                  {getButtonLabel()}
-                </button>
+                <TransactionButton
+                  label={getButtonLabel()}
+                  onClick={handleClickTxButton}
+                />
               )
           }
         </section>

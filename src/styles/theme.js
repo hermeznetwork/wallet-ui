@@ -2,12 +2,14 @@ const theme = {
   palette: {
     primary: {
       main: '#faf4ea',
-      dark: '#f6e9d3'
+      dark: '#f6e9d3',
+      hover: '#ebdbc1'
     },
     secondary: {
       light: '#fef5ed',
       main: '#e75a2b',
-      dark: '#d8853b'
+      dark: '#d8853b',
+      hover: '#d44d20'
     },
     white: '#ffffff',
     black: '#2b2b2b',
@@ -16,7 +18,8 @@ const theme = {
       light: '#f3f3f8',
       main: '#888baa',
       dark: '#7a7c89',
-      dark05: 'rgba(122, 124, 137, 0.5)'
+      dark05: 'rgba(122, 124, 137, 0.5)',
+      hover: 'rgba(122, 124, 137, 0.2)'
     },
     red: {
       light: 'rgba(255, 75, 64, 0.15)',
@@ -29,6 +32,7 @@ const theme = {
     },
     green: '#219653'
   },
+  hoverTransition: 'all 100ms',
   fontWeights: {
     normal: '400',
     medium: '500',

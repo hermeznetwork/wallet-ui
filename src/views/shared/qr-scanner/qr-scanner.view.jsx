@@ -10,6 +10,7 @@ import { ReactComponent as QRScannerMask } from '../../../images/qr-scanner-mask
 import { ReactComponent as ArrowBackIcon } from '../../../images/icons/arrow-back.svg'
 import { ReactComponent as QRCodeIcon } from '../../../images/icons/qr-code.svg'
 import Spinner from '../spinner/spinner.view'
+import Button from '../button/button.view'
 
 function QRScanner ({ hideMyCode, onSuccess, onError, onClose }) {
   const theme = useTheme()
@@ -75,12 +76,10 @@ function QRScanner ({ hideMyCode, onSuccess, onError, onClose }) {
                 <div className={classes.myCodeButtonWrapper}>
                   {!hideMyCode && (
                     <>
-                      <button
-                        className={classes.myCodeButton}
+                      <Button
+                        Icon={<QRCodeIcon />}
                         onClick={onClose}
-                      >
-                        <QRCodeIcon />
-                      </button>
+                      />
                       <p className={classes.myCodeLabel}>My code</p>
                     </>
                   )}

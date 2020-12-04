@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 import { keccak256 } from 'js-sha3'
 import hermezjs from 'hermezjs'
+import { push } from 'connected-react-router'
 
 import * as globalActions from './global.actions'
 import { METAMASK_MESSAGE, PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
@@ -191,6 +192,17 @@ function fetchCoordinatorState () {
   }
 }
 
+/**
+ * Removes the MetaMask wallet data from the Redux store and the localStorage
+ * @returns {void}
+ */
+function disconnectMetaMaskWallet () {
+  return (dispatch) => {
+    dispatch(globalActions.unloadMetaMaskWallet())
+    dispatch(push('/login'))
+  }
+}
+
 export {
   fetchMetamaskWallet,
   changeRedirectRoute,
@@ -200,5 +212,6 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
-  fetchCoordinatorState
+  fetchCoordinatorState,
+  disconnectMetaMaskWallet
 }

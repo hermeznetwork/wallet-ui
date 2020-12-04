@@ -113,16 +113,20 @@ const useExitStyles = createUseStyles(theme => ({
     border: 0,
     outline: 'none',
     borderRadius: 100,
-    backgroundColor: theme.palette.secondary.main,
     padding: `${theme.spacing(1.5)}px ${theme.spacing(4)}px`,
     color: theme.palette.white,
     fontSize: theme.spacing(2),
-    fontWeight: theme.fontWeights.bold
+    fontWeight: theme.fontWeights.bold,
+    transition: theme.hoverTransition
   },
   withdrawDelayerInstantButton: {
     marginBottom: theme.spacing(1.5),
     marginLeft: 0,
     width: theme.spacing(34),
+    backgroundColor: theme.palette.secondary.main,
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.hover
+    },
     [theme.breakpoints.upSm]: {
       marginBottom: 0
     }
@@ -130,6 +134,9 @@ const useExitStyles = createUseStyles(theme => ({
   withdrawDelayerButton: {
     marginLeft: 0,
     backgroundColor: theme.palette.grey.dark05,
+    '&:hover': {
+      backgroundColor: theme.palette.grey.hover
+    },
     width: theme.spacing(34)
   }
 }))
