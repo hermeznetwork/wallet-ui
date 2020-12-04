@@ -16,6 +16,7 @@ function Login ({
   redirectRoute,
   onLoadMetaMaskWallet,
   onLoadLedgerWallet,
+  onLoadTrezorWallet,
   onChangeHeader
 }) {
   const theme = useTheme()
@@ -55,6 +56,8 @@ function Login ({
               </button>
             )
         }
+        <button onClick={onLoadLedgerWallet}>Log in with Ledger</button>
+        <button onClick={onLoadTrezorWallet}>Log in with Trezor</button>
         {(() => {
           switch (metaMaskWalletTask.status) {
             case 'pending':
@@ -94,7 +97,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () => dispatch(changeHeader({ type: undefined })),
   onLoadMetaMaskWallet: () => dispatch(globalThunks.fetchMetamaskWallet()),
-  onLoadLedgerWallet: () => dispatch(globalThunks.fetchLedgerWallet())
+  onLoadLedgerWallet: () => dispatch(globalThunks.fetchLedgerWallet()),
+  onLoadTrezorWallet: () => dispatch(globalThunks.fetchTrezorWallet())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)

@@ -3,6 +3,7 @@ import { keccak256 } from 'js-sha3'
 import hermezjs from 'hermezjs'
 import TransportU2F from '@ledgerhq/hw-transport-u2f'
 import Eth from '@ledgerhq/hw-app-eth'
+import TrezorConnect from 'trezor-connect'
 
 import * as globalActions from './global.actions'
 import { AUTH_MESSAGE, PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
@@ -28,8 +29,8 @@ function fetchMetamaskWallet () {
       const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(ethereumAddress)
       const signature = await signer.signMessage(AUTH_MESSAGE)
       const hashedSignature = keccak256(signature)
-      const bufferSignature = hermezjs.Utils.hexToBuffer(hashedSignature)
-      const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(bufferSignature, hermezEthereumAddress)
+      const signatureBuffer = hermezjs.Utils.hexToBuffer(hashedSignature)
+      const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(signatureBuffer, hermezEthereumAddress)
       dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
     } catch (error) {
       dispatch(globalActions.loadMetamaskWalletFailure(error.message))
@@ -42,18 +43,41 @@ function fetchLedgerWallet () {
     try {
       const transport = await TransportU2F.create()
       const ethereum = new Eth(transport)
-      const athereumAddress = await ethereum.getAddress("44'/60'/0'/0/0")
-      const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(athereumAddress.address)
+      const { address } = await ethereum.getAddress("44'/60'/0'/0/0")
+      const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(address)
       const result = await ethereum.signPersonalMessage("44'/60'/0'/0/0", strToHex(AUTH_MESSAGE))
       const hexV = (result.v - 27).toString(16)
       const fixedHexV = hexV.length < 2 ? `0${hexV}` : hexV
       const signature = `0x${result.r}${result.s}${fixedHexV}`
       const hashedSignature = keccak256(signature)
-      const bufferSignature = hermezjs.Utils.hexToBuffer(hashedSignature)
-      const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(bufferSignature, hermezEthereumAddress)
+      const signatureBuffer = hermezjs.Utils.hexToBuffer(hashedSignature)
+      const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(signatureBuffer, hermezEthereumAddress)
       dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
     } catch (error) {
-      console.log(error)
+      dispatch(globalActions.loadMetamaskWalletFailure(error.message))
+    }
+  }
+}
+
+function fetchTrezorWallet () {
+  return async (dispatch) => {
+    try {
+      const result = await TrezorConnect.ethereumSignMessage({
+        path: "m/44'/60'/0'/0/0",
+        message: AUTH_MESSAGE
+      })
+
+      if (result.success) {
+        const { address, signature } = result.payload
+        const hashedSignature = keccak256(`0x${signature}`)
+        const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(address)
+        const signatureBuffer = hermezjs.Utils.hexToBuffer(hashedSignature)
+        const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(signatureBuffer, hermezEthereumAddress)
+        dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
+      } else {
+        dispatch(globalActions.loadMetamaskWalletFailure(result.payload.error))
+      }
+    } catch (error) {
       dispatch(globalActions.loadMetamaskWalletFailure(error.message))
     }
   }
@@ -219,6 +243,7 @@ function fetchCoordinatorState () {
 export {
   fetchMetamaskWallet,
   fetchLedgerWallet,
+  fetchTrezorWallet,
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,
