@@ -30,14 +30,7 @@ const useLoginStyles = createUseStyles(theme => ({
   connectedText: {
     fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.bold,
-    marginBottom: theme.spacing(6)
-  },
-  helperText: {
-    lineHeight: 1.75,
-    fontWeight: theme.fontWeights.medium,
-    marginTop: theme.spacing(4),
-    maxWidth: 176,
-    textAlign: 'center'
+    marginBottom: theme.spacing(4.5)
   }
 }))
 

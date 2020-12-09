@@ -9,13 +9,25 @@ function WalletButtonList ({ onClick }) {
   return (
     <div className={classes.root}>
       <div className={classes.walletButtonContainer}>
-        <WalletButton walletName='metaMask' onClick={() => onClick('metaMask')} />
+        <WalletButton
+          isClickable
+          walletName='metaMask'
+          onClick={() => onClick('metaMask')}
+        />
       </div>
       <div className={classes.walletButtonContainer}>
-        <WalletButton walletName='ledger' onClick={() => onClick('ledger')} />
+        <WalletButton
+          isClickable
+          walletName='ledger'
+          onClick={() => onClick('ledger')}
+        />
       </div>
       <div className={classes.walletButtonContainer}>
-        <WalletButton walletName='trezor' onClick={() => onClick('trezor')} />
+        <WalletButton
+          isClickable
+          walletName='trezor'
+          onClick={() => onClick('trezor')}
+        />
       </div>
     </div>
   )

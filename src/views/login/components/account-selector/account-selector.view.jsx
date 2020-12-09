@@ -7,7 +7,7 @@ import FormButton from '../../../shared/form-button/form-button.view'
 const ACCOUNTS_LIMIT = 20
 const DEFAULT_ACCOUNT = 0
 
-function AccountSelector ({ walletLabel, onSubmit }) {
+function AccountSelector ({ walletLabel, onSelectAccount }) {
   const classes = useAccountSelectorStyles()
   const accounts = Array(ACCOUNTS_LIMIT).fill()
   const [formData, setFormData] = React.useState({
@@ -18,13 +18,13 @@ function AccountSelector ({ walletLabel, onSubmit }) {
   function handleFormInputChange (event) {
     setFormData({
       ...formData,
-      [event.target.name]: event.target.value
+      [event.target.name]: parseInt(event.target.value)
     })
   }
 
   function handleFormSubmit (event) {
     event.preventDefault()
-    console.log(formData)
+    onSelectAccount(formData)
   }
 
   return (

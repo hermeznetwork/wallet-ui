@@ -1,18 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom'
+// import { Redirect } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 
 import useLoginStyles from './login.styles'
 import * as globalThunks from '../../store/global/global.thunks'
+import * as globalActions from '../../store/global/global.actions'
+import * as loginActions from '../../store/login/login.actions'
 import { ReactComponent as HermezLogoAlternative } from '../../images/hermez-logo-alternative.svg'
 import Container from '../shared/container/container.view'
-import { changeHeader } from '../../store/global/global.actions'
 import { STEP_NAME } from '../../store/login/login.reducer'
 import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
 import AccountSelector from './components/account-selector/account-selector.view'
-import { goToAccountSelectorStep } from '../../store/login/login.actions'
+import WalletLoader from './components/wallet-loader/wallet-loader.view'
 
 function Login ({
   currentStep,
@@ -23,7 +24,8 @@ function Login ({
   onLoadMetaMaskWallet,
   onLoadLedgerWallet,
   onLoadTrezorWallet,
-  onGoToAccountSelectorStep
+  onGoToAccountSelectorStep,
+  onGoToWalletLoaderStep
 }) {
   const theme = useTheme()
   const classes = useLoginStyles()
@@ -39,7 +41,7 @@ function Login ({
   function handleWalletClick (walletName) {
     switch (walletName) {
       case 'metamask': {
-        return onLoadMetaMaskWallet()
+        return onGoToWalletLoaderStep()
       }
       case 'ledger':
       case 'trezor': {
@@ -53,6 +55,14 @@ function Login ({
     return walletName[0].toUpperCase() + walletName.slice(1)
   }
 
+  function handleSelectAccount (walletName, accountData) {
+    onGoToWalletLoaderStep(walletName, accountData)
+  }
+
+  function handleLoadWallet (walletName) {
+    console.log(walletName)
+  }
+
   return (
     <Container backgroundColor={theme.palette.primary.main} fullHeight>
       <div className={classes.root}>
@@ -64,7 +74,6 @@ function Login ({
                 return (
                   <>
                     <h1 className={classes.connectText}>Connect with</h1>
-                    {/* <h2 className={classes.connectedText}>Connected to MetaMask</h2> */}
                     <WalletButtonList onClick={handleWalletClick} />
                   </>
                 )
@@ -78,7 +87,28 @@ function Login ({
                     <h1 className={classes.addAccountText}>
                       Add account through {walletLabel}
                     </h1>
-                    <AccountSelector walletLabel={walletLabel} />
+                    <AccountSelector
+                      walletLabel={walletLabel}
+                      onSelectAccount={(accountData) =>
+                        handleSelectAccount(stepData.walletName, accountData)}
+                    />
+                  </>
+                )
+              }
+              case STEP_NAME.HARDWARE_WALLET_LOADER: {
+                const stepData = steps[STEP_NAME.WALLET_LOADER]
+                const walletLabel = getWalletLabel(stepData.walletName)
+
+                return (
+                  <>
+                    <h1 className={classes.connectedText}>
+                      Connected to {walletLabel}
+                    </h1>
+                    <WalletLoader
+                      walletName={stepData.walletName}
+                      onLoadWallet={(walletName, accountData) => handleLoadWallet(walletName, accountData)}
+                    />
+                    {/* <Redirect to={redirectRoute} /> */}
                   </>
                 )
               }
@@ -88,23 +118,6 @@ function Login ({
             }
           })()
         }
-        {(() => {
-          switch (walletTask.status) {
-            case 'loading': {
-              return (
-                <p className={classes.helperText}>
-                Follow the instructions in the pop up.
-                </p>
-              )
-            }
-            case 'successful': {
-              return <Redirect to={redirectRoute} />
-            }
-            default: {
-              return <></>
-            }
-          }
-        })()}
       </div>
     </Container>
   )
@@ -123,8 +136,11 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: () => dispatch(changeHeader({ type: undefined })),
-  onGoToAccountSelectorStep: (walletName) => dispatch(goToAccountSelectorStep(walletName)),
+  onChangeHeader: () => dispatch(globalActions.changeHeader({ type: undefined })),
+  onGoToAccountSelectorStep: (walletName) =>
+    dispatch(loginActions.goToAccountSelectorStep(walletName)),
+  onGoToWalletLoaderStep: (walletName, accountData) =>
+    dispatch(loginActions.goToWalletLoaderStep(walletName, accountData)),
   onLoadMetaMaskWallet: () => dispatch(globalThunks.fetchMetamaskWallet()),
   onLoadLedgerWallet: () => dispatch(globalThunks.fetchLedgerWallet()),
   onLoadTrezorWallet: () => dispatch(globalThunks.fetchTrezorWallet())

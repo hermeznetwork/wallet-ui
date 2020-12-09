@@ -3,7 +3,7 @@ import { loginActionTypes } from './login.actions'
 export const STEP_NAME = {
   WALLET_SELECTOR: 'wallet-selector',
   ACCOUNT_SELECTOR: 'account-selector',
-  LOADING: 'loading'
+  WALLET_LOADER: 'wallet-loader'
 }
 
 const initialLoginState = {
@@ -12,7 +12,7 @@ const initialLoginState = {
     [STEP_NAME.ACCOUNT_SELECTOR]: {
       walletName: undefined
     },
-    [STEP_NAME.LOADING]: {
+    [STEP_NAME.WALLET_LOADER]: {
       walletName: undefined
     }
   }
@@ -31,13 +31,14 @@ function loginReducer (state = initialLoginState, action) {
         }
       }
     }
-    case loginActionTypes.GO_TO_LOADING_STEP: {
+    case loginActionTypes.GO_TO_WALLET_LOADER_STEP: {
       return {
         ...state,
         currentStep: STEP_NAME.LOADING,
         steps: {
-          [STEP_NAME.LOADING]: {
-            walletName: action.walletName
+          [STEP_NAME.WALLET_LOADER]: {
+            walletName: action.walletName,
+            accountData: action.accountData
           }
         }
       }

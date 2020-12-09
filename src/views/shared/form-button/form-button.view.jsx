@@ -9,8 +9,8 @@ function FormButton ({ label, type, disabled, onClick }) {
     <button
       type={type || 'button'}
       className={classes.root}
-      disabled={disabled}
-      {...(type !== 'submit') ? { onClick: onClick } : {}}
+      disabled={disabled || false}
+      onClick={onClick}
     >
       {label}
     </button>

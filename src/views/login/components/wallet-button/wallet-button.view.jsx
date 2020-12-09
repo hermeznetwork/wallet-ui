@@ -3,7 +3,7 @@ import React from 'react'
 import useWalletButtonStyles from './wallet-button.styles'
 import WalletButtonLogo from '../wallet-button-logo/wallet-button-logo.view'
 
-function WalletButton ({ walletName, isClickable, onClick }) {
+function WalletButton ({ walletName, hideName, isClickable, onClick }) {
   const classes = useWalletButtonStyles()
 
   function getButtonLabel (walletName) {
@@ -15,17 +15,16 @@ function WalletButton ({ walletName, isClickable, onClick }) {
       {
         isClickable
           ? (
+            <button className={classes.walletButtonContainer} onClick={onClick}>
+              <WalletButtonLogo walletName={walletName} />
+            </button>
+          ) : (
             <div className={classes.walletDivContainer}>
               <WalletButtonLogo walletName={walletName} />
             </div>
           )
-          : (
-            <button className={classes.walletButtonContainer} onClick={onClick}>
-              <WalletButtonLogo walletName={walletName} />
-            </button>
-          )
       }
-      <p className={classes.walletName}>{getButtonLabel(walletName)}</p>
+      {!hideName && <p className={classes.walletName}>{getButtonLabel(walletName)}</p>}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 export const loginActionTypes = {
   GO_TO_ACCOUNT_SELECTOR_STEP: '[ACCOUNT] GO TO ACCOUNT SELECTOR STEP',
-  GO_TO_LOADING_STEP: '[ACCOUNT] GO TO LOADING STEP'
+  GO_TO_WALLET_LOADER_STEP: '[ACCOUNT] GO TO WALLET LOADER STEP'
 }
 
 function goToAccountSelectorStep (walletName) {
@@ -10,14 +10,15 @@ function goToAccountSelectorStep (walletName) {
   }
 }
 
-function goToLoadingStep (walletName) {
+function goToWalletLoaderStep (walletName, accountData) {
   return {
-    type: loginActionTypes.GO_TO_LOADING_STEP,
-    walletName
+    type: loginActionTypes.GO_TO_WALLET_LOADER_STEP,
+    walletName,
+    accountData
   }
 }
 
 export {
   goToAccountSelectorStep,
-  goToLoadingStep
+  goToWalletLoaderStep
 }
