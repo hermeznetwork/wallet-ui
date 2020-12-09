@@ -14,6 +14,7 @@ import { STEP_NAME } from '../../store/login/login.reducer'
 import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
 import AccountSelector from './components/account-selector/account-selector.view'
 import WalletLoader from './components/wallet-loader/wallet-loader.view'
+import { push } from 'connected-react-router'
 
 function Login ({
   currentStep,
@@ -21,11 +22,12 @@ function Login ({
   walletTask,
   redirectRoute,
   onChangeHeader,
+  onGoToAccountSelectorStep,
+  onGoToWalletLoaderStep,
   onLoadMetaMaskWallet,
   onLoadLedgerWallet,
   onLoadTrezorWallet,
-  onGoToAccountSelectorStep,
-  onGoToWalletLoaderStep
+  onLoadWalletSuccess
 }) {
   const theme = useTheme()
   const classes = useLoginStyles()
@@ -40,8 +42,8 @@ function Login ({
    */
   function handleWalletClick (walletName) {
     switch (walletName) {
-      case 'metamask': {
-        return onGoToWalletLoaderStep()
+      case 'metaMask': {
+        return onGoToWalletLoaderStep(walletName)
       }
       case 'ledger':
       case 'trezor': {
@@ -59,8 +61,19 @@ function Login ({
     onGoToWalletLoaderStep(walletName, accountData)
   }
 
-  function handleLoadWallet (walletName) {
-    console.log(walletName)
+  function handleLoadWallet (walletName, accountData) {
+    switch (walletName) {
+      case 'metaMask': {
+        return onLoadMetaMaskWallet()
+      }
+      case 'ledger': {
+        return onLoadLedgerWallet(accountData)
+      }
+      case 'trezor': {
+        return onLoadTrezorWallet(accountData)
+      }
+      default: {}
+    }
   }
 
   return (
@@ -88,9 +101,9 @@ function Login ({
                       Add account through {walletLabel}
                     </h1>
                     <AccountSelector
+                      walletName={stepData.walletName}
                       walletLabel={walletLabel}
-                      onSelectAccount={(accountData) =>
-                        handleSelectAccount(stepData.walletName, accountData)}
+                      onSelectAccount={handleSelectAccount}
                     />
                   </>
                 )
@@ -106,7 +119,10 @@ function Login ({
                     </h1>
                     <WalletLoader
                       walletName={stepData.walletName}
-                      onLoadWallet={(walletName, accountData) => handleLoadWallet(walletName, accountData)}
+                      accountData={stepData.accountData}
+                      walletTask={walletTask}
+                      onLoadWallet={handleLoadWallet}
+                      onLoadWalletSuccess={onLoadWalletSuccess}
                     />
                     {/* <Redirect to={redirectRoute} /> */}
                   </>
@@ -141,9 +157,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(loginActions.goToAccountSelectorStep(walletName)),
   onGoToWalletLoaderStep: (walletName, accountData) =>
     dispatch(loginActions.goToWalletLoaderStep(walletName, accountData)),
-  onLoadMetaMaskWallet: () => dispatch(globalThunks.fetchMetamaskWallet()),
-  onLoadLedgerWallet: () => dispatch(globalThunks.fetchLedgerWallet()),
-  onLoadTrezorWallet: () => dispatch(globalThunks.fetchTrezorWallet())
+  onLoadMetaMaskWallet: () => dispatch(globalThunks.fetchMetaMaskWallet()),
+  onLoadLedgerWallet: (accountData) => dispatch(globalThunks.fetchLedgerWallet(accountData)),
+  onLoadTrezorWallet: (accountData) => dispatch(globalThunks.fetchTrezorWallet(accountData)),
+  onLoadWalletSuccess: (redirectRoute) => dispatch(push(redirectRoute))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)

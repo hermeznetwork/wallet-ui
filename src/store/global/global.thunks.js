@@ -10,12 +10,13 @@ import * as globalActions from './global.actions'
 import { AUTH_MESSAGE, PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import { strToHex } from '../../utils/strings'
+import { buildEthereumBip44Path } from '../../utils/hw-wallets'
 
 /**
  * Asks the user to login using a MetaMask wallet and stores its data in the Redux store
  * @returns {void}
  */
-function fetchMetamaskWallet () {
+function fetchMetaMaskWallet () {
   return async function (dispatch) {
     dispatch(globalActions.loadMetamaskWallet())
     try {
@@ -39,14 +40,16 @@ function fetchMetamaskWallet () {
   }
 }
 
-function fetchLedgerWallet () {
+function fetchLedgerWallet (accountData) {
   return async (dispatch) => {
     try {
+      const { accountType, accountIndex } = accountData
+      const path = buildEthereumBip44Path(accountType, accountIndex)
       const transport = await TransportU2F.create()
       const ethereum = new Eth(transport)
-      const { address } = await ethereum.getAddress("44'/60'/0'/0/0")
+      const { address } = await ethereum.getAddress(path)
       const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(address)
-      const result = await ethereum.signPersonalMessage("44'/60'/0'/0/0", strToHex(AUTH_MESSAGE))
+      const result = await ethereum.signPersonalMessage(path, strToHex(AUTH_MESSAGE))
       const hexV = (result.v - 27).toString(16)
       const fixedHexV = hexV.length < 2 ? `0${hexV}` : hexV
       const signature = `0x${result.r}${result.s}${fixedHexV}`
@@ -60,11 +63,13 @@ function fetchLedgerWallet () {
   }
 }
 
-function fetchTrezorWallet () {
+function fetchTrezorWallet (accountData) {
   return async (dispatch) => {
     try {
+      const { accountType, accountIndex } = accountData
+      const path = buildEthereumBip44Path(accountType, accountIndex)
       const result = await TrezorConnect.ethereumSignMessage({
-        path: "m/44'/60'/0'/0/0",
+        path: path,
         message: AUTH_MESSAGE
       })
 
@@ -253,7 +258,7 @@ function disconnectMetaMaskWallet () {
 }
 
 export {
-  fetchMetamaskWallet,
+  fetchMetaMaskWallet,
   fetchLedgerWallet,
   fetchTrezorWallet,
   changeRedirectRoute,
