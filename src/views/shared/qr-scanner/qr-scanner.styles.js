@@ -68,15 +68,6 @@ const useQRScannerStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
-  myCodeButton: {
-    display: 'flex',
-    padding: theme.spacing(2),
-    borderRadius: 50,
-    background: theme.palette.primary.main,
-    cursor: 'pointer',
-    outline: 'none',
-    border: 0
-  },
   myCodeLabel: {
     marginTop: theme.spacing(1),
     color: theme.palette.primary.main,

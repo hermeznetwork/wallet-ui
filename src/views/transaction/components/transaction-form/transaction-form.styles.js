@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useAccountListStyles = createUseStyles(theme => ({
+const useTransactionFormStyles = createUseStyles(theme => ({
   root: {
     marginTop: theme.headerHeight,
     marginBottom: theme.spacing(3),
@@ -85,6 +85,13 @@ const useAccountListStyles = createUseStyles(theme => ({
     color: theme.palette.grey.main,
     flex: 1,
     padding: `${theme.spacing(2)}px 0`,
+    transition: theme.hoverTransition,
+    '&:hover': {
+      color: theme.palette.black,
+      '& path': {
+        fill: theme.palette.black
+      }
+    },
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(3.5)}px 0`
@@ -204,4 +211,4 @@ const useAccountListStyles = createUseStyles(theme => ({
   }
 }))
 
-export default useAccountListStyles
+export default useTransactionFormStyles

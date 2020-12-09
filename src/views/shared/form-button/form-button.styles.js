@@ -13,7 +13,11 @@ const useFormButtonStyles = createUseStyles(theme => ({
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.white,
-    '&[disabled]': {
+    transition: theme.hoverTransition,
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.hover
+    },
+    '&:disabled': {
       backgroundColor: theme.palette.grey.main,
       cursor: 'default'
     },

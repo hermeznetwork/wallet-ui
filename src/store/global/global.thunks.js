@@ -4,6 +4,7 @@ import hermezjs from 'hermezjs'
 import TransportU2F from '@ledgerhq/hw-transport-u2f'
 import Eth from '@ledgerhq/hw-app-eth'
 import TrezorConnect from 'trezor-connect'
+import { push } from 'connected-react-router'
 
 import * as globalActions from './global.actions'
 import { AUTH_MESSAGE, PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
@@ -240,6 +241,17 @@ function fetchCoordinatorState () {
   }
 }
 
+/**
+ * Removes the MetaMask wallet data from the Redux store and the localStorage
+ * @returns {void}
+ */
+function disconnectMetaMaskWallet () {
+  return (dispatch) => {
+    dispatch(globalActions.unloadMetaMaskWallet())
+    dispatch(push('/login'))
+  }
+}
+
 export {
   fetchMetamaskWallet,
   fetchLedgerWallet,
@@ -251,5 +263,6 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
-  fetchCoordinatorState
+  fetchCoordinatorState,
+  disconnectMetaMaskWallet
 }

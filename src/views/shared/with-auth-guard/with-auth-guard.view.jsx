@@ -5,12 +5,15 @@ import { Redirect, useLocation } from 'react-router-dom'
 import { changeRedirectRoute } from '../../../store/global/global.thunks'
 
 const withAuth = (Component) => ({ metaMaskWalletTask, onChangeRedirectRoute, ...props }) => {
-  const { pathname: currentRoute } = useLocation()
+  const { pathname, search } = useLocation()
 
   if (metaMaskWalletTask.status === 'successful') {
     return <Component {...props} />
   } else {
+    const currentRoute = `${pathname}${search}`
+
     onChangeRedirectRoute(currentRoute)
+
     return <Redirect to='/login' />
   }
 }

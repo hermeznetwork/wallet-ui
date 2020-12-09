@@ -13,6 +13,7 @@ import { MY_CODE } from '../../constants'
 import { ReactComponent as QRScannerIcon } from '../../images/icons/qr-scanner.svg'
 import QRScanner from '../shared/qr-scanner/qr-scanner.view'
 import { isAnyVideoDeviceAvailable } from '../../utils/browser'
+import Button from '../shared/button/button.view'
 
 function MyCode ({ metaMaskWalletTask, onChangeHeader, onNavigateToTransfer }) {
   const theme = useTheme()
@@ -80,13 +81,11 @@ function MyCode ({ metaMaskWalletTask, onChangeHeader, onNavigateToTransfer }) {
           </>
         )}
         <div className={classes.qrScannerWrapper}>
-          <button
+          <Button
+            Icon={<QRScannerIcon />}
             disabled={!isVideoDeviceAvailable}
-            className={classes.qrScannerButton}
             onClick={handleOpenQRScanner}
-          >
-            <QRScannerIcon />
-          </button>
+          />
           <p className={classes.qrScannerLabel}>Scan</p>
         </div>
       </div>

@@ -1,7 +1,4 @@
-import { push } from 'connected-react-router'
-
 import * as myAccountActions from './my-account.actions'
-import * as globalAction from '../global/global.actions'
 import { MY_ACCOUNT } from '../../constants'
 
 /**
@@ -16,15 +13,4 @@ function changePreferredCurrency (selectedTokenId) {
   }
 }
 
-/**
- * Removes the MetaMask wallet data from the Redux store and the localStorage
- * @returns {void}
- */
-function disconnectMetaMaskWallet () {
-  return (dispatch) => {
-    dispatch(globalAction.unloadMetaMaskWallet())
-    dispatch(push('/login'))
-  }
-}
-
-export { changePreferredCurrency, disconnectMetaMaskWallet }
+export { changePreferredCurrency }
