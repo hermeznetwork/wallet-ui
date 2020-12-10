@@ -1,93 +1,9 @@
-import { ethers } from 'ethers'
-import { keccak256 } from 'js-sha3'
 import hermezjs from 'hermezjs'
-import TransportU2F from '@ledgerhq/hw-transport-u2f'
-import Eth from '@ledgerhq/hw-app-eth'
-import TrezorConnect from 'trezor-connect'
 import { push } from 'connected-react-router'
 
 import * as globalActions from './global.actions'
-import { AUTH_MESSAGE, PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
+import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
-import { strToHex } from '../../utils/strings'
-import { buildEthereumBip44Path } from '../../utils/hw-wallets'
-
-/**
- * Asks the user to login using a MetaMask wallet and stores its data in the Redux store
- * @returns {void}
- */
-function fetchMetaMaskWallet () {
-  return async function (dispatch) {
-    dispatch(globalActions.loadMetamaskWallet())
-    try {
-      const { ethereum } = window
-      if (!ethereum || !ethereum.isMetaMask) {
-        dispatch(globalActions.loadMetamaskWalletFailure('MetaMask is not available'))
-      }
-      await ethereum.request({ method: 'eth_requestAccounts' })
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const signer = provider.getSigner()
-      const ethereumAddress = await signer.getAddress()
-      const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(ethereumAddress)
-      const signature = await signer.signMessage(AUTH_MESSAGE)
-      const hashedSignature = keccak256(signature)
-      const signatureBuffer = hermezjs.Utils.hexToBuffer(hashedSignature)
-      const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(signatureBuffer, hermezEthereumAddress)
-      dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
-    } catch (error) {
-      dispatch(globalActions.loadMetamaskWalletFailure(error.message))
-    }
-  }
-}
-
-function fetchLedgerWallet (accountData) {
-  return async (dispatch) => {
-    try {
-      const { accountType, accountIndex } = accountData
-      const path = buildEthereumBip44Path(accountType, accountIndex)
-      const transport = await TransportU2F.create()
-      const ethereum = new Eth(transport)
-      const { address } = await ethereum.getAddress(path)
-      const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(address)
-      const result = await ethereum.signPersonalMessage(path, strToHex(AUTH_MESSAGE))
-      const hexV = (result.v - 27).toString(16)
-      const fixedHexV = hexV.length < 2 ? `0${hexV}` : hexV
-      const signature = `0x${result.r}${result.s}${fixedHexV}`
-      const hashedSignature = keccak256(signature)
-      const signatureBuffer = hermezjs.Utils.hexToBuffer(hashedSignature)
-      const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(signatureBuffer, hermezEthereumAddress)
-      dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
-    } catch (error) {
-      dispatch(globalActions.loadMetamaskWalletFailure(error.message))
-    }
-  }
-}
-
-function fetchTrezorWallet (accountData) {
-  return async (dispatch) => {
-    try {
-      const { accountType, accountIndex } = accountData
-      const path = buildEthereumBip44Path(accountType, accountIndex)
-      const result = await TrezorConnect.ethereumSignMessage({
-        path: path,
-        message: AUTH_MESSAGE
-      })
-
-      if (result.success) {
-        const { address, signature } = result.payload
-        const hashedSignature = keccak256(`0x${signature}`)
-        const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(address)
-        const signatureBuffer = hermezjs.Utils.hexToBuffer(hashedSignature)
-        const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(signatureBuffer, hermezEthereumAddress)
-        dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
-      } else {
-        dispatch(globalActions.loadMetamaskWalletFailure(result.payload.error))
-      }
-    } catch (error) {
-      dispatch(globalActions.loadMetamaskWalletFailure(error.message))
-    }
-  }
-}
 
 /**
  * Changes the route to which the user is going to be redirected to after a successful
@@ -252,15 +168,12 @@ function fetchCoordinatorState () {
  */
 function disconnectMetaMaskWallet () {
   return (dispatch) => {
-    dispatch(globalActions.unloadMetaMaskWallet())
+    dispatch(globalActions.unloadWallet())
     dispatch(push('/login'))
   }
 }
 
 export {
-  fetchMetaMaskWallet,
-  fetchLedgerWallet,
-  fetchTrezorWallet,
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,

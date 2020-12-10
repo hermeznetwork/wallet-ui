@@ -23,7 +23,7 @@ import { copyToClipboard } from '../../utils/browser'
 import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
 
 function MyAccount ({
-  metaMaskWalletTask,
+  wallet,
   preferredCurrency,
   onChangeHeader,
   onChangePreferredCurrency,
@@ -62,10 +62,10 @@ function MyAccount ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.topSection}>
-          {metaMaskWalletTask.status === 'successful' && (
+          {wallet && (
             <>
               <h1 className={classes.hermezEthereumAddress}>
-                {getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
+                {getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
               </h1>
               <div className={classes.buttonsWrapper}>
                 <Button
@@ -77,7 +77,7 @@ function MyAccount ({
                 <Button
                   text='Copy'
                   Icon={<CopyIcon />}
-                  onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
+                  onClick={() => handleEthereumAddressClick(wallet.hermezEthereumAddress)}
                 />
               </div>
             </>
@@ -105,10 +105,10 @@ function MyAccount ({
               <p className={classes.settingTitle} onClick={onNavigateToForceExit}>Force withdrawal</p>
             </div>
           </div>
-          {metaMaskWalletTask.status === 'successful' && (
+          {wallet && (
             <a
               className={classes.settingContainer}
-              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/address/${metaMaskWalletTask.data.hermezEthereumAddress}`}
+              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/address/${wallet.hermezEthereumAddress}`}
               target='_blank'
               rel='noopener noreferrer'
             >
@@ -138,7 +138,7 @@ MyAccount.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.global.metaMaskWalletTask,
+  wallet: state.global.wallet,
   preferredCurrency: state.myAccount.preferredCurrency
 })
 

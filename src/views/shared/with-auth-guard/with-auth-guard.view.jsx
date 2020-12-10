@@ -4,10 +4,10 @@ import { Redirect, useLocation } from 'react-router-dom'
 
 import { changeRedirectRoute } from '../../../store/global/global.thunks'
 
-const withAuth = (Component) => ({ metaMaskWalletTask, onChangeRedirectRoute, ...props }) => {
+const withAuth = (Component) => ({ wallet, onChangeRedirectRoute, ...props }) => {
   const { pathname, search } = useLocation()
 
-  if (metaMaskWalletTask.status === 'successful') {
+  if (wallet) {
     return <Component {...props} />
   } else {
     const currentRoute = `${pathname}${search}`
@@ -19,7 +19,7 @@ const withAuth = (Component) => ({ metaMaskWalletTask, onChangeRedirectRoute, ..
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.global.metaMaskWalletTask
+  wallet: state.global.wallet
 })
 
 const mapDispatchToProps = (dispatch) => ({

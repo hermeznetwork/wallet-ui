@@ -1,8 +1,6 @@
 export const globalActionTypes = {
-  LOAD_METAMASK_WALLET: '[GLOBAL] LOAD METAMASK WALLET',
-  LOAD_METAMASK_WALLET_SUCCESS: '[GLOBAL] LOAD METAMASK WALLET SUCCESS',
-  LOAD_METAMASK_WALLET_FAILURE: '[GLOBAL] LOAD METAMASK WALLET FAILURE',
-  UNLOAD_METAMASK_WALLET: '[GLOBAL] UNLOAD METAMASK WALLET',
+  LOAD_WALLET: '[GLOBAL] LOAD WALLET',
+  UNLOAD_WALLET: '[GLOBAL] UNLOAD WALLET',
   CHANGE_HEADER: '[GLOBAL] CHANGE HEADER',
   CHANGE_REDIRECT_ROUTE: '[GLOBAL] CHANGE REDIRECT ROUTE',
   LOAD_FIAT_EXCHANGE_RATES: '[GLOBAL] LOAD FIAT EXCHANGE RATES',
@@ -26,29 +24,16 @@ export const globalActionTypes = {
   LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE'
 }
 
-function loadMetamaskWallet () {
+function loadWallet (wallet) {
   return {
-    type: globalActionTypes.LOAD_METAMASK_WALLET
+    type: globalActionTypes.LOAD_WALLET,
+    wallet
   }
 }
 
-function loadMetamaskWalletSuccess (metaMaskWallet) {
+function unloadWallet () {
   return {
-    type: globalActionTypes.LOAD_METAMASK_WALLET_SUCCESS,
-    metaMaskWallet
-  }
-}
-
-function loadMetamaskWalletFailure (error) {
-  return {
-    type: globalActionTypes.LOAD_METAMASK_WALLET_FAILURE,
-    error
-  }
-}
-
-function unloadMetaMaskWallet () {
-  return {
-    type: globalActionTypes.UNLOAD_METAMASK_WALLET
+    type: globalActionTypes.UNLOAD_WALLET
   }
 }
 
@@ -160,10 +145,8 @@ function loadCoordinatorStateFailure (error) {
 }
 
 export {
-  loadMetamaskWallet,
-  loadMetamaskWalletSuccess,
-  loadMetamaskWalletFailure,
-  unloadMetaMaskWallet,
+  loadWallet,
+  unloadWallet,
   changeHeader,
   changeRedirectRoute,
   loadFiatExchangeRates,

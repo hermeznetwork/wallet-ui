@@ -26,9 +26,7 @@ function getInitialPendingDelayedWithdraws () {
 }
 
 const initialGlobalState = {
-  metaMaskWalletTask: {
-    status: 'pending'
-  },
+  wallet: undefined,
   header: {
     type: undefined
   },
@@ -49,35 +47,15 @@ const initialGlobalState = {
 
 function globalReducer (state = initialGlobalState, action) {
   switch (action.type) {
-    case globalActionTypes.LOAD_METAMASK_WALLET:
+    case globalActionTypes.LOAD_WALLET:
       return {
         ...state,
-        metaMaskWalletTask: {
-          status: 'loading'
-        }
+        wallet: action.wallet
       }
-    case globalActionTypes.LOAD_METAMASK_WALLET_SUCCESS:
+    case globalActionTypes.UNLOAD_WALLET: {
       return {
         ...state,
-        metaMaskWalletTask: {
-          status: 'successful',
-          data: action.metaMaskWallet
-        }
-      }
-    case globalActionTypes.LOAD_METAMASK_WALLET_FAILURE:
-      return {
-        ...state,
-        metaMaskWalletTask: {
-          status: 'failed',
-          error: action.error
-        }
-      }
-    case globalActionTypes.UNLOAD_METAMASK_WALLET: {
-      return {
-        ...state,
-        metaMaskWalletTask: {
-          status: 'pending'
-        }
+        wallet: undefined
       }
     }
     case globalActionTypes.CHANGE_HEADER: {

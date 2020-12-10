@@ -13,7 +13,11 @@ const initialLoginState = {
       walletName: undefined
     },
     [STEP_NAME.WALLET_LOADER]: {
-      walletName: undefined
+      walletName: undefined,
+      accountData: undefined,
+      walletTask: {
+        status: 'pending'
+      }
     }
   }
 }
@@ -25,6 +29,7 @@ function loginReducer (state = initialLoginState, action) {
         ...state,
         currentStep: STEP_NAME.ACCOUNT_SELECTOR,
         steps: {
+          ...state.steps,
           [STEP_NAME.ACCOUNT_SELECTOR]: {
             walletName: action.walletName
           }
@@ -36,7 +41,9 @@ function loginReducer (state = initialLoginState, action) {
         ...state,
         currentStep: STEP_NAME.WALLET_LOADER,
         steps: {
+          ...state.steps,
           [STEP_NAME.WALLET_LOADER]: {
+            ...state.steps[STEP_NAME.WALLET_LOADER],
             walletName: action.walletName,
             accountData: action.accountData
           }
@@ -72,6 +79,53 @@ function loginReducer (state = initialLoginState, action) {
           return state
         }
       }
+    }
+    case loginActionTypes.LOAD_WALLET: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.WALLET_LOADER]: {
+            ...state.steps[STEP_NAME.WALLET_LOADER],
+            walletTask: {
+              status: 'loading'
+            }
+          }
+        }
+      }
+    }
+    case loginActionTypes.LOAD_WALLET_SUCCESS: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.WALLET_LOADER]: {
+            ...state.steps[STEP_NAME.WALLET_LOADER],
+            walletTask: {
+              status: 'successful',
+              data: action.wallet
+            }
+          }
+        }
+      }
+    }
+    case loginActionTypes.LOAD_WALLET_FAILURE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.WALLET_LOADER]: {
+            ...state.steps[STEP_NAME.WALLET_LOADER],
+            walletTask: {
+              status: 'failure',
+              error: action.error
+            }
+          }
+        }
+      }
+    }
+    case loginActionTypes.RESET_STATE: {
+      return initialLoginState
     }
     default: {
       return state

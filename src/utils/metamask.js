@@ -3,6 +3,29 @@ import { getEthereumAddress } from 'hermezjs/src/addresses'
 
 import { ETHER_TOKEN_ID } from '../constants'
 
+let provider
+
+function getProvider () {
+  if (!provider) {
+    if (!window.ethereum || !window.ethereum.isMetaMask) {
+      throw new Error('MetaMask provider is not available')
+    }
+
+    provider = new ethers.providers.Web3Provider(window.ethereum)
+  }
+
+  return provider
+}
+
+async function signMessage (message) {
+  const provider = getProvider()
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  const signature = await signer.signMessage(message)
+
+  return { address, signature }
+}
+
 /**
  * Fetches token balances in the user's MetaMask account. Only for those tokens registered in Hermez and Ether.
  * Throws an error if the user has no balances for any registered token in Hermez or an error comes up from fetching the balances on-chain.
@@ -47,7 +70,7 @@ async function getMetaMaskTokens (metaMaskWallet, finalHermezTokens) {
   ]
 
   if (metaMaskWallet) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const provider = getProvider()
     const partialERC20ABI = [{
       constant: true,
       inputs: [
@@ -103,5 +126,6 @@ async function getMetaMaskTokens (metaMaskWallet, finalHermezTokens) {
 }
 
 export {
+  signMessage,
   getMetaMaskTokens
 }

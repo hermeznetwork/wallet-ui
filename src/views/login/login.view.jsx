@@ -1,11 +1,8 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-// import { Redirect } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 
 import useLoginStyles from './login.styles'
-import * as globalThunks from '../../store/global/global.thunks'
 import * as globalActions from '../../store/global/global.actions'
 import * as loginActions from '../../store/login/login.actions'
 import * as loginThunks from '../../store/login/login.thunks'
@@ -15,21 +12,15 @@ import { STEP_NAME } from '../../store/login/login.reducer'
 import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
 import AccountSelector from './components/account-selector/account-selector.view'
 import WalletLoader from './components/wallet-loader/wallet-loader.view'
-import { push } from 'connected-react-router'
 
 function Login ({
   currentStep,
   steps,
-  walletTask,
   redirectRoute,
   onChangeHeader,
   onGoToAccountSelectorStep,
   onGoToWalletLoaderStep,
-  onLoadMetaMaskWallet,
-  onLoadLedgerWallet,
-  onLoadTrezorWallet,
-  onLoadWalletSuccess,
-  onLoadWalletFailure,
+  onLoadWallet,
   onCleanup
 }) {
   const theme = useTheme()
@@ -39,9 +30,7 @@ function Login ({
     onChangeHeader()
   }, [onChangeHeader])
 
-  React.useEffect(() => {
-    onCleanup()
-  }, [onCleanup])
+  React.useEffect(() => onCleanup, [onCleanup])
 
   /**
    * Handles the click on the MetaMask button
@@ -66,21 +55,6 @@ function Login ({
 
   function handleSelectAccount (walletName, accountData) {
     onGoToWalletLoaderStep(walletName, accountData)
-  }
-
-  function handleLoadWallet (walletName, accountData) {
-    switch (walletName) {
-      case 'metaMask': {
-        return onLoadMetaMaskWallet()
-      }
-      case 'ledger': {
-        return onLoadLedgerWallet(accountData)
-      }
-      case 'trezor': {
-        return onLoadTrezorWallet(accountData)
-      }
-      default: {}
-    }
   }
 
   return (
@@ -127,10 +101,8 @@ function Login ({
                     <WalletLoader
                       walletName={stepData.walletName}
                       accountData={stepData.accountData}
-                      walletTask={walletTask}
-                      onLoadWallet={handleLoadWallet}
-                      onLoadWalletSuccess={() => onLoadWalletSuccess(redirectRoute)}
-                      onLoadWalletFailure={onLoadWalletFailure}
+                      walletTask={stepData.walletTask}
+                      onLoadWallet={onLoadWallet}
                     />
                   </>
                 )
@@ -146,15 +118,9 @@ function Login ({
   )
 }
 
-Login.propTypes = {
-  onLoadMetaMaskWallet: PropTypes.func.isRequired,
-  onLoadLedgerWallet: PropTypes.func.isRequired
-}
-
 const mapStateToProps = (state) => ({
   currentStep: state.login.currentStep,
   steps: state.login.steps,
-  walletTask: state.global.metaMaskWalletTask,
   redirectRoute: state.global.redirectRoute
 })
 
@@ -165,16 +131,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(loginActions.goToAccountSelectorStep(walletName)),
   onGoToWalletLoaderStep: (walletName, accountData) =>
     dispatch(loginActions.goToWalletLoaderStep(walletName, accountData)),
-  onLoadMetaMaskWallet: () =>
-    dispatch(globalThunks.fetchMetaMaskWallet()),
-  onLoadLedgerWallet: (accountData) =>
-    dispatch(globalThunks.fetchLedgerWallet(accountData)),
-  onLoadTrezorWallet: (accountData) =>
-    dispatch(globalThunks.fetchTrezorWallet(accountData)),
-  onLoadWalletSuccess: (redirectRoute) =>
-    dispatch(push(redirectRoute)),
-  onLoadWalletFailure: (errorMessage) =>
-    dispatch(loginThunks.showLoadWalletError(errorMessage)),
+  onLoadWallet: (walletName, accountData) =>
+    dispatch(loginThunks.fetchWallet(walletName, accountData)),
   onCleanup: () =>
     dispatch(loginActions.resetState())
 })

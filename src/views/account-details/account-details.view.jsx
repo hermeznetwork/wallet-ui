@@ -64,9 +64,7 @@ function AccountDetails ({
     onChangeHeader(accountTask.data?.token.name)
   }, [accountTask, onChangeHeader])
 
-  React.useEffect(() => {
-    return onCleanup
-  }, [onCleanup])
+  React.useEffect(() => onCleanup, [onCleanup])
 
   /**
    * Calculates the total balance of the account in the user's preferred currency
