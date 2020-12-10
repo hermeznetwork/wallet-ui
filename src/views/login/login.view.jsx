@@ -8,6 +8,7 @@ import useLoginStyles from './login.styles'
 import * as globalThunks from '../../store/global/global.thunks'
 import * as globalActions from '../../store/global/global.actions'
 import * as loginActions from '../../store/login/login.actions'
+import * as loginThunks from '../../store/login/login.thunks'
 import { ReactComponent as HermezLogoAlternative } from '../../images/hermez-logo-alternative.svg'
 import Container from '../shared/container/container.view'
 import { STEP_NAME } from '../../store/login/login.reducer'
@@ -27,7 +28,9 @@ function Login ({
   onLoadMetaMaskWallet,
   onLoadLedgerWallet,
   onLoadTrezorWallet,
-  onLoadWalletSuccess
+  onLoadWalletSuccess,
+  onLoadWalletFailure,
+  onCleanup
 }) {
   const theme = useTheme()
   const classes = useLoginStyles()
@@ -35,6 +38,10 @@ function Login ({
   React.useEffect(() => {
     onChangeHeader()
   }, [onChangeHeader])
+
+  React.useEffect(() => {
+    onCleanup()
+  }, [onCleanup])
 
   /**
    * Handles the click on the MetaMask button
@@ -108,7 +115,7 @@ function Login ({
                   </>
                 )
               }
-              case STEP_NAME.HARDWARE_WALLET_LOADER: {
+              case STEP_NAME.WALLET_LOADER: {
                 const stepData = steps[STEP_NAME.WALLET_LOADER]
                 const walletLabel = getWalletLabel(stepData.walletName)
 
@@ -122,9 +129,9 @@ function Login ({
                       accountData={stepData.accountData}
                       walletTask={walletTask}
                       onLoadWallet={handleLoadWallet}
-                      onLoadWalletSuccess={onLoadWalletSuccess}
+                      onLoadWalletSuccess={() => onLoadWalletSuccess(redirectRoute)}
+                      onLoadWalletFailure={onLoadWalletFailure}
                     />
-                    {/* <Redirect to={redirectRoute} /> */}
                   </>
                 )
               }
@@ -152,15 +159,24 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: () => dispatch(globalActions.changeHeader({ type: undefined })),
+  onChangeHeader: () =>
+    dispatch(globalActions.changeHeader({ type: undefined })),
   onGoToAccountSelectorStep: (walletName) =>
     dispatch(loginActions.goToAccountSelectorStep(walletName)),
   onGoToWalletLoaderStep: (walletName, accountData) =>
     dispatch(loginActions.goToWalletLoaderStep(walletName, accountData)),
-  onLoadMetaMaskWallet: () => dispatch(globalThunks.fetchMetaMaskWallet()),
-  onLoadLedgerWallet: (accountData) => dispatch(globalThunks.fetchLedgerWallet(accountData)),
-  onLoadTrezorWallet: (accountData) => dispatch(globalThunks.fetchTrezorWallet(accountData)),
-  onLoadWalletSuccess: (redirectRoute) => dispatch(push(redirectRoute))
+  onLoadMetaMaskWallet: () =>
+    dispatch(globalThunks.fetchMetaMaskWallet()),
+  onLoadLedgerWallet: (accountData) =>
+    dispatch(globalThunks.fetchLedgerWallet(accountData)),
+  onLoadTrezorWallet: (accountData) =>
+    dispatch(globalThunks.fetchTrezorWallet(accountData)),
+  onLoadWalletSuccess: (redirectRoute) =>
+    dispatch(push(redirectRoute)),
+  onLoadWalletFailure: (errorMessage) =>
+    dispatch(loginThunks.showLoadWalletError(errorMessage)),
+  onCleanup: () =>
+    dispatch(loginActions.resetState())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)

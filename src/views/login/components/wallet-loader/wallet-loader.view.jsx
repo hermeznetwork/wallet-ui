@@ -8,7 +8,8 @@ function WalletLoader ({
   accountData,
   walletTask,
   onLoadWallet,
-  onLoadWalletSuccess
+  onLoadWalletSuccess,
+  onLoadWalletFailure
 }) {
   const classes = useWalletLoaderStyles()
 
@@ -24,6 +25,12 @@ function WalletLoader ({
     }
   }, [walletTask, onLoadWalletSuccess])
 
+  React.useEffect(() => {
+    if (walletTask.status === 'failed') {
+      onLoadWalletFailure(walletTask.error)
+    }
+  }, [walletTask, onLoadWalletFailure])
+
   return (
     <div>
       <WalletButton
@@ -32,7 +39,9 @@ function WalletLoader ({
         isClickable={false}
       />
       <p className={classes.followInstructionsText}>
-        Follow the instructions in the pop up.
+        Follow the instructions in {
+          walletName === 'ledger' ? 'your device' : 'the pop up'
+        }.
       </p>
     </div>
   )
