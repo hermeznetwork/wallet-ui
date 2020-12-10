@@ -7,6 +7,7 @@ import * as globalActions from '../../store/global/global.actions'
 import * as loginActions from '../../store/login/login.actions'
 import * as loginThunks from '../../store/login/login.thunks'
 import { ReactComponent as HermezLogoAlternative } from '../../images/hermez-logo-alternative.svg'
+import { ReactComponent as CloseIcon } from '../../images/icons/close.svg'
 import Container from '../shared/container/container.view'
 import { STEP_NAME } from '../../store/login/login.reducer'
 import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
@@ -20,6 +21,7 @@ function Login ({
   onChangeHeader,
   onGoToAccountSelectorStep,
   onGoToWalletLoaderStep,
+  onGoToPreviousStep,
   onLoadWallet,
   onCleanup
 }) {
@@ -58,8 +60,13 @@ function Login ({
   }
 
   return (
-    <Container backgroundColor={theme.palette.primary.main} fullHeight>
+    <Container backgroundColor={theme.palette.primary.main} fullHeight disableTopGutter>
       <div className={classes.root}>
+        {currentStep !== STEP_NAME.WALLET_SELECTOR && (
+          <button className={classes.goBackButton} onClick={onGoToPreviousStep}>
+            <CloseIcon className={classes.goBackButtonIcon} />
+          </button>
+        )}
         <HermezLogoAlternative className={classes.logo} />
         {
           (() => {
@@ -131,6 +138,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(loginActions.goToAccountSelectorStep(walletName)),
   onGoToWalletLoaderStep: (walletName, accountData) =>
     dispatch(loginActions.goToWalletLoaderStep(walletName, accountData)),
+  onGoToPreviousStep: () => dispatch(loginActions.goToPreviousStep()),
   onLoadWallet: (walletName, accountData) =>
     dispatch(loginThunks.fetchWallet(walletName, accountData)),
   onCleanup: () =>

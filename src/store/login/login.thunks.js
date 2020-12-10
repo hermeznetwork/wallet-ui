@@ -8,6 +8,7 @@ import * as loginActions from './login.actions'
 import { AUTH_MESSAGE } from '../../constants'
 import { buildEthereumBip44Path, signMessageWithLedger, signMessageWithTrezor } from '../../utils/hw-wallets'
 import { signMessage } from '../../utils/metamask'
+import { STEP_NAME } from './login.reducer'
 
 /**
  * Signs the auth message using the corresponding wallet provider
@@ -52,15 +53,20 @@ function fetchWallet (walletName, accountData) {
       const hashedSignature = keccak256(signature)
       const signatureBuffer = hermezjs.Utils.hexToBuffer(hashedSignature)
       const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(signatureBuffer, hermezAddress)
-      const { global: { redirectRoute } } = getState()
+      const { global: { redirectRoute }, login: { currentStep } } = getState()
 
-      dispatch(globalActions.loadWallet(wallet))
-      dispatch(push(redirectRoute))
+      if (currentStep === STEP_NAME.WALLET_LOADER) {
+        dispatch(globalActions.loadWallet(wallet))
+        dispatch(push(redirectRoute))
+      }
     } catch (error) {
-      console.log(error)
-      dispatch(loginActions.loadWalletFailure(error.message))
-      dispatch(globalActions.openSnackbar(error.message))
-      dispatch(loginActions.goToPreviousStep())
+      const { login: { currentStep } } = getState()
+
+      if (currentStep === STEP_NAME.WALLET_LOADER) {
+        dispatch(loginActions.loadWalletFailure(error.message))
+        dispatch(globalActions.openSnackbar(error.message))
+        dispatch(loginActions.goToPreviousStep())
+      }
     }
   }
 }
