@@ -15,7 +15,7 @@ import QRScanner from '../shared/qr-scanner/qr-scanner.view'
 import { isAnyVideoDeviceAvailable } from '../../utils/browser'
 import Button from '../shared/button/button.view'
 
-function MyCode ({ metaMaskWalletTask, onChangeHeader, onNavigateToTransfer }) {
+function MyCode ({ wallet, onChangeHeader, onNavigateToTransfer }) {
   const theme = useTheme()
   const classes = useMyCodeStyles()
   const { search } = useLocation()
@@ -66,17 +66,17 @@ function MyCode ({ metaMaskWalletTask, onChangeHeader, onNavigateToTransfer }) {
   return (
     <Container backgroundColor={theme.palette.primary.main} addHeaderPadding fullHeight>
       <div className={classes.root}>
-        {metaMaskWalletTask.status === 'successful' && (
+        {wallet && (
           <>
             <QRCode
-              value={metaMaskWalletTask.data.hermezEthereumAddress}
+              value={wallet.hermezEthereumAddress}
               size={MY_CODE.QR_CODE_SIZE}
               bgColor='transparent'
               fgColor={theme.palette.black}
               className={classes.qrCode}
             />
             <p className={classes.address}>
-              {metaMaskWalletTask.data.hermezEthereumAddress}
+              {wallet.hermezEthereumAddress}
             </p>
           </>
         )}
@@ -100,7 +100,7 @@ function MyCode ({ metaMaskWalletTask, onChangeHeader, onNavigateToTransfer }) {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.global.metaMaskWalletTask
+  wallet: state.global.wallet
 })
 
 const mapDispatchToProps = (dispatch) => ({

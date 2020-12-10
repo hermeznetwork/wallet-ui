@@ -33,7 +33,7 @@ async function signMessage (message) {
  * @param {Object[]} hermezTokens - List of registered tokens in Hermez
  * @returns {Promise} - Array of { balance, token } where balance is a Number and token is the Token schema returned from the API.
  */
-async function getMetaMaskTokens (metaMaskWallet, finalHermezTokens) {
+async function getMetaMaskTokens (wallet, finalHermezTokens) {
   // TODO: Remove once the hermez-node is ready
   const hermezTokens = [
     ...finalHermezTokens,
@@ -69,7 +69,7 @@ async function getMetaMaskTokens (metaMaskWallet, finalHermezTokens) {
     }
   ]
 
-  if (metaMaskWallet) {
+  if (wallet) {
     const provider = getProvider()
     const partialERC20ABI = [{
       constant: true,
@@ -99,7 +99,7 @@ async function getMetaMaskTokens (metaMaskWallet, finalHermezTokens) {
         // For ERC 20 tokens, check the balance from the smart contract
         const contract = new ethers.Contract(token.ethereumAddress, partialERC20ABI, provider)
 
-        return contract.balanceOf(getEthereumAddress(metaMaskWallet.hermezEthereumAddress))
+        return contract.balanceOf(getEthereumAddress(wallet.hermezEthereumAddress))
           // We can ignore if a call to the contract of a specific token fails.
           .catch(() => {})
       }

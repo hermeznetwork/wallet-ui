@@ -28,11 +28,10 @@ function fetchPoolTransactions (accountIndex) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadPoolTransactions())
 
-    const { global: { metaMaskWalletTask } } = getState()
+    const { global: { wallet } } = getState()
 
-    if (metaMaskWalletTask.status === 'successful') {
-      const { publicKeyCompressedHex } = metaMaskWalletTask.data
-      getPoolTransactions(accountIndex, publicKeyCompressedHex)
+    if (wallet) {
+      getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(transactions)))
         .catch(err => dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure(err)))
     } else {
@@ -50,7 +49,7 @@ function fetchHistoryTransactions (accountIndex) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadHistoryTransactions())
 
-    const { accountDetails: { exitsTask }, global: { metaMaskWalletTask } } = getState()
+    const { accountDetails: { exitsTask }, global: { wallet } } = getState()
 
     return CoordinatorAPI.getTransactions(undefined, undefined, undefined, accountIndex)
       .then((res) => {
@@ -62,7 +61,7 @@ function fetchHistoryTransactions (accountIndex) {
             )
             if (exitTx) {
               if (exitTx.instantWithdrawn) {
-                removePendingWithdraw(metaMaskWalletTask.data.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
+                removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
                 return true
               } else {
                 return false

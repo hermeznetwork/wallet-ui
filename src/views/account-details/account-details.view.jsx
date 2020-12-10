@@ -28,7 +28,7 @@ function AccountDetails ({
   historyTransactionsTask,
   exitsTask,
   fiatExchangeRatesTask,
-  metaMaskWalletTask,
+  wallet,
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorStateTask,
@@ -176,8 +176,8 @@ function AccountDetails ({
                         : undefined
                     }
                     preferredCurrency={preferredCurrency}
-                    pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
-                    pendingDelayedWithdraws={pendingDelayedWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                    pendingWithdraws={pendingWithdraws[wallet.hermezEthereumAddress]}
+                    pendingDelayedWithdraws={pendingDelayedWithdraws[wallet.hermezEthereumAddress]}
                     onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                     onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                     coordinatorState={coordinatorStateTask.data}
@@ -191,8 +191,8 @@ function AccountDetails ({
                           : undefined
                       }
                       preferredCurrency={preferredCurrency}
-                      pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
-                      pendingDelayedWithdraws={pendingDelayedWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                      pendingWithdraws={pendingWithdraws[wallet.hermezEthereumAddress]}
+                      pendingDelayedWithdraws={pendingDelayedWithdraws[wallet.hermezEthereumAddress]}
                       onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                       onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                       coordinatorState={coordinatorStateTask.data}
@@ -242,7 +242,7 @@ AccountDetails.propTypes = {
   historyTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
   fiatExchangeRatesTask: PropTypes.object.isRequired,
-  metaMaskWalletTask: PropTypes.object.isRequired,
+  wallet: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
   coordinatorStateTask: PropTypes.object.isRequired,
@@ -264,7 +264,7 @@ const mapStateToProps = (state) => ({
   historyTransactionsTask: state.accountDetails.historyTransactionsTask,
   exitsTask: state.accountDetails.exitsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  metaMaskWalletTask: state.global.metaMaskWalletTask,
+  wallet: state.global.wallet,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   coordinatorStateTask: state.global.coordinatorStateTask

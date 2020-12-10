@@ -106,8 +106,8 @@ function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
  */
 function addPendingDelayedWithdraw (pendingDelayedWithdraw) {
   return (dispatch, getState) => {
-    const { global: { metaMaskWalletTask } } = getState()
-    const { hermezEthereumAddress } = metaMaskWalletTask.data
+    const { global: { wallet } } = getState()
+    const { hermezEthereumAddress } = wallet
 
     const pendingDelayedWithdrawStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
     const accountPendingDelayedWithdrawStore = pendingDelayedWithdrawStore[hermezEthereumAddress]
@@ -131,8 +131,8 @@ function addPendingDelayedWithdraw (pendingDelayedWithdraw) {
  */
 function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
   return (dispatch, getState) => {
-    const { global: { metaMaskWalletTask } } = getState()
-    const { hermezEthereumAddress } = metaMaskWalletTask.data
+    const { global: { wallet } } = getState()
+    const { hermezEthereumAddress } = wallet
 
     const pendingDelayedWithdrawStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
     const accountPendingDelayedWithdrawStore = pendingDelayedWithdrawStore[hermezEthereumAddress]
