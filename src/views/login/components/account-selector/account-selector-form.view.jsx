@@ -1,14 +1,14 @@
 import React from 'react'
 
-import useAccountSelectorStyles from './account-selector.styles'
+import useAccountSelectorFormStyles from './account-selector-form.styles'
 import { ReactComponent as InfoIcon } from '../../../../images/icons/info.svg'
 import FormButton from '../../../shared/form-button/form-button.view'
 
 const ACCOUNTS_LIMIT = 20
 const DEFAULT_ACCOUNT = 0
 
-function AccountSelector ({ walletName, walletLabel, onSelectAccount }) {
-  const classes = useAccountSelectorStyles()
+function AccountSelectorForm ({ walletName, walletLabel, onSelectAccount }) {
+  const classes = useAccountSelectorFormStyles()
   const accounts = Array(ACCOUNTS_LIMIT).fill()
   const [formData, setFormData] = React.useState({
     accountType: DEFAULT_ACCOUNT,
@@ -71,4 +71,4 @@ function AccountSelector ({ walletName, walletLabel, onSelectAccount }) {
   )
 }
 
-export default AccountSelector
+export default AccountSelectorForm

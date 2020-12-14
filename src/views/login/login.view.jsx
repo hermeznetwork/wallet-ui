@@ -11,7 +11,7 @@ import { ReactComponent as CloseIcon } from '../../images/icons/close.svg'
 import Container from '../shared/container/container.view'
 import { STEP_NAME } from '../../store/login/login.reducer'
 import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
-import AccountSelector from './components/account-selector/account-selector.view'
+import AccountSelectorForm from './components/account-selector/account-selector-form.view'
 import WalletLoader from './components/wallet-loader/wallet-loader.view'
 
 function Login ({
@@ -88,7 +88,7 @@ function Login ({
                     <h1 className={classes.addAccountText}>
                       Add account through {walletLabel}
                     </h1>
-                    <AccountSelector
+                    <AccountSelectorForm
                       walletName={stepData.walletName}
                       walletLabel={walletLabel}
                       onSelectAccount={handleSelectAccount}

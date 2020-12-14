@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const accountSelectorStyles = createUseStyles(theme => ({
+const accountSelectorFormStyles = createUseStyles(theme => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -45,4 +45,4 @@ const accountSelectorStyles = createUseStyles(theme => ({
   }
 }))
 
-export default accountSelectorStyles
+export default accountSelectorFormStyles
