@@ -6,7 +6,7 @@ import { push } from 'connected-react-router'
 import * as globalActions from '../global/global.actions'
 import * as loginActions from './login.actions'
 import { AUTH_MESSAGE } from '../../constants'
-import { buildEthereumBip44Path, signMessageWithLedger, signMessageWithTrezor } from '../../utils/hw-wallets'
+import { buildEthereumBIP44Path, signMessageWithLedger, signMessageWithTrezor } from '../../utils/hw-wallets'
 import { signMessage } from '../../utils/metamask'
 import { STEP_NAME } from './login.reducer'
 
@@ -22,13 +22,13 @@ async function signAuthMessage (walletName, accountData) {
     }
     case 'ledger': {
       const { accountType, accountIndex } = accountData
-      const path = buildEthereumBip44Path(accountType, accountIndex)
+      const path = buildEthereumBIP44Path(accountType, accountIndex)
 
       return signMessageWithLedger(path, AUTH_MESSAGE)
     }
     case 'trezor': {
       const { accountType, accountIndex } = accountData
-      const path = buildEthereumBip44Path(accountType, accountIndex)
+      const path = buildEthereumBIP44Path(accountType, accountIndex)
 
       return signMessageWithTrezor(path, AUTH_MESSAGE)
     }

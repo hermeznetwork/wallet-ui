@@ -1,11 +1,11 @@
 /**
- * Converts an string to hex
+ * Converts a string to hex
  * @param {string} value - String to convert to hex
  * @returns {string} - String converted to hex
  */
 function strToHex (value) {
   if (typeof value !== 'string') {
-    throw new Error('The input value should be an string')
+    throw new Error('The input value should be a string')
   }
 
   return value.split('')

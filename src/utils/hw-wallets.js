@@ -4,10 +4,22 @@ import TrezorConnect from 'trezor-connect'
 
 import { strToHex } from './strings'
 
-function buildEthereumBip44Path (accountType, accountIndex) {
+/**
+ *
+ * @param {number} accountType - Account type
+ * @param {number} accountIndex - Account index
+ */
+function buildEthereumBIP44Path (accountType, accountIndex) {
   return `m/44'/60'/${accountType}'/0/${accountIndex}`
 }
 
+/**
+ * Signs a message using a Ledger hardware wallet
+ * @param {string} path - BIP-44 path of the account to use for signing
+ * @param {string} message - Message to sign
+ * @returns {Object} - Contains the signature of the message and the Ethereum address
+ * used to sign the message
+ */
 async function signMessageWithLedger (path, message) {
   const transport = await TransportU2F.create()
   const ethereum = new Eth(transport)
@@ -20,6 +32,13 @@ async function signMessageWithLedger (path, message) {
   return { address, signature }
 }
 
+/**
+ * Signs a message using a Trezor hardware wallet
+ * @param {string} path - BIP-44 path of the account to use for signing
+ * @param {string} message - Message to sign
+ * @returns {Object} - Contains the signature of the message and the Ethereum address
+ * used to sign the message
+ */
 async function signMessageWithTrezor (path, message) {
   const result = await TrezorConnect.ethereumSignMessage({
     path,
@@ -34,7 +53,7 @@ async function signMessageWithTrezor (path, message) {
 }
 
 export {
-  buildEthereumBip44Path,
+  buildEthereumBIP44Path,
   signMessageWithLedger,
   signMessageWithTrezor
 }
