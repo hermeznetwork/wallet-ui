@@ -136,7 +136,7 @@ TransactionDetails.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  preferredCurrency: state.settings.preferredCurrency,
+  preferredCurrency: state.myAccount.preferredCurrency,
   transactionTask: state.transactionDetails.transactionTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })

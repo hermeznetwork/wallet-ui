@@ -4,11 +4,12 @@ import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
 import { initializeTransactionPool } from 'hermezjs/src/tx-pool'
+import TrezorConnect from 'trezor-connect'
 
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
-import { fetchFiatExchangeRates, changeNetworkStatus } from '../store/global/global.thunks'
+import { fetchFiatExchangeRates, changeNetworkStatus, disconnectMetaMaskWallet } from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
 import { CurrencySymbol } from '../utils/currencies'
 
@@ -16,7 +17,8 @@ function App ({
   fiatExchangeRatesTask,
   onLoadFiatExchangeRates,
   onChangeNetworkStatus,
-  onOpenSnackbar
+  onOpenSnackbar,
+  onDisconnectAccount
 }) {
   const theme = useTheme()
   const classes = useAppStyles()
@@ -38,6 +40,25 @@ function App ({
   React.useEffect(() => {
     window.addEventListener('offline', () => onChangeNetworkStatus('offline'))
   }, [theme, onChangeNetworkStatus])
+
+  React.useEffect(() => {
+    TrezorConnect.init({
+      lazyLoad: true,
+      popup: true,
+      manifest: {
+        email: 'info@trezor.io',
+        appUrl: 'https://localhost:3000/'
+      }
+    })
+  }, [])
+
+  React.useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', () => {
+        onDisconnectAccount()
+      })
+    }
+  }, [onDisconnectAccount])
 
   if (
     fiatExchangeRatesTask.status === 'loading' ||
@@ -85,7 +106,8 @@ const mapDispatchToProps = (dispatch) => ({
       )
     ),
   onChangeNetworkStatus: (networkStatus, backgroundColor) =>
-    dispatch(changeNetworkStatus(networkStatus, backgroundColor))
+    dispatch(changeNetworkStatus(networkStatus, backgroundColor)),
+  onDisconnectAccount: () => dispatch(disconnectMetaMaskWallet())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

@@ -24,7 +24,30 @@ function readFromClipboard () {
   return navigator.clipboard.readText()
 }
 
+/**
+ * Checks if the user has at least one videodevice available
+ * @returns {Promise}
+ */
+function isAnyVideoDeviceAvailable () {
+  return new Promise((resolve, reject) => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+      reject(new Error('enumerateDevices() not supported'))
+    }
+
+    return navigator.mediaDevices.enumerateDevices()
+      .then(devices => {
+        if (devices.some(device => device.kind === 'videoinput')) {
+          return resolve(true)
+        }
+
+        return resolve(false)
+      })
+      .catch(reject)
+  })
+}
+
 export {
   copyToClipboard,
-  readFromClipboard
+  readFromClipboard,
+  isAnyVideoDeviceAvailable
 }

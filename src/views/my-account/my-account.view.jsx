@@ -4,9 +4,10 @@ import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
-import useSettingsStyles from './settings.styles'
+import useMyAccountStyles from './my-account.styles'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
-import { changePreferredCurrency, disconnectMetaMaskWallet } from '../../store/settings/settings.thunks'
+import { changePreferredCurrency } from '../../store/my-account/my-account.thunks'
+import { disconnectMetaMaskWallet } from '../../store/global/global.thunks'
 import Container from '../shared/container/container.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { ReactComponent as ExchangeIcon } from '../../images/icons/exchange.svg'
@@ -19,18 +20,20 @@ import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import { ReactComponent as CopyIcon } from '../../images/icons/copy.svg'
 import Button from '../shared/button/button.view'
 import { copyToClipboard } from '../../utils/browser'
+import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
 
-function Settings ({
-  metaMaskWalletTask,
+function MyAccount ({
+  wallet,
   preferredCurrency,
   onChangeHeader,
   onChangePreferredCurrency,
   onDisconnectWallet,
   onOpenSnackbar,
-  onNavigateToForceExit
+  onNavigateToForceExit,
+  onNavigateToMyCode
 }) {
   const theme = useTheme()
-  const classes = useSettingsStyles()
+  const classes = useMyAccountStyles()
 
   React.useEffect(() => {
     onChangeHeader()
@@ -59,16 +62,24 @@ function Settings ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.topSection}>
-          {metaMaskWalletTask.status === 'successful' && (
+          {wallet && (
             <>
               <h1 className={classes.hermezEthereumAddress}>
-                {getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
+                {getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
               </h1>
-              <Button
-                text='Copy'
-                Icon={<CopyIcon />}
-                onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
-              />
+              <div className={classes.buttonsWrapper}>
+                <Button
+                  text='Show QR'
+                  className={classes.qrButton}
+                  Icon={<QRCodeIcon className={classes.qrIcon} />}
+                  onClick={onNavigateToMyCode}
+                />
+                <Button
+                  text='Copy'
+                  Icon={<CopyIcon />}
+                  onClick={() => handleEthereumAddressClick(wallet.hermezEthereumAddress)}
+                />
+              </div>
             </>
           )}
         </section>
@@ -94,10 +105,10 @@ function Settings ({
               <p className={classes.settingTitle} onClick={onNavigateToForceExit}>Force withdrawal</p>
             </div>
           </div>
-          {metaMaskWalletTask.status === 'successful' && (
+          {wallet && (
             <a
               className={classes.settingContainer}
-              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/address/${metaMaskWalletTask.data.hermezEthereumAddress}`}
+              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/address/${wallet.hermezEthereumAddress}`}
               target='_blank'
               rel='noopener noreferrer'
             >
@@ -122,13 +133,13 @@ function Settings ({
   )
 }
 
-Settings.propTypes = {
+MyAccount.propTypes = {
   onChangePreferredCurrency: PropTypes.func
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.global.metaMaskWalletTask,
-  preferredCurrency: state.settings.preferredCurrency
+  wallet: state.global.wallet,
+  preferredCurrency: state.myAccount.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -136,14 +147,16 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeHeader({
       type: 'page',
       data: {
-        title: 'Settings',
-        closeAction: push('/')
+        title: 'My Account',
+        goBackAction: push('/')
       }
     })),
+  onNavigateToMyCode: () =>
+    dispatch(push('/my-code?from=my-account')),
   onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
   onDisconnectWallet: () => dispatch(disconnectMetaMaskWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onNavigateToForceExit: () => dispatch(push('/force-withdrawal'))
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Settings))
+export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(MyAccount))

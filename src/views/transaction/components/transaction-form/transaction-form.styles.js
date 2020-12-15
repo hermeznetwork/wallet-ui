@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useAccountListStyles = createUseStyles(theme => ({
+const useTransactionFormStyles = createUseStyles(theme => ({
   root: {
     marginTop: theme.headerHeight,
     marginBottom: theme.spacing(3),
@@ -85,6 +85,13 @@ const useAccountListStyles = createUseStyles(theme => ({
     color: theme.palette.grey.main,
     flex: 1,
     padding: `${theme.spacing(2)}px 0`,
+    transition: theme.hoverTransition,
+    '&:hover': {
+      color: theme.palette.black,
+      '& path': {
+        fill: theme.palette.black
+      }
+    },
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(3.5)}px 0`
@@ -150,77 +157,39 @@ const useAccountListStyles = createUseStyles(theme => ({
   receiverErrorMessageVisible: {
     display: 'flex'
   },
-  receiverPaste: {
-    height: '100%',
-    alignItems: 'center',
+  receiverButtons: {
+    display: 'flex'
+  },
+  receiverButton: {
     border: 0,
-    background: 0,
+    background: 'transparent',
     outline: 'none',
+    cursor: 'pointer',
     padding: theme.spacing(2),
     marginRight: theme.spacing(0.5),
-    fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black.dark,
-    cursor: 'pointer',
-    display: 'none',
+    color: theme.palette.black,
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(2.5)}px`,
+      fontSize: theme.spacing(2.5),
       marginRight: theme.spacing(3)
     }
   },
-  receiverPasteVisible: {
-    display: 'flex'
-  },
-  receiverDelete: {
-    height: '100%',
-    alignItems: 'center',
-    border: 0,
-    background: 0,
-    outline: 'none',
-    padding: theme.spacing(2),
-    marginRight: theme.spacing(0.5),
-    cursor: 'pointer',
-    display: 'none',
-    [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(2.5)}px`,
-      marginRight: theme.spacing(3)
+  receiverButtonIcon: {
+    width: 22,
+    height: 22,
+    '& path': {
+      fill: theme.palette.black
     }
   },
-  receiverDeleteVisible: {
-    display: 'flex'
-  },
-  receiverDeleteIcon: {
-    width: 30,
-    height: 30
-  },
-  continue: {
-    cursor: 'pointer',
-    width: '100%',
-    marginTop: theme.spacing(8),
-    padding: `${theme.spacing(2)}px 0`,
-    backgroundColor: theme.palette.secondary.main,
-    border: 0,
-    outline: 'none',
-    borderRadius: 14,
-    fontSize: `${theme.spacing(2)}px`,
-    fontWeight: theme.fontWeights.bold,
-    color: theme.palette.white,
-    '&[disabled]': {
-      backgroundColor: theme.palette.grey.main,
-      cursor: 'default'
-    },
-    [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(3)}px 0`,
-      marginTop: theme.spacing(14.5)
-    }
+  receiverDeleteButtonIcon: {
+    width: 32,
+    height: 32
   },
   feeWrapper: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    cursor: 'pointer',
     marginTop: theme.spacing(2.5),
     [theme.breakpoints.upSm]: {
       marginTop: theme.spacing(4.5)
@@ -242,4 +211,4 @@ const useAccountListStyles = createUseStyles(theme => ({
   }
 }))
 
-export default useAccountListStyles
+export default useTransactionFormStyles

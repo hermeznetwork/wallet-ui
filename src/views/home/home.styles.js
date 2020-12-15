@@ -23,7 +23,7 @@ const useHomeStyles = createUseStyles(theme => ({
   },
   accountBalance: {
     marginTop: `${theme.spacing(4)}px`,
-    marginBottom: `${theme.spacing(2)}px`
+    marginBottom: `${theme.spacing(3)}px`
   },
   actionButtonsGroup: {
     display: 'flex',

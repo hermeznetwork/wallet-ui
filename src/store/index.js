@@ -5,10 +5,11 @@ import thunk from 'redux-thunk'
 
 import globalReducer from './global/global.reducer'
 import homeReducer from './home/home.reducer'
-import settingsReducer from './settings/settings.reducer'
+import myAccountReducer from './my-account/my-account.reducer'
 import accountDetailsReducer from './account-details/account-details.reducer'
 import transactionDetailsReducer from './transaction-details/transaction-details.reducer'
 import transactionReducer from './transaction/transaction.reducer'
+import loginReducer from './login/login.reducer'
 
 /**
  * Creates the Redux store root reducer combining all the reducers used in the app
@@ -21,9 +22,10 @@ function createRootReducer (history) {
     global: globalReducer,
     home: homeReducer,
     accountDetails: accountDetailsReducer,
-    settings: settingsReducer,
+    myAccount: myAccountReducer,
     transactionDetails: transactionDetailsReducer,
-    transaction: transactionReducer
+    transaction: transactionReducer,
+    login: loginReducer
   })
 }
 

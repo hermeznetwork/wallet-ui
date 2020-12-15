@@ -12,6 +12,8 @@
     "lint:fix": "standard --fix"
   },
   "dependencies": {
+    "@ledgerhq/hw-app-eth": "^5.33.0",
+    "@ledgerhq/hw-transport-u2f": "^5.30.0",
     "abi-decoder": "^2.3.0",
     "axios": "^0.19.2",
     "big-integer": "^1.6.48",
@@ -27,13 +29,15 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-jss": "^10.3.0",
+    "react-qr-reader": "^2.2.1",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
-    "serve": "^11.3.2"
+    "serve": "^11.3.2",
+    "trezor-connect": "^8.1.19"
   },
   "devDependencies": {
     "husky": "^4.2.5",

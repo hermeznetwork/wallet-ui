@@ -13,22 +13,28 @@ function TransactionActions ({ hideWithdraw, accountIndex }) {
 
   return (
     <div className={classes.root}>
-      <Link to={`/transfer${queryString}`} className={classes.button}>
-        <SendIcon />
+      <div className={classes.action}>
+        <Link to={`/transfer${queryString}`} className={classes.button}>
+          <SendIcon className={classes.buttonIcon} />
+        </Link>
         <p className={classes.buttonText}>Send</p>
-      </Link>
-      <Link to={`/deposit${queryString}`} className={classes.button}>
-        <DepositIcon />
+      </div>
+      <div className={classes.action}>
+        <Link to={`/deposit${queryString}`} className={classes.button}>
+          <DepositIcon className={classes.buttonIcon} />
+        </Link>
         <p className={classes.buttonText}>Deposit</p>
-      </Link>
+      </div>
       {
         hideWithdraw
           ? <></>
           : (
-            <Link to={`/withdraw${queryString}`} className={classes.button}>
-              <WithdrawIcon />
+            <div className={classes.action}>
+              <Link to={`/withdraw${queryString}`} className={classes.button}>
+                <WithdrawIcon className={classes.buttonIcon} />
+              </Link>
               <p className={classes.buttonText}>Withdraw</p>
-            </Link>
+            </div>
           )
       }
     </div>

@@ -1,21 +1,29 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 
 import useLoginStyles from './login.styles'
-import { fetchMetamaskWallet } from '../../store/global/global.thunks'
+import * as globalActions from '../../store/global/global.actions'
+import * as loginActions from '../../store/login/login.actions'
+import * as loginThunks from '../../store/login/login.thunks'
 import { ReactComponent as HermezLogoAlternative } from '../../images/hermez-logo-alternative.svg'
-import { ReactComponent as MetaMaskLogo } from '../../images/metamask-logo.svg'
+import { ReactComponent as CloseIcon } from '../../images/icons/close.svg'
 import Container from '../shared/container/container.view'
-import { changeHeader } from '../../store/global/global.actions'
+import { STEP_NAME } from '../../store/login/login.reducer'
+import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
+import AccountSelectorForm from './components/account-selector/account-selector-form.view'
+import WalletLoader from './components/wallet-loader/wallet-loader.view'
 
 function Login ({
-  metaMaskWalletTask,
+  currentStep,
+  steps,
   redirectRoute,
-  onLoadMetaMaskWallet,
-  onChangeHeader
+  onChangeHeader,
+  onGoToAccountSelectorStep,
+  onGoToWalletLoaderStep,
+  onGoToPreviousStep,
+  onLoadWallet,
+  onCleanup
 }) {
   const theme = useTheme()
   const classes = useLoginStyles()
@@ -24,74 +32,117 @@ function Login ({
     onChangeHeader()
   }, [onChangeHeader])
 
+  React.useEffect(() => onCleanup, [onCleanup])
+
   /**
    * Handles the click on the MetaMask button
    * @returns {void}
    */
-  function handleMetamaskLogin () {
-    onLoadMetaMaskWallet()
+  function handleWalletClick (walletName) {
+    switch (walletName) {
+      case 'metaMask': {
+        return onGoToWalletLoaderStep(walletName)
+      }
+      case 'ledger':
+      case 'trezor': {
+        return onGoToAccountSelectorStep(walletName)
+      }
+      default: {}
+    }
+  }
+
+  function getWalletLabel (walletName) {
+    return walletName[0].toUpperCase() + walletName.slice(1)
+  }
+
+  function handleSelectAccount (walletName, accountData) {
+    onGoToWalletLoaderStep(walletName, accountData)
   }
 
   return (
-    <Container backgroundColor={theme.palette.primary.main} fullHeight>
+    <Container backgroundColor={theme.palette.primary.main} fullHeight disableTopGutter>
       <div className={classes.root}>
+        {currentStep !== STEP_NAME.WALLET_SELECTOR && (
+          <button className={classes.goBackButton} onClick={onGoToPreviousStep}>
+            <CloseIcon className={classes.goBackButtonIcon} />
+          </button>
+        )}
         <HermezLogoAlternative className={classes.logo} />
         {
-          metaMaskWalletTask.status === 'pending' || metaMaskWalletTask.status === 'failed'
-            ? <h2 className={classes.connectText}>Connect with</h2>
-            : <h2 className={classes.connectedText}>Connected to MetaMask</h2>
+          (() => {
+            switch (currentStep) {
+              case STEP_NAME.WALLET_SELECTOR: {
+                return (
+                  <>
+                    <h1 className={classes.connectText}>Connect with</h1>
+                    <WalletButtonList onClick={handleWalletClick} />
+                  </>
+                )
+              }
+              case STEP_NAME.ACCOUNT_SELECTOR: {
+                const stepData = steps[STEP_NAME.ACCOUNT_SELECTOR]
+                const walletLabel = getWalletLabel(stepData.walletName)
+
+                return (
+                  <>
+                    <h1 className={classes.addAccountText}>
+                      Add account through {walletLabel}
+                    </h1>
+                    <AccountSelectorForm
+                      walletName={stepData.walletName}
+                      walletLabel={walletLabel}
+                      onSelectAccount={handleSelectAccount}
+                    />
+                  </>
+                )
+              }
+              case STEP_NAME.WALLET_LOADER: {
+                const stepData = steps[STEP_NAME.WALLET_LOADER]
+                const walletLabel = getWalletLabel(stepData.walletName)
+
+                return (
+                  <>
+                    <h1 className={classes.connectedText}>
+                      Connected to {walletLabel}
+                    </h1>
+                    <WalletLoader
+                      walletName={stepData.walletName}
+                      accountData={stepData.accountData}
+                      walletTask={stepData.walletTask}
+                      onLoadWallet={onLoadWallet}
+                    />
+                  </>
+                )
+              }
+              default: {
+                return <></>
+              }
+            }
+          })()
         }
-        {
-          metaMaskWalletTask.status === 'loading'
-            ? (
-              <div className={classes.walletContainer}>
-                <MetaMaskLogo className={classes.walletButtonImage} />
-              </div>
-            )
-            : (
-              <button className={classes.walletButtonContainer} onClick={handleMetamaskLogin}>
-                <MetaMaskLogo className={classes.walletButtonImage} />
-              </button>
-            )
-        }
-        {(() => {
-          switch (metaMaskWalletTask.status) {
-            case 'pending':
-            case 'failed': {
-              return <p className={classes.walletName}>MetaMask</p>
-            }
-            case 'loading': {
-              return (
-                <p className={classes.helperText}>
-                Follow the instructions in the pop up.
-                </p>
-              )
-            }
-            case 'successful': {
-              return <Redirect to={redirectRoute} />
-            }
-            default: {
-              return <></>
-            }
-          }
-        })()}
       </div>
     </Container>
   )
 }
 
-Login.propTypes = {
-  onLoadMetaMaskWallet: PropTypes.func.isRequired
-}
-
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.global.metaMaskWalletTask,
+  currentStep: state.login.currentStep,
+  steps: state.login.steps,
   redirectRoute: state.global.redirectRoute
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: () => dispatch(changeHeader({ type: undefined })),
-  onLoadMetaMaskWallet: () => dispatch(fetchMetamaskWallet())
+  onChangeHeader: () =>
+    dispatch(globalActions.changeHeader({ type: undefined })),
+  onGoToAccountSelectorStep: (walletName) =>
+    dispatch(loginActions.goToAccountSelectorStep(walletName)),
+  onGoToWalletLoaderStep: (walletName, accountData) =>
+    dispatch(loginActions.goToWalletLoaderStep(walletName, accountData)),
+  onGoToPreviousStep: () => dispatch(loginActions.goToPreviousStep()),
+  onLoadWallet: (walletName, accountData) =>
+    dispatch(loginThunks.fetchWallet(walletName, accountData)),
+  onCleanup: () =>
+    dispatch(loginActions.resetState())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)

@@ -12,13 +12,17 @@ const useContainerStyles = createUseStyles(theme => ({
     width: '100%',
     height: '100%',
     display: 'flex',
-    maxWidth: 700,
+    // 2 * theme.spacing(3.5) is the sides padding, so the real width is 700px
+    maxWidth: 700 + 2 * theme.spacing(3.5),
     margin: 'auto',
-    padding: ({ disableVerticalGutters, disableTopGutter }) => disableVerticalGutters
-      ? `0 ${theme.spacing(3.5)}px`
-      : disableTopGutter
-        ? `0 ${theme.spacing(3.5)}px ${theme.spacing(5)}px`
-        : `${theme.spacing(5)}px ${theme.spacing(3.5)}px`
+    padding: ({ disableGutters, disableVerticalGutters, disableTopGutter }) =>
+      disableGutters
+        ? 0
+        : disableVerticalGutters
+          ? `0 ${theme.spacing(3.5)}px`
+          : disableTopGutter
+            ? `0 ${theme.spacing(3.5)}px ${theme.spacing(5)}px`
+            : `${theme.spacing(5)}px ${theme.spacing(3.5)}px`
   }
 }))
 

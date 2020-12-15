@@ -32,7 +32,6 @@ jobs:
       - name: Create production .env file
         run: |
           touch .env
-          echo REACT_APP_ROLLUP_API_URL=${{ secrets.REACT_APP_ROLLUP_API_URL }} >> .env
           echo REACT_APP_FIAT_EXCHANGE_RATES_API_URL=${{ secrets.REACT_APP_FIAT_EXCHANGE_RATES_API_URL }} >> .env
           echo REACT_APP_BATCH_EXPLORER_URL=${{ secrets.REACT_APP_BATCH_EXPLORER_URL }} >> .env
 

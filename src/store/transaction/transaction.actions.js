@@ -25,10 +25,11 @@ function goToChooseAccountStep () {
   }
 }
 
-function goToBuildTransactionStep (account) {
+function goToBuildTransactionStep (account, receiver) {
   return {
     type: transactionActionTypes.GO_TO_BUILD_TRANSACTION_STEP,
-    account
+    account,
+    receiver
   }
 }
 

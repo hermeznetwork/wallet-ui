@@ -15,7 +15,7 @@ const useAccountDetailsStyles = createUseStyles(theme => ({
     marginBottom: theme.spacing(1)
   },
   tokenBalance: {
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(3)
   }
 }))
 

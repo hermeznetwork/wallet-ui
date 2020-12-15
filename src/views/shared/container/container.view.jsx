@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 function Container ({
   backgroundColor,
   addHeaderPadding,
+  disableGutters,
   disableVerticalGutters,
   disableTopGutter,
   children,
@@ -13,6 +14,7 @@ function Container ({
 }) {
   const classes = useContainerStyles({
     addHeaderPadding,
+    disableGutters,
     disableVerticalGutters,
     disableTopGutter,
     backgroundColor,
