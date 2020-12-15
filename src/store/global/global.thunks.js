@@ -26,7 +26,7 @@ function fetchMetamaskWallet () {
       const signature = await signer.signMessage(METAMASK_MESSAGE)
       const hashedSignature = keccak256(signature)
       const bufferSignature = hermezjs.Utils.hexToBuffer(hashedSignature)
-      const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(bufferSignature, hermezEthereumAddress)
+      const wallet = new hermezjs.HermezWallet.HermezWallet(bufferSignature, hermezEthereumAddress)
       dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
     } catch (error) {
       dispatch(globalActions.loadMetamaskWalletFailure(error.message))

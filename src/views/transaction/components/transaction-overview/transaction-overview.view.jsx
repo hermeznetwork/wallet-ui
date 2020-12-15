@@ -194,7 +194,8 @@ function TransactionOverview ({
 
         metaMaskWallet.signTransaction(transaction, encodedTransaction)
 
-        return hermezjs.Tx.send(transaction, metaMaskWallet.publicKeyCompressedHex)
+        console.log(JSON.stringify(transaction))
+        return hermezjs.Tx.sendL2Transaction(transaction, metaMaskWallet.publicKeyCompressedHex)
           .then(() => onGoToFinishTransactionStep(transactionType))
           .catch((error) => console.log(error))
       }
