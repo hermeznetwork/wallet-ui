@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const transactionButtonStyles = createUseStyles(theme => ({
+const useFormButtonStyles = createUseStyles(theme => ({
   root: {
     cursor: 'pointer',
     width: '100%',
@@ -29,4 +29,4 @@ const transactionButtonStyles = createUseStyles(theme => ({
   }
 }))
 
-export default transactionButtonStyles
+export default useFormButtonStyles

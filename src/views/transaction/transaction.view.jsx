@@ -29,7 +29,7 @@ export const TransactionType = {
 function Transaction ({
   currentStep,
   steps,
-  metaMaskWalletTask,
+  wallet,
   preferredCurrency,
   fiatExchangeRatesTask,
   transactionType,
@@ -124,7 +124,7 @@ function Transaction ({
 
             return (
               <TransactionOverview
-                metaMaskWallet={metaMaskWalletTask.data || {}}
+                wallet={wallet || {}}
                 transactionType={transactionType}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}
@@ -160,7 +160,7 @@ function Transaction ({
 }
 
 Transaction.propTypes = {
-  metaMaskWalletTask: PropTypes.object,
+  wallet: PropTypes.object,
   metaMaskTokensTask: PropTypes.object,
   accountsTask: PropTypes.object,
   tokensTask: PropTypes.object,
@@ -172,7 +172,7 @@ Transaction.propTypes = {
 const mapStateToProps = (state) => ({
   currentStep: state.transaction.currentStep,
   steps: state.transaction.steps,
-  metaMaskWalletTask: state.global.metaMaskWalletTask,
+  wallet: state.global.wallet,
   metaMaskTokensTask: state.transaction.metaMaskTokensTask,
   accountsTask: state.transaction.accountsTask,
   tokensTask: state.transaction.tokensTask,

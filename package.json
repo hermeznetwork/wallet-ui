@@ -12,6 +12,8 @@
     "lint:fix": "standard --fix"
   },
   "dependencies": {
+    "@ledgerhq/hw-app-eth": "^5.33.0",
+    "@ledgerhq/hw-transport-u2f": "^5.30.0",
     "abi-decoder": "^2.3.0",
     "axios": "^0.19.2",
     "big-integer": "^1.6.48",
@@ -34,7 +36,8 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
-    "serve": "^11.3.2"
+    "serve": "^11.3.2",
+    "trezor-connect": "^8.1.19"
   },
   "devDependencies": {
     "husky": "^4.2.5",

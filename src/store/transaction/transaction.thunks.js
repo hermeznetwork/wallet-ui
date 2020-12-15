@@ -14,18 +14,18 @@ import { getMetaMaskTokens } from '../../utils/metamask'
  */
 function fetchAccount (tokenId, transactionType) {
   return (dispatch, getState) => {
-    const { global: { metaMaskWalletTask } } = getState()
+    const { global: { wallet } } = getState()
 
     dispatch(transactionActions.loadAccount())
 
-    if (metaMaskWalletTask.status !== 'successful') {
+    if (!wallet) {
       return dispatch(transactionActions.loadAccountFailure('MetaMask wallet is not loaded'))
     }
 
     if (transactionType === TransactionType.Deposit) {
       return CoordinatorAPI.getTokens()
         .then((hermezTokens) => {
-          getMetaMaskTokens(metaMaskWalletTask.data, hermezTokens)
+          getMetaMaskTokens(wallet, hermezTokens)
             .then(metaMaskTokens => {
               const account = metaMaskTokens.find((account) => account.id === tokenId)
 
@@ -35,7 +35,7 @@ function fetchAccount (tokenId, transactionType) {
         })
     } else {
       return CoordinatorAPI.getAccounts(
-        metaMaskWalletTask.data.hermezEthereumAddress,
+        wallet.hermezEthereumAddress,
         [tokenId]
       )
         .then((res) => dispatch(transactionActions.loadAccountSuccess(res.accounts[0])))
@@ -53,19 +53,19 @@ function fetchAccount (tokenId, transactionType) {
  */
 function fetchExit (tokenId, batchNum, accountIndex) {
   return async function (dispatch, getState) {
-    const { global: { metaMaskWalletTask } } = getState()
+    const { global: { wallet } } = getState()
 
-    if (metaMaskWalletTask.status !== 'successful') {
+    if (!wallet) {
       return dispatch(transactionActions.loadExitFailure('MetaMask wallet is not loaded'))
     }
 
     dispatch(transactionActions.loadExit())
 
     Promise.all([
-      CoordinatorAPI.getAccounts(metaMaskWalletTask.data.hermezEthereumAddress, [tokenId]),
+      CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [tokenId]),
       CoordinatorAPI.getExit(batchNum, accountIndex)
     ]).then(([accountsRes, exit]) => {
-      dispatch(transactionActions.loadExitSuccess(accountsRes.accounts[0], exit, metaMaskWalletTask.data.hermezEthereumAddress))
+      dispatch(transactionActions.loadExitSuccess(accountsRes.accounts[0], exit, wallet.hermezEthereumAddress))
     }).catch(err => dispatch(transactionActions.loadExitFailure(err.message)))
   }
 }
@@ -79,11 +79,11 @@ function fetchExit (tokenId, batchNum, accountIndex) {
  */
 function fetchAccounts (transactionType, fromItem) {
   return (dispatch, getState) => {
-    const { global: { metaMaskWalletTask } } = getState()
+    const { global: { wallet } } = getState()
 
     dispatch(transactionActions.loadAccounts())
 
-    if (metaMaskWalletTask.status !== 'successful') {
+    if (!wallet) {
       return dispatch(transactionActions.loadAccountsFailure('MetaMask wallet is not loaded'))
     }
 
@@ -91,12 +91,12 @@ function fetchAccounts (transactionType, fromItem) {
     if (transactionType === TransactionType.Deposit || transactionType === TransactionType.ForceExit) {
       return CoordinatorAPI.getTokens()
         .then((res) => {
-          getMetaMaskTokens(metaMaskWalletTask.data, res.tokens)
+          getMetaMaskTokens(wallet, res.tokens)
             .then(metaMaskTokens => dispatch(transactionActions.loadAccountsSuccess(transactionType, metaMaskTokens)))
             .catch(err => transactionActions.loadAccountsFailure(err.message))
         })
     } else {
-      return CoordinatorAPI.getAccounts(metaMaskWalletTask.data.hermezEthereumAddress, fromItem)
+      return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, fromItem)
         .then(res => dispatch(transactionActions.loadAccountsSuccess(transactionType, res)))
         .catch(err => transactionActions.loadAccountsFailure(err.message))
     }

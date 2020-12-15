@@ -14,7 +14,7 @@ import { TransactionType } from '../../transaction.view'
 import Container from '../../../shared/container/container.view'
 import { isAnyVideoDeviceAvailable, readFromClipboard } from '../../../../utils/browser'
 import QRScanner from '../../../shared/qr-scanner/qr-scanner.view'
-import TransactionButton from '../transaction-button/transaction-button.view'
+import FormButton from '../../../shared/form-button/form-button.view'
 
 function TransactionForm ({
   transactionType,
@@ -429,9 +429,9 @@ function TransactionForm ({
               }
             </p>
             {renderReceiver()}
-            <TransactionButton
-              label='Continue'
+            <FormButton
               type='submit'
+              label='Continue'
               disabled={isContinueDisabled()}
             />
           </form>

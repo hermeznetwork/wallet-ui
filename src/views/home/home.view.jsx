@@ -23,7 +23,7 @@ import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/home/home.actions'
 
 function Home ({
-  metaMaskWalletTask,
+  wallet,
   accountsTask,
   poolTransactionsTask,
   exitsTask,
@@ -51,10 +51,10 @@ function Home ({
   }, [theme, onChangeHeader])
 
   React.useEffect(() => {
-    if (metaMaskWalletTask.status === 'successful') {
-      onLoadAccounts(metaMaskWalletTask.data.hermezEthereumAddress)
+    if (wallet) {
+      onLoadAccounts(wallet.hermezEthereumAddress)
     }
-  }, [metaMaskWalletTask, onLoadAccounts])
+  }, [wallet, onLoadAccounts])
 
   React.useEffect(() => {
     onLoadPoolTransactions()
@@ -127,14 +127,14 @@ function Home ({
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
 
-  return metaMaskWalletTask.status === 'successful' && (
+  return wallet && (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
           {
             <Button
-              text={getPartiallyHiddenHermezAddress(metaMaskWalletTask.data.hermezEthereumAddress)}
-              onClick={() => handleEthereumAddressClick(metaMaskWalletTask.data.hermezEthereumAddress)}
+              text={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
+              onClick={() => handleEthereumAddressClick(wallet.hermezEthereumAddress)}
             />
           }
           <div className={classes.accountBalance}>
@@ -163,8 +163,8 @@ function Home ({
                         : undefined
                     }
                     preferredCurrency={preferredCurrency}
-                    pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
-                    pendingDelayedWithdraws={pendingDelayedWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                    pendingWithdraws={pendingWithdraws[wallet.hermezEthereumAddress]}
+                    pendingDelayedWithdraws={pendingDelayedWithdraws[wallet.hermezEthereumAddress]}
                     onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                     onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                     coordinatorState={coordinatorStateTask.data}
@@ -178,8 +178,8 @@ function Home ({
                           : undefined
                       }
                       preferredCurrency={preferredCurrency}
-                      pendingWithdraws={pendingWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
-                      pendingDelayedWithdraws={pendingDelayedWithdraws[metaMaskWalletTask.data.hermezEthereumAddress]}
+                      pendingWithdraws={pendingWithdraws[wallet.hermezEthereumAddress]}
+                      pendingDelayedWithdraws={pendingDelayedWithdraws[wallet.hermezEthereumAddress]}
                       onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                       onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                       coordinatorState={coordinatorStateTask.data}
@@ -202,7 +202,7 @@ function Home ({
                     paginationData={accountsTask.data.pagination}
                     onLoadNextPage={(fromItem) => {
                       onLoadAccounts(
-                        metaMaskWalletTask.data.hermezEthereumAddress,
+                        wallet.hermezEthereumAddress,
                         fromItem
                       )
                     }}
@@ -233,7 +233,6 @@ function Home ({
 
 Home.propTypes = {
   accountsTask: PropTypes.object,
-  metaMaskWalletTask: PropTypes.object,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRatesTask: PropTypes.object,
   poolTransactionsTask: PropTypes.object.isRequired,
@@ -250,7 +249,7 @@ Home.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  metaMaskWalletTask: state.global.metaMaskWalletTask,
+  wallet: state.global.wallet,
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,

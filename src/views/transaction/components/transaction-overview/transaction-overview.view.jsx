@@ -13,10 +13,10 @@ import { TransactionType } from '../../transaction.view'
 import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../../../shared/token-balance/token-balance.view'
 import Spinner from '../../../shared/spinner/spinner.view'
-import TransactionButton from '../transaction-button/transaction-button.view'
+import FormButton from '../../../shared/form-button/form-button.view'
 
 function TransactionOverview ({
-  metaMaskWallet,
+  wallet,
   transactionType,
   to,
   amount,
@@ -101,7 +101,7 @@ function TransactionOverview ({
    */
   async function handleClickTxButton () {
     // TODO: Remove once we have hermez-node. This is how we test the withdraw flow.
-    // onAddPendingWithdraw(metaMaskWallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
+    // onAddPendingWithdraw(wallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
     // return
     switch (transactionType) {
       case TransactionType.Deposit: {
@@ -109,9 +109,9 @@ function TransactionOverview ({
 
         return hermezjs.Tx.deposit(
           getAmountInBigInt(),
-          metaMaskWallet.hermezEthereumAddress,
+          wallet.hermezEthereumAddress,
           account.token,
-          metaMaskWallet.publicKeyCompressedHex
+          wallet.publicKeyCompressedHex
         )
           .then(() => onGoToFinishTransactionStep(transactionType))
           .catch((error) => {
@@ -139,7 +139,7 @@ function TransactionOverview ({
         // Differentiate between a withdraw on the Hermez SC and the DelayedWithdrawal SC
         if (!completeDelayedWithdrawal) {
           // TODO: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
-          // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, metaMaskWallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings, instantWithdrawal)
+          // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, wallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings, instantWithdrawal)
           return hermezjs.Tx.withdraw(
             ethers.BigNumber.from(340000000000000000000n),
             'hez:TKN:256',
@@ -147,13 +147,13 @@ function TransactionOverview ({
               id: 1,
               ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c'
             },
-            metaMaskWallet.publicKeyCompressedHex,
+            wallet.publicKeyCompressedHex,
             ethers.BigNumber.from('4'),
             [],
             instantWithdrawal
           ).then(() => {
             if (instantWithdrawal) {
-              onAddPendingWithdraw(metaMaskWallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
+              onAddPendingWithdraw(wallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
             } else {
               onAddPendingDelayedWithdraw({
                 id: account.accountIndex + exit.merkleProof.Root,
@@ -168,8 +168,8 @@ function TransactionOverview ({
           })
         } else {
           // Change once hermez-node is ready
-          // return hermezjs.Tx.delayedWithdraw(metaMaskWallet.hermezEthereumAddress, account.token)
-          return hermezjs.Tx.delayedWithdraw(metaMaskWallet.hermezEthereumAddress, { id: 1, ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c' })
+          // return hermezjs.Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token)
+          return hermezjs.Tx.delayedWithdraw(wallet.hermezEthereumAddress, { id: 1, ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c' })
             .then(() => {
               onRemovePendingDelayedWithdraw(account.accountIndex + exit.merkleProof.Root)
               onGoToFinishTransactionStep(transactionType)
@@ -189,13 +189,13 @@ function TransactionOverview ({
             fee,
             nonce: account.nonce
           },
-          metaMaskWallet.publicKeyCompressedHex,
+          wallet.publicKeyCompressedHex,
           account.token
         )
 
-        metaMaskWallet.signTransaction(transaction, encodedTransaction)
+        wallet.signTransaction(transaction, encodedTransaction)
 
-        return hermezjs.Tx.send(transaction, metaMaskWallet.publicKeyCompressedHex)
+        return hermezjs.Tx.send(transaction, wallet.publicKeyCompressedHex)
           .then(() => onGoToFinishTransactionStep(transactionType))
           .catch((error) => console.log(error))
       }
@@ -221,7 +221,7 @@ function TransactionOverview ({
       <Container>
         <section className={classes.section}>
           <TransactionInfo
-            from={getPartiallyHiddenHermezAddress(metaMaskWallet.hermezEthereumAddress)}
+            from={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
             to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
             fee={fee ? {
               fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
@@ -239,7 +239,7 @@ function TransactionOverview ({
                 </div>
               )
               : (
-                <TransactionButton
+                <FormButton
                   label={getButtonLabel()}
                   onClick={handleClickTxButton}
                 />
@@ -252,9 +252,7 @@ function TransactionOverview ({
 }
 
 TransactionOverview.propTypes = {
-  metaMaskWallet: PropTypes.shape({
-    signTransaction: PropTypes.func.isRequired
-  }),
+  wallet: PropTypes.object,
   transactionType: PropTypes.string.isRequired,
   to: PropTypes.object.isRequired,
   amount: PropTypes.string.isRequired,

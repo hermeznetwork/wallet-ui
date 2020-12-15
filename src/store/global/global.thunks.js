@@ -1,39 +1,9 @@
-import { ethers } from 'ethers'
-import { keccak256 } from 'js-sha3'
 import hermezjs from 'hermezjs'
 import { push } from 'connected-react-router'
 
 import * as globalActions from './global.actions'
-import { METAMASK_MESSAGE, PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
+import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
-
-/**
- * Asks the user to login using a MetaMask wallet and stores its data in the Redux store
- * @returns {void}
- */
-function fetchMetamaskWallet () {
-  return async function (dispatch) {
-    dispatch(globalActions.loadMetamaskWallet())
-    try {
-      const { ethereum } = window
-      if (!ethereum || !ethereum.isMetaMask) {
-        dispatch(globalActions.loadMetamaskWalletFailure('MetaMask is not available'))
-      }
-      await ethereum.request({ method: 'eth_requestAccounts' })
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const signer = provider.getSigner()
-      const ethereumAddress = await signer.getAddress()
-      const hermezEthereumAddress = hermezjs.Addresses.getHermezAddress(ethereumAddress)
-      const signature = await signer.signMessage(METAMASK_MESSAGE)
-      const hashedSignature = keccak256(signature)
-      const bufferSignature = hermezjs.Utils.hexToBuffer(hashedSignature)
-      const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(bufferSignature, hermezEthereumAddress)
-      dispatch(globalActions.loadMetamaskWalletSuccess(wallet))
-    } catch (error) {
-      dispatch(globalActions.loadMetamaskWalletFailure(error.message))
-    }
-  }
-}
 
 /**
  * Changes the route to which the user is going to be redirected to after a successful
@@ -136,8 +106,8 @@ function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
  */
 function addPendingDelayedWithdraw (pendingDelayedWithdraw) {
   return (dispatch, getState) => {
-    const { global: { metaMaskWalletTask } } = getState()
-    const { hermezEthereumAddress } = metaMaskWalletTask.data
+    const { global: { wallet } } = getState()
+    const { hermezEthereumAddress } = wallet
 
     const pendingDelayedWithdrawStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
     const accountPendingDelayedWithdrawStore = pendingDelayedWithdrawStore[hermezEthereumAddress]
@@ -161,8 +131,8 @@ function addPendingDelayedWithdraw (pendingDelayedWithdraw) {
  */
 function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
   return (dispatch, getState) => {
-    const { global: { metaMaskWalletTask } } = getState()
-    const { hermezEthereumAddress } = metaMaskWalletTask.data
+    const { global: { wallet } } = getState()
+    const { hermezEthereumAddress } = wallet
 
     const pendingDelayedWithdrawStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
     const accountPendingDelayedWithdrawStore = pendingDelayedWithdrawStore[hermezEthereumAddress]
@@ -198,13 +168,12 @@ function fetchCoordinatorState () {
  */
 function disconnectMetaMaskWallet () {
   return (dispatch) => {
-    dispatch(globalActions.unloadMetaMaskWallet())
+    dispatch(globalActions.unloadWallet())
     dispatch(push('/login'))
   }
 }
 
 export {
-  fetchMetamaskWallet,
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,

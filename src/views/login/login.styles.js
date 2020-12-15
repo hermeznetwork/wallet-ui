@@ -1,19 +1,8 @@
 import { createUseStyles } from 'react-jss'
 
-const metaMaskIconWrapperStyles = (theme) => ({
-  border: 0,
-  borderRadius: theme.spacing(4),
-  background: theme.palette.white,
-  width: theme.spacing(12),
-  height: theme.spacing(12),
-  padding: theme.spacing(1.5),
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
-})
-
 const useLoginStyles = createUseStyles(theme => ({
   root: {
+    position: 'relative',
     width: '100%',
     height: '100%',
     background: theme.palette.primary.main,
@@ -21,6 +10,21 @@ const useLoginStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center'
+  },
+  goBackButton: {
+    position: 'absolute',
+    top: theme.spacing(2),
+    right: 0,
+    display: 'flex',
+    background: 'transparent',
+    border: 0,
+    outline: 'none',
+    cursor: 'pointer',
+    padding: theme.spacing(1),
+    marginRight: -theme.spacing(1)
+  },
+  goBackButtonIcon: {
+
   },
   logo: {
     marginTop: theme.spacing(6),
@@ -34,35 +38,15 @@ const useLoginStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.normal,
     marginBottom: theme.spacing(6)
   },
-  connectedText: {
+  addAccountText: {
     fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.bold,
     marginBottom: theme.spacing(6)
   },
-  walletContainer: {
-    ...metaMaskIconWrapperStyles(theme)
-  },
-  walletButtonContainer: {
-    ...metaMaskIconWrapperStyles(theme),
-    cursor: 'pointer',
-    '&:focus': {
-      outline: 'none'
-    }
-  },
-  walletButtonImage: {
-    width: '100%'
-  },
-  walletName: {
+  connectedText: {
     fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.bold,
-    marginTop: theme.spacing(2)
-  },
-  helperText: {
-    lineHeight: 1.75,
-    fontWeight: theme.fontWeights.medium,
-    marginTop: theme.spacing(4),
-    maxWidth: 176,
-    textAlign: 'center'
+    marginBottom: theme.spacing(4.5)
   }
 }))
 

@@ -26,15 +26,14 @@ function fetchPoolTransactions () {
   return (dispatch, getState) => {
     dispatch(homeActions.loadPoolTransactions())
 
-    const { global: { metaMaskWalletTask } } = getState()
+    const { global: { wallet } } = getState()
 
-    if (metaMaskWalletTask.status === 'successful') {
-      const { publicKeyCompressedHex } = metaMaskWalletTask.data
-      getPoolTransactions(null, publicKeyCompressedHex)
+    if (wallet) {
+      getPoolTransactions(null, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
         .catch(err => dispatch(homeActions.loadPoolTransactionsFailure(err)))
     } else {
-      dispatch(homeActions.loadPoolTransactionsFailure('MetaMask wallet is not available'))
+      dispatch(homeActions.loadPoolTransactionsFailure('Wallet not available'))
     }
   }
 }
