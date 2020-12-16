@@ -70,7 +70,7 @@ async function getMetaMaskTokens (wallet, finalHermezTokens) {
   ]
 
   if (wallet) {
-    const provider = getProvider()
+    const provider = await getProvider()
     const partialERC20ABI = [{
       constant: true,
       inputs: [
