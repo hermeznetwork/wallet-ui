@@ -52,7 +52,7 @@ function fetchWallet (walletName, accountData) {
       const hermezAddress = getHermezAddress(address)
       const hashedSignature = keccak256(signature)
       const signatureBuffer = hermezjs.Utils.hexToBuffer(hashedSignature)
-      const wallet = new hermezjs.BabyJubWallet.BabyJubWallet(signatureBuffer, hermezAddress)
+      const wallet = new hermezjs.HermezWallet.HermezWallet(signatureBuffer, hermezAddress)
       const { global: { redirectRoute }, login: { currentStep } } = getState()
 
       if (currentStep === STEP_NAME.WALLET_LOADER) {

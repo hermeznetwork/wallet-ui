@@ -245,7 +245,7 @@ function TransactionForm ({
     const transactionFee =
       transactionType === TransactionType.Deposit || transactionType === TransactionType.ForceExit
         ? undefined
-        : getTokenAmountBigInt(getFee(fees).toString()).toString()
+        : getTokenAmountBigInt(getFee(fees).toFixed(account.token.decimals), account.token.decimals).toString()
 
     switch (transactionType) {
       case TransactionType.Transfer: {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
-import { beautifyTransactionState } from 'hermezjs/src/tx'
+import { beautifyTransactionState } from 'hermezjs/src/tx-utils'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
