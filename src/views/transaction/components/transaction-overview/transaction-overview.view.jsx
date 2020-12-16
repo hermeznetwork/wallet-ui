@@ -185,7 +185,7 @@ function TransactionOverview ({
           {
             from: account.accountIndex,
             to: transactionType === TransactionType.Transfer ? to.accountIndex : null,
-            amount: hermezjs.Float16.float2Fix(hermezjs.Float16.floorFix2Float(getAmountInBigInt())),
+            amount: getAmountInBigInt(),
             fee,
             nonce: account.nonce
           },
