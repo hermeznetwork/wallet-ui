@@ -5,20 +5,20 @@ import { ETHER_TOKEN_ID } from '../constants'
 
 let provider
 
-function getProvider () {
+async function getProvider () {
   if (!provider) {
     if (!window.ethereum || !window.ethereum.isMetaMask) {
       throw new Error('MetaMask provider is not available')
     }
-
     provider = new ethers.providers.Web3Provider(window.ethereum)
+    await provider.send('eth_requestAccounts')
   }
 
   return provider
 }
 
 async function signMessage (message) {
-  const provider = getProvider()
+  const provider = await getProvider()
   const signer = provider.getSigner()
   const address = await signer.getAddress()
   const signature = await signer.signMessage(message)
