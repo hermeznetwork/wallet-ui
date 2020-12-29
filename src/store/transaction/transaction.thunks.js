@@ -1,4 +1,4 @@
-import { CoordinatorAPI } from 'hermezjs'
+import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 
 import * as transactionActions from './transaction.actions'
 import { TransactionType } from '../../views/transaction/transaction.view'

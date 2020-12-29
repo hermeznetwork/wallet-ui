@@ -1,5 +1,5 @@
-import { CoordinatorAPI } from 'hermezjs'
-import { getPoolTransactions } from 'hermezjs/src/tx-pool'
+import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
+import { getPoolTransactions } from '@hermeznetwork/hermezjs/dist/browser/tx-pool'
 
 import * as accountDetailsActionTypes from './account-details.actions'
 import { removePendingWithdraw } from '../global/global.thunks'

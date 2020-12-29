@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { ethers } from 'ethers'
 import { useTheme } from 'react-jss'
-import hermezjs from 'hermezjs'
+import hermezjs from '@hermeznetwork/hermezjs'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { TxType } from 'hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/dist/browser/tx-utils'
 
 import depositedIcon from '../../../../images/icons/deposited.svg'
 import receivedIcon from '../../../../images/icons/received.svg'
