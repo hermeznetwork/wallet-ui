@@ -70,7 +70,7 @@ function fetchWallet (walletName, accountData) {
       }
     } catch (error) {
       const { login: { currentStep } } = getState()
-      console.log(error)
+
       if (currentStep === STEP_NAME.WALLET_LOADER) {
         dispatch(loginActions.loadWalletFailure(error.message))
         dispatch(globalActions.openSnackbar(error.message))
