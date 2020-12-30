@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
-import { getAccounts } from 'hermezjs/src/api'
-import { getTokenAmountBigInt, getTokenAmountString } from 'hermezjs/src/utils'
+import { getAccounts } from '@hermeznetwork/hermezjs/dist/browser/api'
+import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/dist/browser/utils'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'

@@ -1,6 +1,6 @@
 import { keccak256 } from 'js-sha3'
-import hermezjs from 'hermezjs'
-import { getHermezAddress } from 'hermezjs/src/addresses'
+import hermezjs from '@hermeznetwork/hermezjs'
+import { getHermezAddress } from '@hermeznetwork/hermezjs/dist/browser/addresses'
 import { push } from 'connected-react-router'
 
 import * as globalActions from '../global/global.actions'

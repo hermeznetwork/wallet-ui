@@ -1,7 +1,7 @@
 import React from 'react'
 import QrReader from 'react-qr-reader'
 import { useTheme } from 'react-jss'
-import { Addresses } from 'hermezjs'
+import { Addresses } from '@hermeznetwork/hermezjs'
 
 import useQRScannerStyles from './qr-scanner.styles'
 import Portal from '../portal/portal.view'
