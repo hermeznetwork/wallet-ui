@@ -15,20 +15,6 @@ function WalletButtonList ({ onClick }) {
           onClick={() => onClick('metaMask')}
         />
       </div>
-      <div className={classes.walletButtonContainer}>
-        <WalletButton
-          isClickable
-          walletName='ledger'
-          onClick={() => onClick('ledger')}
-        />
-      </div>
-      <div className={classes.walletButtonContainer}>
-        <WalletButton
-          isClickable
-          walletName='trezor'
-          onClick={() => onClick('trezor')}
-        />
-      </div>
     </div>
   )
 }
