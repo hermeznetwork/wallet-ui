@@ -1,36 +1,43 @@
 import { keccak256 } from 'js-sha3'
 import hermezjs from '@hermeznetwork/hermezjs'
-import { getHermezAddress } from '@hermeznetwork/hermezjs/dist/browser/addresses'
 import { push } from 'connected-react-router'
 
 import * as globalActions from '../global/global.actions'
 import * as loginActions from './login.actions'
 import { AUTH_MESSAGE } from '../../constants'
-import { buildEthereumBIP44Path, signMessageWithLedger, signMessageWithTrezor } from '../../utils/hw-wallets'
-import { signMessage } from '../../utils/metamask'
+import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 
-/**
- * Signs the auth message using the corresponding wallet provider
- * @param {string} walletName - Name of the wallet to use as sign in method
- * @param {Object} accountData - Account type and index for a hardware wallet
- */
-async function signAuthMessage (walletName, accountData) {
+async function getSigner (walletName, accountData) {
+  const provider = hermezjs.Providers.getProvider()
+
   switch (walletName) {
     case 'metaMask': {
-      return signMessage(AUTH_MESSAGE)
+      return hermezjs.Signers.getSigner(provider)
     }
     case 'ledger': {
       const { accountType, accountIndex } = accountData
       const path = buildEthereumBIP44Path(accountType, accountIndex)
 
-      return signMessageWithLedger(path, AUTH_MESSAGE)
+      return hermezjs.Signers.getSigner(
+        provider,
+        {
+          type: hermezjs.Signers.SignerType.LEDGER,
+          path
+        }
+      )
     }
     case 'trezor': {
       const { accountType, accountIndex } = accountData
       const path = buildEthereumBIP44Path(accountType, accountIndex)
 
-      return signMessageWithTrezor(path, AUTH_MESSAGE)
+      return hermezjs.Signers.getSigner(
+        provider,
+        {
+          type: hermezjs.Signers.SignerType.TREZOR,
+          path
+        }
+      )
     }
     default: {
       throw new Error('Wallet not supported')
@@ -48,8 +55,10 @@ function fetchWallet (walletName, accountData) {
     try {
       dispatch(loginActions.loadWallet())
 
-      const { address, signature } = await signAuthMessage(walletName, accountData)
-      const hermezAddress = getHermezAddress(address)
+      const signer = await getSigner(walletName, accountData)
+      const address = await signer.getAddress()
+      const signature = await signer.signMessage(AUTH_MESSAGE)
+      const hermezAddress = hermezjs.Addresses.getHermezAddress(address)
       const hashedSignature = keccak256(signature)
       const signatureBuffer = hermezjs.Utils.hexToBuffer(hashedSignature)
       const wallet = new hermezjs.HermezWallet.HermezWallet(signatureBuffer, hermezAddress)
