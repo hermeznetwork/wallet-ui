@@ -56,7 +56,6 @@ function fetchWallet (walletName, accountData) {
       dispatch(loginActions.loadWallet())
 
       const signer = await getSigner(walletName, accountData)
-      console.log(signer)
       const address = await signer.getAddress()
       const signature = await signer.signMessage(AUTH_MESSAGE)
       const hermezAddress = hermezjs.Addresses.getHermezAddress(address)
