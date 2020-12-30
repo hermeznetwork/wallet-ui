@@ -1,5 +1,5 @@
 import { keccak256 } from 'js-sha3'
-import hermezjs from 'hermezjs'
+import hermezjs from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
 
 import * as globalActions from '../global/global.actions'
