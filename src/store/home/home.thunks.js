@@ -1,6 +1,7 @@
+import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
+import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
+
 import * as homeActions from './home.actions'
-import { CoordinatorAPI } from 'hermezjs'
-import { getPoolTransactions } from 'hermezjs/src/tx-pool'
 
 /**
  * Fetches the accounts for a Hermez Ethereum address
@@ -52,8 +53,29 @@ function fetchExits () {
   }
 }
 
+/**
+ * Sends a create account authorization request if it hasn't been done
+ * for the current coordinator
+ * @returns {void}
+ */
+function postCreateAccountAuthorization () {
+  return (dispatch, getState) => {
+    const { home: { accountAuth }, global: { wallet } } = getState()
+
+    const currentAccountAuth = accountAuth[wallet.hermezEthereumAddress]
+
+    if (!currentAccountAuth[CoordinatorAPI.getBaseApiUrl()]) {
+      return CoordinatorAPI.postCreateAccountAuthorization(
+        wallet.hermezEthereumAddress,
+        `hez:${wallet.publicKeyCompressedHex}`
+      ).then(() => dispatch(homeActions.addAccountAuth(wallet.hermezEthereumAddress, CoordinatorAPI.getBaseApiUrl())))
+    }
+  }
+}
+
 export {
   fetchAccounts,
   fetchPoolTransactions,
-  fetchExits
+  fetchExits,
+  postCreateAccountAuthorization
 }

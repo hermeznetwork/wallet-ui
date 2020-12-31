@@ -1,4 +1,4 @@
-import hermezjs from 'hermezjs'
+import hermezjs from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
 
 import * as globalActions from './global.actions'

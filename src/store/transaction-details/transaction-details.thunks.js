@@ -1,6 +1,6 @@
 import * as transactionDetailsActionTypes from './transaction-details.actions'
-import { CoordinatorAPI } from 'hermezjs'
-import { HttpStatusCode } from 'hermezjs/src/http'
+import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
+import { HttpStatusCode } from '@hermeznetwork/hermezjs/src/http'
 
 /**
  * Fetches the details of a transaction

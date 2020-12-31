@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
+import * as hermezjs from '@hermeznetwork/hermezjs'
 
 import useHomeStyles from './home.styles'
 import { fetchCoordinatorState, addPendingDelayedWithdraw, removePendingDelayedWithdraw } from '../../store/global/global.thunks'
@@ -37,6 +38,7 @@ function Home ({
   onLoadPoolTransactions,
   onLoadExits,
   onLoadCoordinatorState,
+  onCreateAccountAuthorization,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onNavigateToAccountDetails,
@@ -51,16 +53,32 @@ function Home ({
   }, [theme, onChangeHeader])
 
   React.useEffect(() => {
-    if (wallet) {
-      onLoadAccounts(wallet.hermezEthereumAddress)
-    }
-  }, [wallet, onLoadAccounts])
+    onLoadCoordinatorState()
+  }, [onLoadCoordinatorState])
 
   React.useEffect(() => {
-    onLoadPoolTransactions()
-    onLoadExits()
-    onLoadCoordinatorState()
-  }, [onLoadPoolTransactions, onLoadExits, onLoadCoordinatorState])
+    if (coordinatorStateTask.status === 'successful') {
+      const forgers = coordinatorStateTask.data.network.nextForgers
+      if (forgers && forgers.length > 0) {
+        hermezjs.CoordinatorAPI.setBaseApiUrl(forgers[0].coordinator.URL)
+      }
+
+      onCreateAccountAuthorization()
+    }
+  }, [coordinatorStateTask, onCreateAccountAuthorization])
+
+  React.useEffect(() => {
+    if (wallet && coordinatorStateTask.status === 'successful') {
+      onLoadAccounts(wallet.hermezEthereumAddress)
+    }
+  }, [wallet, coordinatorStateTask, onLoadAccounts])
+
+  React.useEffect(() => {
+    if (coordinatorStateTask.status === 'successful') {
+      onLoadPoolTransactions()
+      onLoadExits()
+    }
+  }, [coordinatorStateTask, onLoadPoolTransactions, onLoadExits])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -143,7 +161,7 @@ function Home ({
               currency={preferredCurrency}
             />
           </div>
-          <TransactionActions hideWithdraw />
+          <TransactionActions hideWithdraw hideSend={accountsTask.status !== 'reloading' && accountsTask.status !== 'successful'} />
         </section>
       </Container>
       <Container>
@@ -191,9 +209,7 @@ function Home ({
           {(() => {
             switch (accountsTask.status) {
               case 'loading':
-              case 'failed': {
                 return <Spinner />
-              }
               case 'reloading':
               case 'successful': {
                 return (
@@ -220,6 +236,14 @@ function Home ({
                   </InfiniteScroll>
                 )
               }
+              case 'failed': {
+                return (
+                  <p className={classes.emptyAccounts}>
+                    <span>Deposit tokens from your</span>
+                    <span>Ethereum account</span>
+                  </p>
+                )
+              }
               default: {
                 return <></>
               }
@@ -243,6 +267,7 @@ Home.propTypes = {
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
   onLoadCoordinatorState: PropTypes.func.isRequired,
+  onCreateAccountAuthorization: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
@@ -270,6 +295,7 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
   onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
+  onCreateAccountAuthorization: () => dispatch(homeThunks.postCreateAccountAuthorization()),
   onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
     dispatch(addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>

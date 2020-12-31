@@ -37,6 +37,14 @@ const useHomeStyles = createUseStyles(theme => ({
   buttonText: {
     fontWeight: theme.fontWeights.bold
   },
+  emptyAccounts: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    fontSize: theme.spacing(2.5),
+    lineHeight: `${theme.spacing(4)}px`,
+    color: theme.palette.grey.dark
+  },
   test: {
     width: '222px', // random number added for testing purposes until design is delivered
     height: '222px'

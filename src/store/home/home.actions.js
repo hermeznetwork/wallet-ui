@@ -11,6 +11,7 @@ export const homeActionTypes = {
   LOAD_EXITS: '[HOME] LOAD EXITS',
   LOAD_EXITS_SUCCESS: '[HOME] LOAD EXITS SUCCESS',
   LOAD_EXITS_FAILURE: '[HOME] LOAD EXITS FAILURE',
+  ADD_ACCOUNT_AUTH: '[HOME] ADD ACCOUNT AUTH',
   RESET_STATE: '[HOME] RESET STATE'
 }
 
@@ -91,6 +92,14 @@ function loadExitsFailure (error) {
   }
 }
 
+function addAccountAuth (hermezEthereumAddress, coordinatorUrl) {
+  return {
+    type: homeActionTypes.ADD_ACCOUNT_AUTH,
+    hermezEthereumAddress,
+    coordinatorUrl
+  }
+}
+
 function resetState () {
   return {
     type: homeActionTypes.RESET_STATE
@@ -110,5 +119,6 @@ export {
   loadExits,
   loadExitsSuccess,
   loadExitsFailure,
+  addAccountAuth,
   resetState
 }
