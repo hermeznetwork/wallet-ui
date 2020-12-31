@@ -143,7 +143,13 @@ function Home ({
               currency={preferredCurrency}
             />
           </div>
-          <TransactionActions hideWithdraw />
+          <TransactionActions
+            hideSend={
+              accountsTask.status === 'successful' &&
+              accountsTask.data.accounts.length === 0
+            }
+            hideWithdraw
+          />
         </section>
       </Container>
       <Container>
@@ -196,6 +202,14 @@ function Home ({
               }
               case 'reloading':
               case 'successful': {
+                if (accountsTask.data.accounts.length === 0) {
+                  return (
+                    <p className={classes.emptyAccounts}>
+                      Deposit tokens from your Ethereum account.
+                    </p>
+                  )
+                }
+
                 return (
                   <InfiniteScroll
                     asyncTaskStatus={accountsTask.status}

@@ -25,6 +25,14 @@ const useHomeStyles = createUseStyles(theme => ({
     marginTop: `${theme.spacing(4)}px`,
     marginBottom: `${theme.spacing(3)}px`
   },
+  emptyAccounts: {
+    maxWidth: 240,
+    fontSize: theme.spacing(2.5),
+    fontWeight: theme.fontWeights.medium,
+    lineHeight: 1.8,
+    color: theme.palette.grey.main,
+    textAlign: 'center'
+  },
   actionButtonsGroup: {
     display: 'flex',
     justifyContent: 'space-between'
