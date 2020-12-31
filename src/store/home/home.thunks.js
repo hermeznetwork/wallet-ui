@@ -1,5 +1,5 @@
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
-import { getPoolTransactions } from '@hermeznetwork/hermezjs/dist/browser/tx-pool'
+import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
 import * as homeActions from './home.actions'
 

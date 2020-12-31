@@ -3,7 +3,7 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
-import { initializeTransactionPool } from '@hermeznetwork/hermezjs/dist/browser/tx-pool'
+import { initializeTransactionPool } from '@hermeznetwork/hermezjs/src/tx-pool'
 import TrezorConnect from 'trezor-connect'
 
 import useAppStyles from './app.styles'

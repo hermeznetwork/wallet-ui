@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { getEthereumAddress } from '@hermeznetwork/hermezjs/dist/browser/addresses'
+import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import { ETHER_TOKEN_ID } from '../constants'
 
