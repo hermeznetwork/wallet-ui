@@ -17,15 +17,6 @@ async function getProvider () {
   return provider
 }
 
-async function signMessage (message) {
-  const provider = await getProvider()
-  const signer = provider.getSigner()
-  const address = await signer.getAddress()
-  const signature = await signer.signMessage(message)
-
-  return { address, signature }
-}
-
 /**
  * Fetches token balances in the user's MetaMask account. Only for those tokens registered in Hermez and Ether.
  * Throws an error if the user has no balances for any registered token in Hermez or an error comes up from fetching the balances on-chain.
@@ -126,6 +117,5 @@ async function getMetaMaskTokens (wallet, finalHermezTokens) {
 }
 
 export {
-  signMessage,
   getMetaMaskTokens
 }
