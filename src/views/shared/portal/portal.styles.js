@@ -2,7 +2,7 @@ import { createUseStyles } from 'react-jss'
 
 const usePortalStyles = createUseStyles({
   root: {
-    position: 'absolute',
+    position: 'fixed',
     top: 0,
     left: 0,
     right: 0,
