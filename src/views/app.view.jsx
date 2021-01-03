@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
 import { initializeTransactionPool } from '@hermeznetwork/hermezjs/src/tx-pool'
 import TrezorConnect from 'trezor-connect'
+import hermez from '@hermeznetwork/hermezjs'
 
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
@@ -30,6 +31,10 @@ function App ({
   React.useEffect(() => {
     initializeTransactionPool()
   }, [])
+
+  React.useEffect(() => {
+    hermez.Providers.setProvider(process.env.REACT_APP_ETHEREUM_PROVIDER)
+  })
 
   React.useEffect(() => {
     window.addEventListener('online', () => {
