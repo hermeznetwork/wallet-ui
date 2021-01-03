@@ -32,6 +32,7 @@ function getFixedTokenAmount (amount, decimals) {
   }
 
   const significantDigitsFinal = significantDigits > 2 ? significantDigits : 2
+
   return balanceWithDecimals.toFixed(significantDigitsFinal)
 }
 
