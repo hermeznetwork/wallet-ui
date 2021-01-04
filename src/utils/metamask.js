@@ -71,11 +71,7 @@ async function getMetaMaskTokens (wallet, hermezTokens) {
       })
       .filter((account) => account.balance > 0)
 
-    if (balances.length === 0) {
-      throw Error('You don\'t have any ERC 20 tokens in your MetaMask account that are registered in Hermez.')
-    } else {
-      return balances
-    }
+    return balances
   } else {
     throw Error('MetaMask wallet has not loaded')
   }
