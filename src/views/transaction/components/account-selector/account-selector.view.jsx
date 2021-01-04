@@ -35,10 +35,8 @@ function AccountSelector ({
               }
               case 'reloading':
               case 'successful': {
-                // TODO: Remove the ForceExit from the if when the Hermez node is ready
                 if (
-                  transactionType === TransactionType.Deposit ||
-                  transactionType === TransactionType.ForceExit
+                  transactionType === TransactionType.Deposit
                 ) {
                   if (accountsTask.data.length === 0) {
                     return (

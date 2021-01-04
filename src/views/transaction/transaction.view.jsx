@@ -15,7 +15,6 @@ import { STEP_NAME } from '../../store/transaction/transaction.reducer'
 import AccountSelector from './components/account-selector/account-selector.view'
 import TransactionConfirmation from './components/transaction-confirmation/transaction-confirmation.view'
 import { changeHeader } from '../../store/global/global.actions'
-import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import Spinner from '../shared/spinner/spinner.view'
 
 export const TransactionType = {
@@ -68,9 +67,7 @@ function Transaction ({
       onLoadMetaMaskAccount(Number(tokenId))
     } else if (accountIndex && !tokenId) {
       if (batchNum) {
-        const [, , tokenId] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
-
-        onLoadExit(tokenId, Number(batchNum), accountIndex)
+        onLoadExit(accountIndex, Number(batchNum))
       } else {
         onLoadHermezAccount(accountIndex)
       }
@@ -252,8 +249,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionThunks.fetchMetaMaskAccount(tokenId)),
   onLoadHermezAccount: (accountIndex) =>
     dispatch(transactionThunks.fetchHermezAccount(accountIndex)),
-  onLoadExit: (tokenId, batchNum, accountIndex) =>
-    dispatch(transactionThunks.fetchExit(tokenId, batchNum, accountIndex)),
+  onLoadExit: (accountIndex, batchNum) =>
+    dispatch(transactionThunks.fetchExit(accountIndex, batchNum)),
   onLoadFees: () =>
     dispatch(transactionThunks.fetchFees()),
   onLoadAccounts: (transactionType, fromItem) =>

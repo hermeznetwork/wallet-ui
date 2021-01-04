@@ -59,12 +59,11 @@ function fetchHermezAccount (accountIndex) {
 
 /**
  * Fetches the details of an exit
- * @param {number} tokenId - id of the token of the account
- * @param {number} batchNum - batch number
  * @param {string} accountIndex - account index
+ * @param {number} batchNum - batch number
  * @returns {void}
  */
-function fetchExit (tokenId, batchNum, accountIndex) {
+function fetchExit (accountIndex, batchNum) {
   return async function (dispatch, getState) {
     const { global: { wallet } } = getState()
 
@@ -75,10 +74,10 @@ function fetchExit (tokenId, batchNum, accountIndex) {
     dispatch(transactionActions.loadExit())
 
     Promise.all([
-      CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [tokenId]),
+      CoordinatorAPI.getAccount(accountIndex),
       CoordinatorAPI.getExit(batchNum, accountIndex)
-    ]).then(([accountsRes, exit]) => {
-      dispatch(transactionActions.loadExitSuccess(accountsRes.accounts[0], exit, wallet.hermezEthereumAddress))
+    ]).then(([account, exit]) => {
+      dispatch(transactionActions.loadExitSuccess(account, exit, wallet.hermezEthereumAddress))
     }).catch(err => dispatch(transactionActions.loadExitFailure(err.message)))
   }
 }
@@ -99,8 +98,7 @@ function fetchAccounts (transactionType, fromItem) {
     if (!wallet) {
       return dispatch(transactionActions.loadAccountsFailure('MetaMask wallet is not loaded'))
     }
-    // TODO: Remove the ForceExit from the if when the Hermez node is ready
-    if (transactionType === TransactionType.Deposit || transactionType === TransactionType.ForceExit) {
+    if (transactionType === TransactionType.Deposit) {
       return CoordinatorAPI.getTokens()
         .then((res) => {
           getMetaMaskTokens(wallet, res.tokens)
