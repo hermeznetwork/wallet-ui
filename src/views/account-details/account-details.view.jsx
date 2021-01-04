@@ -198,6 +198,7 @@ function AccountDetails ({
                       coordinatorState={coordinatorStateTask.data}
                     />}
                   <TransactionList
+                    accountIndex={accountIndex}
                     transactions={getPendingTransactions(poolTransactionsTask.data)}
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
@@ -213,6 +214,7 @@ function AccountDetails ({
                     onLoadNextPage={(fromItem) => onLoadHistoryTransactions(accountIndex, fromItem)}
                   >
                     <TransactionList
+                      accountIndex={accountIndex}
                       transactions={historyTransactionsTask.data.transactions}
                       fiatExchangeRates={
                         fiatExchangeRatesTask.status === 'successful'

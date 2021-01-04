@@ -7,6 +7,7 @@ import useTransactionListStyles from './transaction-list.styles'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
 
 function TransactionList ({
+  accountIndex,
   transactions,
   preferredCurrency,
   fiatExchangeRates,
@@ -38,6 +39,8 @@ function TransactionList ({
             <Transaction
               id={transaction.id}
               type={transaction.type}
+              accountIndex={accountIndex}
+              fromAccountIndex={transaction.fromAccountIndex}
               amount={fixedTokenAmount}
               tokenSymbol={transaction.token.symbol}
               fiatAmount={getTokenAmountInPreferredCurrency(
