@@ -34,7 +34,8 @@ function Transaction ({
   fiatExchangeRatesTask,
   transactionType,
   onChangeHeader,
-  onLoadAccount,
+  onLoadMetaMaskAccount,
+  onLoadHermezAccount,
   onLoadExit,
   onLoadFees,
   onLoadAccounts,
@@ -52,7 +53,8 @@ function Transaction ({
   const { search } = useLocation()
   const urlSearchParams = new URLSearchParams(search)
   const accountIndex = urlSearchParams.get('accountIndex')
-  const batchNum = Number(urlSearchParams.get('batchNum'))
+  const tokenId = urlSearchParams.get('tokenId')
+  const batchNum = urlSearchParams.get('batchNum')
   const receiver = urlSearchParams.get('receiver')
   const instantWithdrawal = urlSearchParams.get('instantWithdrawal') === 'true'
   const completeDelayedWithdrawal = urlSearchParams.get('completeDelayedWithdrawal') === 'true'
@@ -62,18 +64,20 @@ function Transaction ({
   }, [currentStep, transactionType, accountIndex, onChangeHeader])
 
   React.useEffect(() => {
-    if (accountIndex) {
-      const [, , tokenId] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
-
+    if (accountIndex && tokenId) {
+      onLoadMetaMaskAccount(Number(tokenId))
+    } else if (accountIndex && !tokenId) {
       if (batchNum) {
-        onLoadExit(tokenId, batchNum, accountIndex)
+        const [, , tokenId] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
+
+        onLoadExit(tokenId, Number(batchNum), accountIndex)
       } else {
-        onLoadAccount(tokenId)
+        onLoadHermezAccount(accountIndex)
       }
     } else {
       onGoToChooseAccountStep()
     }
-  }, [batchNum, accountIndex, onLoadExit, onLoadAccount, onGoToChooseAccountStep])
+  }, [tokenId, batchNum, accountIndex, onLoadExit, onLoadMetaMaskAccount, onLoadHermezAccount, onGoToChooseAccountStep])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -242,10 +246,12 @@ const getHeader = (currentStep, transactionType, accountIndex) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (currentStep, transactionType, tokenId) =>
-    dispatch(changeHeader(getHeader(currentStep, transactionType, tokenId))),
-  onLoadAccount: () =>
-    dispatch(transactionThunks.fetchAccount()),
+  onChangeHeader: (currentStep, transactionType, accountIndex) =>
+    dispatch(changeHeader(getHeader(currentStep, transactionType, accountIndex))),
+  onLoadMetaMaskAccount: (tokenId) =>
+    dispatch(transactionThunks.fetchMetaMaskAccount(tokenId)),
+  onLoadHermezAccount: (accountIndex) =>
+    dispatch(transactionThunks.fetchHermezAccount(accountIndex)),
   onLoadExit: (tokenId, batchNum, accountIndex) =>
     dispatch(transactionThunks.fetchExit(tokenId, batchNum, accountIndex)),
   onLoadFees: () =>

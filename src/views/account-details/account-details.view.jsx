@@ -141,7 +141,7 @@ function AccountDetails ({
               symbol={accountTask.data?.token.symbol}
             />
           </div>
-          <TransactionActions accountIndex={accountIndex} />
+          <TransactionActions accountIndex={accountIndex} tokenId={accountTask.data?.token.id} />
         </section>
       </Container>
       <Container>

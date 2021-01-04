@@ -5,14 +5,11 @@ import { TransactionType } from '../../views/transaction/transaction.view'
 import { getMetaMaskTokens } from '../../utils/metamask'
 
 /**
- * Fetches the account details for a token id. If the transaction is a deposit, it will
- * look for the account details in MetaMask. Otherwise, it will look for the details
- * in the API
+ * Fetches the account details for a token id in MetaMask.
  * @param {string} tokenId - id of the token of the account
- * @param {string} transactionType - Transaction type
  * @returns {void}
  */
-function fetchAccount (tokenId, transactionType) {
+function fetchMetaMaskAccount (tokenId) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
 
@@ -22,25 +19,41 @@ function fetchAccount (tokenId, transactionType) {
       return dispatch(transactionActions.loadAccountFailure('MetaMask wallet is not loaded'))
     }
 
-    if (transactionType === TransactionType.Deposit) {
-      return CoordinatorAPI.getTokens()
-        .then((hermezTokens) => {
-          getMetaMaskTokens(wallet, hermezTokens)
-            .then(metaMaskTokens => {
-              const account = metaMaskTokens.find((account) => account.id === tokenId)
+    return CoordinatorAPI.getTokens()
+      .then((res) => {
+        getMetaMaskTokens(wallet, res.tokens)
+          .then(metaMaskTokens => {
+            const account = metaMaskTokens.find((token) => token.token.id === tokenId)
 
+            if (account) {
               dispatch(transactionActions.loadAccountSuccess(account))
-            })
-            .catch(error => dispatch(transactionActions.loadAccountFailure(error.message)))
-        })
-    } else {
-      return CoordinatorAPI.getAccounts(
-        wallet.hermezEthereumAddress,
-        [tokenId]
-      )
-        .then((res) => dispatch(transactionActions.loadAccountSuccess(res.accounts[0])))
-        .catch(error => dispatch(transactionActions.loadAccountFailure(error.message)))
+            } else {
+              dispatch(transactionActions.loadAccountFailure('Token not found'))
+            }
+          })
+          .catch(error => dispatch(transactionActions.loadAccountFailure(error.message)))
+      })
+  }
+}
+
+/**
+ * Fetches the account details for an accountIndex in the Hermez API.
+ * @param {string} accountIndex - accountIndex of the account
+ * @returns {void}
+ */
+function fetchHermezAccount (accountIndex) {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+
+    dispatch(transactionActions.loadAccount())
+
+    if (!wallet) {
+      return dispatch(transactionActions.loadAccountFailure('MetaMask wallet is not loaded'))
     }
+
+    return CoordinatorAPI.getAccount(accountIndex)
+      .then((res) => dispatch(transactionActions.loadAccountSuccess(res)))
+      .catch(error => dispatch(transactionActions.loadAccountFailure(error.message)))
   }
 }
 
@@ -117,7 +130,8 @@ function fetchFees () {
 }
 
 export {
-  fetchAccount,
+  fetchMetaMaskAccount,
+  fetchHermezAccount,
   fetchExit,
   fetchAccounts,
   fetchFees
