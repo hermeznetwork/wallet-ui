@@ -45,13 +45,20 @@ function fetchPoolTransactions (accountIndex) {
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchHistoryTransactions (accountIndex) {
+function fetchHistoryTransactions (accountIndex, fromItem) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadHistoryTransactions())
 
     const { accountDetails: { exitsTask }, global: { wallet } } = getState()
 
-    return CoordinatorAPI.getTransactions(undefined, undefined, undefined, accountIndex)
+    return CoordinatorAPI.getTransactions(
+      undefined,
+      undefined,
+      undefined,
+      accountIndex,
+      fromItem,
+      CoordinatorAPI.PaginationOrder.DESC
+    )
       .then((res) => {
         res.transactions = res.transactions.filter((transaction) => {
           if (transaction.type === 'Exit') {
