@@ -40,6 +40,14 @@ function AccountSelector ({
                   transactionType === TransactionType.Deposit ||
                   transactionType === TransactionType.ForceExit
                 ) {
+                  if (accountsTask.data.length === 0) {
+                    return (
+                      <p className={classes.emptyState}>
+                        No compatible tokens with Hermez wallet to deposit.
+                      </p>
+                    )
+                  }
+
                   return (
                     <AccountList
                       accounts={accountsTask.data}
