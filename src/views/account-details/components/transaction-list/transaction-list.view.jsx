@@ -27,7 +27,7 @@ function TransactionList ({
     <>
       {transactions.map((transaction) => {
         const fixedTokenAmount = getFixedTokenAmount(
-          transaction.amount,
+          transaction.L1Info?.depositAmount || transaction.amount,
           transaction.token.decimals
         )
 

@@ -52,15 +52,15 @@ function TransactionDetails ({
           return undefined
         }
 
-        const { amount, token } = transactionTask.data
+        const { token, historicUSD, L1Info, amount } = transactionTask.data
         const fixedAccountBalance = getFixedTokenAmount(
-          amount,
+          L1Info?.depositAmount || amount,
           token.decimals
         )
-
+        console.log(historicUSD)
         return getTokenAmountInPreferredCurrency(
           fixedAccountBalance,
-          token.USD,
+          historicUSD || token.USD,
           preferredCurrency,
           fiatExchangeRatesTask.data
         )
@@ -82,7 +82,10 @@ function TransactionDetails ({
             />
           </div>
           <TokenBalance
-            amount={getFixedTokenAmount(transactionTask.data?.amount, transactionTask.data?.token.decimals)}
+            amount={getFixedTokenAmount(
+              transactionTask.data?.L1Info?.depositAmount || transactionTask.data?.amount,
+              transactionTask.data?.token.decimals
+            )}
             symbol={accountTokenSymbol}
           />
         </section>
