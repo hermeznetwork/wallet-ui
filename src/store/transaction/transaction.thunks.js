@@ -19,7 +19,7 @@ function fetchMetaMaskAccount (tokenId) {
       return dispatch(transactionActions.loadAccountFailure('MetaMask wallet is not loaded'))
     }
 
-    return CoordinatorAPI.getTokens()
+    return CoordinatorAPI.getTokens(undefined, undefined, undefined, 2049)
       .then((res) => {
         getMetaMaskTokens(wallet, res.tokens)
           .then(metaMaskTokens => {
@@ -99,7 +99,7 @@ function fetchAccounts (transactionType, fromItem) {
       return dispatch(transactionActions.loadAccountsFailure('MetaMask wallet is not loaded'))
     }
     if (transactionType === TransactionType.Deposit) {
-      return CoordinatorAPI.getTokens()
+      return CoordinatorAPI.getTokens(undefined, undefined, undefined, 2049)
         .then((res) => {
           getMetaMaskTokens(wallet, res.tokens)
             .then(metaMaskTokens => dispatch(transactionActions.loadAccountsSuccess(transactionType, metaMaskTokens)))
