@@ -113,17 +113,15 @@ function TransactionDetails ({
               }
             }
           })()}
-          {transactionTask.status === 'successful' && (
-            <a
-              className={classes.link}
-              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}`}
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              <OpenInNewTabIcon className={classes.linkIcon} />
-                  View in Explorer
-            </a>
-          )}
+          <a
+            className={classes.link}
+            href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/transaction/${transactionId}`}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            <OpenInNewTabIcon className={classes.linkIcon} />
+            View in Explorer
+          </a>
         </section>
       </Container>
     </div>
