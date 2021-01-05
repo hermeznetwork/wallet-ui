@@ -106,7 +106,7 @@ function fetchAccounts (transactionType, fromItem) {
             .catch(err => transactionActions.loadAccountsFailure(err.message))
         })
     } else {
-      return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, fromItem)
+      return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, undefined, fromItem)
         .then(res => dispatch(transactionActions.loadAccountsSuccess(transactionType, res)))
         .catch(err => transactionActions.loadAccountsFailure(err.message))
     }

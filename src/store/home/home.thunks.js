@@ -46,7 +46,7 @@ function fetchAccounts (hermezEthereumAddress, fromItem) {
   return (dispatch) => {
     dispatch(homeActions.loadAccounts())
 
-    return CoordinatorAPI.getAccounts(hermezEthereumAddress, fromItem)
+    return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, fromItem)
       .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
   }

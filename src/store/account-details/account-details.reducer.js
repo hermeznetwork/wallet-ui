@@ -1,3 +1,5 @@
+import { PaginationOrder } from '@hermeznetwork/hermezjs/src/api'
+
 import { accountDetailsActionTypes } from './account-details.actions'
 import { getPaginationData } from '../../utils/api'
 
@@ -82,7 +84,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
       const transactions = state.historyTransactionsTask.status === 'reloading'
         ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
         : action.data.transactions
-      const pagination = getPaginationData(action.data.pendingItems)
+      const pagination = getPaginationData(action.data.pendingItems, transactions, PaginationOrder.DESC)
 
       return {
         ...state,

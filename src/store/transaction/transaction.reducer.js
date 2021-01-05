@@ -119,7 +119,7 @@ function transactionReducer (state = initialTransactionState, action) {
         const accounts = state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'reloading'
           ? [...state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data.accounts, ...action.data.accounts]
           : action.data.accounts
-        const pagination = getPaginationData(action.data.pendingItems)
+        const pagination = getPaginationData(action.data.pendingItems, accounts)
 
         return {
           ...state,
