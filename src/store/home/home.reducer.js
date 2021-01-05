@@ -2,6 +2,9 @@ import { getPaginationData } from '../../utils/api'
 import { homeActionTypes } from './home.actions'
 
 const initialHomeState = {
+  totalAccountsBalanceTask: {
+    status: 'pending'
+  },
   accountsTask: {
     status: 'pending'
   },
@@ -18,6 +21,32 @@ const initialHomeState = {
 
 function homeReducer (state = initialHomeState, action) {
   switch (action.type) {
+    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE: {
+      return {
+        ...state,
+        totalAccountsBalanceTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_SUCCESS: {
+      return {
+        ...state,
+        totalAccountsBalanceTask: {
+          status: 'successful',
+          data: action.balance
+        }
+      }
+    }
+    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_FAILURE: {
+      return {
+        ...state,
+        totalAccountsBalanceTask: {
+          status: 'failed',
+          error: 'An error ocurred loading the total balance of the accounts'
+        }
+      }
+    }
     case homeActionTypes.LOAD_ACCOUNTS: {
       return {
         ...state,

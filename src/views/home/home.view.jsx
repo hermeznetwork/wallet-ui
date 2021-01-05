@@ -11,7 +11,6 @@ import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { copyToClipboard } from '../../utils/browser'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
@@ -24,6 +23,7 @@ import { resetState } from '../../store/home/home.actions'
 
 function Home ({
   wallet,
+  totalAccountsBalanceTask,
   accountsTask,
   poolTransactionsTask,
   exitsTask,
@@ -33,6 +33,7 @@ function Home ({
   pendingDelayedWithdraws,
   coordinatorStateTask,
   onChangeHeader,
+  onLoadTotalAccountsBalance,
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
@@ -51,6 +52,16 @@ function Home ({
   }, [theme, onChangeHeader])
 
   React.useEffect(() => {
+    if (fiatExchangeRatesTask.status === 'successful') {
+      onLoadTotalAccountsBalance(
+        wallet.hermezEthereumAddress,
+        preferredCurrency,
+        fiatExchangeRatesTask.data
+      )
+    }
+  }, [wallet, preferredCurrency, fiatExchangeRatesTask, onLoadTotalAccountsBalance])
+
+  React.useEffect(() => {
     if (wallet) {
       onLoadAccounts(wallet.hermezEthereumAddress)
     }
@@ -63,42 +74,6 @@ function Home ({
   }, [onLoadPoolTransactions, onLoadExits, onLoadCoordinatorState])
 
   React.useEffect(() => onCleanup, [onCleanup])
-
-  /**
-   * Calculates the total balance of the accounts in the user's preferred currency
-   * @param {Object} accountsTask - Asynchronous task of the accounts
-   * @returns {number} The balance of the account in the user's preferred currency
-   */
-  function getTotalBalance (accountsTask) {
-    switch (accountsTask.status) {
-      case 'reloading':
-      case 'successful': {
-        if (fiatExchangeRatesTask.status !== 'successful') {
-          return undefined
-        }
-
-        const { accounts } = accountsTask.data
-
-        return accounts.reduce((amount, account) => {
-          const fixedAccountBalance = getFixedTokenAmount(
-            account.balance,
-            account.token.decimals
-          )
-          const fiatBalance = getTokenAmountInPreferredCurrency(
-            fixedAccountBalance,
-            account.token.USD,
-            preferredCurrency,
-            fiatExchangeRatesTask.data
-          )
-
-          return amount + fiatBalance
-        }, 0)
-      }
-      default: {
-        return undefined
-      }
-    }
-  }
 
   /**
    * Filters the transactions of type exit from the transaction pool
@@ -139,7 +114,7 @@ function Home ({
           }
           <div className={classes.accountBalance}>
             <FiatAmount
-              amount={getTotalBalance(accountsTask)}
+              amount={totalAccountsBalanceTask.data}
               currency={preferredCurrency}
             />
           </div>
@@ -246,6 +221,7 @@ function Home ({
 }
 
 Home.propTypes = {
+  totalAccountsBalanceTask: PropTypes.object,
   accountsTask: PropTypes.object,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRatesTask: PropTypes.object,
@@ -253,6 +229,7 @@ Home.propTypes = {
   exitsTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
+  onLoadTotalAccountsBalance: PropTypes.func.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
@@ -264,6 +241,7 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
+  totalAccountsBalanceTask: state.home.totalAccountsBalanceTask,
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
@@ -277,6 +255,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
+  onLoadTotalAccountsBalance: (hermezEthereumAddress, preferredCurrency, fiatExchangeRates) =>
+    dispatch(homeThunks.fetchTotalAccountsBalance(hermezEthereumAddress, preferredCurrency, fiatExchangeRates)),
   onLoadAccounts: (hermezEthereumAddress, fromItem) =>
     dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem)),
   onLoadPoolTransactions: () =>
