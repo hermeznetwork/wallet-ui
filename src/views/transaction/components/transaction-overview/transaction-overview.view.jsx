@@ -100,8 +100,6 @@ function TransactionOverview ({
    * @returns {void}
    */
   async function handleClickTxButton () {
-    // TODO: Remove once we have hermez-node. This is how we test the withdraw flow.
-    // onAddPendingWithdraw(wallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
     switch (transactionType) {
       case TransactionType.Deposit: {
         setIsUserSigningTransaction(true)
@@ -142,15 +140,15 @@ function TransactionOverview ({
             account.accountIndex,
             account.token,
             wallet.publicKeyCompressedHex,
-            exit.merkleProof.Root,
-            exit.merkleProof.Siblings,
+            exit.batchNum,
+            exit.merkleProof.siblings,
             instantWithdrawal
           ).then(() => {
             if (instantWithdrawal) {
-              onAddPendingWithdraw(wallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
+              onAddPendingWithdraw(wallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.root)
             } else {
               onAddPendingDelayedWithdraw({
-                id: account.accountIndex + exit.merkleProof.Root,
+                id: account.accountIndex + exit.merkleProof.root,
                 instant: false,
                 date: Date.now()
               })
@@ -163,7 +161,7 @@ function TransactionOverview ({
         } else {
           return hermezjs.Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token)
             .then(() => {
-              onRemovePendingDelayedWithdraw(account.accountIndex + exit.merkleProof.Root)
+              onRemovePendingDelayedWithdraw(account.accountIndex + exit.merkleProof.root)
               onGoToFinishTransactionStep(transactionType)
             })
             .catch((error) => {
