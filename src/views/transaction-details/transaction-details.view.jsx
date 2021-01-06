@@ -57,7 +57,7 @@ function TransactionDetails ({
           L1Info?.depositAmount || amount,
           token.decimals
         )
-        console.log(historicUSD)
+
         return getTokenAmountInPreferredCurrency(
           fixedAccountBalance,
           historicUSD || token.USD,
