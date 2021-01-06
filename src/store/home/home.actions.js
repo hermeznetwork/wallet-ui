@@ -32,7 +32,7 @@ function loadTotalAccountsBalanceSuccess (balance) {
 
 function loadTotalAccountsBalanceFailure () {
   return {
-    type: homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_ERROR
+    type: homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_FAILURE
   }
 }
 
