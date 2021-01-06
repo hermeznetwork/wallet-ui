@@ -44,14 +44,6 @@ const useHomeStyles = createUseStyles(theme => ({
   },
   buttonText: {
     fontWeight: theme.fontWeights.bold
-  },
-  test: {
-    width: '222px', // random number added for testing purposes until design is delivered
-    height: '222px'
-  },
-  testCanvas: {
-    width: '100% !important',
-    height: '100% !important'
   }
 }))
 
