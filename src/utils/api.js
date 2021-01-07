@@ -5,12 +5,12 @@ import { PaginationOrder } from '@hermeznetwork/hermezjs/src/api'
  * @param {number} pendingItems - Pending items to retrieve from a paginated API endpoint
  * @returns {Object} - Pagination information for the next request
  */
-function getPaginationData (pendingItems, items, order) {
+function getPaginationData (pendingItems, items, order = PaginationOrder.ASC) {
   if (pendingItems === 0) {
     return { hasMoreItems: false }
   }
 
-  const fromItem = !order || order === PaginationOrder.ASC
+  const fromItem = order === PaginationOrder.ASC
     ? items[items.length - 1].itemId + 1
     : items[items.length - 1].itemId - 1
 
