@@ -100,9 +100,6 @@ function TransactionOverview ({
    * @returns {void}
    */
   async function handleClickTxButton () {
-    // TODO: Remove once we have hermez-node. This is how we test the withdraw flow.
-    // onAddPendingWithdraw(wallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
-    // return
     switch (transactionType) {
       case TransactionType.Deposit: {
         setIsUserSigningTransaction(true)
@@ -124,7 +121,7 @@ function TransactionOverview ({
 
         return hermezjs.Tx.forceExit(
           getAmountInBigInt(),
-          account.accountIndex || 'hez:TKN:256',
+          account.accountIndex,
           account.token
         )
           .then(() => onGoToFinishTransactionStep(transactionType))
@@ -138,25 +135,20 @@ function TransactionOverview ({
 
         // Differentiate between a withdraw on the Hermez SC and the DelayedWithdrawal SC
         if (!completeDelayedWithdrawal) {
-          // TODO: Change once hermez-node is ready and we have a testnet. First line is the proper one, second one needs to be modified manually in each test
-          // withdraw(getAmountInBigInt(), account.accountIndex || 'hez:TKN:256', account.token, wallet.publicKeyCompressedHex, exit.merkleProof.Root, exit.merkleProof.Siblings, instantWithdrawal)
           return hermezjs.Tx.withdraw(
-            ethers.BigNumber.from(340000000000000000000n),
-            'hez:TKN:256',
-            {
-              id: 1,
-              ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c'
-            },
+            getAmountInBigInt(),
+            account.accountIndex,
+            account.token,
             wallet.publicKeyCompressedHex,
-            ethers.BigNumber.from('4'),
-            [],
+            exit.batchNum,
+            exit.merkleProof.siblings,
             instantWithdrawal
           ).then(() => {
             if (instantWithdrawal) {
-              onAddPendingWithdraw(wallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.Root)
+              onAddPendingWithdraw(wallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.root)
             } else {
               onAddPendingDelayedWithdraw({
-                id: account.accountIndex + exit.merkleProof.Root,
+                id: account.accountIndex + exit.merkleProof.root,
                 instant: false,
                 date: Date.now()
               })
@@ -167,11 +159,9 @@ function TransactionOverview ({
             console.log(error)
           })
         } else {
-          // Change once hermez-node is ready
-          // return hermezjs.Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token)
-          return hermezjs.Tx.delayedWithdraw(wallet.hermezEthereumAddress, { id: 1, ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c' })
+          return hermezjs.Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token)
             .then(() => {
-              onRemovePendingDelayedWithdraw(account.accountIndex + exit.merkleProof.Root)
+              onRemovePendingDelayedWithdraw(account.accountIndex + exit.merkleProof.root)
               onGoToFinishTransactionStep(transactionType)
             })
             .catch((error) => {

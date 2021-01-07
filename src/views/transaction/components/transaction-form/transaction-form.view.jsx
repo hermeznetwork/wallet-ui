@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
-import { getAccounts } from '@hermeznetwork/hermezjs/dist/browser/api'
-import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/dist/browser/utils'
+import { getAccounts } from '@hermeznetwork/hermezjs/src/api'
+import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -100,7 +100,11 @@ function TransactionForm ({
    * @returns {number} - Transaction fee
    */
   function getFee (fees) {
-    return fees.existingAccount / account.token.USD
+    if (account.token.USD === 0) {
+      return 0
+    }
+
+    return fees.ExistingAccount / account.token.USD
   }
 
   /**
@@ -249,7 +253,7 @@ function TransactionForm ({
 
     switch (transactionType) {
       case TransactionType.Transfer: {
-        return getAccounts(receiver, [account.tokenId])
+        return getAccounts(receiver, [account.token.id])
           .then((res) => {
             const receiverAccount = res.accounts[0]
 

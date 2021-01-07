@@ -102,8 +102,7 @@ function transactionReducer (state = initialTransactionState, action) {
       }
     }
     case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      // TODO: Remove the ForceExit from the if when the Hermez node is ready
-      if (action.transactionType === TransactionType.Deposit || action.transactionType === TransactionType.ForceExit) {
+      if (action.transactionType === TransactionType.Deposit) {
         return {
           ...state,
           steps: {
@@ -120,7 +119,7 @@ function transactionReducer (state = initialTransactionState, action) {
         const accounts = state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'reloading'
           ? [...state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data.accounts, ...action.data.accounts]
           : action.data.accounts
-        const pagination = getPaginationData(action.data.pendingItems)
+        const pagination = getPaginationData(action.data.pendingItems, accounts)
 
         return {
           ...state,

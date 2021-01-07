@@ -1,5 +1,5 @@
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
-import { getPoolTransactions } from '@hermeznetwork/hermezjs/dist/browser/tx-pool'
+import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
 import * as accountDetailsActionTypes from './account-details.actions'
 import { removePendingWithdraw } from '../global/global.thunks'
@@ -45,13 +45,20 @@ function fetchPoolTransactions (accountIndex) {
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchHistoryTransactions (accountIndex) {
+function fetchHistoryTransactions (accountIndex, fromItem) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadHistoryTransactions())
 
     const { accountDetails: { exitsTask }, global: { wallet } } = getState()
 
-    return CoordinatorAPI.getTransactions(undefined, undefined, undefined, accountIndex)
+    return CoordinatorAPI.getTransactions(
+      undefined,
+      undefined,
+      undefined,
+      accountIndex,
+      fromItem,
+      CoordinatorAPI.PaginationOrder.DESC
+    )
       .then((res) => {
         res.transactions = res.transactions.filter((transaction) => {
           if (transaction.type === 'Exit') {
@@ -61,7 +68,7 @@ function fetchHistoryTransactions (accountIndex) {
             )
             if (exitTx) {
               if (exitTx.instantWithdrawn) {
-                removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
+                removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.root)
                 return true
               } else {
                 return false

@@ -1,5 +1,5 @@
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
-import { HttpStatusCode } from '@hermeznetwork/hermezjs/dist/browser/http'
+import { HttpStatusCode } from '@hermeznetwork/hermezjs/src/http'
 
 import * as transactionDetailsActionTypes from './transaction-details.actions'
 

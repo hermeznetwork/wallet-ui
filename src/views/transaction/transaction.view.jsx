@@ -15,7 +15,6 @@ import { STEP_NAME } from '../../store/transaction/transaction.reducer'
 import AccountSelector from './components/account-selector/account-selector.view'
 import TransactionConfirmation from './components/transaction-confirmation/transaction-confirmation.view'
 import { changeHeader } from '../../store/global/global.actions'
-import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import Spinner from '../shared/spinner/spinner.view'
 
 export const TransactionType = {
@@ -34,7 +33,8 @@ function Transaction ({
   fiatExchangeRatesTask,
   transactionType,
   onChangeHeader,
-  onLoadAccount,
+  onLoadMetaMaskAccount,
+  onLoadHermezAccount,
   onLoadExit,
   onLoadFees,
   onLoadAccounts,
@@ -52,7 +52,8 @@ function Transaction ({
   const { search } = useLocation()
   const urlSearchParams = new URLSearchParams(search)
   const accountIndex = urlSearchParams.get('accountIndex')
-  const batchNum = Number(urlSearchParams.get('batchNum'))
+  const tokenId = urlSearchParams.get('tokenId')
+  const batchNum = urlSearchParams.get('batchNum')
   const receiver = urlSearchParams.get('receiver')
   const instantWithdrawal = urlSearchParams.get('instantWithdrawal') === 'true'
   const completeDelayedWithdrawal = urlSearchParams.get('completeDelayedWithdrawal') === 'true'
@@ -62,18 +63,18 @@ function Transaction ({
   }, [currentStep, transactionType, accountIndex, onChangeHeader])
 
   React.useEffect(() => {
-    if (accountIndex) {
-      const [, , tokenId] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
-
+    if (accountIndex && tokenId) {
+      onLoadMetaMaskAccount(Number(tokenId))
+    } else if (accountIndex && !tokenId) {
       if (batchNum) {
-        onLoadExit(tokenId, batchNum, accountIndex)
+        onLoadExit(accountIndex, Number(batchNum))
       } else {
-        onLoadAccount(tokenId)
+        onLoadHermezAccount(accountIndex)
       }
     } else {
       onGoToChooseAccountStep()
     }
-  }, [batchNum, accountIndex, onLoadExit, onLoadAccount, onGoToChooseAccountStep])
+  }, [tokenId, batchNum, accountIndex, onLoadExit, onLoadMetaMaskAccount, onLoadHermezAccount, onGoToChooseAccountStep])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -242,12 +243,14 @@ const getHeader = (currentStep, transactionType, accountIndex) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (currentStep, transactionType, tokenId) =>
-    dispatch(changeHeader(getHeader(currentStep, transactionType, tokenId))),
-  onLoadAccount: () =>
-    dispatch(transactionThunks.fetchAccount()),
-  onLoadExit: (tokenId, batchNum, accountIndex) =>
-    dispatch(transactionThunks.fetchExit(tokenId, batchNum, accountIndex)),
+  onChangeHeader: (currentStep, transactionType, accountIndex) =>
+    dispatch(changeHeader(getHeader(currentStep, transactionType, accountIndex))),
+  onLoadMetaMaskAccount: (tokenId) =>
+    dispatch(transactionThunks.fetchMetaMaskAccount(tokenId)),
+  onLoadHermezAccount: (accountIndex) =>
+    dispatch(transactionThunks.fetchHermezAccount(accountIndex)),
+  onLoadExit: (accountIndex, batchNum) =>
+    dispatch(transactionThunks.fetchExit(accountIndex, batchNum)),
   onLoadFees: () =>
     dispatch(transactionThunks.fetchFees()),
   onLoadAccounts: (transactionType, fromItem) =>

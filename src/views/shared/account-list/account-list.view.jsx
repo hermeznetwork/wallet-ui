@@ -32,7 +32,7 @@ function AccountList ({
 
         return (
           <div
-            key={account.token.id}
+            key={account.accountIndex || account.token.id}
             className={clsx({ [classes.accountSpacer]: index > 0 })}
           >
             <Account

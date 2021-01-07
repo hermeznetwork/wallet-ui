@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
-import { beautifyTransactionState } from '@hermeznetwork/hermezjs/dist/browser/tx-utils'
+import { beautifyTransactionState } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
@@ -18,6 +18,7 @@ import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import { push } from 'connected-react-router'
+import { getTransactionAmount } from '../../utils/transactions'
 
 function TransactionDetails ({
   transactionTask,
@@ -44,7 +45,7 @@ function TransactionDetails ({
    * @param {Object} transactionTask - Asynchronous task of the transaction
    * @returns {number}
    */
-  function getTransactionAmount (transactionTask) {
+  function getTransactionFiatAmount (transactionTask) {
     switch (transactionTask.status) {
       case 'reloading':
       case 'successful': {
@@ -52,7 +53,8 @@ function TransactionDetails ({
           return undefined
         }
 
-        const { amount, token } = transactionTask.data
+        const { token, historicUSD } = transactionTask.data
+        const amount = getTransactionAmount(transactionTask.data)
         const fixedAccountBalance = getFixedTokenAmount(
           amount,
           token.decimals
@@ -60,7 +62,7 @@ function TransactionDetails ({
 
         return getTokenAmountInPreferredCurrency(
           fixedAccountBalance,
-          token.USD,
+          historicUSD || token.USD,
           preferredCurrency,
           fiatExchangeRatesTask.data
         )
@@ -77,14 +79,19 @@ function TransactionDetails ({
         <section className={classes.section}>
           <div className={classes.fiatAmount}>
             <FiatAmount
-              amount={getTransactionAmount(transactionTask)}
+              amount={getTransactionFiatAmount(transactionTask)}
               currency={preferredCurrency}
             />
           </div>
-          <TokenBalance
-            amount={getFixedTokenAmount(transactionTask.data?.amount, transactionTask.data?.token.decimals)}
-            symbol={accountTokenSymbol}
-          />
+          {
+            <TokenBalance
+              amount={getFixedTokenAmount(
+                getTransactionAmount(transactionTask.data),
+                transactionTask.data?.token.decimals
+              )}
+              symbol={accountTokenSymbol}
+            />
+          }
         </section>
       </Container>
       <Container>
@@ -110,17 +117,15 @@ function TransactionDetails ({
               }
             }
           })()}
-          {transactionTask.status === 'successful' && (
-            <a
-              className={classes.link}
-              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}`}
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              <OpenInNewTabIcon className={classes.linkIcon} />
-                  View in Explorer
-            </a>
-          )}
+          <a
+            className={classes.link}
+            href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/transaction/${transactionId}`}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            <OpenInNewTabIcon className={classes.linkIcon} />
+            View in Explorer
+          </a>
         </section>
       </Container>
     </div>

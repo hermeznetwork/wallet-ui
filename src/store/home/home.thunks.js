@@ -1,7 +1,40 @@
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
-import { getPoolTransactions } from '@hermeznetwork/hermezjs/dist/browser/tx-pool'
+import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 
 import * as homeActions from './home.actions'
+
+/**
+ * Fetches the accounts for a Hermez Ethereum address and calculates the total balance.
+ * @param {string} hermezEthereumAddress - Hermez ethereum address
+ * @returns {void}
+ */
+function fetchTotalAccountsBalance (hermezEthereumAddress, preferredCurrency, fiatExchangeRates) {
+  return (dispatch) => {
+    dispatch(homeActions.loadTotalAccountsBalance())
+
+    return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
+      .then((res) => {
+        const totalAccountsBalance = res.accounts.reduce((amount, account) => {
+          const fixedAccountBalance = getFixedTokenAmount(
+            account.balance,
+            account.token.decimals
+          )
+          const fiatBalance = getTokenAmountInPreferredCurrency(
+            fixedAccountBalance,
+            account.token.USD,
+            preferredCurrency,
+            fiatExchangeRates
+          )
+
+          return amount + fiatBalance
+        }, 0)
+
+        dispatch(homeActions.loadTotalAccountsBalanceSuccess(totalAccountsBalance))
+      })
+      .catch(err => dispatch(homeActions.loadTotalAccountsBalanceFailure(err)))
+  }
+}
 
 /**
  * Fetches the accounts for a Hermez Ethereum address
@@ -13,7 +46,7 @@ function fetchAccounts (hermezEthereumAddress, fromItem) {
   return (dispatch) => {
     dispatch(homeActions.loadAccounts())
 
-    return CoordinatorAPI.getAccounts(hermezEthereumAddress, fromItem)
+    return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, fromItem)
       .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
   }
@@ -54,6 +87,7 @@ function fetchExits () {
 }
 
 export {
+  fetchTotalAccountsBalance,
   fetchAccounts,
   fetchPoolTransactions,
   fetchExits

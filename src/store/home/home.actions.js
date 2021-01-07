@@ -1,4 +1,7 @@
 export const homeActionTypes = {
+  LOAD_TOTAL_ACCOUNTS_BALANCE: '[HOME] LOAD TOTAL ACCOUNTS BALANCE',
+  LOAD_TOTAL_ACCOUNTS_BALANCE_SUCCESS: '[HOME] LOAD TOTAL ACCOUNTS BALANCE SUCCESS',
+  LOAD_TOTAL_ACCOUNTS_BALANCE_FAILURE: '[HOME] LOAD TOTAL ACCOUNTS BALANCE FAILURE',
   LOAD_ACCOUNTS: '[HOME] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[HOME] LOAD ACCOUNTS SUCCESS',
   LOAD_ACCOUNTS_FAILURE: '[HOME] LOAD ACCOUNTS FAILURE',
@@ -12,6 +15,25 @@ export const homeActionTypes = {
   LOAD_EXITS_SUCCESS: '[HOME] LOAD EXITS SUCCESS',
   LOAD_EXITS_FAILURE: '[HOME] LOAD EXITS FAILURE',
   RESET_STATE: '[HOME] RESET STATE'
+}
+
+function loadTotalAccountsBalance () {
+  return {
+    type: homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE
+  }
+}
+
+function loadTotalAccountsBalanceSuccess (balance) {
+  return {
+    type: homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_SUCCESS,
+    balance
+  }
+}
+
+function loadTotalAccountsBalanceFailure () {
+  return {
+    type: homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_FAILURE
+  }
 }
 
 function loadAccounts () {
@@ -98,6 +120,9 @@ function resetState () {
 }
 
 export {
+  loadTotalAccountsBalance,
+  loadTotalAccountsBalanceSuccess,
+  loadTotalAccountsBalanceFailure,
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,

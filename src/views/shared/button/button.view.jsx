@@ -28,7 +28,7 @@ function Button ({ Icon, text, className, disabled, onClick }) {
 
 Button.propTypes = {
   Icon: PropTypes.element,
-  text: PropTypes.string.isRequired,
+  text: PropTypes.string,
   onClick: PropTypes.func.isRequired
 }
 
