@@ -18,6 +18,7 @@ import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import { push } from 'connected-react-router'
+import { getTransactionAmount } from '../../utils/transactions'
 
 function TransactionDetails ({
   transactionTask,
@@ -44,7 +45,7 @@ function TransactionDetails ({
    * @param {Object} transactionTask - Asynchronous task of the transaction
    * @returns {number}
    */
-  function getTransactionAmount (transactionTask) {
+  function getTransactionFiatAmount (transactionTask) {
     switch (transactionTask.status) {
       case 'reloading':
       case 'successful': {
@@ -52,9 +53,10 @@ function TransactionDetails ({
           return undefined
         }
 
-        const { token, historicUSD, L1Info, amount } = transactionTask.data
+        const { token, historicUSD } = transactionTask.data
+        const amount = getTransactionAmount(transactionTask.data)
         const fixedAccountBalance = getFixedTokenAmount(
-          L1Info?.depositAmount || amount,
+          amount,
           token.decimals
         )
 
@@ -77,17 +79,19 @@ function TransactionDetails ({
         <section className={classes.section}>
           <div className={classes.fiatAmount}>
             <FiatAmount
-              amount={getTransactionAmount(transactionTask)}
+              amount={getTransactionFiatAmount(transactionTask)}
               currency={preferredCurrency}
             />
           </div>
-          <TokenBalance
-            amount={getFixedTokenAmount(
-              transactionTask.data?.L1Info?.depositAmount || transactionTask.data?.amount,
-              transactionTask.data?.token.decimals
-            )}
-            symbol={accountTokenSymbol}
-          />
+          {
+            <TokenBalance
+              amount={getFixedTokenAmount(
+                getTransactionAmount(transactionTask.data),
+                transactionTask.data?.token.decimals
+              )}
+              symbol={accountTokenSymbol}
+            />
+          }
         </section>
       </Container>
       <Container>
