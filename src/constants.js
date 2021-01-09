@@ -24,3 +24,5 @@ export const PENDING_WITHDRAWS_KEY = 'pendingWithdraws'
 export const PENDING_DELAYED_WITHDRAWS_KEY = 'pendingDelayedWithdraws'
 
 export const ACCOUNT_AUTH_KEY = 'accountAuth'
+
+export const ACCOUNT_AUTH_SIGNATURE_KEY = 'accountAuthSignature'

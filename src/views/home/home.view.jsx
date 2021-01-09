@@ -28,6 +28,7 @@ function Home ({
   accountsTask,
   poolTransactionsTask,
   exitsTask,
+  accountAuth,
   fiatExchangeRatesTask,
   preferredCurrency,
   pendingWithdraws,
@@ -145,6 +146,15 @@ function Home ({
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
 
+  /**
+   * Whether a create account authorization has been sent from current device for current coordinator
+   * @param {Object} accountAuth - Existing local data of saved create account authorizations
+   */
+  function getCreateAccountAuthorization (accountAuth) {
+    const currentAccountAuth = accountAuth[wallet.hermezEthereumAddress]
+    return currentAccountAuth ? currentAccountAuth[hermezjs.CoordinatorAPI.getBaseApiUrl()] : false
+  }
+
   return wallet && (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
@@ -166,6 +176,17 @@ function Home ({
       </Container>
       <Container>
         <section className={classes.section}>
+          {
+            !getCreateAccountAuthorization(accountAuth)
+              ? (
+                <>
+                  <h2 className={classes.accountAuthTitle}>Create accounts for new tokens</h2>
+                  <p className={classes.accountAuthText}>Confirm with your signature that Hermez will automatically create accounts for your new tokens.</p>
+                  <Spinner />
+                </>
+              )
+              : <></>
+          }
           {
             (poolTransactionsTask.status === 'successful' ||
             poolTransactionsTask.status === 'reloading') &&
@@ -261,6 +282,7 @@ Home.propTypes = {
   fiatExchangeRatesTask: PropTypes.object,
   poolTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
+  accountAuth: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
@@ -280,6 +302,7 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
+  accountAuth: state.home.accountAuth,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   coordinatorStateTask: state.global.coordinatorStateTask

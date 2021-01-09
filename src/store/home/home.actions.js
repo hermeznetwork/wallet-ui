@@ -12,6 +12,9 @@ export const homeActionTypes = {
   LOAD_EXITS_SUCCESS: '[HOME] LOAD EXITS SUCCESS',
   LOAD_EXITS_FAILURE: '[HOME] LOAD EXITS FAILURE',
   ADD_ACCOUNT_AUTH: '[HOME] ADD ACCOUNT AUTH',
+  ADD_ACCOUNT_AUTH_SUCCESS: '[HOME] ADD ACCOUNT AUTH SUCCESS',
+  ADD_ACCOUNT_AUTH_FAILURE: '[HOME] ADD ACCOUNT AUTH FAILURE',
+  SET_ACCOUNT_AUTH_SIGNATURE: '[HOME] SET ACCOUNT AUTH SIGNATURE',
   RESET_STATE: '[HOME] RESET STATE'
 }
 
@@ -94,9 +97,17 @@ function loadExitsFailure (error) {
 
 function addAccountAuth (hermezEthereumAddress, coordinatorUrl) {
   return {
-    type: homeActionTypes.ADD_ACCOUNT_AUTH,
+    type: homeActionTypes.ADD_ACCOUNT_AUTH_SUCCESS,
     hermezEthereumAddress,
     coordinatorUrl
+  }
+}
+
+function setAccountAuthSignature (hermezEthereumAddress, signature) {
+  return {
+    type: homeActionTypes.SET_ACCOUNT_AUTH_SIGNATURE,
+    hermezEthereumAddress,
+    signature
   }
 }
 
@@ -120,5 +131,6 @@ export {
   loadExitsSuccess,
   loadExitsFailure,
   addAccountAuth,
+  setAccountAuthSignature,
   resetState
 }

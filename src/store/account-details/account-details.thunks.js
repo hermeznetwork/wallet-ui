@@ -60,7 +60,7 @@ function fetchHistoryTransactions (accountIndex) {
               exit.accountIndex === transaction.fromAccountIndex
             )
             if (exitTx) {
-              if (exitTx.instantWithdrawn) {
+              if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
                 removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
                 return true
               } else {

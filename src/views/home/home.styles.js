@@ -37,6 +37,21 @@ const useHomeStyles = createUseStyles(theme => ({
   buttonText: {
     fontWeight: theme.fontWeights.bold
   },
+  accountAuthTitle: {
+    fontSize: theme.spacing(2.5),
+    lineHeight: `${theme.spacing(4)}px`,
+    color: theme.palette.black,
+    marginBottom: theme.spacing(2)
+  },
+  accountAuthText: {
+    fontSize: theme.spacing(2),
+    lineHeight: `${theme.spacing(3.5)}px`,
+    color: theme.palette.black,
+    marginBottom: theme.spacing(6),
+    [theme.breakpoints.upSm]: {
+      marginBottom: theme.spacing(11)
+    }
+  },
   emptyAccounts: {
     display: 'flex',
     flexDirection: 'column',
