@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { ethers } from 'ethers'
 import { useTheme } from 'react-jss'
 import hermezjs from '@hermeznetwork/hermezjs'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
@@ -170,22 +171,30 @@ function TransactionOverview ({
             })
         }
       }
+      case TransactionType.Exit: {
+        const txData = {
+          type: TxType.Exit,
+          from: account.accountIndex,
+          amount: getAmountInBigInt(),
+          fee,
+          nonce: account.nonce
+        }
+
+        return hermezjs.Tx.generateAndSendL2Tx(txData, wallet, account.token)
+          .then(() => onGoToFinishTransactionStep(transactionType))
+          .catch(console.log)
+      }
       default: {
-        const { transaction, encodedTransaction } = await hermezjs.TxUtils.generateL2Transaction(
-          {
-            from: account.accountIndex,
-            to: transactionType === TransactionType.Transfer ? to.accountIndex : null,
-            amount: getAmountInBigInt(),
-            fee,
-            nonce: account.nonce
-          },
-          wallet.publicKeyCompressedHex,
-          account.token
-        )
+        const txData = {
+          type: TxType.Transfer,
+          from: account.accountIndex,
+          to: to.accountIndex,
+          amount: getAmountInBigInt(),
+          fee,
+          nonce: account.nonce
+        }
 
-        wallet.signTransaction(transaction, encodedTransaction)
-
-        return hermezjs.Tx.sendL2Transaction(transaction, wallet.publicKeyCompressedHex)
+        return hermezjs.Tx.generateAndSendL2Tx(txData, wallet, account.token)
           .then(() => onGoToFinishTransactionStep(transactionType))
           .catch((error) => console.log(error))
       }
