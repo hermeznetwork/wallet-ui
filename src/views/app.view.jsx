@@ -33,6 +33,7 @@ function App ({
   }, [])
 
   React.useEffect(() => {
+    hermez.CoordinatorAPI.setBaseApiUrl(process.env.REACT_APP_HERMEZ_API_URL)
     hermez.Providers.setProvider(process.env.REACT_APP_ETHEREUM_PROVIDER)
   })
 
