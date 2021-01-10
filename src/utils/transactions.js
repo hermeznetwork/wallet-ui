@@ -10,7 +10,7 @@ function getTransactionAmount (transaction) {
   } else {
     if (transaction.type === TxType.Deposit) {
       return transaction.L1Info.depositAmountSuccess
-        ? transaction.L1Info.amountSuccess
+        ? transaction.L1Info.depositAmount
         : '0'
     } else {
       return transaction.L1Info.amountSuccess
