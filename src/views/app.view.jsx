@@ -28,7 +28,6 @@ function App ({
   }, [onLoadFiatExchangeRates])
 
   React.useEffect(() => {
-    hermez.Providers.setProvider(process.env.REACT_APP_ETHEREUM_PROVIDER)
     hermez.CoordinatorAPI.setBaseApiUrl(process.env.REACT_APP_HERMEZ_API_URL)
     hermez.TxPool.initializeTransactionPool()
   })
