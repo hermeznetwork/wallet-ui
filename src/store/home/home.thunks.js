@@ -77,10 +77,12 @@ function fetchPoolTransactions () {
  * @returns {void}
  */
 function fetchExits () {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch(homeActions.loadExits())
 
-    return CoordinatorAPI.getExits(true)
+    const { global: { wallet } } = getState()
+
+    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
       .then(exits => dispatch(homeActions.loadExitsSuccess(exits)))
       .catch(err => dispatch(homeActions.loadExitsFailure(err)))
   }

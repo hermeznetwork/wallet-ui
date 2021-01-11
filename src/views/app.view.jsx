@@ -27,7 +27,7 @@ function App ({
     onLoadFiatExchangeRates()
   }, [onLoadFiatExchangeRates])
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     hermez.CoordinatorAPI.setBaseApiUrl(process.env.REACT_APP_HERMEZ_API_URL)
     hermez.TxPool.initializeTransactionPool()
   })
