@@ -28,9 +28,17 @@ function App ({
   }, [onLoadFiatExchangeRates])
 
   React.useLayoutEffect(() => {
+    hermez.Constants.setContractAddress(
+      hermez.Constants.ContractNames.Hermez,
+      process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS
+    )
+    hermez.Constants.setContractAddress(
+      hermez.Constants.ContractNames.Hermez,
+      process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
+    )
     hermez.CoordinatorAPI.setBaseApiUrl(process.env.REACT_APP_HERMEZ_API_URL)
     hermez.TxPool.initializeTransactionPool()
-  })
+  }, [])
 
   React.useEffect(() => {
     window.addEventListener('online', () => {
