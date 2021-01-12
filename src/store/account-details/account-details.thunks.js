@@ -93,10 +93,12 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
  * @returns {void}
  */
 function fetchExits () {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadExits())
 
-    return CoordinatorAPI.getExits(true)
+    const { global: { wallet } } = getState()
+
+    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
       .then(exits => dispatch(accountDetailsActionTypes.loadExitsSuccess(exits)))
       .catch(err => dispatch(accountDetailsActionTypes.loadExitsFailure(err)))
   }
