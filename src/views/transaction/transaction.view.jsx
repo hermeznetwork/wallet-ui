@@ -153,7 +153,7 @@ function Transaction ({
             return (
               <TransactionConfirmation
                 transactionType={transactionType}
-                onFinishTransaction={() => onFinishTransaction(accountIndex)}
+                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex, redirectTo)}
               />
             )
           }
@@ -290,8 +290,17 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
-  onFinishTransaction: (accountIndex) =>
-    dispatch(accountIndex ? push(`/accounts/${accountIndex}`) : push('/')),
+  onFinishTransaction: (transactionType, accountIndex, redirectTo) => {
+    if (transactionType === TransactionType.Withdraw) {
+      if (redirectTo === WithdrawRedirectionRoute.Home) {
+        dispatch(push('/'))
+      } else {
+        dispatch(push(`/accounts/${accountIndex}`))
+      }
+    } else {
+      dispatch(accountIndex ? push(`/accounts/${accountIndex}`) : push('/'))
+    }
+  },
   onCleanup: () =>
     dispatch(transactionActions.resetState())
 })
