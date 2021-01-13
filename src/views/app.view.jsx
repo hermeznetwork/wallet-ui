@@ -28,11 +28,12 @@ function App ({
   }, [onLoadFiatExchangeRates])
 
   React.useLayoutEffect(() => {
-    hermez.Constants.setContractAddress(
+    console.log(hermez.Constants)
+    hermez.Constants._setContractAddress(
       hermez.Constants.ContractNames.Hermez,
       process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS
     )
-    hermez.Constants.setContractAddress(
+    hermez.Constants._setContractAddress(
       hermez.Constants.ContractNames.Hermez,
       process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
     )
