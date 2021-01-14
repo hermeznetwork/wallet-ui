@@ -20,6 +20,7 @@ import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import Button from '../shared/button/button.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/home/home.actions'
+import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 
 function Home ({
   wallet,
@@ -120,8 +121,9 @@ function Home ({
           </div>
           <TransactionActions
             hideSend={
-              accountsTask.status === 'successful' &&
-              accountsTask.data.accounts.length === 0
+              accountsTask.status === 'successful'
+                ? accountsTask.data.accounts.length === 0
+                : true
             }
             hideWithdraw
           />
@@ -149,6 +151,7 @@ function Home ({
                     onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                     onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                     coordinatorState={coordinatorStateTask.data}
+                    redirectTo={WithdrawRedirectionRoute.Home}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
@@ -164,6 +167,7 @@ function Home ({
                       onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                       onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                       coordinatorState={coordinatorStateTask.data}
+                      redirectTo={WithdrawRedirectionRoute.Home}
                     />}
                 </>
               )

@@ -25,6 +25,11 @@ export const TransactionType = {
   ForceExit: 'forceExit'
 }
 
+export const WithdrawRedirectionRoute = {
+  Home: 'home',
+  AccountDetails: 'account-details'
+}
+
 function Transaction ({
   currentStep,
   steps,
@@ -57,10 +62,11 @@ function Transaction ({
   const receiver = urlSearchParams.get('receiver')
   const instantWithdrawal = urlSearchParams.get('instantWithdrawal') === 'true'
   const completeDelayedWithdrawal = urlSearchParams.get('completeDelayedWithdrawal') === 'true'
+  const redirectTo = urlSearchParams.get('redirectTo')
 
   React.useEffect(() => {
-    onChangeHeader(currentStep, transactionType, accountIndex)
-  }, [currentStep, transactionType, accountIndex, onChangeHeader])
+    onChangeHeader(currentStep, transactionType, accountIndex, redirectTo)
+  }, [currentStep, transactionType, accountIndex, redirectTo, onChangeHeader])
 
   React.useEffect(() => {
     if (accountIndex && tokenId) {
@@ -147,7 +153,7 @@ function Transaction ({
             return (
               <TransactionConfirmation
                 transactionType={transactionType}
-                onFinishTransaction={() => onFinishTransaction(accountIndex)}
+                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex, redirectTo)}
               />
             )
           }
@@ -203,7 +209,7 @@ const getHeaderCloseAction = (accountIndex) => {
     : push('/')
 }
 
-const getHeader = (currentStep, transactionType, accountIndex) => {
+const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
   switch (currentStep) {
     case STEP_NAME.CHOOSE_ACCOUNT: {
       return {
@@ -227,12 +233,27 @@ const getHeader = (currentStep, transactionType, accountIndex) => {
       }
     }
     case STEP_NAME.REVIEW_TRANSACTION: {
-      return {
-        type: 'page',
-        data: {
-          title: getTransactionOverviewHeaderTitle(transactionType),
-          goBackAction: transactionActions.changeCurrentStep(STEP_NAME.BUILD_TRANSACTION),
-          closeAction: getHeaderCloseAction(accountIndex)
+      if (transactionType === TransactionType.Withdraw) {
+        const action = redirectTo === WithdrawRedirectionRoute.Home
+          ? push('/')
+          : push(`/accounts/${accountIndex}`)
+
+        return {
+          type: 'page',
+          data: {
+            title: getTransactionOverviewHeaderTitle(transactionType),
+            goBackAction: action,
+            closeAction: action
+          }
+        }
+      } else {
+        return {
+          type: 'page',
+          data: {
+            title: getTransactionOverviewHeaderTitle(transactionType),
+            goBackAction: transactionActions.changeCurrentStep(STEP_NAME.BUILD_TRANSACTION),
+            closeAction: getHeaderCloseAction(accountIndex)
+          }
         }
       }
     }
@@ -243,8 +264,8 @@ const getHeader = (currentStep, transactionType, accountIndex) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (currentStep, transactionType, accountIndex) =>
-    dispatch(changeHeader(getHeader(currentStep, transactionType, accountIndex))),
+  onChangeHeader: (currentStep, transactionType, accountIndex, redirectTo) =>
+    dispatch(changeHeader(getHeader(currentStep, transactionType, accountIndex, redirectTo))),
   onLoadMetaMaskAccount: (tokenId) =>
     dispatch(transactionThunks.fetchMetaMaskAccount(tokenId)),
   onLoadHermezAccount: (accountIndex) =>
@@ -269,8 +290,17 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
-  onFinishTransaction: (accountIndex) =>
-    dispatch(accountIndex ? push(`/accounts/${accountIndex}`) : push('/')),
+  onFinishTransaction: (transactionType, accountIndex, redirectTo) => {
+    if (transactionType === TransactionType.Withdraw) {
+      if (redirectTo === WithdrawRedirectionRoute.Home) {
+        dispatch(push('/'))
+      } else {
+        dispatch(push(`/accounts/${accountIndex}`))
+      }
+    } else {
+      dispatch(accountIndex ? push(`/accounts/${accountIndex}`) : push('/'))
+    }
+  },
   onCleanup: () =>
     dispatch(transactionActions.resetState())
 })
