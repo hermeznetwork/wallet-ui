@@ -25,7 +25,7 @@ jobs:
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Deploy sandbox-coordinator image
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: wallet-ui
@@ -33,9 +33,11 @@ jobs:
         run: |
           docker build . \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }} \
           --build-arg GIT_VERSION=${{ github.sha }} \
-          --build-arg HERMEZ_API_URL=${{ secrets.SANDBOX_COORDINATOR_HERMEZ_API_URL }} \
-          --build-arg BATCH_EXPLORER_URL=${{ secrets.SANDBOX_COORDINATOR_BATCH_EXPLORER_URL }} \
+          --build-arg HERMEZ_API_URL=${{ secrets.SANDBOX_HERMEZ_API_URL }} \
+          --build-arg BATCH_EXPLORER_URL=${{ secrets.SANDBOX_BATCH_EXPLORER_URL }} \
           --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.SANDBOX_COORDINATOR_HERMEZ_CONTRACT_ADDRESS }} \
           --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.SANDBOX_COORDINATOR_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }}
