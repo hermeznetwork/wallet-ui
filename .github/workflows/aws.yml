@@ -1,7 +1,6 @@
 on:
   push:
-    branches: 
-    types: [published]
+    branches: main
 
 jobs:
   deploy:
