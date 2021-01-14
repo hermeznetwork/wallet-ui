@@ -1,8 +1,7 @@
 on:
-  release:
+  push:
+    branches: 
     types: [published]
-
-name: Deploy to AWS ECS
 
 jobs:
   deploy:
@@ -16,12 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1 
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -29,25 +22,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      - name: Create production .env file
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: wallet-ui
+          IMAGE_TAG: sandbox-coordinator
         run: |
-          touch .env
-          echo REACT_APP_FIAT_EXCHANGE_RATES_API_URL=${{ secrets.REACT_APP_FIAT_EXCHANGE_RATES_API_URL }} >> .env
-          echo REACT_APP_BATCH_EXPLORER_URL=${{ secrets.REACT_APP_BATCH_EXPLORER_URL }} >> .env
-
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: |
-            hermeznet/wallet-ui:${{ github.event.release.tag_name }}
-            hermeznet/wallet-ui:latest
-
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ecs-task-definition.json
-          service: wallet-ui
-          cluster: wallet-ui
-          wait-for-service-stability: true
+          docker build . \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          --build-arg GIT_VERSION=${{ github.sha }} \
+          --build-arg HERMEZ_API_URL=${{ secrets.SANDBOX_COORDINATOR_HERMEZ_API_URL }} \
+          --build-arg BATCH_EXPLORER_URL=${{ secrets.SANDBOX_COORDINATOR_BATCH_EXPLORER_URL }} \
+          --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.SANDBOX_COORDINATOR_HERMEZ_CONTRACT_ADDRESS }} \
+          --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.SANDBOX_COORDINATOR_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
