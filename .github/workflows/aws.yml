@@ -4,7 +4,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy
+    name: Build and deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -37,8 +37,8 @@ jobs:
           --build-arg GIT_VERSION=${{ github.sha }} \
           --build-arg HERMEZ_API_URL=${{ secrets.SANDBOX_HERMEZ_API_URL }} \
           --build-arg BATCH_EXPLORER_URL=${{ secrets.SANDBOX_BATCH_EXPLORER_URL }} \
-          --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.SANDBOX_COORDINATOR_HERMEZ_CONTRACT_ADDRESS }} \
-          --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.SANDBOX_COORDINATOR_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
+          --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.GANACHE_HERMEZ_CONTRACT_ADDRESS }} \
+          --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.GANACHE_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }}
 
@@ -54,7 +54,7 @@ jobs:
           --build-arg GIT_VERSION=${{ github.sha }} \
           --build-arg HERMEZ_API_URL=${{ secrets.INTEGRATION_HERMEZ_API_URL }} \
           --build-arg BATCH_EXPLORER_URL=${{ secrets.INTEGRATION_BATCH_EXPLORER_URL }} \
-          --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.INTEGRATION_COORDINATOR_HERMEZ_CONTRACT_ADDRESS }} \
-          --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.INTEGRATION_COORDINATOR_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
+          --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.GANACHE_HERMEZ_CONTRACT_ADDRESS }} \
+          --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.GANACHE_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }}
