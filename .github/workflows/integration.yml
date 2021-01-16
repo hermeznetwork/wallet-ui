@@ -24,26 +24,21 @@ jobs:
       - name: Login to Amazon ECR
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v1
-      - name: Verify run id
-        run : echo Run Id $GITHUB_RUN_ID 
-      - name: Output the branch name
-        run: echo $(echo $GITHUB_REF | cut -d'/' -f 3)
       - name: Build image and push
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: wallet-ui
           IMAGE_TAG: sandbox-coordinator
         run: |
-          echo ${{ steps.extract_branch.outputs.branch }}
           docker build . \
-          -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.extract_branch.outputs.branch }}
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.extract_branch.outputs.branch }}
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.head_ref }}
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.head_ref }}
       - name: send event to integration-testing
         run: |
           curl -X POST https://api.github.com/repos/hermeznetwork/integration-testing/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -u ${{ secrets.ACCESS_TOKEN }} \
-          --data '{"event_type": "build", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'", "branch": "'"${{ steps.extract_branch.outputs.branch }}"'"}}'
+          --data '{"event_type": "build", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'", "branch": "'"${{ github.head_ref }}"'"}}'
 
 
           
