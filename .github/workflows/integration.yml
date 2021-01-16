@@ -32,7 +32,7 @@ jobs:
           IMAGE_TAG: sandbox-coordinator
         run: |
           docker build . \
-          -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.extract_branch.outputs.branch }}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.extract_branch.outputs.branch }}
       - name: send event to integration-testing
         run: |
