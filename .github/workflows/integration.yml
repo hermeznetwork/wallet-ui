@@ -1,7 +1,7 @@
 name: Remote Dispatch Action Initiator
  
 on:
-  push:
+  pull_request:
   repository_dispatch:
  
 jobs:
@@ -11,7 +11,7 @@ jobs:
       - name: PING - Dispatch initiating repository event
         if: github.event.action != 'pong'
         run: |
-          curl -X POST https://api.github.com/repos/hermeznetwork/integration-testing//dispatches \
+          curl -X POST https://api.github.com/repos/hermeznetwork/integration-testing/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -u ${{ secrets.ACCESS_TOKEN }} \
           --data '{"event_type": "ping", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
