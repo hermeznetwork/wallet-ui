@@ -24,7 +24,10 @@ jobs:
       - name: Login to Amazon ECR
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v1
-      
+      - name: Verify run id
+        run : echo Run Id $GITHUB_RUN_ID 
+      - name: Output the branch name
+        run: echo $(echo $GITHUB_REF | cut -d'/' -f 3)
       - name: Build image and push
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
