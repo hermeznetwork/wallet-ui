@@ -31,6 +31,7 @@ jobs:
           ECR_REPOSITORY: wallet-ui
           IMAGE_TAG: sandbox-coordinator
         run: |
+          echo ${{ steps.extract_branch.outputs.branch }}
           docker build . \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.extract_branch.outputs.branch }}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.extract_branch.outputs.branch }}
