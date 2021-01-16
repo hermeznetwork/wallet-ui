@@ -1,8 +1,6 @@
 name: Integration testing
  
 on:
-  push:
-  pull_request:
   repository_dispatch:
  
 jobs:
@@ -11,7 +9,7 @@ jobs:
     needs: deploy
     steps:
       - name: send event to integration-testing
-        if: github.event.action == 'build'
+        if: github.event.action == 'integration'
         run: |
           curl -X POST https://api.github.com/repos/hermeznetwork/integration-testing/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \

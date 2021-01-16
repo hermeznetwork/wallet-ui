@@ -58,3 +58,10 @@ jobs:
           --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.INTEGRATION_COORDINATOR_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }}
+        
+      - name: Trigger integration
+        run: |
+          curl -X POST https://api.github.com/repos/hermeznetwork/wallet-ui/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.ACCESS_TOKEN }} \
+          --data '{"event_type": "integration", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'", "branch": "'"${{ steps.extract_branch.outputs.branch }}"'"}}'
