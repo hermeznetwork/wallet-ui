@@ -1,0 +1,47 @@
+name: Integration testing
+
+on:
+  pull_request:
+
+jobs:
+  trigger-integration:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request'}} 
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-3
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build image and push
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: wallet-ui
+          IMAGE_TAG: sandbox-coordinator
+        run: |
+          docker build . \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.head_ref }} \
+          --build-arg GIT_VERSION=${{ github.sha }} \
+          --build-arg HERMEZ_API_URL=${{ secrets.INTEGRATION_HERMEZ_API_URL }} \
+          --build-arg BATCH_EXPLORER_URL=${{ secrets.INTEGRATION_BATCH_EXPLORER_URL }} \
+          --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.INTEGRATION_COORDINATOR_HERMEZ_CONTRACT_ADDRESS }} \
+          --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.INTEGRATION_COORDINATOR_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
+          docker push 
+
+      - name: send event to integration-testing
+        run: |
+          curl -X POST https://api.github.com/repos/hermeznetwork/integration-testing/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.ACCESS_TOKEN }} \
+          --data '{"event_type": "build", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'", "branch": "'"${{ github.head_ref }}"'"}}'
