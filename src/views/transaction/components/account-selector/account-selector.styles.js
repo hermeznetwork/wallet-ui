@@ -14,6 +14,11 @@ const useAccountSelectorStyles = createUseStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  emptyState: {
+    fontSize: theme.spacing(2.5),
+    fontWeight: theme.fontWeights.medium,
+    textAlign: 'center'
   }
 }))
 

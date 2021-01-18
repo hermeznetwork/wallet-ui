@@ -25,6 +25,7 @@ function Exit ({
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorState,
+  redirectTo,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw
 }) {
@@ -56,7 +57,7 @@ function Exit ({
   function getStep () {
     if (!merkleProof) {
       return STEPS.first
-    } else if (!pendingWithdraws || (pendingWithdraws && !pendingWithdraws.includes(accountIndex + merkleProof.Root))) {
+    } else if (!pendingWithdraws || (pendingWithdraws && !pendingWithdraws.includes(accountIndex + merkleProof.root))) {
       return STEPS.second
     } else {
       return STEPS.third
@@ -101,7 +102,7 @@ function Exit ({
     if (delayedWithdrawal.instant) {
       const twoHours = 2 * 60 * 60 * 1000
       if (difference > twoHours) {
-        onRemovePendingDelayedWithdraw(accountIndex + merkleProof.Root)
+        onRemovePendingDelayedWithdraw(accountIndex + merkleProof.root)
       } else {
         const remainingDifference = twoHours - difference
         // Extracts the hours and minutes from the remaining difference
@@ -153,22 +154,22 @@ function Exit ({
 
   function onCheckAvailabilityClick () {
     onAddPendingDelayedWithdraw({
-      id: accountIndex + merkleProof.Root,
+      id: accountIndex + merkleProof.root,
       instant: true,
       date: Date.now()
     })
   }
 
   if (isWithdrawClicked) {
-    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`} />
+    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true&redirectTo=${redirectTo}`} />
   }
 
   if (isWithdrawDelayedClicked) {
-    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`} />
+    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false&redirectTo=${redirectTo}`} />
   }
 
   if (isCompleteDelayedWithdrawalClicked) {
-    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true`} />
+    return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true&redirectTo=${redirectTo}`} />
   }
 
   return (
@@ -213,7 +214,7 @@ function Exit ({
           // Remove once hermez-node is ready
           const accountIndexTemp = 'hez:SCC:256'
           const pendingDelayedWithdrawal = pendingDelayedWithdraws?.find(
-            (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === accountIndexTemp + merkleProof.Root
+            (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === accountIndexTemp + merkleProof.root
           )
 
           if (pendingDelayedWithdrawal) {

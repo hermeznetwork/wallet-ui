@@ -13,6 +13,10 @@ async function getSigner (walletName, accountData) {
 
   switch (walletName) {
     case 'metaMask': {
+      try {
+        await provider.send('eth_requestAccounts')
+      } catch (err) {}
+
       return hermezjs.Signers.getSigner(provider)
     }
     case 'ledger': {

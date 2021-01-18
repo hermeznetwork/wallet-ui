@@ -1,12 +1,10 @@
 on:
-  release:
-    types: [published]
-
-name: Deploy to AWS ECS
+  push:
+    branches: main
 
 jobs:
   deploy:
-    name: Deploy
+    name: Build and deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -16,38 +14,47 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1 
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+          aws-region: eu-west-3
 
-      - name: Create production .env file
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Deploy sandbox-coordinator image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: wallet-ui
+          IMAGE_TAG: sandbox-coordinator
         run: |
-          touch .env
-          echo REACT_APP_FIAT_EXCHANGE_RATES_API_URL=${{ secrets.REACT_APP_FIAT_EXCHANGE_RATES_API_URL }} >> .env
-          echo REACT_APP_BATCH_EXPLORER_URL=${{ secrets.REACT_APP_BATCH_EXPLORER_URL }} >> .env
+          docker build . \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }} \
+          --build-arg GIT_VERSION=${{ github.sha }} \
+          --build-arg HERMEZ_API_URL=${{ secrets.SANDBOX_HERMEZ_API_URL }} \
+          --build-arg BATCH_EXPLORER_URL=${{ secrets.SANDBOX_BATCH_EXPLORER_URL }} \
+          --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.GANACHE_HERMEZ_CONTRACT_ADDRESS }} \
+          --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.GANACHE_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }}
 
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: |
-            hermeznet/wallet-ui:${{ github.event.release.tag_name }}
-            hermeznet/wallet-ui:latest
-
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ecs-task-definition.json
-          service: wallet-ui
-          cluster: wallet-ui
-          wait-for-service-stability: true
+      - name: Deploy integration-coordinator image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: wallet-ui
+          IMAGE_TAG: integration-coordinator
+        run: |
+          docker build . \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }} \
+          --build-arg GIT_VERSION=${{ github.sha }} \
+          --build-arg HERMEZ_API_URL=${{ secrets.INTEGRATION_HERMEZ_API_URL }} \
+          --build-arg BATCH_EXPLORER_URL=${{ secrets.INTEGRATION_BATCH_EXPLORER_URL }} \
+          --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.GANACHE_HERMEZ_CONTRACT_ADDRESS }} \
+          --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.GANACHE_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }}

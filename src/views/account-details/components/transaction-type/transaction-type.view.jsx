@@ -7,7 +7,7 @@ import receivedIcon from '../../../../images/icons/received.svg'
 import sentIcon from '../../../../images/icons/sent.svg'
 import withdrawnIcon from '../../../../images/icons/withdrawn.svg'
 
-function TransactionType ({ type, amount }) {
+function TransactionType ({ type, fromAccountIndex, accountIndex }) {
   /**
    * Returns the icon corresponding to the transaction type
    * @returns {string} - Icon content encoded in base64
@@ -19,14 +19,15 @@ function TransactionType ({ type, amount }) {
         return depositedIcon
       }
       case TxType.Transfer: {
-        if (Number(amount) >= 0) {
+        if (fromAccountIndex === accountIndex) {
           return sentIcon
         } else {
           return receivedIcon
         }
       }
       case TxType.Withdraw:
-      case TxType.Exit: {
+      case TxType.Exit:
+      case TxType.ForceExit: {
         return withdrawnIcon
       }
       default: {
@@ -39,8 +40,7 @@ function TransactionType ({ type, amount }) {
 }
 
 TransactionType.propTypes = {
-  type: PropTypes.string.isRequired,
-  amount: PropTypes.string.isRequired
+  type: PropTypes.string.isRequired
 }
 
 export default TransactionType

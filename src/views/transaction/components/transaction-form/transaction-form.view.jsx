@@ -100,7 +100,11 @@ function TransactionForm ({
    * @returns {number} - Transaction fee
    */
   function getFee (fees) {
-    return fees.existingAccount / account.token.USD
+    if (account.token.USD === 0) {
+      return 0
+    }
+
+    return fees.ExistingAccount / account.token.USD
   }
 
   /**
@@ -249,7 +253,7 @@ function TransactionForm ({
 
     switch (transactionType) {
       case TransactionType.Transfer: {
-        return getAccounts(receiver, [account.tokenId])
+        return getAccounts(receiver, [account.token.id])
           .then((res) => {
             const receiverAccount = res.accounts[0]
 

@@ -108,7 +108,7 @@ function MyAccount ({
           {wallet && (
             <a
               className={classes.settingContainer}
-              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/address/${wallet.hermezEthereumAddress}`}
+              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/user-account/${wallet.hermezEthereumAddress}`}
               target='_blank'
               rel='noopener noreferrer'
             >

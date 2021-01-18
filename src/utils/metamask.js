@@ -24,42 +24,7 @@ async function getProvider () {
  * @param {Object[]} hermezTokens - List of registered tokens in Hermez
  * @returns {Promise} - Array of { balance, token } where balance is a Number and token is the Token schema returned from the API.
  */
-async function getMetaMaskTokens (wallet, finalHermezTokens) {
-  // TODO: Remove once the hermez-node is ready
-  const hermezTokens = [
-    ...finalHermezTokens,
-    {
-      USD: 1.5,
-      decimals: 18,
-      ethereumAddress: '0xf4e77E5Da47AC3125140c470c71cBca77B5c638c',
-      ethereumBlockNum: 539847538,
-      fiatUpdate: null,
-      id: 1,
-      name: 'Token',
-      symbol: 'TKN'
-    },
-    {
-      USD: 2,
-      decimals: 18,
-      ethereumAddress: '0xf784709d2317D872237C4bC22f867d1BAe2913AB',
-      ethereumBlockNum: 539847538,
-      fiatUpdate: null,
-      id: 2,
-      name: 'Token 1',
-      symbol: 'TKN1'
-    },
-    {
-      USD: 350,
-      decimals: 18,
-      ethereumAddress: '0x0000000000000000000000000000000000000000',
-      ethereumBlockNum: 539847538,
-      fiatUpdate: null,
-      id: 0,
-      name: 'Ethereum',
-      symbol: 'Eth'
-    }
-  ]
-
+async function getMetaMaskTokens (wallet, hermezTokens) {
   if (wallet) {
     const provider = await getProvider()
     const partialERC20ABI = [{
@@ -106,11 +71,7 @@ async function getMetaMaskTokens (wallet, finalHermezTokens) {
       })
       .filter((account) => account.balance > 0)
 
-    if (balances.length === 0) {
-      throw Error('You don\'t have any ERC 20 tokens in your MetaMask account that are registered in Hermez.')
-    } else {
-      return balances
-    }
+    return balances
   } else {
     throw Error('MetaMask wallet has not loaded')
   }

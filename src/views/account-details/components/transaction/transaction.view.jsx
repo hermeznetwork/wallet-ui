@@ -3,10 +3,13 @@ import PropTypes from 'prop-types'
 
 import useTransactionStyles from './transaction.styles'
 import TransactionType from '../transaction-type/transaction-type.view'
-import { CurrencySymbol } from '../../../../utils/currencies'
+import TransactionLabel from '../transaction-label/transaction-label.view'
+import TransactionAmount from '../transaction-amount/transaction-amount.view'
 
 function Transaction ({
+  accountIndex,
   type,
+  fromAccountIndex,
   amount,
   tokenSymbol,
   fiatAmount,
@@ -19,14 +22,27 @@ function Transaction ({
   return (
     <div className={classes.root} onClick={onClick}>
       <div className={classes.type}>
-        <TransactionType type={type} amount={amount} />
+        <TransactionType
+          type={type}
+          amount={amount}
+          fromAccountIndex={fromAccountIndex}
+          accountIndex={accountIndex}
+        />
       </div>
       <div className={classes.info}>
         <div className={`${classes.row} ${classes.topRow}`}>
-          <p>{type}</p>
-          <p className={classes.preferredCurrency}>
-            {CurrencySymbol[preferredCurrency].symbol} {fiatAmount.toFixed(2)}
-          </p>
+          <TransactionLabel
+            type={type}
+            fromAccountIndex={fromAccountIndex}
+            accountIndex={accountIndex}
+          />
+          <TransactionAmount
+            fiatAmount={fiatAmount}
+            preferredCurrency={preferredCurrency}
+            type={type}
+            fromAccountIndex={fromAccountIndex}
+            accountIndex={accountIndex}
+          />
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
           {
@@ -47,6 +63,7 @@ function Transaction ({
 
 Transaction.propTypes = {
   type: PropTypes.string.isRequired,
+  fromAccountIndex: PropTypes.string.isRequired,
   amount: PropTypes.string.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
   fiatAmount: PropTypes.number.isRequired,

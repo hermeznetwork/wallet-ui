@@ -25,6 +25,14 @@ const useHomeStyles = createUseStyles(theme => ({
     marginTop: `${theme.spacing(4)}px`,
     marginBottom: `${theme.spacing(3)}px`
   },
+  emptyAccounts: {
+    maxWidth: 240,
+    fontSize: theme.spacing(2.5),
+    fontWeight: theme.fontWeights.medium,
+    lineHeight: 1.8,
+    color: theme.palette.grey.main,
+    textAlign: 'center'
+  },
   actionButtonsGroup: {
     display: 'flex',
     justifyContent: 'space-between'
@@ -51,22 +59,6 @@ const useHomeStyles = createUseStyles(theme => ({
     [theme.breakpoints.upSm]: {
       marginBottom: theme.spacing(11)
     }
-  },
-  emptyAccounts: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    fontSize: theme.spacing(2.5),
-    lineHeight: `${theme.spacing(4)}px`,
-    color: theme.palette.grey.dark
-  },
-  test: {
-    width: '222px', // random number added for testing purposes until design is delivered
-    height: '222px'
-  },
-  testCanvas: {
-    width: '100% !important',
-    height: '100% !important'
   }
 }))
 

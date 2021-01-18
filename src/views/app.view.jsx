@@ -3,8 +3,8 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
-import { initializeTransactionPool } from '@hermeznetwork/hermezjs/src/tx-pool'
 import TrezorConnect from 'trezor-connect'
+import hermez from '@hermeznetwork/hermezjs'
 
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
@@ -27,8 +27,17 @@ function App ({
     onLoadFiatExchangeRates()
   }, [onLoadFiatExchangeRates])
 
-  React.useEffect(() => {
-    initializeTransactionPool()
+  React.useLayoutEffect(() => {
+    hermez.Constants._setContractAddress(
+      hermez.Constants.ContractNames.Hermez,
+      process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS
+    )
+    hermez.Constants._setContractAddress(
+      hermez.Constants.ContractNames.WithdrawalDelayer,
+      process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
+    )
+    hermez.CoordinatorAPI.setBaseApiUrl(process.env.REACT_APP_HERMEZ_API_URL)
+    hermez.TxPool.initializeTransactionPool()
   }, [])
 
   React.useEffect(() => {

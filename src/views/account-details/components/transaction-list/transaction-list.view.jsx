@@ -5,8 +5,10 @@ import { TxState } from '@hermeznetwork/hermezjs/src/tx-utils'
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
+import { getTransactionAmount } from '../../../../utils/transactions'
 
 function TransactionList ({
+  accountIndex,
   transactions,
   preferredCurrency,
   fiatExchangeRates,
@@ -25,8 +27,9 @@ function TransactionList ({
   return (
     <>
       {transactions.map((transaction) => {
+        const amount = getTransactionAmount(transaction)
         const fixedTokenAmount = getFixedTokenAmount(
-          transaction.amount,
+          amount,
           transaction.token.decimals
         )
 
@@ -38,6 +41,8 @@ function TransactionList ({
             <Transaction
               id={transaction.id}
               type={transaction.type}
+              accountIndex={accountIndex}
+              fromAccountIndex={transaction.fromAccountIndex}
               amount={fixedTokenAmount}
               tokenSymbol={transaction.token.symbol}
               fiatAmount={getTokenAmountInPreferredCurrency(

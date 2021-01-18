@@ -20,6 +20,7 @@ import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/account-details/account-details.actions'
+import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 
 function AccountDetails ({
   preferredCurrency,
@@ -141,7 +142,7 @@ function AccountDetails ({
               symbol={accountTask.data?.token.symbol}
             />
           </div>
-          <TransactionActions accountIndex={accountIndex} />
+          <TransactionActions accountIndex={accountIndex} tokenId={accountTask.data?.token.id} />
         </section>
       </Container>
       <Container>
@@ -181,6 +182,7 @@ function AccountDetails ({
                     onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                     onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                     coordinatorState={coordinatorStateTask.data}
+                    redirectTo={WithdrawRedirectionRoute.AccountDetails}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
@@ -196,8 +198,10 @@ function AccountDetails ({
                       onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                       onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                       coordinatorState={coordinatorStateTask.data}
+                      redirectTo={WithdrawRedirectionRoute.AccountDetails}
                     />}
                   <TransactionList
+                    accountIndex={accountIndex}
                     transactions={getPendingTransactions(poolTransactionsTask.data)}
                     fiatExchangeRates={
                       fiatExchangeRatesTask.status === 'successful'
@@ -213,6 +217,7 @@ function AccountDetails ({
                     onLoadNextPage={(fromItem) => onLoadHistoryTransactions(accountIndex, fromItem)}
                   >
                     <TransactionList
+                      accountIndex={accountIndex}
                       transactions={historyTransactionsTask.data.transactions}
                       fiatExchangeRates={
                         fiatExchangeRatesTask.status === 'successful'

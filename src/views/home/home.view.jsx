@@ -12,7 +12,6 @@ import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { copyToClipboard } from '../../utils/browser'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
@@ -22,9 +21,11 @@ import { getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 import Button from '../shared/button/button.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/home/home.actions'
+import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 
 function Home ({
   wallet,
+  totalAccountsBalanceTask,
   accountsTask,
   poolTransactionsTask,
   exitsTask,
@@ -35,6 +36,7 @@ function Home ({
   pendingDelayedWithdraws,
   coordinatorStateTask,
   onChangeHeader,
+  onLoadTotalAccountsBalance,
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
@@ -69,6 +71,16 @@ function Home ({
   }, [coordinatorStateTask, onCreateAccountAuthorization])
 
   React.useEffect(() => {
+    if (fiatExchangeRatesTask.status === 'successful') {
+      onLoadTotalAccountsBalance(
+        wallet.hermezEthereumAddress,
+        preferredCurrency,
+        fiatExchangeRatesTask.data
+      )
+    }
+  }, [wallet, preferredCurrency, fiatExchangeRatesTask, onLoadTotalAccountsBalance])
+
+  React.useEffect(() => {
     if (wallet && coordinatorStateTask.status === 'successful') {
       onLoadAccounts(wallet.hermezEthereumAddress)
     }
@@ -82,42 +94,6 @@ function Home ({
   }, [coordinatorStateTask, onLoadPoolTransactions, onLoadExits])
 
   React.useEffect(() => onCleanup, [onCleanup])
-
-  /**
-   * Calculates the total balance of the accounts in the user's preferred currency
-   * @param {Object} accountsTask - Asynchronous task of the accounts
-   * @returns {number} The balance of the account in the user's preferred currency
-   */
-  function getTotalBalance (accountsTask) {
-    switch (accountsTask.status) {
-      case 'reloading':
-      case 'successful': {
-        if (fiatExchangeRatesTask.status !== 'successful') {
-          return undefined
-        }
-
-        const { accounts } = accountsTask.data
-
-        return accounts.reduce((amount, account) => {
-          const fixedAccountBalance = getFixedTokenAmount(
-            account.balance,
-            account.token.decimals
-          )
-          const fiatBalance = getTokenAmountInPreferredCurrency(
-            fixedAccountBalance,
-            account.token.USD,
-            preferredCurrency,
-            fiatExchangeRatesTask.data
-          )
-
-          return amount + fiatBalance
-        }, 0)
-      }
-      default: {
-        return undefined
-      }
-    }
-  }
 
   /**
    * Filters the transactions of type exit from the transaction pool
@@ -167,11 +143,18 @@ function Home ({
           }
           <div className={classes.accountBalance}>
             <FiatAmount
-              amount={getTotalBalance(accountsTask)}
+              amount={totalAccountsBalanceTask.data}
               currency={preferredCurrency}
             />
           </div>
-          <TransactionActions hideWithdraw hideSend={accountsTask.status !== 'reloading' && accountsTask.status !== 'successful'} />
+          <TransactionActions
+            hideSend={
+              accountsTask.status === 'successful'
+                ? accountsTask.data.accounts.length === 0
+                : true
+            }
+            hideWithdraw
+          />
         </section>
       </Container>
       <Container>
@@ -207,6 +190,7 @@ function Home ({
                     onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                     onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                     coordinatorState={coordinatorStateTask.data}
+                    redirectTo={WithdrawRedirectionRoute.Home}
                   />
                   {exitsTask.status === 'successful' &&
                     <ExitList
@@ -222,6 +206,7 @@ function Home ({
                       onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                       onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                       coordinatorState={coordinatorStateTask.data}
+                      redirectTo={WithdrawRedirectionRoute.Home}
                     />}
                 </>
               )
@@ -233,6 +218,14 @@ function Home ({
                 return <Spinner />
               case 'reloading':
               case 'successful': {
+                if (accountsTask.data.accounts.length === 0) {
+                  return (
+                    <p className={classes.emptyAccounts}>
+                      Deposit tokens from your Ethereum account.
+                    </p>
+                  )
+                }
+
                 return (
                   <InfiniteScroll
                     asyncTaskStatus={accountsTask.status}
@@ -277,6 +270,7 @@ function Home ({
 }
 
 Home.propTypes = {
+  totalAccountsBalanceTask: PropTypes.object,
   accountsTask: PropTypes.object,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRatesTask: PropTypes.object,
@@ -285,6 +279,7 @@ Home.propTypes = {
   accountAuth: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
+  onLoadTotalAccountsBalance: PropTypes.func.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
@@ -297,6 +292,7 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
+  totalAccountsBalanceTask: state.home.totalAccountsBalanceTask,
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
@@ -311,6 +307,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
+  onLoadTotalAccountsBalance: (hermezEthereumAddress, preferredCurrency, fiatExchangeRates) =>
+    dispatch(homeThunks.fetchTotalAccountsBalance(hermezEthereumAddress, preferredCurrency, fiatExchangeRates)),
   onLoadAccounts: (hermezEthereumAddress, fromItem) =>
     dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem)),
   onLoadPoolTransactions: () =>

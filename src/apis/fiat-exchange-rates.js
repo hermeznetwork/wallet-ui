@@ -1,8 +1,9 @@
 import axios from 'axios'
 
 import { CurrencySymbol } from '../utils/currencies'
+import { FIAT_EXCHANGE_RATES_API_URL } from '../constants'
 
-const baseApiUrl = process.env.REACT_APP_FIAT_EXCHANGE_RATES_API_URL
+const baseApiUrl = FIAT_EXCHANGE_RATES_API_URL
 
 /**
  * Fetches the USD exchange rates for the requested currency symbols

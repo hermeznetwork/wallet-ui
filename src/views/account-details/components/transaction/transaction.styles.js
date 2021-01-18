@@ -23,7 +23,6 @@ const useTransactionStyles = createUseStyles(theme => ({
     justifyContent: 'space-between'
   },
   topRow: {
-    fontWeight: theme.fontWeights.bold,
     marginBottom: theme.spacing(2)
   },
   bottomRow: {

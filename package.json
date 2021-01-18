@@ -13,8 +13,6 @@
   },
   "dependencies": {
     "@hermeznetwork/hermezjs": "file:../hermezjs",
-    "@ledgerhq/hw-app-eth": "^5.33.0",
-    "@ledgerhq/hw-transport-u2f": "^5.30.0",
     "abi-decoder": "^2.3.0",
     "axios": "^0.19.2",
     "big-integer": "^1.6.48",
