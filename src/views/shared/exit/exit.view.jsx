@@ -40,8 +40,8 @@ function Exit ({
   React.useEffect(() => {
     if (typeof coordinatorState !== 'undefined') {
       for (const bucket of coordinatorState.rollup.buckets) {
-        if (fiatAmountUSD < bucket.ceilUSD) {
-          setIsWithdrawDelayed(bucket.withdrawals === 0)
+        if (fiatAmountUSD < Number(bucket.ceilUSD)) {
+          setIsWithdrawDelayed(Number(bucket.withdrawals) === 0)
           break
         }
       }
@@ -211,10 +211,8 @@ function Exit ({
         }
 
         if (isWithdrawDelayed && !isDelayedWithdrawalReady) {
-          // Remove once hermez-node is ready
-          const accountIndexTemp = 'hez:SCC:256'
           const pendingDelayedWithdrawal = pendingDelayedWithdraws?.find(
-            (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === accountIndexTemp + merkleProof.root
+            (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === accountIndex + merkleProof.root
           )
 
           if (pendingDelayedWithdrawal) {
