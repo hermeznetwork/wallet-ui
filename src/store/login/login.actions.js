@@ -35,10 +35,9 @@ function loadWallet () {
   }
 }
 
-function loadWalletSuccess (wallet) {
+function loadWalletSuccess () {
   return {
-    type: loginActionTypes.LOAD_WALLET_SUCCESS,
-    wallet
+    type: loginActionTypes.LOAD_WALLET_SUCCESS
   }
 }
 
