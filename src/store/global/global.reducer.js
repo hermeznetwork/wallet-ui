@@ -27,6 +27,7 @@ function getInitialPendingDelayedWithdraws () {
 
 const initialGlobalState = {
   wallet: undefined,
+  signer: undefined,
   header: {
     type: undefined
   },
@@ -56,6 +57,12 @@ function globalReducer (state = initialGlobalState, action) {
       return {
         ...state,
         wallet: undefined
+      }
+    }
+    case globalActionTypes.SET_SIGNER: {
+      return {
+        ...state,
+        signer: action.signer
       }
     }
     case globalActionTypes.CHANGE_HEADER: {

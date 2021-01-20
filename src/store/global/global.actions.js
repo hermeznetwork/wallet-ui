@@ -1,6 +1,7 @@
 export const globalActionTypes = {
   LOAD_WALLET: '[GLOBAL] LOAD WALLET',
   UNLOAD_WALLET: '[GLOBAL] UNLOAD WALLET',
+  SET_SIGNER: '[GLOBAL] SET SIGNER',
   CHANGE_HEADER: '[GLOBAL] CHANGE HEADER',
   CHANGE_REDIRECT_ROUTE: '[GLOBAL] CHANGE REDIRECT ROUTE',
   LOAD_FIAT_EXCHANGE_RATES: '[GLOBAL] LOAD FIAT EXCHANGE RATES',
@@ -34,6 +35,13 @@ function loadWallet (wallet) {
 function unloadWallet () {
   return {
     type: globalActionTypes.UNLOAD_WALLET
+  }
+}
+
+function setSigner (signer) {
+  return {
+    type: globalActionTypes.SET_SIGNER,
+    signer
   }
 }
 
@@ -147,6 +155,7 @@ function loadCoordinatorStateFailure (error) {
 export {
   loadWallet,
   unloadWallet,
+  setSigner,
   changeHeader,
   changeRedirectRoute,
   loadFiatExchangeRates,

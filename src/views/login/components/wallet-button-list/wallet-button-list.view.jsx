@@ -15,11 +15,15 @@ function WalletButtonList ({ onClick }) {
           walletName={WalletName.METAMASK}
           onClick={() => onClick(WalletName.METAMASK)}
         />
+      </div>
+      <div className={classes.walletButtonContainer}>
         <WalletButton
           isClickable
           walletName={WalletName.LEDGER}
           onClick={() => onClick(WalletName.LEDGER)}
         />
+      </div>
+      <div className={classes.walletButtonContainer}>
         <WalletButton
           isClickable
           walletName={WalletName.TREZOR}

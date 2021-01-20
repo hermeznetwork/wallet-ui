@@ -28,7 +28,8 @@ const initialTransactionState = {
       account: undefined
     },
     [STEP_NAME.REVIEW_TRANSACTION]: {
-      transaction: undefined
+      transaction: undefined,
+      isTransactionBeingSigned: false
     }
   },
   tokensTask: {
@@ -71,6 +72,7 @@ function transactionReducer (state = initialTransactionState, action) {
         steps: {
           ...state.steps,
           [STEP_NAME.REVIEW_TRANSACTION]: {
+            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
             transaction: action.transaction
           }
         }
@@ -190,6 +192,7 @@ function transactionReducer (state = initialTransactionState, action) {
             account: action.account
           },
           [STEP_NAME.REVIEW_TRANSACTION]: {
+            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
             transaction: {
               exit: action.exit,
               amount: action.exit.balance,
@@ -255,6 +258,30 @@ function transactionReducer (state = initialTransactionState, action) {
           }
         }
       }
+    case transactionActionTypes.START_TRANSACTION_SIGNING: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.REVIEW_TRANSACTION]: {
+            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+            isTransactionBeingSigned: true
+          }
+        }
+      }
+    }
+    case transactionActionTypes.STOP_TRANSACTION_SIGNING: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.REVIEW_TRANSACTION]: {
+            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+            isTransactionBeingSigned: false
+          }
+        }
+      }
+    }
     case transactionActionTypes.RESET_STATE: {
       return initialTransactionState
     }

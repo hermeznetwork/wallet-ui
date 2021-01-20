@@ -2,8 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { ethers } from 'ethers'
 import { useTheme } from 'react-jss'
-import hermezjs from '@hermeznetwork/hermezjs'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
@@ -18,6 +16,7 @@ import FormButton from '../../../shared/form-button/form-button.view'
 
 function TransactionOverview ({
   wallet,
+  isTransactionBeingSigned,
   transactionType,
   to,
   amount,
@@ -28,14 +27,14 @@ function TransactionOverview ({
   account,
   preferredCurrency,
   fiatExchangeRates,
-  onGoToFinishTransactionStep,
-  onAddPendingWithdraw,
-  onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw
+  onDeposit,
+  onForceExit,
+  onWithdraw,
+  onExit,
+  onTransfer
 }) {
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
-  const [isUserSigningTransaction, setIsUserSigningTransaction] = React.useState(false)
 
   /**
    * Converts the transaction amount to fiat in the preferred currency
@@ -55,23 +54,6 @@ function TransactionOverview ({
       preferredCurrency,
       fiatExchangeRates
     )
-  }
-
-  /**
-   * Converts the transaction amount from a number to a BigNumber
-   * @returns {BigNumber} - Transaction amount in BigNumber
-   */
-  function getAmountInBigInt () {
-    return ethers.BigNumber.from(amount)
-  }
-
-  /**
-   * Converts the token amount to a fixed amount
-   * @param {string} value - Token amount
-   * @returns {string} - Fixed token amount
-   */
-  function getTokenAmount (value) {
-    return getFixedTokenAmount(value, account.token.decimals)
   }
 
   /**
@@ -97,106 +79,27 @@ function TransactionOverview ({
   }
 
   /**
-   * Prepares the transaction and sends it
+   * Bubbles up an event to send the transaction accordingly
    * @returns {void}
    */
-  async function handleClickTxButton () {
+  async function handleFormSubmit () {
+    const bigIntAmount = ethers.BigNumber.from(amount)
+
     switch (transactionType) {
       case TransactionType.Deposit: {
-        setIsUserSigningTransaction(true)
-
-        return hermezjs.Tx.deposit(
-          getAmountInBigInt(),
-          wallet.hermezEthereumAddress,
-          account.token,
-          wallet.publicKeyCompressedHex
-        )
-          .then(() => onGoToFinishTransactionStep(transactionType))
-          .catch((error) => {
-            setIsUserSigningTransaction(false)
-            console.log(error)
-          })
+        return onDeposit(bigIntAmount, account)
       }
       case TransactionType.ForceExit: {
-        setIsUserSigningTransaction(true)
-
-        return hermezjs.Tx.forceExit(
-          getAmountInBigInt(),
-          account.accountIndex,
-          account.token
-        )
-          .then(() => onGoToFinishTransactionStep(transactionType))
-          .catch((error) => {
-            setIsUserSigningTransaction(false)
-            console.log(error)
-          })
+        return onForceExit(bigIntAmount, account)
       }
       case TransactionType.Withdraw: {
-        setIsUserSigningTransaction(true)
-
-        // Differentiate between a withdraw on the Hermez SC and the DelayedWithdrawal SC
-        if (!completeDelayedWithdrawal) {
-          return hermezjs.Tx.withdraw(
-            getAmountInBigInt(),
-            account.accountIndex,
-            account.token,
-            wallet.publicKeyCompressedHex,
-            exit.batchNum,
-            exit.merkleProof.siblings,
-            instantWithdrawal
-          ).then(() => {
-            if (instantWithdrawal) {
-              onAddPendingWithdraw(wallet.hermezEthereumAddress, account.accountIndex + exit.merkleProof.root)
-            } else {
-              onAddPendingDelayedWithdraw({
-                id: account.accountIndex + exit.merkleProof.root,
-                instant: false,
-                date: Date.now()
-              })
-            }
-            onGoToFinishTransactionStep(transactionType)
-          }).catch((error) => {
-            setIsUserSigningTransaction(false)
-            console.log(error)
-          })
-        } else {
-          return hermezjs.Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token)
-            .then(() => {
-              onRemovePendingDelayedWithdraw(account.accountIndex + exit.merkleProof.root)
-              onGoToFinishTransactionStep(transactionType)
-            })
-            .catch((error) => {
-              setIsUserSigningTransaction(false)
-              console.log(error)
-            })
-        }
+        return onWithdraw(amount, account, exit, completeDelayedWithdrawal, instantWithdrawal)
       }
       case TransactionType.Exit: {
-        const txData = {
-          type: TxType.Exit,
-          from: account.accountIndex,
-          amount: getAmountInBigInt(),
-          fee,
-          nonce: account.nonce
-        }
-
-        return hermezjs.Tx.generateAndSendL2Tx(txData, wallet, account.token)
-          .then(() => onGoToFinishTransactionStep(transactionType))
-          .catch(console.log)
+        return onExit(amount, account, fee)
       }
       default: {
-        const txData = {
-          type: TxType.Transfer,
-          from: account.accountIndex,
-          to: to.accountIndex,
-          amount: getAmountInBigInt(),
-          fee,
-          nonce: account.nonce
-        }
-
-        return hermezjs.Tx.generateAndSendL2Tx(txData, wallet, account.token)
-          .then(() => onGoToFinishTransactionStep(transactionType))
-          .catch((error) => console.log(error))
+        return onTransfer(amount, account, to, fee)
       }
     }
   }
@@ -212,7 +115,7 @@ function TransactionOverview ({
             />
           </div>
           <TokenBalance
-            amount={getTokenAmount(amount)}
+            amount={getFixedTokenAmount(amount, account.token.decimals)}
             symbol={account.token.symbol}
           />
         </section>
@@ -224,11 +127,11 @@ function TransactionOverview ({
             to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
             fee={fee ? {
               fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
-              tokens: `${getTokenAmount(fee)} ${account.token.symbol}`
+              tokens: `${getFixedTokenAmount(fee, account.token.decimals)} ${account.token.symbol}`
             } : undefined}
           />
           {
-            isUserSigningTransaction
+            isTransactionBeingSigned
               ? (
                 <div className={classes.signingSpinnerWrapper}>
                   <Spinner />
@@ -240,7 +143,7 @@ function TransactionOverview ({
               : (
                 <FormButton
                   label={getButtonLabel()}
-                  onClick={handleClickTxButton}
+                  onClick={handleFormSubmit}
                 />
               )
           }
@@ -261,9 +164,7 @@ TransactionOverview.propTypes = {
   completeDelayedWithdrawal: PropTypes.bool,
   account: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
-  fiatExchangeRates: PropTypes.object.isRequired,
-  onGoToFinishTransactionStep: PropTypes.func.isRequired,
-  onAddPendingWithdraw: PropTypes.func.isRequired
+  fiatExchangeRates: PropTypes.object.isRequired
 }
 
 export default TransactionOverview
