@@ -1,6 +1,8 @@
-import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
+import { CoordinatorAPI, Tx } from '@hermeznetwork/hermezjs'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import * as transactionActions from './transaction.actions'
+import * as globalThunks from '../global/global.thunks'
 import { TransactionType } from '../../views/transaction/transaction.view'
 import { getMetaMaskTokens } from '../../utils/metamask'
 
@@ -64,7 +66,7 @@ function fetchHermezAccount (accountIndex) {
  * @returns {void}
  */
 function fetchExit (accountIndex, batchNum) {
-  return async function (dispatch, getState) {
+  return (dispatch, getState) => {
     const { global: { wallet } } = getState()
 
     if (!wallet) {
@@ -118,7 +120,7 @@ function fetchAccounts (transactionType, fromItem) {
  * @returns {void}
  */
 function fetchFees () {
-  return async function (dispatch) {
+  return function (dispatch) {
     dispatch(transactionActions.loadFees())
 
     return CoordinatorAPI.getState()
@@ -127,10 +129,147 @@ function fetchFees () {
   }
 }
 
+function deposit (amount, account) {
+  return (dispatch, getState) => {
+    const { global: { wallet, signer } } = getState()
+
+    dispatch(transactionActions.startTransactionSigning())
+
+    return Tx.deposit(
+      amount,
+      wallet.hermezEthereumAddress,
+      account.token,
+      wallet.publicKeyCompressedHex,
+      undefined,
+      signer
+    )
+      .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
+      .catch((error) => {
+        dispatch(transactionActions.stopTransactionSigning())
+        console.log(error)
+      })
+  }
+}
+
+function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWithdrawal) {
+  return (dispatch, getState) => {
+    const { global: { wallet, signer } } = getState()
+    const withdrawalId = account.accountIndex + exit.merkleProof.root
+
+    dispatch(transactionActions.startTransactionSigning())
+
+    // Differentiate between a withdraw on the Hermez SC and the DelayedWithdrawal SC
+    if (!completeDelayedWithdrawal) {
+      return Tx.withdraw(
+        amount,
+        account.accountIndex,
+        account.token,
+        wallet.publicKeyCompressedHex,
+        exit.batchNum,
+        exit.merkleProof.siblings,
+        instantWithdrawal,
+        undefined,
+        signer
+      ).then(() => {
+        if (instantWithdrawal) {
+          dispatch(globalThunks.addPendingWithdraw(wallet.hermezEthereumAddress, withdrawalId))
+        } else {
+          dispatch(globalThunks.addPendingDelayedWithdraw({
+            id: withdrawalId,
+            instant: false,
+            date: Date.now()
+          }))
+        }
+
+        dispatch(transactionActions.goToFinishTransactionStep())
+      }).catch((error) => {
+        dispatch(transactionActions.stopTransactionSigning())
+        console.log(error)
+      })
+    } else {
+      return Tx.delayedWithdraw(
+        wallet.hermezEthereumAddress,
+        account.token,
+        undefined,
+        signer
+      )
+        .then(() => {
+          dispatch(globalThunks.removePendingDelayedWithdraw(withdrawalId))
+          dispatch(transactionActions.goToFinishTransactionStep())
+        })
+        .catch((error) => {
+          dispatch(transactionActions.stopTransactionSigning())
+          console.log(error)
+        })
+    }
+  }
+}
+
+function forceExit (amount, account) {
+  return (dispatch, getState) => {
+    const { global: { signer } } = getState()
+
+    dispatch(transactionActions.startTransactionSigning())
+
+    return Tx.forceExit(
+      amount,
+      account.accountIndex,
+      account.token,
+      undefined,
+      signer
+    )
+      .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
+      .catch((error) => {
+        dispatch(transactionActions.stopTransactionSigning())
+        console.log(error)
+      })
+  }
+}
+
+function exit (amount, account, fee) {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+    const txData = {
+      type: TxType.Exit,
+      from: account.accountIndex,
+      amount,
+      fee,
+      nonce: account.nonce
+    }
+
+    return Tx.generateAndSendL2Tx(txData, wallet, account.token)
+      .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
+      .catch(console.log)
+  }
+}
+
+function transfer (amount, from, to, fee) {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+    const txData = {
+      type: TxType.Transfer,
+      from: from.accountIndex,
+      to: to.accountIndex,
+      amount,
+      fee,
+      nonce: from.nonce
+    }
+
+    return Tx.generateAndSendL2Tx(txData, wallet, from.token)
+      .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
+      .catch(console.log)
+  }
+}
+
 export {
   fetchMetaMaskAccount,
   fetchHermezAccount,
   fetchExit,
   fetchAccounts,
-  fetchFees
+  fetchFees,
+  deposit,
+  withdraw,
+  forceExit,
+  exit,
+  transfer
 }

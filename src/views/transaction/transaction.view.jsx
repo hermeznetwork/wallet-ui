@@ -51,6 +51,11 @@ function Transaction ({
   onAddPendingWithdraw,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
+  onDeposit,
+  onForceExit,
+  onWithdraw,
+  onExit,
+  onTransfer,
   onCleanup
 }) {
   const classes = useTransactionStyles()
@@ -131,7 +136,8 @@ function Transaction ({
 
             return (
               <TransactionOverview
-                wallet={wallet || {}}
+                wallet={wallet}
+                isTransactionBeingSigned={stepData.isTransactionBeingSigned}
                 transactionType={transactionType}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}
@@ -142,10 +148,11 @@ function Transaction ({
                 exit={stepData.transaction.exit}
                 instantWithdrawal={instantWithdrawal}
                 completeDelayedWithdrawal={completeDelayedWithdrawal}
-                onGoToFinishTransactionStep={onGoToFinishTransactionStep}
-                onAddPendingWithdraw={onAddPendingWithdraw}
-                onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                onDeposit={onDeposit}
+                onForceExit={onForceExit}
+                onWithdraw={onWithdraw}
+                onExit={onExit}
+                onTransfer={onTransfer}
               />
             )
           }
@@ -301,6 +308,16 @@ const mapDispatchToProps = (dispatch) => ({
       dispatch(accountIndex ? push(`/accounts/${accountIndex}`) : push('/'))
     }
   },
+  onDeposit: (amount, account) =>
+    dispatch(transactionThunks.deposit(amount, account)),
+  onForceExit: (amount, account) =>
+    dispatch(transactionThunks.forceExit(amount, account)),
+  onWithdraw: (amount, account, exit, completeDelayedWithdrawal, instantWithdrawal) =>
+    dispatch(transactionThunks.withdraw(amount, account, exit, completeDelayedWithdrawal, instantWithdrawal)),
+  onExit: (amount, account, fee) =>
+    dispatch(transactionThunks.exit(amount, account, fee)),
+  onTransfer: (amount, from, to, fee) =>
+    dispatch(transactionThunks.transfer(amount, from, to, fee)),
   onCleanup: () =>
     dispatch(transactionActions.resetState())
 })

@@ -8,12 +8,12 @@ import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 /**
  * Changes the route to which the user is going to be redirected to after a successful
  * login
- * @param {string} redirecRoute - Route to be redirected to
+ * @param {string} redirectRoute - Route to be redirected to
  * @returns {void}
  */
-function changeRedirectRoute (redirecRoute) {
+function changeRedirectRoute (redirectRoute) {
   return (dispatch) => {
-    dispatch(globalActions.changeRedirectRoute(redirecRoute))
+    dispatch(globalActions.changeRedirectRoute(redirectRoute))
   }
 }
 
