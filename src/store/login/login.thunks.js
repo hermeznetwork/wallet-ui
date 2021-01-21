@@ -7,41 +7,32 @@ import * as loginActions from './login.actions'
 import { AUTH_MESSAGE } from '../../constants'
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
+import { WalletName } from '../../views/login/login.view'
 
-async function getSigner (walletName, accountData) {
-  const provider = hermezjs.Providers.getProvider()
-
+async function getSignerData (walletName, accountData) {
   switch (walletName) {
-    case 'metaMask': {
-      try {
-        await provider.send('eth_requestAccounts')
-      } catch (err) {}
-
-      return hermezjs.Signers.getSigner(provider)
+    case WalletName.METAMASK: {
+      return {
+        type: hermezjs.Signers.SignerType.JSON_RPC
+      }
     }
-    case 'ledger': {
+    case WalletName.LEDGER: {
       const { accountType, accountIndex } = accountData
       const path = buildEthereumBIP44Path(accountType, accountIndex)
 
-      return hermezjs.Signers.getSigner(
-        provider,
-        {
-          type: hermezjs.Signers.SignerType.LEDGER,
-          path
-        }
-      )
+      return {
+        type: hermezjs.Signers.SignerType.LEDGER,
+        path
+      }
     }
-    case 'trezor': {
+    case WalletName.TREZOR: {
       const { accountType, accountIndex } = accountData
       const path = buildEthereumBIP44Path(accountType, accountIndex)
 
-      return hermezjs.Signers.getSigner(
-        provider,
-        {
-          type: hermezjs.Signers.SignerType.TREZOR,
-          path
-        }
-      )
+      return {
+        type: hermezjs.Signers.SignerType.TREZOR,
+        path
+      }
     }
     default: {
       throw new Error('Wallet not supported')
@@ -57,9 +48,20 @@ async function getSigner (walletName, accountData) {
 function fetchWallet (walletName, accountData) {
   return async (dispatch, getState) => {
     try {
+      const provider = hermezjs.Providers.getProvider()
+
       dispatch(loginActions.loadWallet())
 
-      const signer = await getSigner(walletName, accountData)
+      if (walletName === WalletName.METAMASK) {
+        try {
+          await provider.send('eth_requestAccounts')
+        } catch (err) {
+          console.log(err)
+        }
+      }
+
+      const signerData = await getSignerData(walletName, accountData)
+      const signer = await hermezjs.Signers.getSigner(provider, signerData)
       const address = await signer.getAddress()
       const signature = await signer.signMessage(AUTH_MESSAGE)
       const hermezAddress = hermezjs.Addresses.getHermezAddress(address)
@@ -70,6 +72,7 @@ function fetchWallet (walletName, accountData) {
 
       if (currentStep === STEP_NAME.WALLET_LOADER) {
         dispatch(globalActions.loadWallet(wallet))
+        dispatch(globalActions.setSigner(signer))
         dispatch(push(redirectRoute))
       }
     } catch (error) {

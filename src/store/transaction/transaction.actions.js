@@ -16,6 +16,8 @@ export const transactionActionTypes = {
   LOAD_ACCOUNTS: '[TRANSACTION] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[TRANSACTION] LOAD ACCOUNTS SUCCESS',
   LOAD_ACCOUNTS_FAILURE: '[TRANSACTION] LOAD ACCOUNTS FAILURE',
+  START_TRANSACTION_SIGNING: '[TRANSACTION] START TRANSACTION SIGNING',
+  STOP_TRANSACTION_SIGNING: '[TRANSACTION] STOP TRANSACTION SIGNING',
   RESET_STATE: '[TRANSACTION] RESET STATE'
 }
 
@@ -135,6 +137,18 @@ function loadFeesFailure (error) {
   }
 }
 
+function startTransactionSigning () {
+  return {
+    type: transactionActionTypes.START_TRANSACTION_SIGNING
+  }
+}
+
+function stopTransactionSigning () {
+  return {
+    type: transactionActionTypes.STOP_TRANSACTION_SIGNING
+  }
+}
+
 function resetState () {
   return {
     type: transactionActionTypes.RESET_STATE
@@ -159,5 +173,7 @@ export {
   loadFees,
   loadFeesSuccess,
   loadFeesFailure,
+  startTransactionSigning,
+  stopTransactionSigning,
   resetState
 }

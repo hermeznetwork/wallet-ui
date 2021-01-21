@@ -14,6 +14,12 @@ import WalletButtonList from './components/wallet-button-list/wallet-button-list
 import AccountSelectorForm from './components/account-selector/account-selector-form.view'
 import WalletLoader from './components/wallet-loader/wallet-loader.view'
 
+export const WalletName = {
+  METAMASK: 'metaMask',
+  LEDGER: 'ledger',
+  TREZOR: 'trezor'
+}
+
 function Login ({
   currentStep,
   steps,
@@ -40,11 +46,11 @@ function Login ({
    */
   function handleWalletClick (walletName) {
     switch (walletName) {
-      case 'metaMask': {
+      case WalletName.METAMASK: {
         return onGoToWalletLoaderStep(walletName)
       }
-      case 'ledger':
-      case 'trezor': {
+      case WalletName.LEDGER:
+      case WalletName.TREZOR: {
         return onGoToAccountSelectorStep(walletName)
       }
       default: {}
