@@ -25,36 +25,15 @@ jobs:
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Deploy sandbox-coordinator image
+      - name: Build and deploy image to AWS ECR
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: wallet-ui
-          IMAGE_TAG: sandbox-coordinator
+          IMAGE_TAG: integration
         run: |
           docker build . \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }} \
           --build-arg GIT_VERSION=${{ github.sha }} \
-          --build-arg HERMEZ_API_URL=${{ secrets.SANDBOX_HERMEZ_API_URL }} \
-          --build-arg BATCH_EXPLORER_URL=${{ secrets.SANDBOX_BATCH_EXPLORER_URL }} \
-          --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.GANACHE_HERMEZ_CONTRACT_ADDRESS }} \
-          --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.GANACHE_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }}
-
-      - name: Deploy integration-coordinator image
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          ECR_REPOSITORY: wallet-ui
-          IMAGE_TAG: integration-coordinator
-        run: |
-          docker build . \
-          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }} \
-          --build-arg GIT_VERSION=${{ github.sha }} \
-          --build-arg HERMEZ_API_URL=${{ secrets.INTEGRATION_HERMEZ_API_URL }} \
-          --build-arg BATCH_EXPLORER_URL=${{ secrets.INTEGRATION_BATCH_EXPLORER_URL }} \
-          --build-arg HERMEZ_CONTRACT_ADDRESS=${{ secrets.GANACHE_HERMEZ_CONTRACT_ADDRESS }} \
-          --build-arg WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.GANACHE_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }}
