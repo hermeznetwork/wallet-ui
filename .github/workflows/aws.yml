@@ -46,7 +46,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: wallet-ui
-          IMAGE_TAG: integration-coordinator
+          IMAGE_TAG: integration
         run: |
           docker build . \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
