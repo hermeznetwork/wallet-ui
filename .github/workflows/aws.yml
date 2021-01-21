@@ -34,6 +34,6 @@ jobs:
           docker build . \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }} \
-          --build-arg GIT_VERSION=${{ github.sha }} \
+          --build-arg GIT_VERSION=${{ github.sha }}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-${{ github.sha }}
