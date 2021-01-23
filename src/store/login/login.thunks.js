@@ -4,7 +4,7 @@ import { push } from 'connected-react-router'
 
 import * as globalActions from '../global/global.actions'
 import * as loginActions from './login.actions'
-import { AUTH_MESSAGE } from '../../constants'
+import { AUTH_MESSAGE, TREZOR_MANIFEST_MAIL } from '../../constants'
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
@@ -31,7 +31,11 @@ async function getSignerData (walletName, accountData) {
 
       return {
         type: hermezjs.Signers.SignerType.TREZOR,
-        path
+        path,
+        manifest: {
+          email: TREZOR_MANIFEST_MAIL,
+          appUrl: window.location.origin
+        }
       }
     }
     default: {
@@ -48,6 +52,10 @@ async function getSignerData (walletName, accountData) {
 function fetchWallet (walletName, accountData) {
   return async (dispatch, getState) => {
     try {
+      if (walletName !== WalletName.METAMASK) {
+        hermezjs.Providers.setProvider(process.env.REACT_APP_HARDWARE_WALLETS_PROVIDER)
+      }
+
       const provider = hermezjs.Providers.getProvider()
 
       dispatch(loginActions.loadWallet())
