@@ -9,7 +9,9 @@ import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
 
-async function getSignerData (walletName, accountData) {
+async function getSignerData (provider, walletName, accountData) {
+  const chainId = (await provider.getNetwork()).chainId
+
   switch (walletName) {
     case WalletName.METAMASK: {
       return {
@@ -18,7 +20,7 @@ async function getSignerData (walletName, accountData) {
     }
     case WalletName.LEDGER: {
       const { accountType, accountIndex } = accountData
-      const path = buildEthereumBIP44Path(accountType, accountIndex)
+      const path = buildEthereumBIP44Path(chainId, accountType, accountIndex)
 
       return {
         type: hermezjs.Signers.SignerType.LEDGER,
@@ -27,7 +29,7 @@ async function getSignerData (walletName, accountData) {
     }
     case WalletName.TREZOR: {
       const { accountType, accountIndex } = accountData
-      const path = buildEthereumBIP44Path(accountType, accountIndex)
+      const path = buildEthereumBIP44Path(chainId, accountType, accountIndex)
 
       return {
         type: hermezjs.Signers.SignerType.TREZOR,
@@ -68,7 +70,7 @@ function fetchWallet (walletName, accountData) {
         }
       }
 
-      const signerData = await getSignerData(walletName, accountData)
+      const signerData = await getSignerData(provider, walletName, accountData)
       const signer = await hermezjs.Signers.getSigner(provider, signerData)
       const address = await signer.getAddress()
       const signature = await signer.signMessage(AUTH_MESSAGE)
@@ -80,7 +82,7 @@ function fetchWallet (walletName, accountData) {
 
       if (currentStep === STEP_NAME.WALLET_LOADER) {
         dispatch(globalActions.loadWallet(wallet))
-        dispatch(globalActions.setSigner(signer))
+        dispatch(globalActions.setSigner({ ...signerData, address }))
         dispatch(push(redirectRoute))
       }
     } catch (error) {
