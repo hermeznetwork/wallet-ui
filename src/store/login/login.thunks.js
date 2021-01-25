@@ -10,8 +10,6 @@ import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
 
 async function getSignerData (provider, walletName, accountData) {
-  const chainId = (await provider.getNetwork()).chainId
-
   switch (walletName) {
     case WalletName.METAMASK: {
       return {
@@ -19,6 +17,7 @@ async function getSignerData (provider, walletName, accountData) {
       }
     }
     case WalletName.LEDGER: {
+      const chainId = (await provider.getNetwork()).chainId
       const { accountType, accountIndex } = accountData
       const path = buildEthereumBIP44Path(chainId, accountType, accountIndex)
 
@@ -28,6 +27,7 @@ async function getSignerData (provider, walletName, accountData) {
       }
     }
     case WalletName.TREZOR: {
+      const chainId = (await provider.getNetwork()).chainId
       const { accountType, accountIndex } = accountData
       const path = buildEthereumBIP44Path(chainId, accountType, accountIndex)
 
