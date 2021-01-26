@@ -166,10 +166,16 @@ function fetchCoordinatorState () {
  * Removes the MetaMask wallet data from the Redux store and the localStorage
  * @returns {void}
  */
-function disconnectMetaMaskWallet () {
+function disconnectWallet () {
   return (dispatch) => {
     dispatch(globalActions.unloadWallet())
     dispatch(push('/login'))
+  }
+}
+
+function reloadApp () {
+  return (dispatch) => {
+    window.location.reload()
   }
 }
 
@@ -182,5 +188,6 @@ export {
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
   fetchCoordinatorState,
-  disconnectMetaMaskWallet
+  disconnectWallet,
+  reloadApp
 }

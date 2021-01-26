@@ -5,6 +5,9 @@ export const loginActionTypes = {
   LOAD_WALLET: '[LOGIN] LOAD WALLET',
   LOAD_WALLET_SUCCESS: '[LOGIN] LOAD WALLET SUCCESS',
   LOAD_WALLET_FAILURE: '[LOGIN] LOAD WALLET FAILURE',
+  LOAD_NETWORK_NAME: '[LOGIN] LOAD NETWORK NAME',
+  LOAD_NETWORK_NAME_SUCCESS: '[LOGIN] LOAD NETWORK NAME SUCCESS',
+  LOAD_NETWORK_NAME_FAILURE: '[LOGIN] LOAD NETWORK NAME FAILURE',
   RESET_STATE: '[LOGIN] RESET STATE'
 }
 
@@ -49,6 +52,25 @@ function loadWalletFailure (error) {
   }
 }
 
+function loadNetworkName () {
+  return {
+    type: loginActionTypes.LOAD_NETWORK_NAME
+  }
+}
+
+function loadNetworkNameSuccess (networkName) {
+  return {
+    type: loginActionTypes.LOAD_NETWORK_NAME_SUCCESS,
+    networkName
+  }
+}
+
+function loadNetworkNameFailure () {
+  return {
+    type: loginActionTypes.LOAD_NETWORK_NAME_FAILURE
+  }
+}
+
 function resetState () {
   return {
     type: loginActionTypes.RESET_STATE
@@ -62,5 +84,8 @@ export {
   loadWallet,
   loadWalletSuccess,
   loadWalletFailure,
+  loadNetworkName,
+  loadNetworkNameSuccess,
+  loadNetworkNameFailure,
   resetState
 }

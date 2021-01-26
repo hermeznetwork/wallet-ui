@@ -8,6 +8,9 @@ export const STEP_NAME = {
 
 const initialLoginState = {
   currentStep: STEP_NAME.WALLET_SELECTOR,
+  networkNameTask: {
+    status: 'pending'
+  },
   steps: {
     [STEP_NAME.ACCOUNT_SELECTOR]: {
       walletName: undefined
@@ -121,6 +124,32 @@ function loginReducer (state = initialLoginState, action) {
               error: action.error
             }
           }
+        }
+      }
+    }
+    case loginActionTypes.LOAD_NETWORK_NAME: {
+      return {
+        ...state,
+        networkNameTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case loginActionTypes.LOAD_NETWORK_NAME_SUCCESS: {
+      return {
+        ...state,
+        networkNameTask: {
+          status: 'successful',
+          data: action.networkName
+        }
+      }
+    }
+    case loginActionTypes.LOAD_NETWORK_NAME_FAILURE: {
+      return {
+        ...state,
+        networkNameTask: {
+          status: 'failure',
+          error: 'An error ocurred loading the chain id'
         }
       }
     }

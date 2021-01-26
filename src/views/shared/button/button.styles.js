@@ -6,8 +6,7 @@ const useButtonStyles = createUseStyles(theme => ({
     alignItems: 'center',
     border: 'none',
     width: 'fit-content',
-    marginTop: theme.spacing(2),
-    margin: 'auto',
+    margin: `${theme.spacing(2)} auto 0 auto`,
     padding: ({ rounded }) => rounded
       ? theme.spacing(2)
       : `${theme.spacing(1.5)}px ${theme.spacing(2.5)}px`,
@@ -16,11 +15,13 @@ const useButtonStyles = createUseStyles(theme => ({
       : 50,
     background: theme.palette.primary.dark,
     color: theme.palette.grey.dark,
-    cursor: 'pointer',
+    cursor: ({ isClickable }) => isClickable ? 'pointer' : 'default',
     fontWeight: theme.fontWeights.medium,
     transition: theme.hoverTransition,
     '&:hover:not(:disabled)': {
-      background: theme.palette.primary.hover
+      background: ({ isClickable }) => isClickable
+        ? theme.palette.primary.hover
+        : undefined
     },
     '&:focus': {
       outline: 'none'

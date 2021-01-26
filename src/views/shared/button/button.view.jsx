@@ -5,10 +5,11 @@ import clsx from 'clsx'
 import useButtonStyles from './button.styles'
 
 function Button ({ Icon, text, className, disabled, onClick }) {
-  const classes = useButtonStyles({ rounded: !text })
+  const Component = onClick !== undefined ? 'button' : 'div'
+  const classes = useButtonStyles({ rounded: !text, isClickable: onClick !== undefined })
 
   return (
-    <button
+    <Component
       onClick={onClick}
       disabled={disabled}
       className={clsx({
@@ -22,14 +23,14 @@ function Button ({ Icon, text, className, disabled, onClick }) {
           {text}
         </p>
       )}
-    </button>
+    </Component>
   )
 }
 
 Button.propTypes = {
   Icon: PropTypes.element,
   text: PropTypes.string,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func
 }
 
 export default Button

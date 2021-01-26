@@ -110,6 +110,7 @@ function Home ({
           {
             <Button
               text={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
+              className={classes.walletAddress}
               onClick={() => handleEthereumAddressClick(wallet.hermezEthereumAddress)}
             />
           }

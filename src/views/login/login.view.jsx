@@ -13,6 +13,7 @@ import { STEP_NAME } from '../../store/login/login.reducer'
 import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
 import AccountSelectorForm from './components/account-selector/account-selector-form.view'
 import WalletLoader from './components/wallet-loader/wallet-loader.view'
+import Button from '../shared/button/button.view'
 
 export const WalletName = {
   METAMASK: 'metaMask',
@@ -22,9 +23,11 @@ export const WalletName = {
 
 function Login ({
   currentStep,
+  networkNameTask,
   steps,
   redirectRoute,
   onChangeHeader,
+  onLoadNetworkName,
   onGoToAccountSelectorStep,
   onGoToWalletLoaderStep,
   onGoToPreviousStep,
@@ -37,6 +40,10 @@ function Login ({
   React.useEffect(() => {
     onChangeHeader()
   }, [onChangeHeader])
+
+  React.useEffect(() => {
+    onLoadNetworkName()
+  }, [onLoadNetworkName])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -57,8 +64,8 @@ function Login ({
     }
   }
 
-  function getWalletLabel (walletName) {
-    return walletName[0].toUpperCase() + walletName.slice(1)
+  function capitalizeLabel (str) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
   function handleSelectAccount (walletName, accountData) {
@@ -70,10 +77,19 @@ function Login ({
       <div className={classes.root}>
         {currentStep !== STEP_NAME.WALLET_SELECTOR && (
           <button className={classes.goBackButton} onClick={onGoToPreviousStep}>
-            <CloseIcon className={classes.goBackButtonIcon} />
+            <CloseIcon />
           </button>
         )}
         <HermezLogoAlternative className={classes.logo} />
+        <p className={classes.description}>Secure wallet for low-cost token transfers</p>
+        {
+          networkNameTask.status === 'successful' && (
+            <Button
+              text={capitalizeLabel(networkNameTask.data)}
+              className={classes.networkName}
+            />
+          )
+        }
         {
           (() => {
             switch (currentStep) {
@@ -87,7 +103,7 @@ function Login ({
               }
               case STEP_NAME.ACCOUNT_SELECTOR: {
                 const stepData = steps[STEP_NAME.ACCOUNT_SELECTOR]
-                const walletLabel = getWalletLabel(stepData.walletName)
+                const walletLabel = capitalizeLabel(stepData.walletName)
 
                 return (
                   <>
@@ -104,7 +120,7 @@ function Login ({
               }
               case STEP_NAME.WALLET_LOADER: {
                 const stepData = steps[STEP_NAME.WALLET_LOADER]
-                const walletLabel = getWalletLabel(stepData.walletName)
+                const walletLabel = capitalizeLabel(stepData.walletName)
 
                 return (
                   <>
@@ -133,6 +149,7 @@ function Login ({
 
 const mapStateToProps = (state) => ({
   currentStep: state.login.currentStep,
+  networkNameTask: state.login.networkNameTask,
   steps: state.login.steps,
   redirectRoute: state.global.redirectRoute
 })
@@ -140,6 +157,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(globalActions.changeHeader({ type: undefined })),
+  onLoadNetworkName: () => dispatch(loginThunks.loadNetworkName()),
   onGoToAccountSelectorStep: (walletName) =>
     dispatch(loginActions.goToAccountSelectorStep(walletName)),
   onGoToWalletLoaderStep: (walletName, accountData) =>
