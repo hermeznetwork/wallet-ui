@@ -24,3 +24,5 @@ export const MAX_DECIMALS_UNTIL_ZERO_AMOUNT = 6
 export const PENDING_WITHDRAWS_KEY = 'pendingWithdraws'
 
 export const PENDING_DELAYED_WITHDRAWS_KEY = 'pendingDelayedWithdraws'
+
+export const TREZOR_MANIFEST_MAIL = 'hello@hermez.io'
