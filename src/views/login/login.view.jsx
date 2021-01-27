@@ -13,6 +13,7 @@ import { STEP_NAME } from '../../store/login/login.reducer'
 import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
 import AccountSelectorForm from './components/account-selector/account-selector-form.view'
 import WalletLoader from './components/wallet-loader/wallet-loader.view'
+import { PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../constants'
 
 export const WalletName = {
   METAMASK: 'metaMask',
@@ -126,6 +127,25 @@ function Login ({
             }
           })()
         }
+        <div className={classes.legalContainer}>
+          <a
+            href={PRIVACY_POLICY_URL}
+            target='_blank'
+            rel='noopener noreferrer'
+            className={classes.privacyPolicyUrl}
+          >
+            Privacy policy
+          </a>
+          <p className={classes.legalSeparator}>|</p>
+          <a
+            href={TERMS_OF_SERVICE_URL}
+            target='_blank'
+            rel='noopener noreferrer'
+            className={classes.termsOfServiceUrl}
+          >
+            Terms of service
+          </a>
+        </div>
       </div>
     </Container>
   )

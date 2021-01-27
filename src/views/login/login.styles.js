@@ -47,6 +47,27 @@ const useLoginStyles = createUseStyles(theme => ({
     fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.bold,
     marginBottom: theme.spacing(4.5)
+  },
+  legalContainer: {
+    width: '100%',
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: theme.spacing(21),
+    color: theme.palette.grey.dark
+  },
+  legalSeparator: {
+    margin: `0 ${theme.spacing(1.5)}px`,
+    cursor: 'default'
+  },
+  privacyPolicyUrl: {
+    position: 'absolute',
+    transform: 'translateX(-64px)'
+  },
+  termsOfServiceUrl: {
+    position: 'absolute',
+    transform: 'translateX(73px)'
   }
 }))
 
