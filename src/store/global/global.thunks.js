@@ -26,11 +26,12 @@ function setHermezEnvironment () {
             globalActions.loadEthereumNetworkFailure(LOAD_ETHEREUM_NETWORK_ERROR.CHAIN_ID_NOT_SUPPORTED)
           )
         }
+
         if (hermezjs.Environment.isEnvironmentSupported(chainId)) {
           hermezjs.Environment.setEnvironment(chainId)
         }
 
-        if (process.env.REACT_APP_ENV === 'development' && !hermezjs.Environment.isEnvironmentSupported(chainId)) {
+        if (process.env.REACT_APP_ENV === 'development') {
           hermezjs.Environment.setEnvironment({
             baseApiUrl: process.env.REACT_APP_HERMEZ_API_URL,
             contractAddresses: {
@@ -38,12 +39,15 @@ function setHermezEnvironment () {
                   process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
               [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
                   process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
-            }
+            },
+            batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL
           })
         }
 
         if (chainId === 1) {
           dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: 'mainnet' }))
+        } else if (chainId === 1337) {
+          dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: 'local' }))
         } else {
           dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name }))
         }
