@@ -140,7 +140,6 @@ function deposit (amount, account) {
       wallet.hermezEthereumAddress,
       account.token,
       wallet.publicKeyCompressedHex,
-      undefined,
       signer
     )
       .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
@@ -168,7 +167,6 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
         exit.batchNum,
         exit.merkleProof.siblings,
         instantWithdrawal,
-        undefined,
         signer
       ).then(() => {
         if (instantWithdrawal) {
@@ -190,7 +188,6 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
       return Tx.delayedWithdraw(
         wallet.hermezEthereumAddress,
         account.token,
-        undefined,
         signer
       )
         .then(() => {
@@ -215,8 +212,7 @@ function forceExit (amount, account) {
       amount,
       account.accountIndex,
       account.token,
-      signer,
-      undefined
+      signer
     )
       .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
       .catch((error) => {
