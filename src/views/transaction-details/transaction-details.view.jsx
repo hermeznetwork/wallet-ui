@@ -158,6 +158,7 @@ function getHeaderTitle (transactionType) {
     case TxType.ForceExit: {
       return 'Withdrawn'
     }
+    case TxType.TransferEthAddr:
     case TxType.Transfer: {
       return 'Transfer'
     }
