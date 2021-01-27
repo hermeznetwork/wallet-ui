@@ -13,6 +13,7 @@ import { STEP_NAME } from '../../store/login/login.reducer'
 import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
 import AccountSelectorForm from './components/account-selector/account-selector-form.view'
 import WalletLoader from './components/wallet-loader/wallet-loader.view'
+import CreateAccountAuth from './components/create-account-auth/create-account-auth.view'
 
 export const WalletName = {
   METAMASK: 'metaMask',
@@ -23,12 +24,13 @@ export const WalletName = {
 function Login ({
   currentStep,
   steps,
-  redirectRoute,
+  accountAuth,
   onChangeHeader,
   onGoToAccountSelectorStep,
   onGoToWalletLoaderStep,
   onGoToPreviousStep,
   onLoadWallet,
+  onCreateAccountAuthorization,
   onCleanup
 }) {
   const theme = useTheme()
@@ -120,6 +122,15 @@ function Login ({
                   </>
                 )
               }
+              case STEP_NAME.CREATE_ACCOUNT_AUTH: {
+                return (
+                  <CreateAccountAuth
+                    accountAuth={accountAuth}
+                    steps={steps}
+                    onCreateAccountAuthorization={onCreateAccountAuthorization}
+                  />
+                )
+              }
               default: {
                 return <></>
               }
@@ -134,7 +145,7 @@ function Login ({
 const mapStateToProps = (state) => ({
   currentStep: state.login.currentStep,
   steps: state.login.steps,
-  redirectRoute: state.global.redirectRoute
+  accountAuth: state.login.accountAuth
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -147,6 +158,7 @@ const mapDispatchToProps = (dispatch) => ({
   onGoToPreviousStep: () => dispatch(loginActions.goToPreviousStep()),
   onLoadWallet: (walletName, accountData) =>
     dispatch(loginThunks.fetchWallet(walletName, accountData)),
+  onCreateAccountAuthorization: (wallet) => dispatch(loginThunks.postCreateAccountAuthorization(wallet)),
   onCleanup: () =>
     dispatch(loginActions.resetState())
 })

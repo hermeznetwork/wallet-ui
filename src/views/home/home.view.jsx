@@ -3,10 +3,9 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import * as hermezjs from '@hermeznetwork/hermezjs'
 
 import useHomeStyles from './home.styles'
-import { fetchCoordinatorState, addPendingDelayedWithdraw, removePendingDelayedWithdraw } from '../../store/global/global.thunks'
+import { addPendingDelayedWithdraw, removePendingDelayedWithdraw } from '../../store/global/global.thunks'
 import * as homeThunks from '../../store/home/home.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
@@ -29,7 +28,6 @@ function Home ({
   accountsTask,
   poolTransactionsTask,
   exitsTask,
-  accountAuth,
   fiatExchangeRatesTask,
   preferredCurrency,
   pendingWithdraws,
@@ -40,8 +38,6 @@ function Home ({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
-  onLoadCoordinatorState,
-  onCreateAccountAuthorization,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onNavigateToAccountDetails,
@@ -54,21 +50,6 @@ function Home ({
   React.useEffect(() => {
     onChangeHeader(theme.palette.primary.main)
   }, [theme, onChangeHeader])
-
-  React.useEffect(() => {
-    onLoadCoordinatorState()
-  }, [onLoadCoordinatorState])
-
-  React.useEffect(() => {
-    if (coordinatorStateTask.status === 'successful') {
-      const forgers = coordinatorStateTask.data.network.nextForgers
-      if (forgers && forgers.length > 0) {
-        hermezjs.CoordinatorAPI.setBaseApiUrl(forgers[0].coordinator.URL)
-      }
-
-      onCreateAccountAuthorization()
-    }
-  }, [coordinatorStateTask, onCreateAccountAuthorization])
 
   React.useEffect(() => {
     if (fiatExchangeRatesTask.status === 'successful') {
@@ -122,15 +103,6 @@ function Home ({
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
 
-  /**
-   * Whether a create account authorization has been sent from current device for current coordinator
-   * @param {Object} accountAuth - Existing local data of saved create account authorizations
-   */
-  function getCreateAccountAuthorization (accountAuth) {
-    const currentAccountAuth = accountAuth[wallet.hermezEthereumAddress]
-    return currentAccountAuth ? currentAccountAuth[hermezjs.CoordinatorAPI.getBaseApiUrl()] : false
-  }
-
   return wallet && (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
@@ -159,17 +131,6 @@ function Home ({
       </Container>
       <Container>
         <section className={classes.section}>
-          {
-            !getCreateAccountAuthorization(accountAuth)
-              ? (
-                <>
-                  <h2 className={classes.accountAuthTitle}>Create accounts for new tokens</h2>
-                  <p className={classes.accountAuthText}>Confirm with your signature that Hermez will automatically create accounts for your new tokens.</p>
-                  <Spinner />
-                </>
-              )
-              : <></>
-          }
           {
             (poolTransactionsTask.status === 'successful' ||
             poolTransactionsTask.status === 'reloading') &&
@@ -276,15 +237,12 @@ Home.propTypes = {
   fiatExchangeRatesTask: PropTypes.object,
   poolTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
-  accountAuth: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
   onLoadTotalAccountsBalance: PropTypes.func.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
-  onLoadCoordinatorState: PropTypes.func.isRequired,
-  onCreateAccountAuthorization: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
@@ -298,7 +256,6 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
-  accountAuth: state.home.accountAuth,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   coordinatorStateTask: state.global.coordinatorStateTask
@@ -315,8 +272,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
-  onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
-  onCreateAccountAuthorization: () => dispatch(homeThunks.postCreateAccountAuthorization()),
   onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
     dispatch(addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>

@@ -1,9 +1,35 @@
 import { loginActionTypes } from './login.actions'
+import { ACCOUNT_AUTH_KEY, ACCOUNT_AUTH_SIGNATURE_KEY } from '../../constants'
+
+function getInitialAccountAuth () {
+  if (!localStorage.getItem(ACCOUNT_AUTH_KEY)) {
+    const emptyAccountAuth = {}
+
+    localStorage.setItem(ACCOUNT_AUTH_KEY, JSON.stringify(emptyAccountAuth))
+
+    return emptyAccountAuth
+  } else {
+    return JSON.parse(localStorage.getItem(ACCOUNT_AUTH_KEY))
+  }
+}
+
+function getAccountAuthSignature () {
+  if (!localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY)) {
+    const emptyAccountAuthSignature = {}
+
+    localStorage.setItem(ACCOUNT_AUTH_SIGNATURE_KEY, JSON.stringify(emptyAccountAuthSignature))
+
+    return emptyAccountAuthSignature
+  } else {
+    return JSON.parse(localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY))
+  }
+}
 
 export const STEP_NAME = {
   WALLET_SELECTOR: 'wallet-selector',
   ACCOUNT_SELECTOR: 'account-selector',
-  WALLET_LOADER: 'wallet-loader'
+  WALLET_LOADER: 'wallet-loader',
+  CREATE_ACCOUNT_AUTH: 'create-account-auth'
 }
 
 const initialLoginState = {
@@ -18,8 +44,13 @@ const initialLoginState = {
       walletTask: {
         status: 'pending'
       }
+    },
+    [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
+      wallet: undefined
     }
-  }
+  },
+  accountAuth: getInitialAccountAuth(),
+  accountAuthSignature: getAccountAuthSignature()
 }
 
 function loginReducer (state = initialLoginState, action) {
@@ -46,6 +77,18 @@ function loginReducer (state = initialLoginState, action) {
             ...state.steps[STEP_NAME.WALLET_LOADER],
             walletName: action.walletName,
             accountData: action.accountData
+          }
+        }
+      }
+    }
+    case loginActionTypes.GO_TO_CREATE_ACCOUNT_AUTH_STEP: {
+      return {
+        ...state,
+        currentStep: STEP_NAME.CREATE_ACCOUNT_AUTH,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
+            wallet: action.wallet
           }
         }
       }
@@ -94,21 +137,6 @@ function loginReducer (state = initialLoginState, action) {
         }
       }
     }
-    case loginActionTypes.LOAD_WALLET_SUCCESS: {
-      return {
-        ...state,
-        steps: {
-          ...state.steps,
-          [STEP_NAME.WALLET_LOADER]: {
-            ...state.steps[STEP_NAME.WALLET_LOADER],
-            walletTask: {
-              status: 'successful',
-              data: action.wallet
-            }
-          }
-        }
-      }
-    }
     case loginActionTypes.LOAD_WALLET_FAILURE: {
       return {
         ...state,
@@ -121,6 +149,29 @@ function loginReducer (state = initialLoginState, action) {
               error: action.error
             }
           }
+        }
+      }
+    }
+    case loginActionTypes.ADD_ACCOUNT_AUTH: {
+      const currentAccountAuth = state.accountAuth[action.hermezEthereumAddress]
+
+      return {
+        ...state,
+        accountAuth: {
+          ...state.accountAuth,
+          [action.hermezEthereumAddress]: {
+            ...currentAccountAuth,
+            [action.coordinatorUrl]: true
+          }
+        }
+      }
+    }
+    case loginActionTypes.SET_ACCOUNT_AUTH_SIGNATURE: {
+      return {
+        ...state,
+        accountAuthSignature: {
+          ...state.accountAuthSignature,
+          [action.hermezEthereumAddress]: action.signature
         }
       }
     }

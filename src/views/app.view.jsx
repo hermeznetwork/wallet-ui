@@ -9,16 +9,17 @@ import hermez from '@hermeznetwork/hermezjs'
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
-import { fetchFiatExchangeRates, changeNetworkStatus, disconnectMetaMaskWallet } from '../store/global/global.thunks'
+import { fetchCoordinatorState, fetchFiatExchangeRates, changeNetworkStatus, disconnectMetaMaskWallet } from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
 import { CurrencySymbol } from '../utils/currencies'
 
 function App ({
   fiatExchangeRatesTask,
+  coordinatorStateTask,
   onLoadFiatExchangeRates,
   onChangeNetworkStatus,
-  onOpenSnackbar,
-  onDisconnectAccount
+  onDisconnectAccount,
+  onLoadCoordinatorState
 }) {
   const theme = useTheme()
   const classes = useAppStyles()
@@ -39,6 +40,19 @@ function App ({
     hermez.CoordinatorAPI.setBaseApiUrl(process.env.REACT_APP_HERMEZ_API_URL)
     hermez.TxPool.initializeTransactionPool()
   }, [])
+
+  React.useLayoutEffect(() => {
+    onLoadCoordinatorState()
+  }, [onLoadCoordinatorState])
+
+  React.useLayoutEffect(() => {
+    if (coordinatorStateTask.status === 'successful') {
+      const forgers = coordinatorStateTask.data.network.nextForgers
+      if (forgers && forgers.length > 0) {
+        hermez.CoordinatorAPI.setBaseApiUrl(forgers[0].coordinator.URL)
+      }
+    }
+  }, [coordinatorStateTask])
 
   React.useEffect(() => {
     window.addEventListener('online', () => {
@@ -102,7 +116,8 @@ App.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
+  coordinatorStateTask: state.global.coordinatorStateTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -116,7 +131,8 @@ const mapDispatchToProps = (dispatch) => ({
     ),
   onChangeNetworkStatus: (networkStatus, backgroundColor) =>
     dispatch(changeNetworkStatus(networkStatus, backgroundColor)),
-  onDisconnectAccount: () => dispatch(disconnectMetaMaskWallet())
+  onDisconnectAccount: () => dispatch(disconnectMetaMaskWallet()),
+  onLoadCoordinatorState: () => dispatch(fetchCoordinatorState())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

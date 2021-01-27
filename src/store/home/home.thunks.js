@@ -3,7 +3,6 @@ import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 
 import * as homeActions from './home.actions'
-import { ACCOUNT_AUTH_KEY, ACCOUNT_AUTH_SIGNATURE_KEY } from '../../constants'
 
 /**
  * Fetches the accounts for a Hermez Ethereum address and calculates the total balance.
@@ -89,72 +88,9 @@ function fetchExits () {
   }
 }
 
-/**
- * Sends a create account authorization request if it hasn't been done
- * for the current coordinator
- */
-function postCreateAccountAuthorization () {
-  return (dispatch, getState) => {
-    const { home: { accountAuthSignature }, global: { wallet } } = getState()
-
-    const accountAuth = JSON.parse(localStorage.getItem(ACCOUNT_AUTH_KEY))
-    const currentAccountAuth = accountAuth[wallet.hermezEthereumAddress]
-
-    const currentSignature = accountAuthSignature[wallet.hermezEthereumAddress]
-    const getSignature = currentSignature
-      ? () => Promise.resolve(currentSignature)
-      : wallet.signCreateAccountAuthorization.bind(wallet)
-    const apiUrl = CoordinatorAPI.getBaseApiUrl()
-
-    if (!currentAccountAuth || !currentAccountAuth[apiUrl]) {
-      getSignature()
-        .then((signature) => {
-          setAccountAuthSignature(wallet.hermezEthereumAddress, signature)
-
-          return CoordinatorAPI.postCreateAccountAuthorization(
-            wallet.hermezEthereumAddress,
-            `${wallet.publicKeyBase64}`,
-            signature
-          )
-        })
-        .then(() => {
-          const newAccountAuth = {
-            ...accountAuth,
-            [wallet.hermezEthereumAddress]: {
-              ...currentAccountAuth,
-              [apiUrl]: true
-            }
-          }
-          localStorage.setItem(ACCOUNT_AUTH_KEY, JSON.stringify(newAccountAuth))
-          dispatch(homeActions.addAccountAuth(wallet.hermezEthereumAddress, apiUrl))
-        })
-        .catch(console.log)
-    }
-  }
-}
-
-/**
- *
- * @param {*} hermezEthereumAddress
- * @param {*} signature
- */
-function setAccountAuthSignature (hermezEthereumAddress, signature) {
-  return (dispatch) => {
-    const accountAuthSignature = JSON.parse(localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY))
-    const newAccountAuthSignature = {
-      ...accountAuthSignature,
-      [hermezEthereumAddress]: signature
-    }
-    localStorage.setItem(ACCOUNT_AUTH_SIGNATURE_KEY, JSON.stringify(newAccountAuthSignature))
-    dispatch(homeActions.setAccountAuthSignature(hermezEthereumAddress, signature))
-  }
-}
-
 export {
   fetchTotalAccountsBalance,
   fetchAccounts,
   fetchPoolTransactions,
-  fetchExits,
-  postCreateAccountAuthorization,
-  setAccountAuthSignature
+  fetchExits
 }

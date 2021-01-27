@@ -215,8 +215,8 @@ function forceExit (amount, account) {
       amount,
       account.accountIndex,
       account.token,
-      undefined,
-      signer
+      signer,
+      undefined
     )
       .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
       .catch((error) => {
@@ -249,7 +249,7 @@ function transfer (amount, from, to, fee) {
     const txData = {
       type: TxType.Transfer,
       from: from.accountIndex,
-      to: to.accountIndex,
+      to: to.accountIndex || to.hezEthereumAddress,
       amount,
       fee,
       nonce: from.nonce

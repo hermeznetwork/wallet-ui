@@ -1,30 +1,5 @@
 import { homeActionTypes } from './home.actions'
 import { getPaginationData } from '../../utils/api'
-import { ACCOUNT_AUTH_KEY, ACCOUNT_AUTH_SIGNATURE_KEY } from '../../constants'
-
-function getInitialAccountAuth () {
-  if (!localStorage.getItem(ACCOUNT_AUTH_KEY)) {
-    const emptyAccountAuth = {}
-
-    localStorage.setItem(ACCOUNT_AUTH_KEY, JSON.stringify(emptyAccountAuth))
-
-    return emptyAccountAuth
-  } else {
-    return JSON.parse(localStorage.getItem(ACCOUNT_AUTH_KEY))
-  }
-}
-
-function getAccountAuthSignature () {
-  if (!localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY)) {
-    const emptyAccountAuthSignature = {}
-
-    localStorage.setItem(ACCOUNT_AUTH_SIGNATURE_KEY, JSON.stringify(emptyAccountAuthSignature))
-
-    return emptyAccountAuthSignature
-  } else {
-    return JSON.parse(localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY))
-  }
-}
 
 const initialHomeState = {
   totalAccountsBalanceTask: {
@@ -41,9 +16,7 @@ const initialHomeState = {
   },
   exitsTask: {
     status: 'pending'
-  },
-  accountAuth: getInitialAccountAuth(),
-  accountAuthSignature: getAccountAuthSignature()
+  }
 }
 
 function homeReducer (state = initialHomeState, action) {
@@ -172,29 +145,6 @@ function homeReducer (state = initialHomeState, action) {
         exitsTask: {
           status: 'failed',
           error: action.error
-        }
-      }
-    }
-    case homeActionTypes.ADD_ACCOUNT_AUTH: {
-      const currentAccountAuth = state.accountAuth[action.hermezEthereumAddress]
-
-      return {
-        ...state,
-        accountAuth: {
-          ...state.accountAuth,
-          [action.hermezEthereumAddress]: {
-            ...currentAccountAuth,
-            [action.coordinatorUrl]: true
-          }
-        }
-      }
-    }
-    case homeActionTypes.SET_ACCOUNT_AUTH_SIGNATURE: {
-      return {
-        ...state,
-        accountAuthSignature: {
-          ...state.accountAuthSignature,
-          [action.hermezEthereumAddress]: action.signature
         }
       }
     }

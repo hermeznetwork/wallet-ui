@@ -7,7 +7,7 @@ import { push } from 'connected-react-router'
 
 import useAccountDetailsStyles from './account-details.styles'
 import * as accountDetailsThunks from '../../store/account-details/account-details.thunks'
-import { fetchCoordinatorState, addPendingDelayedWithdraw, removePendingDelayedWithdraw } from '../../store/global/global.thunks'
+import { addPendingDelayedWithdraw, removePendingDelayedWithdraw } from '../../store/global/global.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -38,7 +38,6 @@ function AccountDetails ({
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
-  onLoadCoordinatorState,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onNavigateToTransactionDetails,
@@ -52,8 +51,7 @@ function AccountDetails ({
     onLoadAccount(accountIndex)
     onLoadPoolTransactions(accountIndex)
     onLoadExits()
-    onLoadCoordinatorState()
-  }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadExits, onLoadCoordinatorState])
+  }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadExits])
 
   React.useEffect(() => {
     if (exitsTask.status === 'successful') {
@@ -256,7 +254,6 @@ AccountDetails.propTypes = {
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
-  onLoadCoordinatorState: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToTransactionDetails: PropTypes.func.isRequired
@@ -292,7 +289,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem)),
   onLoadExits: (exitTransactions) =>
     dispatch(accountDetailsThunks.fetchExits(exitTransactions)),
-  onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
   onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
     dispatch(addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>
