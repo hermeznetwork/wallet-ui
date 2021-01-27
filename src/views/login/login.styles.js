@@ -63,11 +63,13 @@ const useLoginStyles = createUseStyles(theme => ({
   },
   privacyPolicyUrl: {
     position: 'absolute',
-    transform: 'translateX(-64px)'
+    transform: 'translateX(-64px)',
+    padding: theme.spacing(1)
   },
   termsOfServiceUrl: {
     position: 'absolute',
-    transform: 'translateX(73px)'
+    transform: 'translateX(73px)',
+    padding: theme.spacing(1)
   }
 }))
 
