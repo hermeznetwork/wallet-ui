@@ -3,7 +3,6 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
-import hermez from '@hermeznetwork/hermezjs'
 
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
@@ -13,7 +12,9 @@ import Spinner from './shared/spinner/spinner.view'
 import { CurrencySymbol } from '../utils/currencies'
 
 function App ({
+  ethereumNetworkTask,
   fiatExchangeRatesTask,
+  onSetHermezEnvironment,
   onLoadFiatExchangeRates,
   onChangeNetworkStatus,
   onOpenSnackbar,
@@ -24,21 +25,12 @@ function App ({
   const classes = useAppStyles()
 
   React.useEffect(() => {
+    onSetHermezEnvironment()
+  }, [onSetHermezEnvironment])
+
+  React.useEffect(() => {
     onLoadFiatExchangeRates()
   }, [onLoadFiatExchangeRates])
-
-  React.useLayoutEffect(() => {
-    hermez.Constants._setContractAddress(
-      hermez.Constants.ContractNames.Hermez,
-      process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS
-    )
-    hermez.Constants._setContractAddress(
-      hermez.Constants.ContractNames.WithdrawalDelayer,
-      process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
-    )
-    hermez.CoordinatorAPI.setBaseApiUrl(process.env.REACT_APP_HERMEZ_API_URL)
-    hermez.TxPool.initializeTransactionPool()
-  }, [])
 
   React.useEffect(() => {
     window.addEventListener('online', () => {
@@ -57,7 +49,11 @@ function App ({
     }
   }, [onDisconnectAccount, onReloadApp])
 
-  if (fiatExchangeRatesTask.status !== 'successful') {
+  if (
+    fiatExchangeRatesTask.status !== 'successful' ||
+    ethereumNetworkTask.status === 'pending' ||
+    ethereumNetworkTask.status === 'loading'
+  ) {
     return (
       <div className={classes.root}>
         <Spinner size={theme.spacing(8)} />
@@ -87,10 +83,12 @@ App.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
+  ethereumNetworkTask: state.global.ethereumNetworkTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  onSetHermezEnvironment: () => dispatch(globalThunks.setHermezEnvironment()),
   onLoadFiatExchangeRates: () =>
     dispatch(
       globalThunks.fetchFiatExchangeRates(

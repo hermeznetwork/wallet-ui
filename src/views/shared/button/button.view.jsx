@@ -5,8 +5,9 @@ import clsx from 'clsx'
 import useButtonStyles from './button.styles'
 
 function Button ({ Icon, text, className, disabled, onClick }) {
-  const Component = onClick !== undefined ? 'button' : 'div'
-  const classes = useButtonStyles({ rounded: !text, isClickable: onClick !== undefined })
+  const classes = useButtonStyles({ rounded: !text })
+  const isClickable = onClick !== undefined
+  const Component = isClickable ? 'button' : 'div'
 
   return (
     <Component
@@ -14,6 +15,7 @@ function Button ({ Icon, text, className, disabled, onClick }) {
       disabled={disabled}
       className={clsx({
         [classes.root]: true,
+        [classes.button]: isClickable,
         [className]: className
       })}
     >

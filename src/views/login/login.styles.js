@@ -53,7 +53,7 @@ const useLoginStyles = createUseStyles(theme => ({
   connectedText: {
     fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.bold,
-    marginBottom: theme.spacing(4.5)
+    marginBottom: theme.spacing(6)
   }
 }))
 

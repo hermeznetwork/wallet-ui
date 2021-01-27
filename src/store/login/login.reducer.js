@@ -3,7 +3,8 @@ import { loginActionTypes } from './login.actions'
 export const STEP_NAME = {
   WALLET_SELECTOR: 'wallet-selector',
   ACCOUNT_SELECTOR: 'account-selector',
-  WALLET_LOADER: 'wallet-loader'
+  WALLET_LOADER: 'wallet-loader',
+  ERROR: 'error'
 }
 
 const initialLoginState = {
@@ -21,6 +22,9 @@ const initialLoginState = {
       walletTask: {
         status: 'pending'
       }
+    },
+    [STEP_NAME.ERROR]: {
+      error: undefined
     }
   }
 }
@@ -49,6 +53,18 @@ function loginReducer (state = initialLoginState, action) {
             ...state.steps[STEP_NAME.WALLET_LOADER],
             walletName: action.walletName,
             accountData: action.accountData
+          }
+        }
+      }
+    }
+    case loginActionTypes.GO_TO_ERROR_STEP: {
+      return {
+        ...state,
+        currentStep: STEP_NAME.ERROR,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.ERROR]: {
+            error: action.error
           }
         }
       }
@@ -149,7 +165,7 @@ function loginReducer (state = initialLoginState, action) {
         ...state,
         networkNameTask: {
           status: 'failure',
-          error: 'An error ocurred loading the chain id'
+          error: action.error
         }
       }
     }

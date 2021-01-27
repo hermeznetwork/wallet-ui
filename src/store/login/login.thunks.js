@@ -46,23 +46,6 @@ async function getSignerData (provider, walletName, accountData) {
   }
 }
 
-function loadNetworkName () {
-  return async (dispatch) => {
-    const provider = hermezjs.Providers.getProvider()
-
-    dispatch(loginActions.loadNetworkName())
-    provider.getNetwork()
-      .then((network) => {
-        if (network.chainId === 1) {
-          dispatch(loginActions.loadNetworkNameSuccess('mainnet'))
-        } else {
-          dispatch(loginActions.loadNetworkNameSuccess(network.name))
-        }
-      })
-      .catch((err) => console.log(err))
-  }
-}
-
 /**
  * Asks the user to login using a compatible wallet and stores its data in the Redux
  * store
@@ -115,6 +98,5 @@ function fetchWallet (walletName, accountData) {
 }
 
 export {
-  loadNetworkName,
   fetchWallet
 }

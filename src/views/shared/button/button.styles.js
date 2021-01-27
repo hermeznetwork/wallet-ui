@@ -15,20 +15,20 @@ const useButtonStyles = createUseStyles(theme => ({
       : 50,
     background: theme.palette.primary.dark,
     color: theme.palette.grey.dark,
-    cursor: ({ isClickable }) => isClickable ? 'pointer' : 'default',
     fontWeight: theme.fontWeights.medium,
     transition: theme.hoverTransition,
-    '&:hover:not(:disabled)': {
-      background: ({ isClickable }) => isClickable
-        ? theme.palette.primary.hover
-        : undefined
-    },
     '&:focus': {
       outline: 'none'
     },
     '&:disabled': {
       opacity: 0.5,
       cursor: 'default'
+    }
+  },
+  button: {
+    cursor: 'pointer',
+    '&:hover:not(:disabled)': {
+      background: theme.palette.primary.hover
     }
   },
   textSpacer: {
