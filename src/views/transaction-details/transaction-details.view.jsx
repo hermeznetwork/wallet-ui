@@ -19,6 +19,7 @@ import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import { push } from 'connected-react-router'
 import { getTransactionAmount } from '../../utils/transactions'
+import { TxType } from '@hermeznetwork/hermezjs/dist/node/tx-utils'
 
 function TransactionDetails ({
   transactionTask,
@@ -146,6 +147,26 @@ const mapStateToProps = (state) => ({
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
+function getHeaderTitle (transactionType) {
+  switch (transactionType) {
+    case TxType.CreateAccountDeposit:
+    case TxType.Deposit: {
+      return 'Deposited'
+    }
+    case TxType.Withdraw:
+    case TxType.Exit:
+    case TxType.ForceExit: {
+      return 'Withdrawn'
+    }
+    case TxType.Transfer: {
+      return 'Transfer'
+    }
+    default: {
+      return ''
+    }
+  }
+}
+
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionId) =>
     dispatch(transactionDetailsThunks.fetchTransaction(transactionId)),
@@ -154,7 +175,7 @@ const mapDispatchToProps = (dispatch) => ({
       changeHeader({
         type: 'page',
         data: {
-          title: transactionType,
+          title: getHeaderTitle(transactionType),
           closeAction: push(`/accounts/${accountIndex}`)
         }
       })
