@@ -1,21 +1,7 @@
 import { ethers } from 'ethers'
-import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
+import hermezjs from '@hermeznetwork/hermezjs'
 
 import { ETHER_TOKEN_ID } from '../constants'
-
-let provider
-
-async function getProvider () {
-  if (!provider) {
-    if (!window.ethereum || !window.ethereum.isMetaMask) {
-      throw new Error('MetaMask provider is not available')
-    }
-    provider = new ethers.providers.Web3Provider(window.ethereum)
-    await provider.send('eth_requestAccounts')
-  }
-
-  return provider
-}
 
 /**
  * Fetches token balances in the user's MetaMask account. Only for those tokens registered in Hermez and Ether.
@@ -24,9 +10,10 @@ async function getProvider () {
  * @param {Object[]} hermezTokens - List of registered tokens in Hermez
  * @returns {Promise} - Array of { balance, token } where balance is a Number and token is the Token schema returned from the API.
  */
-async function getMetaMaskTokens (wallet, hermezTokens) {
+async function getTokens (wallet, hermezTokens) {
   if (wallet) {
-    const provider = await getProvider()
+    const provider = hermezjs.Providers.getProvider()
+    const ethereumAddress = hermezjs.Addresses.getEthereumAddress(wallet.hermezEthereumAddress)
     const partialERC20ABI = [{
       constant: true,
       inputs: [
@@ -48,14 +35,12 @@ async function getMetaMaskTokens (wallet, hermezTokens) {
     const balancePromises = hermezTokens.map(token => {
       if (token.id === ETHER_TOKEN_ID) {
         // tokenID 0 is for Ether
-        const signer = provider.getSigner()
-
-        return signer.getBalance()
+        return provider.getBalance(ethereumAddress)
       } else {
         // For ERC 20 tokens, check the balance from the smart contract
         const contract = new ethers.Contract(token.ethereumAddress, partialERC20ABI, provider)
 
-        return contract.balanceOf(getEthereumAddress(wallet.hermezEthereumAddress))
+        return contract.balanceOf(ethereumAddress)
           // We can ignore if a call to the contract of a specific token fails.
           .catch(() => {})
       }
@@ -78,5 +63,5 @@ async function getMetaMaskTokens (wallet, hermezTokens) {
 }
 
 export {
-  getMetaMaskTokens
+  getTokens
 }

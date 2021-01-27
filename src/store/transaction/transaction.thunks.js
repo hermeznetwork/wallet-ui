@@ -3,8 +3,8 @@ import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'
+import * as ethereum from '../../utils/ethereum'
 import { TransactionType } from '../../views/transaction/transaction.view'
-import { getMetaMaskTokens } from '../../utils/metamask'
 
 /**
  * Fetches the account details for a token id in MetaMask.
@@ -23,7 +23,7 @@ function fetchMetaMaskAccount (tokenId) {
 
     return CoordinatorAPI.getTokens(undefined, undefined, undefined, 2049)
       .then((res) => {
-        getMetaMaskTokens(wallet, res.tokens)
+        ethereum.getTokens(wallet, res.tokens)
           .then(metaMaskTokens => {
             const account = metaMaskTokens.find((token) => token.token.id === tokenId)
 
@@ -103,7 +103,7 @@ function fetchAccounts (transactionType, fromItem) {
     if (transactionType === TransactionType.Deposit) {
       return CoordinatorAPI.getTokens(undefined, undefined, undefined, 2049)
         .then((res) => {
-          getMetaMaskTokens(wallet, res.tokens)
+          ethereum.getTokens(wallet, res.tokens)
             .then(metaMaskTokens => dispatch(transactionActions.loadAccountsSuccess(transactionType, metaMaskTokens)))
             .catch(err => transactionActions.loadAccountsFailure(err.message))
         })

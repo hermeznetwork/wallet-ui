@@ -3,7 +3,6 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
-import TrezorConnect from 'trezor-connect'
 import hermez from '@hermeznetwork/hermezjs'
 
 import useAppStyles from './app.styles'
@@ -63,17 +62,6 @@ function App ({
   React.useEffect(() => {
     window.addEventListener('offline', () => onChangeNetworkStatus('offline'))
   }, [theme, onChangeNetworkStatus])
-
-  React.useEffect(() => {
-    TrezorConnect.init({
-      lazyLoad: true,
-      popup: true,
-      manifest: {
-        email: 'info@trezor.io',
-        appUrl: 'https://localhost:3000/'
-      }
-    })
-  }, [])
 
   React.useEffect(() => {
     if (window.ethereum) {
