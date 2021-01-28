@@ -3,41 +3,34 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
-import hermez from '@hermeznetwork/hermezjs'
 
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
 import routes from '../routing/routes'
-import { fetchFiatExchangeRates, changeNetworkStatus, disconnectMetaMaskWallet } from '../store/global/global.thunks'
+import * as globalThunks from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
 import { CurrencySymbol } from '../utils/currencies'
 
 function App ({
+  ethereumNetworkTask,
   fiatExchangeRatesTask,
+  onSetHermezEnvironment,
   onLoadFiatExchangeRates,
   onChangeNetworkStatus,
   onOpenSnackbar,
-  onDisconnectAccount
+  onDisconnectAccount,
+  onReloadApp
 }) {
   const theme = useTheme()
   const classes = useAppStyles()
 
   React.useEffect(() => {
+    onSetHermezEnvironment()
+  }, [onSetHermezEnvironment])
+
+  React.useEffect(() => {
     onLoadFiatExchangeRates()
   }, [onLoadFiatExchangeRates])
-
-  React.useLayoutEffect(() => {
-    hermez.Constants._setContractAddress(
-      hermez.Constants.ContractNames.Hermez,
-      process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS
-    )
-    hermez.Constants._setContractAddress(
-      hermez.Constants.ContractNames.WithdrawalDelayer,
-      process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
-    )
-    hermez.CoordinatorAPI.setBaseApiUrl(process.env.REACT_APP_HERMEZ_API_URL)
-    hermez.TxPool.initializeTransactionPool()
-  }, [])
 
   React.useEffect(() => {
     window.addEventListener('online', () => {
@@ -51,15 +44,15 @@ function App ({
 
   React.useEffect(() => {
     if (window.ethereum) {
-      window.ethereum.on('accountsChanged', () => {
-        onDisconnectAccount()
-      })
+      window.ethereum.on('accountsChanged', () => { onDisconnectAccount() })
+      window.ethereum.on('chainChanged', () => { onReloadApp() })
     }
-  }, [onDisconnectAccount])
+  }, [onDisconnectAccount, onReloadApp])
 
   if (
-    fiatExchangeRatesTask.status === 'loading' ||
-    fiatExchangeRatesTask.status === 'failed'
+    fiatExchangeRatesTask.status !== 'successful' ||
+    ethereumNetworkTask.status === 'pending' ||
+    ethereumNetworkTask.status === 'loading'
   ) {
     return (
       <div className={classes.root}>
@@ -90,21 +83,24 @@ App.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
+  ethereumNetworkTask: state.global.ethereumNetworkTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  onSetHermezEnvironment: () => dispatch(globalThunks.setHermezEnvironment()),
   onLoadFiatExchangeRates: () =>
     dispatch(
-      fetchFiatExchangeRates(
+      globalThunks.fetchFiatExchangeRates(
         Object.values(CurrencySymbol)
           .filter(currency => currency.code !== CurrencySymbol.USD.code)
           .map((currency) => currency.code)
       )
     ),
   onChangeNetworkStatus: (networkStatus, backgroundColor) =>
-    dispatch(changeNetworkStatus(networkStatus, backgroundColor)),
-  onDisconnectAccount: () => dispatch(disconnectMetaMaskWallet())
+    dispatch(globalThunks.changeNetworkStatus(networkStatus, backgroundColor)),
+  onDisconnectAccount: () => dispatch(globalThunks.disconnectWallet()),
+  onReloadApp: () => dispatch(globalThunks.reloadApp())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

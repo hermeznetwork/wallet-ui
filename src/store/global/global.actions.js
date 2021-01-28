@@ -1,4 +1,7 @@
 export const globalActionTypes = {
+  LOAD_ETHEREUM_NETWORK: '[GLOBAL] LOAD ETHEREUM NETWORK',
+  LOAD_ETHEREUM_NETWORK_SUCCESS: '[GLOBAL] LOAD ETHEREUM NETWORK SUCCESS',
+  LOAD_ETHEREUM_NETWORK_FAILURE: '[GLOBAL] LOAD ETHEREUM NETWORK FAILURE',
   LOAD_WALLET: '[GLOBAL] LOAD WALLET',
   UNLOAD_WALLET: '[GLOBAL] UNLOAD WALLET',
   SET_SIGNER: '[GLOBAL] SET SIGNER',
@@ -23,6 +26,26 @@ export const globalActionTypes = {
   LOAD_COORDINATOR_STATE: '[GLOBAL] LOAD COORDINATOR STATE',
   LOAD_COORDINATOR_STATE_SUCCESS: '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
   LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE'
+}
+
+function loadEthereumNetwork () {
+  return {
+    type: globalActionTypes.LOAD_ETHEREUM_NETWORK
+  }
+}
+
+function loadEthereumNetworkSuccess (ethereumNetwork) {
+  return {
+    type: globalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS,
+    ethereumNetwork
+  }
+}
+
+function loadEthereumNetworkFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_ETHEREUM_NETWORK_FAILURE,
+    error
+  }
 }
 
 function loadWallet (wallet) {
@@ -153,6 +176,9 @@ function loadCoordinatorStateFailure (error) {
 }
 
 export {
+  loadEthereumNetwork,
+  loadEthereumNetworkSuccess,
+  loadEthereumNetworkFailure,
   loadWallet,
   unloadWallet,
   setSigner,

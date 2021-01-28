@@ -3,11 +3,12 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
+import hermezjs from '@hermeznetwork/hermezjs'
 
 import useMyAccountStyles from './my-account.styles'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
 import { changePreferredCurrency } from '../../store/my-account/my-account.thunks'
-import { disconnectMetaMaskWallet } from '../../store/global/global.thunks'
+import { disconnectWallet } from '../../store/global/global.thunks'
 import Container from '../shared/container/container.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { ReactComponent as ExchangeIcon } from '../../images/icons/exchange.svg'
@@ -108,7 +109,7 @@ function MyAccount ({
           {wallet && (
             <a
               className={classes.settingContainer}
-              href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/user-account/${wallet.hermezEthereumAddress}`}
+              href={`${hermezjs.Environment.getBatchExplorerUrl()}/user-account/${wallet.hermezEthereumAddress}`}
               target='_blank'
               rel='noopener noreferrer'
             >
@@ -154,7 +155,7 @@ const mapDispatchToProps = (dispatch) => ({
   onNavigateToMyCode: () =>
     dispatch(push('/my-code?from=my-account')),
   onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
-  onDisconnectWallet: () => dispatch(disconnectMetaMaskWallet()),
+  onDisconnectWallet: () => dispatch(disconnectWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onNavigateToForceExit: () => dispatch(push('/force-withdrawal'))
 })

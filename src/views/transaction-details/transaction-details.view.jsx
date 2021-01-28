@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
-import { beautifyTransactionState } from '@hermeznetwork/hermezjs/src/tx-utils'
+import hermezjs, { TxUtils } from '@hermeznetwork/hermezjs'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
@@ -105,7 +106,7 @@ function TransactionDetails ({
               case 'successful': {
                 return (
                   <TransactionInfo
-                    status={beautifyTransactionState(transactionTask.data.state)}
+                    status={TxUtils.beautifyTransactionState(transactionTask.data.state)}
                     from={transactionTask.data.fromAccountIndex}
                     to={transactionTask.data.toAccountIndex}
                     date={new Date(transactionTask.data.timestamp).toLocaleString()}
@@ -119,7 +120,7 @@ function TransactionDetails ({
           })()}
           <a
             className={classes.link}
-            href={`${process.env.REACT_APP_BATCH_EXPLORER_URL}/transaction/${transactionId}`}
+            href={`${hermezjs.Environment.getBatchExplorerUrl()}/transaction/${transactionId}`}
             target='_blank'
             rel='noopener noreferrer'
           >
@@ -146,6 +147,27 @@ const mapStateToProps = (state) => ({
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
+function getHeaderTitle (transactionType) {
+  switch (transactionType) {
+    case TxType.CreateAccountDeposit:
+    case TxType.Deposit: {
+      return 'Deposited'
+    }
+    case TxType.Withdraw:
+    case TxType.Exit:
+    case TxType.ForceExit: {
+      return 'Withdrawn'
+    }
+    case TxType.TransferToEthAddr:
+    case TxType.Transfer: {
+      return 'Transfer'
+    }
+    default: {
+      return ''
+    }
+  }
+}
+
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionId) =>
     dispatch(transactionDetailsThunks.fetchTransaction(transactionId)),
@@ -154,7 +176,7 @@ const mapDispatchToProps = (dispatch) => ({
       changeHeader({
         type: 'page',
         data: {
-          title: transactionType,
+          title: getHeaderTitle(transactionType),
           closeAction: push(`/accounts/${accountIndex}`)
         }
       })
