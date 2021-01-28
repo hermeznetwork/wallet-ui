@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 import hermezjs, { TxUtils } from '@hermeznetwork/hermezjs'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
@@ -19,7 +20,6 @@ import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import { push } from 'connected-react-router'
 import { getTransactionAmount } from '../../utils/transactions'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 function TransactionDetails ({
   transactionTask,
