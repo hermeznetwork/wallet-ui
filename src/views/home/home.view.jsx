@@ -5,7 +5,7 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
-import { fetchCoordinatorState, addPendingDelayedWithdraw, removePendingDelayedWithdraw } from '../../store/global/global.thunks'
+import { addPendingDelayedWithdraw, removePendingDelayedWithdraw } from '../../store/global/global.thunks'
 import * as homeThunks from '../../store/home/home.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
@@ -38,7 +38,6 @@ function Home ({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
-  onLoadCoordinatorState,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onNavigateToAccountDetails,
@@ -63,16 +62,17 @@ function Home ({
   }, [wallet, preferredCurrency, fiatExchangeRatesTask, onLoadTotalAccountsBalance])
 
   React.useEffect(() => {
-    if (wallet) {
+    if (wallet && coordinatorStateTask.status === 'successful') {
       onLoadAccounts(wallet.hermezEthereumAddress)
     }
-  }, [wallet, onLoadAccounts])
+  }, [wallet, coordinatorStateTask, onLoadAccounts])
 
   React.useEffect(() => {
-    onLoadPoolTransactions()
-    onLoadExits()
-    onLoadCoordinatorState()
-  }, [onLoadPoolTransactions, onLoadExits, onLoadCoordinatorState])
+    if (coordinatorStateTask.status === 'successful') {
+      onLoadPoolTransactions()
+      onLoadExits()
+    }
+  }, [coordinatorStateTask, onLoadPoolTransactions, onLoadExits])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -177,9 +177,7 @@ function Home ({
           {(() => {
             switch (accountsTask.status) {
               case 'loading':
-              case 'failed': {
                 return <Spinner />
-              }
               case 'reloading':
               case 'successful': {
                 if (accountsTask.data.accounts.length === 0) {
@@ -238,7 +236,6 @@ Home.propTypes = {
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
-  onLoadCoordinatorState: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
@@ -268,7 +265,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
-  onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
   onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
     dispatch(addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>

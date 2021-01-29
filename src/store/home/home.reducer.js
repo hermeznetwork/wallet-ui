@@ -1,5 +1,5 @@
-import { getPaginationData } from '../../utils/api'
 import { homeActionTypes } from './home.actions'
+import { getPaginationData } from '../../utils/api'
 
 const initialHomeState = {
   totalAccountsBalanceTask: {

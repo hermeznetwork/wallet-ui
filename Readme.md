@@ -2,11 +2,10 @@
 
 ## Getting Started
 
-To set up a local blockchain with the Hermez smart contracts for testing, follow these steps:
+To set up a local blockchain with the Hermez smart contracts and a Hermez node for testing, follow these steps:
 
-1. Clone https://github.com/hermeznetwork/contracts
-2. `cd contracts && git checkout feature/fe-tools && npm i`
-3. Follow steps in https://github.com/hermeznetwork/contracts/blob/feature/fe-tools/scripts/fe-deploymentTest/readme.md
+1. Clone https://github.com/hermeznetwork/integration-testing
+2. `cd integration-testing && make build && make start` (Keep in mind you need to login to Docker. Ask for credentials on Keybase)
 
 ### Setting up Metamask
 
@@ -16,10 +15,18 @@ To set up a local blockchain with the Hermez smart contracts for testing, follow
   2.2 Select Localhost 8545
   2.3 Change the Chain Id to `0x7a69`
 3. Select the Localhost network
-4. Create an account
-5. Select Custom Token tab and introduce this Token Contract Address `0xf784709d2317D872237C4bC22f867d1BAe2913AB`, introduce any token symbol and set the Decimals of Precision to `18`.
-6. Repeat step 6 with the following Token Contact Address `0x3619DbE27d7c1e7E91aA738697Ae7Bc5FC3eACA5`
+4. Import an account with the seed phrase: `explain tackle mirror kit van hammer degree position ginger unfair soup bonus`
+5. Find registered tokens in [http://localhost:8086/tokens](http://localhost:8086/tokens). For each registered token except for the first one (it's ETH):
+  5.1 Select Custom Token tab and introduce the `ethereumAddress` as Token Contract Address. The rest of the fields will auto-populate
 7. Sign into **wallet-ui** using this account.
+
+#### Reset nonce
+
+Everytime you re-run the sandbox, you need to reset your nonce in Metamask. To do so:
+
+1. Click on your account icon
+2. Settings => Advanced
+3. Reset Account
 
 ## Deployment
 

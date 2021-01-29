@@ -14,6 +14,7 @@ import { STEP_NAME } from '../../store/login/login.reducer'
 import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
 import AccountSelectorForm from './components/account-selector/account-selector-form.view'
 import WalletLoader from './components/wallet-loader/wallet-loader.view'
+import CreateAccountAuth from './components/create-account-auth/create-account-auth.view'
 import Button from '../shared/button/button.view'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from '../../store/global/global.reducer'
 import ChainIdError from './components/chain-id-error/chain-id-error.view'
@@ -30,13 +31,16 @@ function Login ({
   currentStep,
   ethereumNetworkTask,
   steps,
-  redirectRoute,
+  accountAuthTask,
+  addAccountAuthTask,
   onChangeHeader,
   onGoToAccountSelectorStep,
   onGoToWalletLoaderStep,
   onGoToErrorStep,
   onGoToPreviousStep,
   onLoadWallet,
+  onLoadCreateAccountAuthorization,
+  onCreateAccountAuthorization,
   onCleanup
 }) {
   const theme = useTheme()
@@ -145,6 +149,17 @@ function Login ({
                   </>
                 )
               }
+              case STEP_NAME.CREATE_ACCOUNT_AUTH: {
+                return (
+                  <CreateAccountAuth
+                    accountAuthTask={accountAuthTask}
+                    addAccountAuthTask={addAccountAuthTask}
+                    steps={steps}
+                    onLoadCreateAccountAuthorization={onLoadCreateAccountAuthorization}
+                    onCreateAccountAuthorization={onCreateAccountAuthorization}
+                  />
+                )
+              }
               case STEP_NAME.ERROR: {
                 switch (stepData.error) {
                   case LOAD_ETHEREUM_NETWORK_ERROR.METAMASK_NOT_INSTALLED: {
@@ -194,7 +209,8 @@ const mapStateToProps = (state) => ({
   currentStep: state.login.currentStep,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
   steps: state.login.steps,
-  redirectRoute: state.global.redirectRoute
+  accountAuthTask: state.login.accountAuthTask,
+  addAccountAuthTask: state.login.addAccountAuthTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -208,6 +224,10 @@ const mapDispatchToProps = (dispatch) => ({
   onGoToPreviousStep: () => dispatch(loginActions.goToPreviousStep()),
   onLoadWallet: (walletName, accountData) =>
     dispatch(loginThunks.fetchWallet(walletName, accountData)),
+  onLoadCreateAccountAuthorization: (hermezEthereumAddress) =>
+    dispatch(loginThunks.loadCreateAccountAuthorization(hermezEthereumAddress)),
+  onCreateAccountAuthorization: (wallet) =>
+    dispatch(loginThunks.postCreateAccountAuthorization(wallet)),
   onCleanup: () =>
     dispatch(loginActions.resetState())
 })

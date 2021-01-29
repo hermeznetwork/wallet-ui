@@ -28,7 +28,8 @@ function TransactionAmount ({
     case TxType.ForceExit: {
       return <p className={classes.root}>- {currencySymbol}{(fiatAmount).toFixed(2)}</p>
     }
-    case TxType.Transfer: {
+    case TxType.Transfer:
+    case TxType.TransferEthAddr: {
       if (fromAccountIndex === accountIndex) {
         return <p className={classes.root}>- {currencySymbol}{(fiatAmount).toFixed(2)}</p>
       } else {

@@ -1,9 +1,23 @@
 import { loginActionTypes } from './login.actions'
+import { ACCOUNT_AUTH_SIGNATURE_KEY } from '../../constants'
+
+function getAccountAuthSignature () {
+  if (!localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY)) {
+    const emptyAccountAuthSignature = {}
+
+    localStorage.setItem(ACCOUNT_AUTH_SIGNATURE_KEY, JSON.stringify(emptyAccountAuthSignature))
+
+    return emptyAccountAuthSignature
+  } else {
+    return JSON.parse(localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY))
+  }
+}
 
 export const STEP_NAME = {
   WALLET_SELECTOR: 'wallet-selector',
   ACCOUNT_SELECTOR: 'account-selector',
   WALLET_LOADER: 'wallet-loader',
+  CREATE_ACCOUNT_AUTH: 'create-account-auth',
   ERROR: 'error'
 }
 
@@ -23,14 +37,29 @@ const initialLoginState = {
         status: 'pending'
       }
     },
+    [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
+      wallet: undefined
+    },
     [STEP_NAME.ERROR]: {
       error: undefined
     }
-  }
+  },
+  accountAuthTask: {
+    status: 'pending'
+  },
+  addAccountAuthTask: {
+    status: 'pending'
+  },
+  accountAuthSignature: getAccountAuthSignature()
 }
 
 function loginReducer (state = initialLoginState, action) {
   switch (action.type) {
+    case loginActionTypes.GO_TO_WALLET_SELECTOR_STEP: {
+      return {
+        ...initialLoginState
+      }
+    }
     case loginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP: {
       return {
         ...state,
@@ -53,6 +82,18 @@ function loginReducer (state = initialLoginState, action) {
             ...state.steps[STEP_NAME.WALLET_LOADER],
             walletName: action.walletName,
             accountData: action.accountData
+          }
+        }
+      }
+    }
+    case loginActionTypes.GO_TO_CREATE_ACCOUNT_AUTH_STEP: {
+      return {
+        ...state,
+        currentStep: STEP_NAME.CREATE_ACCOUNT_AUTH,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
+            wallet: action.wallet
           }
         }
       }
@@ -90,7 +131,7 @@ function loginReducer (state = initialLoginState, action) {
             steps: {
               ...state.steps,
               [STEP_NAME.WALLET_LOADER]:
-                  initialLoginState.steps[STEP_NAME.WALLET_LOADER]
+                initialLoginState.steps[STEP_NAME.WALLET_LOADER]
             }
           }
         }
@@ -113,21 +154,6 @@ function loginReducer (state = initialLoginState, action) {
         }
       }
     }
-    case loginActionTypes.LOAD_WALLET_SUCCESS: {
-      return {
-        ...state,
-        steps: {
-          ...state.steps,
-          [STEP_NAME.WALLET_LOADER]: {
-            ...state.steps[STEP_NAME.WALLET_LOADER],
-            walletTask: {
-              status: 'successful',
-              data: action.wallet
-            }
-          }
-        }
-      }
-    }
     case loginActionTypes.LOAD_WALLET_FAILURE: {
       return {
         ...state,
@@ -140,6 +166,65 @@ function loginReducer (state = initialLoginState, action) {
               error: action.error
             }
           }
+        }
+      }
+    }
+    case loginActionTypes.LOAD_ACCOUNT_AUTH: {
+      return {
+        ...state,
+        accountAuthTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case loginActionTypes.LOAD_ACCOUNT_AUTH_SUCCESS: {
+      return {
+        ...state,
+        accountAuthTask: {
+          status: 'successful'
+        }
+      }
+    }
+    case loginActionTypes.LOAD_ACCOUNT_AUTH_FAILURE: {
+      return {
+        ...state,
+        accountAuthTask: {
+          status: 'failure',
+          error: action.error
+        }
+      }
+    }
+    case loginActionTypes.ADD_ACCOUNT_AUTH: {
+      return {
+        ...state,
+        addAccountAuthTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case loginActionTypes.ADD_ACCOUNT_AUTH_SUCCESS: {
+      return {
+        ...state,
+        addAccountAuthTask: {
+          status: 'successful'
+        }
+      }
+    }
+    case loginActionTypes.ADD_ACCOUNT_AUTH_FAILURE: {
+      return {
+        ...state,
+        addAccountAuthTask: {
+          status: 'failure',
+          error: action.error
+        }
+      }
+    }
+    case loginActionTypes.SET_ACCOUNT_AUTH_SIGNATURE: {
+      return {
+        ...state,
+        accountAuthSignature: {
+          ...state.accountAuthSignature,
+          [action.hermezEthereumAddress]: action.signature
         }
       }
     }
