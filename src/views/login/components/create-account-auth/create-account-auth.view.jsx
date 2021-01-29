@@ -19,7 +19,6 @@ function CreateAccountAuth ({
   }, [onLoadCreateAccountAuthorization, wallet])
 
   React.useEffect(() => {
-    console.log(accountAuthTask.status)
     if (accountAuthTask.status === 'failure') {
       onCreateAccountAuthorization(wallet)
     }

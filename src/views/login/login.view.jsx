@@ -63,7 +63,6 @@ function Login ({
    * @returns {void}
    */
   function handleWalletClick (walletName) {
-    console.log(walletName)
     switch (walletName) {
       case WalletName.METAMASK: {
         return onGoToWalletLoaderStep(walletName)

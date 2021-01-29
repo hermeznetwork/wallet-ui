@@ -57,8 +57,7 @@ function loginReducer (state = initialLoginState, action) {
   switch (action.type) {
     case loginActionTypes.GO_TO_WALLET_SELECTOR_STEP: {
       return {
-        ...state,
-        currentStep: STEP_NAME.WALLET_SELECTOR
+        ...initialLoginState
       }
     }
     case loginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP: {
