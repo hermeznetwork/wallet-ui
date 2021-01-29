@@ -24,12 +24,14 @@ export const WalletName = {
 function Login ({
   currentStep,
   steps,
-  accountAuth,
+  accountAuthTask,
+  addAccountAuthTask,
   onChangeHeader,
   onGoToAccountSelectorStep,
   onGoToWalletLoaderStep,
   onGoToPreviousStep,
   onLoadWallet,
+  onLoadCreateAccountAuthorization,
   onCreateAccountAuthorization,
   onCleanup
 }) {
@@ -125,8 +127,10 @@ function Login ({
               case STEP_NAME.CREATE_ACCOUNT_AUTH: {
                 return (
                   <CreateAccountAuth
-                    accountAuth={accountAuth}
+                    accountAuthTask={accountAuthTask}
+                    addAccountAuthTask={addAccountAuthTask}
                     steps={steps}
+                    onLoadCreateAccountAuthorization={onLoadCreateAccountAuthorization}
                     onCreateAccountAuthorization={onCreateAccountAuthorization}
                   />
                 )
@@ -145,7 +149,8 @@ function Login ({
 const mapStateToProps = (state) => ({
   currentStep: state.login.currentStep,
   steps: state.login.steps,
-  accountAuth: state.login.accountAuth
+  accountAuthTask: state.login.accountAuthTask,
+  addAccountAuthTask: state.login.addAccountAuthTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -158,7 +163,10 @@ const mapDispatchToProps = (dispatch) => ({
   onGoToPreviousStep: () => dispatch(loginActions.goToPreviousStep()),
   onLoadWallet: (walletName, accountData) =>
     dispatch(loginThunks.fetchWallet(walletName, accountData)),
-  onCreateAccountAuthorization: (wallet) => dispatch(loginThunks.postCreateAccountAuthorization(wallet)),
+  onLoadCreateAccountAuthorization: (hermezEthereumAddress) =>
+    dispatch(loginThunks.loadCreateAccountAuthorization(hermezEthereumAddress)),
+  onCreateAccountAuthorization: (wallet) =>
+    dispatch(loginThunks.postCreateAccountAuthorization(wallet)),
   onCleanup: () =>
     dispatch(loginActions.resetState())
 })

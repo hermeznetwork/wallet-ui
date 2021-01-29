@@ -50,8 +50,13 @@ function AccountDetails ({
   React.useEffect(() => {
     onLoadAccount(accountIndex)
     onLoadPoolTransactions(accountIndex)
-    onLoadExits()
-  }, [accountIndex, onLoadAccount, onLoadPoolTransactions, onLoadExits])
+  }, [accountIndex, onLoadAccount, onLoadPoolTransactions])
+
+  React.useEffect(() => {
+    if (accountTask.status === 'successful') {
+      onLoadExits(accountTask.data.token.id)
+    }
+  }, [onLoadExits, accountTask])
 
   React.useEffect(() => {
     if (exitsTask.status === 'successful') {
@@ -287,8 +292,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(accountDetailsThunks.fetchPoolTransactions(accountIndex)),
   onLoadHistoryTransactions: (accountIndex, fromItem) =>
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem)),
-  onLoadExits: (exitTransactions) =>
-    dispatch(accountDetailsThunks.fetchExits(exitTransactions)),
+  onLoadExits: (tokenId) =>
+    dispatch(accountDetailsThunks.fetchExits(tokenId)),
   onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
     dispatch(addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>

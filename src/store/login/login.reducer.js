@@ -1,17 +1,5 @@
 import { loginActionTypes } from './login.actions'
-import { ACCOUNT_AUTH_KEY, ACCOUNT_AUTH_SIGNATURE_KEY } from '../../constants'
-
-function getInitialAccountAuth () {
-  if (!localStorage.getItem(ACCOUNT_AUTH_KEY)) {
-    const emptyAccountAuth = {}
-
-    localStorage.setItem(ACCOUNT_AUTH_KEY, JSON.stringify(emptyAccountAuth))
-
-    return emptyAccountAuth
-  } else {
-    return JSON.parse(localStorage.getItem(ACCOUNT_AUTH_KEY))
-  }
-}
+import { ACCOUNT_AUTH_SIGNATURE_KEY } from '../../constants'
 
 function getAccountAuthSignature () {
   if (!localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY)) {
@@ -49,12 +37,23 @@ const initialLoginState = {
       wallet: undefined
     }
   },
-  accountAuth: getInitialAccountAuth(),
+  accountAuthTask: {
+    status: 'pending'
+  },
+  addAccountAuthTask: {
+    status: 'pending'
+  },
   accountAuthSignature: getAccountAuthSignature()
 }
 
 function loginReducer (state = initialLoginState, action) {
   switch (action.type) {
+    case loginActionTypes.GO_TO_WALLET_SELECTOR_STEP: {
+      return {
+        ...state,
+        currentStep: STEP_NAME.WALLET_SELECTOR
+      }
+    }
     case loginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP: {
       return {
         ...state,
@@ -114,7 +113,7 @@ function loginReducer (state = initialLoginState, action) {
             steps: {
               ...state.steps,
               [STEP_NAME.WALLET_LOADER]:
-                  initialLoginState.steps[STEP_NAME.WALLET_LOADER]
+                initialLoginState.steps[STEP_NAME.WALLET_LOADER]
             }
           }
         }
@@ -152,17 +151,53 @@ function loginReducer (state = initialLoginState, action) {
         }
       }
     }
-    case loginActionTypes.ADD_ACCOUNT_AUTH: {
-      const currentAccountAuth = state.accountAuth[action.hermezEthereumAddress]
-
+    case loginActionTypes.LOAD_ACCOUNT_AUTH: {
       return {
         ...state,
-        accountAuth: {
-          ...state.accountAuth,
-          [action.hermezEthereumAddress]: {
-            ...currentAccountAuth,
-            [action.coordinatorUrl]: true
-          }
+        accountAuthTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case loginActionTypes.LOAD_ACCOUNT_AUTH_SUCCESS: {
+      return {
+        ...state,
+        accountAuthTask: {
+          status: 'successful'
+        }
+      }
+    }
+    case loginActionTypes.LOAD_ACCOUNT_AUTH_FAILURE: {
+      return {
+        ...state,
+        accountAuthTask: {
+          status: 'error',
+          error: action.error
+        }
+      }
+    }
+    case loginActionTypes.ADD_ACCOUNT_AUTH: {
+      return {
+        ...state,
+        addAccountAuthTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case loginActionTypes.ADD_ACCOUNT_AUTH_SUCCESS: {
+      return {
+        ...state,
+        addAccountAuthTask: {
+          status: 'successful'
+        }
+      }
+    }
+    case loginActionTypes.ADD_ACCOUNT_AUTH_FAILURE: {
+      return {
+        ...state,
+        addAccountAuthTask: {
+          status: 'error',
+          error: action.error
         }
       }
     }

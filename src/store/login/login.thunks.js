@@ -4,7 +4,7 @@ import { push } from 'connected-react-router'
 
 import * as globalActions from '../global/global.actions'
 import * as loginActions from './login.actions'
-import { AUTH_MESSAGE, ACCOUNT_AUTH_KEY, ACCOUNT_AUTH_SIGNATURE_KEY, TREZOR_MANIFEST_MAIL } from '../../constants'
+import { AUTH_MESSAGE, ACCOUNT_AUTH_SIGNATURE_KEY, TREZOR_MANIFEST_MAIL } from '../../constants'
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
@@ -98,6 +98,28 @@ function fetchWallet (walletName, accountData) {
 }
 
 /**
+ * Checks whether current Hermez account has performed a create account authorization
+ * with current Coordinator
+ * @param {String} hermezEthereumAddress - Hermez Ethereum address to check
+ */
+function loadCreateAccountAuthorization (hermezEthereumAddress) {
+  return (dispatch, getState) => {
+    dispatch(loginActions.loadAccountAuth)
+
+    const { global: { redirectRoute } } = getState()
+
+    return hermez.CoordinatorAPI.getCreateAccountAuthorization(hermezEthereumAddress)
+      .then(() => {
+        dispatch(loginActions.loadAccountAuthSuccess())
+        dispatch(push(redirectRoute))
+      })
+      .catch(err => {
+        dispatch(loginActions.loadAccountAuthFailure(err))
+      })
+  }
+}
+
+/**
  * Sends a create account authorization request if it hasn't been done
  * for the current coordinator
  */
@@ -105,43 +127,29 @@ function postCreateAccountAuthorization (wallet) {
   return (dispatch, getState) => {
     const { login: { accountAuthSignature }, global: { redirectRoute } } = getState()
 
-    const accountAuth = JSON.parse(localStorage.getItem(ACCOUNT_AUTH_KEY))
-    const currentAccountAuth = accountAuth[wallet.hermezEthereumAddress]
+    const currentSignature = accountAuthSignature[wallet.hermezEthereumAddress]
+    const getSignature = currentSignature
+      ? () => Promise.resolve(currentSignature)
+      : wallet.signCreateAccountAuthorization.bind(wallet)
 
-    const apiUrl = hermez.CoordinatorAPI.getBaseApiUrl()
+    getSignature()
+      .then((signature) => {
+        setAccountAuthSignature(wallet.hermezEthereumAddress, signature)
 
-    if (!currentAccountAuth || !currentAccountAuth[apiUrl]) {
-      const currentSignature = accountAuthSignature[wallet.hermezEthereumAddress]
-      const getSignature = currentSignature
-        ? () => Promise.resolve(currentSignature)
-        : wallet.signCreateAccountAuthorization.bind(wallet)
-
-      getSignature()
-        .then((signature) => {
-          setAccountAuthSignature(wallet.hermezEthereumAddress, signature)
-
-          return hermez.CoordinatorAPI.postCreateAccountAuthorization(
-            wallet.hermezEthereumAddress,
-            wallet.publicKeyBase64,
-            signature
-          )
-        })
-        .then(() => {
-          const newAccountAuth = {
-            ...accountAuth,
-            [wallet.hermezEthereumAddress]: {
-              ...currentAccountAuth,
-              [apiUrl]: true
-            }
-          }
-          localStorage.setItem(ACCOUNT_AUTH_KEY, JSON.stringify(newAccountAuth))
-          dispatch(loginActions.addAccountAuth(wallet.hermezEthereumAddress, apiUrl))
-          dispatch(push(redirectRoute))
-        })
-        .catch(console.log)
-    } else {
-      dispatch(push(redirectRoute))
-    }
+        return hermez.CoordinatorAPI.postCreateAccountAuthorization(
+          wallet.hermezEthereumAddress,
+          wallet.publicKeyBase64,
+          signature
+        )
+      })
+      .then(() => {
+        dispatch(loginActions.addAccountAuthSuccess())
+        dispatch(push(redirectRoute))
+      })
+      .catch(err => {
+        dispatch(loginActions.addAccountAuthFailure(err))
+        dispatch(loginActions.goToWalletSelectorStep())
+      })
   }
 }
 
@@ -164,6 +172,7 @@ function setAccountAuthSignature (hermezEthereumAddress, signature) {
 
 export {
   fetchWallet,
+  loadCreateAccountAuthorization,
   postCreateAccountAuthorization,
   setAccountAuthSignature
 }

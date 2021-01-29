@@ -90,15 +90,16 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
 
 /**
  * Fetches the exit data for transactions of type Exit that are still pending a withdraw
+ * @param {Number} tokenId - The token ID for the current account
  * @returns {void}
  */
-function fetchExits () {
+function fetchExits (tokenId) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadExits())
 
     const { global: { wallet } } = getState()
 
-    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
+    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
       .then(exits => dispatch(accountDetailsActionTypes.loadExitsSuccess(exits)))
       .catch(err => dispatch(accountDetailsActionTypes.loadExitsFailure(err)))
   }
