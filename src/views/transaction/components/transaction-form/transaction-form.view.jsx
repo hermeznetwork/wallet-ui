@@ -137,6 +137,17 @@ function TransactionForm ({
     }
   }
 
+  function getAmountInputValue () {
+    if (!amount) {
+      return ''
+    }
+    if (showInFiat) {
+      return amount.toFixed(2)
+    } else {
+      return amount
+    }
+  }
+
   /**
    * When the amount changes, check if the Continue button should be enabled or not.
    * Checks if the user has the selected amount in their balance
@@ -164,7 +175,7 @@ function TransactionForm ({
     if (showInFiat) {
       const maxAmount = getAmountInFiat(account.balance)
       const fee = getAmountInFiat(getFee(feesTask.data))
-      const newAmount = (maxAmount - fee).toFixed(2)
+      const newAmount = maxAmount - fee
 
       setAmount(newAmount)
     } else {
@@ -185,13 +196,9 @@ function TransactionForm ({
    */
   function handleChangeCurrencyButtonClick () {
     if (showInFiat) {
-      const newAmount = amount / getAccountFiatRate()
-
-      setAmount(getFixedTokenAmount(newAmount), account.token.decimals)
+      setAmount(amount / getAccountFiatRate())
     } else {
-      const newAmount = amount * getAccountFiatRate()
-
-      setAmount(newAmount)
+      setAmount(amount * getAccountFiatRate())
     }
     setShowInFiat(!showInFiat)
   }
@@ -264,7 +271,7 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleContinueButton (fees) {
-    const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
+    const selectedAmount = showInFiat ? (amount / getAccountFiatRate()) : amount
     const transactionAmount = getTokenAmountBigInt(selectedAmount.toString(), account.token.decimals).toString()
 
     switch (transactionType) {
@@ -397,7 +404,7 @@ function TransactionForm ({
                           <input
                             ref={amountInput}
                             className={classes.amountInput}
-                            value={amount || ''}
+                            value={getAmountInputValue()}
                             placeholder='0.00'
                             type='number'
                             onChange={handleAmountInputChange}
