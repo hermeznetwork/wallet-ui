@@ -36,17 +36,17 @@ function TransactionForm ({
   const [isAmountLessThanFunds, setIsAmountLessThanFunds] = React.useState(undefined)
   const [isAmountPositive, setIsAmountPositive] = React.useState(undefined)
   const [isReceiverValid, setIsReceiverValid] = React.useState(undefined)
-  const amountInput = React.useRef()
+  const amountInput = React.useRef(undefined)
 
   React.useEffect(() => {
     onLoadFees()
   }, [onLoadFees])
 
   React.useEffect(() => {
-    if (amountInput.current) {
+    if (feesTask.status === 'successful' && amountInput.current) {
       amountInput.current.focus()
     }
-  }, [amountInput])
+  }, [feesTask])
 
   React.useEffect(() => {
     if (receiverAddress) {
