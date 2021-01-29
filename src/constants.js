@@ -19,7 +19,7 @@ export const AUTH_MESSAGE = 'HERMEZ_ACCOUNT. Don\'t share this signature with an
 
 export const ETHER_TOKEN_ID = 0
 
-export const MAX_DECIMALS_UNTIL_ZERO_AMOUNT = 6
+export const MAX_TOKEN_DECIMALS = 6
 
 export const PENDING_WITHDRAWS_KEY = 'pendingWithdraws'
 
