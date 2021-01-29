@@ -19,7 +19,7 @@ function TransactionType ({ type, fromAccountIndex, accountIndex }) {
         return depositedIcon
       }
       case TxType.Transfer:
-      case TxType.TransferEthAddr: {
+      case TxType.TransferToEthAddr: {
         if (fromAccountIndex === accountIndex) {
           return sentIcon
         } else {
