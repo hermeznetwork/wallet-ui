@@ -31,7 +31,7 @@ function TransactionForm ({
   const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false)
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false)
   const [showInFiat, setShowInFiat] = useState(false)
-  const [amount, setAmount] = useState(undefined)
+  const [amount, setAmount] = useState()
   const [receiver, setReceiver] = useState('')
   const [isAmountLessThanFunds, setIsAmountLessThanFunds] = React.useState(undefined)
   const [isAmountPositive, setIsAmountPositive] = React.useState(undefined)
@@ -107,7 +107,7 @@ function TransactionForm ({
       return 0
     }
 
-    const fee = createAccount ? fees.createAccount : fees.existingAccount
+    const fee = createAccount ? fees.CreateAccount : fees.ExistingAccount
 
     return fee / account.token.USD
   }
@@ -187,9 +187,9 @@ function TransactionForm ({
     if (showInFiat) {
       const newAmount = amount / getAccountFiatRate()
 
-      setAmount(newAmount)
+      setAmount(getFixedTokenAmount(newAmount), account.token.decimals)
     } else {
-      const newAmount = (amount * getAccountFiatRate())
+      const newAmount = amount * getAccountFiatRate()
 
       setAmount(newAmount)
     }
