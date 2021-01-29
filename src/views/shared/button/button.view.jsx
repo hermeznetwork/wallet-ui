@@ -6,13 +6,16 @@ import useButtonStyles from './button.styles'
 
 function Button ({ Icon, text, className, disabled, onClick }) {
   const classes = useButtonStyles({ rounded: !text })
+  const isClickable = onClick !== undefined
+  const Component = isClickable ? 'button' : 'div'
 
   return (
-    <button
+    <Component
       onClick={onClick}
       disabled={disabled}
       className={clsx({
         [classes.root]: true,
+        [classes.button]: isClickable,
         [className]: className
       })}
     >
@@ -22,14 +25,14 @@ function Button ({ Icon, text, className, disabled, onClick }) {
           {text}
         </p>
       )}
-    </button>
+    </Component>
   )
 }
 
 Button.propTypes = {
   Icon: PropTypes.element,
   text: PropTypes.string,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func
 }
 
 export default Button

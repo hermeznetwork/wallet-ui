@@ -2,8 +2,59 @@ import hermezjs from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
 
 import * as globalActions from './global.actions'
+import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
 import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
+
+/**
+ * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
+ * a known environment and if not will use the one provided in the .env file
+ */
+function setHermezEnvironment () {
+  return async (dispatch) => {
+    dispatch(globalActions.loadEthereumNetwork())
+    hermezjs.TxPool.initializeTransactionPool()
+
+    if (!window.ethereum) {
+      return dispatch(globalActions.loadEthereumNetworkFailure(LOAD_ETHEREUM_NETWORK_ERROR.METAMASK_NOT_INSTALLED))
+    }
+
+    hermezjs.Providers.getProvider().getNetwork()
+      .then(({ chainId, name }) => {
+        if (process.env.REACT_APP_ENV === 'production' && !hermezjs.Environment.isEnvironmentSupported(chainId)) {
+          return dispatch(
+            globalActions.loadEthereumNetworkFailure(LOAD_ETHEREUM_NETWORK_ERROR.CHAIN_ID_NOT_SUPPORTED)
+          )
+        }
+
+        if (hermezjs.Environment.isEnvironmentSupported(chainId)) {
+          hermezjs.Environment.setEnvironment(chainId)
+        }
+
+        if (process.env.REACT_APP_ENV === 'development') {
+          hermezjs.Environment.setEnvironment({
+            baseApiUrl: process.env.REACT_APP_HERMEZ_API_URL,
+            contractAddresses: {
+              [hermezjs.Constants.ContractNames.Hermez]:
+                  process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
+              [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
+                  process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
+            },
+            batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL
+          })
+        }
+
+        if (chainId === 1) {
+          dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: 'mainnet' }))
+        } else if (chainId === 1337) {
+          dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: 'local' }))
+        } else {
+          dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name }))
+        }
+      })
+      .catch((error) => globalActions.loadEthereumNetworkFailure(error.message))
+  }
+}
 
 /**
  * Changes the route to which the user is going to be redirected to after a successful
@@ -166,14 +217,25 @@ function fetchCoordinatorState () {
  * Removes the MetaMask wallet data from the Redux store and the localStorage
  * @returns {void}
  */
-function disconnectMetaMaskWallet () {
+function disconnectWallet () {
   return (dispatch) => {
     dispatch(globalActions.unloadWallet())
     dispatch(push('/login'))
   }
 }
 
+/**
+ * Reloads the webapp
+ * @returns {void}
+ */
+function reloadApp () {
+  return (dispatch) => {
+    window.location.reload()
+  }
+}
+
 export {
+  setHermezEnvironment,
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,
@@ -182,5 +244,6 @@ export {
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
   fetchCoordinatorState,
-  disconnectMetaMaskWallet
+  disconnectWallet,
+  reloadApp
 }

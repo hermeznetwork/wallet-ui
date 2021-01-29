@@ -19,34 +19,31 @@ function CreateAccountAuth ({
   }, [onLoadCreateAccountAuthorization, wallet])
 
   React.useEffect(() => {
+    console.log(accountAuthTask.status)
     if (accountAuthTask.status === 'failure') {
       onCreateAccountAuthorization(wallet)
     }
   }, [onCreateAccountAuthorization, accountAuthTask, wallet])
 
-  return (
-    () => {
-      if (accountAuthTask.status === 'failure') {
-        switch (addAccountAuthTask.status) {
-          case 'pending':
-          case 'loading':
-            return (
-              <div className={classes.accountAuth}>
-                <h2 className={classes.accountAuthTitle}>Create accounts for new tokens</h2>
-                <p className={classes.accountAuthText}>Confirm with your signature that Hermez will automatically create accounts for your new tokens.</p>
-                <Spinner />
-              </div>
-            )
-          default:
-            return <></>
-        }
-      } else if (accountAuthTask.status === 'successful') {
+  if (accountAuthTask.status === 'failure') {
+    switch (addAccountAuthTask.status) {
+      case 'pending':
+      case 'loading':
+        return (
+          <div className={classes.accountAuth}>
+            <h2 className={classes.accountAuthTitle}>Create accounts for new tokens</h2>
+            <p className={classes.accountAuthText}>Confirm with your signature that Hermez will automatically create accounts for your new tokens.</p>
+            <Spinner />
+          </div>
+        )
+      default:
         return <></>
-      } else {
-        return <Spinner />
-      }
     }
-  )
+  } else if (accountAuthTask.status === 'successful') {
+    return <></>
+  } else {
+    return <Spinner />
+  }
 }
 
 export default CreateAccountAuth

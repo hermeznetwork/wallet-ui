@@ -4,18 +4,19 @@ import useWalletButtonStyles from './wallet-button-logo.styles'
 import { ReactComponent as MetaMaskLogo } from '../../../../images/wallet-logos/metamask.svg'
 import { ReactComponent as LedgerLogo } from '../../../../images/wallet-logos/ledger.svg'
 import { ReactComponent as TrezorLogo } from '../../../../images/wallet-logos/trezor.svg'
+import { WalletName } from '../../login.view'
 
 function WalletButtonLogo ({ walletName }) {
   const classes = useWalletButtonStyles()
 
   switch (walletName) {
-    case 'metaMask': {
+    case WalletName.METAMASK: {
       return <MetaMaskLogo className={classes.root} />
     }
-    case 'ledger': {
+    case WalletName.LEDGER: {
       return <LedgerLogo className={classes.root} />
     }
-    case 'trezor': {
+    case WalletName.TREZOR: {
       return <TrezorLogo className={classes.root} />
     }
     default: {

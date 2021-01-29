@@ -114,6 +114,7 @@ function loadCreateAccountAuthorization (hermezEthereumAddress) {
         dispatch(push(redirectRoute))
       })
       .catch(err => {
+        console.log(err)
         dispatch(loginActions.loadAccountAuthFailure(err))
       })
   }

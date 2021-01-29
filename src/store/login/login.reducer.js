@@ -17,11 +17,15 @@ export const STEP_NAME = {
   WALLET_SELECTOR: 'wallet-selector',
   ACCOUNT_SELECTOR: 'account-selector',
   WALLET_LOADER: 'wallet-loader',
-  CREATE_ACCOUNT_AUTH: 'create-account-auth'
+  CREATE_ACCOUNT_AUTH: 'create-account-auth',
+  ERROR: 'error'
 }
 
 const initialLoginState = {
   currentStep: STEP_NAME.WALLET_SELECTOR,
+  networkNameTask: {
+    status: 'pending'
+  },
   steps: {
     [STEP_NAME.ACCOUNT_SELECTOR]: {
       walletName: undefined
@@ -35,6 +39,9 @@ const initialLoginState = {
     },
     [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
       wallet: undefined
+    },
+    [STEP_NAME.ERROR]: {
+      error: undefined
     }
   },
   accountAuthTask: {
@@ -88,6 +95,18 @@ function loginReducer (state = initialLoginState, action) {
           ...state.steps,
           [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
             wallet: action.wallet
+          }
+        }
+      }
+    }
+    case loginActionTypes.GO_TO_ERROR_STEP: {
+      return {
+        ...state,
+        currentStep: STEP_NAME.ERROR,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.ERROR]: {
+            error: action.error
           }
         }
       }
@@ -171,7 +190,7 @@ function loginReducer (state = initialLoginState, action) {
       return {
         ...state,
         accountAuthTask: {
-          status: 'error',
+          status: 'failure',
           error: action.error
         }
       }
@@ -196,7 +215,7 @@ function loginReducer (state = initialLoginState, action) {
       return {
         ...state,
         addAccountAuthTask: {
-          status: 'error',
+          status: 'failure',
           error: action.error
         }
       }
@@ -207,6 +226,32 @@ function loginReducer (state = initialLoginState, action) {
         accountAuthSignature: {
           ...state.accountAuthSignature,
           [action.hermezEthereumAddress]: action.signature
+        }
+      }
+    }
+    case loginActionTypes.LOAD_NETWORK_NAME: {
+      return {
+        ...state,
+        networkNameTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case loginActionTypes.LOAD_NETWORK_NAME_SUCCESS: {
+      return {
+        ...state,
+        networkNameTask: {
+          status: 'successful',
+          data: action.networkName
+        }
+      }
+    }
+    case loginActionTypes.LOAD_NETWORK_NAME_FAILURE: {
+      return {
+        ...state,
+        networkNameTask: {
+          status: 'failure',
+          error: action.error
         }
       }
     }

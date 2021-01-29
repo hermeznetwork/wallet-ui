@@ -28,3 +28,7 @@ export const PENDING_DELAYED_WITHDRAWS_KEY = 'pendingDelayedWithdraws'
 export const ACCOUNT_AUTH_SIGNATURE_KEY = 'accountAuthSignature'
 
 export const TREZOR_MANIFEST_MAIL = 'hello@hermez.io'
+
+export const PRIVACY_POLICY_URL = 'https://hermez.io/privacy-policy'
+
+export const TERMS_OF_SERVICE_URL = 'https://hermez.io/terms-of-service'

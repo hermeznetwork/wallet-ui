@@ -1,6 +1,11 @@
 import { globalActionTypes } from './global.actions'
 import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
 
+export const LOAD_ETHEREUM_NETWORK_ERROR = {
+  METAMASK_NOT_INSTALLED: 'metamask-not-installed',
+  CHAIN_ID_NOT_SUPPORTED: 'chain-id-not-supported'
+}
+
 function getInitialPendingWithdraws () {
   if (!localStorage.getItem(PENDING_WITHDRAWS_KEY)) {
     const emptyPendingWithdraws = {}
@@ -26,6 +31,9 @@ function getInitialPendingDelayedWithdraws () {
 }
 
 const initialGlobalState = {
+  ethereumNetworkTask: {
+    status: 'pending'
+  },
   wallet: undefined,
   signer: undefined,
   header: {
@@ -48,6 +56,32 @@ const initialGlobalState = {
 
 function globalReducer (state = initialGlobalState, action) {
   switch (action.type) {
+    case globalActionTypes.LOAD_ETHEREUM_NETWORK: {
+      return {
+        ...state,
+        ethereumNetworkTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case globalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS: {
+      return {
+        ...state,
+        ethereumNetworkTask: {
+          status: 'successful',
+          data: action.ethereumNetwork
+        }
+      }
+    }
+    case globalActionTypes.LOAD_ETHEREUM_NETWORK_FAILURE: {
+      return {
+        ...state,
+        ethereumNetworkTask: {
+          status: 'failure',
+          error: action.error
+        }
+      }
+    }
     case globalActionTypes.LOAD_WALLET:
       return {
         ...state,
