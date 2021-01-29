@@ -2,7 +2,7 @@ import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
 import * as accountDetailsActionTypes from './account-details.actions'
-import { removePendingWithdraw } from '../global/global.thunks'
+import { removePendingWithdraw, removePendingDelayedWithdraw } from '../global/global.thunks'
 
 /**
  * Fetches the account details for the specified account index
@@ -67,8 +67,11 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
               exit.accountIndex === transaction.fromAccountIndex
             )
             if (exitTx) {
-              if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
+              if (exitTx.instantWithdraw) {
                 removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
+                return true
+              } else if (exitTx.delayedWithdraw) {
+                removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
                 return true
               } else {
                 return false

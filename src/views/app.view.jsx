@@ -34,11 +34,11 @@ function App ({
     onLoadFiatExchangeRates()
   }, [onLoadFiatExchangeRates])
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     onLoadCoordinatorState()
   }, [onLoadCoordinatorState])
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (coordinatorStateTask.status === 'successful') {
       const forgers = coordinatorStateTask.data.network.nextForgers
       if (forgers && forgers.length > 0) {
@@ -65,6 +65,7 @@ function App ({
   }, [onDisconnectAccount, onReloadApp])
 
   if (
+    coordinatorStateTask.status !== 'successful' ||
     fiatExchangeRatesTask.status !== 'successful' ||
     ethereumNetworkTask.status === 'pending' ||
     ethereumNetworkTask.status === 'loading'

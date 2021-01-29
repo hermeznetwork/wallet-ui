@@ -212,14 +212,6 @@ function Home ({
                   </InfiniteScroll>
                 )
               }
-              case 'failed': {
-                return (
-                  <p className={classes.emptyAccounts}>
-                    <span>Deposit tokens from your</span>
-                    <span>Ethereum account</span>
-                  </p>
-                )
-              }
               default: {
                 return <></>
               }
