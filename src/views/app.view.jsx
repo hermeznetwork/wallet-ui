@@ -3,6 +3,7 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
+import hermez from '@hermeznetwork/hermezjs'
 
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
@@ -14,11 +15,12 @@ import { CurrencySymbol } from '../utils/currencies'
 function App ({
   ethereumNetworkTask,
   fiatExchangeRatesTask,
-  onSetHermezEnvironment,
+  coordinatorStateTask,
   onLoadFiatExchangeRates,
   onChangeNetworkStatus,
-  onOpenSnackbar,
   onDisconnectAccount,
+  onLoadCoordinatorState,
+  onSetHermezEnvironment,
   onReloadApp
 }) {
   const theme = useTheme()
@@ -31,6 +33,19 @@ function App ({
   React.useEffect(() => {
     onLoadFiatExchangeRates()
   }, [onLoadFiatExchangeRates])
+
+  React.useEffect(() => {
+    onLoadCoordinatorState()
+  }, [onLoadCoordinatorState])
+
+  React.useEffect(() => {
+    if (coordinatorStateTask.status === 'successful') {
+      const forgers = coordinatorStateTask.data.network.nextForgers
+      if (forgers && forgers.length > 0) {
+        hermez.CoordinatorAPI.setBaseApiUrl(forgers[0].coordinator.URL)
+      }
+    }
+  }, [coordinatorStateTask])
 
   React.useEffect(() => {
     window.addEventListener('online', () => {
@@ -50,6 +65,7 @@ function App ({
   }, [onDisconnectAccount, onReloadApp])
 
   if (
+    coordinatorStateTask.status !== 'successful' ||
     fiatExchangeRatesTask.status !== 'successful' ||
     ethereumNetworkTask.status === 'pending' ||
     ethereumNetworkTask.status === 'loading'
@@ -83,8 +99,9 @@ App.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-  ethereumNetworkTask: state.global.ethereumNetworkTask,
-  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
+  coordinatorStateTask: state.global.coordinatorStateTask,
+  ethereumNetworkTask: state.global.ethereumNetworkTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -100,6 +117,7 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeNetworkStatus: (networkStatus, backgroundColor) =>
     dispatch(globalThunks.changeNetworkStatus(networkStatus, backgroundColor)),
   onDisconnectAccount: () => dispatch(globalThunks.disconnectWallet()),
+  onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onReloadApp: () => dispatch(globalThunks.reloadApp())
 })
 

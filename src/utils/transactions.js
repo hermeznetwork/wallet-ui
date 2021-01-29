@@ -8,7 +8,7 @@ function getTransactionAmount (transaction) {
   if (!transaction.L1Info) {
     return transaction.amount
   } else {
-    if (transaction.type === TxType.Deposit) {
+    if (transaction.type === TxType.Deposit || transaction.type === TxType.CreateAccountDeposit) {
       return transaction.L1Info.depositAmountSuccess
         ? transaction.L1Info.depositAmount
         : '0'

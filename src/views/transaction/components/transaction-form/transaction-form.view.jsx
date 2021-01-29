@@ -97,14 +97,18 @@ function TransactionForm ({
    * Calculates the fee for the transaction.
    * It takes the appropriate recomended fee in USD from the coordinator
    * and converts it to token value.
+   * @param {Object} fees - The recommended Fee object feturned by the Coordinator
+   * @param {Boolean} createAccount - Whether it's a createAccount transfer
    * @returns {number} - Transaction fee
    */
-  function getFee (fees) {
+  function getFee (fees, createAccount) {
     if (account.token.USD === 0) {
       return 0
     }
 
-    return fees.ExistingAccount / account.token.USD
+    const fee = createAccount ? fees.createAccount : fees.existingAccount
+
+    return fee / account.token.USD
   }
 
   /**
@@ -246,30 +250,24 @@ function TransactionForm ({
   function handleContinueButton (fees) {
     const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
     const transactionAmount = getTokenAmountBigInt(selectedAmount.toString(), account.token.decimals).toString()
-    const transactionFee =
-      transactionType === TransactionType.Deposit || transactionType === TransactionType.ForceExit
-        ? undefined
-        : getTokenAmountBigInt(getFee(fees).toFixed(account.token.decimals), account.token.decimals).toString()
 
     switch (transactionType) {
       case TransactionType.Transfer: {
         return getAccounts(receiver, [account.token.id])
           .then((res) => {
             const receiverAccount = res.accounts[0]
+            const transactionFee = getTokenAmountBigInt(getFee(fees, !receiverAccount).toFixed(account.token.decimals), account.token.decimals).toString()
 
-            if (receiverAccount) {
-              onSubmit({
-                amount: transactionAmount,
-                to: receiverAccount,
-                fee: transactionFee
-              })
-            } else {
-              setIsReceiverValid(false)
-            }
+            onSubmit({
+              amount: transactionAmount,
+              to: receiverAccount || { hezEthereumAddress: receiver },
+              fee: transactionFee
+            })
           })
           .catch(() => setIsReceiverValid(false))
       }
       default: {
+        const transactionFee = getTokenAmountBigInt(getFee(fees).toFixed(account.token.decimals), account.token.decimals).toString()
         return onSubmit({
           amount: transactionAmount,
           to: {},

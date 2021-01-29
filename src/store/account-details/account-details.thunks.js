@@ -2,7 +2,7 @@ import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
 import * as accountDetailsActionTypes from './account-details.actions'
-import { removePendingWithdraw } from '../global/global.thunks'
+import { removePendingWithdraw, removePendingDelayedWithdraw } from '../global/global.thunks'
 
 /**
  * Fetches the account details for the specified account index
@@ -68,7 +68,10 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
             )
             if (exitTx) {
               if (exitTx.instantWithdraw) {
-                removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.root)
+                removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
+                return true
+              } else if (exitTx.delayedWithdraw) {
+                removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
                 return true
               } else {
                 return false
@@ -90,15 +93,16 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
 
 /**
  * Fetches the exit data for transactions of type Exit that are still pending a withdraw
+ * @param {Number} tokenId - The token ID for the current account
  * @returns {void}
  */
-function fetchExits () {
+function fetchExits (tokenId) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadExits())
 
     const { global: { wallet } } = getState()
 
-    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
+    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
       .then(exits => dispatch(accountDetailsActionTypes.loadExitsSuccess(exits)))
       .catch(err => dispatch(accountDetailsActionTypes.loadExitsFailure(err)))
   }
