@@ -113,10 +113,7 @@ function loadCreateAccountAuthorization (hermezEthereumAddress) {
         dispatch(loginActions.loadAccountAuthSuccess())
         dispatch(push(redirectRoute))
       })
-      .catch(err => {
-        console.log(err)
-        dispatch(loginActions.loadAccountAuthFailure(err))
-      })
+      .catch(error => dispatch(loginActions.loadAccountAuthFailure(error)))
   }
 }
 
@@ -147,8 +144,9 @@ function postCreateAccountAuthorization (wallet) {
         dispatch(loginActions.addAccountAuthSuccess())
         dispatch(push(redirectRoute))
       })
-      .catch(err => {
-        dispatch(loginActions.addAccountAuthFailure(err))
+      .catch((error) => {
+        dispatch(loginActions.addAccountAuthFailure(error))
+        dispatch(globalActions.openSnackbar(error.message))
         dispatch(loginActions.goToWalletSelectorStep())
       })
   }
