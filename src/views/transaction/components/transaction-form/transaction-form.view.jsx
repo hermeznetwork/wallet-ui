@@ -138,7 +138,7 @@ function TransactionForm ({
   }
 
   function getAmountInputValue () {
-    if (!amount) {
+    if (amount === undefined) {
       return ''
     }
     if (showInFiat) {
@@ -157,12 +157,18 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleAmountInputChange (event) {
-    const newAmount = Number(event.target.value)
-    const newAmountInToken = (showInFiat) ? (newAmount / getAccountFiatRate()) : newAmount
+    if (event.target.value === '') {
+      setIsAmountPositive(undefined)
+      setIsAmountLessThanFunds(undefined)
+      setAmount(undefined)
+    } else {
+      const newAmount = Number(event.target.value)
+      const newAmountInToken = showInFiat ? (newAmount / getAccountFiatRate()) : newAmount
 
-    setIsAmountLessThanFunds(newAmountInToken <= getAccountBalance())
-    setIsAmountPositive(event.target.value === '' ? undefined : newAmountInToken > 0)
-    setAmount(event.target.value)
+      setIsAmountLessThanFunds(newAmountInToken <= getAccountBalance())
+      setIsAmountPositive(newAmountInToken > 0)
+      setAmount(newAmount)
+    }
   }
 
   /**
