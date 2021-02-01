@@ -21,7 +21,7 @@ function TransactionLabel ({ type, fromAccountIndex, accountIndex }) {
         return 'Withdrawn'
       }
       case TxType.Transfer:
-      case TxType.TransferEthAddr: {
+      case TxType.TransferToEthAddr: {
         if (fromAccountIndex === accountIndex) {
           return 'Sent'
         } else {

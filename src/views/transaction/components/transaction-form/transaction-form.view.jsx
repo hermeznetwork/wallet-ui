@@ -107,7 +107,7 @@ function TransactionForm ({
       return 0
     }
 
-    const fee = createAccount ? fees.CreateAccount : fees.ExistingAccount
+    const fee = createAccount ? fees.CreatesAccount : fees.ExistingAccount
 
     return fee / account.token.USD
   }
@@ -293,7 +293,6 @@ function TransactionForm ({
               fee: transactionFee
             })
           })
-          .catch(() => setIsReceiverValid(false))
       }
       default: {
         const transactionFee = getTokenAmountBigInt(getFee(fees).toFixed(account.token.decimals), account.token.decimals).toString()

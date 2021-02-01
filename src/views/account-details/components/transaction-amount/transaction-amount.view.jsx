@@ -29,7 +29,7 @@ function TransactionAmount ({
       return <p className={classes.root}>- {currencySymbol}{(fiatAmount).toFixed(2)}</p>
     }
     case TxType.Transfer:
-    case TxType.TransferEthAddr: {
+    case TxType.TransferToEthAddr: {
       if (fromAccountIndex === accountIndex) {
         return <p className={classes.root}>- {currencySymbol}{(fiatAmount).toFixed(2)}</p>
       } else {

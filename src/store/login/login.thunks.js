@@ -132,7 +132,7 @@ function postCreateAccountAuthorization (wallet) {
 
     getSignature()
       .then((signature) => {
-        setAccountAuthSignature(wallet.hermezEthereumAddress, signature)
+        dispatch(setAccountAuthSignature(wallet.hermezEthereumAddress, signature))
 
         return hermez.CoordinatorAPI.postCreateAccountAuthorization(
           wallet.hermezEthereumAddress,
