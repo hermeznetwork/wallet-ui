@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { TxState } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxLevel } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
@@ -44,6 +44,7 @@ function TransactionList ({
               accountIndex={accountIndex}
               fromAccountIndex={transaction.fromAccountIndex}
               amount={fixedTokenAmount}
+              isL1={transaction.L1orL2 === TxLevel.L1}
               tokenSymbol={transaction.token.symbol}
               fiatAmount={getTokenAmountInPreferredCurrency(
                 fixedTokenAmount,
@@ -51,11 +52,8 @@ function TransactionList ({
                 preferredCurrency,
                 fiatExchangeRates
               )}
-              timestamp={
-                transaction.state === TxState.Pending
-                  ? undefined
-                  : transaction.timestamp
-              }
+              state={transaction.state}
+              timestamp={transaction.timestamp}
               preferredCurrency={preferredCurrency}
               onClick={() => handleTransactionClick(transaction)}
             />
