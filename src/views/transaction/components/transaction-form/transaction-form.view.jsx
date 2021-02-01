@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { getAccounts } from '@hermeznetwork/hermezjs/src/api'
-import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
+import { getTokenAmountBigInt } from '@hermeznetwork/hermezjs/src/utils'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -15,6 +15,7 @@ import Container from '../../../shared/container/container.view'
 import { isAnyVideoDeviceAvailable, readFromClipboard } from '../../../../utils/browser'
 import QRScanner from '../../../shared/qr-scanner/qr-scanner.view'
 import FormButton from '../../../shared/form-button/form-button.view'
+import Spinner from '../../../shared/spinner/spinner.view'
 
 function TransactionForm ({
   transactionType,
@@ -30,22 +31,22 @@ function TransactionForm ({
   const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false)
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false)
   const [showInFiat, setShowInFiat] = useState(false)
-  const [amount, setAmount] = useState(undefined)
+  const [amount, setAmount] = useState()
   const [receiver, setReceiver] = useState('')
   const [isAmountLessThanFunds, setIsAmountLessThanFunds] = React.useState(undefined)
   const [isAmountPositive, setIsAmountPositive] = React.useState(undefined)
   const [isReceiverValid, setIsReceiverValid] = React.useState(undefined)
-  const amountInput = React.useRef()
+  const amountInput = React.useRef(undefined)
 
   React.useEffect(() => {
     onLoadFees()
   }, [onLoadFees])
 
   React.useEffect(() => {
-    if (amountInput.current) {
+    if (feesTask.status === 'successful' && amountInput.current) {
       amountInput.current.focus()
     }
-  }, [amountInput])
+  }, [feesTask])
 
   React.useEffect(() => {
     if (receiverAddress) {
@@ -65,7 +66,7 @@ function TransactionForm ({
    * @returns {number} - Account balance in number
    */
   function getAccountBalance () {
-    return getTokenAmountString(account.balance, account.token.decimals)
+    return getFixedTokenAmount(account.balance, account.token.decimals)
   }
 
   /**
@@ -84,9 +85,9 @@ function TransactionForm ({
    * Coonverts the account balance to fiat in the preferred currency
    * @returns {number} - Accont balance in the preferred currency
    */
-  function getBalanceinFiat () {
+  function getAmountInFiat (amount) {
     return getTokenAmountInPreferredCurrency(
-      Number(account.balance) / Math.pow(10, account.token.decimals),
+      Number(amount) / Math.pow(10, account.token.decimals),
       account.token.USD,
       preferredCurrency,
       fiatExchangeRates
@@ -106,7 +107,7 @@ function TransactionForm ({
       return 0
     }
 
-    const fee = createAccount ? fees.createAccount : fees.existingAccount
+    const fee = createAccount ? fees.CreateAccount : fees.ExistingAccount
 
     return fee / account.token.USD
   }
@@ -136,6 +137,17 @@ function TransactionForm ({
     }
   }
 
+  function getAmountInputValue () {
+    if (amount === undefined) {
+      return ''
+    }
+    if (showInFiat) {
+      return amount.toFixed(2)
+    } else {
+      return amount
+    }
+  }
+
   /**
    * When the amount changes, check if the Continue button should be enabled or not.
    * Checks if the user has the selected amount in their balance
@@ -145,12 +157,18 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleAmountInputChange (event) {
-    const newAmount = Number(event.target.value)
-    const newAmountInToken = (showInFiat) ? (newAmount / getAccountFiatRate()) : newAmount
+    if (event.target.value === '') {
+      setIsAmountPositive(undefined)
+      setIsAmountLessThanFunds(undefined)
+      setAmount(undefined)
+    } else {
+      const newAmount = Number(event.target.value)
+      const newAmountInToken = showInFiat ? (newAmount / getAccountFiatRate()) : newAmount
 
-    setIsAmountLessThanFunds(newAmountInToken <= getAccountBalance())
-    setIsAmountPositive(event.target.value === '' ? undefined : newAmountInToken > 0)
-    setAmount(event.target.value)
+      setIsAmountLessThanFunds(newAmountInToken <= getAccountBalance())
+      setIsAmountPositive(newAmountInToken > 0)
+      setAmount(newAmount)
+    }
   }
 
   /**
@@ -160,11 +178,22 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleSendAllButtonClick () {
-    const inputAmount = showInFiat ? getBalanceinFiat() : getAccountBalance()
+    if (showInFiat) {
+      const maxAmount = getAmountInFiat(account.balance)
+      const fee = getAmountInFiat(getFee(feesTask.data))
+      const newAmount = maxAmount - fee
+
+      setAmount(newAmount)
+    } else {
+      const maxAmount = getAccountBalance()
+      const fee = getFixedTokenAmount(getFee(feesTask.data), account.token.decimals)
+      const newAmount = Number(maxAmount) - Number(fee)
+
+      setAmount(newAmount)
+    }
 
     setIsAmountLessThanFunds(true)
     setIsAmountPositive(true)
-    setAmount(inputAmount)
   }
 
   /**
@@ -248,7 +277,7 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleContinueButton (fees) {
-    const selectedAmount = (showInFiat) ? (amount / getAccountFiatRate()) : amount
+    const selectedAmount = showInFiat ? (amount / getAccountFiatRate()) : amount
     const transactionAmount = getTokenAmountBigInt(selectedAmount.toString(), account.token.decimals).toString()
 
     switch (transactionType) {
@@ -347,97 +376,102 @@ function TransactionForm ({
     }
   }
 
-  /**
-   * Renders the fee selector if it' s a Layer 2 transaction.
-   * @returns {JSX.Element} The fee selector component
-   */
-  function renderFeeSelector (fees) {
-    if (transactionType !== TransactionType.Deposit && transactionType !== TransactionType.ForceExit) {
-      return (
-        <div className={classes.feeWrapper}>
-          <p className={classes.fee}>
-            Fee {Number(getFee(fees)).toFixed(6)} {account.token.symbol}
-          </p>
-        </div>
-      )
-    }
-  }
-
   return (
     <div className={classes.root}>
       <Container disableTopGutter>
         <section className={classes.sectionWrapper}>
-          <div className={classes.token}>
-            <p className={classes.tokenName}>{account.token.name}</p>
-            {
-              showInFiat
-                ? <p><span>{preferredCurrency}</span> <span>{getBalanceinFiat().toFixed(2)}</span></p>
-                : <p><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
-            }
-          </div>
-          <form onSubmit={(event) => {
-            event.preventDefault()
-            if (feesTask.status === 'successful') {
-              handleContinueButton(feesTask.data)
-            }
-          }}
-          >
-            <div className={clsx({
-              [classes.selectAmount]: true,
-              [classes.selectAmountError]: isAmountPositive === false || isAmountLessThanFunds === false
-            })}
-            >
-              <div className={classes.amount}>
-                <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
-                <input
-                  ref={amountInput}
-                  className={classes.amountInput}
-                  value={amount || ''}
-                  placeholder='0.00'
-                  type='number'
-                  onChange={handleAmountInputChange}
-                />
-              </div>
-              <div className={classes.amountButtons}>
-                <button
-                  type='button'
-                  className={`${classes.amountButton} ${classes.sendAll}`}
-                  onClick={handleSendAllButtonClick}
-                >
-                  Send All
-                </button>
-                <button
-                  type='button'
-                  className={`${classes.amountButton} ${classes.changeCurrency}`}
-                  onClick={handleChangeCurrencyButtonClick}
-                >
-                  <SwapIcon className={classes.changeCurrencyIcon} />
-                  <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
-                </button>
-              </div>
-            </div>
-            <p className={clsx({
-              [classes.errorMessage]: true,
-              [classes.selectAmountErrorMessageVisible]: isAmountPositive === false || isAmountLessThanFunds === false
-            })}
-            >
-              <ErrorIcon className={classes.errorIcon} />
-              {
-                isAmountPositive === false
-                  ? 'The amount should be positive'
-                  : isAmountLessThanFunds === false
-                    ? "You don't have enough funds"
-                    : ''
+          {(() => {
+            switch (feesTask.status) {
+              case 'successful': {
+                return (
+                  <>
+                    <div className={classes.token}>
+                      <p className={classes.tokenName}>{account.token.name}</p>
+                      {
+                        showInFiat
+                          ? <p><span>{preferredCurrency}</span> <span>{getAmountInFiat(account.balance).toFixed(2)}</span></p>
+                          : <p><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
+                      }
+                    </div>
+                    <form
+                      className={classes.form}
+                      onSubmit={(event) => {
+                        event.preventDefault()
+                        handleContinueButton(feesTask.data)
+                      }}
+                    >
+                      <div className={clsx({
+                        [classes.selectAmount]: true,
+                        [classes.selectAmountError]: isAmountPositive === false || isAmountLessThanFunds === false
+                      })}
+                      >
+                        <div className={classes.amount}>
+                          <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
+                          <input
+                            ref={amountInput}
+                            className={classes.amountInput}
+                            value={getAmountInputValue()}
+                            placeholder='0.00'
+                            type='number'
+                            onChange={handleAmountInputChange}
+                          />
+                        </div>
+                        <div className={classes.amountButtons}>
+                          <button
+                            type='button'
+                            className={`${classes.amountButton} ${classes.sendAll}`}
+                            onClick={handleSendAllButtonClick}
+                          >
+                            Send All
+                          </button>
+                          <button
+                            type='button'
+                            className={`${classes.amountButton} ${classes.changeCurrency}`}
+                            onClick={handleChangeCurrencyButtonClick}
+                          >
+                            <SwapIcon className={classes.changeCurrencyIcon} />
+                            <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
+                          </button>
+                        </div>
+                      </div>
+                      <p className={clsx({
+                        [classes.errorMessage]: true,
+                        [classes.selectAmountErrorMessageVisible]: isAmountPositive === false || isAmountLessThanFunds === false
+                      })}
+                      >
+                        <ErrorIcon className={classes.errorIcon} />
+                        {
+                          isAmountPositive === false
+                            ? 'The amount should be positive'
+                            : isAmountLessThanFunds === false
+                              ? "You don't have enough funds"
+                              : ''
+                        }
+                      </p>
+                      {renderReceiver()}
+                      <FormButton
+                        type='submit'
+                        label='Continue'
+                        disabled={isContinueDisabled()}
+                      />
+                    </form>
+                    {
+                      transactionType !== TransactionType.Deposit && transactionType !== TransactionType.ForceExit && (
+                        <div className={classes.feeWrapper}>
+                          <p className={classes.fee}>
+                            Fee {getFixedTokenAmount(getFee(feesTask.data), account.token.decimals)}
+                          </p>
+                        </div>
+                      )
+                    }
+                  </>
+                )
               }
-            </p>
-            {renderReceiver()}
-            <FormButton
-              type='submit'
-              label='Continue'
-              disabled={isContinueDisabled()}
-            />
-          </form>
-          {feesTask.status === 'successful' && renderFeeSelector(feesTask.data)}
+              default: {
+                return <Spinner />
+              }
+            }
+          })()}
         </section>
         {isVideoDeviceAvailable && isQRScannerOpen && (
           <QRScanner
