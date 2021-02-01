@@ -88,11 +88,12 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     border: '0',
     borderTop: `solid 2px ${theme.palette.grey.veryLight}`,
     fontSize: `${theme.spacing(2)}px`,
-    fontWeight: theme.fontWeights.bold,
+    fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
     flex: 1,
     padding: `${theme.spacing(2)}px 0`,
     transition: theme.hoverTransition,
+    textAlign: 'center',
     '&:hover': {
       color: theme.palette.black,
       '& path': {
@@ -103,9 +104,6 @@ const useTransactionFormStyles = createUseStyles(theme => ({
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(3.5)}px 0`
     }
-  },
-  sendAll: {
-    borderRight: `solid 2px ${theme.palette.grey.veryLight}`
   },
   changeCurrency: {
     display: 'flex',
