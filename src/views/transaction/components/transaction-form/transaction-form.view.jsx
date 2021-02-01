@@ -418,18 +418,22 @@ function TransactionForm ({
                         <div className={classes.amountButtons}>
                           <button
                             type='button'
-                            className={`${classes.amountButton} ${classes.sendAll}`}
+                            className={classes.amountButton}
                             onClick={handleSendAllButtonClick}
                           >
-                            Send All
+                            Max
                           </button>
+                          <div className={classes.amountButton}>
+                            <p>
+                              <span>{showInFiat ? ((amount || 0) / getAccountFiatRate()) : ((amount || 0) * getAccountFiatRate()).toFixed(2)}</span> <span>{(showInFiat) ? account.token.symbol : preferredCurrency}</span>
+                            </p>
+                          </div>
                           <button
                             type='button'
                             className={`${classes.amountButton} ${classes.changeCurrency}`}
                             onClick={handleChangeCurrencyButtonClick}
                           >
                             <SwapIcon className={classes.changeCurrencyIcon} />
-                            <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
                           </button>
                         </div>
                       </div>
