@@ -10,9 +10,13 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     }
   },
   sectionWrapper: {
-    width: '100%'
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
   token: {
+    width: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -27,6 +31,9 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     [theme.breakpoints.upSm]: {
       marginBottom: theme.spacing(6)
     }
+  },
+  form: {
+    width: '100%'
   },
   selectAmount: {
     border: `solid 2px ${theme.palette.grey.veryLight}`,
