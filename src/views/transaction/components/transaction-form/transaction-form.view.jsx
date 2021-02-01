@@ -107,7 +107,7 @@ function TransactionForm ({
       return 0
     }
 
-    const fee = createAccount ? fees.CreatesAccount : fees.ExistingAccount
+    const fee = createAccount ? fees.createAccount : fees.existingAccount
 
     return fee / account.token.USD
   }
