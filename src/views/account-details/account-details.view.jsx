@@ -204,6 +204,7 @@ function AccountDetails ({
                       redirectTo={WithdrawRedirectionRoute.AccountDetails}
                     />}
                   <TransactionList
+                    arePending
                     accountIndex={accountIndex}
                     transactions={getPendingTransactions(poolTransactionsTask.data)}
                     fiatExchangeRates={

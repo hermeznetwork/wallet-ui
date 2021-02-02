@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { TxState } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionStyles from './transaction.styles'
 import TransactionType from '../transaction-type/transaction-type.view'
@@ -12,11 +11,11 @@ function Transaction ({
   type,
   fromAccountIndex,
   amount,
-  isL1,
   tokenSymbol,
   fiatAmount,
   state,
   timestamp,
+  isPending,
   preferredCurrency,
   onClick
 }) {
@@ -49,13 +48,13 @@ function Transaction ({
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
           {
-            isL1 || state === TxState.Forged
-              ? <p>{new Date(timestamp).toLocaleDateString()}</p>
-              : (
+            isPending
+              ? (
                 <div className={classes.pendingLabelContainer}>
                   <p className={classes.pendingLabelText}>Pending</p>
                 </div>
               )
+              : <p>{new Date(timestamp).toLocaleDateString()}</p>
           }
           <p>{amount} {tokenSymbol}</p>
         </div>
