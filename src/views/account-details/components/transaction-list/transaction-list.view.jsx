@@ -12,6 +12,7 @@ function TransactionList ({
   transactions,
   preferredCurrency,
   fiatExchangeRates,
+  arePending,
   onTransactionClick
 }) {
   const classes = useTransactionListStyles()
@@ -52,7 +53,7 @@ function TransactionList ({
                 preferredCurrency,
                 fiatExchangeRates
               )}
-              state={transaction.state}
+              isPending={arePending}
               timestamp={transaction.timestamp}
               preferredCurrency={preferredCurrency}
               onClick={() => handleTransactionClick(transaction)}
