@@ -21,6 +21,7 @@ import Button from '../shared/button/button.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 function Home ({
   wallet,
@@ -32,6 +33,7 @@ function Home ({
   preferredCurrency,
   pendingWithdraws,
   pendingDelayedWithdraws,
+  pendingDeposits,
   coordinatorStateTask,
   onChangeHeader,
   onLoadTotalAccountsBalance,
@@ -81,7 +83,7 @@ function Home ({
    * @returns {void}
    */
   function getPendingExits () {
-    return poolTransactionsTask.data.filter((transaction) => transaction.type === 'Exit')
+    return poolTransactionsTask.data.filter((transaction) => transaction.type === TxType.Exit)
   }
 
   /**
@@ -207,6 +209,7 @@ function Home ({
                           ? fiatExchangeRatesTask.data
                           : undefined
                       }
+                      pendingDeposits={pendingDeposits[wallet.hermezEthereumAddress]}
                       onAccountClick={handleAccountClick}
                     />
                   </InfiniteScroll>
@@ -251,6 +254,7 @@ const mapStateToProps = (state) => ({
   exitsTask: state.home.exitsTask,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
+  pendingDeposits: state.global.pendingDeposits,
   coordinatorStateTask: state.global.coordinatorStateTask
 })
 

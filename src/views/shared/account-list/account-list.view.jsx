@@ -5,11 +5,13 @@ import clsx from 'clsx'
 import useAccountListStyles from './account-list.styles'
 import Account from '../account/account.view'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
+import { BigNumber } from 'ethers'
 
 function AccountList ({
   accounts,
   preferredCurrency,
   fiatExchangeRates,
+  pendingDeposits,
   onAccountClick
 }) {
   const classes = useAccountListStyles()
@@ -25,8 +27,13 @@ function AccountList ({
   return (
     <div className={classes.root}>
       {accounts.map((account, index) => {
+        const pendingDeposit = pendingDeposits && pendingDeposits
+          .find((deposit) => deposit.token.id === account.token.id)
+        const accountBalance = pendingDeposit !== undefined
+          ? BigNumber.from(account.balance).add(BigNumber.from(pendingDeposit.amount)).toString()
+          : account.balance
         const fixedAccountBalance = getFixedTokenAmount(
-          account.balance,
+          accountBalance,
           account.token.decimals
         )
 
@@ -46,6 +53,7 @@ function AccountList ({
                 preferredCurrency,
                 fiatExchangeRates
               )}
+              hasPendingDeposit={pendingDeposit !== undefined}
               onClick={() => handleAccountListItemClick(account)}
             />
           </div>

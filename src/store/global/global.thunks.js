@@ -3,7 +3,7 @@ import { push } from 'connected-react-router'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
-import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
+import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY, PENDING_DEPOSITS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 
 /**
@@ -200,6 +200,55 @@ function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
 }
 
 /**
+ * Adds a pendingDeposit to the pendingDeposits store
+ * @param {string} pendingDeposit - The pendingDeposit to add to the store
+ * @returns {void}
+ */
+function addPendingDeposit (pendingDeposit) {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+    const { hermezEthereumAddress } = wallet
+
+    const pendingDepositsStore = JSON.parse(localStorage.getItem(PENDING_DEPOSITS_KEY))
+    const accountPendingDepositsStore = pendingDepositsStore[hermezEthereumAddress]
+    const newAccountPendingDepositsStore = accountPendingDepositsStore === undefined
+      ? [pendingDeposit]
+      : [...accountPendingDepositsStore, pendingDeposit]
+    const newPendingDepositsStore = {
+      ...pendingDepositsStore,
+      [hermezEthereumAddress]: newAccountPendingDepositsStore
+    }
+
+    localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
+    dispatch(globalActions.addPendingDeposit(hermezEthereumAddress, pendingDeposit))
+  }
+}
+
+/**
+ * Removes a pendingDeposit from the pendingDeposit store
+ * @param {string} tokenId - The token identifier used to remove a pendingDeposit from the store
+ * @returns {void}
+ */
+function removePendingDeposit (tokenId) {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+    const { hermezEthereumAddress } = wallet
+
+    const pendingDepositsStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
+    const accountPendingDepositsStore = pendingDepositsStore[hermezEthereumAddress]
+    const newAccountPendingDepositsStore = accountPendingDepositsStore
+      .filter((pendingDeposit) => pendingDeposit.token.id !== tokenId)
+    const newPendingDepositsStore = {
+      ...pendingDepositsStore,
+      [hermezEthereumAddress]: newAccountPendingDepositsStore
+    }
+
+    localStorage.setItem(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newPendingDepositsStore))
+    dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, tokenId))
+  }
+}
+
+/**
  * Fetches the state of the coordinator
  * @returns {void}
  */
@@ -243,6 +292,8 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  addPendingDeposit,
+  removePendingDeposit,
   fetchCoordinatorState,
   disconnectWallet,
   reloadApp

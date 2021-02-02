@@ -142,7 +142,10 @@ function deposit (amount, account) {
       wallet.publicKeyCompressedHex,
       signer
     )
-      .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
+      .then(() => {
+        dispatch(globalThunks.addPendingDeposit({ token: account.token, amount: amount.toString() }))
+        dispatch(transactionActions.goToFinishTransactionStep())
+      })
       .catch((error) => {
         dispatch(transactionActions.stopTransactionSigning())
         console.log(error)
