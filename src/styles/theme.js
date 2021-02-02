@@ -43,7 +43,7 @@ const theme = {
     upSm: '@media (min-width: 576px)'
   },
   spacing: (value) => value * 8,
-  headerHeight: 72
+  headerHeight: 88
 }
 
 export default theme

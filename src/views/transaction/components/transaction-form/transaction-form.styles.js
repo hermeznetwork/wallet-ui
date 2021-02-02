@@ -6,7 +6,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     marginBottom: theme.spacing(3),
     paddingTop: theme.spacing(4),
     [theme.breakpoints.upSm]: {
-      paddingTop: theme.spacing(6)
+      paddingTop: theme.spacing(3.5)
     }
   },
   sectionWrapper: {
@@ -24,13 +24,16 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     borderRadius: 12,
     height: theme.spacing(10),
     marginBottom: theme.spacing(2.5),
-    padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
+    padding: `${theme.spacing(3.5)}px ${theme.spacing(5)}px`,
     fontSize: `${theme.spacing(2.5)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
     [theme.breakpoints.upSm]: {
-      marginBottom: theme.spacing(6)
+      marginBottom: theme.spacing(3)
     }
+  },
+  tokenSymbolAmount: {
+    fontWeight: theme.fontWeights.medium
   },
   form: {
     width: '100%'
@@ -49,7 +52,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     padding: theme.spacing(2),
     [theme.breakpoints.upSm]: {
-      padding: theme.spacing(5.5)
+      padding: `${theme.spacing(5)}px ${theme.spacing(6)}px`
     }
   },
   amountCurrency: {
@@ -79,18 +82,19 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     }
   },
   amountButtons: {
-    display: 'flex'
+    display: 'flex',
+    borderTop: `solid 2px ${theme.palette.grey.veryLight}`,
+    justifyContent: 'space-between',
+    padding: `0 ${theme.spacing(6)}px`
   },
   amountButton: {
     cursor: 'pointer',
     background: 'none',
     outline: 'none',
-    border: '0',
-    borderTop: `solid 2px ${theme.palette.grey.veryLight}`,
+    border: 0,
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
-    flex: 1,
     padding: `${theme.spacing(2)}px 0`,
     transition: theme.hoverTransition,
     textAlign: 'center',
@@ -102,8 +106,11 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     },
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(3.5)}px 0`
+      padding: `${theme.spacing(3)}px 0`
     }
+  },
+  amountMax: {
+    fontWeight: theme.fontWeights.bold
   },
   changeCurrency: {
     display: 'flex',
