@@ -20,9 +20,10 @@ function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
         return 'Your transaction is completed.'
       case TransactionType.Exit:
       case TransactionType.ForceExit:
+        return 'Withdrawal has been initiated and will require additional confirmation in a few minutes.'
       case TransactionType.Withdraw:
       case TransactionType.DelayedWithdrawal:
-        return 'Withdrawal has been initiated and will require additional confirmation in a few minutes.'
+        return 'Your withdrawal is awaiting verification.'
       default:
         return ''
     }
