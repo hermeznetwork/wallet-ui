@@ -11,9 +11,10 @@ function Account ({
   fiatBalance,
   preferredCurrency,
   hasPendingDeposit,
+  isDisabled,
   onClick
 }) {
-  const classes = useAccountStyles({ hasPendingDeposit })
+  const classes = useAccountStyles({ hasPendingDeposit, isDisabled })
 
   return (
     <div className={classes.root} onClick={() => onClick()}>

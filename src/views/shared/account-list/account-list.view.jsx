@@ -12,9 +12,37 @@ function AccountList ({
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
+  disabledTokenIds,
   onAccountClick
 }) {
   const classes = useAccountListStyles()
+
+  function hasAccountPendingDeposit (account) {
+    if (!pendingDeposits) {
+      return false
+    }
+
+    return pendingDeposits.find((deposit) => deposit.token.id === account.token.id) !== undefined
+  }
+
+  function getAccountBalance (account) {
+    if (!pendingDeposits) {
+      return account.balance
+    }
+
+    const pendingDeposit = pendingDeposits.find((deposit) => deposit.token.id === account.token.id)
+    const newAccountBalance = BigNumber.from(account.balance).add(BigNumber.from(pendingDeposit.amount)).toString()
+
+    return newAccountBalance
+  }
+
+  function isAccountDisabled (account) {
+    if (!disabledTokenIds) {
+      return false
+    }
+
+    return disabledTokenIds.find((id) => account.token.id === id) !== undefined
+  }
 
   /**
    * Bubbles up the onAccountClick event when an account is clicked
@@ -27,15 +55,8 @@ function AccountList ({
   return (
     <div className={classes.root}>
       {accounts.map((account, index) => {
-        const pendingDeposit = pendingDeposits && pendingDeposits
-          .find((deposit) => deposit.token.id === account.token.id)
-        const accountBalance = pendingDeposit !== undefined
-          ? BigNumber.from(account.balance).add(BigNumber.from(pendingDeposit.amount)).toString()
-          : account.balance
-        const fixedAccountBalance = getFixedTokenAmount(
-          accountBalance,
-          account.token.decimals
-        )
+        const accountBalance = getAccountBalance(account)
+        const fixedAccountBalance = getFixedTokenAmount(accountBalance, account.token.decimals)
 
         return (
           <div
@@ -53,7 +74,8 @@ function AccountList ({
                 preferredCurrency,
                 fiatExchangeRates
               )}
-              hasPendingDeposit={pendingDeposit !== undefined}
+              hasPendingDeposit={hasAccountPendingDeposit(account)}
+              isDisabled={isAccountDisabled(account)}
               onClick={() => handleAccountListItemClick(account)}
             />
           </div>

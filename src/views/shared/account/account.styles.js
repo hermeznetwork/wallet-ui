@@ -1,7 +1,7 @@
 import { createUseStyles } from 'react-jss'
 
 const useAccountStyles = createUseStyles(theme => ({
-  root: ({ hasPendingDeposit }) => ({
+  root: ({ hasPendingDeposit, isDisabled }) => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -9,7 +9,9 @@ const useAccountStyles = createUseStyles(theme => ({
     backgroundColor: hasPendingDeposit ? theme.palette.black : theme.palette.grey.light,
     borderRadius: theme.spacing(1),
     padding: `${theme.spacing(3)}px ${theme.spacing(5)}px`,
-    cursor: 'pointer'
+    cursor: isDisabled ? 'default' : 'pointer',
+    opacity: isDisabled ? 0.5 : 1,
+    pointerEvents: isDisabled ? 'none' : 'all'
   }),
   values: {
     display: 'flex',

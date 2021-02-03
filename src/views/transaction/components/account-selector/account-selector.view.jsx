@@ -12,6 +12,7 @@ function AccountSelector ({
   accountsTask,
   preferredCurrency,
   fiatExchangeRates,
+  pendingDeposits,
   onLoadAccounts,
   onAccountClick
 }) {
@@ -51,6 +52,7 @@ function AccountSelector ({
                       accounts={accountsTask.data}
                       preferredCurrency={preferredCurrency}
                       fiatExchangeRates={fiatExchangeRates}
+                      disabledTokenIds={pendingDeposits.map(deposit => deposit.token.id)}
                       onAccountClick={onAccountClick}
                     />
                   )
