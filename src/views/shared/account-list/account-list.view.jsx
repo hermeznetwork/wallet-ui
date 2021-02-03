@@ -31,6 +31,11 @@ function AccountList ({
     }
 
     const pendingDeposit = pendingDeposits.find((deposit) => deposit.token.id === account.token.id)
+
+    if (!pendingDeposit) {
+      return account.balance
+    }
+
     const newAccountBalance = BigNumber.from(account.balance).add(BigNumber.from(pendingDeposit.amount)).toString()
 
     return newAccountBalance

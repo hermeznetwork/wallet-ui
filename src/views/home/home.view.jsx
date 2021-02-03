@@ -5,7 +5,7 @@ import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 
 import useHomeStyles from './home.styles'
-import { addPendingDelayedWithdraw, removePendingDelayedWithdraw } from '../../store/global/global.thunks'
+import * as globalThunks from '../../store/global/global.thunks'
 import * as homeThunks from '../../store/home/home.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
@@ -36,6 +36,7 @@ function Home ({
   pendingDeposits,
   coordinatorStateTask,
   onChangeHeader,
+  onCheckPendingDeposits,
   onLoadTotalAccountsBalance,
   onLoadAccounts,
   onLoadPoolTransactions,
@@ -52,6 +53,10 @@ function Home ({
   React.useEffect(() => {
     onChangeHeader(theme.palette.primary.main)
   }, [theme, onChangeHeader])
+
+  React.useEffect(() => {
+    onCheckPendingDeposits()
+  }, [onCheckPendingDeposits])
 
   React.useEffect(() => {
     if (fiatExchangeRatesTask.status === 'successful') {
@@ -261,6 +266,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
+  onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadTotalAccountsBalance: (hermezEthereumAddress, preferredCurrency, fiatExchangeRates) =>
     dispatch(homeThunks.fetchTotalAccountsBalance(hermezEthereumAddress, preferredCurrency, fiatExchangeRates)),
   onLoadAccounts: (hermezEthereumAddress, fromItem) =>
@@ -270,9 +276,9 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
   onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
-    dispatch(addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
+    dispatch(globalThunks.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>
-    dispatch(removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId)),
+    dispatch(globalThunks.removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) =>
