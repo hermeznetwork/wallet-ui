@@ -22,13 +22,16 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     justifyContent: 'space-between',
     backgroundColor: theme.palette.grey.light,
     borderRadius: 12,
-    height: theme.spacing(10),
+    height: theme.spacing(7.5),
     marginBottom: theme.spacing(2.5),
-    padding: `${theme.spacing(3.5)}px ${theme.spacing(5)}px`,
-    fontSize: `${theme.spacing(2.5)}px`,
+    padding: theme.spacing(2.5),
+    fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
     [theme.breakpoints.upSm]: {
+      fontSize: `${theme.spacing(2.5)}px`,
+      height: theme.spacing(10),
+      padding: `${theme.spacing(3.5)}px ${theme.spacing(5)}px`,
       marginBottom: theme.spacing(3)
     }
   },
@@ -50,7 +53,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    padding: theme.spacing(2),
+    padding: theme.spacing(2.5),
     [theme.breakpoints.upSm]: {
       padding: `${theme.spacing(5)}px ${theme.spacing(6)}px`
     }
@@ -59,6 +62,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
+    marginBottom: theme.spacing(0.5),
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       marginBottom: theme.spacing(1.5)
@@ -69,7 +73,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     border: 0,
     outline: 'none',
     caretColor: theme.palette.orange.main,
-    fontSize: `${theme.spacing(6)}px`,
+    fontSize: `${theme.spacing(5)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
     textAlign: 'center',
@@ -79,13 +83,19 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     },
     '&[type=number]': {
       '-moz-appearance': 'textfield'
+    },
+    [theme.breakpoints.upSm]: {
+      fontSize: `${theme.spacing(6)}px`
     }
   },
   amountButtons: {
     display: 'flex',
     borderTop: `solid 2px ${theme.palette.grey.veryLight}`,
     justifyContent: 'space-between',
-    padding: `0 ${theme.spacing(6)}px`
+    padding: `0 ${theme.spacing(3)}px`,
+    [theme.breakpoints.upSm]: {
+      padding: `0 ${theme.spacing(6)}px`
+    }
   },
   amountButton: {
     cursor: 'pointer',

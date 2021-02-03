@@ -38,7 +38,7 @@ const usePageHeaderStyles = createUseStyles(theme => ({
   },
   title: {
     fontSize: theme.spacing(3),
-    fontWeight: theme.fontWeights.bold
+    fontWeight: theme.fontWeights.extraBold
   }
 }))
 

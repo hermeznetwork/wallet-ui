@@ -8,8 +8,11 @@ const useAccountStyles = createUseStyles(theme => ({
     justifyContent: 'center',
     backgroundColor: theme.palette.grey.light,
     borderRadius: theme.spacing(1),
-    padding: `${theme.spacing(3)}px ${theme.spacing(5)}px`,
-    cursor: 'pointer'
+    padding: `${theme.spacing(2.5)}px ${theme.spacing(3)}px`,
+    cursor: 'pointer',
+    [theme.breakpoints.upSm]: {
+      padding: `${theme.spacing(3.5)}px ${theme.spacing(5)}px`
+    }
   },
   values: {
     display: 'flex',
@@ -18,8 +21,11 @@ const useAccountStyles = createUseStyles(theme => ({
   },
   topRow: {
     color: theme.palette.black,
-    fontSize: theme.spacing(2.5),
-    marginBottom: theme.spacing(1.5)
+    fontSize: theme.spacing(2),
+    marginBottom: theme.spacing(1.5),
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(2.5)
+    }
   },
   tokenName: {
     fontWeight: theme.fontWeights.bold
