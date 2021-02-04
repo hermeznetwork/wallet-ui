@@ -14,10 +14,21 @@ function Account ({
   isDisabled,
   onClick
 }) {
-  const classes = useAccountStyles({ hasPendingDeposit, isDisabled })
+  const classes = useAccountStyles({
+    isClickable: onClick !== undefined,
+    hasPendingDeposit,
+    isDisabled
+  })
 
   return (
-    <div className={classes.root} onClick={() => onClick()}>
+    <div
+      className={classes.root}
+      onClick={() => {
+        if (onClick) {
+          onClick()
+        }
+      }}
+    >
       <div className={`${classes.values} ${classes.topRow}`}>
         <p className={classes.tokenName}>{tokenName}</p>
         <p>{CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}</p>

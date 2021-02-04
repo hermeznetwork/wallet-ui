@@ -143,12 +143,16 @@ function deposit (amount, account) {
       signer
     )
       .then((data) => {
-        dispatch(globalThunks.addPendingDeposit({
-          transactionHash: data.hash,
-          token: account.token,
-          amount: amount.toString()
-        }))
-        dispatch(transactionActions.goToFinishTransactionStep())
+        CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [account.token.id])
+          .then((res) => {
+            dispatch(globalThunks.addPendingDeposit({
+              transactionHash: data.hash,
+              token: account.token,
+              amount: amount.toString(),
+              type: res.accounts.length ? TxType.Deposit : TxType.CreateAccountDeposit
+            }))
+            dispatch(transactionActions.goToFinishTransactionStep())
+          })
       })
       .catch((error) => {
         dispatch(transactionActions.stopTransactionSigning())

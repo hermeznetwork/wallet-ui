@@ -22,6 +22,7 @@ import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import PendingDepositList from './pending-deposit-list/pending-deposit-list.view'
 
 function Home ({
   wallet,
@@ -89,6 +90,32 @@ function Home ({
    */
   function getPendingExits () {
     return poolTransactionsTask.data.filter((transaction) => transaction.type === TxType.Exit)
+  }
+
+  // function getCreateAccountDeposits (accounts, pendingDeposits) {
+  //   if (pendingDeposits === undefined) {
+  //     return undefined
+  //   }
+
+  //   const accountTokenIds = accounts.map(account => account.token.id)
+
+  //   return accountPendingDeposits.filter(deposit => accountTokenIds.includes(deposit.token.id))
+  // }
+
+  function getPendingCreateAccountDeposits (accountPendingDeposits) {
+    if (!accountPendingDeposits) {
+      return undefined
+    }
+
+    return accountPendingDeposits.filter(deposit => deposit.type === TxType.CreateAccountDeposit)
+  }
+
+  function getPendingOnTopDeposits (accountPendingDeposits) {
+    if (!accountPendingDeposits) {
+      return undefined
+    }
+
+    return accountPendingDeposits.filter(deposit => deposit.type === TxType.Deposit)
   }
 
   /**
@@ -195,29 +222,36 @@ function Home ({
                   )
                 }
 
+                const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
+                const pendingOnTopDeposits = getPendingOnTopDeposits(accountPendingDeposits)
+                const pendingCreateAccountDeposits = getPendingCreateAccountDeposits(accountPendingDeposits)
+
                 return (
-                  <InfiniteScroll
-                    asyncTaskStatus={accountsTask.status}
-                    paginationData={accountsTask.data.pagination}
-                    onLoadNextPage={(fromItem) => {
-                      onLoadAccounts(
-                        wallet.hermezEthereumAddress,
-                        fromItem
-                      )
-                    }}
-                  >
-                    <AccountList
-                      accounts={accountsTask.data.accounts}
+                  <>
+                    <PendingDepositList
+                      deposits={pendingCreateAccountDeposits}
                       preferredCurrency={preferredCurrency}
-                      fiatExchangeRates={
-                        fiatExchangeRatesTask.status === 'successful'
-                          ? fiatExchangeRatesTask.data
-                          : undefined
-                      }
-                      pendingDeposits={pendingDeposits[wallet.hermezEthereumAddress]}
-                      onAccountClick={handleAccountClick}
+                      fiatExchangeRates={fiatExchangeRatesTask.data}
                     />
-                  </InfiniteScroll>
+                    <InfiniteScroll
+                      asyncTaskStatus={accountsTask.status}
+                      paginationData={accountsTask.data.pagination}
+                      onLoadNextPage={(fromItem) => {
+                        onLoadAccounts(
+                          wallet.hermezEthereumAddress,
+                          fromItem
+                        )
+                      }}
+                    >
+                      <AccountList
+                        accounts={accountsTask.data.accounts}
+                        preferredCurrency={preferredCurrency}
+                        fiatExchangeRates={fiatExchangeRatesTask.data}
+                        pendingDeposits={pendingOnTopDeposits}
+                        onAccountClick={handleAccountClick}
+                      />
+                    </InfiniteScroll>
+                  </>
                 )
               }
               default: {
