@@ -34,7 +34,7 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(3)}px`,
       padding: `${theme.spacing(3)}px 0`,
-      marginTop: theme.spacing(18)
+      marginTop: theme.spacing(7)
     }
 
   }

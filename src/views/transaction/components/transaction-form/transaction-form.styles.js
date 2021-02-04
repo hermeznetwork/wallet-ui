@@ -97,8 +97,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
       padding: `0 ${theme.spacing(6)}px`
     }
   },
-  amountButton: {
-    cursor: 'pointer',
+  amountButtonsItem: {
     background: 'none',
     outline: 'none',
     border: 0,
@@ -106,17 +105,20 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
     padding: `${theme.spacing(2)}px 0`,
-    transition: theme.hoverTransition,
     textAlign: 'center',
+    [theme.breakpoints.upSm]: {
+      fontSize: `${theme.spacing(3)}px`,
+      padding: `${theme.spacing(3)}px 0`
+    }
+  },
+  amountButton: {
+    cursor: 'pointer',
+    transition: theme.hoverTransition,
     '&:hover': {
       color: theme.palette.black,
       '& path': {
         fill: theme.palette.black
       }
-    },
-    [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(3)}px 0`
     }
   },
   amountMax: {
