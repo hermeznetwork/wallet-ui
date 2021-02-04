@@ -389,7 +389,7 @@ function TransactionForm ({
                       {
                         showInFiat
                           ? <p><span>{preferredCurrency}</span> <span>{getAmountInFiat(account.balance).toFixed(2)}</span></p>
-                          : <p><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
+                          : <p className={classes.tokenSymbolAmount}><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
                       }
                     </div>
                     <form
@@ -418,18 +418,23 @@ function TransactionForm ({
                         <div className={classes.amountButtons}>
                           <button
                             type='button'
-                            className={`${classes.amountButton} ${classes.sendAll}`}
+                            className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.amountMax}`}
                             onClick={handleSendAllButtonClick}
                           >
-                            Send All
+                            Max
                           </button>
+                          <div className={classes.amountButtonsItem}>
+                            <p>
+                              <span>{showInFiat ? ((amount || 0) / getAccountFiatRate()) : ((amount || 0) * getAccountFiatRate()).toFixed(2)} </span>
+                              <span>{(showInFiat) ? account.token.symbol : preferredCurrency}</span>
+                            </p>
+                          </div>
                           <button
                             type='button'
-                            className={`${classes.amountButton} ${classes.changeCurrency}`}
+                            className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.changeCurrency}`}
                             onClick={handleChangeCurrencyButtonClick}
                           >
                             <SwapIcon className={classes.changeCurrencyIcon} />
-                            <p>{(showInFiat) ? account.token.symbol : preferredCurrency}</p>
                           </button>
                         </div>
                       </div>
