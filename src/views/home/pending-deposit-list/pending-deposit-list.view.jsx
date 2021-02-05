@@ -11,7 +11,7 @@ function PendingDepositList ({ deposits, preferredCurrency, fiatExchangeRates })
   return (
     <>
       {
-        deposits.map((deposit) => (
+        deposits && deposits.map((deposit) => (
           <div
             key={deposit.transactionHash}
             className={classes.pendingDeposit}
