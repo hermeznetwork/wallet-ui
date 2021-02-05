@@ -10,27 +10,8 @@ function TransactionInfoRow ({ title, subtitle, value }) {
     <div className={classes.root}>
       <p className={classes.title}>{title}</p>
       <div className={classes.content}>
-        {(() => {
-          if (subtitle === undefined && value !== undefined) {
-            return (
-              <>
-                <p className={classes.subtitle}>{value}</p>
-                <p className={classes.value}>&nbsp;</p>
-              </>
-            )
-          }
-
-          if (subtitle !== undefined && value !== undefined) {
-            return (
-              <>
-                <p className={classes.subtitle}>{subtitle}</p>
-                <p className={classes.value}>{value}</p>
-              </>
-            )
-          }
-
-          return <></>
-        })()}
+        <p className={classes.subtitle}>{subtitle}</p>
+        {value ? <p className={classes.value}>{value}</p> : <p className={classes.value}>&nbsp;</p>}
       </div>
     </div>
   )

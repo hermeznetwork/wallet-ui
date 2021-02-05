@@ -5,6 +5,7 @@ import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
 import { TransactionType } from '../../views/transaction/transaction.view'
+import { TxState } from '@hermeznetwork/hermezjs/dist/node/tx-utils'
 
 /**
  * Fetches the account details for a token id in MetaMask.
@@ -146,9 +147,13 @@ function deposit (amount, account) {
         CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [account.token.id])
           .then((res) => {
             dispatch(globalThunks.addPendingDeposit({
+              fromHezEthereumAddress: wallet.hermezEthereumAddress,
+              toHezEthereumAddress: wallet.hermezEthereumAddress,
               transactionHash: data.hash,
               token: account.token,
               amount: amount.toString(),
+              state: TxState.Pending,
+              timestamp: new Date().toISOString(),
               type: res.accounts.length ? TxType.Deposit : TxType.CreateAccountDeposit
             }))
             dispatch(transactionActions.goToFinishTransactionStep())

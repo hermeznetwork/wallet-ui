@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
-import hermezjs, { TxUtils } from '@hermeznetwork/hermezjs'
+import hermezjs from '@hermeznetwork/hermezjs'
 import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
@@ -20,6 +20,7 @@ import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import { push } from 'connected-react-router'
 import { getTransactionAmount } from '../../utils/transactions'
+import { getEthereumAddressFromHermezAddress, getPartiallyHiddenEthereumAddress, getPartiallyHiddenHermezAddress } from '../../utils/addresses'
 
 function TransactionDetails ({
   transactionTask,
@@ -104,14 +105,72 @@ function TransactionDetails ({
                 return <Spinner />
               }
               case 'successful': {
-                return (
-                  <TransactionInfo
-                    status={TxUtils.beautifyTransactionState(transactionTask.data.state)}
-                    from={transactionTask.data.fromAccountIndex}
-                    to={transactionTask.data.toAccountIndex}
-                    date={new Date(transactionTask.data.timestamp).toLocaleString()}
-                  />
-                )
+                const status = {
+                  subtitle: transactionTask.data.state !== undefined ? 'Confirmed' : 'Pending'
+                }
+                const date = {
+                  subtitle: new Date(transactionTask.data.timestamp).toLocaleString()
+                }
+
+                switch (transactionTask.data.type) {
+                  case TxType.CreateAccountDeposit:
+                  case TxType.Deposit: {
+                    return (
+                      <TransactionInfo
+                        status={status}
+                        from={{
+                          subtitle: 'My Ethereum address',
+                          value: getPartiallyHiddenEthereumAddress(
+                            getEthereumAddressFromHermezAddress(transactionTask.data.fromHezEthereumAddress)
+                          )
+                        }}
+                        to={{
+                          subtitle: 'My Hermez address',
+                          value: getPartiallyHiddenHermezAddress(transactionTask.data.fromHezEthereumAddress)
+                        }}
+                        date={date}
+                      />
+                    )
+                  }
+                  case TxType.Transfer: {
+                    return (
+                      <TransactionInfo
+                        status={status}
+                        from={{
+                          subtitle: 'My Hermez address',
+                          value: getPartiallyHiddenHermezAddress(transactionTask.data.fromHezEthereumAddress)
+                        }}
+                        to={{
+                          subtitle: getPartiallyHiddenHermezAddress(transactionTask.data.toHezEthereumAddress)
+                        }}
+                        date={date}
+                      />
+                    )
+                  }
+                  case TxType.Withdraw:
+                  case TxType.Exit:
+                  case TxType.ForceExit: {
+                    return (
+                      <TransactionInfo
+                        status={status}
+                        from={{
+                          subtitle: 'My Hermez address',
+                          value: getPartiallyHiddenHermezAddress(transactionTask.data.fromHezEthereumAddress)
+                        }}
+                        to={{
+                          subtitle: 'My Ethereum address',
+                          value: getPartiallyHiddenEthereumAddress(
+                            getEthereumAddressFromHermezAddress(transactionTask.data.toHezEthereumAddress)
+                          )
+                        }}
+                        date={date}
+                      />
+                    )
+                  }
+                  default: {
+                    return <></>
+                  }
+                }
               }
               default: {
                 return <></>

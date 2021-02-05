@@ -8,8 +8,20 @@ import * as transactionDetailsActionTypes from './transaction-details.actions'
  * @param {string} transactionId - Transaction id
  */
 function fetchTransaction (transactionId) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
+    const { global: { wallet, pendingDeposits } } = getState()
+    const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
+
     dispatch(transactionDetailsActionTypes.loadTransaction())
+
+    if (accountPendingDeposits !== undefined) {
+      const pendingDeposit = accountPendingDeposits
+        .find(deposit => deposit.transactionHash === transactionId)
+
+      if (pendingDeposit !== undefined) {
+        return dispatch(transactionDetailsActionTypes.loadTransaction(pendingDeposit))
+      }
+    }
 
     return CoordinatorAPI.getPoolTransaction(transactionId)
       .then(res => dispatch(transactionDetailsActionTypes.loadTransactionSuccess(res)))

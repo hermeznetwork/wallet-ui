@@ -6,14 +6,14 @@ import TransactionInfoRow from '../transaction-info-row/transaction-info-row.vie
 
 function TransactionInfo ({ status, from, to, date, fee }) {
   const classes = useTransactionInfoStyles()
-
+  console.log(to.subtitle)
   return (
     <div className={classes.root}>
-      {status && <TransactionInfoRow title='Status' value={status} />}
-      <TransactionInfoRow title='From' subtitle='My Ethereum address' value={from} />
-      {to && <TransactionInfoRow title='To' subtitle='To Ethereum address' value={to} />}
-      {date && <TransactionInfoRow title='Date' value={date} />}
-      {fee && <TransactionInfoRow title='Fee' subtitle={fee.fiat} value={fee.tokens} />}
+      {status && <TransactionInfoRow title='Status' subtitle={status.subtitle} value={status.value} />}
+      {from && <TransactionInfoRow title='From' subtitle={from.subtitle} value={from.value} />}
+      {to && <TransactionInfoRow title='To' subtitle={to.subtitle} value={to.value} />}
+      {date && <TransactionInfoRow title='Date' subtitle={date.subtitle} value={date.value} />}
+      {fee && <TransactionInfoRow title='Fee' subtitle={fee.value.fiat} value={fee.value.tokens} />}
     </div>
   )
 }
