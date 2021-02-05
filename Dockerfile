@@ -6,6 +6,10 @@ RUN apk add bash g++ make python git
 
 ARG GIT_VERSION=0
 LABEL vcs-ref=$GIT_VERSION
+ENV _GIT_VERSION=$GIT_VERSION
+
+ARG GIT_IT=0
+ENV _GIT_IT=$GIT_IT
 
 WORKDIR /usr/src/wallet-ui
 
