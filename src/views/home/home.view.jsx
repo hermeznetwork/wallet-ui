@@ -218,11 +218,13 @@ function Home ({
 
                 return (
                   <>
-                    <PendingDepositList
-                      deposits={pendingCreateAccountDeposits}
-                      preferredCurrency={preferredCurrency}
-                      fiatExchangeRates={fiatExchangeRatesTask.data}
-                    />
+                    {pendingCreateAccountDeposits && (
+                      <PendingDepositList
+                        deposits={pendingCreateAccountDeposits}
+                        preferredCurrency={preferredCurrency}
+                        fiatExchangeRates={fiatExchangeRatesTask.data}
+                      />
+                    )}
                     <InfiniteScroll
                       asyncTaskStatus={accountsTask.status}
                       paginationData={accountsTask.data.pagination}
