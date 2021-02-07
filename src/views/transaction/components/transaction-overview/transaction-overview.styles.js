@@ -22,7 +22,7 @@ const useTransactionOverviewStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
-  fiatAmount: {
+  highlightedAmount: {
     marginTop: `${theme.spacing(2)}px`,
     marginBottom: `${theme.spacing(1)}px`
   },
