@@ -23,8 +23,6 @@ function AccountSelector ({
     }
   }, [accountsTask, transactionType, onLoadAccounts])
 
-  console.log('transactionType: ', transactionType)
-
   return (
     <div className={classes.root}>
       <Container disableTopGutter>
