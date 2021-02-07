@@ -19,6 +19,17 @@ const useAccountSelectorStyles = createUseStyles(theme => ({
     fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.medium,
     textAlign: 'center'
+  },
+  accountListDeposit: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%'
+  },
+  accountListDepositText: {
+    textAlign: 'center',
+    fontSize: theme.spacing(2.5),
+    fontWeight: theme.fontWeights.medium,
+    marginBottom: theme.spacing(4)
   }
 }))
 

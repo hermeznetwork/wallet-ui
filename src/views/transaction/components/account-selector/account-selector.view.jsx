@@ -23,6 +23,8 @@ function AccountSelector ({
     }
   }, [accountsTask, transactionType, onLoadAccounts])
 
+  console.log('transactionType: ', transactionType)
+
   return (
     <div className={classes.root}>
       <Container disableTopGutter>
@@ -47,12 +49,15 @@ function AccountSelector ({
                   }
 
                   return (
-                    <AccountList
-                      accounts={accountsTask.data}
-                      preferredCurrency={preferredCurrency}
-                      fiatExchangeRates={fiatExchangeRates}
-                      onAccountClick={onAccountClick}
-                    />
+                    <div className={classes.accountListDeposit}>
+                      <p className={classes.accountListDepositText}>Available tokens to deposit</p>
+                      <AccountList
+                        accounts={accountsTask.data}
+                        preferredCurrency={preferredCurrency}
+                        fiatExchangeRates={fiatExchangeRates}
+                        onAccountClick={onAccountClick}
+                      />
+                    </div>
                   )
                 } else {
                   return (
