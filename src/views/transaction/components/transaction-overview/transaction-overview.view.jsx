@@ -4,7 +4,6 @@ import { ethers } from 'ethers'
 import { useTheme } from 'react-jss'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
-import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
 import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
 import Container from '../../../shared/container/container.view'
@@ -13,6 +12,7 @@ import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../../../shared/token-balance/token-balance.view'
 import Spinner from '../../../shared/spinner/spinner.view'
 import FormButton from '../../../shared/form-button/form-button.view'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 function TransactionOverview ({
   wallet,
@@ -78,6 +78,23 @@ function TransactionOverview ({
     }
   }
 
+  function getTxType () {
+    switch (transactionType) {
+      case TransactionType.Deposit:
+        return TxType.Deposit
+      case TransactionType.Transfer:
+        return TxType.Transfer
+      case TransactionType.Exit:
+        return TxType.Exit
+      case TransactionType.Withdraw:
+        return TxType.Withdraw
+      case TransactionType.ForceExit:
+        return TxType.ForceExit
+      default:
+        return ''
+    }
+  }
+
   /**
    * Bubbles up an event to send the transaction accordingly
    * @returns {void}
@@ -123,12 +140,15 @@ function TransactionOverview ({
       <Container>
         <section className={classes.section}>
           <TransactionInfo
-            from={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
-            to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
-            fee={fee ? {
-              fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
-              tokens: `${getFixedTokenAmount(fee, account.token.decimals)} ${account.token.symbol}`
-            } : undefined}
+            txData={{
+              type: getTxType(),
+              fromHezEthereumAddress: wallet.hermezEthereumAddress,
+              toHezEthereumAddress: to.hezEthereumAddress,
+              fee: fee ? {
+                fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
+                tokens: `${getFixedTokenAmount(fee, account.token.decimals)} ${account.token.symbol}`
+              } : undefined
+            }}
           />
           {
             isTransactionBeingSigned

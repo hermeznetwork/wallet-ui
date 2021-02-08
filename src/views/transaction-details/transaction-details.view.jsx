@@ -13,14 +13,13 @@ import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
-import TransactionInfo from '../shared/transaction-info/transaction-info.view'
 import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import { push } from 'connected-react-router'
 import { getTransactionAmount } from '../../utils/transactions'
-import { getEthereumAddressFromHermezAddress, getPartiallyHiddenEthereumAddress, getPartiallyHiddenHermezAddress } from '../../utils/addresses'
+import TransactionInfo from '../shared/transaction-info/transaction-info.view'
 
 function TransactionDetails ({
   transactionTask,
@@ -105,72 +104,7 @@ function TransactionDetails ({
                 return <Spinner />
               }
               case 'successful': {
-                const status = {
-                  subtitle: transactionTask.data.state !== undefined ? 'Confirmed' : 'Pending'
-                }
-                const date = {
-                  subtitle: new Date(transactionTask.data.timestamp).toLocaleString()
-                }
-
-                switch (transactionTask.data.type) {
-                  case TxType.CreateAccountDeposit:
-                  case TxType.Deposit: {
-                    return (
-                      <TransactionInfo
-                        status={status}
-                        from={{
-                          subtitle: 'My Ethereum address',
-                          value: getPartiallyHiddenEthereumAddress(
-                            getEthereumAddressFromHermezAddress(transactionTask.data.fromHezEthereumAddress)
-                          )
-                        }}
-                        to={{
-                          subtitle: 'My Hermez address',
-                          value: getPartiallyHiddenHermezAddress(transactionTask.data.fromHezEthereumAddress)
-                        }}
-                        date={date}
-                      />
-                    )
-                  }
-                  case TxType.Transfer: {
-                    return (
-                      <TransactionInfo
-                        status={status}
-                        from={{
-                          subtitle: 'My Hermez address',
-                          value: getPartiallyHiddenHermezAddress(transactionTask.data.fromHezEthereumAddress)
-                        }}
-                        to={{
-                          subtitle: getPartiallyHiddenHermezAddress(transactionTask.data.toHezEthereumAddress)
-                        }}
-                        date={date}
-                      />
-                    )
-                  }
-                  case TxType.Withdraw:
-                  case TxType.Exit:
-                  case TxType.ForceExit: {
-                    return (
-                      <TransactionInfo
-                        status={status}
-                        from={{
-                          subtitle: 'My Hermez address',
-                          value: getPartiallyHiddenHermezAddress(transactionTask.data.fromHezEthereumAddress)
-                        }}
-                        to={{
-                          subtitle: 'My Ethereum address',
-                          value: getPartiallyHiddenEthereumAddress(
-                            getEthereumAddressFromHermezAddress(transactionTask.data.toHezEthereumAddress)
-                          )
-                        }}
-                        date={date}
-                      />
-                    )
-                  }
-                  default: {
-                    return <></>
-                  }
-                }
+                return <TransactionInfo txData={transactionTask.data} showStatus />
               }
               default: {
                 return <></>
