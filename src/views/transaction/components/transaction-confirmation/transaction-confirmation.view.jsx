@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionConfirmationStyles from './transaction-confirmation.styles'
 import transactionConfirmation from '../../../../images/transaction-confirmation.png'
-import { TransactionType } from '../../transaction.view'
 
 function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
   const classes = useTransactionConfirmationStyles()
@@ -14,15 +14,15 @@ function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
    */
   function getExplanation () {
     switch (transactionType) {
-      case TransactionType.Deposit:
+      case TxType.Deposit:
         return 'Your transaction is awaiting verification.'
-      case TransactionType.Transfer:
+      case TxType.Transfer:
         return 'Your transaction is completed.'
-      case TransactionType.Exit:
-      case TransactionType.ForceExit:
+      case TxType.Exit:
+      case TxType.ForceExit:
         return 'Withdrawal has been initiated and will require additional confirmation in a few minutes.'
-      case TransactionType.Withdraw:
-      case TransactionType.DelayedWithdrawal:
+      case TxType.Withdraw:
+      case TxType.DelayedWithdrawal:
         return 'Your withdrawal is awaiting verification.'
       default:
         return ''

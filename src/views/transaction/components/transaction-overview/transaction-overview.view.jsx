@@ -7,7 +7,6 @@ import useTransactionOverviewStyles from './transaction-overview.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
 import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
 import Container from '../../../shared/container/container.view'
-import { TransactionType } from '../../transaction.view'
 import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../../../shared/token-balance/token-balance.view'
 import Spinner from '../../../shared/spinner/spinner.view'
@@ -63,33 +62,16 @@ function TransactionOverview ({
    */
   function getButtonLabel () {
     switch (transactionType) {
-      case TransactionType.Deposit:
+      case TxType.Deposit:
         return 'Deposit'
-      case TransactionType.Transfer:
+      case TxType.Transfer:
         return 'Send'
-      case TransactionType.Exit:
+      case TxType.Exit:
         return 'Withdraw'
-      case TransactionType.Withdraw:
+      case TxType.Withdraw:
         return 'Withdraw'
-      case TransactionType.ForceExit:
+      case TxType.ForceExit:
         return 'Force Withdrawal'
-      default:
-        return ''
-    }
-  }
-
-  function getTxType () {
-    switch (transactionType) {
-      case TransactionType.Deposit:
-        return TxType.Deposit
-      case TransactionType.Transfer:
-        return TxType.Transfer
-      case TransactionType.Exit:
-        return TxType.Exit
-      case TransactionType.Withdraw:
-        return TxType.Withdraw
-      case TransactionType.ForceExit:
-        return TxType.ForceExit
       default:
         return ''
     }
@@ -103,16 +85,16 @@ function TransactionOverview ({
     const bigIntAmount = ethers.BigNumber.from(amount)
 
     switch (transactionType) {
-      case TransactionType.Deposit: {
+      case TxType.Deposit: {
         return onDeposit(bigIntAmount, account)
       }
-      case TransactionType.ForceExit: {
+      case TxType.ForceExit: {
         return onForceExit(bigIntAmount, account)
       }
-      case TransactionType.Withdraw: {
+      case TxType.Withdraw: {
         return onWithdraw(amount, account, exit, completeDelayedWithdrawal, instantWithdrawal)
       }
-      case TransactionType.Exit: {
+      case TxType.Exit: {
         return onExit(amount, account, fee)
       }
       default: {
@@ -141,7 +123,7 @@ function TransactionOverview ({
         <section className={classes.section}>
           <TransactionInfo
             txData={{
-              type: getTxType(),
+              type: transactionType,
               fromHezEthereumAddress: wallet.hermezEthereumAddress,
               toHezEthereumAddress: to.hezEthereumAddress,
               fee: fee ? {

@@ -1,7 +1,8 @@
 import React from 'react'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import Home from '../views/home/home.view'
-import Transaction, { TransactionType } from '../views/transaction/transaction.view'
+import Transaction from '../views/transaction/transaction.view'
 import MyAccount from '../views/my-account/my-account.view'
 import AccountDetails from '../views/account-details/account-details.view'
 import TransactionDetails from '../views/transaction-details/transaction-details.view'
@@ -19,23 +20,23 @@ const routes = [
   },
   {
     path: '/deposit',
-    render: () => <Transaction transactionType={TransactionType.Deposit} />
+    render: () => <Transaction transactionType={TxType.Deposit} />
   },
   {
     path: '/transfer',
-    render: () => <Transaction transactionType={TransactionType.Transfer} />
+    render: () => <Transaction transactionType={TxType.Transfer} />
   },
   {
     path: '/withdraw',
-    render: () => <Transaction transactionType={TransactionType.Exit} />
+    render: () => <Transaction transactionType={TxType.Exit} />
   },
   {
     path: '/withdraw-complete',
-    render: () => <Transaction transactionType={TransactionType.Withdraw} />
+    render: () => <Transaction transactionType={TxType.Withdraw} />
   },
   {
     path: '/force-withdrawal',
-    render: () => <Transaction transactionType={TransactionType.ForceExit} />
+    render: () => <Transaction transactionType={TxType.ForceExit} />
   },
   {
     path: '/my-account',

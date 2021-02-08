@@ -1,5 +1,6 @@
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+
 import { getPaginationData } from '../../utils/api'
-import { TransactionType } from '../../views/transaction/transaction.view'
 import { transactionActionTypes } from './transaction.actions'
 
 export const STEP_NAME = {
@@ -104,7 +105,7 @@ function transactionReducer (state = initialTransactionState, action) {
       }
     }
     case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      if (action.transactionType === TransactionType.Deposit) {
+      if (action.transactionType === TxType.Deposit) {
         return {
           ...state,
           steps: {

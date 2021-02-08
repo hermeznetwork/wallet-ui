@@ -21,7 +21,7 @@ import TokenBalance from '../shared/token-balance/token-balance.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
-import { TxType } from '@hermeznetwork/hermezjs/dist/node/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 function AccountDetails ({
   preferredCurrency,

@@ -1,11 +1,9 @@
 import { CoordinatorAPI, Tx } from '@hermeznetwork/hermezjs'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType, TxState } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
-import { TransactionType } from '../../views/transaction/transaction.view'
-import { TxState } from '@hermeznetwork/hermezjs/dist/node/tx-utils'
 
 /**
  * Fetches the account details for a token id in MetaMask.
@@ -101,7 +99,7 @@ function fetchAccounts (transactionType, fromItem) {
     if (!wallet) {
       return dispatch(transactionActions.loadAccountsFailure('MetaMask wallet is not loaded'))
     }
-    if (transactionType === TransactionType.Deposit) {
+    if (transactionType === TxType.Deposit) {
       return CoordinatorAPI.getTokens(undefined, undefined, undefined, 2049)
         .then((res) => {
           ethereum.getTokens(wallet, res.tokens)

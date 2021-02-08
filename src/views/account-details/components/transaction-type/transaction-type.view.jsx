@@ -40,7 +40,7 @@ function TransactionType ({ type, fromAccountIndex, accountIndex }) {
   return <img src={getIcon(type)} alt='Transaction type' />
 }
 
-TransactionType.propTypes = {
+TxType.propTypes = {
   type: PropTypes.string.isRequired
 }
 

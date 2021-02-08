@@ -1,10 +1,10 @@
 import React from 'react'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import AccountList from '../../../shared/account-list/account-list.view'
 import Container from '../../../shared/container/container.view'
 import InfiniteScroll from '../../../shared/infinite-scroll/infinite-scroll.view'
 import Spinner from '../../../shared/spinner/spinner.view'
-import { TransactionType } from '../../transaction.view'
 import useAccountSelectorStyles from './account-selector.styles'
 
 function AccountSelector ({
@@ -37,7 +37,7 @@ function AccountSelector ({
               case 'reloading':
               case 'successful': {
                 if (
-                  transactionType === TransactionType.Deposit
+                  transactionType === TxType.Deposit
                 ) {
                   if (accountsTask.data.length === 0) {
                     return (

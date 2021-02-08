@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import { push } from 'connected-react-router'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import * as transactionThunks from '../../store/transaction/transaction.thunks'
 import * as transactionActions from '../../store/transaction/transaction.actions'
@@ -16,14 +17,6 @@ import AccountSelector from './components/account-selector/account-selector.view
 import TransactionConfirmation from './components/transaction-confirmation/transaction-confirmation.view'
 import { changeHeader } from '../../store/global/global.actions'
 import Spinner from '../shared/spinner/spinner.view'
-
-export const TransactionType = {
-  Deposit: 'deposit',
-  Transfer: 'transfer',
-  Withdraw: 'withdraw',
-  Exit: 'exit',
-  ForceExit: 'forceExit'
-}
 
 export const WithdrawRedirectionRoute = {
   Home: 'home',
@@ -199,14 +192,14 @@ const mapStateToProps = (state) => ({
 
 const getTransactionOverviewHeaderTitle = (transactionType) => {
   switch (transactionType) {
-    case TransactionType.Deposit:
+    case TxType.Deposit:
       return 'Deposit'
-    case TransactionType.Transfer:
+    case TxType.Transfer:
       return 'Send'
-    case TransactionType.Exit:
-    case TransactionType.Withdraw:
+    case TxType.Exit:
+    case TxType.Withdraw:
       return 'Withdraw'
-    case TransactionType.ForceExit:
+    case TxType.ForceExit:
       return 'Force Withdrawal'
     default:
       return undefined
@@ -243,7 +236,7 @@ const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
       }
     }
     case STEP_NAME.REVIEW_TRANSACTION: {
-      if (transactionType === TransactionType.Withdraw) {
+      if (transactionType === TxType.Withdraw) {
         const action = redirectTo === WithdrawRedirectionRoute.Home
           ? push('/')
           : push(`/accounts/${accountIndex}`)
@@ -301,7 +294,7 @@ const mapDispatchToProps = (dispatch) => ({
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onFinishTransaction: (transactionType, accountIndex, redirectTo) => {
-    if (transactionType === TransactionType.Withdraw) {
+    if (transactionType === TxType.Withdraw) {
       if (redirectTo === WithdrawRedirectionRoute.Home) {
         dispatch(push('/'))
       } else {

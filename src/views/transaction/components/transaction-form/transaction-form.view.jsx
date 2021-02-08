@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { getAccounts } from '@hermeznetwork/hermezjs/src/api'
 import { getTokenAmountBigInt } from '@hermeznetwork/hermezjs/src/utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -10,7 +11,6 @@ import { ReactComponent as SwapIcon } from '../../../../images/icons/swap.svg'
 import { ReactComponent as ErrorIcon } from '../../../../images/icons/error.svg'
 import { ReactComponent as CloseIcon } from '../../../../images/icons/close.svg'
 import { ReactComponent as QRScannerIcon } from '../../../../images/icons/qr-scanner.svg'
-import { TransactionType } from '../../transaction.view'
 import Container from '../../../shared/container/container.view'
 import { isAnyVideoDeviceAvailable, readFromClipboard } from '../../../../utils/browser'
 import QRScanner from '../../../shared/qr-scanner/qr-scanner.view'
@@ -128,7 +128,7 @@ function TransactionForm ({
   function isContinueDisabled () {
     const isAmountValid = isAmountLessThanFunds && isAmountPositive
 
-    if (transactionType !== TransactionType.Transfer && isAmountValid) {
+    if (transactionType !== TxType.Transfer && isAmountValid) {
       return false
     } else if (isAmountValid && isReceiverValid) {
       return false
@@ -281,7 +281,7 @@ function TransactionForm ({
     const transactionAmount = getTokenAmountBigInt(selectedAmount.toString(), account.token.decimals).toString()
 
     switch (transactionType) {
-      case TransactionType.Transfer: {
+      case TxType.Transfer: {
         return getAccounts(receiver, [account.token.id])
           .then((res) => {
             const receiverAccount = res.accounts[0]
@@ -310,7 +310,7 @@ function TransactionForm ({
    * @returns {JSX.Element} The receiver input field
    */
   function renderReceiver () {
-    if (transactionType === TransactionType.Transfer) {
+    if (transactionType === TxType.Transfer) {
       return (
         <div className={classes.receiverWrapper}>
           <div className={clsx({
@@ -455,7 +455,7 @@ function TransactionForm ({
                       />
                     </form>
                     {
-                      transactionType !== TransactionType.Deposit && transactionType !== TransactionType.ForceExit && (
+                      transactionType !== TxType.Deposit && transactionType !== TxType.ForceExit && (
                         <div className={classes.feeWrapper}>
                           <p className={classes.fee}>
                             Fee {getFixedTokenAmount(getFee(feesTask.data), account.token.decimals)}
