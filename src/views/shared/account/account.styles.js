@@ -7,11 +7,14 @@ const useAccountStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     justifyContent: 'center',
     backgroundColor: hasPendingDeposit ? theme.palette.black : theme.palette.grey.light,
-    borderRadius: theme.spacing(1),
-    padding: `${theme.spacing(3)}px ${theme.spacing(5)}px`,
+    borderRadius: theme.spacing(2),
+    padding: `${theme.spacing(2.5)}px ${theme.spacing(3)}px`,
     cursor: isDisabled || !isClickable ? 'default' : 'pointer',
     opacity: isDisabled ? 0.5 : 1,
-    pointerEvents: isDisabled ? 'none' : 'all'
+    pointerEvents: isDisabled ? 'none' : 'all',
+    [theme.breakpoints.upSm]: {
+      padding: `${theme.spacing(3.5)}px ${theme.spacing(5)}px`
+    }
   }),
   values: {
     display: 'flex',
@@ -20,11 +23,23 @@ const useAccountStyles = createUseStyles(theme => ({
   },
   topRow: ({ hasPendingDeposit }) => ({
     color: hasPendingDeposit ? theme.palette.white : theme.palette.black,
-    fontSize: theme.spacing(2.5),
-    marginBottom: theme.spacing(1.5)
+    fontSize: theme.spacing(2),
+    marginBottom: theme.spacing(1.5),
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(2.5)
+    }
   }),
   tokenName: {
+    fontWeight: theme.fontWeights.medium
+  },
+  tokenSymbol: {
     fontWeight: theme.fontWeights.bold
+  },
+  tokenBalance: {
+    fontWeight: theme.fontWeights.medium
+  },
+  fiatBalance: {
+    fontWeight: theme.fontWeights.medium
   },
   bottomRow: {
     color: theme.palette.grey.main

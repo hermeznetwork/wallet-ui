@@ -218,7 +218,7 @@ const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
       return {
         type: 'page',
         data: {
-          title: 'Token',
+          title: transactionType === TxType.Deposit ? 'Deposit' : 'Token',
           closeAction: getHeaderCloseAction(accountIndex)
         }
       }

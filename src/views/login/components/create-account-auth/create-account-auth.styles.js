@@ -20,7 +20,7 @@ const useCreateAccountAuthStyles = createUseStyles(theme => ({
     color: theme.palette.black,
     fontWeight: theme.fontWeights.medium,
     textAlign: 'center',
-    marginBottom: theme.spacing(6),
+    marginBottom: theme.spacing(1),
     [theme.breakpoints.upSm]: {
       marginBottom: theme.spacing(11)
     }

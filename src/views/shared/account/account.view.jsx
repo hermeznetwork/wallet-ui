@@ -30,8 +30,8 @@ function Account ({
       }}
     >
       <div className={`${classes.values} ${classes.topRow}`}>
-        <p className={classes.tokenName}>{tokenName}</p>
-        <p>{CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}</p>
+        <p>{tokenSymbol}</p>
+        <p>{balance} {tokenSymbol}</p>
       </div>
       <div className={`${classes.values} ${classes.bottomRow}`}>
         {
@@ -41,9 +41,9 @@ function Account ({
                 <p className={classes.pendingLabelText}>Pending</p>
               </div>
             )
-            : <p>{tokenSymbol}</p>
+            : <p className={classes.tokenName}>{tokenName}</p>
         }
-        <p>{balance} {tokenSymbol}</p>
+        <p>{CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}</p>
       </div>
     </div>
   )

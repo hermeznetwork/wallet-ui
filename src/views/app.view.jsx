@@ -36,7 +36,7 @@ function App ({
 
   React.useEffect(() => {
     onLoadCoordinatorState()
-  }, [onLoadCoordinatorState])
+  }, [ethereumNetworkTask, onLoadCoordinatorState])
 
   React.useEffect(() => {
     if (coordinatorStateTask.status === 'successful') {

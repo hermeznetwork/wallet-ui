@@ -77,21 +77,21 @@ function TransactionDetails ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.section}>
-          <div className={classes.fiatAmount}>
-            <FiatAmount
-              amount={getTransactionFiatAmount(transactionTask)}
-              currency={preferredCurrency}
-            />
-          </div>
           {
-            <TokenBalance
-              amount={getFixedTokenAmount(
-                getTransactionAmount(transactionTask.data),
-                transactionTask.data?.token.decimals
-              )}
-              symbol={accountTokenSymbol}
-            />
+            <div className={classes.highlightedAmount}>
+              <TokenBalance
+                amount={getFixedTokenAmount(
+                  getTransactionAmount(transactionTask.data),
+                  transactionTask.data?.token.decimals
+                )}
+                symbol={accountTokenSymbol}
+              />
+            </div>
           }
+          <FiatAmount
+            amount={getTransactionFiatAmount(transactionTask)}
+            currency={preferredCurrency}
+          />
         </section>
       </Container>
       <Container>

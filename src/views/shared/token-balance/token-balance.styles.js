@@ -4,8 +4,11 @@ const useTokenBalance = createUseStyles(theme => ({
   root: {
     textAlign: 'center',
     fontSize: theme.spacing(2.5),
-    fontWeight: theme.fontWeights.medium,
-    color: theme.palette.grey.dark
+    fontWeight: theme.fontWeights.medium
+  },
+  amount: {
+    margin: 0,
+    fontSize: `${theme.spacing(5)}px`
   }
 }))
 

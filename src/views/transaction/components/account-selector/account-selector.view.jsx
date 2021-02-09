@@ -48,13 +48,16 @@ function AccountSelector ({
                   }
 
                   return (
-                    <AccountList
-                      accounts={accountsTask.data}
-                      preferredCurrency={preferredCurrency}
-                      fiatExchangeRates={fiatExchangeRates}
-                      disabledTokenIds={pendingDeposits && pendingDeposits.map(deposit => deposit.token.id)}
-                      onAccountClick={onAccountClick}
-                    />
+                    <div className={classes.accountListDeposit}>
+                      <p className={classes.accountListDepositText}>Available tokens to deposit</p>
+                      <AccountList
+                        accounts={accountsTask.data}
+                        preferredCurrency={preferredCurrency}
+                        fiatExchangeRates={fiatExchangeRates}
+                        disabledTokenIds={pendingDeposits && pendingDeposits.map(deposit => deposit.token.id)}
+                        onAccountClick={onAccountClick}
+                      />
+                    </div>
                   )
                 } else {
                   return (
