@@ -40,7 +40,8 @@ function setHermezEnvironment () {
               [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
                   process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
             },
-            batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL
+            batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL,
+            etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL
           })
         }
 
