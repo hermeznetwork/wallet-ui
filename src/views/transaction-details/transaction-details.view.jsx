@@ -107,6 +107,7 @@ function TransactionDetails ({
                   <>
                     <TransactionInfo
                       txData={transactionTask.data}
+                      accountIndex={accountIndex}
                       showStatus
                     />
                     <ExploreTransactionButton

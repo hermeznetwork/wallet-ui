@@ -4,7 +4,7 @@ import { TxState, TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 import TransactionInfoTable from '../transaction-info-table/transaction-info-table-row.view'
 import { getEthereumAddressFromHermezAddress, getPartiallyHiddenEthereumAddress, getPartiallyHiddenHermezAddress } from '../../../utils/addresses'
 
-function TransactionInfo ({ txData, showStatus }) {
+function TransactionInfo ({ txData, accountIndex, showStatus }) {
   const status = showStatus && {
     subtitle: !txData.state || txData.state === TxState.Forged ? 'Confirmed' : 'Pending'
   }
@@ -33,19 +33,35 @@ function TransactionInfo ({ txData, showStatus }) {
       )
     }
     case TxType.Transfer: {
-      return (
-        <TransactionInfoTable
-          status={status}
-          from={{
-            subtitle: 'My Hermez address',
-            value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
-          }}
-          to={{
-            subtitle: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
-          }}
-          date={date}
-        />
-      )
+      if (accountIndex === txData.fromAccountIndex) {
+        return (
+          <TransactionInfoTable
+            status={status}
+            from={{
+              subtitle: 'My Hermez address',
+              value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
+            }}
+            to={{
+              subtitle: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
+            }}
+            date={date}
+          />
+        )
+      } else {
+        return (
+          <TransactionInfoTable
+            status={status}
+            from={{
+              subtitle: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
+            }}
+            to={{
+              subtitle: 'My Hermez address',
+              value: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
+            }}
+            date={date}
+          />
+        )
+      }
     }
     case TxType.Withdraw:
     case TxType.Exit:
