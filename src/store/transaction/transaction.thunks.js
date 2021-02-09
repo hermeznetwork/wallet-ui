@@ -1,5 +1,5 @@
 import { CoordinatorAPI, Tx } from '@hermeznetwork/hermezjs'
-import { TxType, TxState, TxLevel } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType, TxState } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'
@@ -152,8 +152,7 @@ function deposit (amount, account) {
               amount: amount.toString(),
               state: TxState.Pending,
               timestamp: new Date().toISOString(),
-              type: res.accounts.length ? TxType.Deposit : TxType.CreateAccountDeposit,
-              L1orL2: TxLevel.L1
+              type: res.accounts.length ? TxType.Deposit : TxType.CreateAccountDeposit
             }))
             dispatch(transactionActions.goToFinishTransactionStep())
           })

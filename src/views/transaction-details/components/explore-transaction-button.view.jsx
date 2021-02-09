@@ -3,12 +3,11 @@ import hermezjs from '@hermeznetwork/hermezjs'
 
 import useExploreTransactionButtonStyles from './explore-transaction-button.styles'
 import { ReactComponent as OpenInNewTabIcon } from '../../../images/icons/open-in-new-tab.svg'
-import { TxLevel } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 function ExploreTransactionButton ({ txLevel, transactionId }) {
   const classes = useExploreTransactionButtonStyles()
-  const explorerName = txLevel === TxLevel.L1 ? 'Etherscan' : 'Explorer'
-  const href = txLevel === TxLevel.L1
+  const explorerName = !txLevel ? 'Etherscan' : 'Explorer'
+  const href = !txLevel
     ? `${hermezjs.Environment.getEtherscanUrl()}/tx/${transactionId}`
     : `${hermezjs.Environment.getBatchExplorerUrl()}/transaction/${transactionId}`
 
