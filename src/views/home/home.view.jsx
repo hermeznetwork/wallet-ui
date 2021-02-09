@@ -204,17 +204,17 @@ function Home ({
                 return <Spinner />
               case 'reloading':
               case 'successful': {
-                if (accountsTask.data.accounts.length === 0) {
+                const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
+                const pendingOnTopDeposits = getPendingOnTopDeposits(accountPendingDeposits)
+                const pendingCreateAccountDeposits = getPendingCreateAccountDeposits(accountPendingDeposits)
+
+                if (accountsTask.data.accounts.length === 0 && !pendingCreateAccountDeposits) {
                   return (
                     <p className={classes.emptyAccounts}>
                       Deposit tokens from your Ethereum account.
                     </p>
                   )
                 }
-
-                const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
-                const pendingOnTopDeposits = getPendingOnTopDeposits(accountPendingDeposits)
-                const pendingCreateAccountDeposits = getPendingCreateAccountDeposits(accountPendingDeposits)
 
                 return (
                   <>

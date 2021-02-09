@@ -226,10 +226,10 @@ function addPendingDeposit (pendingDeposit) {
 
 /**
  * Removes a pendingDeposit from the pendingDeposit store
- * @param {string} transactionHash - The token identifier used to remove a pendingDeposit from the store
+ * @param {string} transactionId - The transaction identifier used to remove a pendingDeposit from the store
  * @returns {void}
  */
-function removePendingDeposit (transactionHash) {
+function removePendingDeposit (transactionId) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
     const { hermezEthereumAddress } = wallet
@@ -239,14 +239,14 @@ function removePendingDeposit (transactionHash) {
 
     if (accountPendingDepositsStore !== undefined) {
       const newAccountPendingDepositsStore = accountPendingDepositsStore
-        .filter((pendingDeposit) => pendingDeposit.transactionHash !== transactionHash)
+        .filter((pendingDeposit) => pendingDeposit.id !== transactionId)
       const newPendingDepositsStore = {
         ...pendingDepositsStore,
         [hermezEthereumAddress]: newAccountPendingDepositsStore
       }
 
       localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
-      dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, transactionHash))
+      dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, transactionId))
     }
   }
 }
@@ -257,9 +257,9 @@ function checkPendingDeposits () {
     const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
 
     if (accountPendingDeposits !== undefined) {
-      const pendingDepositsTransactionHashes = accountPendingDeposits.map(deposit => deposit.transactionHash)
+      const pendingDepositsTransactionIds = accountPendingDeposits.map(deposit => deposit.id)
       const provider = hermezjs.Providers.getProvider()
-      const getTransactionPromises = pendingDepositsTransactionHashes.map((hash) => provider.getTransaction(hash))
+      const getTransactionPromises = pendingDepositsTransactionIds.map((hash) => provider.getTransaction(hash))
 
       Promise.all(getTransactionPromises).then((transactionsData) => {
         transactionsData.forEach((transaction) => {

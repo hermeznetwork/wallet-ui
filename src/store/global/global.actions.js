@@ -165,11 +165,11 @@ function addPendingDeposit (hermezEthereumAddress, pendingDeposit) {
   }
 }
 
-function removePendingDeposit (hermezEthereumAddress, transactionHash) {
+function removePendingDeposit (hermezEthereumAddress, transactionId) {
   return {
     type: globalActionTypes.REMOVE_PENDING_DEPOSIT,
     hermezEthereumAddress,
-    transactionHash
+    transactionId
   }
 }
 

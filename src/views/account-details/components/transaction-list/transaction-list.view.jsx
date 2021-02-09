@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { TxLevel } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
@@ -45,7 +44,6 @@ function TransactionList ({
               accountIndex={accountIndex}
               fromAccountIndex={transaction.fromAccountIndex}
               amount={fixedTokenAmount}
-              isL1={transaction.L1orL2 === TxLevel.L1}
               tokenSymbol={transaction.token.symbol}
               fiatAmount={getTokenAmountInPreferredCurrency(
                 fixedTokenAmount,

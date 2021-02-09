@@ -16,10 +16,10 @@ function fetchTransaction (transactionId) {
 
     if (accountPendingDeposits !== undefined) {
       const pendingDeposit = accountPendingDeposits
-        .find(deposit => deposit.transactionHash === transactionId)
+        .find(deposit => deposit.id === transactionId)
 
       if (pendingDeposit !== undefined) {
-        return dispatch(transactionDetailsActionTypes.loadTransaction(pendingDeposit))
+        return dispatch(transactionDetailsActionTypes.loadTransactionSuccess(pendingDeposit))
       }
     }
 

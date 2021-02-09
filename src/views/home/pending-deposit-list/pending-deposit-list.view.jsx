@@ -5,32 +5,35 @@ import Account from '../../shared/account/account.view'
 import usePendingDepositListStyles from './pending-deposit-list.styles'
 
 function PendingDepositList ({ deposits, preferredCurrency, fiatExchangeRates }) {
-  const classes = usePendingDepositListStyles(
+  const classes = usePendingDepositListStyles()
 
-  )
   return (
     <>
       {
-        deposits.map((deposit) => (
-          <div
-            key={deposit.transactionHash}
-            className={classes.pendingDeposit}
-          >
-            <Account
-              hasPendingDeposit
-              balance={getFixedTokenAmount(deposit.amount, deposit.token.decimals)}
-              fiatBalance={getTokenAmountInPreferredCurrency(
-                deposit.amount,
-                deposit.token.USD,
-                preferredCurrency,
-                fiatExchangeRates
-              )}
-              tokenName={deposit.token.name}
-              tokenSymbol={deposit.token.symbol}
-              preferredCurrency={preferredCurrency}
-            />
-          </div>
-        ))
+        deposits.map((deposit) => {
+          const fixedTokenAmount = getFixedTokenAmount(deposit.amount, deposit.token.decimals)
+
+          return (
+            <div
+              key={deposit.id}
+              className={classes.pendingDeposit}
+            >
+              <Account
+                hasPendingDeposit
+                balance={fixedTokenAmount}
+                fiatBalance={getTokenAmountInPreferredCurrency(
+                  fixedTokenAmount,
+                  deposit.token.USD,
+                  preferredCurrency,
+                  fiatExchangeRates
+                )}
+                tokenName={deposit.token.name}
+                tokenSymbol={deposit.token.symbol}
+                preferredCurrency={preferredCurrency}
+              />
+            </div>
+          )
+        })
       }
     </>
   )

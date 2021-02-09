@@ -11,7 +11,7 @@ function TransactionInfo ({ txData, showStatus }) {
   const date = txData.timestamp && {
     subtitle: new Date(txData.timestamp).toLocaleString()
   }
-  console.log(txData)
+
   switch (txData.type) {
     case TxType.CreateAccountDeposit:
     case TxType.Deposit: {

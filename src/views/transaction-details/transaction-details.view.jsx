@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
-import hermezjs from '@hermeznetwork/hermezjs'
 import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
@@ -13,13 +12,13 @@ import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
-import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
 import { push } from 'connected-react-router'
 import { getTransactionAmount } from '../../utils/transactions'
 import TransactionInfo from '../shared/transaction-info/transaction-info.view'
+import ExploreTransactionButton from './components/explore-transaction-button.view'
 
 function TransactionDetails ({
   transactionTask,
@@ -104,22 +103,24 @@ function TransactionDetails ({
                 return <Spinner />
               }
               case 'successful': {
-                return <TransactionInfo txData={transactionTask.data} showStatus />
+                return (
+                  <>
+                    <TransactionInfo
+                      txData={transactionTask.data}
+                      showStatus
+                    />
+                    <ExploreTransactionButton
+                      txLevel={transactionTask.data.L1orL2}
+                      transactionId={transactionTask.data.id}
+                    />
+                  </>
+                )
               }
               default: {
                 return <></>
               }
             }
           })()}
-          <a
-            className={classes.link}
-            href={`${hermezjs.Environment.getBatchExplorerUrl()}/transaction/${transactionId}`}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            <OpenInNewTabIcon className={classes.linkIcon} />
-            View in Explorer
-          </a>
         </section>
       </Container>
     </div>
