@@ -11,11 +11,11 @@ const useAccountDetailsStyles = createUseStyles(theme => ({
     alignItems: 'center'
   },
   fiatBalance: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(3)
   },
   tokenBalance: {
-    marginBottom: theme.spacing(3)
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1)
   }
 }))
 

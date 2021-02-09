@@ -38,13 +38,7 @@ function Transaction ({
             fromAccountIndex={fromAccountIndex}
             accountIndex={accountIndex}
           />
-          <TransactionAmount
-            fiatAmount={fiatAmount}
-            preferredCurrency={preferredCurrency}
-            type={type}
-            fromAccountIndex={fromAccountIndex}
-            accountIndex={accountIndex}
-          />
+          <p className={classes.tokenSymbol}>{amount} {tokenSymbol}</p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
           {
@@ -56,7 +50,13 @@ function Transaction ({
               )
               : <p>{new Date(timestamp).toLocaleDateString()}</p>
           }
-          <p>{amount} {tokenSymbol}</p>
+          <TransactionAmount
+            fiatAmount={fiatAmount}
+            preferredCurrency={preferredCurrency}
+            type={type}
+            fromAccountIndex={fromAccountIndex}
+            accountIndex={accountIndex}
+          />
         </div>
       </div>
     </div>

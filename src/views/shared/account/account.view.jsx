@@ -17,12 +17,12 @@ function Account ({
   return (
     <div className={classes.root} onClick={() => onClick()}>
       <div className={`${classes.values} ${classes.topRow}`}>
-        <p className={classes.tokenName}>{tokenName}</p>
-        <p>{CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}</p>
-      </div>
-      <div className={`${classes.values} ${classes.bottomRow}`}>
         <p>{tokenSymbol}</p>
         <p>{balance} {tokenSymbol}</p>
+      </div>
+      <div className={`${classes.values} ${classes.bottomRow}`}>
+        <p className={classes.tokenName}>{tokenName}</p>
+        <p>{CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}</p>
       </div>
     </div>
   )

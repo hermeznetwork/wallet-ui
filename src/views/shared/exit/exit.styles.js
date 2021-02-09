@@ -26,9 +26,9 @@ const useExitStyles = createUseStyles(theme => ({
     fontSize: theme.spacing(2.5)
   },
   amountFiat: {
-    color: theme.palette.white,
-    fontWeight: theme.fontWeights.bold,
-    fontSize: theme.spacing(2.5)
+    color: theme.palette.grey.dark,
+    fontSize: theme.spacing(2),
+    fontWeight: theme.fontWeights.medium
   },
   rowBottom: {
     display: 'flex',
@@ -52,9 +52,9 @@ const useExitStyles = createUseStyles(theme => ({
     color: theme.palette.red.main
   },
   tokenAmount: {
-    color: theme.palette.grey.dark,
-    fontSize: theme.spacing(2),
-    fontWeight: theme.fontWeights.medium
+    color: theme.palette.white,
+    fontWeight: theme.fontWeights.bold,
+    fontSize: theme.spacing(2.5)
   },
   withdraw: {
     display: 'flex',
