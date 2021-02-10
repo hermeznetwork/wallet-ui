@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { getAccounts } from '@hermeznetwork/hermezjs/src/api'
 import { getTokenAmountBigInt } from '@hermeznetwork/hermezjs/src/utils'
+import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compressed-amount'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -35,6 +36,7 @@ function TransactionForm ({
   const [receiver, setReceiver] = useState('')
   const [isAmountLessThanFunds, setIsAmountLessThanFunds] = React.useState(undefined)
   const [isAmountPositive, setIsAmountPositive] = React.useState(undefined)
+  const [isAmountCompressedValid, setIsAmountCompressedValid] = React.useState(undefined)
   const [isReceiverValid, setIsReceiverValid] = React.useState(undefined)
   const amountInput = React.useRef(undefined)
 
@@ -82,7 +84,7 @@ function TransactionForm ({
   }
 
   /**
-   * Coonverts the account balance to fiat in the preferred currency
+   * Converts the account balance to fiat in the preferred currency
    * @returns {number} - Accont balance in the preferred currency
    */
   function getAmountInFiat (amount) {
@@ -142,10 +144,23 @@ function TransactionForm ({
       return ''
     }
     if (showInFiat) {
-      return amount.toFixed(2)
+      return Number(amount.toFixed(2))
     } else {
       return amount
     }
+  }
+
+  /**
+   * Checks whether the selected amount is supported by the compression
+   * used in the Hermez network
+   * @param {Number} amount - Selector amount
+   * @returns {Boolean} Whether it is valid
+   */
+  function getIsAmountCompressedValid (amount) {
+    const bigIntAmount = BigInt(getTokenAmountBigInt(amount.toString(), account.token.decimals).toString())
+    const compressedAmount = HermezCompressedAmount.compressAmount(bigIntAmount)
+    const decompressedAmount = HermezCompressedAmount.decompressAmount(compressedAmount)
+    return bigIntAmount === decompressedAmount
   }
 
   /**
@@ -160,6 +175,7 @@ function TransactionForm ({
     if (event.target.value === '') {
       setIsAmountPositive(undefined)
       setIsAmountLessThanFunds(undefined)
+      setIsAmountCompressedValid(undefined)
       setAmount(undefined)
     } else {
       const newAmount = Number(event.target.value)
@@ -167,6 +183,7 @@ function TransactionForm ({
 
       setIsAmountLessThanFunds(newAmountInToken <= getAccountBalance())
       setIsAmountPositive(newAmountInToken > 0)
+      setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountInToken))
       setAmount(newAmount)
     }
   }
@@ -182,13 +199,16 @@ function TransactionForm ({
       const maxAmount = getAmountInFiat(account.balance)
       const fee = getAmountInFiat(getFee(feesTask.data))
       const newAmount = maxAmount - fee
+      const newAmountInToken = newAmount / getAccountFiatRate()
 
+      setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountInToken))
       setAmount(newAmount)
     } else {
       const maxAmount = getAccountBalance()
       const fee = getFixedTokenAmount(getFee(feesTask.data), account.token.decimals)
       const newAmount = Number(maxAmount) - Number(fee)
 
+      setIsAmountCompressedValid(getIsAmountCompressedValid(newAmount))
       setAmount(newAmount)
     }
 
@@ -440,7 +460,7 @@ function TransactionForm ({
                       </div>
                       <p className={clsx({
                         [classes.errorMessage]: true,
-                        [classes.selectAmountErrorMessageVisible]: isAmountPositive === false || isAmountLessThanFunds === false
+                        [classes.selectAmountErrorMessageVisible]: isAmountPositive === false || isAmountLessThanFunds === false || isAmountCompressedValid === false
                       })}
                       >
                         <ErrorIcon className={classes.errorIcon} />
@@ -448,8 +468,10 @@ function TransactionForm ({
                           isAmountPositive === false
                             ? 'The amount should be positive'
                             : isAmountLessThanFunds === false
-                              ? "You don't have enough funds"
-                              : ''
+                              ? 'You don\'t have enough funds'
+                              : isAmountCompressedValid === false
+                                ? 'The amount introduced is not supported by Hermez\'s compression algorithm. It needs to have a maximum of 10 significant digits'
+                                : ''
                         }
                       </p>
                       {renderReceiver()}

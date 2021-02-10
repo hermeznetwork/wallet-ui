@@ -12,7 +12,7 @@
     "lint:fix": "standard --fix"
   },
   "dependencies": {
-    "@hermeznetwork/hermezjs": "1.0.0-beta.13",
+    "@hermeznetwork/hermezjs": "file:../hermezjs",
     "abi-decoder": "^2.3.0",
     "axios": "^0.19.2",
     "big-integer": "^1.6.48",
@@ -30,16 +30,16 @@
     "react-qr-reader": "^2.2.1",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.3",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
-    "redux-thunk": "^2.3.0",
-    "serve": "^11.3.2"
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
-    "standard": "^14.3.4"
+    "react-scripts": "^4.0.2",
+    "serve": "^11.3.2",
+    "standard": "^16.0.3"
   },
   "standard": {
     "parser": "babel-eslint",
@@ -50,6 +50,9 @@
     "ignore": [
       "/build/",
       "/public/"
+    ],
+    "globals": [
+      "BigInt"
     ]
   },
   "browserslist": {

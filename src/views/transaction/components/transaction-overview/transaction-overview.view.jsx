@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { ethers } from 'ethers'
 import { useTheme } from 'react-jss'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
@@ -83,14 +82,14 @@ function TransactionOverview ({
    * @returns {void}
    */
   async function handleFormSubmit () {
-    const bigIntAmount = ethers.BigNumber.from(amount)
+    // const bigIntAmount = ethers.BigNumber.from(amount)
 
     switch (transactionType) {
       case TransactionType.Deposit: {
-        return onDeposit(bigIntAmount, account)
+        return onDeposit(amount, account)
       }
       case TransactionType.ForceExit: {
-        return onForceExit(bigIntAmount, account)
+        return onForceExit(amount, account)
       }
       case TransactionType.Withdraw: {
         return onWithdraw(amount, account, exit, completeDelayedWithdrawal, instantWithdrawal)
@@ -125,10 +124,12 @@ function TransactionOverview ({
           <TransactionInfo
             from={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
             to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
-            fee={fee ? {
-              fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
-              tokens: `${getFixedTokenAmount(fee, account.token.decimals)} ${account.token.symbol}`
-            } : undefined}
+            fee={fee
+              ? {
+                  fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
+                  tokens: `${getFixedTokenAmount(fee, account.token.decimals)} ${account.token.symbol}`
+                }
+              : undefined}
           />
           {
             isTransactionBeingSigned
@@ -139,13 +140,13 @@ function TransactionOverview ({
                     Sign in with MetaMask to confirm transaction
                   </p>
                 </div>
-              )
+                )
               : (
                 <FormButton
                   label={getButtonLabel()}
                   onClick={handleFormSubmit}
                 />
-              )
+                )
           }
         </section>
       </Container>

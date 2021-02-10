@@ -1,4 +1,4 @@
-import { CoordinatorAPI, Tx } from '@hermeznetwork/hermezjs'
+import { CoordinatorAPI, Tx, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
 import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import * as transactionActions from './transaction.actions'
@@ -136,7 +136,7 @@ function deposit (amount, account) {
     dispatch(transactionActions.startTransactionSigning())
 
     return Tx.deposit(
-      amount,
+      HermezCompressedAmount.compressAmount(amount),
       wallet.hermezEthereumAddress,
       account.token,
       wallet.publicKeyCompressedHex,
@@ -209,7 +209,7 @@ function forceExit (amount, account) {
     dispatch(transactionActions.startTransactionSigning())
 
     return Tx.forceExit(
-      amount,
+      HermezCompressedAmount.compressAmount(amount),
       account.accountIndex,
       account.token,
       signer
@@ -228,7 +228,7 @@ function exit (amount, account, fee) {
     const txData = {
       type: TxType.Exit,
       from: account.accountIndex,
-      amount,
+      amount: HermezCompressedAmount.compressAmount(amount),
       fee,
       nonce: account.nonce
     }
@@ -246,7 +246,7 @@ function transfer (amount, from, to, fee) {
       type: TxType.Transfer,
       from: from.accountIndex,
       to: to.accountIndex || to.hezEthereumAddress,
-      amount,
+      amount: HermezCompressedAmount.compressAmount(amount),
       fee,
       nonce: from.nonce
     }
