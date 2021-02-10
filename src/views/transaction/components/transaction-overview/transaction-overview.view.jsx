@@ -105,15 +105,15 @@ function TransactionOverview ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
-          <div className={classes.fiatAmount}>
-            <FiatAmount
-              amount={getAmountInFiat(amount)}
-              currency={preferredCurrency}
+          <div className={classes.highlightedAmount}>
+            <TokenBalance
+              amount={getFixedTokenAmount(amount, account.token.decimals)}
+              symbol={account.token.symbol}
             />
           </div>
-          <TokenBalance
-            amount={getFixedTokenAmount(amount, account.token.decimals)}
-            symbol={account.token.symbol}
+          <FiatAmount
+            amount={getAmountInFiat(amount)}
+            currency={preferredCurrency}
           />
         </section>
       </Container>

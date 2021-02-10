@@ -14,8 +14,8 @@ function TransactionInfoRow ({ title, subtitle, value }) {
           if (subtitle === undefined && value !== undefined) {
             return (
               <>
-                <p className={classes.subtitle}>{value}</p>
                 <p className={classes.value}>&nbsp;</p>
+                <p className={classes.subtitle}>{value}</p>
               </>
             )
           }
@@ -23,8 +23,8 @@ function TransactionInfoRow ({ title, subtitle, value }) {
           if (subtitle !== undefined && value !== undefined) {
             return (
               <>
-                <p className={classes.subtitle}>{subtitle}</p>
                 <p className={classes.value}>{value}</p>
+                <p className={classes.subtitle}>{subtitle}</p>
               </>
             )
           }

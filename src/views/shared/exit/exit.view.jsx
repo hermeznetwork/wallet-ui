@@ -177,7 +177,7 @@ function Exit ({
       <p className={classes.step}>Step {getStep()}/3</p>
       <div className={classes.rowTop}>
         <span className={classes.txType}>Withdrawal</span>
-        <span className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol}{fiatAmount.toFixed(2)}</span>
+        <span className={classes.tokenAmount}>{amount} {token.symbol}</span>
       </div>
       <div className={classes.rowBottom}>
         <div className={clsx({
@@ -192,7 +192,7 @@ function Exit ({
           >{getTag()}
           </span>
         </div>
-        <span className={classes.tokenAmount}>{amount} {token.symbol}</span>
+        <span className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol}{fiatAmount.toFixed(2)}</span>
       </div>
       {(() => {
         if (getStep() !== STEPS.second) {

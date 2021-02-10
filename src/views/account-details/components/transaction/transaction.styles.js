@@ -39,6 +39,9 @@ const useTransactionStyles = createUseStyles(theme => ({
   pendingLabelText: {
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.secondary.dark
+  },
+  tokenSymbol: {
+    fontWeight: theme.fontWeights.bold
   }
 }))
 

@@ -7,7 +7,7 @@ const useAccountStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     justifyContent: 'center',
     backgroundColor: theme.palette.grey.light,
-    borderRadius: theme.spacing(1),
+    borderRadius: theme.spacing(2),
     padding: `${theme.spacing(2.5)}px ${theme.spacing(3)}px`,
     cursor: 'pointer',
     [theme.breakpoints.upSm]: {
@@ -28,7 +28,16 @@ const useAccountStyles = createUseStyles(theme => ({
     }
   },
   tokenName: {
+    fontWeight: theme.fontWeights.medium
+  },
+  tokenSymbol: {
     fontWeight: theme.fontWeights.bold
+  },
+  tokenBalance: {
+    fontWeight: theme.fontWeights.medium
+  },
+  fiatBalance: {
+    fontWeight: theme.fontWeights.medium
   },
   bottomRow: {
     color: theme.palette.grey.main

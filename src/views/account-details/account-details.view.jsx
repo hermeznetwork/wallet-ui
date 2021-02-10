@@ -133,16 +133,16 @@ function AccountDetails ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.section}>
-          <div className={classes.fiatBalance}>
-            <FiatAmount
-              amount={getAccountBalance(accountTask)}
-              currency={preferredCurrency}
-            />
-          </div>
           <div className={classes.tokenBalance}>
             <TokenBalance
               amount={getFixedTokenAmount(accountTask.data?.balance, accountTask.data?.token.decimals)}
               symbol={accountTask.data?.token.symbol}
+            />
+          </div>
+          <div className={classes.fiatBalance}>
+            <FiatAmount
+              amount={getAccountBalance(accountTask)}
+              currency={preferredCurrency}
             />
           </div>
           <TransactionActions accountIndex={accountIndex} tokenId={accountTask.data?.token.id} />

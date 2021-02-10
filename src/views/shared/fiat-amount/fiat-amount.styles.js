@@ -4,11 +4,8 @@ const useFiatAmountStyles = createUseStyles(theme => ({
   root: {
     display: 'flex',
     alignItems: 'baseline',
-    justifyContent: 'center'
-  },
-  amount: {
-    margin: 0,
-    fontSize: `${theme.spacing(5)}px`
+    justifyContent: 'center',
+    color: theme.palette.grey.dark
   },
   currency: {
     margin: 0,
