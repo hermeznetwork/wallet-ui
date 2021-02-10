@@ -1,5 +1,5 @@
 import { CoordinatorAPI, Tx, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'

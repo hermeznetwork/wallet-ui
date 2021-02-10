@@ -1,4 +1,4 @@
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 function getTransactionAmount (transaction) {
   if (!transaction) {
