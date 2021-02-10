@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
+import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useAccountDetailsStyles from './account-details.styles'
 import * as globalThunks from '../../store/global/global.thunks'
@@ -21,7 +22,6 @@ import TokenBalance from '../shared/token-balance/token-balance.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 function AccountDetails ({
   preferredCurrency,
