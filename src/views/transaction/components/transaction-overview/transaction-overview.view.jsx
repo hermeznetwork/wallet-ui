@@ -82,8 +82,6 @@ function TransactionOverview ({
    * @returns {void}
    */
   async function handleFormSubmit () {
-    // const bigIntAmount = ethers.BigNumber.from(amount)
-
     switch (transactionType) {
       case TransactionType.Deposit: {
         return onDeposit(amount, account)

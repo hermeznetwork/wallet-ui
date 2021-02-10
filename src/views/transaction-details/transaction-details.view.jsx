@@ -84,15 +84,13 @@ function TransactionDetails ({
               currency={preferredCurrency}
             />
           </div>
-          {
-            <TokenBalance
-              amount={getFixedTokenAmount(
-                getTransactionAmount(transactionTask.data),
-                transactionTask.data?.token.decimals
-              )}
-              symbol={accountTokenSymbol}
-            />
-          }
+          <TokenBalance
+            amount={getFixedTokenAmount(
+              getTransactionAmount(transactionTask.data),
+              transactionTask.data?.token.decimals
+            )}
+            symbol={accountTokenSymbol}
+          />
         </section>
       </Container>
       <Container>

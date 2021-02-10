@@ -24,7 +24,7 @@ function TransactionActions ({ hideWithdraw, hideSend, accountIndex, tokenId }) 
               </Link>
               <p className={classes.buttonText}>Send</p>
             </div>
-          )
+            )
       }
       <div className={classes.action}>
         <Link to={`/deposit${depositQueryString}`} className={classes.button}>
@@ -42,7 +42,7 @@ function TransactionActions ({ hideWithdraw, hideSend, accountIndex, tokenId }) 
               </Link>
               <p className={classes.buttonText}>Withdraw</p>
             </div>
-          )
+            )
       }
     </div>
   )

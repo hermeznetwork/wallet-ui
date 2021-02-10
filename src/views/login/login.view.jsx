@@ -71,7 +71,6 @@ function Login ({
       case WalletName.TREZOR: {
         return onGoToAccountSelectorStep(walletName)
       }
-      default: {}
     }
   }
 

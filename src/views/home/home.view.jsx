@@ -107,13 +107,11 @@ function Home ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
-          {
-            <Button
-              text={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
-              className={classes.walletAddress}
-              onClick={() => handleEthereumAddressClick(wallet.hermezEthereumAddress)}
-            />
-          }
+          <Button
+            text={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
+            className={classes.walletAddress}
+            onClick={() => handleEthereumAddressClick(wallet.hermezEthereumAddress)}
+          />
           <div className={classes.accountBalance}>
             <FiatAmount
               amount={totalAccountsBalanceTask.data}
@@ -171,7 +169,7 @@ function Home ({
                       redirectTo={WithdrawRedirectionRoute.Home}
                     />}
                 </>
-              )
+                )
               : <></>
           }
           {(() => {
