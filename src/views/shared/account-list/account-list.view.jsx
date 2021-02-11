@@ -30,15 +30,12 @@ function AccountList ({
       return account.balance
     }
 
-    const pendingDeposit = pendingDeposits.find((deposit) => deposit.token.id === account.token.id)
+    const pendingAccountDeposits = pendingDeposits.filter((deposit) => deposit.token.id === account.token.id)
+    const newAccountBalance = pendingAccountDeposits.reduce((totalAccountBalance, pendingDeposit) => {
+      return totalAccountBalance.add(BigNumber.from(pendingDeposit.amount))
+    }, BigNumber.from(account.balance))
 
-    if (!pendingDeposit) {
-      return account.balance
-    }
-
-    const newAccountBalance = BigNumber.from(account.balance).add(BigNumber.from(pendingDeposit.amount)).toString()
-
-    return newAccountBalance
+    return newAccountBalance.toString()
   }
 
   function isAccountDisabled (account) {
