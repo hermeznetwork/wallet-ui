@@ -65,7 +65,7 @@ function Transaction ({
 
 Transaction.propTypes = {
   type: PropTypes.string.isRequired,
-  fromAccountIndex: PropTypes.string.isRequired,
+  fromAccountIndex: PropTypes.string,
   amount: PropTypes.string.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
   fiatAmount: PropTypes.number.isRequired,

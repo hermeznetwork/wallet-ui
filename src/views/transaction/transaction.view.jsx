@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import { push } from 'connected-react-router'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as transactionThunks from '../../store/transaction/transaction.thunks'
 import * as transactionActions from '../../store/transaction/transaction.actions'
@@ -16,14 +17,6 @@ import TransactionConfirmation from './components/transaction-confirmation/trans
 import { changeHeader } from '../../store/global/global.actions'
 import Spinner from '../shared/spinner/spinner.view'
 
-export const TransactionType = {
-  Deposit: 'deposit',
-  Transfer: 'transfer',
-  Withdraw: 'withdraw',
-  Exit: 'exit',
-  ForceExit: 'forceExit'
-}
-
 export const WithdrawRedirectionRoute = {
   Home: 'home',
   AccountDetails: 'account-details'
@@ -36,6 +29,7 @@ function Transaction ({
   preferredCurrency,
   fiatExchangeRatesTask,
   transactionType,
+  pendingDeposits,
   onChangeHeader,
   onLoadMetaMaskAccount,
   onLoadHermezAccount,
@@ -104,6 +98,7 @@ function Transaction ({
                 accountsTask={stepData.accountsTask}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}
+                pendingDeposits={pendingDeposits[wallet.hermezEthereumAddress]}
                 onLoadAccounts={onLoadAccounts}
                 onAccountClick={(account) => onGoToBuildTransactionStep(account, receiver)}
               />
@@ -185,20 +180,21 @@ const mapStateToProps = (state) => ({
   metaMaskTokensTask: state.transaction.metaMaskTokensTask,
   accountsTask: state.transaction.accountsTask,
   tokensTask: state.transaction.tokensTask,
+  pendingDeposits: state.global.pendingDeposits,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency
 })
 
 const getTransactionOverviewHeaderTitle = (transactionType) => {
   switch (transactionType) {
-    case TransactionType.Deposit:
+    case TxType.Deposit:
       return 'Deposit'
-    case TransactionType.Transfer:
+    case TxType.Transfer:
       return 'Send'
-    case TransactionType.Exit:
-    case TransactionType.Withdraw:
+    case TxType.Exit:
+    case TxType.Withdraw:
       return 'Withdraw'
-    case TransactionType.ForceExit:
+    case TxType.ForceExit:
       return 'Force Withdrawal'
     default:
       return undefined
@@ -217,7 +213,7 @@ const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
       return {
         type: 'page',
         data: {
-          title: transactionType === TransactionType.Deposit ? 'Deposit' : 'Token',
+          title: transactionType === TxType.Deposit ? 'Deposit' : 'Token',
           closeAction: getHeaderCloseAction(accountIndex)
         }
       }
@@ -235,7 +231,7 @@ const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
       }
     }
     case STEP_NAME.REVIEW_TRANSACTION: {
-      if (transactionType === TransactionType.Withdraw) {
+      if (transactionType === TxType.Withdraw) {
         const action = redirectTo === WithdrawRedirectionRoute.Home
           ? push('/')
           : push(`/accounts/${accountIndex}`)
@@ -285,7 +281,7 @@ const mapDispatchToProps = (dispatch) => ({
   onGoToTransactionOverviewStep: (transaction) =>
     dispatch(transactionActions.goToReviewTransactionStep(transaction)),
   onFinishTransaction: (transactionType, accountIndex, redirectTo) => {
-    if (transactionType === TransactionType.Withdraw) {
+    if (transactionType === TxType.Withdraw) {
       if (redirectTo === WithdrawRedirectionRoute.Home) {
         dispatch(push('/'))
       } else {

@@ -3,15 +3,14 @@ import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
-import { getPartiallyHiddenHermezAddress } from '../../../../utils/addresses'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
 import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
 import Container from '../../../shared/container/container.view'
-import { TransactionType } from '../../transaction.view'
 import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../../../shared/token-balance/token-balance.view'
 import Spinner from '../../../shared/spinner/spinner.view'
 import FormButton from '../../../shared/form-button/form-button.view'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 function TransactionOverview ({
   wallet,
@@ -62,15 +61,15 @@ function TransactionOverview ({
    */
   function getButtonLabel () {
     switch (transactionType) {
-      case TransactionType.Deposit:
+      case TxType.Deposit:
         return 'Deposit'
-      case TransactionType.Transfer:
+      case TxType.Transfer:
         return 'Send'
-      case TransactionType.Exit:
+      case TxType.Exit:
         return 'Withdraw'
-      case TransactionType.Withdraw:
+      case TxType.Withdraw:
         return 'Withdraw'
-      case TransactionType.ForceExit:
+      case TxType.ForceExit:
         return 'Force Withdrawal'
       default:
         return ''
@@ -83,16 +82,16 @@ function TransactionOverview ({
    */
   async function handleFormSubmit () {
     switch (transactionType) {
-      case TransactionType.Deposit: {
+      case TxType.Deposit: {
         return onDeposit(amount, account)
       }
-      case TransactionType.ForceExit: {
+      case TxType.ForceExit: {
         return onForceExit(amount, account)
       }
-      case TransactionType.Withdraw: {
+      case TxType.Withdraw: {
         return onWithdraw(amount, account, exit, completeDelayedWithdrawal, instantWithdrawal)
       }
-      case TransactionType.Exit: {
+      case TxType.Exit: {
         return onExit(amount, account, fee)
       }
       default: {
@@ -120,14 +119,17 @@ function TransactionOverview ({
       <Container>
         <section className={classes.section}>
           <TransactionInfo
-            from={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
-            to={Object.keys(to).length !== 0 ? getPartiallyHiddenHermezAddress(to.hezEthereumAddress) : undefined}
-            fee={fee
-              ? {
-                  fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
-                  tokens: `${getFixedTokenAmount(fee, account.token.decimals)} ${account.token.symbol}`
-                }
-              : undefined}
+            txData={{
+              type: transactionType,
+              fromHezEthereumAddress: wallet.hermezEthereumAddress,
+              toHezEthereumAddress: to.hezEthereumAddress,
+              fee: fee
+                ? {
+                    fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
+                    tokens: `${getFixedTokenAmount(fee, account.token.decimals)} ${account.token.symbol}`
+                  }
+                : undefined
+            }}
           />
           {
             isTransactionBeingSigned

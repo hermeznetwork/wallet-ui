@@ -23,6 +23,8 @@ export const globalActionTypes = {
   REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW',
   ADD_PENDING_DELAYED_WITHDRAW: '[GLOBAL] ADD PENDING DELAYED WITHRAW',
   REMOVE_PENDING_DELAYED_WITHDRAW: '[GLOBAL] REMOVE PENDING DELAYED WITHRAW',
+  ADD_PENDING_DEPOSIT: '[GLOBAL] ADD PENDING DEPOSIT',
+  REMOVE_PENDING_DEPOSIT: '[GLOBAL] REMOVE PENDING DEPOSIT',
   LOAD_COORDINATOR_STATE: '[GLOBAL] LOAD COORDINATOR STATE',
   LOAD_COORDINATOR_STATE_SUCCESS: '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
   LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE'
@@ -155,6 +157,22 @@ function removePendingDelayedWithdraw (hermezEthereumAddress, pendingDelayedWith
   }
 }
 
+function addPendingDeposit (hermezEthereumAddress, pendingDeposit) {
+  return {
+    type: globalActionTypes.ADD_PENDING_DEPOSIT,
+    hermezEthereumAddress,
+    pendingDeposit
+  }
+}
+
+function removePendingDeposit (hermezEthereumAddress, transactionId) {
+  return {
+    type: globalActionTypes.REMOVE_PENDING_DEPOSIT,
+    hermezEthereumAddress,
+    transactionId
+  }
+}
+
 function loadCoordinatorState () {
   return {
     type: globalActionTypes.LOAD_COORDINATOR_STATE
@@ -194,6 +212,8 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  addPendingDeposit,
+  removePendingDeposit,
   loadCoordinatorState,
   loadCoordinatorStateSuccess,
   loadCoordinatorStateFailure

@@ -3,7 +3,7 @@ import { push } from 'connected-react-router'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
-import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
+import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY, PENDING_DEPOSITS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 
 /**
@@ -40,7 +40,8 @@ function setHermezEnvironment () {
               [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
                   process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
             },
-            batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL
+            batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL,
+            etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL
           })
         }
 
@@ -200,6 +201,79 @@ function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
 }
 
 /**
+ * Adds a pendingDeposit to the pendingDeposits store
+ * @param {string} pendingDeposit - The pendingDeposit to add to the store
+ * @returns {void}
+ */
+function addPendingDeposit (pendingDeposit) {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+    const { hermezEthereumAddress } = wallet
+
+    const pendingDepositsStore = JSON.parse(localStorage.getItem(PENDING_DEPOSITS_KEY))
+    const accountPendingDepositsStore = pendingDepositsStore[hermezEthereumAddress]
+    const newAccountPendingDepositsStore = accountPendingDepositsStore === undefined
+      ? [pendingDeposit]
+      : [...accountPendingDepositsStore, pendingDeposit]
+    const newPendingDepositsStore = {
+      ...pendingDepositsStore,
+      [hermezEthereumAddress]: newAccountPendingDepositsStore
+    }
+
+    localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
+    dispatch(globalActions.addPendingDeposit(hermezEthereumAddress, pendingDeposit))
+  }
+}
+
+/**
+ * Removes a pendingDeposit from the pendingDeposit store
+ * @param {string} transactionId - The transaction identifier used to remove a pendingDeposit from the store
+ * @returns {void}
+ */
+function removePendingDeposit (transactionId) {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+    const { hermezEthereumAddress } = wallet
+
+    const pendingDepositsStore = JSON.parse(localStorage.getItem(PENDING_DEPOSITS_KEY))
+    const accountPendingDepositsStore = pendingDepositsStore[hermezEthereumAddress]
+
+    if (accountPendingDepositsStore !== undefined) {
+      const newAccountPendingDepositsStore = accountPendingDepositsStore
+        .filter((pendingDeposit) => pendingDeposit.id !== transactionId)
+      const newPendingDepositsStore = {
+        ...pendingDepositsStore,
+        [hermezEthereumAddress]: newAccountPendingDepositsStore
+      }
+
+      localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
+      dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, transactionId))
+    }
+  }
+}
+
+function checkPendingDeposits () {
+  return (dispatch, getState) => {
+    const { global: { wallet, pendingDeposits } } = getState()
+    const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
+
+    if (accountPendingDeposits !== undefined) {
+      const pendingDepositsTransactionIds = accountPendingDeposits.map(deposit => deposit.id)
+      const provider = hermezjs.Providers.getProvider()
+      const getTransactionPromises = pendingDepositsTransactionIds.map((hash) => provider.getTransaction(hash))
+
+      Promise.all(getTransactionPromises).then((transactionsData) => {
+        transactionsData.forEach((transaction) => {
+          if (transaction.blockNumber) {
+            dispatch(removePendingDeposit(transaction.hash))
+          }
+        })
+      })
+    }
+  }
+}
+
+/**
  * Fetches the state of the coordinator
  * @returns {void}
  */
@@ -243,6 +317,9 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  addPendingDeposit,
+  removePendingDeposit,
+  checkPendingDeposits,
   fetchCoordinatorState,
   disconnectWallet,
   reloadApp

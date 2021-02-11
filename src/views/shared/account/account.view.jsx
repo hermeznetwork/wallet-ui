@@ -10,18 +10,39 @@ function Account ({
   tokenSymbol,
   fiatBalance,
   preferredCurrency,
+  hasPendingDeposit,
+  isDisabled,
   onClick
 }) {
-  const classes = useAccountStyles()
+  const classes = useAccountStyles({
+    isClickable: onClick !== undefined,
+    hasPendingDeposit,
+    isDisabled
+  })
 
   return (
-    <div className={classes.root} onClick={() => onClick()}>
+    <div
+      className={classes.root}
+      onClick={() => {
+        if (onClick) {
+          onClick()
+        }
+      }}
+    >
       <div className={`${classes.values} ${classes.topRow}`}>
         <p>{tokenSymbol}</p>
         <p>{balance} {tokenSymbol}</p>
       </div>
       <div className={`${classes.values} ${classes.bottomRow}`}>
-        <p className={classes.tokenName}>{tokenName}</p>
+        {
+          hasPendingDeposit
+            ? (
+              <div className={classes.pendingLabelContainer}>
+                <p className={classes.pendingLabelText}>Pending</p>
+              </div>
+              )
+            : <p className={classes.tokenName}>{tokenName}</p>
+        }
         <p>{CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}</p>
       </div>
     </div>

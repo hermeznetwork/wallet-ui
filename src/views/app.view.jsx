@@ -35,9 +35,7 @@ function App ({
   }, [onLoadFiatExchangeRates])
 
   React.useEffect(() => {
-    if (ethereumNetworkTask.status === 'successful') {
-      onLoadCoordinatorState()
-    }
+    onLoadCoordinatorState()
   }, [ethereumNetworkTask, onLoadCoordinatorState])
 
   React.useEffect(() => {

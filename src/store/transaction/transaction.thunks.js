@@ -1,10 +1,9 @@
 import { CoordinatorAPI, Tx, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
-import { TransactionType } from '../../views/transaction/transaction.view'
 
 /**
  * Fetches the account details for a token id in MetaMask.
@@ -21,7 +20,7 @@ function fetchMetaMaskAccount (tokenId) {
       return dispatch(transactionActions.loadAccountFailure('MetaMask wallet is not loaded'))
     }
 
-    return CoordinatorAPI.getTokens(undefined, undefined, undefined, 2049)
+    return CoordinatorAPI.getTokens(undefined, undefined, undefined, undefined, 2049)
       .then((res) => {
         ethereum.getTokens(wallet, res.tokens)
           .then(metaMaskTokens => {
@@ -100,8 +99,8 @@ function fetchAccounts (transactionType, fromItem) {
     if (!wallet) {
       return dispatch(transactionActions.loadAccountsFailure('MetaMask wallet is not loaded'))
     }
-    if (transactionType === TransactionType.Deposit) {
-      return CoordinatorAPI.getTokens(undefined, undefined, undefined, 2049)
+    if (transactionType === TxType.Deposit) {
+      return CoordinatorAPI.getTokens(undefined, undefined, undefined, undefined, 2049)
         .then((res) => {
           ethereum.getTokens(wallet, res.tokens)
             .then(metaMaskTokens => dispatch(transactionActions.loadAccountsSuccess(transactionType, metaMaskTokens)))
@@ -142,7 +141,22 @@ function deposit (amount, account) {
       wallet.publicKeyCompressedHex,
       signer
     )
-      .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
+      .then((data) => {
+        CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [account.token.id])
+          .then((res) => {
+            dispatch(globalThunks.addPendingDeposit({
+              id: data.hash,
+              fromHezEthereumAddress: wallet.hermezEthereumAddress,
+              toHezEthereumAddress: wallet.hermezEthereumAddress,
+              token: account.token,
+              amount: amount.toString(),
+              state: TxState.Pending,
+              timestamp: new Date().toISOString(),
+              type: res.accounts.length ? TxType.Deposit : TxType.CreateAccountDeposit
+            }))
+            dispatch(transactionActions.goToFinishTransactionStep())
+          })
+      })
       .catch((error) => {
         dispatch(transactionActions.stopTransactionSigning())
         console.log(error)

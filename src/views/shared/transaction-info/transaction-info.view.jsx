@@ -1,29 +1,93 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import { TxState, TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
-import useTransactionInfoStyles from './transaction-info.styles'
-import TransactionInfoRow from '../transaction-info-row/transaction-info-row.view'
+import TransactionInfoTable from '../transaction-info-table/transaction-info-table-row.view'
+import { getPartiallyHiddenEthereumAddress, getPartiallyHiddenHermezAddress } from '../../../utils/addresses'
 
-function TransactionInfo ({ status, from, to, date, fee }) {
-  const classes = useTransactionInfoStyles()
+function TransactionInfo ({ txData, accountIndex, showStatus }) {
+  const status = showStatus && {
+    subtitle: !txData.state || txData.state === TxState.Forged ? 'Confirmed' : 'Pending'
+  }
+  const date = txData.timestamp && {
+    subtitle: new Date(txData.timestamp).toLocaleString()
+  }
 
-  return (
-    <div className={classes.root}>
-      {status && <TransactionInfoRow title='Status' value={status} />}
-      <TransactionInfoRow title='From' subtitle='My Ethereum address' value={from} />
-      {to && <TransactionInfoRow title='To' subtitle='To Ethereum address' value={to} />}
-      {date && <TransactionInfoRow title='Date' value={date} />}
-      {fee && <TransactionInfoRow title='Fee' subtitle={fee.fiat} value={fee.tokens} />}
-    </div>
-  )
-}
-
-TransactionInfo.propTypes = {
-  status: PropTypes.string,
-  from: PropTypes.string.isRequired,
-  to: PropTypes.string,
-  date: PropTypes.string,
-  fee: PropTypes.object
+  switch (txData.type) {
+    case TxType.CreateAccountDeposit:
+    case TxType.Deposit: {
+      return (
+        <TransactionInfoTable
+          status={status}
+          from={{
+            subtitle: 'My Ethereum address',
+            value: getPartiallyHiddenEthereumAddress(
+              getEthereumAddress(txData.fromHezEthereumAddress)
+            )
+          }}
+          to={{
+            subtitle: 'My Hermez address',
+            value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
+          }}
+          date={date}
+        />
+      )
+    }
+    case TxType.Transfer: {
+      if (accountIndex === txData.fromAccountIndex) {
+        return (
+          <TransactionInfoTable
+            status={status}
+            from={{
+              subtitle: 'My Hermez address',
+              value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
+            }}
+            to={{
+              subtitle: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
+            }}
+            date={date}
+          />
+        )
+      } else {
+        return (
+          <TransactionInfoTable
+            status={status}
+            from={{
+              subtitle: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
+            }}
+            to={{
+              subtitle: 'My Hermez address',
+              value: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
+            }}
+            date={date}
+          />
+        )
+      }
+    }
+    case TxType.Withdraw:
+    case TxType.Exit:
+    case TxType.ForceExit: {
+      return (
+        <TransactionInfoTable
+          status={status}
+          from={{
+            subtitle: 'My Hermez address',
+            value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
+          }}
+          to={{
+            subtitle: 'My Ethereum address',
+            value: getPartiallyHiddenEthereumAddress(
+              getEthereumAddress(txData.fromHezEthereumAddress)
+            )
+          }}
+          date={date}
+        />
+      )
+    }
+    default: {
+      return <></>
+    }
+  }
 }
 
 export default TransactionInfo

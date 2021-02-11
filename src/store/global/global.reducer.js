@@ -1,5 +1,5 @@
 import { globalActionTypes } from './global.actions'
-import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
+import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY, PENDING_DEPOSITS_KEY } from '../../constants'
 
 export const LOAD_ETHEREUM_NETWORK_ERROR = {
   METAMASK_NOT_INSTALLED: 'metamask-not-installed',
@@ -30,6 +30,18 @@ function getInitialPendingDelayedWithdraws () {
   }
 }
 
+function getInitialPendingDeposits () {
+  if (!localStorage.getItem(PENDING_DEPOSITS_KEY)) {
+    const emptyPendingDeposits = {}
+
+    localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(emptyPendingDeposits))
+
+    return emptyPendingDeposits
+  } else {
+    return JSON.parse(localStorage.getItem(PENDING_DEPOSITS_KEY))
+  }
+}
+
 const initialGlobalState = {
   ethereumNetworkTask: {
     status: 'pending'
@@ -49,6 +61,7 @@ const initialGlobalState = {
   networkStatus: 'online',
   pendingWithdraws: getInitialPendingWithdraws(),
   pendingDelayedWithdraws: getInitialPendingDelayedWithdraws(),
+  pendingDeposits: getInitialPendingDeposits(),
   coordinatorStateTask: {
     status: 'pending'
   }
@@ -208,6 +221,31 @@ function globalReducer (state = initialGlobalState, action) {
           ...state.pendingDelayedWithdraws,
           [action.hermezEthereumAddress]: accountPendingDelayedWithdraws
             .filter(pendingDelayedWithdraw => pendingDelayedWithdraw.id !== action.pendingDelayedWithdrawId)
+        }
+      }
+    }
+    case globalActionTypes.ADD_PENDING_DEPOSIT: {
+      const accountPendingDeposits = state.pendingDeposits[action.hermezEthereumAddress]
+
+      return {
+        ...state,
+        pendingDeposits: {
+          ...state.pendingDeposits,
+          [action.hermezEthereumAddress]: accountPendingDeposits === undefined
+            ? [action.pendingDeposit]
+            : [...accountPendingDeposits, action.pendingDeposit]
+        }
+      }
+    }
+    case globalActionTypes.REMOVE_PENDING_DEPOSIT: {
+      const accountPendingDeposits = state.pendingDeposits[action.hermezEthereumAddress]
+
+      return {
+        ...state,
+        pendingDeposits: {
+          ...state.pendingDeposits,
+          [action.hermezEthereumAddress]: accountPendingDeposits
+            .filter(pendingDeposit => pendingDeposit.id !== action.transactionId)
         }
       }
     }
