@@ -1,5 +1,5 @@
 import React from 'react'
-import { TxState, TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxState, TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import TransactionInfoTable from '../transaction-info-table/transaction-info-table-row.view'

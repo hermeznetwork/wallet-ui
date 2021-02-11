@@ -21,7 +21,7 @@ import Button from '../shared/button/button.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './pending-deposit-list/pending-deposit-list.view'
 
 function Home ({
@@ -131,13 +131,11 @@ function Home ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
-          {
-            <Button
-              text={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
-              className={classes.walletAddress}
-              onClick={() => handleEthereumAddressClick(wallet.hermezEthereumAddress)}
-            />
-          }
+          <Button
+            text={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
+            className={classes.walletAddress}
+            onClick={() => handleEthereumAddressClick(wallet.hermezEthereumAddress)}
+          />
           <div className={classes.accountBalance}>
             <FiatAmount
               amount={totalAccountsBalanceTask.data}
@@ -195,7 +193,7 @@ function Home ({
                       redirectTo={WithdrawRedirectionRoute.Home}
                     />}
                 </>
-              )
+                )
               : <></>
           }
           {(() => {

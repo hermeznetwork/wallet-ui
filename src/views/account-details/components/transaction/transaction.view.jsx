@@ -47,7 +47,7 @@ function Transaction ({
                 <div className={classes.pendingLabelContainer}>
                   <p className={classes.pendingLabelText}>Pending</p>
                 </div>
-              )
+                )
               : <p>{new Date(timestamp).toLocaleDateString()}</p>
           }
           <TransactionAmount

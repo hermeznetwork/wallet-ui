@@ -1,5 +1,5 @@
 import React from 'react'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import AccountList from '../../../shared/account-list/account-list.view'
 import Container from '../../../shared/container/container.view'

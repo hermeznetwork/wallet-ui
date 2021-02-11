@@ -1,5 +1,5 @@
 import React from 'react'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import Home from '../views/home/home.view'
 import Transaction from '../views/transaction/transaction.view'

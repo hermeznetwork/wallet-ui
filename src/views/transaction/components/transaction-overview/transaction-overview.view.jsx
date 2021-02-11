@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { ethers } from 'ethers'
 import { useTheme } from 'react-jss'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
@@ -11,7 +10,7 @@ import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../../../shared/token-balance/token-balance.view'
 import Spinner from '../../../shared/spinner/spinner.view'
 import FormButton from '../../../shared/form-button/form-button.view'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 function TransactionOverview ({
   wallet,
@@ -82,14 +81,12 @@ function TransactionOverview ({
    * @returns {void}
    */
   async function handleFormSubmit () {
-    const bigIntAmount = ethers.BigNumber.from(amount)
-
     switch (transactionType) {
       case TxType.Deposit: {
-        return onDeposit(bigIntAmount, account)
+        return onDeposit(amount, account)
       }
       case TxType.ForceExit: {
-        return onForceExit(bigIntAmount, account)
+        return onForceExit(amount, account)
       }
       case TxType.Withdraw: {
         return onWithdraw(amount, account, exit, completeDelayedWithdrawal, instantWithdrawal)
@@ -126,10 +123,12 @@ function TransactionOverview ({
               type: transactionType,
               fromHezEthereumAddress: wallet.hermezEthereumAddress,
               toHezEthereumAddress: to.hezEthereumAddress,
-              fee: fee ? {
-                fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
-                tokens: `${getFixedTokenAmount(fee, account.token.decimals)} ${account.token.symbol}`
-              } : undefined
+              fee: fee
+                ? {
+                    fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
+                    tokens: `${getFixedTokenAmount(fee, account.token.decimals)} ${account.token.symbol}`
+                  }
+                : undefined
             }}
           />
           {
@@ -141,13 +140,13 @@ function TransactionOverview ({
                     Sign in with MetaMask to confirm transaction
                   </p>
                 </div>
-              )
+                )
               : (
                 <FormButton
                   label={getButtonLabel()}
                   onClick={handleFormSubmit}
                 />
-              )
+                )
           }
         </section>
       </Container>

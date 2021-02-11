@@ -35,7 +35,7 @@ function WalletButtonList ({ onClick }) {
                 />
               </div>
             </>
-          )
+            )
           : <></>
       }
     </div>

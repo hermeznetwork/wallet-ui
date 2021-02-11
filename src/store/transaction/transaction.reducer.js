@@ -1,4 +1,4 @@
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import { getPaginationData } from '../../utils/api'
 import { transactionActionTypes } from './transaction.actions'

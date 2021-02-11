@@ -40,7 +40,7 @@ function Account ({
               <div className={classes.pendingLabelContainer}>
                 <p className={classes.pendingLabelText}>Pending</p>
               </div>
-            )
+              )
             : <p className={classes.tokenName}>{tokenName}</p>
         }
         <p>{CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}</p>

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionConfirmationStyles from './transaction-confirmation.styles'
 import transactionConfirmation from '../../../../images/transaction-confirmation.png'

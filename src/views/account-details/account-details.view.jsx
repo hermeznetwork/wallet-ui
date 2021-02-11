@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import useAccountDetailsStyles from './account-details.styles'
 import * as globalThunks from '../../store/global/global.thunks'
