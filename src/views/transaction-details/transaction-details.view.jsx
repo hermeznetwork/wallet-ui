@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 import hermezjs, { TxUtils } from '@hermeznetwork/hermezjs'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
@@ -78,17 +78,15 @@ function TransactionDetails ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.section}>
-          {
-            <div className={classes.highlightedAmount}>
-              <TokenBalance
-                amount={getFixedTokenAmount(
-                  getTransactionAmount(transactionTask.data),
-                  transactionTask.data?.token.decimals
-                )}
-                symbol={accountTokenSymbol}
-              />
-            </div>
-          }
+          <div className={classes.highlightedAmount}>
+            <TokenBalance
+              amount={getFixedTokenAmount(
+                getTransactionAmount(transactionTask.data),
+                transactionTask.data?.token.decimals
+              )}
+              symbol={accountTokenSymbol}
+            />
+          </div>
           <FiatAmount
             amount={getTransactionFiatAmount(transactionTask)}
             currency={preferredCurrency}

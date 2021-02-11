@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { TxLevel } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxLevel } from '@hermeznetwork/hermezjs/src/enums'
 
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
