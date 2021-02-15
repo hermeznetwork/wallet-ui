@@ -24,6 +24,14 @@ function AccountSelector ({
     }
   }, [accountsTask, transactionType, onLoadAccounts])
 
+  function getDisabledTokenIds () {
+    if (!pendingDeposits) {
+      return []
+    }
+
+    return pendingDeposits.map(deposit => deposit.type === TxType.CreateAccountDeposit && deposit.token.id)
+  }
+
   return (
     <div className={classes.root}>
       <Container disableTopGutter>
@@ -54,7 +62,7 @@ function AccountSelector ({
                         accounts={accountsTask.data}
                         preferredCurrency={preferredCurrency}
                         fiatExchangeRates={fiatExchangeRates}
-                        disabledTokenIds={pendingDeposits && pendingDeposits.map(deposit => deposit.token.id)}
+                        disabledTokenIds={getDisabledTokenIds()}
                         onAccountClick={onAccountClick}
                       />
                     </div>
