@@ -151,7 +151,7 @@ function AccountDetails ({
    * @returns {void}
    */
   function handleTransactionClick (transaction) {
-    onNavigateToTransactionDetails(accountIndex, transaction.id)
+    onNavigateToTransactionDetails(accountIndex, transaction.id || transaction.hash)
   }
 
   return (
