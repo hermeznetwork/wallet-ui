@@ -22,7 +22,7 @@ function Account ({
 
   return (
     <div
-      className={classes.root}
+      className={`${classes.root} ${classes.account}`}
       onClick={() => {
         if (onClick) {
           onClick()
