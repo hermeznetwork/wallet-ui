@@ -6,8 +6,8 @@ import { ReactComponent as OpenInNewTabIcon } from '../../../images/icons/open-i
 
 function ExploreTransactionButton ({ txLevel, transactionId }) {
   const classes = useExploreTransactionButtonStyles()
-  const explorerName = !txLevel ? 'Etherscan' : 'Explorer'
-  const href = !txLevel
+  const explorerName = txLevel === hermezjs.Enums.TxLevel.L1 ? 'Etherscan' : 'Explorer'
+  const href = txLevel === hermezjs.Enums.TxLevel.L1
     ? `${hermezjs.Environment.getEtherscanUrl()}/tx/${transactionId}`
     : `${hermezjs.Environment.getBatchExplorerUrl()}/transaction/${transactionId}`
 
