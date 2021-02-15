@@ -69,7 +69,6 @@ function TransactionForm ({
    * @returns {number} - Account balance in number
    */
   function getAccountBalance () {
-    console.log(account.balance, account.token.decimals)
     return getFixedTokenAmount(account.balance, account.token.decimals)
   }
 
@@ -157,21 +156,23 @@ function TransactionForm ({
   function getIsAmountCompressedValid (amount) {
     const compressedAmount = HermezCompressedAmount.compressAmount(amount)
     const decompressedAmount = HermezCompressedAmount.decompressAmount(compressedAmount)
-    return amount === decompressedAmount.toString()
+    return amount.toString() === decompressedAmount.toString()
   }
 
   /**
-   *
-   * @param {*} newAmount
+   * Makes the appropriate checks that the amount is valid
+   * @param {ethers.BigNumber} newAmount - The new amount as a BigNumber
    */
   function setAmountChecks (newAmount) {
-    setIsAmountLessThanFunds(BigInt(newAmount) <= BigInt(account.balance.toString()))
-    setIsAmountPositive(newAmount > 0)
-    setIsAmountCompressedValid(getIsAmountCompressedValid(newAmount))
+    // Convert from ethers.BigNumber to native BigInt
+    const newAmountBigInt = BigInt(newAmount.toString())
+    setIsAmountLessThanFunds(newAmountBigInt <= BigInt(account.balance.toString()))
+    setIsAmountPositive(newAmountBigInt > 0)
+    setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountBigInt))
   }
 
   /**
-   *
+   * Resets the local state
    */
   function resetAmounts () {
     setIsAmountPositive(undefined)
@@ -219,23 +220,22 @@ function TransactionForm ({
     if (showInFiat) {
       const maxAmount = getAmountInFiat(account.balance)
       const fee = getAmountInFiat(getFee(feesTask.data))
-      const newAmount = maxAmount - fee
-      const newAmountInToken = newAmount / getAccountFiatRate()
+      const newAmountInFiat = maxAmount - fee
+      const newAmountInToken = getTokenAmountBigInt((newAmountInFiat / getAccountFiatRate()).toString(), account.token.decimals)
 
-      setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountInToken))
+      setAmountChecks(newAmountInToken)
       setAmount(newAmountInToken)
-      setAmountFiat(newAmount)
+      setAmountFiat(newAmountInFiat)
     } else {
       const maxAmount = getAccountBalance()
       const fee = getFixedTokenAmount(getFee(feesTask.data), account.token.decimals)
-      const newAmount = Number(maxAmount) - Number(fee)
+      const newAmountInToken = getTokenAmountBigInt((Number(maxAmount) - Number(fee)).toString(), account.token.decimals)
+      const newAmountInFiat = getAmountInFiat(newAmountInToken)
 
-      setIsAmountCompressedValid(getIsAmountCompressedValid(newAmount))
-      setAmount(newAmount)
+      setAmountChecks(newAmountInToken)
+      setAmount(newAmountInToken)
+      setAmountFiat(newAmountInFiat)
     }
-
-    setIsAmountLessThanFunds(true)
-    setIsAmountPositive(true)
   }
 
   /**
