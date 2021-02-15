@@ -17,7 +17,14 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
     fontSize: `${theme.spacing(3)}px`,
     color: theme.palette.black.light,
     fontWeight: theme.fontWeights.bold,
-    marginTop: theme.spacing(6)
+    textAlign: 'center',
+    marginTop: theme.spacing(6),
+    marginLeft: theme.spacing(6),
+    marginRight: theme.spacing(6),
+    [theme.breakpoints.upSm]: {
+      marginLeft: theme.spacing(3),
+      marginRight: theme.spacing(3)
+    }
   },
   done: {
     cursor: 'pointer',
