@@ -19,8 +19,6 @@ function fetchTransaction (transactionIdOrHash) {
         .find(deposit => deposit.hash === transactionIdOrHash)
 
       if (pendingDeposit !== undefined) {
-        console.log('pending deposit ok')
-        console.log(pendingDeposit)
         return dispatch(transactionDetailsActionTypes.loadTransactionSuccess(pendingDeposit))
       }
     }
