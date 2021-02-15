@@ -1,4 +1,4 @@
-import hermezjs from '@hermeznetwork/hermezjs'
+import hermezjs, { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
 
 import * as globalActions from './global.actions'
@@ -227,10 +227,10 @@ function addPendingDeposit (pendingDeposit) {
 
 /**
  * Removes a pendingDeposit from the pendingDeposit store
- * @param {string} hash - The transaction identifier used to remove a pendingDeposit from the store
+ * @param {string} id - The transaction identifier used to remove a pendingDeposit from the store
  * @returns {void}
  */
-function removePendingDeposit (hash) {
+function removePendingDeposit (id) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
     const { hermezEthereumAddress } = wallet
@@ -240,14 +240,14 @@ function removePendingDeposit (hash) {
 
     if (accountPendingDepositsStore !== undefined) {
       const newAccountPendingDepositsStore = accountPendingDepositsStore
-        .filter((pendingDeposit) => pendingDeposit.hash !== hash)
+        .filter((pendingDeposit) => pendingDeposit.id !== id)
       const newPendingDepositsStore = {
         ...pendingDepositsStore,
         [hermezEthereumAddress]: newAccountPendingDepositsStore
       }
 
       localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
-      dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, hash))
+      dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, id))
     }
   }
 }
@@ -286,16 +286,13 @@ function checkPendingDeposits () {
     const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
 
     if (accountPendingDeposits !== undefined) {
-      const pendingDepositsTransactionHashes = accountPendingDeposits.map(deposit => deposit.hash)
-      const provider = hermezjs.Providers.getProvider()
-      const getTransactionPromises = pendingDepositsTransactionHashes.map((hash) => provider.getTransaction(hash))
+      const pendingDepositsMined = accountPendingDeposits.filter(deposit => deposit.id !== undefined)
+      const getTransactionPromises = pendingDepositsMined.map((deposit) => CoordinatorAPI.getHistoryTransaction(deposit.id))
 
-      Promise.all(getTransactionPromises).then((transactionsData) => {
-        transactionsData.forEach((transaction) => {
-          if (transaction.blockNumber) {
-            dispatch(removePendingDeposit(transaction.hash))
-          }
-        })
+      Promise.all(getTransactionPromises).then((results) => {
+        results
+          .filter((transaction) => transaction.batchNum !== null)
+          .forEach((transaction) => dispatch(removePendingDeposit(transaction.id)))
       })
     }
   }

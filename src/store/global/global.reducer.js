@@ -245,7 +245,7 @@ function globalReducer (state = initialGlobalState, action) {
         pendingDeposits: {
           ...state.pendingDeposits,
           [action.hermezEthereumAddress]: accountPendingDeposits
-            .filter(pendingDeposit => pendingDeposit.hash !== action.hash)
+            .filter(pendingDeposit => pendingDeposit.id !== action.id)
         }
       }
     }
