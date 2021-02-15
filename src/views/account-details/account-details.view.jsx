@@ -22,6 +22,7 @@ import TokenBalance from '../shared/token-balance/token-balance.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
+import { BigNumber } from 'ethers'
 
 function AccountDetails ({
   preferredCurrency,
@@ -49,6 +50,7 @@ function AccountDetails ({
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
   const { accountIndex } = useParams()
+  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
 
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name)
@@ -77,12 +79,28 @@ function AccountDetails ({
 
   React.useEffect(() => onCleanup, [onCleanup])
 
+  function getTokenBalance () {
+    if (accountTask.status !== 'successful' && accountTask.status !== 'reloading') {
+      return undefined
+    }
+
+    if (!accountPendingDeposits) {
+      return accountTask.data.balance
+    }
+
+    const tokenBalance = accountPendingDeposits.reduce((totalAccountBalance, pendingDeposit) => {
+      return totalAccountBalance.add(BigNumber.from(pendingDeposit.amount))
+    }, BigNumber.from(accountTask.data.balance))
+
+    return tokenBalance.toString()
+  }
+
   /**
    * Calculates the total balance of the account in the user's preferred currency
    * @param {Object} accountTask - Asynchronous task of the account
    * @returns {number} The balance of the account in user's preferred currency
    */
-  function getAccountBalance (accountTask) {
+  function getAccountBalance () {
     switch (accountTask.status) {
       case 'reloading':
       case 'successful': {
@@ -90,15 +108,15 @@ function AccountDetails ({
           return undefined
         }
 
-        const account = accountTask.data
+        const accountTokenBalance = getTokenBalance()
         const fixedAccountBalance = getFixedTokenAmount(
-          account.balance,
-          account.token.decimals
+          accountTokenBalance,
+          accountTask.data.token.decimals
         )
 
         return getTokenAmountInPreferredCurrency(
           fixedAccountBalance,
-          account.token.USD,
+          accountTask.data.token.USD,
           preferredCurrency,
           fiatExchangeRatesTask.data
         )
@@ -142,13 +160,13 @@ function AccountDetails ({
         <section className={classes.section}>
           <div className={classes.tokenBalance}>
             <TokenBalance
-              amount={getFixedTokenAmount(accountTask.data?.balance, accountTask.data?.token.decimals)}
+              amount={getFixedTokenAmount(getTokenBalance(), accountTask.data?.token.decimals)}
               symbol={accountTask.data?.token.symbol}
             />
           </div>
           <div className={classes.fiatBalance}>
             <FiatAmount
-              amount={getAccountBalance(accountTask)}
+              amount={getAccountBalance()}
               currency={preferredCurrency}
             />
           </div>
@@ -179,8 +197,6 @@ function AccountDetails ({
               (exitsTask.status === 'successful' ||
               exitsTask.status === 'reloading')
             ) {
-              const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
-
               return (
                 <>
                   <ExitList
