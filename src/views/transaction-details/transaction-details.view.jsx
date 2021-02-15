@@ -109,7 +109,7 @@ function TransactionDetails ({
                       showStatus
                     />
                     <ExploreTransactionButton
-                      txLevel={transactionTask.data.L1orL2}
+                      txLevel={transactionTask.data.fromAccountIndex}
                       transactionId={transactionTask.data.id}
                     />
                   </>

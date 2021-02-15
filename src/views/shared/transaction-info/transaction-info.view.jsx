@@ -33,7 +33,8 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
         />
       )
     }
-    case TxType.Transfer: {
+    case TxType.Transfer:
+    case TxType.TransferToEthAddr: {
       if (accountIndex === txData.fromAccountIndex) {
         return (
           <TransactionInfoTable
