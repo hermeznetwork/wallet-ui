@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { getAccounts } from '@hermeznetwork/hermezjs/src/api'
-import { getTokenAmountBigInt } from '@hermeznetwork/hermezjs/src/utils'
+import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compressed-amount'
 
@@ -144,7 +144,7 @@ function TransactionForm ({
     if (amount === undefined) {
       return ''
     }
-    return showInFiat ? Number(amountFiat.toFixed(2)) : getFixedTokenAmount(amount, account.token.decimals)
+    return showInFiat ? Number(amountFiat.toFixed(2)) : getTokenAmountString(amount, account.token.decimals)
   }
 
   /**
@@ -154,9 +154,13 @@ function TransactionForm ({
    * @returns {Boolean} Whether it is valid
    */
   function getIsAmountCompressedValid (amount) {
-    const compressedAmount = HermezCompressedAmount.compressAmount(amount)
-    const decompressedAmount = HermezCompressedAmount.decompressAmount(compressedAmount)
-    return amount.toString() === decompressedAmount.toString()
+    try {
+      const compressedAmount = HermezCompressedAmount.compressAmount(amount)
+      const decompressedAmount = HermezCompressedAmount.decompressAmount(compressedAmount)
+      return amount.toString() === decompressedAmount.toString()
+    } catch (e) {
+      return false
+    }
   }
 
   /**
