@@ -27,7 +27,7 @@ function setHermezEnvironment () {
           )
         }
 
-        if (hermezjs.Environment.isEnvironmentSupported(chainId)) {
+        if (process.env.REACT_APP_ENV === 'production' && hermezjs.Environment.isEnvironmentSupported(chainId)) {
           hermezjs.Environment.setEnvironment(chainId)
         }
 

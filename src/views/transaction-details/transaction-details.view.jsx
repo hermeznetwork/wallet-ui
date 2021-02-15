@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { TxType, TxLevel } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
@@ -109,7 +109,7 @@ function TransactionDetails ({
                       showStatus
                     />
                     <ExploreTransactionButton
-                      txLevel={transactionTask.data.L1orL2}
+                      txLevel={transactionTask.data.fromAccountIndex ? TxLevel.L2 : TxLevel.L1}
                       transactionIdOrHash={transactionTask.data.id || transactionTask.data.hash}
                     />
                   </>
