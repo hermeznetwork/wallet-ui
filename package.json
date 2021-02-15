@@ -12,7 +12,7 @@
     "lint:fix": "standard --fix"
   },
   "dependencies": {
-    "@hermeznetwork/hermezjs": "hermeznetwork/hermezjs#4edfc3a99604e9e86b505b74877073d6717df0f4",
+    "@hermeznetwork/hermezjs": "hermeznetwork/hermezjs#ad17798c57c2d771f442882e0ffc25fb4e8152a8",
     "abi-decoder": "^2.3.0",
     "axios": "^0.19.2",
     "big-integer": "^1.6.48",
