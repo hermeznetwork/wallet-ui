@@ -7,6 +7,7 @@ import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as transactionThunks from '../../store/transaction/transaction.thunks'
 import * as transactionActions from '../../store/transaction/transaction.actions'
+import * as globalThunks from '../../store/global/global.thunks'
 import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
 import TransactionOverview from './components/transaction-overview/transaction-overview.view'
@@ -31,6 +32,7 @@ function Transaction ({
   transactionType,
   pendingDeposits,
   onChangeHeader,
+  onCheckPendingDeposits,
   onLoadMetaMaskAccount,
   onLoadHermezAccount,
   onLoadExit,
@@ -61,6 +63,10 @@ function Transaction ({
   React.useEffect(() => {
     onChangeHeader(currentStep, transactionType, accountIndex, redirectTo)
   }, [currentStep, transactionType, accountIndex, redirectTo, onChangeHeader])
+
+  React.useEffect(() => {
+    onCheckPendingDeposits()
+  }, [onCheckPendingDeposits])
 
   React.useEffect(() => {
     if (accountIndex && tokenId) {
@@ -264,6 +270,7 @@ const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: (currentStep, transactionType, accountIndex, redirectTo) =>
     dispatch(changeHeader(getHeader(currentStep, transactionType, accountIndex, redirectTo))),
+  onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadMetaMaskAccount: (tokenId) =>
     dispatch(transactionThunks.fetchMetaMaskAccount(tokenId)),
   onLoadHermezAccount: (accountIndex) =>
