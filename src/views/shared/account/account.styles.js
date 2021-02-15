@@ -15,7 +15,7 @@ const useAccountStyles = createUseStyles(theme => ({
   account: {
     padding: theme.spacing(2.5),
     [theme.breakpoints.upSm]: {
-      padding: `${theme.spacing(3)}px ${theme.spacing(3)}px`
+      padding: `${theme.spacing(3)}px ${theme.spacing(5)}px`
     }
   },
   values: {
