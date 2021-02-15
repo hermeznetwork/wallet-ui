@@ -227,10 +227,10 @@ function addPendingDeposit (pendingDeposit) {
 
 /**
  * Removes a pendingDeposit from the pendingDeposit store
- * @param {string} transactionId - The transaction identifier used to remove a pendingDeposit from the store
+ * @param {string} hash - The transaction identifier used to remove a pendingDeposit from the store
  * @returns {void}
  */
-function removePendingDeposit (transactionId) {
+function removePendingDeposit (hash) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
     const { hermezEthereumAddress } = wallet
@@ -240,14 +240,42 @@ function removePendingDeposit (transactionId) {
 
     if (accountPendingDepositsStore !== undefined) {
       const newAccountPendingDepositsStore = accountPendingDepositsStore
-        .filter((pendingDeposit) => pendingDeposit.id !== transactionId)
+        .filter((pendingDeposit) => pendingDeposit.hash !== hash)
       const newPendingDepositsStore = {
         ...pendingDepositsStore,
         [hermezEthereumAddress]: newAccountPendingDepositsStore
       }
 
       localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
-      dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, transactionId))
+      dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, hash))
+    }
+  }
+}
+
+function updatePendingDepositId (hash, id) {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+    const { hermezEthereumAddress } = wallet
+
+    const pendingDepositsStore = JSON.parse(localStorage.getItem(PENDING_DEPOSITS_KEY))
+    const accountPendingDepositsStore = pendingDepositsStore[hermezEthereumAddress]
+
+    if (accountPendingDepositsStore !== undefined) {
+      const newAccountPendingDepositsStore = accountPendingDepositsStore
+        .map((pendingDeposit) => {
+          if (pendingDeposit.hash === hash) {
+            return { ...pendingDeposit, id }
+          } else {
+            return pendingDeposit
+          }
+        })
+      const newPendingDepositsStore = {
+        ...pendingDepositsStore,
+        [hermezEthereumAddress]: newAccountPendingDepositsStore
+      }
+
+      localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
+      dispatch(globalActions.updatePendingDepositId(hermezEthereumAddress, hash, id))
     }
   }
 }
@@ -258,9 +286,9 @@ function checkPendingDeposits () {
     const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
 
     if (accountPendingDeposits !== undefined) {
-      const pendingDepositsTransactionIds = accountPendingDeposits.map(deposit => deposit.id)
+      const pendingDepositsTransactionHashes = accountPendingDeposits.map(deposit => deposit.hash)
       const provider = hermezjs.Providers.getProvider()
-      const getTransactionPromises = pendingDepositsTransactionIds.map((hash) => provider.getTransaction(hash))
+      const getTransactionPromises = pendingDepositsTransactionHashes.map((hash) => provider.getTransaction(hash))
 
       Promise.all(getTransactionPromises).then((transactionsData) => {
         transactionsData.forEach((transaction) => {
@@ -319,6 +347,7 @@ export {
   removePendingDelayedWithdraw,
   addPendingDeposit,
   removePendingDeposit,
+  updatePendingDepositId,
   checkPendingDeposits,
   fetchCoordinatorState,
   disconnectWallet,

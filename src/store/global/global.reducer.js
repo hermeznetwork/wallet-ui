@@ -245,7 +245,25 @@ function globalReducer (state = initialGlobalState, action) {
         pendingDeposits: {
           ...state.pendingDeposits,
           [action.hermezEthereumAddress]: accountPendingDeposits
-            .filter(pendingDeposit => pendingDeposit.id !== action.transactionId)
+            .filter(pendingDeposit => pendingDeposit.hash !== action.hash)
+        }
+      }
+    }
+    case globalActionTypes.UPDATE_PENDING_DEPOSIT_ID: {
+      const accountPendingDeposits = state.pendingDeposits[action.hermezEthereumAddress]
+      const newAccountPendingDeposits = accountPendingDeposits.map((pendingDeposit) => {
+        if (pendingDeposit.hash === action.hash) {
+          return { ...pendingDeposit, id: action.id }
+        } else {
+          return pendingDeposit
+        }
+      })
+
+      return {
+        ...state,
+        pendingDeposits: {
+          ...state.pendingDeposits,
+          [action.hermezEthereumAddress]: newAccountPendingDeposits
         }
       }
     }
