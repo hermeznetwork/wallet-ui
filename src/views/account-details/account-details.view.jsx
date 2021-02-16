@@ -79,6 +79,9 @@ function AccountDetails ({
 
   React.useEffect(() => onCleanup, [onCleanup])
 
+  /**
+   * Gets the token balance of the account, including pending deposits
+   */
   function getTokenBalance () {
     if (accountTask.status !== 'successful' && accountTask.status !== 'reloading') {
       return undefined
