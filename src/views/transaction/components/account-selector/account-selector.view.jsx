@@ -13,11 +13,12 @@ function AccountSelector ({
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
+  pendingDepositsCheckTask,
   onLoadAccounts,
   onAccountClick
 }) {
   const classes = useAccountSelectorStyles()
-
+  console.log(pendingDepositsCheckTask)
   React.useEffect(() => {
     if (accountsTask.status === 'pending') {
       onLoadAccounts(transactionType)
@@ -38,15 +39,18 @@ function AccountSelector ({
         <section className={classes.accountListWrapper}>
           {(() => {
             switch (accountsTask.status) {
+              case 'pending':
               case 'loading':
               case 'failed': {
                 return <Spinner />
               }
               case 'reloading':
               case 'successful': {
-                if (
-                  transactionType === TxType.Deposit
-                ) {
+                if (pendingDepositsCheckTask.status !== 'successful') {
+                  return <Spinner />
+                }
+
+                if (transactionType === TxType.Deposit) {
                   if (accountsTask.data.length === 0) {
                     return (
                       <p className={classes.emptyState}>

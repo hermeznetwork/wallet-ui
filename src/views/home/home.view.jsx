@@ -35,6 +35,7 @@ function Home ({
   pendingWithdraws,
   pendingDelayedWithdraws,
   pendingDeposits,
+  pendingDepositsCheckTask,
   coordinatorStateTask,
   onChangeHeader,
   onCheckPendingDeposits,
@@ -70,17 +71,15 @@ function Home ({
   }, [wallet, preferredCurrency, fiatExchangeRatesTask, onLoadTotalAccountsBalance])
 
   React.useEffect(() => {
-    if (wallet && coordinatorStateTask.status === 'successful') {
+    if (wallet) {
       onLoadAccounts(wallet.hermezEthereumAddress)
     }
-  }, [wallet, coordinatorStateTask, onLoadAccounts])
+  }, [wallet, onLoadAccounts])
 
   React.useEffect(() => {
-    if (coordinatorStateTask.status === 'successful') {
-      onLoadPoolTransactions()
-      onLoadExits()
-    }
-  }, [coordinatorStateTask, onLoadPoolTransactions, onLoadExits])
+    onLoadPoolTransactions()
+    onLoadExits()
+  }, [onLoadPoolTransactions, onLoadExits])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -198,10 +197,17 @@ function Home ({
           }
           {(() => {
             switch (accountsTask.status) {
+              case 'pending':
               case 'loading':
+              case 'failed': {
                 return <Spinner />
+              }
               case 'reloading':
               case 'successful': {
+                if (pendingDepositsCheckTask.status === 'loading') {
+                  return <Spinner />
+                }
+
                 const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
                 const pendingOnTopDeposits = getPendingOnTopDeposits(accountPendingDeposits)
                 const pendingCreateAccountDeposits = getPendingCreateAccountDeposits(accountPendingDeposits)
@@ -245,9 +251,6 @@ function Home ({
                   </>
                 )
               }
-              default: {
-                return <></>
-              }
             }
           })()}
         </section>
@@ -278,6 +281,7 @@ const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
   totalAccountsBalanceTask: state.home.totalAccountsBalanceTask,
   accountsTask: state.home.accountsTask,
+  pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
