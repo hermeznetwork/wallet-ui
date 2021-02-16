@@ -102,15 +102,15 @@ function TransactionForm ({
    * It takes the appropriate recomended fee in USD from the coordinator
    * and converts it to token value.
    * @param {Object} fees - The recommended Fee object feturned by the Coordinator
-   * @param {Boolean} existingAccount - Whether it's a existingAccount transfer
+   * @param {Boolean} iExistingAccount - Whether it's a existingAccount transfer
    * @returns {number} - Transaction fee
    */
-  function getFee (fees, existingAccount) {
+  function getFee (fees, isExistingAccount) {
     if (account.token.USD === 0) {
       return 0
     }
 
-    const fee = existingAccount ? fees.existingAccount : fees.createAccount
+    const fee = isExistingAccount ? fees.existingAccount : fees.createAccount
 
     return fee / account.token.USD
   }
