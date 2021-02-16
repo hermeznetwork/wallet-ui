@@ -18,7 +18,7 @@ function AccountSelector ({
   onAccountClick
 }) {
   const classes = useAccountSelectorStyles()
-  console.log(pendingDepositsCheckTask)
+
   React.useEffect(() => {
     if (accountsTask.status === 'pending') {
       onLoadAccounts(transactionType)
