@@ -15,7 +15,6 @@ function Account ({
   onClick
 }) {
   const classes = useAccountStyles({
-    isClickable: onClick !== undefined,
     hasPendingDeposit,
     isDisabled
   })

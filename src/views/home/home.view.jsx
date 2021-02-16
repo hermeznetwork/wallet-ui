@@ -221,6 +221,7 @@ function Home ({
                         deposits={pendingCreateAccountDeposits}
                         preferredCurrency={preferredCurrency}
                         fiatExchangeRates={fiatExchangeRatesTask.data}
+                        onAccountClick={() => onOpenSnackbar('This token account is being created')}
                       />
                     )}
                     <InfiniteScroll
