@@ -13,6 +13,7 @@ function AccountSelector ({
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
+  pendingDepositsCheckTask,
   onLoadAccounts,
   onAccountClick
 }) {
@@ -24,21 +25,32 @@ function AccountSelector ({
     }
   }, [accountsTask, transactionType, onLoadAccounts])
 
+  function getDisabledTokenIds () {
+    if (!pendingDeposits) {
+      return []
+    }
+
+    return pendingDeposits.map(deposit => deposit.type === TxType.CreateAccountDeposit && deposit.token.id)
+  }
+
   return (
     <div className={classes.root}>
       <Container disableTopGutter>
         <section className={classes.accountListWrapper}>
           {(() => {
             switch (accountsTask.status) {
+              case 'pending':
               case 'loading':
               case 'failed': {
                 return <Spinner />
               }
               case 'reloading':
               case 'successful': {
-                if (
-                  transactionType === TxType.Deposit
-                ) {
+                if (pendingDepositsCheckTask.status !== 'successful') {
+                  return <Spinner />
+                }
+
+                if (transactionType === TxType.Deposit) {
                   if (accountsTask.data.length === 0) {
                     return (
                       <p className={classes.emptyState}>
@@ -54,7 +66,7 @@ function AccountSelector ({
                         accounts={accountsTask.data}
                         preferredCurrency={preferredCurrency}
                         fiatExchangeRates={fiatExchangeRates}
-                        disabledTokenIds={pendingDeposits && pendingDeposits.map(deposit => deposit.token.id)}
+                        disabledTokenIds={getDisabledTokenIds()}
                         onAccountClick={onAccountClick}
                       />
                     </div>

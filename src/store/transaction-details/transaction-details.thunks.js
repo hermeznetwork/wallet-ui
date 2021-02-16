@@ -5,9 +5,9 @@ import * as transactionDetailsActionTypes from './transaction-details.actions'
 
 /**
  * Fetches the details of a transaction
- * @param {string} transactionId - Transaction id
+ * @param {string} transactionIdOrHash - Transaction id or hash
  */
-function fetchTransaction (transactionId) {
+function fetchTransaction (transactionIdOrHash) {
   return (dispatch, getState) => {
     const { global: { wallet, pendingDeposits } } = getState()
     const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
@@ -16,18 +16,18 @@ function fetchTransaction (transactionId) {
 
     if (accountPendingDeposits !== undefined) {
       const pendingDeposit = accountPendingDeposits
-        .find(deposit => deposit.id === transactionId)
+        .find(deposit => deposit.hash === transactionIdOrHash)
 
       if (pendingDeposit !== undefined) {
         return dispatch(transactionDetailsActionTypes.loadTransactionSuccess(pendingDeposit))
       }
     }
 
-    return CoordinatorAPI.getPoolTransaction(transactionId)
+    return CoordinatorAPI.getPoolTransaction(transactionIdOrHash)
       .then(res => dispatch(transactionDetailsActionTypes.loadTransactionSuccess(res)))
       .catch(err => {
         if (err.response.status === HttpStatusCode.NOT_FOUND) {
-          return CoordinatorAPI.getHistoryTransaction(transactionId)
+          return CoordinatorAPI.getHistoryTransaction(transactionIdOrHash)
             .then(res => dispatch(transactionDetailsActionTypes.loadTransactionSuccess(res)))
             .catch(() => dispatch(transactionDetailsActionTypes.loadTransactionFailure()))
         } else {

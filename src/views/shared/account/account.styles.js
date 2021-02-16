@@ -1,14 +1,14 @@
 import { createUseStyles } from 'react-jss'
 
 const useAccountStyles = createUseStyles(theme => ({
-  root: ({ hasPendingDeposit, isDisabled, isClickable }) => ({
+  root: ({ hasPendingDeposit, isDisabled }) => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     backgroundColor: hasPendingDeposit ? theme.palette.black : theme.palette.grey.light,
     borderRadius: theme.spacing(2),
-    cursor: isDisabled || !isClickable ? 'default' : 'pointer',
+    cursor: isDisabled ? 'default' : 'pointer',
     opacity: isDisabled ? 0.5 : 1,
     pointerEvents: isDisabled ? 'none' : 'all'
   }),

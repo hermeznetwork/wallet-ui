@@ -5,7 +5,6 @@ import clsx from 'clsx'
 import useAccountListStyles from './account-list.styles'
 import Account from '../account/account.view'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
-import { BigNumber } from 'ethers'
 
 function AccountList ({
   accounts,
@@ -32,8 +31,8 @@ function AccountList ({
 
     const pendingAccountDeposits = pendingDeposits.filter((deposit) => deposit.token.id === account.token.id)
     const newAccountBalance = pendingAccountDeposits.reduce((totalAccountBalance, pendingDeposit) => {
-      return totalAccountBalance.add(BigNumber.from(pendingDeposit.amount))
-    }, BigNumber.from(account.balance))
+      return totalAccountBalance + BigInt(pendingDeposit.amount)
+    }, BigInt(account.balance))
 
     return newAccountBalance.toString()
   }

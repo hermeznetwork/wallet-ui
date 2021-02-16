@@ -1,5 +1,7 @@
-import hermezjs from '@hermeznetwork/hermezjs'
+import hermezjs, { CoordinatorAPI, Providers, TxUtils } from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
+import { ethers } from 'ethers'
+import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
@@ -252,24 +254,82 @@ function removePendingDeposit (transactionId) {
   }
 }
 
+function updatePendingDepositId (transactionHash, transactionId) {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+    const { hermezEthereumAddress } = wallet
+
+    const pendingDepositsStore = JSON.parse(localStorage.getItem(PENDING_DEPOSITS_KEY))
+    const accountPendingDepositsStore = pendingDepositsStore[hermezEthereumAddress]
+
+    if (accountPendingDepositsStore !== undefined) {
+      const newAccountPendingDepositsStore = accountPendingDepositsStore
+        .map((pendingDeposit) => {
+          if (pendingDeposit.hash === transactionHash) {
+            return { ...pendingDeposit, id: transactionId }
+          } else {
+            return pendingDeposit
+          }
+        })
+      const newPendingDepositsStore = {
+        ...pendingDepositsStore,
+        [hermezEthereumAddress]: newAccountPendingDepositsStore
+      }
+
+      localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
+      dispatch(globalActions.updatePendingDepositId(hermezEthereumAddress, transactionHash, transactionId))
+    }
+  }
+}
+
 function checkPendingDeposits () {
   return (dispatch, getState) => {
     const { global: { wallet, pendingDeposits } } = getState()
     const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
 
-    if (accountPendingDeposits !== undefined) {
-      const pendingDepositsTransactionIds = accountPendingDeposits.map(deposit => deposit.id)
-      const provider = hermezjs.Providers.getProvider()
-      const getTransactionPromises = pendingDepositsTransactionIds.map((hash) => provider.getTransaction(hash))
-
-      Promise.all(getTransactionPromises).then((transactionsData) => {
-        transactionsData.forEach((transaction) => {
-          if (transaction.blockNumber) {
-            dispatch(removePendingDeposit(transaction.hash))
-          }
-        })
-      })
+    if (accountPendingDeposits === undefined) {
+      return
     }
+
+    dispatch(globalActions.checkPendingDeposits())
+
+    const provider = Providers.getProvider()
+    const pendingDepositsHashes = accountPendingDeposits.map(deposit => deposit.hash)
+    const pendingDepositsTxReceipts = pendingDepositsHashes.map(hash => provider.getTransactionReceipt(hash))
+
+    Promise.all(pendingDepositsTxReceipts).then((txReceipts) => {
+      const transactionHistoryPromises = txReceipts
+        .filter(txReceipt => txReceipt && txReceipt.logs && txReceipt.logs.length > 0)
+        .map((txReceipt) => {
+          const hermezContractInterface = new ethers.utils.Interface(HermezABI)
+          const parsedLogs = txReceipt.logs.map(log => hermezContractInterface.parseLog(log))
+          const l1UserTxEvent = parsedLogs.find((event) => event.name === 'L1UserTxEvent')
+
+          if (!l1UserTxEvent) {
+            return Promise.resolve()
+          }
+
+          const txId = TxUtils.getL1UserTxId(l1UserTxEvent.args[0], l1UserTxEvent.args[1])
+          const pendingDeposit = accountPendingDeposits.find(deposit => deposit.hash === txReceipt.transactionHash)
+
+          if (pendingDeposit && !pendingDeposit.id) {
+            dispatch(updatePendingDepositId(txReceipt.transactionHash, txId))
+          }
+
+          return CoordinatorAPI.getHistoryTransaction(txId)
+        })
+
+      Promise.all(transactionHistoryPromises).then((results) => {
+        results
+          .filter(result => result !== undefined)
+          .forEach((transaction) => {
+            if (transaction.batchNum !== null) {
+              dispatch(removePendingDeposit(transaction.id))
+            }
+          })
+        dispatch(globalActions.checkPendingDepositsSuccess())
+      })
+    })
   }
 }
 
@@ -319,6 +379,7 @@ export {
   removePendingDelayedWithdraw,
   addPendingDeposit,
   removePendingDeposit,
+  updatePendingDepositId,
   checkPendingDeposits,
   fetchCoordinatorState,
   disconnectWallet,

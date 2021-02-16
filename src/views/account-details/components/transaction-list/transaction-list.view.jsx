@@ -35,7 +35,7 @@ function TransactionList ({
 
         return (
           <div
-            key={transaction.id}
+            key={transaction.hash || transaction.id}
             className={classes.transaction}
           >
             <Transaction

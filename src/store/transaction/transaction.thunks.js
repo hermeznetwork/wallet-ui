@@ -141,11 +141,11 @@ function deposit (amount, account) {
       wallet.publicKeyCompressedHex,
       signer
     )
-      .then((data) => {
+      .then((txData) => {
         CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [account.token.id])
           .then((res) => {
             dispatch(globalThunks.addPendingDeposit({
-              id: data.hash,
+              hash: txData.hash,
               fromHezEthereumAddress: wallet.hermezEthereumAddress,
               toHezEthereumAddress: wallet.hermezEthereumAddress,
               token: account.token,

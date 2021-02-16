@@ -62,6 +62,9 @@ const initialGlobalState = {
   pendingWithdraws: getInitialPendingWithdraws(),
   pendingDelayedWithdraws: getInitialPendingDelayedWithdraws(),
   pendingDeposits: getInitialPendingDeposits(),
+  pendingDepositsCheckTask: {
+    status: 'pending'
+  },
   coordinatorStateTask: {
     status: 'pending'
   }
@@ -246,6 +249,40 @@ function globalReducer (state = initialGlobalState, action) {
           ...state.pendingDeposits,
           [action.hermezEthereumAddress]: accountPendingDeposits
             .filter(pendingDeposit => pendingDeposit.id !== action.transactionId)
+        }
+      }
+    }
+    case globalActionTypes.UPDATE_PENDING_DEPOSIT_ID: {
+      const accountPendingDeposits = state.pendingDeposits[action.hermezEthereumAddress]
+      const newAccountPendingDeposits = accountPendingDeposits.map((pendingDeposit) => {
+        if (pendingDeposit.hash === action.transactionHash) {
+          return { ...pendingDeposit, id: action.transactionId }
+        } else {
+          return pendingDeposit
+        }
+      })
+
+      return {
+        ...state,
+        pendingDeposits: {
+          ...state.pendingDeposits,
+          [action.hermezEthereumAddress]: newAccountPendingDeposits
+        }
+      }
+    }
+    case globalActionTypes.CHECK_PENDING_DEPOSITS: {
+      return {
+        ...state,
+        pendingDepositsCheckTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case globalActionTypes.CHECK_PENDING_DEPOSITS_SUCCESS: {
+      return {
+        ...state,
+        pendingDepositsCheckTask: {
+          status: 'successful'
         }
       }
     }

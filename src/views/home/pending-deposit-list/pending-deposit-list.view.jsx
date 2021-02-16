@@ -4,7 +4,7 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../..
 import Account from '../../shared/account/account.view'
 import usePendingDepositListStyles from './pending-deposit-list.styles'
 
-function PendingDepositList ({ deposits, preferredCurrency, fiatExchangeRates }) {
+function PendingDepositList ({ deposits, preferredCurrency, fiatExchangeRates, onAccountClick }) {
   const classes = usePendingDepositListStyles()
 
   return (
@@ -30,6 +30,7 @@ function PendingDepositList ({ deposits, preferredCurrency, fiatExchangeRates })
                 tokenName={deposit.token.name}
                 tokenSymbol={deposit.token.symbol}
                 preferredCurrency={preferredCurrency}
+                onClick={onAccountClick}
               />
             </div>
           )

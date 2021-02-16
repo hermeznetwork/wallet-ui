@@ -5,12 +5,30 @@ import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 import TransactionInfoTable from '../transaction-info-table/transaction-info-table-row.view'
 import { getPartiallyHiddenEthereumAddress, getPartiallyHiddenHermezAddress } from '../../../utils/addresses'
 
+const TxStatus = {
+  Confirmed: 'Confirmed',
+  Pending: 'Pending'
+}
+
 function TransactionInfo ({ txData, accountIndex, showStatus }) {
-  const status = showStatus && {
-    subtitle: !txData.state || txData.state === TxState.Forged ? 'Confirmed' : 'Pending'
-  }
   const date = txData.timestamp && {
     subtitle: new Date(txData.timestamp).toLocaleString()
+  }
+
+  function getTransactionStatus () {
+    if (!showStatus) {
+      return undefined
+    }
+
+    if (!txData.state && txData.batchNum) {
+      return { subtitle: TxStatus.Confirmed }
+    }
+
+    if (txData.state === TxState.Forged) {
+      return { subtitle: TxStatus.Confirmed }
+    }
+
+    return { subtitle: TxStatus.Pending }
   }
 
   switch (txData.type) {
@@ -18,7 +36,7 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
     case TxType.Deposit: {
       return (
         <TransactionInfoTable
-          status={status}
+          status={getTransactionStatus()}
           from={{
             subtitle: 'My Ethereum address',
             value: getPartiallyHiddenEthereumAddress(
@@ -38,7 +56,7 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
       if (accountIndex === txData.fromAccountIndex) {
         return (
           <TransactionInfoTable
-            status={status}
+            status={getTransactionStatus()}
             from={{
               subtitle: 'My Hermez address',
               value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
@@ -52,7 +70,7 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
       } else {
         return (
           <TransactionInfoTable
-            status={status}
+            status={getTransactionStatus()}
             from={{
               subtitle: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
             }}
@@ -70,7 +88,7 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
     case TxType.ForceExit: {
       return (
         <TransactionInfoTable
-          status={status}
+          status={getTransactionStatus()}
           from={{
             subtitle: 'My Hermez address',
             value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)

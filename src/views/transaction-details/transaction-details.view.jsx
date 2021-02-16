@@ -110,7 +110,7 @@ function TransactionDetails ({
                     />
                     <ExploreTransactionButton
                       txLevel={transactionTask.data.fromAccountIndex ? TxLevel.L2 : TxLevel.L1}
-                      transactionId={transactionTask.data.id}
+                      transactionIdOrHash={transactionTask.data.id || transactionTask.data.hash}
                     />
                   </>
                 )
@@ -162,8 +162,8 @@ function getHeaderTitle (transactionType) {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadTransaction: (transactionId) =>
-    dispatch(transactionDetailsThunks.fetchTransaction(transactionId)),
+  onLoadTransaction: (transactionIdOrHash) =>
+    dispatch(transactionDetailsThunks.fetchTransaction(transactionIdOrHash)),
   onChangeHeader: (transactionType, accountIndex) =>
     dispatch(
       changeHeader({
