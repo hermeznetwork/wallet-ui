@@ -1,4 +1,4 @@
-import { CoordinatorAPI, Tx, HermezCompressedAmount, TxUtils } from '@hermeznetwork/hermezjs'
+import { CoordinatorAPI, Tx, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
 import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as transactionActions from './transaction.actions'
@@ -142,17 +142,6 @@ function deposit (amount, account) {
       signer
     )
       .then((txData) => {
-        txData.wait()
-          .then((txReceipt) => {
-            const txEvent = txReceipt.events.find((event) => event.event === 'L1UserTxEvent')
-
-            if (txEvent) {
-              const txId = TxUtils.getL1UserTxId(txEvent.args[0], txEvent.args[1])
-
-              dispatch(globalThunks.updatePendingDepositId(txData.hash, txId))
-            }
-          })
-          .catch(err => console.log(err))
         CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [account.token.id])
           .then((res) => {
             dispatch(globalThunks.addPendingDeposit({

@@ -1,5 +1,7 @@
-import hermezjs, { CoordinatorAPI } from '@hermeznetwork/hermezjs'
+import hermezjs, { CoordinatorAPI, Providers, TxUtils } from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
+import { ethers } from 'ethers'
+import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
@@ -227,10 +229,10 @@ function addPendingDeposit (pendingDeposit) {
 
 /**
  * Removes a pendingDeposit from the pendingDeposit store
- * @param {string} id - The transaction identifier used to remove a pendingDeposit from the store
+ * @param {string} transactionId - The transaction identifier used to remove a pendingDeposit from the store
  * @returns {void}
  */
-function removePendingDeposit (id) {
+function removePendingDeposit (transactionId) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
     const { hermezEthereumAddress } = wallet
@@ -240,19 +242,19 @@ function removePendingDeposit (id) {
 
     if (accountPendingDepositsStore !== undefined) {
       const newAccountPendingDepositsStore = accountPendingDepositsStore
-        .filter((pendingDeposit) => pendingDeposit.id !== id)
+        .filter((pendingDeposit) => pendingDeposit.id !== transactionId)
       const newPendingDepositsStore = {
         ...pendingDepositsStore,
         [hermezEthereumAddress]: newAccountPendingDepositsStore
       }
 
       localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
-      dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, id))
+      dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, transactionId))
     }
   }
 }
 
-function updatePendingDepositId (hash, id) {
+function updatePendingDepositId (transactionHash, transactionId) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
     const { hermezEthereumAddress } = wallet
@@ -263,8 +265,8 @@ function updatePendingDepositId (hash, id) {
     if (accountPendingDepositsStore !== undefined) {
       const newAccountPendingDepositsStore = accountPendingDepositsStore
         .map((pendingDeposit) => {
-          if (pendingDeposit.hash === hash) {
-            return { ...pendingDeposit, id }
+          if (pendingDeposit.hash === transactionHash) {
+            return { ...pendingDeposit, id: transactionId }
           } else {
             return pendingDeposit
           }
@@ -275,7 +277,7 @@ function updatePendingDepositId (hash, id) {
       }
 
       localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
-      dispatch(globalActions.updatePendingDepositId(hermezEthereumAddress, hash, id))
+      dispatch(globalActions.updatePendingDepositId(hermezEthereumAddress, transactionHash, transactionId))
     }
   }
 }
@@ -286,13 +288,33 @@ function checkPendingDeposits () {
     const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
 
     if (accountPendingDeposits !== undefined) {
-      const pendingDepositsMined = accountPendingDeposits.filter(deposit => deposit.id !== undefined)
-      const getTransactionPromises = pendingDepositsMined.map((deposit) => CoordinatorAPI.getHistoryTransaction(deposit.id))
+      const provider = Providers.getProvider()
+      const pendingDepositsHashes = accountPendingDeposits.map(deposit => deposit.hash)
+      const pendingDepositsTxReceipts = pendingDepositsHashes.map(hash => provider.getTransactionReceipt(hash))
 
-      Promise.all(getTransactionPromises).then((results) => {
-        results
-          .filter((transaction) => transaction.batchNum !== null)
-          .forEach((transaction) => dispatch(removePendingDeposit(transaction.id)))
+      Promise.all(pendingDepositsTxReceipts).then((txReceipts) => {
+        txReceipts
+          .filter(txReceipt => txReceipt && txReceipt.logs && txReceipt.logs.length > 0)
+          .forEach((txReceipt) => {
+            const hermezContractInterface = new ethers.utils.Interface(HermezABI)
+            const parsedLogs = txReceipt.logs.map(log => hermezContractInterface.parseLog(log))
+            const l1UserTxEvent = parsedLogs.find((event) => event.name === 'L1UserTxEvent')
+
+            if (l1UserTxEvent) {
+              const txId = TxUtils.getL1UserTxId(l1UserTxEvent.args[0], l1UserTxEvent.args[1])
+              const pendingDeposit = accountPendingDeposits.find(deposit => deposit.hash === txReceipt.transactionHash)
+
+              if (pendingDeposit && !pendingDeposit.id) {
+                dispatch(updatePendingDepositId(txReceipt.transactionHash, txId))
+              }
+
+              CoordinatorAPI.getHistoryTransaction(txId).then((transaction) => {
+                if (transaction.batchNum !== null) {
+                  dispatch(removePendingDeposit(txId))
+                }
+              })
+            }
+          })
       })
     }
   }
