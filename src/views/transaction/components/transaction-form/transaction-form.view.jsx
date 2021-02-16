@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { getAccounts } from '@hermeznetwork/hermezjs/src/api'
-import { getTokenAmountBigInt } from '@hermeznetwork/hermezjs/src/utils'
+import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compressed-amount'
 
@@ -33,6 +33,7 @@ function TransactionForm ({
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false)
   const [showInFiat, setShowInFiat] = useState(false)
   const [amount, setAmount] = useState()
+  const [amountFiat, setAmountFiat] = useState()
   const [receiver, setReceiver] = useState('')
   const [isAmountLessThanFunds, setIsAmountLessThanFunds] = React.useState(undefined)
   const [isAmountPositive, setIsAmountPositive] = React.useState(undefined)
@@ -101,15 +102,15 @@ function TransactionForm ({
    * It takes the appropriate recomended fee in USD from the coordinator
    * and converts it to token value.
    * @param {Object} fees - The recommended Fee object feturned by the Coordinator
-   * @param {Boolean} createAccount - Whether it's a createAccount transfer
+   * @param {Boolean} iExistingAccount - Whether it's a existingAccount transfer
    * @returns {number} - Transaction fee
    */
-  function getFee (fees, createAccount) {
+  function getFee (fees, isExistingAccount) {
     if (account.token.USD === 0) {
       return 0
     }
 
-    const fee = createAccount ? fees.createAccount : fees.existingAccount
+    const fee = isExistingAccount ? fees.existingAccount : fees.createAccount
 
     return fee / account.token.USD
   }
@@ -143,11 +144,7 @@ function TransactionForm ({
     if (amount === undefined) {
       return ''
     }
-    if (showInFiat) {
-      return Number(amount.toFixed(2))
-    } else {
-      return amount
-    }
+    return showInFiat ? Number(amountFiat.toFixed(2)) : getTokenAmountString(amount, account.token.decimals)
   }
 
   /**
@@ -157,10 +154,36 @@ function TransactionForm ({
    * @returns {Boolean} Whether it is valid
    */
   function getIsAmountCompressedValid (amount) {
-    const bigIntAmount = BigInt(getTokenAmountBigInt(amount.toString(), account.token.decimals).toString())
-    const compressedAmount = HermezCompressedAmount.compressAmount(bigIntAmount)
-    const decompressedAmount = HermezCompressedAmount.decompressAmount(compressedAmount)
-    return bigIntAmount === decompressedAmount
+    try {
+      const compressedAmount = HermezCompressedAmount.compressAmount(amount)
+      const decompressedAmount = HermezCompressedAmount.decompressAmount(compressedAmount)
+      return amount.toString() === decompressedAmount.toString()
+    } catch (e) {
+      return false
+    }
+  }
+
+  /**
+   * Makes the appropriate checks that the amount is valid
+   * @param {ethers.BigNumber} newAmount - The new amount as a BigNumber
+   */
+  function setAmountChecks (newAmount) {
+    // Convert from ethers.BigNumber to native BigInt
+    const newAmountBigInt = BigInt(newAmount.toString())
+    setIsAmountLessThanFunds(newAmountBigInt <= BigInt(account.balance.toString()))
+    setIsAmountPositive(newAmountBigInt > 0)
+    setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountBigInt))
+  }
+
+  /**
+   * Resets the local state
+   */
+  function resetAmounts () {
+    setIsAmountPositive(undefined)
+    setIsAmountLessThanFunds(undefined)
+    setIsAmountCompressedValid(undefined)
+    setAmount(undefined)
+    setAmountFiat(undefined)
   }
 
   /**
@@ -173,18 +196,21 @@ function TransactionForm ({
    */
   function handleAmountInputChange (event) {
     if (event.target.value === '') {
-      setIsAmountPositive(undefined)
-      setIsAmountLessThanFunds(undefined)
-      setIsAmountCompressedValid(undefined)
-      setAmount(undefined)
-    } else {
-      const newAmount = Number(event.target.value)
-      const newAmountInToken = showInFiat ? (newAmount / getAccountFiatRate()) : newAmount
+      resetAmounts()
+    } else if (showInFiat) {
+      const newAmountInFiat = Number(Number(event.target.value).toFixed(2))
+      const newAmountInToken = getTokenAmountBigInt((newAmountInFiat / getAccountFiatRate()).toString(), account.token.decimals)
 
-      setIsAmountLessThanFunds(newAmountInToken <= getAccountBalance())
-      setIsAmountPositive(newAmountInToken > 0)
-      setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountInToken))
-      setAmount(newAmount)
+      setAmountChecks(newAmountInToken)
+      setAmount(newAmountInToken)
+      setAmountFiat(newAmountInFiat)
+    } else {
+      const newAmountInToken = getTokenAmountBigInt(event.target.value, account.token.decimals).toString()
+      const newAmountInFiat = getAmountInFiat(newAmountInToken)
+
+      setAmountChecks(newAmountInToken)
+      setAmount(newAmountInToken)
+      setAmountFiat(newAmountInFiat)
     }
   }
 
@@ -198,22 +224,22 @@ function TransactionForm ({
     if (showInFiat) {
       const maxAmount = getAmountInFiat(account.balance)
       const fee = getAmountInFiat(getFee(feesTask.data))
-      const newAmount = maxAmount - fee
-      const newAmountInToken = newAmount / getAccountFiatRate()
+      const newAmountInFiat = maxAmount - fee
+      const newAmountInToken = getTokenAmountBigInt((newAmountInFiat / getAccountFiatRate()).toString(), account.token.decimals)
 
-      setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountInToken))
-      setAmount(newAmount)
+      setAmountChecks(newAmountInToken)
+      setAmount(newAmountInToken)
+      setAmountFiat(newAmountInFiat)
     } else {
       const maxAmount = getAccountBalance()
       const fee = getFixedTokenAmount(getFee(feesTask.data), account.token.decimals)
-      const newAmount = Number(maxAmount) - Number(fee)
+      const newAmountInToken = getTokenAmountBigInt((Number(maxAmount) - Number(fee)).toString(), account.token.decimals)
+      const newAmountInFiat = getAmountInFiat(newAmountInToken)
 
-      setIsAmountCompressedValid(getIsAmountCompressedValid(newAmount))
-      setAmount(newAmount)
+      setAmountChecks(newAmountInToken)
+      setAmount(newAmountInToken)
+      setAmountFiat(newAmountInFiat)
     }
-
-    setIsAmountLessThanFunds(true)
-    setIsAmountPositive(true)
   }
 
   /**
@@ -221,11 +247,6 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleChangeCurrencyButtonClick () {
-    if (showInFiat) {
-      setAmount(amount / getAccountFiatRate())
-    } else {
-      setAmount(amount * getAccountFiatRate())
-    }
     setShowInFiat(!showInFiat)
   }
 
@@ -297,18 +318,15 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleContinueButton (fees) {
-    const selectedAmount = showInFiat ? (amount / getAccountFiatRate()) : amount
-    const transactionAmount = getTokenAmountBigInt(selectedAmount.toString(), account.token.decimals).toString()
-
     switch (transactionType) {
       case TxType.Transfer: {
         return getAccounts(receiver, [account.token.id])
           .then((res) => {
             const receiverAccount = res.accounts[0]
-            const transactionFee = getTokenAmountBigInt(getFee(fees, !receiverAccount).toFixed(account.token.decimals), account.token.decimals).toString()
+            const transactionFee = getTokenAmountBigInt(getFee(fees, receiverAccount).toFixed(account.token.decimals), account.token.decimals).toString()
 
             onSubmit({
-              amount: transactionAmount,
+              amount: amount,
               to: receiverAccount || { hezEthereumAddress: receiver },
               fee: transactionFee
             })
@@ -317,7 +335,7 @@ function TransactionForm ({
       default: {
         const transactionFee = getTokenAmountBigInt(getFee(fees).toFixed(account.token.decimals), account.token.decimals).toString()
         return onSubmit({
-          amount: transactionAmount,
+          amount: amount,
           to: {},
           fee: transactionFee
         })
@@ -445,7 +463,7 @@ function TransactionForm ({
                           </button>
                           <div className={classes.amountButtonsItem}>
                             <p>
-                              <span>{showInFiat ? ((amount || 0) / getAccountFiatRate()) : ((amount || 0) * getAccountFiatRate()).toFixed(2)} </span>
+                              <span>{showInFiat ? (getFixedTokenAmount(amount || 0, account.token.decimals)) : (amountFiat || 0).toFixed(2)} </span>
                               <span>{(showInFiat) ? account.token.symbol : preferredCurrency}</span>
                             </p>
                           </div>

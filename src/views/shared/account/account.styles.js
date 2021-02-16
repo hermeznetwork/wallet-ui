@@ -8,14 +8,16 @@ const useAccountStyles = createUseStyles(theme => ({
     justifyContent: 'center',
     backgroundColor: hasPendingDeposit ? theme.palette.black : theme.palette.grey.light,
     borderRadius: theme.spacing(2),
-    padding: `${theme.spacing(2.5)}px ${theme.spacing(3)}px`,
     cursor: isDisabled || !isClickable ? 'default' : 'pointer',
     opacity: isDisabled ? 0.5 : 1,
-    pointerEvents: isDisabled ? 'none' : 'all',
-    [theme.breakpoints.upSm]: {
-      padding: `${theme.spacing(3.5)}px ${theme.spacing(5)}px`
-    }
+    pointerEvents: isDisabled ? 'none' : 'all'
   }),
+  account: {
+    padding: theme.spacing(2.5),
+    [theme.breakpoints.upSm]: {
+      padding: `${theme.spacing(3)}px ${theme.spacing(5)}px`
+    }
+  },
   values: {
     display: 'flex',
     alignItems: 'center',
