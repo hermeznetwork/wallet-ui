@@ -22,7 +22,6 @@ import TokenBalance from '../shared/token-balance/token-balance.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
-import { BigNumber } from 'ethers'
 
 function AccountDetails ({
   preferredCurrency,
@@ -92,8 +91,8 @@ function AccountDetails ({
     }
 
     const tokenBalance = accountPendingDeposits.reduce((totalAccountBalance, pendingDeposit) => {
-      return totalAccountBalance.add(BigNumber.from(pendingDeposit.amount))
-    }, BigNumber.from(accountTask.data.balance))
+      return totalAccountBalance + BigInt(pendingDeposit.amount)
+    }, BigInt(accountTask.data.balance))
 
     return tokenBalance.toString()
   }
