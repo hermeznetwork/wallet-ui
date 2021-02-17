@@ -42,6 +42,7 @@ function AccountDetails ({
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
+  onRefresHistoryTransactions,
   onCheckPendingDeposits,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
@@ -58,19 +59,17 @@ function AccountDetails ({
   }, [accountTask, onChangeHeader])
 
   React.useEffect(() => {
-    const autoRefreshFn = () => {
-      onLoadAccount(accountIndex)
-      onLoadPoolTransactions(accountIndex)
-    }
-
-    autoRefreshFn()
-
-    const intervalId = setInterval(autoRefreshFn, AUTO_REFRESH_RATE)
-
-    return () => {
-      clearInterval(intervalId)
-    }
+    onLoadAccount(accountIndex)
+    onLoadPoolTransactions(accountIndex)
   }, [accountIndex, onLoadAccount, onLoadPoolTransactions])
+
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      onRefresHistoryTransactions(accountIndex)
+    }, AUTO_REFRESH_RATE)
+
+    return () => { clearInterval(intervalId) }
+  }, [accountIndex, onRefresHistoryTransactions])
 
   React.useEffect(() => {
     if (accountTask.status === 'successful') {
@@ -335,6 +334,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem)),
   onLoadExits: (tokenId) =>
     dispatch(accountDetailsThunks.fetchExits(tokenId)),
+  onRefresHistoryTransactions: (accountIndex) =>
+    dispatch(accountDetailsThunks.refreshHistoryTransactions(accountIndex)),
   onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
     dispatch(globalThunks.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>

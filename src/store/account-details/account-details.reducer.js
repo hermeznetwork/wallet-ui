@@ -85,12 +85,15 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
         : action.data.transactions
       const pagination = getPaginationData(action.data.pendingItems, transactions, PaginationOrder.DESC)
+      const fromItemHistory = state.historyTransactionsTask.status === 'reloading'
+        ? [...state.historyTransactionsTask.data.fromItemHistory, state.historyTransactionsTask.data.pagination.fromItem]
+        : []
 
       return {
         ...state,
         historyTransactionsTask: {
           status: 'successful',
-          data: { transactions, pagination }
+          data: { transactions, pagination, fromItemHistory }
         }
       }
     }
@@ -100,6 +103,34 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         historyTransactionsTask: {
           status: 'failed',
           error: 'An error ocurred loading the transactions from the history'
+        }
+      }
+    }
+    case accountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS: {
+      return {
+        ...state,
+        historyTransactionsTask: {
+          ...state.historyTransactionsTask,
+          status: 'reloading'
+        }
+      }
+    }
+    case accountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS: {
+      const pagination = getPaginationData(
+        action.data.pendingItems,
+        action.data.transactions,
+        PaginationOrder.DESC
+      )
+
+      return {
+        ...state,
+        historyTransactionsTask: {
+          status: 'successful',
+          data: {
+            ...state.historyTransactionsTask.data,
+            transactions: action.data.transactions,
+            pagination
+          }
         }
       }
     }

@@ -1,8 +1,9 @@
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
-import * as accountDetailsActionTypes from './account-details.actions'
+import * as accountDetailsActions from './account-details.actions'
 import { removePendingWithdraw, removePendingDelayedWithdraw } from '../global/global.thunks'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 /**
  * Fetches the account details for the specified account index
@@ -11,11 +12,11 @@ import { removePendingWithdraw, removePendingDelayedWithdraw } from '../global/g
  */
 function fetchAccount (accountIndex) {
   return (dispatch) => {
-    dispatch(accountDetailsActionTypes.loadAccount())
+    dispatch(accountDetailsActions.loadAccount())
 
     return CoordinatorAPI.getAccount(accountIndex)
-      .then(res => dispatch(accountDetailsActionTypes.loadAccountSuccess(res)))
-      .catch(err => dispatch(accountDetailsActionTypes.loadAccountFailure(err)))
+      .then(res => dispatch(accountDetailsActions.loadAccountSuccess(res)))
+      .catch(err => dispatch(accountDetailsActions.loadAccountFailure(err)))
   }
 }
 
@@ -26,18 +27,43 @@ function fetchAccount (accountIndex) {
  */
 function fetchPoolTransactions (accountIndex) {
   return (dispatch, getState) => {
-    dispatch(accountDetailsActionTypes.loadPoolTransactions())
+    dispatch(accountDetailsActions.loadPoolTransactions())
 
     const { global: { wallet } } = getState()
 
     if (wallet) {
       getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(transactions)))
-        .catch(err => dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure(err)))
+        .then((transactions) => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
+        .catch(err => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)))
     } else {
-      dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure('MetaMask wallet is not available'))
+      dispatch(accountDetailsActions.loadPoolTransactionsFailure('MetaMask wallet is not available'))
     }
   }
+}
+
+function filterExitsFromHistoryTransactions (historyTransactions, exits, wallet, dispatch) {
+  return historyTransactions.filter((transaction) => {
+    if (transaction.type === TxType.Exit) {
+      const exitTx = exits.find((exit) =>
+        exit.batchNum === transaction.batchNum &&
+        exit.accountIndex === transaction.fromAccountIndex
+      )
+
+      if (exitTx) {
+        if (exitTx.instantWithdraw) {
+          removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
+          return true
+        }
+        if (exitTx.delayedWithdraw) {
+          removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
+          return true
+        }
+        return false
+      }
+    }
+
+    return true
+  })
 }
 
 /**
@@ -47,7 +73,7 @@ function fetchPoolTransactions (accountIndex) {
  */
 function fetchHistoryTransactions (accountIndex, fromItem) {
   return (dispatch, getState) => {
-    dispatch(accountDetailsActionTypes.loadHistoryTransactions())
+    dispatch(accountDetailsActions.loadHistoryTransactions())
 
     const { accountDetails: { exitsTask }, global: { wallet } } = getState()
 
@@ -60,34 +86,71 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
       CoordinatorAPI.PaginationOrder.DESC
     )
       .then((res) => {
-        res.transactions = res.transactions.filter((transaction) => {
-          if (transaction.type === 'Exit') {
-            const exitTx = exitsTask.data.exits.find((exit) =>
-              exit.batchNum === transaction.batchNum &&
-              exit.accountIndex === transaction.fromAccountIndex
-            )
-            if (exitTx) {
-              if (exitTx.instantWithdraw) {
-                removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
-                return true
-              } else if (exitTx.delayedWithdraw) {
-                removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
-                return true
-              } else {
-                return false
-              }
-            } else {
-              return true
-            }
-          } else {
-            return true
-          }
-        })
+        const filteredTransactions = filterExitsFromHistoryTransactions(
+          res.transactions,
+          exitsTask.data,
+          wallet,
+          dispatch
+        )
 
-        return res
+        return { ...res, transactions: filteredTransactions }
       })
-      .then(res => dispatch(accountDetailsActionTypes.loadHistoryTransactionsSuccess(res)))
-      .catch(err => dispatch(accountDetailsActionTypes.loadHistoryTransactionsFailure(err)))
+      .then(res => dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(res)))
+      .catch(err => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)))
+  }
+}
+
+/**
+ * Refreshes the transactions information for the transactions that have already been
+ * loaded
+ * @param {string} accountIndex - Account index
+ */
+function refreshHistoryTransactions (accountIndex) {
+  return (dispatch, getState) => {
+    const { accountDetails: { historyTransactionsTask, exitsTask }, global: { wallet } } = getState()
+
+    if (historyTransactionsTask.status === 'successful') {
+      dispatch(accountDetailsActions.refreshHistoryTransactions())
+
+      const initialReq = CoordinatorAPI.getTransactions(
+        undefined,
+        undefined,
+        undefined,
+        accountIndex,
+        undefined,
+        CoordinatorAPI.PaginationOrder.DESC
+      )
+
+      const requests = historyTransactionsTask.data.fromItemHistory
+        .reduce((requests, fromItem) => ([
+          ...requests,
+          CoordinatorAPI.getTransactions(
+            undefined,
+            undefined,
+            undefined,
+            accountIndex,
+            fromItem,
+            CoordinatorAPI.PaginationOrder.DESC
+          )
+        ]), [initialReq])
+
+      Promise.all(requests)
+        .then((results) => {
+          const transactions = results.reduce((acc, result) => {
+            return [...acc, ...result.transactions]
+          }, [])
+          const filteredTransactions = filterExitsFromHistoryTransactions(
+            transactions,
+            exitsTask.data,
+            wallet,
+            dispatch
+          )
+          const pendingItems = results[results.length - 1].pendingItems
+
+          return { transactions: filteredTransactions, pendingItems }
+        })
+        .then(res => dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(res)))
+    }
   }
 }
 
@@ -98,13 +161,13 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
  */
 function fetchExits (tokenId) {
   return (dispatch, getState) => {
-    dispatch(accountDetailsActionTypes.loadExits())
+    dispatch(accountDetailsActions.loadExits())
 
     const { global: { wallet } } = getState()
 
     return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
-      .then(exits => dispatch(accountDetailsActionTypes.loadExitsSuccess(exits)))
-      .catch(err => dispatch(accountDetailsActionTypes.loadExitsFailure(err)))
+      .then(exits => dispatch(accountDetailsActions.loadExitsSuccess(exits)))
+      .catch(err => dispatch(accountDetailsActions.loadExitsFailure(err)))
   }
 }
 
@@ -112,5 +175,6 @@ export {
   fetchAccount,
   fetchPoolTransactions,
   fetchHistoryTransactions,
+  refreshHistoryTransactions,
   fetchExits
 }
