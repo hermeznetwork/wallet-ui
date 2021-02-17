@@ -67,10 +67,12 @@ function App ({
   }, [onDisconnectAccount, onReloadApp])
 
   if (
-    coordinatorStateTask.status !== 'successful' ||
-    fiatExchangeRatesTask.status !== 'successful' ||
     ethereumNetworkTask.status === 'pending' ||
-    ethereumNetworkTask.status === 'loading'
+    ethereumNetworkTask.status === 'loading' ||
+    coordinatorStateTask.status === 'loading' ||
+    coordinatorStateTask.status === 'failure' ||
+    fiatExchangeRatesTask.status === 'loading' ||
+    fiatExchangeRatesTask.status === 'failure'
   ) {
     return (
       <div className={classes.root}>
