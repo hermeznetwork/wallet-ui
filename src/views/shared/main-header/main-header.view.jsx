@@ -19,12 +19,9 @@ function MainHeader () {
             <p className={classes.linkText}>My Account</p>
           </Link>
           <h1>
-            <Link
-              to='/'
-              className={classes.logo}
-            >
+            <div className={classes.logo}>
               <HermezLogo />
-            </Link>
+            </div>
           </h1>
           <Link to='/my-code' className={`${classes.link} ${classes.myCodeLink}`}>
             <p className={classes.linkText}>My Code</p>
