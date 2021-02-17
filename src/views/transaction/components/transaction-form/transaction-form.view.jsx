@@ -144,7 +144,7 @@ function TransactionForm ({
     if (amount === undefined) {
       return ''
     }
-    return showInFiat ? Number(amountFiat.toFixed(2)) : getTokenAmountString(amount, account.token.decimals)
+    return showInFiat ? Number(amountFiat.toFixed(2)) : Number(getTokenAmountString(amount, account.token.decimals))
   }
 
   /**
@@ -170,9 +170,9 @@ function TransactionForm ({
   function setAmountChecks (newAmount) {
     // Convert from ethers.BigNumber to native BigInt
     const newAmountBigInt = BigInt(newAmount.toString())
-    setIsAmountLessThanFunds(newAmountBigInt <= BigInt(account.balance.toString()))
-    setIsAmountPositive(newAmountBigInt > 0)
+    setIsAmountPositive(newAmountBigInt >= 0)
     setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountBigInt))
+    setIsAmountLessThanFunds(newAmountBigInt <= BigInt(account.balance.toString()))
   }
 
   /**
@@ -199,7 +199,9 @@ function TransactionForm ({
       resetAmounts()
     } else if (showInFiat) {
       const newAmountInFiat = Number(Number(event.target.value).toFixed(2))
-      const newAmountInToken = getTokenAmountBigInt((newAmountInFiat / getAccountFiatRate()).toString(), account.token.decimals)
+      // Makes sure the converted amount from fiat to tokens is a valid amount in Hermez
+      const newAmountConversion = Number((newAmountInFiat / getAccountFiatRate()).toFixed(10))
+      const newAmountInToken = getTokenAmountBigInt(newAmountConversion.toString(), account.token.decimals)
 
       setAmountChecks(newAmountInToken)
       setAmount(newAmountInToken)
@@ -225,7 +227,9 @@ function TransactionForm ({
       const maxAmount = getAmountInFiat(account.balance)
       const fee = getAmountInFiat(getFee(feesTask.data))
       const newAmountInFiat = maxAmount - fee
-      const newAmountInToken = getTokenAmountBigInt((newAmountInFiat / getAccountFiatRate()).toString(), account.token.decimals)
+      // Makes sure the converted amount from fiat to tokens is a valid amount in Hermez
+      const newAmountConversion = Number((newAmountInFiat / getAccountFiatRate()).toFixed(10))
+      const newAmountInToken = getTokenAmountBigInt(newAmountConversion.toString(), account.token.decimals)
 
       setAmountChecks(newAmountInToken)
       setAmount(newAmountInToken)
