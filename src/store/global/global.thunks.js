@@ -302,7 +302,14 @@ function checkPendingDeposits () {
         .filter(txReceipt => txReceipt && txReceipt.logs && txReceipt.logs.length > 0)
         .map((txReceipt) => {
           const hermezContractInterface = new ethers.utils.Interface(HermezABI)
-          const parsedLogs = txReceipt.logs.map(log => hermezContractInterface.parseLog(log))
+          // Need to parse logs, but only events from the Hermez SC. Ignore errors when trying to parse others
+          const parsedLogs = []
+          for (const txReceiptLog of txReceipt.logs) {
+            try {
+              const parsedLog = hermezContractInterface.parseLog(txReceiptLog)
+              parsedLogs.push(parsedLog)
+            } catch (e) {}
+          }
           const l1UserTxEvent = parsedLogs.find((event) => event.name === 'L1UserTxEvent')
 
           if (!l1UserTxEvent) {
