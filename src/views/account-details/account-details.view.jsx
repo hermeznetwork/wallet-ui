@@ -35,7 +35,6 @@ function AccountDetails ({
   pendingWithdraws,
   pendingDelayedWithdraws,
   pendingDeposits,
-  pendingDepositsCheckTask,
   coordinatorStateTask,
   onChangeHeader,
   onLoadAccount,
@@ -67,6 +66,7 @@ function AccountDetails ({
     const intervalId = setInterval(() => {
       onRefresHistoryTransactions(accountIndex)
       onLoadPoolTransactions(accountIndex)
+      onCheckPendingDeposits()
     }, AUTO_REFRESH_RATE)
 
     return () => { clearInterval(intervalId) }
@@ -198,8 +198,7 @@ function AccountDetails ({
               historyTransactionsTask.status === 'loading' ||
               historyTransactionsTask.status === 'failed' ||
               exitsTask.status === 'loading' ||
-              exitsTask.status === 'failed' ||
-              pendingDepositsCheckTask.status === 'loading'
+              exitsTask.status === 'failed'
             ) {
               return <Spinner />
             }
@@ -313,7 +312,6 @@ const mapStateToProps = (state) => ({
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
-  pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
   coordinatorStateTask: state.global.coordinatorStateTask
 })
 
