@@ -14,6 +14,8 @@ export const homeActionTypes = {
   LOAD_EXITS: '[HOME] LOAD EXITS',
   LOAD_EXITS_SUCCESS: '[HOME] LOAD EXITS SUCCESS',
   LOAD_EXITS_FAILURE: '[HOME] LOAD EXITS FAILURE',
+  REFRESH_HISTORY_ACCOUNTS: '[HOME] REFRESH HISTORY ACCOUNTS',
+  REFRESH_HISTORY_ACCOUNTS_SUCCESS: '[HOME] REFRESH HISTORY ACCOUNTS SUCCESS',
   RESET_STATE: '[HOME] RESET STATE'
 }
 
@@ -113,6 +115,19 @@ function loadExitsFailure (error) {
   }
 }
 
+function refreshHistoryAccounts () {
+  return {
+    type: homeActionTypes.REFRESH_HISTORY_ACCOUNTS
+  }
+}
+
+function refreshHistoryAccountsSuccess (data) {
+  return {
+    type: homeActionTypes.REFRESH_HISTORY_ACCOUNTS_SUCCESS,
+    data
+  }
+}
+
 function resetState () {
   return {
     type: homeActionTypes.RESET_STATE
@@ -135,5 +150,7 @@ export {
   loadExits,
   loadExitsSuccess,
   loadExitsFailure,
+  refreshHistoryAccounts,
+  refreshHistoryAccountsSuccess,
   resetState
 }

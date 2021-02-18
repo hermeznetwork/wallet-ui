@@ -1,5 +1,6 @@
 import { homeActionTypes } from './home.actions'
 import { getPaginationData } from '../../utils/api'
+import { PaginationOrder } from '@hermeznetwork/hermezjs/dist/node/api'
 
 const initialHomeState = {
   totalAccountsBalanceTask: {
@@ -22,11 +23,13 @@ const initialHomeState = {
 function homeReducer (state = initialHomeState, action) {
   switch (action.type) {
     case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE: {
+      const totalAccountsBalanceTask = state.totalAccountsBalanceTask.status === 'pending'
+        ? { status: 'loading' }
+        : { status: 'reloading', data: state.totalAccountsBalanceTask.data }
+
       return {
         ...state,
-        totalAccountsBalanceTask: {
-          status: 'loading'
-        }
+        totalAccountsBalanceTask
       }
     }
     case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_SUCCESS: {
@@ -48,6 +51,10 @@ function homeReducer (state = initialHomeState, action) {
       }
     }
     case homeActionTypes.LOAD_ACCOUNTS: {
+      if (state.accountsTask.status === 'reloading') {
+        return state
+      }
+
       return {
         ...state,
         accountsTask: state.accountsTask.status === 'successful'
@@ -60,12 +67,15 @@ function homeReducer (state = initialHomeState, action) {
         ? [...state.accountsTask.data.accounts, ...action.data.accounts]
         : action.data.accounts
       const pagination = getPaginationData(action.data.pendingItems, accounts)
+      const fromItemHistory = state.accountsTask.status === 'reloading'
+        ? [...state.accountsTask.data.fromItemHistory, state.accountsTask.data.pagination.fromItem]
+        : []
 
       return {
         ...state,
         accountsTask: {
           status: 'successful',
-          data: { accounts, pagination }
+          data: { accounts, pagination, fromItemHistory }
         }
       }
     }
@@ -75,6 +85,34 @@ function homeReducer (state = initialHomeState, action) {
         accountsTask: {
           status: 'failed',
           error: 'An error ocurred loading the accounts'
+        }
+      }
+    }
+    case homeActionTypes.REFRESH_HISTORY_ACCOUNTS: {
+      return {
+        ...state,
+        accountsTask: {
+          ...state.accountsTask,
+          status: 'reloading'
+        }
+      }
+    }
+    case homeActionTypes.REFRESH_HISTORY_ACCOUNTS_SUCCESS: {
+      const pagination = getPaginationData(
+        action.data.pendingItems,
+        action.data.accounts,
+        PaginationOrder.DESC
+      )
+
+      return {
+        ...state,
+        accountsTask: {
+          status: 'successful',
+          data: {
+            ...state.accountsTask.data,
+            accounts: action.data.accounts,
+            pagination
+          }
         }
       }
     }

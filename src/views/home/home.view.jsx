@@ -23,6 +23,7 @@ import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './pending-deposit-list/pending-deposit-list.view'
+import { AUTO_REFRESH_RATE } from '../../constants'
 
 function Home ({
   wallet,
@@ -43,6 +44,7 @@ function Home ({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
+  onRefreshAccounts,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onNavigateToAccountDetails,
@@ -58,28 +60,22 @@ function Home ({
 
   React.useEffect(() => {
     onCheckPendingDeposits()
-  }, [onCheckPendingDeposits])
-
-  React.useEffect(() => {
-    if (fiatExchangeRatesTask.status === 'successful') {
-      onLoadTotalAccountsBalance(
-        wallet.hermezEthereumAddress,
-        preferredCurrency,
-        fiatExchangeRatesTask.data
-      )
-    }
-  }, [wallet, preferredCurrency, fiatExchangeRatesTask, onLoadTotalAccountsBalance])
-
-  React.useEffect(() => {
-    if (wallet) {
-      onLoadAccounts(wallet.hermezEthereumAddress)
-    }
-  }, [wallet, onLoadAccounts])
-
-  React.useEffect(() => {
+    onLoadTotalAccountsBalance()
+    onLoadAccounts()
     onLoadPoolTransactions()
     onLoadExits()
-  }, [onLoadPoolTransactions, onLoadExits])
+  }, [onCheckPendingDeposits, onLoadTotalAccountsBalance, onLoadAccounts, onLoadPoolTransactions, onLoadExits])
+
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      onRefreshAccounts()
+      onLoadTotalAccountsBalance()
+      onLoadPoolTransactions()
+      onLoadExits()
+    }, AUTO_REFRESH_RATE)
+
+    return () => { clearInterval(intervalId) }
+  }, [])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -143,7 +139,7 @@ function Home ({
           </div>
           <TransactionActions
             hideSend={
-              accountsTask.status === 'successful'
+              accountsTask.status === 'successful' || accountsTask.status === 'reloading'
                 ? accountsTask.data.accounts.length === 0
                 : true
             }
@@ -234,10 +230,7 @@ function Home ({
                       asyncTaskStatus={accountsTask.status}
                       paginationData={accountsTask.data.pagination}
                       onLoadNextPage={(fromItem) => {
-                        onLoadAccounts(
-                          wallet.hermezEthereumAddress,
-                          fromItem
-                        )
+                        onLoadAccounts(fromItem)
                       }}
                     >
                       <AccountList
@@ -296,14 +289,16 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
-  onLoadTotalAccountsBalance: (hermezEthereumAddress, preferredCurrency, fiatExchangeRates) =>
-    dispatch(homeThunks.fetchTotalAccountsBalance(hermezEthereumAddress, preferredCurrency, fiatExchangeRates)),
-  onLoadAccounts: (hermezEthereumAddress, fromItem) =>
-    dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem)),
+  onLoadTotalAccountsBalance: () =>
+    dispatch(homeThunks.fetchTotalAccountsBalance()),
+  onLoadAccounts: (fromItem) =>
+    dispatch(homeThunks.fetchAccounts(fromItem)),
   onLoadPoolTransactions: () =>
     dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
+  onRefreshAccounts: () =>
+    dispatch(homeThunks.refreshAccounts()),
   onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
     dispatch(globalThunks.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>
