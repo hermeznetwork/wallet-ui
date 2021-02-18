@@ -58,9 +58,25 @@ function AccountDetails ({
   }, [accountTask, onChangeHeader])
 
   React.useEffect(() => {
+    onCheckPendingDeposits()
+  }, [onCheckPendingDeposits])
+
+  React.useEffect(() => {
     onLoadAccount(accountIndex)
     onLoadPoolTransactions(accountIndex)
   }, [accountIndex, onLoadAccount, onLoadPoolTransactions])
+
+  React.useEffect(() => {
+    if (accountTask.status === 'successful') {
+      onLoadExits(accountTask.data.token.id)
+    }
+  }, [accountTask, onLoadExits])
+
+  React.useEffect(() => {
+    if (exitsTask.status === 'successful') {
+      onLoadHistoryTransactions(accountIndex)
+    }
+  }, [exitsTask, accountIndex, onLoadHistoryTransactions])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
@@ -71,22 +87,6 @@ function AccountDetails ({
 
     return () => { clearInterval(intervalId) }
   }, [accountIndex, onRefresHistoryTransactions])
-
-  React.useEffect(() => {
-    if (accountTask.status === 'successful') {
-      onLoadExits(accountTask.data.token.id)
-    }
-  }, [onLoadExits, accountTask])
-
-  React.useEffect(() => {
-    if (exitsTask.status === 'successful') {
-      onLoadHistoryTransactions(accountIndex)
-    }
-  }, [exitsTask, accountIndex, onLoadHistoryTransactions])
-
-  React.useEffect(() => {
-    onCheckPendingDeposits()
-  }, [onCheckPendingDeposits])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
