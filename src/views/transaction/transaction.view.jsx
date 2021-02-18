@@ -106,7 +106,6 @@ function Transaction ({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}
                 pendingDeposits={pendingDeposits[wallet.hermezEthereumAddress]}
-                pendingDepositsCheckTask={pendingDepositsCheckTask}
                 onLoadAccounts={onLoadAccounts}
                 onAccountClick={(account) => onGoToBuildTransactionStep(account, receiver)}
               />
