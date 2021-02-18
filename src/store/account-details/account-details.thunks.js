@@ -1,9 +1,12 @@
+import axios from 'axios'
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as accountDetailsActions from './account-details.actions'
 import { removePendingWithdraw, removePendingDelayedWithdraw } from '../global/global.thunks'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+
+let refreshCancelTokenSource = axios.CancelToken.source()
 
 /**
  * Fetches the account details for the specified account index
@@ -77,6 +80,10 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
 
     const { accountDetails: { exitsTask }, global: { wallet } } = getState()
 
+    if (fromItem) {
+      refreshCancelTokenSource.cancel()
+    }
+
     return CoordinatorAPI.getTransactions(
       undefined,
       undefined,
@@ -112,13 +119,17 @@ function refreshHistoryTransactions (accountIndex) {
     if (historyTransactionsTask.status === 'successful') {
       dispatch(accountDetailsActions.refreshHistoryTransactions())
 
+      refreshCancelTokenSource = axios.CancelToken.source()
+
       const initialReq = CoordinatorAPI.getTransactions(
         undefined,
         undefined,
         undefined,
         accountIndex,
         undefined,
-        CoordinatorAPI.PaginationOrder.DESC
+        CoordinatorAPI.PaginationOrder.DESC,
+        undefined,
+        { cancelToken: refreshCancelTokenSource.token }
       )
 
       const requests = historyTransactionsTask.data.fromItemHistory
@@ -130,7 +141,9 @@ function refreshHistoryTransactions (accountIndex) {
             undefined,
             accountIndex,
             fromItem,
-            CoordinatorAPI.PaginationOrder.DESC
+            CoordinatorAPI.PaginationOrder.DESC,
+            undefined,
+            { cancelToken: refreshCancelTokenSource.token }
           )
         ]), [initialReq])
 

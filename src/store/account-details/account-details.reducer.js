@@ -73,6 +73,10 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
       }
     }
     case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS: {
+      if (state.historyTransactionsTask.status === 'reloading') {
+        return state
+      }
+
       return {
         ...state,
         historyTransactionsTask: state.historyTransactionsTask.status === 'successful'
