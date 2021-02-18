@@ -66,6 +66,7 @@ function AccountDetails ({
   React.useEffect(() => {
     const intervalId = setInterval(() => {
       onRefresHistoryTransactions(accountIndex)
+      onLoadPoolTransactions(accountIndex)
     }, AUTO_REFRESH_RATE)
 
     return () => { clearInterval(intervalId) }
