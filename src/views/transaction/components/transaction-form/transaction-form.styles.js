@@ -154,6 +154,9 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     width: theme.spacing(2.5),
     height: theme.spacing(2.5)
   },
+  receiverWrapper: {
+    width: '100%'
+  },
   receiverInputWrapper: {
     width: '100%',
     position: 'relative',
@@ -222,17 +225,16 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     marginTop: theme.spacing(2.5),
     [theme.breakpoints.upSm]: {
-      marginTop: theme.spacing(4.5)
+      marginTop: theme.spacing(3)
     }
   },
   fee: {
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
-    marginBottom: theme.spacing(1),
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(2)}px 0`
+      fontSize: `${theme.spacing(2.5)}px`,
+      padding: 0
     }
   },
   feeIcon: {
