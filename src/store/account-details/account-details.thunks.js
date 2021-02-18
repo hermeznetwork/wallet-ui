@@ -76,9 +76,9 @@ function filterExitsFromHistoryTransactions (historyTransactions, exits, wallet,
  */
 function fetchHistoryTransactions (accountIndex, fromItem) {
   return (dispatch, getState) => {
-    dispatch(accountDetailsActions.loadHistoryTransactions())
-
     const { accountDetails: { exitsTask }, global: { wallet } } = getState()
+
+    dispatch(accountDetailsActions.loadHistoryTransactions())
 
     if (fromItem) {
       refreshCancelTokenSource.cancel()
@@ -121,6 +121,7 @@ function refreshHistoryTransactions (accountIndex) {
 
       refreshCancelTokenSource = axios.CancelToken.source()
 
+      const axiosConfig = { cancelToken: refreshCancelTokenSource.token }
       const initialReq = CoordinatorAPI.getTransactions(
         undefined,
         undefined,
@@ -129,9 +130,8 @@ function refreshHistoryTransactions (accountIndex) {
         undefined,
         CoordinatorAPI.PaginationOrder.DESC,
         undefined,
-        { cancelToken: refreshCancelTokenSource.token }
+        axiosConfig
       )
-
       const requests = historyTransactionsTask.data.fromItemHistory
         .reduce((requests, fromItem) => ([
           ...requests,
@@ -143,15 +143,13 @@ function refreshHistoryTransactions (accountIndex) {
             fromItem,
             CoordinatorAPI.PaginationOrder.DESC,
             undefined,
-            { cancelToken: refreshCancelTokenSource.token }
+            axiosConfig
           )
         ]), [initialReq])
 
       Promise.all(requests)
         .then((results) => {
-          const transactions = results.reduce((acc, result) => {
-            return [...acc, ...result.transactions]
-          }, [])
+          const transactions = results.reduce((acc, result) => [...acc, ...result.transactions], [])
           const filteredTransactions = filterExitsFromHistoryTransactions(
             transactions,
             exitsTask.data,
