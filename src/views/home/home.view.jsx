@@ -35,7 +35,6 @@ function Home ({
   pendingWithdraws,
   pendingDelayedWithdraws,
   pendingDeposits,
-  pendingDepositsCheckTask,
   coordinatorStateTask,
   onChangeHeader,
   onCheckPendingDeposits,
@@ -204,10 +203,6 @@ function Home ({
               }
               case 'reloading':
               case 'successful': {
-                if (pendingDepositsCheckTask.status === 'loading') {
-                  return <Spinner />
-                }
-
                 const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
                 const pendingOnTopDeposits = getPendingOnTopDeposits(accountPendingDeposits)
                 const pendingCreateAccountDeposits = getPendingCreateAccountDeposits(accountPendingDeposits)
@@ -281,7 +276,6 @@ const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
   totalAccountsBalanceTask: state.home.totalAccountsBalanceTask,
   accountsTask: state.home.accountsTask,
-  pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
