@@ -31,7 +31,6 @@ function Transaction ({
   fiatExchangeRatesTask,
   transactionType,
   pendingDeposits,
-  pendingDepositsCheckTask,
   onChangeHeader,
   onCheckPendingDeposits,
   onLoadMetaMaskAccount,
@@ -188,7 +187,6 @@ const mapStateToProps = (state) => ({
   accountsTask: state.transaction.accountsTask,
   tokensTask: state.transaction.tokensTask,
   pendingDeposits: state.global.pendingDeposits,
-  pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency
 })
