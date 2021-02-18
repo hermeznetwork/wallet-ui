@@ -13,7 +13,6 @@ function AccountSelector ({
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
-  pendingDepositsCheckTask,
   onLoadAccounts,
   onAccountClick
 }) {
@@ -46,10 +45,6 @@ function AccountSelector ({
               }
               case 'reloading':
               case 'successful': {
-                if (pendingDepositsCheckTask.status !== 'successful') {
-                  return <Spinner />
-                }
-
                 if (transactionType === TxType.Deposit) {
                   if (accountsTask.data.length === 0) {
                     return (

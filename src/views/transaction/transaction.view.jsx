@@ -31,7 +31,6 @@ function Transaction ({
   fiatExchangeRatesTask,
   transactionType,
   pendingDeposits,
-  pendingDepositsCheckTask,
   onChangeHeader,
   onCheckPendingDeposits,
   onLoadMetaMaskAccount,
@@ -106,7 +105,6 @@ function Transaction ({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}
                 pendingDeposits={pendingDeposits[wallet.hermezEthereumAddress]}
-                pendingDepositsCheckTask={pendingDepositsCheckTask}
                 onLoadAccounts={onLoadAccounts}
                 onAccountClick={(account) => onGoToBuildTransactionStep(account, receiver)}
               />
@@ -189,7 +187,6 @@ const mapStateToProps = (state) => ({
   accountsTask: state.transaction.accountsTask,
   tokensTask: state.transaction.tokensTask,
   pendingDeposits: state.global.pendingDeposits,
-  pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency
 })
