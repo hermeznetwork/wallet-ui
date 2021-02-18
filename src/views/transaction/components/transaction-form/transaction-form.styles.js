@@ -30,20 +30,24 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     color: theme.palette.black,
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(2.5)}px`,
-      height: theme.spacing(10),
-      padding: `${theme.spacing(3.5)}px ${theme.spacing(5)}px`,
-      marginBottom: theme.spacing(3)
+      height: theme.spacing(8),
+      padding: `${theme.spacing(3)}px ${theme.spacing(5)}px ${theme.spacing(2.5)}px`,
+      marginBottom: theme.spacing(2)
     }
   },
   tokenSymbolAmount: {
     fontWeight: theme.fontWeights.medium
   },
   form: {
-    width: '100%'
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
   selectAmount: {
     border: `solid 2px ${theme.palette.grey.veryLight}`,
-    borderRadius: 12
+    borderRadius: 12,
+    width: '100%'
   },
   selectAmountError: {
     borderColor: theme.palette.red.main
@@ -55,7 +59,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     padding: theme.spacing(2.5),
     [theme.breakpoints.upSm]: {
-      padding: `${theme.spacing(5)}px ${theme.spacing(6)}px`
+      padding: `${theme.spacing(5)}px ${theme.spacing(6)}px ${theme.spacing(4)}px`
     }
   },
   amountCurrency: {
@@ -64,7 +68,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     color: theme.palette.black,
     marginBottom: theme.spacing(0.5),
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
+      fontSize: `${theme.spacing(2.5)}px`,
       marginBottom: theme.spacing(1.5)
     }
   },
@@ -85,7 +89,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
       '-moz-appearance': 'textfield'
     },
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(6)}px`
+      fontSize: `${theme.spacing(5)}px`
     }
   },
   amountButtons: {
@@ -107,8 +111,9 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     padding: `${theme.spacing(2)}px 0`,
     textAlign: 'center',
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(3)}px 0`
+      fontSize: `${theme.spacing(2.5)}px`,
+      lineHeight: `${theme.spacing(2.5)}px`,
+      padding: `${theme.spacing(2)}px 0 ${theme.spacing(2.5)}px`
     }
   },
   amountButton: {
@@ -130,7 +135,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     justifyContent: 'center'
   },
   changeCurrencyIcon: {
-    marginRight: theme.spacing(1)
+    height: theme.spacing(2.5)
   },
   errorMessage: {
     display: 'none',
@@ -138,7 +143,8 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     marginTop: theme.spacing(1.5),
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.medium,
-    color: theme.palette.red.main
+    color: theme.palette.red.main,
+    width: '100%'
   },
   selectAmountErrorMessageVisible: {
     display: 'flex'
@@ -151,7 +157,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
   receiverInputWrapper: {
     width: '100%',
     position: 'relative',
-    marginTop: theme.spacing(5),
+    marginTop: theme.spacing(4),
     borderRadius: 12,
     border: `solid 2px ${theme.palette.grey.veryLight}`,
     display: 'flex',
@@ -171,8 +177,8 @@ const useTransactionFormStyles = createUseStyles(theme => ({
       opacity: 1
     },
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(5.5)}px ${theme.spacing(2)}px ${theme.spacing(5.5)}px ${theme.spacing(5)}px`
+      fontSize: `${theme.spacing(2.5)}px`,
+      padding: `${theme.spacing(4.5)}px ${theme.spacing(2)}px ${theme.spacing(4)}px ${theme.spacing(5)}px`
     }
   },
   receiverError: {
