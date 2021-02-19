@@ -60,7 +60,6 @@ function fetchAccounts (fromItem) {
       refreshCancelTokenSource.cancel()
     }
 
-    console.log(fromItem)
     return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, undefined, fromItem, undefined, 1)
       .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch(err => dispatch(homeActions.loadAccountsFailure(err)))

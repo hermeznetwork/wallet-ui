@@ -1,6 +1,6 @@
 import { homeActionTypes } from './home.actions'
 import { getPaginationData } from '../../utils/api'
-import { PaginationOrder } from '@hermeznetwork/hermezjs/dist/node/api'
+import { PaginationOrder } from '@hermeznetwork/hermezjs/src/api'
 
 const initialHomeState = {
   totalAccountsBalanceTask: {
