@@ -9,7 +9,7 @@ import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
@@ -60,12 +60,20 @@ function TransactionDetails ({
           token.decimals
         )
 
-        return getTokenAmountInPreferredCurrency(
-          fixedAccountBalance,
-          historicUSD || token.USD,
-          preferredCurrency,
-          fiatExchangeRatesTask.data
-        )
+        if (historicUSD) {
+          return getAmountInPreferredCurrency(
+            historicUSD,
+            preferredCurrency,
+            fiatExchangeRatesTask.data
+          )
+        } else {
+          return getTokenAmountInPreferredCurrency(
+            fixedAccountBalance,
+            token.USD,
+            preferredCurrency,
+            fiatExchangeRatesTask.data
+          )
+        }
       }
       default: {
         return undefined
