@@ -25,12 +25,14 @@ const useAccountStyles = createUseStyles(theme => ({
   },
   topRow: ({ hasPendingDeposit }) => ({
     color: hasPendingDeposit ? theme.palette.white : theme.palette.black,
+    marginBottom: theme.spacing(1.5)
+  }),
+  topRowText: {
     fontSize: theme.spacing(2),
-    marginBottom: theme.spacing(1.5),
     [theme.breakpoints.upSm]: {
       fontSize: theme.spacing(2.5)
     }
-  }),
+  },
   tokenName: {
     fontWeight: theme.fontWeights.medium
   },

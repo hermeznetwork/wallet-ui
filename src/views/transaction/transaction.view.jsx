@@ -228,7 +228,7 @@ const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
       return {
         type: 'page',
         data: {
-          title: 'Amount',
+          title: getTransactionOverviewHeaderTitle(transactionType),
           goBackAction: accountIndex
             ? push(`/accounts/${accountIndex}`)
             : transactionActions.changeCurrentStep(STEP_NAME.CHOOSE_ACCOUNT),
