@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
-import { getAccounts } from '@hermeznetwork/hermezjs/src/api'
+import { getAccounts, getCreateAccountAuthorization } from '@hermeznetwork/hermezjs/src/api'
 import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compressed-amount'
@@ -329,9 +329,13 @@ function TransactionForm ({
 
     switch (transactionType) {
       case TxType.Transfer: {
-        return getAccounts(receiver, [account.token.id])
+        const accountChecks = [
+          getAccounts(receiver, [account.token.id]),
+          getCreateAccountAuthorization(receiver)
+        ]
+        return Promise.all(accountChecks)
           .then((res) => {
-            const receiverAccount = res.accounts[0]
+            const receiverAccount = res[0].accounts[0]
             const transactionFee = getTokenAmountBigInt(getFee(fees, receiverAccount).toFixed(account.token.decimals), account.token.decimals).toString()
 
             onSubmit({
@@ -339,6 +343,9 @@ function TransactionForm ({
               to: receiverAccount || { hezEthereumAddress: receiver },
               fee: transactionFee
             })
+          })
+          .catch(() => {
+            setIsReceiverValid(false)
           })
       }
       default: {
@@ -415,7 +422,7 @@ function TransactionForm ({
           })}
           >
             <ErrorIcon className={classes.errorIcon} />
-            Please enter a valid address.
+            Please enter a valid address (e.g. hez:0x380ed8Bd696c78395Fb1961BDa42739D2f5242a1). Receiver needs to have signed in to Hermez Wallet at least once.
           </p>
         </div>
       )
