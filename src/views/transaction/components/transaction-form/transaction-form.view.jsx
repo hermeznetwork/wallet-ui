@@ -322,6 +322,11 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleContinueButton (fees) {
+    if (amount === BigInt(0)) {
+      setIsAmountPositive(false)
+      return
+    }
+
     switch (transactionType) {
       case TxType.Transfer: {
         return getAccounts(receiver, [account.token.id])
@@ -455,6 +460,8 @@ function TransactionForm ({
                             placeholder='0.00'
                             type='number'
                             onChange={handleAmountInputChange}
+                            onFocus={(e) => { e.target.placeholder = '' }}
+                            onBlur={(e) => { e.target.placeholder = '0.00' }}
                           />
                         </div>
                         <div className={classes.amountButtons}>
