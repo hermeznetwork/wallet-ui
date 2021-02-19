@@ -322,6 +322,11 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleContinueButton (fees) {
+    if (amount === BigInt(0)) {
+      setIsAmountPositive(false)
+      return
+    }
+
     switch (transactionType) {
       case TxType.Transfer: {
         return getAccounts(receiver, [account.token.id])
