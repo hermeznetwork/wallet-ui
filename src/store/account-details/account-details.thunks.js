@@ -32,7 +32,9 @@ function fetchPoolTransactions (accountIndex) {
 
     if (wallet) {
       getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(transactions)))
+        // We need to reverse the txs to match the order of the txs from the history (DESC)
+        .then(transactions => transactions.reverse())
+        .then(transactions => dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(transactions)))
         .catch(err => dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure(err)))
     } else {
       dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure('MetaMask wallet is not available'))
