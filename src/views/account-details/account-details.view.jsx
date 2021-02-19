@@ -50,7 +50,6 @@ function AccountDetails ({
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
   const { accountIndex } = useParams()
-  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
   const [accountTokenPendingDeposits, setAccountTokenPendingDeposits] = React.useState()
 
   React.useEffect(() => {
@@ -69,13 +68,17 @@ function AccountDetails ({
   }, [onLoadExits, accountTask])
 
   React.useEffect(() => {
-    if (accountTask.status === 'successful' && accountPendingDeposits) {
-      const accountTokenPendingDeposits = accountPendingDeposits
-        .filter(deposit => deposit.token.id === accountTask.data.token.id)
+    if (accountTask.status === 'successful') {
+      const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
 
-      setAccountTokenPendingDeposits(accountTokenPendingDeposits)
+      if (accountPendingDeposits) {
+        const accountTokenPendingDeposits = accountPendingDeposits
+          .filter(deposit => deposit.token.id === accountTask.data.token.id)
+
+        setAccountTokenPendingDeposits(accountTokenPendingDeposits)
+      }
     }
-  }, [accountTask])
+  }, [accountTask, pendingDeposits])
 
   React.useEffect(() => {
     if (exitsTask.status === 'successful') {
