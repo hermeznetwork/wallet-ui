@@ -28,7 +28,7 @@ function Account ({
         }
       }}
     >
-      <div className={`${classes.values} ${classes.topRow}`}>
+      <div className={`${classes.values} ${classes.topRow} ${classes.topRowText}`}>
         <p>{tokenSymbol}</p>
         <p>{balance} {tokenSymbol}</p>
       </div>
