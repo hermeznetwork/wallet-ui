@@ -51,6 +51,7 @@ function AccountDetails ({
   const classes = useAccountDetailsStyles()
   const { accountIndex } = useParams()
   const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
+  const [accountTokenPendingDeposits, setAccountTokenPendingDeposits] = React.useState()
 
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name)
@@ -66,6 +67,15 @@ function AccountDetails ({
       onLoadExits(accountTask.data.token.id)
     }
   }, [onLoadExits, accountTask])
+
+  React.useEffect(() => {
+    if (accountTask.status === 'successful' && accountPendingDeposits) {
+      const accountTokenPendingDeposits = accountPendingDeposits
+        .filter(deposit => deposit.token.id === accountTask.data.token.id)
+
+      setAccountTokenPendingDeposits(accountTokenPendingDeposits)
+    }
+  }, [accountTask])
 
   React.useEffect(() => {
     if (exitsTask.status === 'successful') {
@@ -87,11 +97,11 @@ function AccountDetails ({
       return undefined
     }
 
-    if (!accountPendingDeposits) {
+    if (!accountTokenPendingDeposits) {
       return accountTask.data.balance
     }
 
-    const tokenBalance = accountPendingDeposits.reduce((totalAccountBalance, pendingDeposit) => {
+    const tokenBalance = accountTokenPendingDeposits.reduce((totalAccountBalance, pendingDeposit) => {
       return totalAccountBalance + BigInt(pendingDeposit.amount)
     }, BigInt(accountTask.data.balance))
 
@@ -227,11 +237,11 @@ function AccountDetails ({
                       redirectTo={WithdrawRedirectionRoute.AccountDetails}
                     />
                   )}
-                  {accountPendingDeposits && (
+                  {accountTokenPendingDeposits && (
                     <TransactionList
                       arePending
                       accountIndex={accountIndex}
-                      transactions={accountPendingDeposits}
+                      transactions={accountTokenPendingDeposits}
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       preferredCurrency={preferredCurrency}
                       onTransactionClick={handleTransactionClick}
