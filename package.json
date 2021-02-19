@@ -12,7 +12,7 @@
     "lint:fix": "standard --fix"
   },
   "dependencies": {
-    "@hermeznetwork/hermezjs": "hermeznetwork/hermezjs#c2cd73b7607a657a172478129605c584e23ff09b",
+    "@hermeznetwork/hermezjs": "hermeznetwork/hermezjs#d9d63439e22b635abe425eab6f566f12575771de",
     "axios": "^0.19.2",
     "big-integer": "^1.6.48",
     "clsx": "^1.1.1",
