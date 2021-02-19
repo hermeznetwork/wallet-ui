@@ -243,8 +243,7 @@ function exit (amount, account, fee) {
       type: TxType.Exit,
       from: account.accountIndex,
       amount: HermezCompressedAmount.compressAmount(amount),
-      fee,
-      nonce: account.nonce
+      fee
     }
 
     return Tx.generateAndSendL2Tx(txData, wallet, account.token)
@@ -261,8 +260,7 @@ function transfer (amount, from, to, fee) {
       from: from.accountIndex,
       to: to.accountIndex || to.hezEthereumAddress,
       amount: HermezCompressedAmount.compressAmount(amount),
-      fee,
-      nonce: from.nonce
+      fee
     }
 
     return Tx.generateAndSendL2Tx(txData, wallet, from.token)
