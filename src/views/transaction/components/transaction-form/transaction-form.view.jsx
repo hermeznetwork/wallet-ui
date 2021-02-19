@@ -332,7 +332,7 @@ function TransactionForm ({
         return getAccounts(receiver, [account.token.id])
           .then((res) => {
             const receiverAccount = res.accounts[0]
-            const transactionFee = getTokenAmountBigInt(getFee(fees, receiverAccount).toFixed(account.token.decimals), account.token.decimals).toString()
+            const transactionFee = getFee(fees, receiverAccount).toFixed(account.token.decimals)
 
             onSubmit({
               amount: amount,
@@ -342,7 +342,7 @@ function TransactionForm ({
           })
       }
       default: {
-        const transactionFee = getTokenAmountBigInt(getFee(fees).toFixed(account.token.decimals), account.token.decimals).toString()
+        const transactionFee = getFee(fees).toFixed(account.token.decimals)
         return onSubmit({
           amount: amount,
           to: {},
