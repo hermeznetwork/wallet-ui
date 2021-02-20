@@ -240,6 +240,7 @@ function Home ({
                         preferredCurrency={preferredCurrency}
                         fiatExchangeRates={fiatExchangeRatesTask.data}
                         pendingDeposits={pendingOnTopDeposits}
+                        poolTransactions={poolTransactionsTask.data}
                         onAccountClick={handleAccountClick}
                       />
                     </InfiniteScroll>

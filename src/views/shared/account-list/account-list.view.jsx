@@ -11,6 +11,7 @@ function AccountList ({
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
+  poolTransactions,
   disabledTokenIds,
   onAccountClick
 }) {
@@ -25,16 +26,23 @@ function AccountList ({
   }
 
   function getAccountBalance (account) {
-    if (!pendingDeposits) {
-      return account.balance
+    let totalBalance = BigInt(account.balance)
+
+    if (pendingDeposits) {
+      const pendingAccountDeposits = pendingDeposits.filter((deposit) => deposit.token.id === account.token.id)
+
+      pendingAccountDeposits.forEach((pendingDeposit) => {
+        totalBalance += BigInt(pendingDeposit.amount)
+      })
     }
 
-    const pendingAccountDeposits = pendingDeposits.filter((deposit) => deposit.token.id === account.token.id)
-    const newAccountBalance = pendingAccountDeposits.reduce((totalAccountBalance, pendingDeposit) => {
-      return totalAccountBalance + BigInt(pendingDeposit.amount)
-    }, BigInt(account.balance))
+    if (poolTransactions) {
+      poolTransactions.forEach((pendingTransaction) => {
+        totalBalance -= BigInt(pendingTransaction.amount)
+      })
+    }
 
-    return newAccountBalance.toString()
+    return totalBalance.toString()
   }
 
   function isAccountDisabled (account) {
