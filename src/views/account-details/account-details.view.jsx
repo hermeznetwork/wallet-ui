@@ -100,15 +100,21 @@ function AccountDetails ({
       return undefined
     }
 
-    if (!accountTokenPendingDeposits) {
-      return accountTask.data.balance
+    let totalBalance = BigInt(accountTask.data.balance)
+
+    if (accountTokenPendingDeposits) {
+      accountTokenPendingDeposits.forEach((pendingDeposit) => {
+        totalBalance += BigInt(pendingDeposit.amount)
+      })
     }
 
-    const tokenBalance = accountTokenPendingDeposits.reduce((totalAccountBalance, pendingDeposit) => {
-      return totalAccountBalance + BigInt(pendingDeposit.amount)
-    }, BigInt(accountTask.data.balance))
+    if (poolTransactionsTask.status === 'successful' || poolTransactionsTask.status === 'reloading') {
+      poolTransactionsTask.data.forEach((pendingTransaction) => {
+        totalBalance -= BigInt(pendingTransaction.amount)
+      })
+    }
 
-    return tokenBalance.toString()
+    return totalBalance.toString()
   }
 
   /**
