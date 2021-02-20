@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import useAccountListStyles from './account-list.styles'
 import Account from '../account/account.view'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
+import { getAccountBalance } from '../../../utils/accounts'
 
 function AccountList ({
   accounts,
@@ -23,26 +24,6 @@ function AccountList ({
     }
 
     return pendingDeposits.find((deposit) => deposit.token.id === account.token.id) !== undefined
-  }
-
-  function getAccountBalance (account) {
-    let totalBalance = BigInt(account.balance)
-
-    if (pendingDeposits) {
-      const pendingAccountDeposits = pendingDeposits.filter((deposit) => deposit.token.id === account.token.id)
-
-      pendingAccountDeposits.forEach((pendingDeposit) => {
-        totalBalance += BigInt(pendingDeposit.amount)
-      })
-    }
-
-    if (poolTransactions) {
-      poolTransactions.forEach((pendingTransaction) => {
-        totalBalance -= BigInt(pendingTransaction.amount)
-      })
-    }
-
-    return totalBalance.toString()
   }
 
   function isAccountDisabled (account) {
@@ -64,7 +45,7 @@ function AccountList ({
   return (
     <div className={classes.root}>
       {accounts.map((account, index) => {
-        const accountBalance = getAccountBalance(account)
+        const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
         const fixedAccountBalance = getFixedTokenAmount(accountBalance, account.token.decimals)
 
         return (

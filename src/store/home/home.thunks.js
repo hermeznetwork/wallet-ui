@@ -1,38 +1,21 @@
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 
 import * as homeActions from './home.actions'
 
 /**
- * Fetches the accounts for a Hermez Ethereum address and calculates the total balance.
+ * Fetches all the accounts for a Hermez Ethereum address to calculate the total balance
+ * later on taking into account the transactions from the pool and the pending deposits
  * @param {string} hermezEthereumAddress - Hermez ethereum address
  * @returns {void}
  */
-function fetchTotalAccountsBalance (hermezEthereumAddress, preferredCurrency, fiatExchangeRates) {
+function fetchAllAccounts (hermezEthereumAddress) {
   return (dispatch) => {
-    dispatch(homeActions.loadTotalAccountsBalance())
+    dispatch(homeActions.loadAllAccounts())
 
     return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
-      .then((res) => {
-        const totalAccountsBalance = res.accounts.reduce((amount, account) => {
-          const fixedAccountBalance = getFixedTokenAmount(
-            account.balance,
-            account.token.decimals
-          )
-          const fiatBalance = getTokenAmountInPreferredCurrency(
-            fixedAccountBalance,
-            account.token.USD,
-            preferredCurrency,
-            fiatExchangeRates
-          )
-
-          return amount + fiatBalance
-        }, 0)
-
-        dispatch(homeActions.loadTotalAccountsBalanceSuccess(totalAccountsBalance))
-      })
-      .catch(err => dispatch(homeActions.loadTotalAccountsBalanceFailure(err)))
+      .then((res) => dispatch(homeActions.loadAllAccountsSuccess(res.accounts)))
+      .catch(err => dispatch(homeActions.loadAllAccountsFailure(err)))
   }
 }
 
@@ -89,7 +72,7 @@ function fetchExits () {
 }
 
 export {
-  fetchTotalAccountsBalance,
+  fetchAllAccounts,
   fetchAccounts,
   fetchPoolTransactions,
   fetchExits

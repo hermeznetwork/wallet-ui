@@ -22,6 +22,7 @@ import TokenBalance from '../shared/token-balance/token-balance.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
+import { getAccountBalance } from '../../utils/accounts'
 
 function AccountDetails ({
   preferredCurrency,
@@ -93,60 +94,35 @@ function AccountDetails ({
   React.useEffect(() => onCleanup, [onCleanup])
 
   /**
-   * Gets the token balance of the account, including pending deposits
-   */
-  function getTokenBalance () {
-    if (accountTask.status !== 'successful' && accountTask.status !== 'reloading') {
-      return undefined
-    }
-
-    let totalBalance = BigInt(accountTask.data.balance)
-
-    if (accountTokenPendingDeposits) {
-      accountTokenPendingDeposits.forEach((pendingDeposit) => {
-        totalBalance += BigInt(pendingDeposit.amount)
-      })
-    }
-
-    if (poolTransactionsTask.status === 'successful' || poolTransactionsTask.status === 'reloading') {
-      poolTransactionsTask.data.forEach((pendingTransaction) => {
-        totalBalance -= BigInt(pendingTransaction.amount)
-      })
-    }
-
-    return totalBalance.toString()
-  }
-
-  /**
    * Calculates the total balance of the account in the user's preferred currency
    * @param {Object} accountTask - Asynchronous task of the account
    * @returns {number} The balance of the account in user's preferred currency
    */
-  function getAccountBalance () {
-    switch (accountTask.status) {
-      case 'reloading':
-      case 'successful': {
-        if (fiatExchangeRatesTask.status !== 'successful') {
-          return undefined
-        }
-
-        const accountTokenBalance = getTokenBalance()
-        const fixedAccountBalance = getFixedTokenAmount(
-          accountTokenBalance,
-          accountTask.data.token.decimals
-        )
-
-        return getTokenAmountInPreferredCurrency(
-          fixedAccountBalance,
-          accountTask.data.token.USD,
-          preferredCurrency,
-          fiatExchangeRatesTask.data
-        )
-      }
-      default: {
-        return undefined
-      }
+  function getAccountFiatBalance () {
+    if (accountTask.status !== 'successful' && accountTask.status !== 'reloading') {
+      return undefined
     }
+
+    if (fiatExchangeRatesTask.status !== 'successful') {
+      return undefined
+    }
+
+    const accountTokenBalance = getAccountBalance(
+      accountTask.data,
+      poolTransactionsTask.data,
+      accountTokenPendingDeposits
+    )
+    const fixedAccountBalance = getFixedTokenAmount(
+      accountTokenBalance,
+      accountTask.data.token.decimals
+    )
+
+    return getTokenAmountInPreferredCurrency(
+      fixedAccountBalance,
+      accountTask.data.token.USD,
+      preferredCurrency,
+      fiatExchangeRatesTask.data
+    )
   }
 
   /**
@@ -182,13 +158,15 @@ function AccountDetails ({
         <section className={classes.section}>
           <div className={classes.tokenBalance}>
             <TokenBalance
-              amount={getFixedTokenAmount(getTokenBalance(), accountTask.data?.token.decimals)}
+              amount={getFixedTokenAmount(
+                getAccountBalance(accountTask.data, poolTransactionsTask.data, accountTokenPendingDeposits),
+                accountTask.data?.token.decimals)}
               symbol={accountTask.data?.token.symbol}
             />
           </div>
           <div className={classes.fiatBalance}>
             <FiatAmount
-              amount={getAccountBalance()}
+              amount={getAccountFiatBalance()}
               currency={preferredCurrency}
             />
           </div>

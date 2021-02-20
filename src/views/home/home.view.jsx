@@ -23,10 +23,11 @@ import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './pending-deposit-list/pending-deposit-list.view'
+import { getAccountsFiatBalance } from '../../utils/accounts'
 
 function Home ({
   wallet,
-  totalAccountsBalanceTask,
+  allAccountsTask,
   accountsTask,
   poolTransactionsTask,
   exitsTask,
@@ -38,7 +39,7 @@ function Home ({
   coordinatorStateTask,
   onChangeHeader,
   onCheckPendingDeposits,
-  onLoadTotalAccountsBalance,
+  fetchAllAccounts,
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
@@ -50,6 +51,7 @@ function Home ({
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
+  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
 
   React.useEffect(() => {
     onChangeHeader(theme.palette.primary.main)
@@ -61,13 +63,13 @@ function Home ({
 
   React.useEffect(() => {
     if (fiatExchangeRatesTask.status === 'successful') {
-      onLoadTotalAccountsBalance(
+      fetchAllAccounts(
         wallet.hermezEthereumAddress,
         preferredCurrency,
         fiatExchangeRatesTask.data
       )
     }
-  }, [wallet, preferredCurrency, fiatExchangeRatesTask, onLoadTotalAccountsBalance])
+  }, [wallet, preferredCurrency, fiatExchangeRatesTask, fetchAllAccounts])
 
   React.useEffect(() => {
     if (wallet) {
@@ -106,6 +108,16 @@ function Home ({
     return accountPendingDeposits.filter(deposit => deposit.type === TxType.Deposit)
   }
 
+  function getTotalFiatBalance () {
+    return getAccountsFiatBalance(
+      allAccountsTask.data,
+      poolTransactionsTask.data,
+      accountPendingDeposits,
+      preferredCurrency,
+      fiatExchangeRatesTask.data
+    )
+  }
+
   /**
    * Navigates to the AccountDetails view when an account is clicked
    * @param {Object} account - Account
@@ -136,7 +148,7 @@ function Home ({
           />
           <div className={classes.accountBalance}>
             <FiatAmount
-              amount={totalAccountsBalanceTask.data}
+              amount={getTotalFiatBalance()}
               currency={preferredCurrency}
             />
           </div>
@@ -203,7 +215,6 @@ function Home ({
               }
               case 'reloading':
               case 'successful': {
-                const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
                 const pendingOnTopDeposits = getPendingOnTopDeposits(accountPendingDeposits)
                 const pendingCreateAccountDeposits = getPendingCreateAccountDeposits(accountPendingDeposits)
 
@@ -275,7 +286,7 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
-  totalAccountsBalanceTask: state.home.totalAccountsBalanceTask,
+  allAccountsTask: state.home.allAccountsTask,
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
@@ -291,8 +302,8 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
-  onLoadTotalAccountsBalance: (hermezEthereumAddress, preferredCurrency, fiatExchangeRates) =>
-    dispatch(homeThunks.fetchTotalAccountsBalance(hermezEthereumAddress, preferredCurrency, fiatExchangeRates)),
+  fetchAllAccounts: (hermezEthereumAddress) =>
+    dispatch(homeThunks.fetchAllAccounts(hermezEthereumAddress)),
   onLoadAccounts: (hermezEthereumAddress, fromItem) =>
     dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem)),
   onLoadPoolTransactions: () =>
