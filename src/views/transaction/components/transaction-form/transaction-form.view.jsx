@@ -331,11 +331,17 @@ function TransactionForm ({
       case TxType.Transfer: {
         const accountChecks = [
           getAccounts(receiver, [account.token.id]),
-          getCreateAccountAuthorization(receiver)
+          getCreateAccountAuthorization(receiver).catch(() => {})
         ]
         return Promise.all(accountChecks)
           .then((res) => {
+            console.log(res)
             const receiverAccount = res[0].accounts[0]
+            console.log(receiverAccount)
+            if (!receiverAccount && !res[1]) {
+              setIsReceiverValid(false)
+              return
+            }
             const transactionFee = getFee(fees, receiverAccount).toFixed(account.token.decimals)
 
             onSubmit({
@@ -343,9 +349,6 @@ function TransactionForm ({
               to: receiverAccount || { hezEthereumAddress: receiver },
               fee: transactionFee
             })
-          })
-          .catch(() => {
-            setIsReceiverValid(false)
           })
       }
       default: {
