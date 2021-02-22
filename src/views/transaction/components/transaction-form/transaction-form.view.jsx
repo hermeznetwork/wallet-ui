@@ -164,7 +164,6 @@ function TransactionForm ({
     const newAmountBigInt = BigInt(newAmount.toString())
     setIsAmountPositive(newAmountBigInt >= 0)
     setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountBigInt))
-    console.log(newAmountBigInt, BigInt(account.balance.toString()))
     setIsAmountLessThanFunds(newAmountBigInt <= BigInt(account.balance.toString()))
   }
 
