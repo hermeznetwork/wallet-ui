@@ -335,9 +335,7 @@ function TransactionForm ({
         ]
         return Promise.all(accountChecks)
           .then((res) => {
-            console.log(res)
             const receiverAccount = res[0].accounts[0]
-            console.log(receiverAccount)
             if (!receiverAccount && !res[1]) {
               setIsReceiverValid(false)
               return
