@@ -21,7 +21,7 @@ const initialHomeState = {
 
 function homeReducer (state = initialHomeState, action) {
   switch (action.type) {
-    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE: {
+    case homeActionTypes.LOAD_TOTAL_BALANCE: {
       return {
         ...state,
         allAccountsTask: {
@@ -29,7 +29,7 @@ function homeReducer (state = initialHomeState, action) {
         }
       }
     }
-    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_SUCCESS: {
+    case homeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS: {
       return {
         ...state,
         allAccountsTask: {
@@ -38,7 +38,7 @@ function homeReducer (state = initialHomeState, action) {
         }
       }
     }
-    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_FAILURE: {
+    case homeActionTypes.LOAD_TOTAL_BALANCE_FAILURE: {
       return {
         ...state,
         allAccountsTask: {
@@ -75,6 +75,15 @@ function homeReducer (state = initialHomeState, action) {
         accountsTask: {
           status: 'failed',
           error: 'An error ocurred loading the accounts'
+        }
+      }
+    }
+    case homeActionTypes.LOAD_POOL_TRANSACTIONS: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: 'loading',
+          data: action.transactions
         }
       }
     }
@@ -149,7 +158,7 @@ function homeReducer (state = initialHomeState, action) {
       }
     }
     case homeActionTypes.RESET_STATE: {
-      return initialHomeState
+      return { ...initialHomeState }
     }
     default: {
       return state

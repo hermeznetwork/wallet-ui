@@ -23,7 +23,6 @@ import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './pending-deposit-list/pending-deposit-list.view'
-import { getAccountsFiatBalance } from '../../utils/accounts'
 
 function Home ({
   wallet,
@@ -39,7 +38,7 @@ function Home ({
   coordinatorStateTask,
   onChangeHeader,
   onCheckPendingDeposits,
-  fetchAllAccounts,
+  onLoadTotalBalance,
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
@@ -59,28 +58,29 @@ function Home ({
 
   React.useEffect(() => {
     onCheckPendingDeposits()
-  }, [onCheckPendingDeposits])
-
-  React.useEffect(() => {
-    if (fiatExchangeRatesTask.status === 'successful') {
-      fetchAllAccounts(
-        wallet.hermezEthereumAddress,
-        preferredCurrency,
-        fiatExchangeRatesTask.data
-      )
-    }
-  }, [wallet, preferredCurrency, fiatExchangeRatesTask, fetchAllAccounts])
-
-  React.useEffect(() => {
-    if (wallet) {
-      onLoadAccounts(wallet.hermezEthereumAddress)
-    }
-  }, [wallet, onLoadAccounts])
-
-  React.useEffect(() => {
     onLoadPoolTransactions()
     onLoadExits()
-  }, [onLoadPoolTransactions, onLoadExits])
+  }, [onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
+
+  React.useEffect(() => {
+    if (poolTransactionsTask.status === 'successful' && fiatExchangeRatesTask.status === 'successful') {
+      onLoadTotalBalance(
+        wallet.hermezEthereumAddress,
+        poolTransactionsTask.data,
+        accountPendingDeposits,
+        fiatExchangeRatesTask.data,
+        preferredCurrency
+      )
+      onLoadAccounts(
+        wallet.hermezEthereumAddress,
+        undefined,
+        poolTransactionsTask.data,
+        accountPendingDeposits,
+        fiatExchangeRatesTask.data,
+        preferredCurrency
+      )
+    }
+  }, [wallet, poolTransactionsTask, accountPendingDeposits, fiatExchangeRatesTask, preferredCurrency, onLoadAccounts])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -106,16 +106,6 @@ function Home ({
     }
 
     return accountPendingDeposits.filter(deposit => deposit.type === TxType.Deposit)
-  }
-
-  function getTotalFiatBalance () {
-    return getAccountsFiatBalance(
-      allAccountsTask.data,
-      poolTransactionsTask.data,
-      accountPendingDeposits,
-      preferredCurrency,
-      fiatExchangeRatesTask.data
-    )
   }
 
   /**
@@ -148,7 +138,7 @@ function Home ({
           />
           <div className={classes.accountBalance}>
             <FiatAmount
-              amount={getTotalFiatBalance()}
+              amount={allAccountsTask.data}
               currency={preferredCurrency}
             />
           </div>
@@ -275,7 +265,7 @@ Home.propTypes = {
   exitsTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
-  onLoadTotalAccountsBalance: PropTypes.func.isRequired,
+  onLoadTotalBalance: PropTypes.func.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
@@ -302,10 +292,10 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
-  fetchAllAccounts: (hermezEthereumAddress) =>
-    dispatch(homeThunks.fetchAllAccounts(hermezEthereumAddress)),
-  onLoadAccounts: (hermezEthereumAddress, fromItem) =>
-    dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem)),
+  onLoadTotalBalance: (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
+    dispatch(homeThunks.fetchTotalBalance(hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
+  onLoadAccounts: (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
+    dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onLoadPoolTransactions: () =>
     dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) =>

@@ -8,7 +8,7 @@ function getAccountBalance (account, poolTransactions, pendingDeposits) {
 
   let totalBalance = BigInt(account.balance)
 
-  if (pendingDeposits) {
+  if (pendingDeposits && pendingDeposits.length) {
     const pendingAccountDeposits = pendingDeposits.filter((deposit) => deposit.token.id === account.token.id)
 
     pendingAccountDeposits.forEach((pendingDeposit) => {

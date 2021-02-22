@@ -4,8 +4,7 @@ import clsx from 'clsx'
 
 import useAccountListStyles from './account-list.styles'
 import Account from '../account/account.view'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
-import { getAccountBalance } from '../../../utils/accounts'
+import '../../../utils/accounts'
 
 function AccountList ({
   accounts,
@@ -45,25 +44,17 @@ function AccountList ({
   return (
     <div className={classes.root}>
       {accounts.map((account, index) => {
-        const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
-        const fixedAccountBalance = getFixedTokenAmount(accountBalance, account.token.decimals)
-
         return (
           <div
             key={account.accountIndex || account.token.id}
             className={clsx({ [classes.accountSpacer]: index > 0 })}
           >
             <Account
-              balance={fixedAccountBalance}
+              balance={account.balance}
               tokenName={account.token.name}
               tokenSymbol={account.token.symbol}
               preferredCurrency={preferredCurrency}
-              fiatBalance={getTokenAmountInPreferredCurrency(
-                fixedAccountBalance,
-                account.token.USD,
-                preferredCurrency,
-                fiatExchangeRates
-              )}
+              fiatBalance={account.fiatBalance}
               hasPendingDeposit={hasAccountPendingDeposit(account)}
               isDisabled={isAccountDisabled(account)}
               onClick={() => handleAccountListItemClick(account)}
