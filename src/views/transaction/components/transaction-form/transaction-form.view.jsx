@@ -65,14 +65,6 @@ function TransactionForm ({
   }, [])
 
   /**
-   * Converts the account balance to a number
-   * @returns {number} - Account balance in number
-   */
-  function getAccountBalance () {
-    return getFixedTokenAmount(account.balance, account.token.decimals)
-  }
-
-  /**
    * Returns the conversion rate from the selected token to the selected preferred
    * currency
    *
@@ -223,27 +215,16 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleSendAllButtonClick () {
-    if (showInFiat) {
-      const maxAmount = getAmountInFiat(account.balance)
-      const fee = getAmountInFiat(getFee(feesTask.data))
-      const newAmountInFiat = maxAmount - fee
-      // Makes sure the converted amount from fiat to tokens is a valid amount in Hermez
-      const newAmountConversion = Number((newAmountInFiat / getAccountFiatRate()).toFixed(10))
-      const newAmountInToken = getTokenAmountBigInt(newAmountConversion.toString(), account.token.decimals)
+    const maxAmount = BigInt(account.balance)
+    const fee = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toString(), account.token.decimals).toString())
+    const newAmount = (maxAmount - fee).toString()
+    // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
+    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(newAmount.length - 10).fill(0).join('')}`)
+    const newAmountInFiat = getAmountInFiat(newAmountInToken)
 
-      setAmountChecks(newAmountInToken)
-      setAmount(newAmountInToken)
-      setAmountFiat(newAmountInFiat)
-    } else {
-      const maxAmount = getAccountBalance()
-      const fee = getFixedTokenAmount(getFee(feesTask.data), account.token.decimals)
-      const newAmountInToken = getTokenAmountBigInt((Number(maxAmount) - Number(fee)).toString(), account.token.decimals)
-      const newAmountInFiat = getAmountInFiat(newAmountInToken)
-
-      setAmountChecks(newAmountInToken)
-      setAmount(newAmountInToken)
-      setAmountFiat(newAmountInFiat)
-    }
+    setAmountChecks(newAmountInToken)
+    setAmount(newAmountInToken)
+    setAmountFiat(newAmountInFiat)
   }
 
   /**
@@ -331,11 +312,15 @@ function TransactionForm ({
       case TxType.Transfer: {
         const accountChecks = [
           getAccounts(receiver, [account.token.id]),
-          getCreateAccountAuthorization(receiver)
+          getCreateAccountAuthorization(receiver).catch(() => {})
         ]
         return Promise.all(accountChecks)
           .then((res) => {
             const receiverAccount = res[0].accounts[0]
+            if (!receiverAccount && !res[1]) {
+              setIsReceiverValid(false)
+              return
+            }
             const transactionFee = getFee(fees, receiverAccount).toFixed(account.token.decimals)
 
             onSubmit({
@@ -343,9 +328,6 @@ function TransactionForm ({
               to: receiverAccount || { hezEthereumAddress: receiver },
               fee: transactionFee
             })
-          })
-          .catch(() => {
-            setIsReceiverValid(false)
           })
       }
       default: {
