@@ -67,6 +67,8 @@ function Home ({
 
   React.useEffect(() => {
     if (
+      totalBalanceTask.status === 'pending' &&
+      accountsTask.status === 'pending' &&
       pendingDepositsCheckTask.status === 'successful' &&
       poolTransactionsTask.status === 'successful' &&
       fiatExchangeRatesTask.status === 'successful'
