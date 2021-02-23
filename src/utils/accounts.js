@@ -5,6 +5,7 @@ function getAccountBalance (account, poolTransactions, pendingDeposits, pendingW
   }
 
   let totalBalance = BigInt(account.balance)
+
   if (pendingDeposits && pendingDeposits.length) {
     const pendingAccountDeposits = pendingDeposits.filter((deposit) => deposit.token.id === account.token.id)
 

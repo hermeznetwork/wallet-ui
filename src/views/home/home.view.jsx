@@ -67,7 +67,6 @@ function Home ({
   React.useEffect(() => {
     if (
       poolTransactionsTask.status === 'successful' &&
-      exitsTask.status === 'successful' &&
       fiatExchangeRatesTask.status === 'successful'
     ) {
       onLoadTotalBalance(
@@ -88,7 +87,7 @@ function Home ({
         preferredCurrency
       )
     }
-  }, [wallet, poolTransactionsTask, exitsTask, fiatExchangeRatesTask, preferredCurrency, onLoadTotalBalance, onLoadAccounts])
+  }, [wallet, poolTransactionsTask, onLoadTotalBalance, onLoadAccounts])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -134,7 +133,7 @@ function Home ({
     copyToClipboard(hermezEthereumAddress)
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
-
+  console.log(accountsTask.data)
   return wallet && (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
