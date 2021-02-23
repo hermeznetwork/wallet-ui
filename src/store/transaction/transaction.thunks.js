@@ -167,7 +167,7 @@ function deposit (amount, account) {
 function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWithdrawal) {
   return (dispatch, getState) => {
     const { global: { wallet, signer } } = getState()
-    const withdrawalId = account.accountIndex + exit.merkleProof.root
+    const withdrawalId = account.accountIndex + exit.batchNum
 
     dispatch(transactionActions.startTransactionSigning())
 

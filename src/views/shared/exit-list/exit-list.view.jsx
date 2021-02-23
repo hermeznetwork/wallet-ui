@@ -48,7 +48,7 @@ function ExitList ({
             )}
             preferredCurrency={preferredCurrency}
             batchNum={transaction.batchNum}
-            exitId={transaction.accountIndex + transaction.merkleProof.root + transaction.nonce}
+            exitId={transaction.accountIndex + transaction.batchNum}
             merkleProof={transaction.merkleProof}
             accountIndex={transaction.accountIndex}
             pendingWithdraws={pendingWithdraws}
