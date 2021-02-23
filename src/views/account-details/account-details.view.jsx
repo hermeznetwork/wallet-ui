@@ -12,7 +12,7 @@ import * as accountDetailsThunks from '../../store/account-details/account-detai
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { getFixedTokenAmount } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
@@ -22,7 +22,6 @@ import TokenBalance from '../shared/token-balance/token-balance.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
-import { getAccountBalance } from '../../utils/accounts'
 
 function AccountDetails ({
   preferredCurrency,
@@ -51,35 +50,38 @@ function AccountDetails ({
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
   const { accountIndex } = useParams()
-  const [accountTokenPendingDeposits, setAccountTokenPendingDeposits] = React.useState()
+  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress] || []
+  const tokenPendingDeposits = accountTask.status === 'successful' &&
+    accountPendingDeposits.filter(deposit => deposit.token.id === accountTask.data.token.id)
+  const accountPendingWithdraws = pendingWithdraws[wallet.hermezEthereumAddress] || []
+  const accountPendingDelayedWithdraws = pendingDelayedWithdraws[wallet.hermezEthereumAddress] || []
 
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name)
   }, [accountTask, onChangeHeader])
 
   React.useEffect(() => {
-    onLoadAccount(accountIndex)
     onLoadPoolTransactions(accountIndex)
-  }, [accountIndex, onLoadAccount, onLoadPoolTransactions])
+  }, [onLoadPoolTransactions])
+
+  React.useEffect(() => {
+    if (poolTransactionsTask.status === 'successful' && fiatExchangeRatesTask.status === 'successful') {
+      onLoadAccount(
+        accountIndex,
+        poolTransactionsTask.data,
+        tokenPendingDeposits,
+        [...accountPendingWithdraws, ...accountPendingDelayedWithdraws],
+        fiatExchangeRatesTask.data,
+        preferredCurrency
+      )
+    }
+  }, [poolTransactionsTask, fiatExchangeRatesTask, accountIndex, onLoadAccount])
 
   React.useEffect(() => {
     if (accountTask.status === 'successful') {
       onLoadExits(accountTask.data.token.id)
     }
   }, [onLoadExits, accountTask])
-
-  React.useEffect(() => {
-    if (accountTask.status === 'successful') {
-      const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
-
-      if (accountPendingDeposits) {
-        const accountTokenPendingDeposits = accountPendingDeposits
-          .filter(deposit => deposit.token.id === accountTask.data.token.id)
-
-        setAccountTokenPendingDeposits(accountTokenPendingDeposits)
-      }
-    }
-  }, [accountTask, pendingDeposits])
 
   React.useEffect(() => {
     if (exitsTask.status === 'successful') {
@@ -92,38 +94,6 @@ function AccountDetails ({
   }, [onCheckPendingDeposits])
 
   React.useEffect(() => onCleanup, [onCleanup])
-
-  /**
-   * Calculates the total balance of the account in the user's preferred currency
-   * @param {Object} accountTask - Asynchronous task of the account
-   * @returns {number} The balance of the account in user's preferred currency
-   */
-  function getAccountFiatBalance () {
-    if (accountTask.status !== 'successful' && accountTask.status !== 'reloading') {
-      return undefined
-    }
-
-    if (fiatExchangeRatesTask.status !== 'successful') {
-      return undefined
-    }
-
-    const accountTokenBalance = getAccountBalance(
-      accountTask.data,
-      poolTransactionsTask.data,
-      accountTokenPendingDeposits
-    )
-    const fixedAccountBalance = getFixedTokenAmount(
-      accountTokenBalance,
-      accountTask.data.token.decimals
-    )
-
-    return getTokenAmountInPreferredCurrency(
-      fixedAccountBalance,
-      accountTask.data.token.USD,
-      preferredCurrency,
-      fiatExchangeRatesTask.data
-    )
-  }
 
   /**
    * Filters the transactions from the pool which are of type Exit
@@ -158,15 +128,16 @@ function AccountDetails ({
         <section className={classes.section}>
           <div className={classes.tokenBalance}>
             <TokenBalance
-              amount={getFixedTokenAmount(
-                getAccountBalance(accountTask.data, poolTransactionsTask.data, accountTokenPendingDeposits),
-                accountTask.data?.token.decimals)}
+              amount={accountTask.data && getFixedTokenAmount(
+                accountTask.data.balance,
+                accountTask.data.token.decimals
+              )}
               symbol={accountTask.data?.token.symbol}
             />
           </div>
           <div className={classes.fiatBalance}>
             <FiatAmount
-              amount={getAccountFiatBalance()}
+              amount={accountTask.data?.fiatBalance}
               currency={preferredCurrency}
             />
           </div>
@@ -204,8 +175,8 @@ function AccountDetails ({
                     transactions={getPendingExits(poolTransactionsTask.data)}
                     fiatExchangeRates={fiatExchangeRatesTask.data}
                     preferredCurrency={preferredCurrency}
-                    pendingWithdraws={pendingWithdraws[wallet.hermezEthereumAddress]}
-                    pendingDelayedWithdraws={pendingDelayedWithdraws[wallet.hermezEthereumAddress]}
+                    pendingWithdraws={accountPendingWithdraws}
+                    pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                     onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                     onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                     coordinatorState={coordinatorStateTask.data}
@@ -216,19 +187,19 @@ function AccountDetails ({
                       transactions={exitsTask.data.exits}
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       preferredCurrency={preferredCurrency}
-                      pendingWithdraws={pendingWithdraws[wallet.hermezEthereumAddress]}
-                      pendingDelayedWithdraws={pendingDelayedWithdraws[wallet.hermezEthereumAddress]}
+                      pendingWithdraws={accountPendingWithdraws}
+                      pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                       onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                       onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                       coordinatorState={coordinatorStateTask.data}
                       redirectTo={WithdrawRedirectionRoute.AccountDetails}
                     />
                   )}
-                  {accountTokenPendingDeposits && (
+                  {tokenPendingDeposits && (
                     <TransactionList
                       arePending
                       accountIndex={accountIndex}
-                      transactions={accountTokenPendingDeposits}
+                      transactions={tokenPendingDeposits}
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       preferredCurrency={preferredCurrency}
                       onTransactionClick={handleTransactionClick}
@@ -304,8 +275,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccount: (accountIndex) =>
-    dispatch(accountDetailsThunks.fetchAccount(accountIndex)),
+  onLoadAccount: (accountIndex, poolTransactionsTask, tokenPendingDeposits, pendingWithdraws, fiatExchangeRatesTask, preferredCurrency) =>
+    dispatch(accountDetailsThunks.fetchAccount(accountIndex, poolTransactionsTask, tokenPendingDeposits, pendingWithdraws, fiatExchangeRatesTask, preferredCurrency)),
   onChangeHeader: (tokenName) =>
     dispatch(changeHeader({
       type: 'page',

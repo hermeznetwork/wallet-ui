@@ -3,17 +3,35 @@ import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
 import * as accountDetailsActionTypes from './account-details.actions'
 import { removePendingWithdraw, removePendingDelayedWithdraw } from '../global/global.thunks'
+import { getAccountBalance } from '../../utils/accounts'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 
 /**
  * Fetches the account details for the specified account index
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchAccount (accountIndex) {
+function fetchAccount (accountIndex, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
   return (dispatch) => {
     dispatch(accountDetailsActionTypes.loadAccount())
 
     return CoordinatorAPI.getAccount(accountIndex)
+      .then((account) => {
+        const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+        const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
+        const fiatBalance = getTokenAmountInPreferredCurrency(
+          fixedTokenAmount,
+          account.token.USD,
+          preferredCurrency,
+          fiatExchangeRates
+        )
+
+        return {
+          ...account,
+          balance: accountBalance,
+          fiatBalance
+        }
+      })
       .then(res => dispatch(accountDetailsActionTypes.loadAccountSuccess(res)))
       .catch(err => dispatch(accountDetailsActionTypes.loadAccountFailure(err)))
   }
