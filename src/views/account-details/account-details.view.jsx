@@ -50,12 +50,9 @@ function AccountDetails ({
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
   const { accountIndex } = useParams()
-  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
-  const accountPendingWithdraws = pendingWithdraws[wallet.hermezEthereumAddress]
-  const accountPendingDelayedWithdraws = pendingDelayedWithdraws[wallet.hermezEthereumAddress]
-  const [tokenPendingDeposits, setTokenPendingDeposits] = React.useState([])
-  const [tokenPendingWithdraws, setTokenPendingWithdraws] = React.useState([])
-  const [tokenPendingDelayedWithdraws, setTokenPendingDelayedWithdraws] = React.useState([])
+  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress] || []
+  const accountPendingWithdraws = pendingWithdraws[wallet.hermezEthereumAddress] || []
+  const accountPendingDelayedWithdraws = pendingDelayedWithdraws[wallet.hermezEthereumAddress] || []
 
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name)
@@ -78,29 +75,6 @@ function AccountDetails ({
   }, [accountTask, onLoadExits])
 
   React.useEffect(() => {
-    if (accountTask.status === 'successful') {
-      if (accountPendingDeposits) {
-        const tokenPendingDeposits = accountPendingDeposits
-          .filter(deposit => deposit.token.id === accountTask.data.token.id)
-
-        setTokenPendingDeposits(tokenPendingDeposits)
-      }
-      if (accountPendingWithdraws) {
-        const tokenPendingWithdraws = accountPendingWithdraws
-          .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
-
-        setTokenPendingWithdraws(tokenPendingWithdraws)
-      }
-      if (accountPendingDelayedWithdraws) {
-        const tokenPendingDelayedWithdraws = accountPendingDelayedWithdraws
-          .filter(delayedWithdraw => delayedWithdraw.token.id === accountTask.data.token.id)
-
-        setTokenPendingDelayedWithdraws(tokenPendingDelayedWithdraws)
-      }
-    }
-  }, [accountTask, accountPendingDeposits, accountPendingWithdraws, accountPendingDelayedWithdraws])
-
-  React.useEffect(() => {
     if (exitsTask.status === 'successful') {
       onLoadHistoryTransactions(accountIndex)
     }
@@ -120,8 +94,8 @@ function AccountDetails ({
     const accountBalance = getAccountBalance(
       account,
       poolTransactionsTask.data,
-      tokenPendingDeposits,
-      [...tokenPendingWithdraws, ...tokenPendingDelayedWithdraws]
+      accountPendingDeposits,
+      [...accountPendingWithdraws, ...accountPendingDelayedWithdraws]
     )
 
     return getFixedTokenAmount(accountBalance, account.token.decimals)
@@ -210,6 +184,13 @@ function AccountDetails ({
               (exitsTask.status === 'successful' ||
               exitsTask.status === 'reloading')
             ) {
+              const tokenPendingDeposits = pendingDeposits
+                .filter(deposit => deposit.token.id === accountTask.data.token.id)
+              const tokenPendingWithdraws = pendingWithdraws
+                .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
+              const tokenPendingDelayedWithdraws = pendingDelayedWithdraws
+                .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
+
               return (
                 <>
                   <ExitList
