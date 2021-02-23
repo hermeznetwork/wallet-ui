@@ -47,8 +47,9 @@ function ExitList ({
               fiatExchangeRates
             )}
             preferredCurrency={preferredCurrency}
-            merkleProof={transaction.merkleProof}
             batchNum={transaction.batchNum}
+            exitId={transaction.accountIndex + transaction.batchNum}
+            merkleProof={transaction.merkleProof}
             accountIndex={transaction.accountIndex}
             pendingWithdraws={pendingWithdraws}
             pendingDelayedWithdraws={pendingDelayedWithdraws}

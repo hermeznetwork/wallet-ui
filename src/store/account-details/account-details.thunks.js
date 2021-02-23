@@ -70,10 +70,10 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
             )
             if (exitTx) {
               if (exitTx.instantWithdraw) {
-                removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
+                removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.batchNum)
                 return true
               } else if (exitTx.delayedWithdraw) {
-                removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.merkleProof.Root)
+                removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.batchNum)
                 return true
               } else {
                 return false
