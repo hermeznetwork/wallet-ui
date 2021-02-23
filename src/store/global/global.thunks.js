@@ -327,16 +327,18 @@ function checkPendingDeposits () {
           return CoordinatorAPI.getHistoryTransaction(txId)
         })
 
-      Promise.all(transactionHistoryPromises).then((results) => {
-        results
-          .filter(result => result !== undefined)
-          .forEach((transaction) => {
-            if (transaction.batchNum !== null) {
-              dispatch(removePendingDeposit(transaction.id))
-            }
-          })
-        dispatch(globalActions.checkPendingDepositsSuccess())
-      })
+      Promise.all(transactionHistoryPromises)
+        .then((results) => {
+          results
+            .filter(result => result !== undefined)
+            .forEach((transaction) => {
+              if (transaction.batchNum !== null) {
+                dispatch(removePendingDeposit(transaction.id))
+              }
+            })
+          dispatch(globalActions.checkPendingDepositsSuccess())
+        })
+        .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()))
     })
   }
 }

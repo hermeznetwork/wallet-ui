@@ -26,6 +26,7 @@ import PendingDepositList from './pending-deposit-list/pending-deposit-list.view
 
 function Home ({
   wallet,
+  pendingDepositsCheckTask,
   totalBalanceTask,
   accountsTask,
   poolTransactionsTask,
@@ -66,6 +67,7 @@ function Home ({
 
   React.useEffect(() => {
     if (
+      pendingDepositsCheckTask.status === 'successful' &&
       poolTransactionsTask.status === 'successful' &&
       fiatExchangeRatesTask.status === 'successful'
     ) {
@@ -87,7 +89,7 @@ function Home ({
         preferredCurrency
       )
     }
-  }, [wallet, poolTransactionsTask, onLoadTotalBalance, onLoadAccounts])
+  }, [wallet, pendingDepositsCheckTask, poolTransactionsTask, onLoadTotalBalance, onLoadAccounts])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -288,6 +290,7 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
+  pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
   totalBalanceTask: state.home.totalBalanceTask,
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
