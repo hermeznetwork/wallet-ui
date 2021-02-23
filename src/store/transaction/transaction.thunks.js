@@ -45,7 +45,7 @@ function fetchMetaMaskAccount (tokenId) {
  * @param {string} accountIndex - accountIndex of the account
  * @returns {void}
  */
-function fetchHermezAccount (accountIndex) {
+function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
 
@@ -56,6 +56,18 @@ function fetchHermezAccount (accountIndex) {
     }
 
     return CoordinatorAPI.getAccount(accountIndex)
+      .then((account) => {
+        const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+        const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
+        const fiatBalance = getTokenAmountInPreferredCurrency(
+          fixedTokenAmount,
+          account.token.USD,
+          preferredCurrency,
+          fiatExchangeRates
+        )
+
+        return { ...account, balance: accountBalance, fiatBalance }
+      })
       .then((res) => dispatch(transactionActions.loadAccountSuccess(res)))
       .catch(error => dispatch(transactionActions.loadAccountFailure(error.message)))
   }
@@ -121,7 +133,7 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
           ethereum.getTokens(wallet, res.tokens)
             .then((tokens) => {
               return tokens.map((token) => {
-                const tokenBalance = getAccountBalance({ ...token, balance: token.balance.toString() }, poolTransactions, pendingDeposits, pendingWithdraws)
+                const tokenBalance = token.balance.toString()
                 const fixedTokenAmount = getFixedTokenAmount(tokenBalance, token.token.decimals)
                 const fiatTokenBalance = getTokenAmountInPreferredCurrency(
                   fixedTokenAmount,
@@ -130,7 +142,7 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
                   fiatExchangeRates
                 )
 
-                return { ...token, balance: token.balance.toString(), fiatBalance: fiatTokenBalance }
+                return { ...token, balance: tokenBalance, fiatBalance: fiatTokenBalance }
               })
             })
             .then(metaMaskTokens => dispatch(transactionActions.loadAccountsSuccess(transactionType, metaMaskTokens)))
@@ -149,11 +161,7 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
               fiatExchangeRates
             )
 
-            return {
-              ...account,
-              balance: accountBalance,
-              fiatBalance
-            }
+            return { ...account, balance: accountBalance, fiatBalance }
           })
 
           return { ...res, accounts }

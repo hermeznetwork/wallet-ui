@@ -17,14 +17,9 @@ function AccountSelector ({
   pendingWithdraws,
   pendingDelayedWithdraws,
   onLoadAccounts,
-  onLoadPoolTransactionsTask,
   onAccountClick
 }) {
   const classes = useAccountSelectorStyles()
-
-  React.useEffect(() => {
-    onLoadPoolTransactionsTask()
-  }, [onLoadPoolTransactionsTask])
 
   React.useEffect(() => {
     if (poolTransactionsTask.status === 'successful') {

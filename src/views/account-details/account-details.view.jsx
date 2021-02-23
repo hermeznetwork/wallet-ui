@@ -184,11 +184,11 @@ function AccountDetails ({
               (exitsTask.status === 'successful' ||
               exitsTask.status === 'reloading')
             ) {
-              const tokenPendingDeposits = pendingDeposits
+              const tokenPendingDeposits = accountPendingDeposits
                 .filter(deposit => deposit.token.id === accountTask.data.token.id)
-              const tokenPendingWithdraws = pendingWithdraws
+              const tokenPendingWithdraws = accountPendingWithdraws
                 .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
-              const tokenPendingDelayedWithdraws = pendingDelayedWithdraws
+              const tokenPendingDelayedWithdraws = accountPendingWithdraws
                 .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
 
               return (

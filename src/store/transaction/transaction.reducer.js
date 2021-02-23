@@ -12,15 +12,15 @@ export const STEP_NAME = {
 }
 
 const initialTransactionState = {
+  poolTransactionsTask: {
+    status: 'pending'
+  },
   currentStep: STEP_NAME.LOAD_INITIAL_DATA,
   steps: {
     [STEP_NAME.LOAD_INITIAL_DATA]: {
       status: 'pending'
     },
     [STEP_NAME.CHOOSE_ACCOUNT]: {
-      poolTransactionsTask: {
-        status: 'pending'
-      },
       accountsTask: {
         status: 'pending'
       }
@@ -88,44 +88,26 @@ function transactionReducer (state = initialTransactionState, action) {
     case transactionActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
-        steps: {
-          ...state.steps,
-          [STEP_NAME.CHOOSE_ACCOUNT]: {
-            ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
-            poolTransactionsTask: {
-              status: 'loading'
-            }
-          }
+        poolTransactionsTask: {
+          status: 'loading'
         }
       }
     }
     case transactionActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
-        steps: {
-          ...state.steps,
-          [STEP_NAME.CHOOSE_ACCOUNT]: {
-            ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
-            poolTransactionsTask: {
-              status: 'successful',
-              data: action.transactions
-            }
-          }
+        poolTransactionsTask: {
+          status: 'successful',
+          data: action.transactions
         }
       }
     }
     case transactionActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
       return {
         ...state,
-        steps: {
-          ...state.steps,
-          [STEP_NAME.CHOOSE_ACCOUNT]: {
-            ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
-            poolTransactionsTask: {
-              status: 'failed',
-              error: action.error
-            }
-          }
+        poolTransactionsTask: {
+          status: 'failed',
+          error: action.error
         }
       }
     }
