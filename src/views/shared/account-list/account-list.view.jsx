@@ -4,13 +4,14 @@ import clsx from 'clsx'
 
 import useAccountListStyles from './account-list.styles'
 import Account from '../account/account.view'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
+import '../../../utils/accounts'
 
 function AccountList ({
   accounts,
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
+  poolTransactions,
   disabledTokenIds,
   onAccountClick
 }) {
@@ -22,19 +23,6 @@ function AccountList ({
     }
 
     return pendingDeposits.find((deposit) => deposit.token.id === account.token.id) !== undefined
-  }
-
-  function getAccountBalance (account) {
-    if (!pendingDeposits) {
-      return account.balance
-    }
-
-    const pendingAccountDeposits = pendingDeposits.filter((deposit) => deposit.token.id === account.token.id)
-    const newAccountBalance = pendingAccountDeposits.reduce((totalAccountBalance, pendingDeposit) => {
-      return totalAccountBalance + BigInt(pendingDeposit.amount)
-    }, BigInt(account.balance))
-
-    return newAccountBalance.toString()
   }
 
   function isAccountDisabled (account) {
@@ -56,25 +44,16 @@ function AccountList ({
   return (
     <div className={classes.root}>
       {accounts.map((account, index) => {
-        const accountBalance = getAccountBalance(account)
-        const fixedAccountBalance = getFixedTokenAmount(accountBalance, account.token.decimals)
-
         return (
           <div
             key={account.accountIndex || account.token.id}
             className={clsx({ [classes.accountSpacer]: index > 0 })}
           >
             <Account
-              balance={fixedAccountBalance}
-              tokenName={account.token.name}
-              tokenSymbol={account.token.symbol}
+              balance={account.balance}
               preferredCurrency={preferredCurrency}
-              fiatBalance={getTokenAmountInPreferredCurrency(
-                fixedAccountBalance,
-                account.token.USD,
-                preferredCurrency,
-                fiatExchangeRates
-              )}
+              fiatBalance={account.fiatBalance}
+              token={account.token}
               hasPendingDeposit={hasAccountPendingDeposit(account)}
               isDisabled={isAccountDisabled(account)}
               onClick={() => handleAccountListItemClick(account)}

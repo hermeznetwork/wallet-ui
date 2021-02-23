@@ -114,8 +114,9 @@ function changeNetworkStatus (newNetworkStatus, backgroundColor) {
  * @param {string} pendingWithdraw - The pendingWithdraw to add to the pool
  * @returns {void}
  */
-function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
+function addPendingWithdraw (pendingWithdraw) {
   return (dispatch) => {
+    const hermezEthereumAddress = pendingWithdraw.hermezEthereumAddress
     const pendingWithdrawPool = JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
     const accountPendingWithdrawPool = pendingWithdrawPool[hermezEthereumAddress]
     const newAccountPendingWithdrawPool = accountPendingWithdrawPool === undefined
@@ -127,7 +128,7 @@ function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
     }
 
     localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdrawPool))
-    dispatch(globalActions.addPendingWithdraw(hermezEthereumAddress, pendingWithdraw))
+    dispatch(globalActions.addPendingWithdraw(pendingWithdraw))
   }
 }
 
@@ -326,16 +327,18 @@ function checkPendingDeposits () {
           return CoordinatorAPI.getHistoryTransaction(txId)
         })
 
-      Promise.all(transactionHistoryPromises).then((results) => {
-        results
-          .filter(result => result !== undefined)
-          .forEach((transaction) => {
-            if (transaction.batchNum !== null) {
-              dispatch(removePendingDeposit(transaction.id))
-            }
-          })
-        dispatch(globalActions.checkPendingDepositsSuccess())
-      })
+      Promise.all(transactionHistoryPromises)
+        .then((results) => {
+          results
+            .filter(result => result !== undefined)
+            .forEach((transaction) => {
+              if (transaction.batchNum !== null) {
+                dispatch(removePendingDeposit(transaction.id))
+              }
+            })
+          dispatch(globalActions.checkPendingDepositsSuccess())
+        })
+        .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()))
     })
   }
 }

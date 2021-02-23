@@ -178,13 +178,14 @@ function globalReducer (state = initialGlobalState, action) {
       }
     }
     case globalActionTypes.ADD_PENDING_WITHDRAW: {
-      const accountPendingWithdraws = state.pendingWithdraws[action.hermezEthereumAddress]
+      const hermezEthereumAddress = action.pendingWithdraw.hermezEthereumAddress
+      const accountPendingWithdraws = state.pendingWithdraws[hermezEthereumAddress]
 
       return {
         ...state,
         pendingWithdraws: {
           ...state.pendingWithdraws,
-          [action.hermezEthereumAddress]: accountPendingWithdraws === undefined
+          [hermezEthereumAddress]: accountPendingWithdraws === undefined
             ? [action.pendingWithdraw]
             : [...accountPendingWithdraws, action.pendingWithdraw]
         }

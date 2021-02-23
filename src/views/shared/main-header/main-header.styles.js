@@ -18,8 +18,6 @@ const useMainHeaderStyles = createUseStyles(theme => ({
     position: 'relative'
   },
   logo: {
-    textDecoration: 'none',
-    color: 'currentColor',
     display: 'flex'
   },
   link: {
