@@ -24,6 +24,7 @@ export const WithdrawRedirectionRoute = {
 }
 
 function Transaction ({
+  pendingDepositsCheckTask,
   poolTransactionsTask,
   currentStep,
   steps,
@@ -80,7 +81,10 @@ function Transaction ({
   }, [onLoadPoolTransactions])
 
   React.useEffect(() => {
-    if (poolTransactionsTask.status === 'successful') {
+    if (
+      pendingDepositsCheckTask.status === 'successful' &&
+      poolTransactionsTask.status === 'successful'
+    ) {
       if (accountIndex && tokenId) {
         onLoadMetaMaskAccount(Number(tokenId))
       } else if (accountIndex && !tokenId) {
@@ -200,11 +204,12 @@ Transaction.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
+  pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
+  poolTransactionsTask: state.transaction.poolTransactionsTask,
   currentStep: state.transaction.currentStep,
   steps: state.transaction.steps,
   wallet: state.global.wallet,
   accountsTask: state.transaction.accountsTask,
-  poolTransactionsTask: state.transaction.poolTransactionsTask,
   pendingDeposits: state.global.pendingDeposits,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
