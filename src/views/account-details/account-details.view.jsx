@@ -78,7 +78,6 @@ function AccountDetails ({
   }, [accountTask, onLoadExits])
 
   React.useEffect(() => {
-    console.log('pasa')
     if (accountTask.status === 'successful') {
       if (accountPendingDeposits) {
         const tokenPendingDeposits = accountPendingDeposits
