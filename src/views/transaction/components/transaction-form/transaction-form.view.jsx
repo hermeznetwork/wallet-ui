@@ -8,6 +8,7 @@ import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compr
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
+import { MAX_TOKEN_DECIMALS } from '../../../../constants'
 import { ReactComponent as SwapIcon } from '../../../../images/icons/swap.svg'
 import { ReactComponent as ErrorIcon } from '../../../../images/icons/error.svg'
 import { ReactComponent as CloseIcon } from '../../../../images/icons/close.svg'
@@ -103,6 +104,7 @@ function TransactionForm ({
     }
 
     const fee = isExistingAccount ? fees.existingAccount : fees.createAccount
+    console.log(fee, account.token.USD)
 
     return fee / account.token.USD
   }
@@ -503,7 +505,7 @@ function TransactionForm ({
                       transactionType !== TxType.Deposit && transactionType !== TxType.ForceExit && (
                         <div className={classes.feeWrapper}>
                           <p className={classes.fee}>
-                            Fee {getFixedTokenAmount(getFee(feesTask.data), account.token.decimals)}
+                            Fee {Number(getFee(feesTask.data).toFixed(MAX_TOKEN_DECIMALS))}
                           </p>
                         </div>
                       )
