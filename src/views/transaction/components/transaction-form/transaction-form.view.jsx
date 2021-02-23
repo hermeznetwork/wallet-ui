@@ -104,7 +104,6 @@ function TransactionForm ({
     }
 
     const fee = isExistingAccount ? fees.existingAccount : fees.createAccount
-    console.log(fee, account.token.USD)
 
     return fee / account.token.USD
   }
