@@ -43,7 +43,7 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
 
         dispatch(homeActions.loadTotalBalanceSuccess(totalAccountsBalance))
       })
-      .catch(err => dispatch(homeActions.loadTotalBalanceFailure(err)))
+      .catch(console.log)
   }
 }
 

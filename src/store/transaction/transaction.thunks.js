@@ -234,12 +234,19 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
         signer
       ).then(() => {
         if (instantWithdrawal) {
-          dispatch(globalThunks.addPendingWithdraw(wallet.hermezEthereumAddress, withdrawalId))
+          dispatch(globalThunks.addPendingWithdraw({
+            hermezEthereumAddress: wallet.hermezEthereumAddress,
+            id: withdrawalId,
+            amount,
+            token: account.token
+          }))
         } else {
           dispatch(globalThunks.addPendingDelayedWithdraw({
             id: withdrawalId,
             instant: false,
-            date: Date.now()
+            date: Date.now(),
+            amount,
+            token: account.token
           }))
         }
 
