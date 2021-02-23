@@ -11,17 +11,17 @@ import * as homeActions from './home.actions'
  * @param {string} hermezEthereumAddress - Hermez ethereum address
  * @returns {void}
  */
-function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
+function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
   return (dispatch) => {
     dispatch(homeActions.loadTotalBalance())
 
     return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
       .then((res) => {
         const accounts = res.accounts.map((account) => {
-          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
-          const fixedAccountBalance = getFixedTokenAmount(accountBalance, account.token.decimals)
+          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+          const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
           const fiatBalance = getTokenAmountInPreferredCurrency(
-            fixedAccountBalance,
+            fixedTokenAmount,
             account.token.USD,
             preferredCurrency,
             fiatExchangeRates
@@ -29,7 +29,7 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
 
           return {
             ...account,
-            balance: fixedAccountBalance,
+            balance: accountBalance,
             fiatBalance
           }
         })
@@ -53,17 +53,17 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
  * @param {number} fromItem - id of the first account to be returned from the API
  * @returns {void}
  */
-function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
+function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
   return (dispatch) => {
     dispatch(homeActions.loadAccounts())
 
     return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, fromItem)
       .then((res) => {
         const accounts = res.accounts.map((account) => {
-          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
-          const fixedAccountBalance = getFixedTokenAmount(accountBalance, account.token.decimals)
+          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+          const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
           const fiatBalance = getTokenAmountInPreferredCurrency(
-            fixedAccountBalance,
+            fixedTokenAmount,
             account.token.USD,
             preferredCurrency,
             fiatExchangeRates
@@ -71,7 +71,7 @@ function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendi
 
           return {
             ...account,
-            balance: fixedAccountBalance,
+            balance: accountBalance,
             fiatBalance
           }
         })
@@ -79,7 +79,7 @@ function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendi
         return { ...res, accounts }
       })
       .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
-      .catch(console.log)
+      .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
   }
 }
 

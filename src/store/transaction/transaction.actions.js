@@ -13,6 +13,9 @@ export const transactionActionTypes = {
   LOAD_FEES: '[TRANSACTION] LOAD FEES',
   LOAD_FEES_SUCCESS: '[TRANSACTION] LOAD FEES SUCCESS',
   LOAD_FEES_FAILURE: '[TRANSACTION] LOAD FEES FAILURE',
+  LOAD_POOL_TRANSACTIONS: '[TRANSACTION] LOAD POOL TRANSACTIONS',
+  LOAD_POOL_TRANSACTIONS_SUCCESS: '[TRANSACTION] LOAD POOL TRANSACTIONS SUCCESS',
+  LOAD_POOL_TRANSACTIONS_FAILURE: '[TRANSACTION] LOAD POOL TRANSACTIONS FAILURE',
   LOAD_ACCOUNTS: '[TRANSACTION] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[TRANSACTION] LOAD ACCOUNTS SUCCESS',
   LOAD_ACCOUNTS_FAILURE: '[TRANSACTION] LOAD ACCOUNTS FAILURE',
@@ -72,6 +75,25 @@ function loadAccountsSuccess (transactionType, data) {
 function loadAccountsFailure () {
   return {
     type: transactionActionTypes.LOAD_ACCOUNTS_FAILURE
+  }
+}
+
+function loadPoolTransactions () {
+  return {
+    type: transactionActionTypes.LOAD_POOL_TRANSACTIONS
+  }
+}
+
+function loadPoolTransactionsSuccess (transactions) {
+  return {
+    type: transactionActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
+    transactions
+  }
+}
+
+function loadPoolTransactionsFailure () {
+  return {
+    type: transactionActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE
   }
 }
 
@@ -164,6 +186,9 @@ export {
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
+  loadPoolTransactions,
+  loadPoolTransactionsSuccess,
+  loadPoolTransactionsFailure,
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,

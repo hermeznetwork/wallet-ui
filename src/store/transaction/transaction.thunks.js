@@ -1,9 +1,12 @@
 import { CoordinatorAPI, Tx, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
 import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
+import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
 import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
+import { getAccountBalance } from '../../utils/accounts'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 
 /**
  * Fetches the account details for a token id in MetaMask.
@@ -84,32 +87,79 @@ function fetchExit (accountIndex, batchNum) {
 }
 
 /**
+ * Fetches the transactions which are in the transactions pool
+ * @returns {void}
+ */
+function fetchPoolTransactions () {
+  return (dispatch, getState) => {
+    dispatch(transactionActions.loadPoolTransactions())
+
+    const { global: { wallet } } = getState()
+
+    getPoolTransactions(null, wallet.publicKeyCompressedHex)
+      .then((transactions) => dispatch(transactionActions.loadPoolTransactionsSuccess(transactions)))
+      .catch(err => dispatch(transactionActions.loadPoolTransactionsFailure(err)))
+  }
+}
+
+/**
  * Fetches the accounts to use in the transaction. If the transaction is a deposit it will
  * look for them on MetaMask, otherwise it will look for them on the rollup api
  * @param {string} transactionType - Transaction type
  * @param {number} fromItem - id of the first account to be returned from the api
  * @returns {void}
  */
-function fetchAccounts (transactionType, fromItem) {
+function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
 
     dispatch(transactionActions.loadAccounts())
 
-    if (!wallet) {
-      return dispatch(transactionActions.loadAccountsFailure('MetaMask wallet is not loaded'))
-    }
     if (transactionType === TxType.Deposit) {
       return CoordinatorAPI.getTokens(undefined, undefined, undefined, undefined, 2049)
         .then((res) => {
           ethereum.getTokens(wallet, res.tokens)
+            .then((tokens) => {
+              return tokens.map((token) => {
+                const tokenBalance = getAccountBalance({ ...token, balance: token.balance.toString() }, poolTransactions, pendingDeposits, pendingWithdraws)
+                const fixedTokenAmount = getFixedTokenAmount(tokenBalance, token.token.decimals)
+                const fiatTokenBalance = getTokenAmountInPreferredCurrency(
+                  fixedTokenAmount,
+                  token.token.USD,
+                  preferredCurrency,
+                  fiatExchangeRates
+                )
+
+                return { ...token, balance: token.balance.toString(), fiatBalance: fiatTokenBalance }
+              })
+            })
             .then(metaMaskTokens => dispatch(transactionActions.loadAccountsSuccess(transactionType, metaMaskTokens)))
             .catch(err => transactionActions.loadAccountsFailure(err.message))
         })
     } else {
       return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, undefined, fromItem)
+        .then((res) => {
+          const accounts = res.accounts.map((account) => {
+            const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+            const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
+            const fiatBalance = getTokenAmountInPreferredCurrency(
+              fixedTokenAmount,
+              account.token.USD,
+              preferredCurrency,
+              fiatExchangeRates
+            )
+
+            return {
+              ...account,
+              balance: accountBalance,
+              fiatBalance
+            }
+          })
+
+          return { ...res, accounts }
+        })
         .then(res => dispatch(transactionActions.loadAccountsSuccess(transactionType, res)))
-        .catch(err => transactionActions.loadAccountsFailure(err.message))
+        .catch(err => dispatch(transactionActions.loadAccountsFailure(err)))
     }
   }
 }
@@ -273,6 +323,7 @@ export {
   fetchMetaMaskAccount,
   fetchHermezAccount,
   fetchExit,
+  fetchPoolTransactions,
   fetchAccounts,
   fetchFees,
   deposit,

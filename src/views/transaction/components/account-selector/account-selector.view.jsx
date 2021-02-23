@@ -10,19 +10,35 @@ import useAccountSelectorStyles from './account-selector.styles'
 function AccountSelector ({
   transactionType,
   accountsTask,
+  poolTransactionsTask,
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
+  pendingWithdraws,
+  pendingDelayedWithdraws,
   onLoadAccounts,
+  onLoadPoolTransactionsTask,
   onAccountClick
 }) {
   const classes = useAccountSelectorStyles()
 
   React.useEffect(() => {
-    if (accountsTask.status === 'pending') {
-      onLoadAccounts(transactionType)
+    onLoadPoolTransactionsTask()
+  }, [onLoadPoolTransactionsTask])
+
+  React.useEffect(() => {
+    if (poolTransactionsTask.status === 'successful') {
+      onLoadAccounts(
+        transactionType,
+        undefined,
+        poolTransactionsTask.data,
+        pendingDeposits,
+        [...pendingWithdraws, ...pendingDelayedWithdraws],
+        fiatExchangeRates,
+        preferredCurrency
+      )
     }
-  }, [accountsTask, transactionType, onLoadAccounts])
+  }, [poolTransactionsTask, onLoadAccounts])
 
   function getDisabledTokenIds () {
     if (!pendingDeposits) {
@@ -72,7 +88,15 @@ function AccountSelector ({
                       asyncTaskStatus={accountsTask.status}
                       paginationData={accountsTask.data.pagination}
                       onLoadNextPage={(fromItem) => {
-                        onLoadAccounts(transactionType, fromItem)
+                        onLoadAccounts(
+                          transactionType,
+                          fromItem,
+                          poolTransactionsTask.data,
+                          pendingDeposits,
+                          [...pendingWithdraws, ...pendingDelayedWithdraws],
+                          fiatExchangeRates,
+                          preferredCurrency
+                        )
                       }}
                     >
                       <AccountList

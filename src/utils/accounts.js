@@ -1,13 +1,12 @@
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from './currencies'
 
 /** */
-function getAccountBalance (account, poolTransactions, pendingDeposits) {
+function getAccountBalance (account, poolTransactions, pendingDeposits, pendingWithdraws) {
   if (!account) {
     return undefined
   }
 
   let totalBalance = BigInt(account.balance)
-
   if (pendingDeposits && pendingDeposits.length) {
     const pendingAccountDeposits = pendingDeposits.filter((deposit) => deposit.token.id === account.token.id)
 
@@ -16,9 +15,15 @@ function getAccountBalance (account, poolTransactions, pendingDeposits) {
     })
   }
 
-  if (poolTransactions) {
+  if (poolTransactions && poolTransactions.length) {
     poolTransactions.forEach((pendingTransaction) => {
       totalBalance -= BigInt(pendingTransaction.amount)
+    })
+  }
+
+  if (pendingWithdraws && pendingWithdraws.length) {
+    pendingWithdraws.forEach((pendingWithdraw) => {
+      totalBalance -= BigInt(pendingWithdraw.balance)
     })
   }
 

@@ -74,25 +74,6 @@ function loadPoolTransactionsFailure () {
   }
 }
 
-function loadHistoryTransactions () {
-  return {
-    type: homeActionTypes.LOAD_HISTORY_TRANSACTIONS
-  }
-}
-
-function loadHistoryTransactionsSuccess (transactions) {
-  return {
-    type: homeActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
-    transactions
-  }
-}
-
-function loadHistoryTransactionsFailure () {
-  return {
-    type: homeActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE
-  }
-}
-
 function loadExits () {
   return {
     type: homeActionTypes.LOAD_EXITS
@@ -129,9 +110,6 @@ export {
   loadPoolTransactions,
   loadPoolTransactionsSuccess,
   loadPoolTransactionsFailure,
-  loadHistoryTransactions,
-  loadHistoryTransactionsSuccess,
-  loadHistoryTransactionsFailure,
   loadExits,
   loadExitsSuccess,
   loadExitsFailure,

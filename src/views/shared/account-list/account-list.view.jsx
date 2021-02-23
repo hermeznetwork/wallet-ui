@@ -51,10 +51,9 @@ function AccountList ({
           >
             <Account
               balance={account.balance}
-              tokenName={account.token.name}
-              tokenSymbol={account.token.symbol}
               preferredCurrency={preferredCurrency}
               fiatBalance={account.fiatBalance}
+              token={account.token}
               hasPendingDeposit={hasAccountPendingDeposit(account)}
               isDisabled={isAccountDisabled(account)}
               onClick={() => handleAccountListItemClick(account)}
