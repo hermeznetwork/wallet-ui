@@ -103,7 +103,7 @@ function Transaction ({
         onGoToChooseAccountStep()
       }
     }
-  }, [poolTransactionsTask, tokenId, batchNum, accountIndex, onLoadExit, onLoadMetaMaskAccount, onLoadHermezAccount, onGoToChooseAccountStep])
+  }, [pendingDepositsCheckTask, poolTransactionsTask, tokenId, batchNum, accountIndex, onLoadExit, onLoadMetaMaskAccount, onLoadHermezAccount, onGoToChooseAccountStep])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
