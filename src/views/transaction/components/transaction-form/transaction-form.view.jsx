@@ -216,7 +216,7 @@ function TransactionForm ({
    */
   function handleSendAllButtonClick () {
     const maxAmount = BigInt(account.balance)
-    const fee = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toString(), account.token.decimals).toString())
+    const fee = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
     const newAmount = (maxAmount - fee).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
     const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(newAmount.length - 10).fill(0).join('')}`)
