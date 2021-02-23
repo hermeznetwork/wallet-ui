@@ -133,7 +133,7 @@ function Home ({
     copyToClipboard(hermezEthereumAddress)
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
-  console.log(accountsTask.data)
+
   return wallet && (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>

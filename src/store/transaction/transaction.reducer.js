@@ -107,7 +107,8 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.CHOOSE_ACCOUNT]: {
             ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
             poolTransactionsTask: {
-              status: 'successful'
+              status: 'successful',
+              data: action.transactions
             }
           }
         }
@@ -121,7 +122,8 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.CHOOSE_ACCOUNT]: {
             ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
             poolTransactionsTask: {
-              status: 'failed'
+              status: 'failed',
+              error: action.error
             }
           }
         }
