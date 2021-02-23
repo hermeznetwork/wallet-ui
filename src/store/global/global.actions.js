@@ -128,9 +128,10 @@ function changeNetworkStatus (networkStatus) {
   }
 }
 
-function addPendingWithdraw (pendingWithdraw) {
+function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
   return {
     type: globalActionTypes.ADD_PENDING_WITHDRAW,
+    hermezEthereumAddress,
     pendingWithdraw
   }
 }
