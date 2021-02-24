@@ -26,7 +26,7 @@ function getAccountBalance (account, poolTransactions, pendingDeposits, pendingW
     const accountPendingWithdraws = pendingWithdraws.filter(withdraw => withdraw.token.id === account.token.id)
 
     accountPendingWithdraws.forEach((pendingWithdraw) => {
-      totalBalance -= BigInt(pendingWithdraw.balance)
+      totalBalance -= pendingWithdraw.balance ? BigInt(pendingWithdraw.balance) : BigInt(pendingWithdraw.amount)
     })
   }
 
