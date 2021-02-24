@@ -122,7 +122,7 @@ function TransactionForm ({
    * @returns {boolean} - Whether the continue button should be disabled or not
    */
   function isContinueDisabled () {
-    const isAmountValid = isAmountLessThanFunds && isAmountPositive
+    const isAmountValid = isAmountLessThanFunds && isAmountPositive && isAmountCompressedValid && BigInt(amount.toString()) > 0
 
     if (transactionType !== TxType.Transfer && isAmountValid) {
       return false
@@ -163,9 +163,10 @@ function TransactionForm ({
   function setAmountChecks (newAmount) {
     // Convert from ethers.BigNumber to native BigInt
     const newAmountBigInt = BigInt(newAmount.toString())
+    const fee = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
     setIsAmountPositive(newAmountBigInt >= 0)
     setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountBigInt))
-    setIsAmountLessThanFunds(newAmountBigInt <= BigInt(account.balance.toString()))
+    setIsAmountLessThanFunds(newAmountBigInt <= BigInt(account.balance.toString()) - fee)
   }
 
   /**
@@ -217,6 +218,13 @@ function TransactionForm ({
    */
   function handleSendAllButtonClick () {
     const maxAmount = BigInt(account.balance)
+    if (maxAmount === 0) {
+      setAmountChecks(BigInt(0))
+      setAmount(BigInt(0))
+      setAmountFiat(0)
+      return
+    }
+
     const fee = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
     const newAmount = (maxAmount - fee).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)

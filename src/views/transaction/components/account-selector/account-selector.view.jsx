@@ -22,7 +22,7 @@ function AccountSelector ({
   const classes = useAccountSelectorStyles()
 
   React.useEffect(() => {
-    if (poolTransactionsTask.status === 'successful') {
+    if (accountsTask.status === 'pending' && poolTransactionsTask.status === 'successful') {
       onLoadAccounts(
         transactionType,
         undefined,
@@ -33,7 +33,7 @@ function AccountSelector ({
         preferredCurrency
       )
     }
-  }, [poolTransactionsTask, onLoadAccounts])
+  }, [accountsTask, poolTransactionsTask, onLoadAccounts])
 
   function getDisabledTokenIds () {
     if (!pendingDeposits) {
