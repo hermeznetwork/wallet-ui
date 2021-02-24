@@ -286,13 +286,14 @@ function updatePendingDepositId (transactionHash, transactionId) {
 function checkPendingDeposits () {
   return (dispatch, getState) => {
     const { global: { wallet, pendingDeposits } } = getState()
+
+    dispatch(globalActions.checkPendingDeposits())
     const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
 
     if (accountPendingDeposits === undefined) {
+      dispatch(globalActions.checkPendingDepositsSuccess())
       return
     }
-
-    dispatch(globalActions.checkPendingDeposits())
 
     const provider = Providers.getProvider()
     const pendingDepositsHashes = accountPendingDeposits.map(deposit => deposit.hash)

@@ -91,7 +91,7 @@ function Home ({
         preferredCurrency
       )
     }
-  }, [wallet, pendingDepositsCheckTask, poolTransactionsTask, onLoadTotalBalance, onLoadAccounts])
+  }, [totalBalanceTask, accountsTask, pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
