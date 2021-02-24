@@ -51,7 +51,7 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
   return (dispatch, getState) => {
     dispatch(accountDetailsActionTypes.loadHistoryTransactions())
 
-    const { accountDetails: { exitsTask }, global: { wallet } } = getState()
+    const { accountDetails: { exitsTask }, global: { wallet, pendingWithdraws, pendingDelayedWithdraws } } = getState()
 
     return CoordinatorAPI.getTransactions(
       undefined,
@@ -62,18 +62,27 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
       CoordinatorAPI.PaginationOrder.DESC
     )
       .then((res) => {
+        const pendingWithdrawsAccount = pendingWithdraws[wallet.hermezEthereumAddress]
+        const pendingDelayedWithdrawsAccount = pendingDelayedWithdraws[wallet.hermezEthereumAddress]
         res.transactions = res.transactions.filter((transaction) => {
           if (transaction.type === 'Exit') {
+            const exitId = transaction.fromAccountIndex + transaction.batchNum
+            const pendingWithdraw = pendingWithdrawsAccount?.find((pendingWithdraw) => pendingWithdraw.id === exitId)
+            if (pendingWithdraw) {
+              dispatch(removePendingWithdraw(wallet.hermezEthereumAddress, exitId))
+            }
+
+            const pendingDelayedWithdraw = pendingDelayedWithdrawsAccount?.find((pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId)
+            if (pendingDelayedWithdraw) {
+              dispatch(removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitId))
+            }
+
             const exitTx = exitsTask.data.exits.find((exit) =>
               exit.batchNum === transaction.batchNum &&
               exit.accountIndex === transaction.fromAccountIndex
             )
             if (exitTx) {
-              if (exitTx.instantWithdraw) {
-                removePendingWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.batchNum)
-                return true
-              } else if (exitTx.delayedWithdraw) {
-                removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitTx.accountIndex + exitTx.batchNum)
+              if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
                 return true
               } else {
                 return false

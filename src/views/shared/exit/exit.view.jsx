@@ -58,7 +58,7 @@ function Exit ({
   function getStep () {
     if (!merkleProof) {
       return STEPS.first
-    } else if (!pendingWithdraws || (pendingWithdraws && !pendingWithdraws.includes(exitId))) {
+    } else if (!pendingWithdraws || (pendingWithdraws && pendingWithdraws.filter((pendingWithdraw) => pendingWithdraw.id === exitId).length === 0)) {
       return STEPS.second
     } else {
       return STEPS.third
