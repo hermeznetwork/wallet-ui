@@ -36,7 +36,9 @@ function fetchPoolTransactions (accountIndex) {
 
     if (wallet) {
       getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
+        // We need to reverse the txs to match the order of the txs from the history (DESC)
+        .then(transactions => transactions.reverse())
+        .then(transactions => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
         .catch(err => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)))
     } else {
       dispatch(accountDetailsActions.loadPoolTransactionsFailure('MetaMask wallet is not available'))
@@ -74,9 +76,13 @@ function filterExitsFromHistoryTransactions (historyTransactions, exits, wallet,
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchHistoryTransactions (accountIndex, fromItem) {
+function fetchHistoryTransactions (accountIndex, fromItem, exits) {
   return (dispatch, getState) => {
-    const { accountDetails: { exitsTask }, global: { wallet } } = getState()
+    const { global: { wallet }, accountDetails: { historyTransactionsTask } } = getState()
+
+    if (fromItem === undefined && historyTransactionsTask.status === 'successful') {
+      return dispatch(refreshHistoryTransactions(accountIndex, exits))
+    }
 
     dispatch(accountDetailsActions.loadHistoryTransactions())
 
@@ -95,7 +101,7 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
       .then((res) => {
         const filteredTransactions = filterExitsFromHistoryTransactions(
           res.transactions,
-          exitsTask.data,
+          exits.exits,
           wallet,
           dispatch
         )
@@ -103,7 +109,7 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
         return { ...res, transactions: filteredTransactions }
       })
       .then(res => dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(res)))
-      .catch(err => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)))
+      .catch(console.log)
   }
 }
 
@@ -112,9 +118,9 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshHistoryTransactions (accountIndex) {
+function refreshHistoryTransactions (accountIndex, exits) {
   return (dispatch, getState) => {
-    const { accountDetails: { historyTransactionsTask, exitsTask }, global: { wallet } } = getState()
+    const { global: { wallet }, accountDetails: { historyTransactionsTask } } = getState()
 
     if (historyTransactionsTask.status === 'successful') {
       dispatch(accountDetailsActions.refreshHistoryTransactions())
@@ -152,7 +158,7 @@ function refreshHistoryTransactions (accountIndex) {
           const transactions = results.reduce((acc, result) => [...acc, ...result.transactions], [])
           const filteredTransactions = filterExitsFromHistoryTransactions(
             transactions,
-            exitsTask.data,
+            exits.exits,
             wallet,
             dispatch
           )

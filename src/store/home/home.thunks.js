@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
+import { getAccountBalance } from '../../utils/accounts'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 
 import * as homeActions from './home.actions'
@@ -11,36 +12,42 @@ let refreshCancelTokenSource = axios.CancelToken.source()
  * Fetches the accounts for a Hermez Ethereum address and calculates the total balance.
  * @returns {void}
  */
-function fetchTotalAccountsBalance () {
+function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const {
-      home: { totalAccountsBalanceTask },
-      global: { wallet, fiatExchangeRatesTask },
-      myAccount: { preferredCurrency }
-    } = getState()
+    const { home: { totalBalanceTask } } = getState()
 
-    if (totalAccountsBalanceTask.status === 'pending' || totalAccountsBalanceTask.status === 'successful') {
-      dispatch(homeActions.loadTotalAccountsBalance())
+    if (totalBalanceTask.status === 'pending' || totalBalanceTask.status === 'successful') {
+      dispatch(homeActions.loadTotalBalance())
 
-      return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, undefined, undefined, undefined, 2049)
+      return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
         .then((res) => {
-          const totalAccountsBalance = res.accounts.reduce((amount, account) => {
-            const fixedAccountBalance = getFixedTokenAmount(
-              account.balance,
-              account.token.decimals
-            )
+          const accounts = res.accounts.map((account) => {
+            const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+            const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
             const fiatBalance = getTokenAmountInPreferredCurrency(
-              fixedAccountBalance,
+              fixedTokenAmount,
               account.token.USD,
               preferredCurrency,
-              fiatExchangeRatesTask.data
+              fiatExchangeRates
             )
 
-            return amount + fiatBalance
-          }, 0)
-          dispatch(homeActions.loadTotalAccountsBalanceSuccess(totalAccountsBalance))
+            return {
+              ...account,
+              balance: accountBalance,
+              fiatBalance
+            }
+          })
+
+          return { ...res, accounts }
         })
-        .catch(err => dispatch(homeActions.loadTotalAccountsBalanceFailure(err)))
+        .then((res) => {
+          const totalAccountsBalance = res.accounts.reduce((totalBalance, account) => {
+            return totalBalance + Number(account.fiatBalance)
+          }, 0)
+
+          dispatch(homeActions.loadTotalBalanceSuccess(totalAccountsBalance))
+        })
+        .catch((err) => dispatch(homeActions.loadTotalBalanceFailure(err)))
     }
   }
 }
@@ -50,9 +57,22 @@ function fetchTotalAccountsBalance () {
  * @param {number} fromItem - id of the first account to be returned from the API
  * @returns {void}
  */
-function fetchAccounts (fromItem) {
+function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { home: { accountsTask } } = getState()
+
+    if (fromItem === undefined && accountsTask.status === 'successful') {
+      return dispatch(
+        refreshAccounts(
+          hermezEthereumAddress,
+          poolTransactions,
+          pendingDeposits,
+          pendingWithdraws,
+          fiatExchangeRates,
+          preferredCurrency
+        )
+      )
+    }
 
     dispatch(homeActions.loadAccounts())
 
@@ -60,7 +80,27 @@ function fetchAccounts (fromItem) {
       refreshCancelTokenSource.cancel()
     }
 
-    return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, undefined, fromItem, undefined, 1)
+    return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, fromItem, undefined)
+      .then((res) => {
+        const accounts = res.accounts.map((account) => {
+          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+          const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
+          const fiatBalance = getTokenAmountInPreferredCurrency(
+            fixedTokenAmount,
+            account.token.USD,
+            preferredCurrency,
+            fiatExchangeRates
+          )
+
+          return {
+            ...account,
+            balance: accountBalance,
+            fiatBalance
+          }
+        })
+
+        return { ...res, accounts }
+      })
       .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
   }
@@ -71,9 +111,9 @@ function fetchAccounts (fromItem) {
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshAccounts () {
+function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { home: { accountsTask }, global: { wallet } } = getState()
+    const { home: { accountsTask } } = getState()
 
     if (accountsTask.status === 'successful') {
       dispatch(homeActions.refreshHistoryAccounts())
@@ -81,23 +121,47 @@ function refreshAccounts () {
       refreshCancelTokenSource = axios.CancelToken.source()
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token }
-      const initialReq = CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, undefined, undefined, undefined, 1, axiosConfig)
+      const initialReq = CoordinatorAPI.getAccounts(
+        hermezEthereumAddress,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        axiosConfig
+      )
       const requests = accountsTask.data.fromItemHistory
         .reduce((requests, fromItem) => ([
           ...requests,
           CoordinatorAPI.getAccounts(
-            wallet.hermezEthereumAddress,
+            hermezEthereumAddress,
             undefined,
             fromItem,
             undefined,
-            1,
+            undefined,
             axiosConfig
           )
         ]), [initialReq])
 
       Promise.all(requests)
         .then((results) => {
-          const accounts = results.reduce((acc, result) => [...acc, ...result.accounts], [])
+          const accounts = results
+            .reduce((acc, result) => [...acc, ...result.accounts], [])
+            .map((account) => {
+              const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+              const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
+              const fiatBalance = getTokenAmountInPreferredCurrency(
+                fixedTokenAmount,
+                account.token.USD,
+                preferredCurrency,
+                fiatExchangeRates
+              )
+
+              return {
+                ...account,
+                balance: accountBalance,
+                fiatBalance
+              }
+            })
           const pendingItems = results[results.length - 1].pendingItems
 
           return { accounts, pendingItems }
@@ -117,13 +181,9 @@ function fetchPoolTransactions () {
 
     const { global: { wallet } } = getState()
 
-    if (wallet) {
-      getPoolTransactions(null, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
-        .catch(err => dispatch(homeActions.loadPoolTransactionsFailure(err)))
-    } else {
-      dispatch(homeActions.loadPoolTransactionsFailure('Wallet not available'))
-    }
+    getPoolTransactions(null, wallet.publicKeyCompressedHex)
+      .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
+      .catch(err => dispatch(homeActions.loadPoolTransactionsFailure(err)))
   }
 }
 
@@ -146,7 +206,7 @@ function fetchExits () {
 }
 
 export {
-  fetchTotalAccountsBalance,
+  fetchTotalBalance,
   fetchAccounts,
   refreshAccounts,
   fetchPoolTransactions,

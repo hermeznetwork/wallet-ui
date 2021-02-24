@@ -1,7 +1,7 @@
 export const homeActionTypes = {
-  LOAD_TOTAL_ACCOUNTS_BALANCE: '[HOME] LOAD TOTAL ACCOUNTS BALANCE',
-  LOAD_TOTAL_ACCOUNTS_BALANCE_SUCCESS: '[HOME] LOAD TOTAL ACCOUNTS BALANCE SUCCESS',
-  LOAD_TOTAL_ACCOUNTS_BALANCE_FAILURE: '[HOME] LOAD TOTAL ACCOUNTS BALANCE FAILURE',
+  LOAD_TOTAL_BALANCE: '[HOME] LOAD TOTAL BALANCE',
+  LOAD_TOTAL_BALANCE_SUCCESS: '[HOME] LOAD TOTAL BALANCE SUCCESS',
+  LOAD_TOTAL_BALANCE_FAILURE: '[HOME] LOAD TOTAL BALANCE FAILURE',
   LOAD_ACCOUNTS: '[HOME] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[HOME] LOAD ACCOUNTS SUCCESS',
   LOAD_ACCOUNTS_FAILURE: '[HOME] LOAD ACCOUNTS FAILURE',
@@ -19,22 +19,22 @@ export const homeActionTypes = {
   RESET_STATE: '[HOME] RESET STATE'
 }
 
-function loadTotalAccountsBalance () {
+function loadTotalBalance () {
   return {
-    type: homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE
+    type: homeActionTypes.LOAD_TOTAL_BALANCE
   }
 }
 
-function loadTotalAccountsBalanceSuccess (balance) {
+function loadTotalBalanceSuccess (balance) {
   return {
-    type: homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_SUCCESS,
+    type: homeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS,
     balance
   }
 }
 
-function loadTotalAccountsBalanceFailure () {
+function loadTotalBalanceFailure () {
   return {
-    type: homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_FAILURE
+    type: homeActionTypes.LOAD_TOTAL_BALANCE_FAILURE
   }
 }
 
@@ -73,25 +73,6 @@ function loadPoolTransactionsSuccess (transactions) {
 function loadPoolTransactionsFailure () {
   return {
     type: homeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE
-  }
-}
-
-function loadHistoryTransactions () {
-  return {
-    type: homeActionTypes.LOAD_HISTORY_TRANSACTIONS
-  }
-}
-
-function loadHistoryTransactionsSuccess (transactions) {
-  return {
-    type: homeActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
-    transactions
-  }
-}
-
-function loadHistoryTransactionsFailure () {
-  return {
-    type: homeActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE
   }
 }
 
@@ -135,18 +116,15 @@ function resetState () {
 }
 
 export {
-  loadTotalAccountsBalance,
-  loadTotalAccountsBalanceSuccess,
-  loadTotalAccountsBalanceFailure,
+  loadTotalBalance,
+  loadTotalBalanceSuccess,
+  loadTotalBalanceFailure,
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
   loadPoolTransactions,
   loadPoolTransactionsSuccess,
   loadPoolTransactionsFailure,
-  loadHistoryTransactions,
-  loadHistoryTransactionsSuccess,
-  loadHistoryTransactionsFailure,
   loadExits,
   loadExitsSuccess,
   loadExitsFailure,

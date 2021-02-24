@@ -1,9 +1,12 @@
 import { CoordinatorAPI, Tx, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
 import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
+import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
 import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
+import { getAccountBalance } from '../../utils/accounts'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 
 /**
  * Fetches the account details for a token id in MetaMask.
@@ -42,7 +45,7 @@ function fetchMetaMaskAccount (tokenId) {
  * @param {string} accountIndex - accountIndex of the account
  * @returns {void}
  */
-function fetchHermezAccount (accountIndex) {
+function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
 
@@ -53,6 +56,18 @@ function fetchHermezAccount (accountIndex) {
     }
 
     return CoordinatorAPI.getAccount(accountIndex)
+      .then((account) => {
+        const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+        const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
+        const fiatBalance = getTokenAmountInPreferredCurrency(
+          fixedTokenAmount,
+          account.token.USD,
+          preferredCurrency,
+          fiatExchangeRates
+        )
+
+        return { ...account, balance: accountBalance, fiatBalance }
+      })
       .then((res) => dispatch(transactionActions.loadAccountSuccess(res)))
       .catch(error => dispatch(transactionActions.loadAccountFailure(error.message)))
   }
@@ -84,32 +99,75 @@ function fetchExit (accountIndex, batchNum) {
 }
 
 /**
+ * Fetches the transactions which are in the transactions pool
+ * @returns {void}
+ */
+function fetchPoolTransactions () {
+  return (dispatch, getState) => {
+    dispatch(transactionActions.loadPoolTransactions())
+
+    const { global: { wallet } } = getState()
+
+    getPoolTransactions(null, wallet.publicKeyCompressedHex)
+      .then((transactions) => dispatch(transactionActions.loadPoolTransactionsSuccess(transactions)))
+      .catch(err => dispatch(transactionActions.loadPoolTransactionsFailure(err)))
+  }
+}
+
+/**
  * Fetches the accounts to use in the transaction. If the transaction is a deposit it will
  * look for them on MetaMask, otherwise it will look for them on the rollup api
  * @param {string} transactionType - Transaction type
  * @param {number} fromItem - id of the first account to be returned from the api
  * @returns {void}
  */
-function fetchAccounts (transactionType, fromItem) {
+function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
 
     dispatch(transactionActions.loadAccounts())
 
-    if (!wallet) {
-      return dispatch(transactionActions.loadAccountsFailure('MetaMask wallet is not loaded'))
-    }
     if (transactionType === TxType.Deposit) {
       return CoordinatorAPI.getTokens(undefined, undefined, undefined, undefined, 2049)
         .then((res) => {
           ethereum.getTokens(wallet, res.tokens)
+            .then((tokens) => {
+              return tokens.map((token) => {
+                const tokenBalance = token.balance.toString()
+                const fixedTokenAmount = getFixedTokenAmount(tokenBalance, token.token.decimals)
+                const fiatTokenBalance = getTokenAmountInPreferredCurrency(
+                  fixedTokenAmount,
+                  token.token.USD,
+                  preferredCurrency,
+                  fiatExchangeRates
+                )
+
+                return { ...token, balance: tokenBalance, fiatBalance: fiatTokenBalance }
+              })
+            })
             .then(metaMaskTokens => dispatch(transactionActions.loadAccountsSuccess(transactionType, metaMaskTokens)))
-            .catch(err => transactionActions.loadAccountsFailure(err.message))
+            .catch(console.log)
         })
     } else {
       return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, undefined, fromItem)
+        .then((res) => {
+          const accounts = res.accounts.map((account) => {
+            const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+            const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
+            const fiatBalance = getTokenAmountInPreferredCurrency(
+              fixedTokenAmount,
+              account.token.USD,
+              preferredCurrency,
+              fiatExchangeRates
+            )
+
+            return { ...account, balance: accountBalance, fiatBalance }
+          })
+
+          return { ...res, accounts }
+        })
         .then(res => dispatch(transactionActions.loadAccountsSuccess(transactionType, res)))
-        .catch(err => transactionActions.loadAccountsFailure(err.message))
+        .catch(err => dispatch(transactionActions.loadAccountsFailure(err)))
     }
   }
 }
@@ -167,7 +225,7 @@ function deposit (amount, account) {
 function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWithdrawal) {
   return (dispatch, getState) => {
     const { global: { wallet, signer } } = getState()
-    const withdrawalId = account.accountIndex + exit.merkleProof.root
+    const withdrawalId = account.accountIndex + exit.batchNum
 
     dispatch(transactionActions.startTransactionSigning())
 
@@ -184,12 +242,19 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
         signer
       ).then(() => {
         if (instantWithdrawal) {
-          dispatch(globalThunks.addPendingWithdraw(wallet.hermezEthereumAddress, withdrawalId))
+          dispatch(globalThunks.addPendingWithdraw({
+            hermezEthereumAddress: wallet.hermezEthereumAddress,
+            id: withdrawalId,
+            amount,
+            token: account.token
+          }))
         } else {
           dispatch(globalThunks.addPendingDelayedWithdraw({
             id: withdrawalId,
             instant: false,
-            date: Date.now()
+            date: Date.now(),
+            amount,
+            token: account.token
           }))
         }
 
@@ -243,8 +308,7 @@ function exit (amount, account, fee) {
       type: TxType.Exit,
       from: account.accountIndex,
       amount: HermezCompressedAmount.compressAmount(amount),
-      fee,
-      nonce: account.nonce
+      fee
     }
 
     return Tx.generateAndSendL2Tx(txData, wallet, account.token)
@@ -261,8 +325,7 @@ function transfer (amount, from, to, fee) {
       from: from.accountIndex,
       to: to.accountIndex || to.hezEthereumAddress,
       amount: HermezCompressedAmount.compressAmount(amount),
-      fee,
-      nonce: from.nonce
+      fee
     }
 
     return Tx.generateAndSendL2Tx(txData, wallet, from.token)
@@ -275,6 +338,7 @@ export {
   fetchMetaMaskAccount,
   fetchHermezAccount,
   fetchExit,
+  fetchPoolTransactions,
   fetchAccounts,
   fetchFees,
   deposit,

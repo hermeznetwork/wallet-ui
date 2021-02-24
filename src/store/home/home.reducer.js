@@ -3,7 +3,7 @@ import { getPaginationData } from '../../utils/api'
 import { PaginationOrder } from '@hermeznetwork/hermezjs/src/api'
 
 const initialHomeState = {
-  totalAccountsBalanceTask: {
+  totalBalanceTask: {
     status: 'pending'
   },
   accountsTask: {
@@ -22,29 +22,29 @@ const initialHomeState = {
 
 function homeReducer (state = initialHomeState, action) {
   switch (action.type) {
-    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE: {
-      const totalAccountsBalanceTask = state.totalAccountsBalanceTask.status === 'pending'
+    case homeActionTypes.LOAD_TOTAL_BALANCE: {
+      const totalBalanceTask = state.totalBalanceTask.status === 'pending'
         ? { status: 'loading' }
-        : { status: 'reloading', data: state.totalAccountsBalanceTask.data }
+        : { status: 'reloading', data: state.totalBalanceTask.data }
 
       return {
         ...state,
-        totalAccountsBalanceTask
+        totalBalanceTask
       }
     }
-    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_SUCCESS: {
+    case homeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS: {
       return {
         ...state,
-        totalAccountsBalanceTask: {
+        totalBalanceTask: {
           status: 'successful',
           data: action.balance
         }
       }
     }
-    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_FAILURE: {
+    case homeActionTypes.LOAD_TOTAL_BALANCE_FAILURE: {
       return {
         ...state,
-        totalAccountsBalanceTask: {
+        totalBalanceTask: {
           status: 'failed',
           error: 'An error ocurred loading the total balance of the accounts'
         }
@@ -113,6 +113,15 @@ function homeReducer (state = initialHomeState, action) {
             accounts: action.data.accounts,
             pagination
           }
+        }
+      }
+    }
+    case homeActionTypes.LOAD_POOL_TRANSACTIONS: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: 'loading',
+          data: action.transactions
         }
       }
     }
@@ -187,7 +196,7 @@ function homeReducer (state = initialHomeState, action) {
       }
     }
     case homeActionTypes.RESET_STATE: {
-      return initialHomeState
+      return { ...initialHomeState }
     }
     default: {
       return state

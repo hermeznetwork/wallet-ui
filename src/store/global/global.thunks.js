@@ -114,8 +114,9 @@ function changeNetworkStatus (newNetworkStatus, backgroundColor) {
  * @param {string} pendingWithdraw - The pendingWithdraw to add to the pool
  * @returns {void}
  */
-function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
+function addPendingWithdraw (pendingWithdraw) {
   return (dispatch) => {
+    const hermezEthereumAddress = pendingWithdraw.hermezEthereumAddress
     const pendingWithdrawPool = JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
     const accountPendingWithdrawPool = pendingWithdrawPool[hermezEthereumAddress]
     const newAccountPendingWithdrawPool = accountPendingWithdrawPool === undefined
@@ -127,7 +128,7 @@ function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
     }
 
     localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdrawPool))
-    dispatch(globalActions.addPendingWithdraw(hermezEthereumAddress, pendingWithdraw))
+    dispatch(globalActions.addPendingWithdraw(pendingWithdraw))
   }
 }
 
@@ -285,13 +286,14 @@ function updatePendingDepositId (transactionHash, transactionId) {
 function checkPendingDeposits () {
   return (dispatch, getState) => {
     const { global: { wallet, pendingDeposits } } = getState()
+
+    dispatch(globalActions.checkPendingDeposits())
     const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
 
     if (accountPendingDeposits === undefined) {
+      dispatch(globalActions.checkPendingDepositsSuccess())
       return
     }
-
-    dispatch(globalActions.checkPendingDeposits())
 
     const provider = Providers.getProvider()
     const pendingDepositsHashes = accountPendingDeposits.map(deposit => deposit.hash)
@@ -302,7 +304,14 @@ function checkPendingDeposits () {
         .filter(txReceipt => txReceipt && txReceipt.logs && txReceipt.logs.length > 0)
         .map((txReceipt) => {
           const hermezContractInterface = new ethers.utils.Interface(HermezABI)
-          const parsedLogs = txReceipt.logs.map(log => hermezContractInterface.parseLog(log))
+          // Need to parse logs, but only events from the Hermez SC. Ignore errors when trying to parse others
+          const parsedLogs = []
+          for (const txReceiptLog of txReceipt.logs) {
+            try {
+              const parsedLog = hermezContractInterface.parseLog(txReceiptLog)
+              parsedLogs.push(parsedLog)
+            } catch (e) {}
+          }
           const l1UserTxEvent = parsedLogs.find((event) => event.name === 'L1UserTxEvent')
 
           if (!l1UserTxEvent) {
@@ -319,16 +328,18 @@ function checkPendingDeposits () {
           return CoordinatorAPI.getHistoryTransaction(txId)
         })
 
-      Promise.all(transactionHistoryPromises).then((results) => {
-        results
-          .filter(result => result !== undefined)
-          .forEach((transaction) => {
-            if (transaction.batchNum !== null) {
-              dispatch(removePendingDeposit(transaction.id))
-            }
-          })
-        dispatch(globalActions.checkPendingDepositsSuccess())
-      })
+      Promise.all(transactionHistoryPromises)
+        .then((results) => {
+          results
+            .filter(result => result !== undefined)
+            .forEach((transaction) => {
+              if (transaction.batchNum !== null) {
+                dispatch(removePendingDeposit(transaction.id))
+              }
+            })
+          dispatch(globalActions.checkPendingDepositsSuccess())
+        })
+        .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()))
     })
   }
 }

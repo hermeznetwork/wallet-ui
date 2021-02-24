@@ -2,13 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import useAccountStyles from './account.styles'
-import { CurrencySymbol } from '../../../utils/currencies'
+import { CurrencySymbol, getFixedTokenAmount } from '../../../utils/currencies'
 
 function Account ({
-  tokenName,
   balance,
-  tokenSymbol,
   fiatBalance,
+  token,
   preferredCurrency,
   hasPendingDeposit,
   isDisabled,
@@ -28,9 +27,9 @@ function Account ({
         }
       }}
     >
-      <div className={`${classes.values} ${classes.topRow}`}>
-        <p>{tokenSymbol}</p>
-        <p>{balance} {tokenSymbol}</p>
+      <div className={`${classes.values} ${classes.topRow} ${classes.topRowText}`}>
+        <p>{token.symbol}</p>
+        <p>{getFixedTokenAmount(balance, token.decimals)} {token.symbol}</p>
       </div>
       <div className={`${classes.values} ${classes.bottomRow}`}>
         {
@@ -40,7 +39,7 @@ function Account ({
                 <p className={classes.pendingLabelText}>Pending</p>
               </div>
               )
-            : <p className={classes.tokenName}>{tokenName}</p>
+            : <p className={classes.tokenName}>{token.name}</p>
         }
         <p>{CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}</p>
       </div>
@@ -50,9 +49,8 @@ function Account ({
 
 Account.propTypes = {
   balance: PropTypes.string.isRequired,
-  tokenName: PropTypes.string.isRequired,
-  tokenSymbol: PropTypes.string.isRequired,
   fiatBalance: PropTypes.number.isRequired,
+  token: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   onClick: PropTypes.func
 }

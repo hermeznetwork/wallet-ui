@@ -29,6 +29,27 @@ function getFixedTokenAmount (amount, decimals) {
 }
 
 /**
+ * Converts a USD amount to the preferred currency
+ *
+ * @param {Number} usdAmount
+ * @param {String} preferredCurrency - User preferred currency
+ * @param {String} fiatExchangeRates - Exchange rates for all the supported currencies in the app
+ *
+ * @returns {Number}
+ */
+function getAmountInPreferredCurrency (
+  usdAmount,
+  preferredCurrency,
+  fiatExchangeRates
+) {
+  if (preferredCurrency === CurrencySymbol.USD.code) {
+    return usdAmount
+  }
+
+  return usdAmount * fiatExchangeRates[preferredCurrency]
+}
+
+/**
  * Converts a token amount to a new amount but in the user preferred currency
  *
  * @param {string} amount - The amount to be be converted
@@ -50,15 +71,12 @@ function getTokenAmountInPreferredCurrency (
     return undefined
   }
 
-  if (preferredCurrency === CurrencySymbol.USD.code) {
-    return usdAmount
-  }
-
-  return usdAmount * fiatExchangeRates[preferredCurrency]
+  return getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchangeRates)
 }
 
 export {
   CurrencySymbol,
   getFixedTokenAmount,
+  getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency
 }

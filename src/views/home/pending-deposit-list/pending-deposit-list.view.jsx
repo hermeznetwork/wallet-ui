@@ -11,8 +11,6 @@ function PendingDepositList ({ deposits, preferredCurrency, fiatExchangeRates, o
     <>
       {
         deposits.map((deposit) => {
-          const fixedTokenAmount = getFixedTokenAmount(deposit.amount, deposit.token.decimals)
-
           return (
             <div
               key={deposit.id}
@@ -20,15 +18,14 @@ function PendingDepositList ({ deposits, preferredCurrency, fiatExchangeRates, o
             >
               <Account
                 hasPendingDeposit
-                balance={fixedTokenAmount}
+                balance={deposit.amount}
                 fiatBalance={getTokenAmountInPreferredCurrency(
-                  fixedTokenAmount,
+                  getFixedTokenAmount(deposit.amount, deposit.token.decimals),
                   deposit.token.USD,
                   preferredCurrency,
                   fiatExchangeRates
                 )}
-                tokenName={deposit.token.name}
-                tokenSymbol={deposit.token.symbol}
+                token={deposit.token}
                 preferredCurrency={preferredCurrency}
                 onClick={onAccountClick}
               />

@@ -12,6 +12,9 @@ export const STEP_NAME = {
 }
 
 const initialTransactionState = {
+  poolTransactionsTask: {
+    status: 'pending'
+  },
   currentStep: STEP_NAME.LOAD_INITIAL_DATA,
   steps: {
     [STEP_NAME.LOAD_INITIAL_DATA]: {
@@ -32,15 +35,6 @@ const initialTransactionState = {
       transaction: undefined,
       isTransactionBeingSigned: false
     }
-  },
-  tokensTask: {
-    status: 'pending'
-  },
-  accountsTask: {
-    status: 'pending'
-  },
-  metaMaskTokensTask: {
-    status: 'pending'
   }
 }
 
@@ -91,12 +85,39 @@ function transactionReducer (state = initialTransactionState, action) {
         currentStep: action.nextStep
       }
     }
+    case transactionActionTypes.LOAD_POOL_TRANSACTIONS: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: 'successful',
+          data: action.transactions
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: 'failed',
+          error: action.error
+        }
+      }
+    }
     case transactionActionTypes.LOAD_ACCOUNTS: {
       return {
         ...state,
         steps: {
           ...state.steps,
           [STEP_NAME.CHOOSE_ACCOUNT]: {
+            ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
             accountsTask: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'successful'
               ? { status: 'reloading', data: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data }
               : { status: 'loading' }
@@ -111,6 +132,7 @@ function transactionReducer (state = initialTransactionState, action) {
           steps: {
             ...state.steps,
             [STEP_NAME.CHOOSE_ACCOUNT]: {
+              ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
               accountsTask: {
                 status: 'successful',
                 data: action.data
@@ -129,6 +151,7 @@ function transactionReducer (state = initialTransactionState, action) {
           steps: {
             ...state.steps,
             [STEP_NAME.CHOOSE_ACCOUNT]: {
+              ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
               accountsTask: {
                 status: 'successful',
                 data: { accounts, pagination }
@@ -144,6 +167,7 @@ function transactionReducer (state = initialTransactionState, action) {
         steps: {
           ...state.steps,
           [STEP_NAME.CHOOSE_ACCOUNT]: {
+            ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
             accountsTask: {
               status: 'failed',
               error: action.error

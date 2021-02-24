@@ -10,20 +10,30 @@ import useAccountSelectorStyles from './account-selector.styles'
 function AccountSelector ({
   transactionType,
   accountsTask,
+  poolTransactionsTask,
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
-  pendingDepositsCheckTask,
+  pendingWithdraws,
+  pendingDelayedWithdraws,
   onLoadAccounts,
   onAccountClick
 }) {
   const classes = useAccountSelectorStyles()
 
   React.useEffect(() => {
-    if (accountsTask.status === 'pending') {
-      onLoadAccounts(transactionType)
+    if (poolTransactionsTask.status === 'successful') {
+      onLoadAccounts(
+        transactionType,
+        undefined,
+        poolTransactionsTask.data,
+        pendingDeposits,
+        [...pendingWithdraws, ...pendingDelayedWithdraws],
+        fiatExchangeRates,
+        preferredCurrency
+      )
     }
-  }, [accountsTask, transactionType, onLoadAccounts])
+  }, [poolTransactionsTask, onLoadAccounts])
 
   function getDisabledTokenIds () {
     if (!pendingDeposits) {
@@ -46,10 +56,6 @@ function AccountSelector ({
               }
               case 'reloading':
               case 'successful': {
-                if (pendingDepositsCheckTask.status !== 'successful') {
-                  return <Spinner />
-                }
-
                 if (transactionType === TxType.Deposit) {
                   if (accountsTask.data.length === 0) {
                     return (
@@ -77,7 +83,15 @@ function AccountSelector ({
                       asyncTaskStatus={accountsTask.status}
                       paginationData={accountsTask.data.pagination}
                       onLoadNextPage={(fromItem) => {
-                        onLoadAccounts(transactionType, fromItem)
+                        onLoadAccounts(
+                          transactionType,
+                          fromItem,
+                          poolTransactionsTask.data,
+                          pendingDeposits,
+                          [...pendingWithdraws, ...pendingDelayedWithdraws],
+                          fiatExchangeRates,
+                          preferredCurrency
+                        )
                       }}
                     >
                       <AccountList
