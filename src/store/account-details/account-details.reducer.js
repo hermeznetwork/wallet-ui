@@ -141,9 +141,9 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
     case accountDetailsActionTypes.LOAD_EXITS: {
       return {
         ...state,
-        exitsTask: {
-          status: 'loading'
-        }
+        exitsTask: state.exitsTask.status === 'pending'
+          ? { status: 'loading' }
+          : { status: 'reloading', data: state.exitsTask.data }
       }
     }
     case accountDetailsActionTypes.LOAD_EXITS_SUCCESS: {
