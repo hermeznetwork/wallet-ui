@@ -4,7 +4,7 @@ import { push } from 'connected-react-router'
 
 import * as globalActions from '../global/global.actions'
 import * as loginActions from './login.actions'
-import { AUTH_MESSAGE, ACCOUNT_AUTH_SIGNATURE_KEY, TREZOR_MANIFEST_MAIL } from '../../constants'
+import { ACCOUNT_AUTH_SIGNATURE_KEY, TREZOR_MANIFEST_MAIL } from '../../constants'
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
@@ -74,7 +74,7 @@ function fetchWallet (walletName, accountData) {
       const signer = await hermez.Signers.getSigner(provider, signerData)
       const address = await signer.getAddress()
       const hermezAddress = hermez.Addresses.getHermezAddress(address)
-      const signature = await signer.signMessage(AUTH_MESSAGE)
+      const signature = await signer.signMessage(hermez.Constants.METAMASK_MESSAGE)
       const hashedSignature = keccak256(signature)
       const signatureBuffer = hermez.Utils.hexToBuffer(hashedSignature)
       const wallet = new hermez.HermezWallet.HermezWallet(signatureBuffer, hermezAddress)
