@@ -229,7 +229,7 @@ function Home ({
                 const pendingOnTopDeposits = getPendingOnTopDeposits(accountPendingDeposits)
                 const pendingCreateAccountDeposits = getPendingCreateAccountDeposits(accountPendingDeposits)
 
-                if (accountsTask.data.accounts.length === 0 && !pendingCreateAccountDeposits) {
+                if (accountsTask.data.accounts.length === 0 && pendingCreateAccountDeposits.length === 0) {
                   return (
                     <p className={classes.emptyAccounts}>
                       Deposit tokens from your Ethereum account.
