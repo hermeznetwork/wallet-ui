@@ -22,6 +22,7 @@ import TokenBalance from '../shared/token-balance/token-balance.view'
 import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
+import { AUTO_REFRESH_RATE } from '../../constants'
 import { getAccountBalance } from '../../utils/accounts'
 
 function AccountDetails ({
@@ -41,6 +42,7 @@ function AccountDetails ({
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
+  onRefresHistoryTransactions,
   onCheckPendingDeposits,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
@@ -59,14 +61,20 @@ function AccountDetails ({
   }, [accountTask, onChangeHeader])
 
   React.useEffect(() => {
-    onLoadPoolTransactions(accountIndex)
-  }, [onLoadPoolTransactions])
+  }, [onCheckPendingDeposits])
 
   React.useEffect(() => {
-    if (poolTransactionsTask.status === 'successful' && fiatExchangeRatesTask.status === 'successful') {
+    const loadInitialData = () => {
+      onCheckPendingDeposits()
       onLoadAccount(accountIndex)
+      onLoadPoolTransactions(accountIndex)
     }
-  }, [poolTransactionsTask, fiatExchangeRatesTask, accountIndex, onLoadAccount])
+    const intervalId = setInterval(loadInitialData, AUTO_REFRESH_RATE)
+
+    loadInitialData()
+
+    return () => { clearInterval(intervalId) }
+  }, [accountIndex, onCheckPendingDeposits, onLoadAccount, onLoadPoolTransactions])
 
   React.useEffect(() => {
     if (accountTask.status === 'successful') {
@@ -76,13 +84,9 @@ function AccountDetails ({
 
   React.useEffect(() => {
     if (exitsTask.status === 'successful') {
-      onLoadHistoryTransactions(accountIndex)
+      onLoadHistoryTransactions(accountIndex, undefined, exitsTask.data)
     }
   }, [exitsTask, accountIndex, onLoadHistoryTransactions])
-
-  React.useEffect(() => {
-    onCheckPendingDeposits()
-  }, [onCheckPendingDeposits])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -238,7 +242,7 @@ function AccountDetails ({
                   <InfiniteScroll
                     asyncTaskStatus={historyTransactionsTask.status}
                     paginationData={historyTransactionsTask.data.pagination}
-                    onLoadNextPage={(fromItem) => onLoadHistoryTransactions(accountIndex, fromItem)}
+                    onLoadNextPage={(fromItem) => onLoadHistoryTransactions(accountIndex, fromItem, exitsTask.data)}
                   >
                     <TransactionList
                       accountIndex={accountIndex}
@@ -309,10 +313,12 @@ const mapDispatchToProps = (dispatch) => ({
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadPoolTransactions: (accountIndex) =>
     dispatch(accountDetailsThunks.fetchPoolTransactions(accountIndex)),
-  onLoadHistoryTransactions: (accountIndex, fromItem) =>
-    dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem)),
+  onLoadHistoryTransactions: (accountIndex, fromItem, exits) =>
+    dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem, exits)),
   onLoadExits: (tokenId) =>
     dispatch(accountDetailsThunks.fetchExits(tokenId)),
+  onRefresHistoryTransactions: (accountIndex) =>
+    dispatch(accountDetailsThunks.refreshHistoryTransactions(accountIndex)),
   onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
     dispatch(globalThunks.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>

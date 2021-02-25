@@ -32,3 +32,5 @@ export const TREZOR_MANIFEST_MAIL = 'hello@hermez.io'
 export const PRIVACY_POLICY_URL = 'https://hermez.io/privacy-policy'
 
 export const TERMS_OF_SERVICE_URL = 'https://hermez.io/terms-of-service'
+
+export const AUTO_REFRESH_RATE = 60000 // 1min

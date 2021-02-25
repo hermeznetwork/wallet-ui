@@ -23,6 +23,7 @@ import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './pending-deposit-list/pending-deposit-list.view'
+import { AUTO_REFRESH_RATE } from '../../constants'
 
 function Home ({
   wallet,
@@ -43,6 +44,7 @@ function Home ({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
+  onRefreshAccounts,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onNavigateToAccountDetails,
@@ -63,12 +65,20 @@ function Home ({
     onCheckPendingDeposits()
     onLoadPoolTransactions()
     onLoadExits()
-  }, [onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
+  }, [onCheckPendingDeposits, onLoadTotalBalance, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
+
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      onCheckPendingDeposits()
+      onLoadPoolTransactions()
+      onLoadExits()
+    }, AUTO_REFRESH_RATE)
+
+    return () => { clearInterval(intervalId) }
+  }, [onLoadPoolTransactions])
 
   React.useEffect(() => {
     if (
-      totalBalanceTask.status === 'pending' &&
-      accountsTask.status === 'pending' &&
       pendingDepositsCheckTask.status === 'successful' &&
       poolTransactionsTask.status === 'successful' &&
       fiatExchangeRatesTask.status === 'successful'
@@ -91,7 +101,7 @@ function Home ({
         preferredCurrency
       )
     }
-  }, [totalBalanceTask, accountsTask, pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts])
+  }, [pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -155,7 +165,7 @@ function Home ({
           </div>
           <TransactionActions
             hideSend={
-              accountsTask.status === 'successful'
+              accountsTask.status === 'successful' || accountsTask.status === 'reloading'
                 ? accountsTask.data.accounts.length === 0
                 : true
             }
@@ -219,7 +229,7 @@ function Home ({
                 const pendingOnTopDeposits = getPendingOnTopDeposits(accountPendingDeposits)
                 const pendingCreateAccountDeposits = getPendingCreateAccountDeposits(accountPendingDeposits)
 
-                if (accountsTask.data.accounts.length === 0 && !pendingCreateAccountDeposits) {
+                if (accountsTask.data.accounts.length === 0 && pendingCreateAccountDeposits.length === 0) {
                   return (
                     <p className={classes.emptyAccounts}>
                       Deposit tokens from your Ethereum account.
@@ -317,6 +327,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
+  onRefreshAccounts: () =>
+    dispatch(homeThunks.refreshAccounts()),
   onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
     dispatch(globalThunks.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>

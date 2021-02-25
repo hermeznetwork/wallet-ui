@@ -73,6 +73,10 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
       }
     }
     case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS: {
+      if (state.historyTransactionsTask.status === 'reloading') {
+        return state
+      }
+
       return {
         ...state,
         historyTransactionsTask: state.historyTransactionsTask.status === 'successful'
@@ -85,12 +89,15 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
         : action.data.transactions
       const pagination = getPaginationData(action.data.pendingItems, transactions, PaginationOrder.DESC)
+      const fromItemHistory = state.historyTransactionsTask.status === 'reloading'
+        ? [...state.historyTransactionsTask.data.fromItemHistory, state.historyTransactionsTask.data.pagination.fromItem]
+        : []
 
       return {
         ...state,
         historyTransactionsTask: {
           status: 'successful',
-          data: { transactions, pagination }
+          data: { transactions, pagination, fromItemHistory }
         }
       }
     }
@@ -103,12 +110,40 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
+    case accountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS: {
+      return {
+        ...state,
+        historyTransactionsTask: {
+          ...state.historyTransactionsTask,
+          status: 'reloading'
+        }
+      }
+    }
+    case accountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS: {
+      const pagination = getPaginationData(
+        action.data.pendingItems,
+        action.data.transactions,
+        PaginationOrder.DESC
+      )
+
+      return {
+        ...state,
+        historyTransactionsTask: {
+          status: 'successful',
+          data: {
+            ...state.historyTransactionsTask.data,
+            transactions: action.data.transactions,
+            pagination
+          }
+        }
+      }
+    }
     case accountDetailsActionTypes.LOAD_EXITS: {
       return {
         ...state,
-        exitsTask: {
-          status: 'loading'
-        }
+        exitsTask: state.exitsTask.status === 'pending'
+          ? { status: 'loading' }
+          : { status: 'reloading', data: state.exitsTask.data }
       }
     }
     case accountDetailsActionTypes.LOAD_EXITS_SUCCESS: {

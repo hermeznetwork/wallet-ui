@@ -1,8 +1,12 @@
+import axios from 'axios'
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
-import * as accountDetailsActionTypes from './account-details.actions'
+import * as accountDetailsActions from './account-details.actions'
 import { removePendingWithdraw, removePendingDelayedWithdraw } from '../global/global.thunks'
+
+let refreshCancelTokenSource = axios.CancelToken.source()
 
 /**
  * Fetches the account details for the specified account index
@@ -11,11 +15,11 @@ import { removePendingWithdraw, removePendingDelayedWithdraw } from '../global/g
  */
 function fetchAccount (accountIndex) {
   return (dispatch) => {
-    dispatch(accountDetailsActionTypes.loadAccount())
+    dispatch(accountDetailsActions.loadAccount())
 
     return CoordinatorAPI.getAccount(accountIndex)
-      .then(res => dispatch(accountDetailsActionTypes.loadAccountSuccess(res)))
-      .catch(err => dispatch(accountDetailsActionTypes.loadAccountFailure(err)))
+      .then(res => dispatch(accountDetailsActions.loadAccountSuccess(res)))
+      .catch(err => dispatch(accountDetailsActions.loadAccountFailure(err)))
   }
 }
 
@@ -26,20 +30,51 @@ function fetchAccount (accountIndex) {
  */
 function fetchPoolTransactions (accountIndex) {
   return (dispatch, getState) => {
-    dispatch(accountDetailsActionTypes.loadPoolTransactions())
+    dispatch(accountDetailsActions.loadPoolTransactions())
 
     const { global: { wallet } } = getState()
 
-    if (wallet) {
-      getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
-        // We need to reverse the txs to match the order of the txs from the history (DESC)
-        .then(transactions => transactions.reverse())
-        .then(transactions => dispatch(accountDetailsActionTypes.loadPoolTransactionsSuccess(transactions)))
-        .catch(err => dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure(err)))
-    } else {
-      dispatch(accountDetailsActionTypes.loadPoolTransactionsFailure('MetaMask wallet is not available'))
-    }
+    getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
+    // We need to reverse the txs to match the order of the txs from the history (DESC)
+      .then(transactions => transactions.reverse())
+      .then(transactions => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
+      .catch(err => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)))
   }
+}
+
+function filterExitsFromHistoryTransactions (historyTransactions, exits, pendingWithdraws, pendingDelayedWithdraws, wallet, dispatch) {
+  return historyTransactions.filter((transaction) => {
+    if (transaction.type === TxType.Exit) {
+      const exitId = transaction.fromAccountIndex + transaction.batchNum
+      const pendingWithdraw = pendingWithdraws.find((pendingWithdraw) => pendingWithdraw.id === exitId)
+
+      if (pendingWithdraw) {
+        dispatch(removePendingWithdraw(wallet.hermezEthereumAddress, exitId))
+      }
+
+      const pendingDelayedWithdraw = pendingDelayedWithdraws.find((pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId)
+      if (pendingDelayedWithdraw) {
+        dispatch(removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitId))
+      }
+
+      const exitTx = exits.find((exit) =>
+        exit.batchNum === transaction.batchNum &&
+        exit.accountIndex === transaction.fromAccountIndex
+      )
+
+      if (exitTx) {
+        if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
+          return true
+        } else {
+          return false
+        }
+      }
+
+      return true
+    }
+
+    return true
+  })
 }
 
 /**
@@ -47,11 +82,22 @@ function fetchPoolTransactions (accountIndex) {
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchHistoryTransactions (accountIndex, fromItem) {
+function fetchHistoryTransactions (accountIndex, fromItem, exits) {
   return (dispatch, getState) => {
-    dispatch(accountDetailsActionTypes.loadHistoryTransactions())
+    const {
+      global: { wallet, pendingWithdraws, pendingDelayedWithdraws },
+      accountDetails: { historyTransactionsTask }
+    } = getState()
 
-    const { accountDetails: { exitsTask }, global: { wallet, pendingWithdraws, pendingDelayedWithdraws } } = getState()
+    if (fromItem === undefined && historyTransactionsTask.status === 'successful') {
+      return dispatch(refreshHistoryTransactions(accountIndex, exits))
+    }
+
+    dispatch(accountDetailsActions.loadHistoryTransactions())
+
+    if (fromItem) {
+      refreshCancelTokenSource.cancel()
+    }
 
     return CoordinatorAPI.getTransactions(
       undefined,
@@ -62,43 +108,79 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
       CoordinatorAPI.PaginationOrder.DESC
     )
       .then((res) => {
-        const pendingWithdrawsAccount = pendingWithdraws[wallet.hermezEthereumAddress]
-        const pendingDelayedWithdrawsAccount = pendingDelayedWithdraws[wallet.hermezEthereumAddress]
-        res.transactions = res.transactions.filter((transaction) => {
-          if (transaction.type === 'Exit') {
-            const exitId = transaction.fromAccountIndex + transaction.batchNum
-            const pendingWithdraw = pendingWithdrawsAccount?.find((pendingWithdraw) => pendingWithdraw.id === exitId)
-            if (pendingWithdraw) {
-              dispatch(removePendingWithdraw(wallet.hermezEthereumAddress, exitId))
-            }
+        const pendingWithdrawsAccount = pendingWithdraws[wallet.hermezEthereumAddress] || []
+        const pendingDelayedWithdrawsAccount = pendingDelayedWithdraws[wallet.hermezEthereumAddress] || []
+        const filteredTransactions = filterExitsFromHistoryTransactions(
+          res.transactions,
+          exits.exits,
+          pendingWithdrawsAccount,
+          pendingDelayedWithdrawsAccount,
+          wallet,
+          dispatch
+        )
 
-            const pendingDelayedWithdraw = pendingDelayedWithdrawsAccount?.find((pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId)
-            if (pendingDelayedWithdraw) {
-              dispatch(removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitId))
-            }
-
-            const exitTx = exitsTask.data.exits.find((exit) =>
-              exit.batchNum === transaction.batchNum &&
-              exit.accountIndex === transaction.fromAccountIndex
-            )
-            if (exitTx) {
-              if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
-                return true
-              } else {
-                return false
-              }
-            } else {
-              return true
-            }
-          } else {
-            return true
-          }
-        })
-
-        return res
+        return { ...res, transactions: filteredTransactions }
       })
-      .then(res => dispatch(accountDetailsActionTypes.loadHistoryTransactionsSuccess(res)))
-      .catch(err => dispatch(accountDetailsActionTypes.loadHistoryTransactionsFailure(err)))
+      .then(res => dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(res)))
+      .catch(console.log)
+  }
+}
+
+/**
+ * Refreshes the transactions information for the transactions that have already been
+ * loaded
+ * @param {string} accountIndex - Account index
+ */
+function refreshHistoryTransactions (accountIndex, exits) {
+  return (dispatch, getState) => {
+    const { global: { wallet }, accountDetails: { historyTransactionsTask } } = getState()
+
+    if (historyTransactionsTask.status === 'successful') {
+      dispatch(accountDetailsActions.refreshHistoryTransactions())
+
+      refreshCancelTokenSource = axios.CancelToken.source()
+
+      const axiosConfig = { cancelToken: refreshCancelTokenSource.token }
+      const initialReq = CoordinatorAPI.getTransactions(
+        undefined,
+        undefined,
+        undefined,
+        accountIndex,
+        undefined,
+        CoordinatorAPI.PaginationOrder.DESC,
+        undefined,
+        axiosConfig
+      )
+      const requests = historyTransactionsTask.data.fromItemHistory
+        .reduce((requests, fromItem) => ([
+          ...requests,
+          CoordinatorAPI.getTransactions(
+            undefined,
+            undefined,
+            undefined,
+            accountIndex,
+            fromItem,
+            CoordinatorAPI.PaginationOrder.DESC,
+            undefined,
+            axiosConfig
+          )
+        ]), [initialReq])
+
+      Promise.all(requests)
+        .then((results) => {
+          const transactions = results.reduce((acc, result) => [...acc, ...result.transactions], [])
+          const filteredTransactions = filterExitsFromHistoryTransactions(
+            transactions,
+            exits.exits,
+            wallet,
+            dispatch
+          )
+          const pendingItems = results[results.length - 1].pendingItems
+
+          return { transactions: filteredTransactions, pendingItems }
+        })
+        .then(res => dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(res)))
+    }
   }
 }
 
@@ -109,13 +191,13 @@ function fetchHistoryTransactions (accountIndex, fromItem) {
  */
 function fetchExits (tokenId) {
   return (dispatch, getState) => {
-    dispatch(accountDetailsActionTypes.loadExits())
+    dispatch(accountDetailsActions.loadExits())
 
     const { global: { wallet } } = getState()
 
     return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
-      .then(exits => dispatch(accountDetailsActionTypes.loadExitsSuccess(exits)))
-      .catch(err => dispatch(accountDetailsActionTypes.loadExitsFailure(err)))
+      .then(exits => dispatch(accountDetailsActions.loadExitsSuccess(exits)))
+      .catch(err => dispatch(accountDetailsActions.loadExitsFailure(err)))
   }
 }
 
@@ -123,5 +205,6 @@ export {
   fetchAccount,
   fetchPoolTransactions,
   fetchHistoryTransactions,
+  refreshHistoryTransactions,
   fetchExits
 }
