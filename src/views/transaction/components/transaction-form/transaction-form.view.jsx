@@ -512,7 +512,7 @@ function TransactionForm ({
                       transactionType !== TxType.Deposit && transactionType !== TxType.ForceExit && (
                         <div className={classes.feeWrapper}>
                           <p className={classes.fee}>
-                            Fee {Number(getFee(feesTask.data).toFixed(MAX_TOKEN_DECIMALS))}
+                            Fee {`${Number(getFee(feesTask.data).toFixed(MAX_TOKEN_DECIMALS))} ${account.token.symbol}`}
                           </p>
                         </div>
                       )

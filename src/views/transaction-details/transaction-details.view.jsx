@@ -3,19 +3,20 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
+import { push } from 'connected-react-router'
 import { TxType, TxLevel } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency, getFeeInUsd, CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
-import { ACCOUNT_INDEX_SEPARATOR } from '../../constants'
-import { push } from 'connected-react-router'
+import { ACCOUNT_INDEX_SEPARATOR, MAX_TOKEN_DECIMALS } from '../../constants'
+
 import { getTransactionAmount } from '../../utils/transactions'
 import TransactionInfo from '../shared/transaction-info/transaction-info.view'
 import ExploreTransactionButton from './components/explore-transaction-button.view'
@@ -81,6 +82,45 @@ function TransactionDetails ({
     }
   }
 
+  /**
+   * Converts the transaction fee to the supported value
+   * @param {Object} transactionTask - Asynchronous task of the transaction
+   * @returns {Object}
+   */
+  function getTransactionFee (transactionTask) {
+    switch (transactionTask.status) {
+      case 'reloading':
+      case 'successful': {
+        if (fiatExchangeRatesTask.status !== 'successful') {
+          return undefined
+        }
+
+        const token = transactionTask.data.token
+
+        if (transactionTask.data.fee) {
+          const feeUsd = getFeeInUsd(transactionTask.data.fee, transactionTask.data.amount, token)
+          const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
+          return {
+            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${feePreferredCurrency.toFixed(2)}`,
+            tokens: `${Number((feeUsd / token.USD).toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`
+          }
+        } else if (transactionTask.data.L2Info) {
+          const feeUsd = transactionTask.data.L2Info.historicFeeUSD
+          const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
+          return {
+            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${feePreferredCurrency.toFixed(2)}`,
+            tokens: `${Number((feeUsd / token.USD).toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`
+          }
+        } else {
+          return undefined
+        }
+      }
+      default: {
+        return undefined
+      }
+    }
+  }
+
   return (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
@@ -112,7 +152,7 @@ function TransactionDetails ({
                 return (
                   <>
                     <TransactionInfo
-                      txData={transactionTask.data}
+                      txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
                       showStatus
                     />

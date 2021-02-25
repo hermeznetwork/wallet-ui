@@ -65,6 +65,7 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
               subtitle: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
             }}
             date={date}
+            fee={txData.fee}
           />
         )
       } else {
@@ -79,6 +80,7 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
               value: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
             }}
             date={date}
+            fee={txData.fee}
           />
         )
       }
@@ -100,6 +102,7 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
             )
           }}
           date={date}
+          fee={txData.fee}
         />
       )
     }

@@ -1,3 +1,6 @@
+import { feeFactors } from '@hermeznetwork/hermezjs/src/fee-factors'
+import { getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
+
 import { MAX_TOKEN_DECIMALS } from '../constants'
 
 const CurrencySymbol = {
@@ -74,9 +77,25 @@ function getTokenAmountInPreferredCurrency (
   return getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchangeRates)
 }
 
+/**
+ * Converts a fee index to USD
+ * @param {Number} feeIndex - The fee index from the Hermez protocol
+ * @param {BigInt} amount - Amount in BigInt string value
+ * @param {Object} token - Token object
+ * @returns {String} Amount in USD
+ */
+function getFeeInUsd (feeIndex, amount, token) {
+  const feeFactor = feeFactors[feeIndex]
+  const amountFloat = Number(getTokenAmountString(amount, token.decimals))
+  const feeInToken = feeFactor * amountFloat
+  const feeInFiat = feeInToken * token.USD
+  return feeInFiat
+}
+
 export {
   CurrencySymbol,
   getFixedTokenAmount,
   getAmountInPreferredCurrency,
-  getTokenAmountInPreferredCurrency
+  getTokenAmountInPreferredCurrency,
+  getFeeInUsd
 }
