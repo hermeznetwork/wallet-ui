@@ -13,7 +13,6 @@ function Transaction ({
   amount,
   tokenSymbol,
   fiatAmount,
-  state,
   timestamp,
   isPending,
   preferredCurrency,

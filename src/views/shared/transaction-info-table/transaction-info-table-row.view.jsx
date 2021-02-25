@@ -13,7 +13,7 @@ function TransactionInfoTableRow ({ status, from, to, date, fee }) {
       {from && <TransactionInfoRow title='From' subtitle={from.subtitle} value={from.value} />}
       {to && <TransactionInfoRow title='To' subtitle={to.subtitle} value={to.value} />}
       {date && <TransactionInfoRow title='Date' subtitle={date.subtitle} value={date.value} />}
-      {fee && <TransactionInfoRow title='Fee' subtitle={fee.value.fiat} value={fee.value.tokens} />}
+      {fee && <TransactionInfoRow title='Fee' subtitle={fee.fiat} value={fee.tokens} />}
     </div>
   )
 }

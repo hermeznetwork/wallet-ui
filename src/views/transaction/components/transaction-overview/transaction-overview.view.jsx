@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -10,7 +11,7 @@ import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../../../shared/token-balance/token-balance.view'
 import Spinner from '../../../shared/spinner/spinner.view'
 import FormButton from '../../../shared/form-button/form-button.view'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { MAX_TOKEN_DECIMALS } from '../../../../constants'
 
 function TransactionOverview ({
   wallet,
@@ -125,8 +126,8 @@ function TransactionOverview ({
               toHezEthereumAddress: to.hezEthereumAddress,
               fee: fee
                 ? {
-                    fiat: `${CurrencySymbol[preferredCurrency].symbol} ${getAmountInFiat(fee).toFixed(6)}`,
-                    tokens: `${getFixedTokenAmount(fee, account.token.decimals)} ${account.token.symbol}`
+                    fiat: `${CurrencySymbol[preferredCurrency].symbol} ${(Number(fee) * account.token.USD).toFixed(2)}`,
+                    tokens: `${Number(fee).toFixed(MAX_TOKEN_DECIMALS)} ${account.token.symbol}`
                   }
                 : undefined
             }}
