@@ -121,6 +121,8 @@ function TransactionDetails ({
     }
   }
 
+  console.log({ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } })
+
   return (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
@@ -152,7 +154,7 @@ function TransactionDetails ({
                 return (
                   <>
                     <TransactionInfo
-                      txData={Object.assign({}, transactionTask.data, { fee: getTransactionFee(transactionTask) })}
+                      txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
                       showStatus
                     />

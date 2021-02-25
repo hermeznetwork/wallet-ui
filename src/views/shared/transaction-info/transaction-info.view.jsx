@@ -47,7 +47,7 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
             subtitle: 'My Hermez address',
             value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
           }}
-          date={txData.date}
+          date={date}
         />
       )
     }
