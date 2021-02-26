@@ -1,3 +1,5 @@
+import { STORAGE_VERSION, STORAGE_VERSION_KEY } from '../constants'
+
 function initStorage (key) {
   const initialStorage = {}
 
@@ -8,8 +10,13 @@ function initStorage (key) {
 
 function getStorage (key) {
   const storage = JSON.parse(localStorage.getItem(key))
+  const storageVersion = JSON.parse(localStorage.getItem(STORAGE_VERSION_KEY))
 
-  if (!storage) {
+  if (!storageVersion) {
+    localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION)
+  }
+
+  if (!storage || storageVersion !== STORAGE_VERSION) {
     return initStorage(key)
   }
 
