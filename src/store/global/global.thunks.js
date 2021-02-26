@@ -5,8 +5,9 @@ import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
-import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY, PENDING_DEPOSITS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
+import * as storage from '../../utils/storage'
+import * as constants from '../../constants'
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -115,20 +116,13 @@ function changeNetworkStatus (newNetworkStatus, backgroundColor) {
  * @returns {void}
  */
 function addPendingWithdraw (pendingWithdraw) {
-  return (dispatch) => {
-    const hermezEthereumAddress = pendingWithdraw.hermezEthereumAddress
-    const pendingWithdrawPool = JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
-    const accountPendingWithdrawPool = pendingWithdrawPool[hermezEthereumAddress]
-    const newAccountPendingWithdrawPool = accountPendingWithdrawPool === undefined
-      ? [pendingWithdraw]
-      : [...accountPendingWithdrawPool, pendingWithdraw]
-    const newPendingWithdrawPool = {
-      ...pendingWithdrawPool,
-      [hermezEthereumAddress]: newAccountPendingWithdrawPool
-    }
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
 
-    localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdrawPool))
-    dispatch(globalActions.addPendingWithdraw(pendingWithdraw))
+    storage.addItem(constants.PENDING_WITHDRAWS_KEY, chainId, hermezEthereumAddress, pendingWithdraw)
+    dispatch(globalActions.addPendingWithdraw(chainId, hermezEthereumAddress, pendingWithdraw))
   }
 }
 
@@ -139,17 +133,12 @@ function addPendingWithdraw (pendingWithdraw) {
  * @returns {void}
  */
 function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
-  return (dispatch) => {
-    const pendingWithdrawPool = JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
-    const accountPendingWithdrawPool = pendingWithdrawPool[hermezEthereumAddress]
-    const newAccountPendingWithdrawPool = accountPendingWithdrawPool
-      .filter((pendingWithdraw) => pendingWithdraw.id !== pendingWithdrawId)
-    const newPendingWithdrawPool = {
-      ...pendingWithdrawPool,
-      [hermezEthereumAddress]: newAccountPendingWithdrawPool
-    }
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
 
-    localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdrawPool))
+    storage.removeItem(constants.PENDING_WITHDRAWS_KEY, chainId, hermezEthereumAddress, pendingWithdrawId)
     dispatch(globalActions.removePendingWithdraw(hermezEthereumAddress, pendingWithdrawId))
   }
 }
@@ -161,21 +150,12 @@ function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
  */
 function addPendingDelayedWithdraw (pendingDelayedWithdraw) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
     const { hermezEthereumAddress } = wallet
 
-    const pendingDelayedWithdrawStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
-    const accountPendingDelayedWithdrawStore = pendingDelayedWithdrawStore[hermezEthereumAddress]
-    const newAccountPendingDelayedWithdrawStore = accountPendingDelayedWithdrawStore === undefined
-      ? [pendingDelayedWithdraw]
-      : [...accountPendingDelayedWithdrawStore, pendingDelayedWithdraw]
-    const newPendingDelayedWithdrawStore = {
-      ...pendingDelayedWithdrawStore,
-      [hermezEthereumAddress]: newAccountPendingDelayedWithdrawStore
-    }
-
-    localStorage.setItem(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newPendingDelayedWithdrawStore))
-    dispatch(globalActions.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw))
+    storage.addItem(constants.PENDING_DELAYED_WITHDRAWS_KEY, chainId, hermezEthereumAddress, pendingDelayedWithdraw)
+    dispatch(globalActions.addPendingDelayedWithdraw(chainId, hermezEthereumAddress, pendingDelayedWithdraw))
   }
 }
 
@@ -186,20 +166,12 @@ function addPendingDelayedWithdraw (pendingDelayedWithdraw) {
  */
 function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
     const { hermezEthereumAddress } = wallet
 
-    const pendingDelayedWithdrawStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
-    const accountPendingDelayedWithdrawStore = pendingDelayedWithdrawStore[hermezEthereumAddress]
-    const newAccountPendingDelayedWithdrawStore = accountPendingDelayedWithdrawStore
-      .filter((pendingDelayedWithdraw) => pendingDelayedWithdraw.id !== pendingDelayedWithdrawId)
-    const newPendingDelayedWithdrawStore = {
-      ...pendingDelayedWithdrawStore,
-      [hermezEthereumAddress]: newAccountPendingDelayedWithdrawStore
-    }
-
-    localStorage.setItem(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newPendingDelayedWithdrawStore))
-    dispatch(globalActions.removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId))
+    storage.removeItem(constants.PENDING_DELAYED_WITHDRAWS_KEY, chainId, hermezEthereumAddress, pendingDelayedWithdrawId)
+    dispatch(globalActions.removePendingDelayedWithdraw(chainId, hermezEthereumAddress, pendingDelayedWithdrawId))
   }
 }
 
@@ -210,21 +182,12 @@ function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
  */
 function addPendingDeposit (pendingDeposit) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
     const { hermezEthereumAddress } = wallet
 
-    const pendingDepositsStore = JSON.parse(localStorage.getItem(PENDING_DEPOSITS_KEY))
-    const accountPendingDepositsStore = pendingDepositsStore[hermezEthereumAddress]
-    const newAccountPendingDepositsStore = accountPendingDepositsStore === undefined
-      ? [pendingDeposit]
-      : [...accountPendingDepositsStore, pendingDeposit]
-    const newPendingDepositsStore = {
-      ...pendingDepositsStore,
-      [hermezEthereumAddress]: newAccountPendingDepositsStore
-    }
-
-    localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
-    dispatch(globalActions.addPendingDeposit(hermezEthereumAddress, pendingDeposit))
+    storage.addItem(constants.PENDING_DEPOSITS_KEY, chainId, hermezEthereumAddress, pendingDeposit)
+    dispatch(globalActions.addPendingDeposit(chainId, hermezEthereumAddress, pendingDeposit))
   }
 }
 
@@ -235,67 +198,43 @@ function addPendingDeposit (pendingDeposit) {
  */
 function removePendingDeposit (transactionId) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
     const { hermezEthereumAddress } = wallet
 
-    const pendingDepositsStore = JSON.parse(localStorage.getItem(PENDING_DEPOSITS_KEY))
-    const accountPendingDepositsStore = pendingDepositsStore[hermezEthereumAddress]
-
-    if (accountPendingDepositsStore !== undefined) {
-      const newAccountPendingDepositsStore = accountPendingDepositsStore
-        .filter((pendingDeposit) => pendingDeposit.id !== transactionId)
-      const newPendingDepositsStore = {
-        ...pendingDepositsStore,
-        [hermezEthereumAddress]: newAccountPendingDepositsStore
-      }
-
-      localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
-      dispatch(globalActions.removePendingDeposit(hermezEthereumAddress, transactionId))
-    }
+    storage.removeItem(constants.PENDING_DEPOSITS_KEY, chainId, hermezEthereumAddress, transactionId)
+    dispatch(globalActions.removePendingDeposit(chainId, hermezEthereumAddress, transactionId))
   }
 }
 
 function updatePendingDepositId (transactionHash, transactionId) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
     const { hermezEthereumAddress } = wallet
 
-    const pendingDepositsStore = JSON.parse(localStorage.getItem(PENDING_DEPOSITS_KEY))
-    const accountPendingDepositsStore = pendingDepositsStore[hermezEthereumAddress]
-
-    if (accountPendingDepositsStore !== undefined) {
-      const newAccountPendingDepositsStore = accountPendingDepositsStore
-        .map((pendingDeposit) => {
-          if (pendingDeposit.hash === transactionHash) {
-            return { ...pendingDeposit, id: transactionId }
-          } else {
-            return pendingDeposit
-          }
-        })
-      const newPendingDepositsStore = {
-        ...pendingDepositsStore,
-        [hermezEthereumAddress]: newAccountPendingDepositsStore
-      }
-
-      localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(newPendingDepositsStore))
-      dispatch(globalActions.updatePendingDepositId(hermezEthereumAddress, transactionHash, transactionId))
-    }
+    storage.updatePartialItemByCustomProp(
+      constants.PENDING_DEPOSITS_KEY,
+      chainId,
+      hermezEthereumAddress,
+      { name: 'hash', value: transactionHash },
+      { id: transactionId }
+    )
+    dispatch(globalActions.updatePendingDepositId(chainId, hermezEthereumAddress, transactionHash, transactionId))
   }
 }
 
 function checkPendingDeposits () {
   return (dispatch, getState) => {
-    const { global: { wallet, pendingDeposits } } = getState()
+    const { global: { wallet, pendingDeposits, ethereumNetworkTask } } = getState()
 
     dispatch(globalActions.checkPendingDeposits())
-    const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
-
-    if (accountPendingDeposits === undefined) {
-      dispatch(globalActions.checkPendingDepositsSuccess())
-      return
-    }
-
     const provider = Providers.getProvider()
+    const accountPendingDeposits = storage.getItemsByHermezAddress(
+      pendingDeposits,
+      ethereumNetworkTask.data.chainId,
+      wallet.hermezEthereumAddress
+    )
     const pendingDepositsHashes = accountPendingDeposits.map(deposit => deposit.hash)
     const pendingDepositsTxReceipts = pendingDepositsHashes.map(hash => provider.getTransactionReceipt(hash))
 
