@@ -12,12 +12,12 @@
     "lint:fix": "standard --fix"
   },
   "dependencies": {
-    "@hermeznetwork/hermezjs": "hermeznetwork/hermezjs#d9d63439e22b635abe425eab6f566f12575771de",
+    "@hermeznetwork/hermezjs": "hermeznetwork/hermezjs#5a47f6ef452137d6dfe499b40032265b2d3f552a",
     "axios": "^0.19.2",
     "big-integer": "^1.6.48",
     "clsx": "^1.1.1",
     "connected-react-router": "^6.8.0",
-    "ethers": "^5.0.2",
+    "ethers": "5.0.24",
     "js-sha3": "^0.8.0",
     "normalize.css": "^8.0.1",
     "qrcode.react": "^1.0.0",
