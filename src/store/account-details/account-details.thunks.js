@@ -4,6 +4,7 @@ import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as accountDetailsActions from './account-details.actions'
+import * as storage from '../../utils/storage'
 import { removePendingWithdraw, removePendingDelayedWithdraw } from '../global/global.thunks'
 
 let refreshCancelTokenSource = axios.CancelToken.source()
@@ -85,7 +86,7 @@ function filterExitsFromHistoryTransactions (historyTransactions, exits, pending
 function fetchHistoryTransactions (accountIndex, fromItem, exits) {
   return (dispatch, getState) => {
     const {
-      global: { wallet, pendingWithdraws, pendingDelayedWithdraws },
+      global: { wallet, ethereumNetworkTask, pendingWithdraws, pendingDelayedWithdraws },
       accountDetails: { historyTransactionsTask }
     } = getState()
 
@@ -108,8 +109,16 @@ function fetchHistoryTransactions (accountIndex, fromItem, exits) {
       CoordinatorAPI.PaginationOrder.DESC
     )
       .then((res) => {
-        const pendingWithdrawsAccount = pendingWithdraws[wallet.hermezEthereumAddress] || []
-        const pendingDelayedWithdrawsAccount = pendingDelayedWithdraws[wallet.hermezEthereumAddress] || []
+        const pendingWithdrawsAccount = storage.getItemsByHermezAddress(
+          pendingWithdraws,
+          ethereumNetworkTask.data.chainId,
+          wallet.hermezEthereumAddress
+        )
+        const pendingDelayedWithdrawsAccount = storage.getItemsByHermezAddress(
+          pendingDelayedWithdraws,
+          ethereumNetworkTask.data.chainId,
+          wallet.hermezEthereumAddress
+        )
         const filteredTransactions = filterExitsFromHistoryTransactions(
           res.transactions,
           exits.exits,
@@ -134,7 +143,7 @@ function fetchHistoryTransactions (accountIndex, fromItem, exits) {
 function refreshHistoryTransactions (accountIndex, exits) {
   return (dispatch, getState) => {
     const {
-      global: { wallet, pendingWithdraws, pendingDelayedWithdraws },
+      global: { wallet, ethereumNetworkTask, pendingWithdraws, pendingDelayedWithdraws },
       accountDetails: { historyTransactionsTask }
     } = getState()
 
@@ -172,8 +181,16 @@ function refreshHistoryTransactions (accountIndex, exits) {
       Promise.all(requests)
         .then((results) => {
           const transactions = results.reduce((acc, result) => [...acc, ...result.transactions], [])
-          const pendingWithdrawsAccount = pendingWithdraws[wallet.hermezEthereumAddress] || []
-          const pendingDelayedWithdrawsAccount = pendingDelayedWithdraws[wallet.hermezEthereumAddress] || []
+          const pendingWithdrawsAccount = storage.getItemsByHermezAddress(
+            pendingWithdraws,
+            ethereumNetworkTask.data.chainId,
+            wallet.hermezEthereumAddress
+          )
+          const pendingDelayedWithdrawsAccount = storage.getItemsByHermezAddress(
+            pendingDelayedWithdraws,
+            ethereumNetworkTask.data.chainId,
+            wallet.hermezEthereumAddress
+          )
           const filteredTransactions = filterExitsFromHistoryTransactions(
             transactions,
             exits.exits,
