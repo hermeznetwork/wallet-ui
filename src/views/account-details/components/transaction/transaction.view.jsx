@@ -16,9 +16,18 @@ function Transaction ({
   timestamp,
   isPending,
   preferredCurrency,
+  coordinatorState,
   onClick
 }) {
   const classes = useTransactionStyles()
+
+  function getTxPendingTime () {
+    const timeToForge = coordinatorState.metrics.estimatedTimeToForgeL1 || 300
+    // const lastBatchForgedInSeconds = Date.parse(coordinatorState.lastBatch.timestamp) / 1000
+    const timeSinceTxInSeconds = (Date.now() - timestamp) / 1000
+    const timeLeftToForgeInMinutes = Math.round((timeToForge - timeSinceTxInSeconds) / 60)
+    return timeLeftToForgeInMinutes > 0 ? timeLeftToForgeInMinutes : 0
+  }
 
   return (
     <div className={classes.root} onClick={onClick}>
@@ -43,8 +52,11 @@ function Transaction ({
           {
             isPending
               ? (
-                <div className={classes.pendingLabelContainer}>
-                  <p className={classes.pendingLabelText}>Pending</p>
+                <div className={classes.pendingContainer}>
+                  <div className={classes.pendingLabelContainer}>
+                    <p className={classes.pendingLabelText}>Pending</p>
+                  </div>
+                  {getTxPendingTime() > 0 && <p className={classes.pendingTimer}>{getTxPendingTime()} min</p>}
                 </div>
                 )
               : <p>{new Date(timestamp).toLocaleDateString()}</p>
