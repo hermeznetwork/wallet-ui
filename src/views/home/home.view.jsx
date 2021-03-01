@@ -192,7 +192,7 @@ function Home ({
                         : undefined
                     }
                     preferredCurrency={preferredCurrency}
-                    pendingWithdraws={pendingWithdraws[wallet.hermezEthereumAddress]}
+                    pendingWithdraws={accountPendingWithdraws}
                     pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                     onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                     onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
@@ -208,7 +208,7 @@ function Home ({
                           : undefined
                       }
                       preferredCurrency={preferredCurrency}
-                      pendingWithdraws={pendingWithdraws[wallet.hermezEthereumAddress]}
+                      pendingWithdraws={accountPendingWithdraws}
                       pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                       onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                       onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
