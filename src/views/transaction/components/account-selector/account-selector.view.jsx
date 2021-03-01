@@ -14,8 +14,6 @@ function AccountSelector ({
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
-  pendingWithdraws,
-  pendingDelayedWithdraws,
   onLoadAccounts,
   onAccountClick
 }) {
@@ -28,7 +26,6 @@ function AccountSelector ({
         undefined,
         poolTransactionsTask.data,
         pendingDeposits,
-        [...pendingWithdraws, ...pendingDelayedWithdraws],
         fiatExchangeRates,
         preferredCurrency
       )
@@ -88,7 +85,6 @@ function AccountSelector ({
                           fromItem,
                           poolTransactionsTask.data,
                           pendingDeposits,
-                          [...pendingWithdraws, ...pendingDelayedWithdraws],
                           fiatExchangeRates,
                           preferredCurrency
                         )

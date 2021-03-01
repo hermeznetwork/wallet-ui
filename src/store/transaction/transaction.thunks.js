@@ -45,7 +45,7 @@ function fetchMetaMaskAccount (tokenId) {
  * @param {string} accountIndex - accountIndex of the account
  * @returns {void}
  */
-function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
+function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
 
@@ -57,7 +57,7 @@ function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, pe
 
     return CoordinatorAPI.getAccount(accountIndex)
       .then((account) => {
-        const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+        const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
         const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
         const fiatBalance = getTokenAmountInPreferredCurrency(
           fixedTokenAmount,
@@ -121,7 +121,7 @@ function fetchPoolTransactions () {
  * @param {number} fromItem - id of the first account to be returned from the api
  * @returns {void}
  */
-function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
+function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
 
@@ -152,7 +152,7 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
       return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, undefined, fromItem)
         .then((res) => {
           const accounts = res.accounts.map((account) => {
-            const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+            const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
             const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
             const fiatBalance = getTokenAmountInPreferredCurrency(
               fixedTokenAmount,

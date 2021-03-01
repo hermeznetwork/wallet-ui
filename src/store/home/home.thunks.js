@@ -12,7 +12,7 @@ let refreshCancelTokenSource = axios.CancelToken.source()
  * Fetches the accounts for a Hermez Ethereum address and calculates the total balance.
  * @returns {void}
  */
-function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
+function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { home: { totalBalanceTask } } = getState()
 
@@ -22,7 +22,7 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
       return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
         .then((res) => {
           const accounts = res.accounts.map((account) => {
-            const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+            const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
             const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
             const fiatBalance = getTokenAmountInPreferredCurrency(
               fixedTokenAmount,
@@ -57,7 +57,7 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
  * @param {number} fromItem - id of the first account to be returned from the API
  * @returns {void}
  */
-function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
+function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { home: { accountsTask } } = getState()
 
@@ -67,7 +67,6 @@ function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendi
           hermezEthereumAddress,
           poolTransactions,
           pendingDeposits,
-          pendingWithdraws,
           fiatExchangeRates,
           preferredCurrency
         )
@@ -83,7 +82,7 @@ function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendi
     return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, fromItem, undefined)
       .then((res) => {
         const accounts = res.accounts.map((account) => {
-          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
           const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
           const fiatBalance = getTokenAmountInPreferredCurrency(
             fixedTokenAmount,
@@ -111,7 +110,7 @@ function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendi
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) {
+function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { home: { accountsTask } } = getState()
 
@@ -147,7 +146,7 @@ function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposi
           const accounts = results
             .reduce((acc, result) => [...acc, ...result.accounts], [])
             .map((account) => {
-              const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits, pendingWithdraws)
+              const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
               const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
               const fiatBalance = getTokenAmountInPreferredCurrency(
                 fixedTokenAmount,

@@ -95,8 +95,8 @@ function Transaction ({
             accountIndex,
             poolTransactionsTask.data,
             accountPendingDeposits,
-            accountPendingWithdraws,
-            accountPendingDelayedWithdraws
+            fiatExchangeRatesTask.data,
+            preferredCurrency
           )
         }
       } else {
@@ -299,16 +299,16 @@ const mapDispatchToProps = (dispatch) => ({
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadMetaMaskAccount: (tokenId) =>
     dispatch(transactionThunks.fetchMetaMaskAccount(tokenId)),
-  onLoadHermezAccount: (accountIndex, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) =>
-    dispatch(transactionThunks.fetchHermezAccount(accountIndex, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency)),
+  onLoadHermezAccount: (accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
+    dispatch(transactionThunks.fetchHermezAccount(accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onLoadExit: (accountIndex, batchNum) =>
     dispatch(transactionThunks.fetchExit(accountIndex, batchNum)),
   onLoadFees: () =>
     dispatch(transactionThunks.fetchFees()),
   onLoadPoolTransactions: () =>
     dispatch(transactionThunks.fetchPoolTransactions()),
-  onLoadAccounts: (transactionType, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) =>
-    dispatch(transactionThunks.fetchAccounts(transactionType, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency)),
+  onLoadAccounts: (transactionType, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
+    dispatch(transactionThunks.fetchAccounts(transactionType, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onGoToChooseAccountStep: () =>
     dispatch(transactionActions.goToChooseAccountStep()),
   onGoToBuildTransactionStep: (account, receiver) =>
