@@ -94,7 +94,9 @@ function Transaction ({
           onLoadHermezAccount(
             accountIndex,
             poolTransactionsTask.data,
-            accountPendingDeposits
+            accountPendingDeposits,
+            fiatExchangeRatesTask.data,
+            preferredCurrency
           )
         }
       } else {
