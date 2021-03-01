@@ -1,5 +1,5 @@
 /** */
-function getAccountBalance (account, poolTransactions, pendingDeposits, pendingWithdraws) {
+function getAccountBalance (account, poolTransactions, pendingDeposits) {
   if (!account) {
     return undefined
   }
@@ -19,14 +19,6 @@ function getAccountBalance (account, poolTransactions, pendingDeposits, pendingW
 
     accountPoolTransactions.forEach((pendingTransaction) => {
       totalBalance -= BigInt(pendingTransaction.amount)
-    })
-  }
-
-  if (pendingWithdraws && pendingWithdraws.length) {
-    const accountPendingWithdraws = pendingWithdraws.filter(withdraw => withdraw.token.id === account.token.id)
-
-    accountPendingWithdraws.forEach((pendingWithdraw) => {
-      totalBalance -= pendingWithdraw.balance ? BigInt(pendingWithdraw.balance) : BigInt(pendingWithdraw.amount)
     })
   }
 

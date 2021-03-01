@@ -112,8 +112,7 @@ function AccountDetails ({
     const accountBalance = getAccountBalance(
       account,
       poolTransactionsTask.data,
-      accountPendingDeposits,
-      [...accountPendingWithdraws, ...accountPendingDelayedWithdraws]
+      accountPendingDeposits
     )
 
     return getFixedTokenAmount(accountBalance, account.token.decimals)
@@ -206,7 +205,7 @@ function AccountDetails ({
                 .filter(deposit => deposit.token.id === accountTask.data.token.id)
               const tokenPendingWithdraws = accountPendingWithdraws
                 .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
-              const tokenPendingDelayedWithdraws = accountPendingWithdraws
+              const tokenPendingDelayedWithdraws = accountPendingDelayedWithdraws
                 .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
 
               return (
