@@ -13,7 +13,7 @@ function PendingDepositList ({ deposits, preferredCurrency, fiatExchangeRates, o
         deposits.map((deposit) => {
           return (
             <div
-              key={deposit.id}
+              key={deposit.hash}
               className={classes.pendingDeposit}
             >
               <Account
