@@ -24,10 +24,12 @@ import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
 import { getAccountBalance } from '../../utils/accounts'
+import * as storage from '../../utils/storage'
 
 function AccountDetails ({
   preferredCurrency,
   accountTask,
+  ethereumNetworkTask,
   poolTransactionsTask,
   historyTransactionsTask,
   exitsTask,
@@ -52,9 +54,21 @@ function AccountDetails ({
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
   const { accountIndex } = useParams()
-  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress] || []
-  const accountPendingWithdraws = pendingWithdraws[wallet.hermezEthereumAddress] || []
-  const accountPendingDelayedWithdraws = pendingDelayedWithdraws[wallet.hermezEthereumAddress] || []
+  const accountPendingDeposits = storage.getItemsByHermezAddress(
+    pendingDeposits,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const accountPendingWithdraws = storage.getItemsByHermezAddress(
+    pendingWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
+    pendingDelayedWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
 
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name)
@@ -288,6 +302,7 @@ AccountDetails.propTypes = {
 const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
+  ethereumNetworkTask: state.global.ethereumNetworkTask,
   poolTransactionsTask: state.accountDetails.poolTransactionsTask,
   historyTransactionsTask: state.accountDetails.historyTransactionsTask,
   exitsTask: state.accountDetails.exitsTask,

@@ -146,7 +146,7 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
               })
             })
             .then(metaMaskTokens => dispatch(transactionActions.loadAccountsSuccess(transactionType, metaMaskTokens)))
-            .catch(console.log)
+            .catch(err => dispatch(transactionActions.loadAccountsFailure(err)))
         })
     } else {
       return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, undefined, fromItem)

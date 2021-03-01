@@ -1,45 +1,10 @@
 import { globalActionTypes } from './global.actions'
-import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY, PENDING_DEPOSITS_KEY } from '../../constants'
+import * as constants from '../../constants'
+import * as storage from '../../utils/storage'
 
 export const LOAD_ETHEREUM_NETWORK_ERROR = {
   METAMASK_NOT_INSTALLED: 'metamask-not-installed',
   CHAIN_ID_NOT_SUPPORTED: 'chain-id-not-supported'
-}
-
-function getInitialPendingWithdraws () {
-  if (!localStorage.getItem(PENDING_WITHDRAWS_KEY)) {
-    const emptyPendingWithdraws = {}
-
-    localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(emptyPendingWithdraws))
-
-    return emptyPendingWithdraws
-  } else {
-    return JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
-  }
-}
-
-function getInitialPendingDelayedWithdraws () {
-  if (!localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY)) {
-    const emptyPendingDelayedWithdraws = {}
-
-    localStorage.setItem(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(emptyPendingDelayedWithdraws))
-
-    return emptyPendingDelayedWithdraws
-  } else {
-    return JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
-  }
-}
-
-function getInitialPendingDeposits () {
-  if (!localStorage.getItem(PENDING_DEPOSITS_KEY)) {
-    const emptyPendingDeposits = {}
-
-    localStorage.setItem(PENDING_DEPOSITS_KEY, JSON.stringify(emptyPendingDeposits))
-
-    return emptyPendingDeposits
-  } else {
-    return JSON.parse(localStorage.getItem(PENDING_DEPOSITS_KEY))
-  }
 }
 
 const initialGlobalState = {
@@ -59,9 +24,9 @@ const initialGlobalState = {
     status: 'closed'
   },
   networkStatus: 'online',
-  pendingWithdraws: getInitialPendingWithdraws(),
-  pendingDelayedWithdraws: getInitialPendingDelayedWithdraws(),
-  pendingDeposits: getInitialPendingDeposits(),
+  pendingWithdraws: storage.getStorage(constants.PENDING_WITHDRAWS_KEY),
+  pendingDelayedWithdraws: storage.getStorage(constants.PENDING_DELAYED_WITHDRAWS_KEY),
+  pendingDeposits: storage.getStorage(constants.PENDING_DEPOSITS_KEY),
   pendingDepositsCheckTask: {
     status: 'pending'
   },
@@ -178,96 +143,114 @@ function globalReducer (state = initialGlobalState, action) {
       }
     }
     case globalActionTypes.ADD_PENDING_WITHDRAW: {
-      const hermezEthereumAddress = action.pendingWithdraw.hermezEthereumAddress
-      const accountPendingWithdraws = state.pendingWithdraws[hermezEthereumAddress]
+      const chainIdPendingWithdraws = state.pendingWithdraws[action.chainId] || {}
+      const accountPendingWithdraws = chainIdPendingWithdraws[action.hermezEthereumAddress] || []
 
       return {
         ...state,
         pendingWithdraws: {
           ...state.pendingWithdraws,
-          [hermezEthereumAddress]: accountPendingWithdraws === undefined
-            ? [action.pendingWithdraw]
-            : [...accountPendingWithdraws, action.pendingWithdraw]
+          [action.chainId]: {
+            ...chainIdPendingWithdraws,
+            [action.hermezEthereumAddress]: [...accountPendingWithdraws, action.pendingWithdraw]
+          }
         }
       }
     }
     case globalActionTypes.REMOVE_PENDING_WITHDRAW: {
-      const accountPendingWithdraws = state.pendingWithdraws[action.hermezEthereumAddress]
+      const chainIdPendingWithdraws = state.pendingWithdraws[action.chainId] || {}
+      const accountPendingWithdraws = chainIdPendingWithdraws[action.hermezEthereumAddress] || []
 
       return {
         ...state,
         pendingWithdraws: {
           ...state.pendingWithdraws,
-          [action.hermezEthereumAddress]: accountPendingWithdraws
-            .filter(pendingWithdraw => pendingWithdraw.id !== action.pendingWithdrawId)
+          [action.chainId]: {
+            ...chainIdPendingWithdraws,
+            [action.hermezEthereumAddress]: accountPendingWithdraws
+              .filter(withdraw => withdraw.id !== action.pendingWithdrawId)
+          }
         }
       }
     }
     case globalActionTypes.ADD_PENDING_DELAYED_WITHDRAW: {
-      const accountPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.hermezEthereumAddress]
+      const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {}
+      const accountPendingDelayedWithdraws = chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || []
 
       return {
         ...state,
         pendingDelayedWithdraws: {
           ...state.pendingDelayedWithdraws,
-          [action.hermezEthereumAddress]: accountPendingDelayedWithdraws === undefined
-            ? [action.pendingDelayedWithdraw]
-            : [...accountPendingDelayedWithdraws, action.pendingDelayedWithdraw]
+          [action.chainId]: {
+            ...chainIdPendingDelayedWithdraws,
+            [action.hermezEthereumAddress]: [...accountPendingDelayedWithdraws, action.pendingDelayedWithdraw]
+          }
         }
       }
     }
     case globalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW: {
-      const accountPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.hermezEthereumAddress]
+      const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {}
+      const accountPendingDelayedWithdraws = chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || []
 
       return {
         ...state,
         pendingDelayedWithdraws: {
           ...state.pendingDelayedWithdraws,
-          [action.hermezEthereumAddress]: accountPendingDelayedWithdraws
-            .filter(pendingDelayedWithdraw => pendingDelayedWithdraw.id !== action.pendingDelayedWithdrawId)
+          [action.chainId]: {
+            ...chainIdPendingDelayedWithdraws,
+            [action.hermezEthereumAddress]: [...accountPendingDelayedWithdraws, action.pendingDelayedWithdraw]
+          }
         }
       }
     }
     case globalActionTypes.ADD_PENDING_DEPOSIT: {
-      const accountPendingDeposits = state.pendingDeposits[action.hermezEthereumAddress]
+      const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {}
+      const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || []
 
       return {
         ...state,
         pendingDeposits: {
           ...state.pendingDeposits,
-          [action.hermezEthereumAddress]: accountPendingDeposits === undefined
-            ? [action.pendingDeposit]
-            : [...accountPendingDeposits, action.pendingDeposit]
+          [action.chainId]: {
+            ...chainIdPendingDeposits,
+            [action.hermezEthereumAddress]: [...accountPendingDeposits, action.pendingDeposit]
+          }
         }
       }
     }
     case globalActionTypes.REMOVE_PENDING_DEPOSIT: {
-      const accountPendingDeposits = state.pendingDeposits[action.hermezEthereumAddress]
+      const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {}
+      const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || []
 
       return {
         ...state,
         pendingDeposits: {
           ...state.pendingDeposits,
-          [action.hermezEthereumAddress]: accountPendingDeposits
-            .filter(pendingDeposit => pendingDeposit.id !== action.transactionId)
+          [action.chainId]: {
+            ...chainIdPendingDeposits,
+            [action.hermezEthereumAddress]: accountPendingDeposits
+              .filter(deposit => deposit.id !== action.transactionId)
+          }
         }
       }
     }
     case globalActionTypes.UPDATE_PENDING_DEPOSIT_ID: {
-      const accountPendingDeposits = state.pendingDeposits[action.hermezEthereumAddress]
-      const newAccountPendingDeposits = accountPendingDeposits.map((pendingDeposit) => {
-        if (pendingDeposit.hash === action.transactionHash) {
-          return { ...pendingDeposit, id: action.transactionId }
-        } else {
-          return pendingDeposit
-        }
-      })
+      const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {}
+      const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || []
 
       return {
         ...state,
         pendingDeposits: {
           ...state.pendingDeposits,
-          [action.hermezEthereumAddress]: newAccountPendingDeposits
+          [action.chainId]: {
+            ...chainIdPendingDeposits,
+            [action.hermezEthereumAddress]: accountPendingDeposits.map((deposit) => {
+              if (deposit.hash === action.transactionHash) {
+                return { ...deposit, id: action.transactionId }
+              }
+              return deposit
+            })
+          }
         }
       }
     }

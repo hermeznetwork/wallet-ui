@@ -24,9 +24,11 @@ import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './pending-deposit-list/pending-deposit-list.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
+import * as storage from '../../utils/storage'
 
 function Home ({
   wallet,
+  ethereumNetworkTask,
   pendingDepositsCheckTask,
   totalBalanceTask,
   accountsTask,
@@ -53,9 +55,25 @@ function Home ({
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
-  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress] || []
-  const accountPendingWithdraws = pendingWithdraws[wallet.hermezEthereumAddress] || []
-  const accountPendingDelayedWithdraws = pendingDelayedWithdraws[wallet.hermezEthereumAddress] || []
+  const accountPendingDeposits = storage.getItemsByHermezAddress(
+    pendingDeposits,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const accountPendingWithdraws = storage.getItemsByHermezAddress(
+    pendingWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
+    pendingDelayedWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const pendingOnTopDeposits = accountPendingDeposits
+    .filter(deposit => deposit.type === TxType.Deposit)
+  const pendingCreateAccountDeposits = accountPendingDeposits
+    .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
 
   React.useEffect(() => {
     onChangeHeader(theme.palette.primary.main)
@@ -111,22 +129,6 @@ function Home ({
    */
   function getPendingExits () {
     return poolTransactionsTask.data.filter((transaction) => transaction.type === TxType.Exit)
-  }
-
-  function getPendingCreateAccountDeposits (accountPendingDeposits) {
-    if (!accountPendingDeposits) {
-      return undefined
-    }
-
-    return accountPendingDeposits.filter(deposit => deposit.type === TxType.CreateAccountDeposit)
-  }
-
-  function getPendingOnTopDeposits (accountPendingDeposits) {
-    if (!accountPendingDeposits) {
-      return undefined
-    }
-
-    return accountPendingDeposits.filter(deposit => deposit.type === TxType.Deposit)
   }
 
   /**
@@ -226,9 +228,6 @@ function Home ({
               }
               case 'reloading':
               case 'successful': {
-                const pendingOnTopDeposits = getPendingOnTopDeposits(accountPendingDeposits)
-                const pendingCreateAccountDeposits = getPendingCreateAccountDeposits(accountPendingDeposits)
-
                 if (accountsTask.data.accounts.length === 0 && pendingCreateAccountDeposits.length === 0) {
                   return (
                     <p className={classes.emptyAccounts}>
@@ -302,6 +301,7 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
+  ethereumNetworkTask: state.global.ethereumNetworkTask,
   pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
   totalBalanceTask: state.home.totalBalanceTask,
   accountsTask: state.home.accountsTask,
