@@ -176,47 +176,39 @@ function Home ({
       <Container>
         <section className={classes.section}>
           {
-            (poolTransactionsTask.status === 'successful' ||
-            poolTransactionsTask.status === 'reloading') &&
-            (exitsTask.status === 'successful' ||
-            exitsTask.status === 'reloading')
-              ? (
-                <>
-                  <ExitList
-                    transactions={getPendingExits()}
-                    fiatExchangeRates={
-                      fiatExchangeRatesTask.status === 'successful'
-                        ? fiatExchangeRatesTask.data
-                        : undefined
-                    }
-                    preferredCurrency={preferredCurrency}
-                    pendingWithdraws={accountPendingWithdraws}
-                    pendingDelayedWithdraws={accountPendingDelayedWithdraws}
-                    onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                    onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                    coordinatorState={coordinatorStateTask.data}
-                    redirectTo={WithdrawRedirectionRoute.Home}
-                  />
-                  {exitsTask.status === 'successful' &&
-                    <ExitList
-                      transactions={exitsTask.data.exits}
-                      fiatExchangeRates={
-                        fiatExchangeRatesTask.status === 'successful'
-                          ? fiatExchangeRatesTask.data
-                          : undefined
-                      }
-                      preferredCurrency={preferredCurrency}
-                      pendingWithdraws={accountPendingWithdraws}
-                      pendingDelayedWithdraws={accountPendingDelayedWithdraws}
-                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                      coordinatorState={coordinatorStateTask.data}
-                      redirectTo={WithdrawRedirectionRoute.Home}
-                    />}
-                </>
-                )
+            poolTransactionsTask.status === 'successful' || poolTransactionsTask.status === 'reloading'
+              ? <ExitList
+                  transactions={getPendingExits()}
+                  fiatExchangeRates={fiatExchangeRatesTask.data}
+                  preferredCurrency={preferredCurrency}
+                  pendingWithdraws={accountPendingWithdraws}
+                  pendingDelayedWithdraws={accountPendingDelayedWithdraws}
+                  onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                  onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                  coordinatorState={coordinatorStateTask.data}
+                  redirectTo={WithdrawRedirectionRoute.Home}
+                />
               : <></>
           }
+          {
+            exitsTask.status === 'successful' || exitsTask.status === 'reloading'
+              ? <ExitList
+                  transactions={exitsTask.data.exits}
+                  fiatExchangeRates={
+                  fiatExchangeRatesTask.status === 'successful'
+                    ? fiatExchangeRatesTask.data
+                    : undefined
+                }
+                  preferredCurrency={preferredCurrency}
+                  pendingWithdraws={accountPendingWithdraws}
+                  pendingDelayedWithdraws={accountPendingDelayedWithdraws}
+                  onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                  onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                  coordinatorState={coordinatorStateTask.data}
+                  redirectTo={WithdrawRedirectionRoute.Home}
+                />
+              : <></>
+}
           {(() => {
             switch (accountsTask.status) {
               case 'pending':

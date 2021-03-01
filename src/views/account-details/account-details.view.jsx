@@ -210,30 +210,36 @@ function AccountDetails ({
 
               return (
                 <>
-                  <ExitList
-                    transactions={getPendingExits(poolTransactionsTask.data)}
-                    fiatExchangeRates={fiatExchangeRatesTask.data}
-                    preferredCurrency={preferredCurrency}
-                    pendingWithdraws={tokenPendingWithdraws}
-                    pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                    onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                    onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                    coordinatorState={coordinatorStateTask.data}
-                    redirectTo={WithdrawRedirectionRoute.AccountDetails}
-                  />
-                  {exitsTask.status === 'successful' && (
-                    <ExitList
-                      transactions={exitsTask.data.exits}
-                      fiatExchangeRates={fiatExchangeRatesTask.data}
-                      preferredCurrency={preferredCurrency}
-                      pendingWithdraws={tokenPendingWithdraws}
-                      pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                      coordinatorState={coordinatorStateTask.data}
-                      redirectTo={WithdrawRedirectionRoute.AccountDetails}
-                    />
-                  )}
+                  {
+                    poolTransactionsTask.status === 'successful' || poolTransactionsTask.status === 'reloading'
+                      ? <ExitList
+                          transactions={getPendingExits(poolTransactionsTask.data)}
+                          fiatExchangeRates={fiatExchangeRatesTask.data}
+                          preferredCurrency={preferredCurrency}
+                          pendingWithdraws={tokenPendingWithdraws}
+                          pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
+                          onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                          onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                          coordinatorState={coordinatorStateTask.data}
+                          redirectTo={WithdrawRedirectionRoute.AccountDetails}
+                        />
+                      : <></>
+                }
+                  {
+                    exitsTask.status === 'successful' || exitsTask.status === 'reloading'
+                      ? <ExitList
+                          transactions={exitsTask.data.exits}
+                          fiatExchangeRates={fiatExchangeRatesTask.data}
+                          preferredCurrency={preferredCurrency}
+                          pendingWithdraws={tokenPendingWithdraws}
+                          pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
+                          onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                          onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                          coordinatorState={coordinatorStateTask.data}
+                          redirectTo={WithdrawRedirectionRoute.AccountDetails}
+                        />
+                      : <></>
+                  }
                   {tokenPendingDeposits && (
                     <TransactionList
                       arePending
