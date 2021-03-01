@@ -119,10 +119,9 @@ function homeReducer (state = initialHomeState, action) {
     case homeActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
-        poolTransactionsTask: {
-          status: 'loading',
-          data: action.transactions
-        }
+        poolTransactionsTask: state.poolTransactionsTask.status === 'pending'
+          ? { status: 'loading' }
+          : { ...state.poolTransactionsTask, status: 'reloading' }
       }
     }
     case homeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
@@ -143,38 +142,12 @@ function homeReducer (state = initialHomeState, action) {
         }
       }
     }
-    case homeActionTypes.LOAD_HISTORY_TRANSACTIONS: {
-      return {
-        ...state,
-        historyTransactionsTask: {
-          status: 'loading'
-        }
-      }
-    }
-    case homeActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
-      return {
-        ...state,
-        historyTransactionsTask: {
-          status: 'successful',
-          data: action.transactions
-        }
-      }
-    }
-    case homeActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE: {
-      return {
-        ...state,
-        historyTransactionsTask: {
-          status: 'failed',
-          error: 'An error ocurred loading the transactions from the history'
-        }
-      }
-    }
     case homeActionTypes.LOAD_EXITS: {
       return {
         ...state,
-        exitsTask: {
-          status: 'loading'
-        }
+        exitsTask: state.exitsTask.status === 'pending'
+          ? { status: 'loading' }
+          : { ...state.exitsTask, status: 'reloading' }
       }
     }
     case homeActionTypes.LOAD_EXITS_SUCCESS: {
