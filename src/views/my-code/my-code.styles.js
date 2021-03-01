@@ -18,6 +18,7 @@ const useMyCodeStyles = createUseStyles(theme => ({
     lineHeight: 1.6,
     fontWeight: theme.fontWeights.medium,
     marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(5.5),
     wordBreak: 'break-word',
     textAlign: 'center'
   },
