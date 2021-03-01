@@ -109,9 +109,10 @@ function addAccountAuthFailure (error) {
   }
 }
 
-function setAccountAuthSignature (hermezEthereumAddress, signature) {
+function setAccountAuthSignature (chainId, hermezEthereumAddress, signature) {
   return {
     type: loginActionTypes.SET_ACCOUNT_AUTH_SIGNATURE,
+    chainId,
     hermezEthereumAddress,
     signature
   }
