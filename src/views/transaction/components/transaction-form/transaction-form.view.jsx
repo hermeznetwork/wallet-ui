@@ -195,7 +195,7 @@ function TransactionForm ({
       const newAmountInFiat = Number(Number(event.target.value).toFixed(2))
       // Makes sure the converted amount from fiat to tokens is a valid amount in Hermez
       const newAmountConversion = Number((newAmountInFiat / getAccountFiatRate()).toFixed(10))
-      const newAmountInToken = getTokenAmountBigInt(newAmountConversion.toString(), account.token.decimals)
+      const newAmountInToken = getTokenAmountBigInt(newAmountConversion.toString(), account.token.decimals).toString()
 
       setAmountChecks(newAmountInToken)
       setAmount(newAmountInToken)
@@ -228,7 +228,7 @@ function TransactionForm ({
     const fee = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
     const newAmount = (maxAmount - fee).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
-    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(newAmount.length - 10).fill(0).join('')}`)
+    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(newAmount.length - 10).fill(0).join('')}`).toString()
     const newAmountInFiat = getAmountInFiat(newAmountInToken)
 
     setAmountChecks(newAmountInToken)
@@ -340,7 +340,8 @@ function TransactionForm ({
           })
       }
       default: {
-        const transactionFee = getFee(fees).toFixed(account.token.decimals)
+        const transactionFee = getFee(fees, true).toFixed(account.token.decimals)
+        console.log(amount, transactionFee)
         return onSubmit({
           amount: amount,
           to: {},
