@@ -341,7 +341,7 @@ function TransactionForm ({
       }
       default: {
         const transactionFee = getFee(fees, true).toFixed(account.token.decimals)
-        console.log(amount, transactionFee)
+
         return onSubmit({
           amount: amount,
           to: {},
