@@ -88,7 +88,7 @@ function homeReducer (state = initialHomeState, action) {
         }
       }
     }
-    case homeActionTypes.REFRESH_HISTORY_ACCOUNTS: {
+    case homeActionTypes.REFRESH_ACCOUNTS: {
       return {
         ...state,
         accountsTask: {
@@ -97,7 +97,7 @@ function homeReducer (state = initialHomeState, action) {
         }
       }
     }
-    case homeActionTypes.REFRESH_HISTORY_ACCOUNTS_SUCCESS: {
+    case homeActionTypes.REFRESH_ACCOUNTS_SUCCESS: {
       const pagination = getPaginationData(
         action.data.pendingItems,
         action.data.accounts,

@@ -93,13 +93,13 @@ function loadExitsFailure (error) {
   }
 }
 
-function refreshHistoryAccounts () {
+function refreshAccounts () {
   return {
     type: homeActionTypes.REFRESH_ACCOUNTS
   }
 }
 
-function refreshHistoryAccountsSuccess (data) {
+function refreshAccountsSuccess (data) {
   return {
     type: homeActionTypes.REFRESH_ACCOUNTS_SUCCESS,
     data
@@ -125,7 +125,7 @@ export {
   loadExits,
   loadExitsSuccess,
   loadExitsFailure,
-  refreshHistoryAccounts,
-  refreshHistoryAccountsSuccess,
+  refreshAccounts,
+  refreshAccountsSuccess,
   resetState
 }

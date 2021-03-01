@@ -116,7 +116,7 @@ function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposi
     const { home: { accountsTask } } = getState()
 
     if (accountsTask.status === 'successful') {
-      dispatch(homeActions.refreshHistoryAccounts())
+      dispatch(homeActions.refreshAccounts())
 
       refreshCancelTokenSource = axios.CancelToken.source()
 
@@ -166,7 +166,7 @@ function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposi
 
           return { accounts, pendingItems }
         })
-        .then(res => dispatch(homeActions.refreshHistoryAccountsSuccess(res)))
+        .then(res => dispatch(homeActions.refreshAccountsSuccess(res)))
     }
   }
 }
