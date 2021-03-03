@@ -1,4 +1,4 @@
-import { feeFactors } from '@hermeznetwork/hermezjs/src/fee-factors'
+import { getFeeValue } from '@hermeznetwork/hermezjs/src/tx-utils'
 import { getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 
 import { MAX_TOKEN_DECIMALS } from '../constants'
@@ -85,9 +85,7 @@ function getTokenAmountInPreferredCurrency (
  * @returns {String} Amount in USD
  */
 function getFeeInUsd (feeIndex, amount, token) {
-  const feeFactor = feeFactors[feeIndex]
-  const amountFloat = Number(getTokenAmountString(amount, token.decimals))
-  const feeInToken = feeFactor * amountFloat
+  const feeInToken = Number(getTokenAmountString(getFeeValue(feeIndex, amount), token.decimals))
   const feeInFiat = feeInToken * token.USD
   return feeInFiat
 }
