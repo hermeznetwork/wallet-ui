@@ -22,9 +22,10 @@ import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
-import PendingDepositList from './pending-deposit-list/pending-deposit-list.view'
+import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
 import * as storage from '../../utils/storage'
+import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
 
 function Home ({
   wallet,
@@ -173,7 +174,7 @@ function Home ({
           />
         </section>
       </Container>
-      <Container>
+      <Container fullHeight>
         <section className={classes.section}>
           {
             poolTransactionsTask.status === 'successful' || poolTransactionsTask.status === 'reloading'
@@ -267,6 +268,7 @@ function Home ({
           })()}
         </section>
       </Container>
+      <ReportIssueButton />
     </div>
   )
 }

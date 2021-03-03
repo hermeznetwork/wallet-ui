@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
-import Account from '../../shared/account/account.view'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
+import Account from '../../../shared/account/account.view'
 import usePendingDepositListStyles from './pending-deposit-list.styles'
 
 function PendingDepositList ({ deposits, preferredCurrency, fiatExchangeRates, onAccountClick }) {

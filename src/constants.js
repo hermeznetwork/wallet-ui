@@ -38,3 +38,5 @@ export const AUTO_REFRESH_RATE = 60000 // 1min
 export const STORAGE_VERSION_KEY = 'hermezWalletStorageVersion'
 
 export const STORAGE_VERSION = 1
+
+export const REPORT_ISSUE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScvCK2OaRYSXcFYEiWAkbtWzHxWh8fGO4uOn0sIRdPP9Gigeg/viewform'
