@@ -11,7 +11,8 @@ const useMetaMaskErrorStyles = createUseStyles((theme) => ({
     fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.dark,
-    marginBottom: theme.spacing(6)
+    marginBottom: theme.spacing(6),
+    textAlign: 'center'
   },
   href: {
     fontSize: theme.spacing(3),
@@ -22,7 +23,7 @@ const useMetaMaskErrorStyles = createUseStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
     border: 0,
     outline: 'none',
-    borderRadius: 14,
+    borderRadius: 100,
     transition: theme.hoverTransition,
     '&:hover': {
       backgroundColor: theme.palette.secondary.hover

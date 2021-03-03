@@ -34,7 +34,8 @@ const useLoginStyles = createUseStyles(theme => ({
   description: {
     fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.medium,
-    marginBottom: theme.spacing(7)
+    marginBottom: theme.spacing(7),
+    textAlign: 'center'
   },
   networkName: {
     marginBottom: theme.spacing(8)

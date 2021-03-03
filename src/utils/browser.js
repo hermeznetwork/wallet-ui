@@ -46,8 +46,23 @@ function isAnyVideoDeviceAvailable () {
   })
 }
 
+function isMobileDevice () {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+}
+
+function isAndroidDevice () {
+  return /Android/i.test(navigator.userAgent)
+}
+
+function isiOsDevice () {
+  return /iPhone|iPad|iPod/.test(navigator.userAgent)
+}
+
 export {
   copyToClipboard,
   readFromClipboard,
-  isAnyVideoDeviceAvailable
+  isAnyVideoDeviceAvailable,
+  isMobileDevice,
+  isAndroidDevice,
+  isiOsDevice
 }
