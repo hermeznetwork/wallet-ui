@@ -107,7 +107,6 @@ function TransactionDetails ({
         } else if (transactionTask.data.L2Info) {
           const feeUsd = transactionTask.data.L2Info.historicFeeUSD
           const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
-          console.log(feeUsd, feePreferredCurrency)
           return {
             fiat: `${CurrencySymbol[preferredCurrency].symbol} ${feePreferredCurrency.toFixed(2)}`,
             tokens: `${Number((feeUsd / token.USD).toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`
