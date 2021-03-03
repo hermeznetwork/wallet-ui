@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
+import { Scalar } from 'ffjavascript'
 import { getAccounts, getCreateAccountAuthorization } from '@hermeznetwork/hermezjs/src/api'
 import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compressed-amount'
-import { feeFactors } from '@hermeznetwork/hermezjs/src/fee-factors'
-import { getFee as getFeeIndex } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { getMaxAmountFromMinimumFee } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -229,10 +229,10 @@ function TransactionForm ({
       return
     }
 
-    const fee = transactionType === TxType.Deposit
-      ? BigInt(0)
-      : getMaxAmountFee(getFee(feesTask.data).toFixed(account.token.decimals), maxAmount, account.token.decimals)
-    const newAmount = (maxAmount - fee).toString()
+    const minFeeInScalar = Scalar.fromString(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
+    const newAmount = transactionType === TxType.Deposit
+      ? maxAmount.toString()
+      : getMaxAmountFromMinimumFee(minFeeInScalar, maxAmount).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
     const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(newAmount.length - 10).fill(0).join('')}`).toString()
     const newAmountInFiat = getAmountInFiat(newAmountInToken)
@@ -312,21 +312,6 @@ function TransactionForm ({
   }
 
   /**
-   *
-   * @param {Number} feeInToken - Minimum fee in token value requested by coordinator
-   * @param {String} amount - BigInt string of the total account balance
-   * @param {Number} decimals - Decimals the token has
-   * @returns {BigInt} The calculated fee as a BigInt
-   */
-  function getMaxAmountFee (feeInToken, amount, decimals) {
-    const feeIndex = getFeeIndex(feeInToken, amount, decimals)
-    const feeFactor = feeFactors[feeIndex]
-    const feeFactorBigInt = BigInt(getTokenAmountBigInt(feeFactor.toString(), decimals).toString())
-    const fee = amount * feeFactorBigInt / BigInt(10 ** decimals)
-    return fee
-  }
-
-  /**
    * Based on the type of transaction, prepares the necessary values (amount, receiver and
    * fee).
    * Communicate to TransactionLayout to display TransactionOverview.
@@ -351,7 +336,7 @@ function TransactionForm ({
               setIsReceiverValid(false)
               return
             }
-            const transactionFee = getFee(fees, receiverAccount).toFixed(account.token.decimals)
+            const transactionFee = getFee(fees, receiverAccount)
 
             onSubmit({
               amount: amount,
@@ -361,7 +346,7 @@ function TransactionForm ({
           })
       }
       default: {
-        const transactionFee = getFee(fees).toFixed(account.token.decimals)
+        const transactionFee = getFee(fees, true)
         return onSubmit({
           amount: amount,
           to: {},
