@@ -160,7 +160,7 @@ TransactionOverview.propTypes = {
   transactionType: PropTypes.string.isRequired,
   to: PropTypes.object.isRequired,
   amount: PropTypes.string.isRequired,
-  fee: PropTypes.string,
+  fee: PropTypes.number,
   exit: PropTypes.object,
   instantWithdrawal: PropTypes.bool,
   completeDelayedWithdrawal: PropTypes.bool,

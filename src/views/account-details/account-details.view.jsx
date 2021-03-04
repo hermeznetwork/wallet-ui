@@ -69,6 +69,7 @@ function AccountDetails ({
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   )
+  console.log(wallet)
 
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name)

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { Redirect } from 'react-router-dom'
+import { isInstantWithdrawalAllowed } from '@hermeznetwork/hermezjs/src/tx'
 
 import useExitStyles from './exit.styles'
 import { CurrencySymbol } from '../../../utils/currencies'
@@ -37,8 +38,11 @@ function Exit ({
   const [isEmergencyMode, setIsEmergencyMode] = useState(false)
   const [isDelayedWithdrawalReady, setIsDelayedWithdrawalReady] = useState(false)
   const [isCompleteDelayedWithdrawalClicked, setIsCompleteDelayedWithdrawalClicked] = useState(false)
-
+  console.log(amount, merkleProof, batchNum, accountIndex, token)
   React.useEffect(() => {
+    // try {
+    //   const res = await isInstantWithdrawalAllowed()
+    // }
     if (typeof coordinatorState !== 'undefined') {
       for (const bucket of coordinatorState.rollup.buckets) {
         if (fiatAmountUSD < Number(bucket.ceilUSD)) {
@@ -49,7 +53,7 @@ function Exit ({
 
       setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode)
     }
-  }, [coordinatorState, fiatAmountUSD, setIsWithdrawDelayed, setIsEmergencyMode])
+  }, [isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode])
 
   /**
    * Calculates in which step is the Exit process in

@@ -18,6 +18,7 @@ function ExitList ({
   return (
     <>
       {transactions.map((transaction) => {
+        console.log(transaction.balance)
         const fixedTokenAmount = getFixedTokenAmount(
           transaction.amount || transaction.balance,
           transaction.token.decimals
