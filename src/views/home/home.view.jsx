@@ -182,6 +182,7 @@ function Home ({
                   transactions={getPendingExits()}
                   fiatExchangeRates={fiatExchangeRatesTask.data}
                   preferredCurrency={preferredCurrency}
+                  babyJubJub={wallet.publicKeyCompressedHex}
                   pendingWithdraws={accountPendingWithdraws}
                   pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
@@ -201,6 +202,7 @@ function Home ({
                     : undefined
                 }
                   preferredCurrency={preferredCurrency}
+                  babyJubJub={wallet.publicKeyCompressedHex}
                   pendingWithdraws={accountPendingWithdraws}
                   pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}

@@ -16,14 +16,15 @@ const STEPS = {
 
 function Exit ({
   amount,
+  fixedTokenAmount,
   token,
   fiatAmount,
-  fiatAmountUSD,
   preferredCurrency,
   exitId,
   merkleProof,
   batchNum,
   accountIndex,
+  babyJubJub,
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorState,
@@ -38,18 +39,23 @@ function Exit ({
   const [isEmergencyMode, setIsEmergencyMode] = useState(false)
   const [isDelayedWithdrawalReady, setIsDelayedWithdrawalReady] = useState(false)
   const [isCompleteDelayedWithdrawalClicked, setIsCompleteDelayedWithdrawalClicked] = useState(false)
-  console.log(amount, merkleProof, batchNum, accountIndex, token)
+
   React.useEffect(() => {
-    // try {
-    //   const res = await isInstantWithdrawalAllowed()
-    // }
     if (typeof coordinatorState !== 'undefined') {
-      for (const bucket of coordinatorState.rollup.buckets) {
-        if (fiatAmountUSD < Number(bucket.ceilUSD)) {
-          setIsWithdrawDelayed(Number(bucket.withdrawals) === 0)
-          break
-        }
-      }
+      isInstantWithdrawalAllowed(
+        amount,
+        accountIndex,
+        token,
+        babyJubJub,
+        batchNum,
+        merkleProof.siblings
+      )
+        .then(() => {
+          setIsWithdrawDelayed(false)
+        })
+        .catch(() => {
+          setIsWithdrawDelayed(true)
+        })
 
       setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode)
     }
@@ -182,7 +188,7 @@ function Exit ({
       <p className={classes.step}>Step {getStep()}/3</p>
       <div className={classes.rowTop}>
         <span className={classes.txType}>Withdrawal</span>
-        <span className={classes.tokenAmount}>{amount} {token.symbol}</span>
+        <span className={classes.tokenAmount}>{fixedTokenAmount} {token.symbol}</span>
       </div>
       <div className={classes.rowBottom}>
         <div className={clsx({
@@ -269,7 +275,6 @@ Exit.propTypes = {
   amount: PropTypes.string.isRequired,
   token: PropTypes.object.isRequired,
   fiatAmount: PropTypes.number.isRequired,
-  fiatAmountUSD: PropTypes.number.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   merkleProof: PropTypes.object,
   batchNum: PropTypes.number,
