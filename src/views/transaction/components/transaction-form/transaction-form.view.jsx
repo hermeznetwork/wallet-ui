@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
+import { Scalar } from 'ffjavascript'
 import { getAccounts, getCreateAccountAuthorization } from '@hermeznetwork/hermezjs/src/api'
 import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compressed-amount'
+import { getMaxAmountFromMinimumFee } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -103,7 +105,7 @@ function TransactionForm ({
       return 0
     }
 
-    const fee = isExistingAccount ? fees.existingAccount : fees.createAccount
+    const fee = isExistingAccount || transactionType === TxType.Exit ? fees.existingAccount : fees.createAccount
 
     return fee / account.token.USD
   }
@@ -163,7 +165,9 @@ function TransactionForm ({
   function setAmountChecks (newAmount) {
     // Convert from ethers.BigNumber to native BigInt
     const newAmountBigInt = BigInt(newAmount.toString())
-    const fee = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
+    const fee = transactionType === TxType.Deposit
+      ? BigInt(0)
+      : BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
     setIsAmountPositive(newAmountBigInt >= 0)
     setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountBigInt))
     setIsAmountLessThanFunds(newAmountBigInt <= BigInt(account.balance.toString()) - fee)
@@ -195,7 +199,7 @@ function TransactionForm ({
       const newAmountInFiat = Number(Number(event.target.value).toFixed(2))
       // Makes sure the converted amount from fiat to tokens is a valid amount in Hermez
       const newAmountConversion = Number((newAmountInFiat / getAccountFiatRate()).toFixed(10))
-      const newAmountInToken = getTokenAmountBigInt(newAmountConversion.toString(), account.token.decimals)
+      const newAmountInToken = getTokenAmountBigInt(newAmountConversion.toString(), account.token.decimals).toString()
 
       setAmountChecks(newAmountInToken)
       setAmount(newAmountInToken)
@@ -225,10 +229,12 @@ function TransactionForm ({
       return
     }
 
-    const fee = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
-    const newAmount = (maxAmount - fee).toString()
+    const minFeeInScalar = Scalar.fromString(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
+    const newAmount = transactionType === TxType.Deposit
+      ? maxAmount.toString()
+      : getMaxAmountFromMinimumFee(minFeeInScalar, maxAmount).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
-    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(newAmount.length - 10).fill(0).join('')}`)
+    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(newAmount.length - 10).fill(0).join('')}`).toString()
     const newAmountInFiat = getAmountInFiat(newAmountInToken)
 
     setAmountChecks(newAmountInToken)
@@ -330,7 +336,7 @@ function TransactionForm ({
               setIsReceiverValid(false)
               return
             }
-            const transactionFee = getFee(fees, receiverAccount).toFixed(account.token.decimals)
+            const transactionFee = getFee(fees, receiverAccount)
 
             onSubmit({
               amount: amount,
@@ -340,7 +346,7 @@ function TransactionForm ({
           })
       }
       default: {
-        const transactionFee = getFee(fees).toFixed(account.token.decimals)
+        const transactionFee = getFee(fees, true)
         return onSubmit({
           amount: amount,
           to: {},

@@ -25,7 +25,7 @@ export const PENDING_DELAYED_WITHDRAWS_KEY = 'pendingDelayedWithdraws'
 
 export const PENDING_DEPOSITS_KEY = 'pendingDeposits'
 
-export const ACCOUNT_AUTH_SIGNATURE_KEY = 'accountAuthSignature'
+export const ACCOUNT_AUTH_SIGNATURES_KEY = 'accountAuthSignatures'
 
 export const TREZOR_MANIFEST_MAIL = 'hello@hermez.io'
 
@@ -34,3 +34,9 @@ export const PRIVACY_POLICY_URL = 'https://hermez.io/privacy-policy'
 export const TERMS_OF_SERVICE_URL = 'https://hermez.io/terms-of-service'
 
 export const AUTO_REFRESH_RATE = 60000 // 1min
+
+export const STORAGE_VERSION_KEY = 'hermezWalletStorageVersion'
+
+export const STORAGE_VERSION = 1
+
+export const REPORT_ISSUE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScvCK2OaRYSXcFYEiWAkbtWzHxWh8fGO4uOn0sIRdPP9Gigeg/viewform'

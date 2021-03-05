@@ -14,12 +14,13 @@ function AccountSelector ({
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
-  pendingWithdraws,
-  pendingDelayedWithdraws,
   onLoadAccounts,
   onAccountClick
 }) {
   const classes = useAccountSelectorStyles()
+  const disabledTokenIds = pendingDeposits
+    .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
+    .map(deposit => deposit.token.id)
 
   React.useEffect(() => {
     if (accountsTask.status === 'pending' && poolTransactionsTask.status === 'successful') {
@@ -28,20 +29,11 @@ function AccountSelector ({
         undefined,
         poolTransactionsTask.data,
         pendingDeposits,
-        [...pendingWithdraws, ...pendingDelayedWithdraws],
         fiatExchangeRates,
         preferredCurrency
       )
     }
   }, [accountsTask, poolTransactionsTask, onLoadAccounts])
-
-  function getDisabledTokenIds () {
-    if (!pendingDeposits) {
-      return []
-    }
-
-    return pendingDeposits.map(deposit => deposit.type === TxType.CreateAccountDeposit && deposit.token.id)
-  }
 
   return (
     <div className={classes.root}>
@@ -72,7 +64,7 @@ function AccountSelector ({
                         accounts={accountsTask.data}
                         preferredCurrency={preferredCurrency}
                         fiatExchangeRates={fiatExchangeRates}
-                        disabledTokenIds={getDisabledTokenIds()}
+                        disabledTokenIds={disabledTokenIds}
                         onAccountClick={onAccountClick}
                       />
                     </div>
@@ -88,7 +80,6 @@ function AccountSelector ({
                           fromItem,
                           poolTransactionsTask.data,
                           pendingDeposits,
-                          [...pendingWithdraws, ...pendingDelayedWithdraws],
                           fiatExchangeRates,
                           preferredCurrency
                         )

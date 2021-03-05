@@ -2,7 +2,9 @@ import { createUseStyles } from 'react-jss'
 
 const useHomeStyles = createUseStyles(theme => ({
   root: {
-    width: '100%'
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column'
   },
   section: {
     width: '100%',

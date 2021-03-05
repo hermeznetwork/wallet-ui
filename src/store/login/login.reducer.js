@@ -1,17 +1,6 @@
 import { loginActionTypes } from './login.actions'
-import { ACCOUNT_AUTH_SIGNATURE_KEY } from '../../constants'
-
-function getAccountAuthSignature () {
-  if (!localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY)) {
-    const emptyAccountAuthSignature = {}
-
-    localStorage.setItem(ACCOUNT_AUTH_SIGNATURE_KEY, JSON.stringify(emptyAccountAuthSignature))
-
-    return emptyAccountAuthSignature
-  } else {
-    return JSON.parse(localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY))
-  }
-}
+import { ACCOUNT_AUTH_SIGNATURES_KEY } from '../../constants'
+import { getStorage } from '../../utils/storage'
 
 export const STEP_NAME = {
   WALLET_SELECTOR: 'wallet-selector',
@@ -50,7 +39,7 @@ const initialLoginState = {
   addAccountAuthTask: {
     status: 'pending'
   },
-  accountAuthSignature: getAccountAuthSignature()
+  accountAuthSignatures: getStorage(ACCOUNT_AUTH_SIGNATURES_KEY)
 }
 
 function loginReducer (state = initialLoginState, action) {
@@ -220,11 +209,16 @@ function loginReducer (state = initialLoginState, action) {
       }
     }
     case loginActionTypes.SET_ACCOUNT_AUTH_SIGNATURE: {
+      const chainIdAuthSignatures = state.accountAuthSignatures[action.chainId] || {}
+
       return {
         ...state,
-        accountAuthSignature: {
-          ...state.accountAuthSignature,
-          [action.hermezEthereumAddress]: action.signature
+        accountAuthSignatures: {
+          ...state.accountAuthSignatures,
+          [action.chainId]: {
+            ...chainIdAuthSignatures,
+            [action.hermezEthereumAddress]: action.signature
+          }
         }
       }
     }

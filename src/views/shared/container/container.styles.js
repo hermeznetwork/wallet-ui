@@ -2,7 +2,7 @@ import { createUseStyles } from 'react-jss'
 
 const useContainerStyles = createUseStyles(theme => ({
   root: {
-    flex: ({ fullHeight }) => fullHeight ? 1 : 'auto',
+    flex: ({ fullHeight }) => fullHeight ? '1 1 auto' : '0 0 auto',
     width: '100%',
     background: ({ backgroundColor }) => backgroundColor || theme.white,
     paddingTop: ({ addHeaderPadding }) => addHeaderPadding ? theme.headerHeight : 0

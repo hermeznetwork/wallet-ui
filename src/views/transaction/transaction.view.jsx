@@ -17,6 +17,7 @@ import AccountSelector from './components/account-selector/account-selector.view
 import TransactionConfirmation from './components/transaction-confirmation/transaction-confirmation.view'
 import { changeHeader } from '../../store/global/global.actions'
 import Spinner from '../shared/spinner/spinner.view'
+import * as storage from '../../utils/storage'
 
 export const WithdrawRedirectionRoute = {
   Home: 'home',
@@ -25,6 +26,7 @@ export const WithdrawRedirectionRoute = {
 
 function Transaction ({
   pendingDepositsCheckTask,
+  ethereumNetworkTask,
   poolTransactionsTask,
   currentStep,
   steps,
@@ -64,9 +66,21 @@ function Transaction ({
   const instantWithdrawal = urlSearchParams.get('instantWithdrawal') === 'true'
   const completeDelayedWithdrawal = urlSearchParams.get('completeDelayedWithdrawal') === 'true'
   const redirectTo = urlSearchParams.get('redirectTo')
-  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress] || []
-  const accountPendingWithdraws = pendingWithdraws[wallet.hermezEthereumAddress] || []
-  const accountPendingDelayedWithdraws = pendingDelayedWithdraws[wallet.hermezEthereumAddress] || []
+  const accountPendingDeposits = storage.getItemsByHermezAddress(
+    pendingDeposits,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const accountPendingWithdraws = storage.getItemsByHermezAddress(
+    pendingWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
+    pendingDelayedWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
 
   React.useEffect(() => {
     onChangeHeader(currentStep, transactionType, accountIndex, redirectTo)
@@ -95,8 +109,8 @@ function Transaction ({
             accountIndex,
             poolTransactionsTask.data,
             accountPendingDeposits,
-            accountPendingWithdraws,
-            accountPendingDelayedWithdraws
+            fiatExchangeRatesTask.data,
+            preferredCurrency
           )
         }
       } else {
@@ -204,6 +218,7 @@ Transaction.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
+  ethereumNetworkTask: state.global.ethereumNetworkTask,
   pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
   poolTransactionsTask: state.transaction.poolTransactionsTask,
   currentStep: state.transaction.currentStep,
@@ -299,16 +314,16 @@ const mapDispatchToProps = (dispatch) => ({
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadMetaMaskAccount: (tokenId) =>
     dispatch(transactionThunks.fetchMetaMaskAccount(tokenId)),
-  onLoadHermezAccount: (accountIndex, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) =>
-    dispatch(transactionThunks.fetchHermezAccount(accountIndex, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency)),
+  onLoadHermezAccount: (accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
+    dispatch(transactionThunks.fetchHermezAccount(accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onLoadExit: (accountIndex, batchNum) =>
     dispatch(transactionThunks.fetchExit(accountIndex, batchNum)),
   onLoadFees: () =>
     dispatch(transactionThunks.fetchFees()),
   onLoadPoolTransactions: () =>
     dispatch(transactionThunks.fetchPoolTransactions()),
-  onLoadAccounts: (transactionType, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) =>
-    dispatch(transactionThunks.fetchAccounts(transactionType, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency)),
+  onLoadAccounts: (transactionType, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
+    dispatch(transactionThunks.fetchAccounts(transactionType, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onGoToChooseAccountStep: () =>
     dispatch(transactionActions.goToChooseAccountStep()),
   onGoToBuildTransactionStep: (account, receiver) =>

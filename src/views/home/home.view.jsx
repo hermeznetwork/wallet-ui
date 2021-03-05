@@ -22,11 +22,14 @@ import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
 import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
-import PendingDepositList from './pending-deposit-list/pending-deposit-list.view'
+import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
+import * as storage from '../../utils/storage'
+import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
 
 function Home ({
   wallet,
+  ethereumNetworkTask,
   pendingDepositsCheckTask,
   totalBalanceTask,
   accountsTask,
@@ -53,9 +56,25 @@ function Home ({
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
-  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress] || []
-  const accountPendingWithdraws = pendingWithdraws[wallet.hermezEthereumAddress] || []
-  const accountPendingDelayedWithdraws = pendingDelayedWithdraws[wallet.hermezEthereumAddress] || []
+  const accountPendingDeposits = storage.getItemsByHermezAddress(
+    pendingDeposits,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const accountPendingWithdraws = storage.getItemsByHermezAddress(
+    pendingWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
+    pendingDelayedWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const pendingOnTopDeposits = accountPendingDeposits
+    .filter(deposit => deposit.type === TxType.Deposit)
+  const pendingCreateAccountDeposits = accountPendingDeposits
+    .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
 
   React.useEffect(() => {
     onChangeHeader(theme.palette.primary.main)
@@ -65,7 +84,7 @@ function Home ({
     onCheckPendingDeposits()
     onLoadPoolTransactions()
     onLoadExits()
-  }, [onCheckPendingDeposits, onLoadTotalBalance, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
+  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
@@ -87,7 +106,6 @@ function Home ({
         wallet.hermezEthereumAddress,
         poolTransactionsTask.data,
         accountPendingDeposits,
-        [...accountPendingWithdraws, ...accountPendingDelayedWithdraws],
         fiatExchangeRatesTask.data,
         preferredCurrency
       )
@@ -96,7 +114,6 @@ function Home ({
         undefined,
         poolTransactionsTask.data,
         accountPendingDeposits,
-        [...accountPendingWithdraws, ...accountPendingDelayedWithdraws],
         fiatExchangeRatesTask.data,
         preferredCurrency
       )
@@ -111,22 +128,6 @@ function Home ({
    */
   function getPendingExits () {
     return poolTransactionsTask.data.filter((transaction) => transaction.type === TxType.Exit)
-  }
-
-  function getPendingCreateAccountDeposits (accountPendingDeposits) {
-    if (!accountPendingDeposits) {
-      return undefined
-    }
-
-    return accountPendingDeposits.filter(deposit => deposit.type === TxType.CreateAccountDeposit)
-  }
-
-  function getPendingOnTopDeposits (accountPendingDeposits) {
-    if (!accountPendingDeposits) {
-      return undefined
-    }
-
-    return accountPendingDeposits.filter(deposit => deposit.type === TxType.Deposit)
   }
 
   /**
@@ -173,50 +174,42 @@ function Home ({
           />
         </section>
       </Container>
-      <Container>
+      <Container fullHeight>
         <section className={classes.section}>
           {
-            (poolTransactionsTask.status === 'successful' ||
-            poolTransactionsTask.status === 'reloading') &&
-            (exitsTask.status === 'successful' ||
-            exitsTask.status === 'reloading')
-              ? (
-                <>
-                  <ExitList
-                    transactions={getPendingExits()}
-                    fiatExchangeRates={
-                      fiatExchangeRatesTask.status === 'successful'
-                        ? fiatExchangeRatesTask.data
-                        : undefined
-                    }
-                    preferredCurrency={preferredCurrency}
-                    pendingWithdraws={pendingWithdraws[wallet.hermezEthereumAddress]}
-                    pendingDelayedWithdraws={accountPendingDelayedWithdraws}
-                    onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                    onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                    coordinatorState={coordinatorStateTask.data}
-                    redirectTo={WithdrawRedirectionRoute.Home}
-                  />
-                  {exitsTask.status === 'successful' &&
-                    <ExitList
-                      transactions={exitsTask.data.exits}
-                      fiatExchangeRates={
-                        fiatExchangeRatesTask.status === 'successful'
-                          ? fiatExchangeRatesTask.data
-                          : undefined
-                      }
-                      preferredCurrency={preferredCurrency}
-                      pendingWithdraws={pendingWithdraws[wallet.hermezEthereumAddress]}
-                      pendingDelayedWithdraws={accountPendingDelayedWithdraws}
-                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                      coordinatorState={coordinatorStateTask.data}
-                      redirectTo={WithdrawRedirectionRoute.Home}
-                    />}
-                </>
-                )
+            poolTransactionsTask.status === 'successful' || poolTransactionsTask.status === 'reloading'
+              ? <ExitList
+                  transactions={getPendingExits()}
+                  fiatExchangeRates={fiatExchangeRatesTask.data}
+                  preferredCurrency={preferredCurrency}
+                  pendingWithdraws={accountPendingWithdraws}
+                  pendingDelayedWithdraws={accountPendingDelayedWithdraws}
+                  onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                  onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                  coordinatorState={coordinatorStateTask.data}
+                  redirectTo={WithdrawRedirectionRoute.Home}
+                />
               : <></>
           }
+          {
+            exitsTask.status === 'successful' || exitsTask.status === 'reloading'
+              ? <ExitList
+                  transactions={exitsTask.data.exits}
+                  fiatExchangeRates={
+                  fiatExchangeRatesTask.status === 'successful'
+                    ? fiatExchangeRatesTask.data
+                    : undefined
+                }
+                  preferredCurrency={preferredCurrency}
+                  pendingWithdraws={accountPendingWithdraws}
+                  pendingDelayedWithdraws={accountPendingDelayedWithdraws}
+                  onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                  onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                  coordinatorState={coordinatorStateTask.data}
+                  redirectTo={WithdrawRedirectionRoute.Home}
+                />
+              : <></>
+}
           {(() => {
             switch (accountsTask.status) {
               case 'pending':
@@ -226,9 +219,6 @@ function Home ({
               }
               case 'reloading':
               case 'successful': {
-                const pendingOnTopDeposits = getPendingOnTopDeposits(accountPendingDeposits)
-                const pendingCreateAccountDeposits = getPendingCreateAccountDeposits(accountPendingDeposits)
-
                 if (accountsTask.data.accounts.length === 0 && pendingCreateAccountDeposits.length === 0) {
                   return (
                     <p className={classes.emptyAccounts}>
@@ -278,6 +268,7 @@ function Home ({
           })()}
         </section>
       </Container>
+      <ReportIssueButton />
     </div>
   )
 }
@@ -302,6 +293,7 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
+  ethereumNetworkTask: state.global.ethereumNetworkTask,
   pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
   totalBalanceTask: state.home.totalBalanceTask,
   accountsTask: state.home.accountsTask,
@@ -319,10 +311,10 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
-  onLoadTotalBalance: (hermezEthereumAddress, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) =>
-    dispatch(homeThunks.fetchTotalBalance(hermezEthereumAddress, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency)),
-  onLoadAccounts: (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency) =>
-    dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, pendingWithdraws, fiatExchangeRates, preferredCurrency)),
+  onLoadTotalBalance: (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
+    dispatch(homeThunks.fetchTotalBalance(hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
+  onLoadAccounts: (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
+    dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onLoadPoolTransactions: () =>
     dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) =>

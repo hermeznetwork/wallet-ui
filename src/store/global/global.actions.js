@@ -128,56 +128,64 @@ function changeNetworkStatus (networkStatus) {
   }
 }
 
-function addPendingWithdraw (pendingWithdraw) {
+function addPendingWithdraw (chainId, hermezEthereumAddress, pendingWithdraw) {
   return {
     type: globalActionTypes.ADD_PENDING_WITHDRAW,
+    chainId,
+    hermezEthereumAddress,
     pendingWithdraw
   }
 }
 
-function removePendingWithdraw (hermezEthereumAddress, withdrawId) {
+function removePendingWithdraw (chainId, hermezEthereumAddress, pendingWithdrawId) {
   return {
     type: globalActionTypes.REMOVE_PENDING_WITHDRAW,
+    chainId,
     hermezEthereumAddress,
-    withdrawId
+    pendingWithdrawId
   }
 }
 
-function addPendingDelayedWithdraw (hermezEthereumAddress, pendingDelayedWithdraw) {
+function addPendingDelayedWithdraw (chainId, hermezEthereumAddress, pendingDelayedWithdraw) {
   return {
     type: globalActionTypes.ADD_PENDING_DELAYED_WITHDRAW,
+    chainId,
     hermezEthereumAddress,
     pendingDelayedWithdraw
   }
 }
 
-function removePendingDelayedWithdraw (hermezEthereumAddress, pendingDelayedWithdrawId) {
+function removePendingDelayedWithdraw (chainId, hermezEthereumAddress, pendingDelayedWithdrawId) {
   return {
     type: globalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW,
+    chainId,
     hermezEthereumAddress,
     pendingDelayedWithdrawId
   }
 }
 
-function addPendingDeposit (hermezEthereumAddress, pendingDeposit) {
+function addPendingDeposit (chainId, hermezEthereumAddress, pendingDeposit) {
   return {
     type: globalActionTypes.ADD_PENDING_DEPOSIT,
+    chainId,
     hermezEthereumAddress,
     pendingDeposit
   }
 }
 
-function removePendingDeposit (hermezEthereumAddress, transactionId) {
+function removePendingDeposit (chainId, hermezEthereumAddress, transactionId) {
   return {
     type: globalActionTypes.REMOVE_PENDING_DEPOSIT,
+    chainId,
     hermezEthereumAddress,
     transactionId
   }
 }
 
-function updatePendingDepositId (hermezEthereumAddress, transactionHash, transactionId) {
+function updatePendingDepositId (chainId, hermezEthereumAddress, transactionHash, transactionId) {
   return {
     type: globalActionTypes.UPDATE_PENDING_DEPOSIT_ID,
+    chainId,
     hermezEthereumAddress,
     transactionHash,
     transactionId

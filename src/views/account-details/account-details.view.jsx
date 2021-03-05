@@ -24,10 +24,12 @@ import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
 import { getAccountBalance } from '../../utils/accounts'
+import * as storage from '../../utils/storage'
 
 function AccountDetails ({
   preferredCurrency,
   accountTask,
+  ethereumNetworkTask,
   poolTransactionsTask,
   historyTransactionsTask,
   exitsTask,
@@ -51,9 +53,21 @@ function AccountDetails ({
   const theme = useTheme()
   const classes = useAccountDetailsStyles()
   const { accountIndex } = useParams()
-  const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress] || []
-  const accountPendingWithdraws = pendingWithdraws[wallet.hermezEthereumAddress] || []
-  const accountPendingDelayedWithdraws = pendingDelayedWithdraws[wallet.hermezEthereumAddress] || []
+  const accountPendingDeposits = storage.getItemsByHermezAddress(
+    pendingDeposits,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const accountPendingWithdraws = storage.getItemsByHermezAddress(
+    pendingWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
+  const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
+    pendingDelayedWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  )
 
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name)
@@ -97,8 +111,7 @@ function AccountDetails ({
     const accountBalance = getAccountBalance(
       account,
       poolTransactionsTask.data,
-      accountPendingDeposits,
-      [...accountPendingWithdraws, ...accountPendingDelayedWithdraws]
+      accountPendingDeposits
     )
 
     return getFixedTokenAmount(accountBalance, account.token.decimals)
@@ -191,35 +204,41 @@ function AccountDetails ({
                 .filter(deposit => deposit.token.id === accountTask.data.token.id)
               const tokenPendingWithdraws = accountPendingWithdraws
                 .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
-              const tokenPendingDelayedWithdraws = accountPendingWithdraws
+              const tokenPendingDelayedWithdraws = accountPendingDelayedWithdraws
                 .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
 
               return (
                 <>
-                  <ExitList
-                    transactions={getPendingExits(poolTransactionsTask.data)}
-                    fiatExchangeRates={fiatExchangeRatesTask.data}
-                    preferredCurrency={preferredCurrency}
-                    pendingWithdraws={tokenPendingWithdraws}
-                    pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                    onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                    onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                    coordinatorState={coordinatorStateTask.data}
-                    redirectTo={WithdrawRedirectionRoute.AccountDetails}
-                  />
-                  {exitsTask.status === 'successful' && (
-                    <ExitList
-                      transactions={exitsTask.data.exits}
-                      fiatExchangeRates={fiatExchangeRatesTask.data}
-                      preferredCurrency={preferredCurrency}
-                      pendingWithdraws={tokenPendingWithdraws}
-                      pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                      coordinatorState={coordinatorStateTask.data}
-                      redirectTo={WithdrawRedirectionRoute.AccountDetails}
-                    />
-                  )}
+                  {
+                    poolTransactionsTask.status === 'successful' || poolTransactionsTask.status === 'reloading'
+                      ? <ExitList
+                          transactions={getPendingExits(poolTransactionsTask.data)}
+                          fiatExchangeRates={fiatExchangeRatesTask.data}
+                          preferredCurrency={preferredCurrency}
+                          pendingWithdraws={tokenPendingWithdraws}
+                          pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
+                          onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                          onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                          coordinatorState={coordinatorStateTask.data}
+                          redirectTo={WithdrawRedirectionRoute.AccountDetails}
+                        />
+                      : <></>
+                }
+                  {
+                    exitsTask.status === 'successful' || exitsTask.status === 'reloading'
+                      ? <ExitList
+                          transactions={exitsTask.data.exits}
+                          fiatExchangeRates={fiatExchangeRatesTask.data}
+                          preferredCurrency={preferredCurrency}
+                          pendingWithdraws={tokenPendingWithdraws}
+                          pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
+                          onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                          onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                          coordinatorState={coordinatorStateTask.data}
+                          redirectTo={WithdrawRedirectionRoute.AccountDetails}
+                        />
+                      : <></>
+                  }
                   {tokenPendingDeposits && (
                     <TransactionList
                       arePending
@@ -288,6 +307,7 @@ AccountDetails.propTypes = {
 const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
+  ethereumNetworkTask: state.global.ethereumNetworkTask,
   poolTransactionsTask: state.accountDetails.poolTransactionsTask,
   historyTransactionsTask: state.accountDetails.historyTransactionsTask,
   exitsTask: state.accountDetails.exitsTask,
