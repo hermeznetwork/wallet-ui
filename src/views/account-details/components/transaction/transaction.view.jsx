@@ -22,12 +22,12 @@ function Transaction ({
   const classes = useTransactionStyles()
 
   /**
-   *
+   * Calculates an estimated time until the transaction will be forged
    */
   function getTxPendingTime () {
     const timeToForge = coordinatorState.nodeConfig.forgeDelay || 300
-    const lastBatchForgedInSeconds = Date.parse(coordinatorState.lastBatch.timestamp) / 1000
-    const timeSinceTxInSeconds = lastBatchForgedInSeconds - (timestamp / 1000)
+    const lastBatchForgedInSeconds = Date.parse(coordinatorState.network.lastBatch.timestamp) / 1000
+    const timeSinceTxInSeconds = lastBatchForgedInSeconds - (Date.parse(timestamp) / 1000)
     const timeLeftToForgeInMinutes = Math.round((timeToForge - timeSinceTxInSeconds) / 60)
     return timeLeftToForgeInMinutes > 0 ? timeLeftToForgeInMinutes : 0
   }

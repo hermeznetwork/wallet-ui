@@ -17,6 +17,7 @@ import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR, MAX_TOKEN_DECIMALS } from '../../constants'
 
+import { ReactComponent as InfoIcon } from '../../images/icons/info.svg'
 import { getTransactionAmount } from '../../utils/transactions'
 import TransactionInfo from '../shared/transaction-info/transaction-info.view'
 import ExploreTransactionButton from './components/explore-transaction-button.view'
@@ -25,6 +26,7 @@ function TransactionDetails ({
   transactionTask,
   fiatExchangeRatesTask,
   preferredCurrency,
+  coordinatorStateTask,
   onLoadTransaction,
   onChangeHeader
 }) {
@@ -40,6 +42,17 @@ function TransactionDetails ({
   React.useEffect(() => {
     onChangeHeader(transactionTask.data?.type, accountIndex)
   }, [transactionTask, accountIndex, onChangeHeader])
+
+  /**
+   * Calculates an estimated time until the transaction will be forged
+   */
+  function getTxPendingTime () {
+    const timeToForge = coordinatorStateTask.data.nodeConfig.forgeDelay || 300
+    const lastBatchForgedInSeconds = Date.parse(coordinatorStateTask.data.network.lastBatch.timestamp) / 1000
+    const timeSinceTxInSeconds = lastBatchForgedInSeconds - (Date.parse(transactionTask.data.timestamp) / 1000)
+    const timeLeftToForgeInMinutes = Math.round((timeToForge - timeSinceTxInSeconds) / 60)
+    return timeLeftToForgeInMinutes > 0 ? timeLeftToForgeInMinutes : 0
+  }
 
   /**
    * Converts the transaction amount in USD to an amount in the user's preferred currency
@@ -151,6 +164,11 @@ function TransactionDetails ({
               case 'successful': {
                 return (
                   <>
+                    {getTxPendingTime() > 0 &&
+                      <p className={classes.timeEstimate}>
+                        <InfoIcon className={classes.timeEstimateIcon} />
+                        <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {getTxPendingTime()} minutes.</span>
+                      </p>}
                     <TransactionInfo
                       txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
@@ -185,7 +203,8 @@ TransactionDetails.propTypes = {
 const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   transactionTask: state.transactionDetails.transactionTask,
-  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
+  coordinatorStateTask: state.global.coordinatorStateTask
 })
 
 function getHeaderTitle (transactionType) {
