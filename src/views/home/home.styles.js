@@ -2,7 +2,9 @@ import { createUseStyles } from 'react-jss'
 
 const useHomeStyles = createUseStyles(theme => ({
   root: {
-    width: '100%'
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column'
   },
   section: {
     width: '100%',
@@ -15,7 +17,12 @@ const useHomeStyles = createUseStyles(theme => ({
   },
   accountBalance: {
     marginTop: `${theme.spacing(4)}px`,
-    marginBottom: `${theme.spacing(3)}px`
+    marginBottom: `${theme.spacing(3)}px`,
+    fontSize: theme.spacing(5),
+    '& div': {
+      color: theme.palette.black,
+      fontWeight: theme.fontWeights.medium
+    }
   },
   emptyAccounts: {
     maxWidth: 240,

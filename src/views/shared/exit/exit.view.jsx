@@ -19,6 +19,7 @@ function Exit ({
   fiatAmount,
   fiatAmountUSD,
   preferredCurrency,
+  exitId,
   merkleProof,
   batchNum,
   accountIndex,
@@ -57,7 +58,7 @@ function Exit ({
   function getStep () {
     if (!merkleProof) {
       return STEPS.first
-    } else if (!pendingWithdraws || (pendingWithdraws && !pendingWithdraws.includes(accountIndex + merkleProof.root))) {
+    } else if (!pendingWithdraws || (pendingWithdraws && !pendingWithdraws.find((pendingWithdraw) => pendingWithdraw.id === exitId))) {
       return STEPS.second
     } else {
       return STEPS.third
@@ -102,7 +103,7 @@ function Exit ({
     if (delayedWithdrawal.instant) {
       const twoHours = 2 * 60 * 60 * 1000
       if (difference > twoHours) {
-        onRemovePendingDelayedWithdraw(accountIndex + merkleProof.root)
+        onRemovePendingDelayedWithdraw(exitId)
       } else {
         const remainingDifference = twoHours - difference
         // Extracts the hours and minutes from the remaining difference
@@ -154,7 +155,7 @@ function Exit ({
 
   function onCheckAvailabilityClick () {
     onAddPendingDelayedWithdraw({
-      id: accountIndex + merkleProof.root,
+      id: exitId,
       instant: true,
       date: Date.now()
     })
@@ -177,7 +178,7 @@ function Exit ({
       <p className={classes.step}>Step {getStep()}/3</p>
       <div className={classes.rowTop}>
         <span className={classes.txType}>Withdrawal</span>
-        <span className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol}{fiatAmount.toFixed(2)}</span>
+        <span className={classes.tokenAmount}>{amount} {token.symbol}</span>
       </div>
       <div className={classes.rowBottom}>
         <div className={clsx({
@@ -192,7 +193,7 @@ function Exit ({
           >{getTag()}
           </span>
         </div>
-        <span className={classes.tokenAmount}>{amount} {token.symbol}</span>
+        <span className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol}{fiatAmount.toFixed(2)}</span>
       </div>
       {(() => {
         if (getStep() !== STEPS.second) {
@@ -212,7 +213,7 @@ function Exit ({
 
         if (isWithdrawDelayed && !isDelayedWithdrawalReady) {
           const pendingDelayedWithdrawal = pendingDelayedWithdraws?.find(
-            (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === accountIndex + merkleProof.root
+            (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === exitId
           )
 
           if (pendingDelayedWithdrawal) {

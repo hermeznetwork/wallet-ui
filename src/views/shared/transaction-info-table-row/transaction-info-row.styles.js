@@ -16,7 +16,26 @@ const useTransactionInfoRowStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'flex-end'
   },
+  copyButton: {
+    display: 'flex',
+    marginRight: theme.spacing(1),
+    padding: theme.spacing(1),
+    border: 0,
+    background: theme.palette.grey.light,
+    borderRadius: '50%',
+    cursor: 'pointer',
+    outline: 'none'
+  },
+  copyIcon: {
+    width: 14,
+    height: 14,
+    '& path': {
+      fill: theme.palette.secondary.main
+    }
+  },
   subtitle: {
+    display: 'flex',
+    alignItems: 'center',
     color: theme.palette.black.dark,
     fontWeight: theme.fontWeights.bold,
     marginBottom: `${theme.spacing(1.5)}px`

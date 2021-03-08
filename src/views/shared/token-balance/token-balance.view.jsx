@@ -8,7 +8,9 @@ function TokenBalance ({ amount, symbol }) {
 
   return (
     <p className={classes.root}>
-      {amount || '--'} {symbol || <></>}
+      <span className={classes.amount}>
+        {amount || '--'} {symbol || <></>}
+      </span>
     </p>
   )
 }

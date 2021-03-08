@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import Exit from '../exit/exit.view'
-import { CurrencySymbol, getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
+import { CurrencySymbol, getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
 
 function ExitList ({
   transactions,
@@ -28,21 +28,28 @@ function ExitList ({
             key={transaction.id || transaction.itemId}
             amount={fixedTokenAmount}
             token={transaction.token}
-            fiatAmount={getTokenAmountInPreferredCurrency(
+            fiatAmount={transaction.historicUSD
+              ? getAmountInPreferredCurrency(
+                  transaction.historicUSD,
+                  preferredCurrency,
+                  fiatExchangeRates
+                )
+              : getTokenAmountInPreferredCurrency(
+                fixedTokenAmount,
+                transaction.token.USD,
+                preferredCurrency,
+                fiatExchangeRates
+              )}
+            fiatAmountUSD={transaction.historicUSD || getTokenAmountInPreferredCurrency(
               fixedTokenAmount,
-              transaction.historicUSD || transaction.token.USD,
-              preferredCurrency,
-              fiatExchangeRates
-            )}
-            fiatAmountUSD={getTokenAmountInPreferredCurrency(
-              fixedTokenAmount,
-              transaction.historicUSD || transaction.token.USD,
+              transaction.token.USD,
               CurrencySymbol.USD.code,
               fiatExchangeRates
             )}
             preferredCurrency={preferredCurrency}
-            merkleProof={transaction.merkleProof}
             batchNum={transaction.batchNum}
+            exitId={transaction.accountIndex + transaction.batchNum}
+            merkleProof={transaction.merkleProof}
             accountIndex={transaction.accountIndex}
             pendingWithdraws={pendingWithdraws}
             pendingDelayedWithdraws={pendingDelayedWithdraws}

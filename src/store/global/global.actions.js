@@ -23,6 +23,11 @@ export const globalActionTypes = {
   REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW',
   ADD_PENDING_DELAYED_WITHDRAW: '[GLOBAL] ADD PENDING DELAYED WITHRAW',
   REMOVE_PENDING_DELAYED_WITHDRAW: '[GLOBAL] REMOVE PENDING DELAYED WITHRAW',
+  ADD_PENDING_DEPOSIT: '[GLOBAL] ADD PENDING DEPOSIT',
+  REMOVE_PENDING_DEPOSIT: '[GLOBAL] REMOVE PENDING DEPOSIT',
+  UPDATE_PENDING_DEPOSIT_ID: '[GLOBAL] UPDATE PENDING DEPOSIT ID',
+  CHECK_PENDING_DEPOSITS: '[GLOBAL] CHECK PENDING DEPOSITS',
+  CHECK_PENDING_DEPOSITS_SUCCESS: '[GLOBAL] CHECK PENDING DEPOSITS SUCCESS',
   LOAD_COORDINATOR_STATE: '[GLOBAL] LOAD COORDINATOR STATE',
   LOAD_COORDINATOR_STATE_SUCCESS: '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
   LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE'
@@ -123,35 +128,79 @@ function changeNetworkStatus (networkStatus) {
   }
 }
 
-function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
+function addPendingWithdraw (chainId, hermezEthereumAddress, pendingWithdraw) {
   return {
     type: globalActionTypes.ADD_PENDING_WITHDRAW,
+    chainId,
     hermezEthereumAddress,
     pendingWithdraw
   }
 }
 
-function removePendingWithdraw (hermezEthereumAddress, withdrawId) {
+function removePendingWithdraw (chainId, hermezEthereumAddress, pendingWithdrawId) {
   return {
     type: globalActionTypes.REMOVE_PENDING_WITHDRAW,
+    chainId,
     hermezEthereumAddress,
-    withdrawId
+    pendingWithdrawId
   }
 }
 
-function addPendingDelayedWithdraw (hermezEthereumAddress, pendingDelayedWithdraw) {
+function addPendingDelayedWithdraw (chainId, hermezEthereumAddress, pendingDelayedWithdraw) {
   return {
     type: globalActionTypes.ADD_PENDING_DELAYED_WITHDRAW,
+    chainId,
     hermezEthereumAddress,
     pendingDelayedWithdraw
   }
 }
 
-function removePendingDelayedWithdraw (hermezEthereumAddress, pendingDelayedWithdrawId) {
+function removePendingDelayedWithdraw (chainId, hermezEthereumAddress, pendingDelayedWithdrawId) {
   return {
     type: globalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW,
+    chainId,
     hermezEthereumAddress,
     pendingDelayedWithdrawId
+  }
+}
+
+function addPendingDeposit (chainId, hermezEthereumAddress, pendingDeposit) {
+  return {
+    type: globalActionTypes.ADD_PENDING_DEPOSIT,
+    chainId,
+    hermezEthereumAddress,
+    pendingDeposit
+  }
+}
+
+function removePendingDeposit (chainId, hermezEthereumAddress, transactionId) {
+  return {
+    type: globalActionTypes.REMOVE_PENDING_DEPOSIT,
+    chainId,
+    hermezEthereumAddress,
+    transactionId
+  }
+}
+
+function updatePendingDepositId (chainId, hermezEthereumAddress, transactionHash, transactionId) {
+  return {
+    type: globalActionTypes.UPDATE_PENDING_DEPOSIT_ID,
+    chainId,
+    hermezEthereumAddress,
+    transactionHash,
+    transactionId
+  }
+}
+
+function checkPendingDeposits () {
+  return {
+    type: globalActionTypes.CHECK_PENDING_DEPOSITS
+  }
+}
+
+function checkPendingDepositsSuccess () {
+  return {
+    type: globalActionTypes.CHECK_PENDING_DEPOSITS_SUCCESS
   }
 }
 
@@ -194,6 +243,11 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  addPendingDeposit,
+  removePendingDeposit,
+  updatePendingDepositId,
+  checkPendingDeposits,
+  checkPendingDepositsSuccess,
   loadCoordinatorState,
   loadCoordinatorStateSuccess,
   loadCoordinatorStateFailure

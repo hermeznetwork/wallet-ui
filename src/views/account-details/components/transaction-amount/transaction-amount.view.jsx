@@ -1,5 +1,5 @@
 import React from 'react'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import { CurrencySymbol } from '../../../../utils/currencies'
 import useTransactionAmountStyles from './transaction-amount.styles'

@@ -13,7 +13,6 @@ function Transaction ({
   amount,
   tokenSymbol,
   fiatAmount,
-  state,
   timestamp,
   isPending,
   preferredCurrency,
@@ -38,13 +37,7 @@ function Transaction ({
             fromAccountIndex={fromAccountIndex}
             accountIndex={accountIndex}
           />
-          <TransactionAmount
-            fiatAmount={fiatAmount}
-            preferredCurrency={preferredCurrency}
-            type={type}
-            fromAccountIndex={fromAccountIndex}
-            accountIndex={accountIndex}
-          />
+          <p className={classes.tokenSymbol}>{amount} {tokenSymbol}</p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
           {
@@ -53,10 +46,16 @@ function Transaction ({
                 <div className={classes.pendingLabelContainer}>
                   <p className={classes.pendingLabelText}>Pending</p>
                 </div>
-              )
+                )
               : <p>{new Date(timestamp).toLocaleDateString()}</p>
           }
-          <p>{amount} {tokenSymbol}</p>
+          <TransactionAmount
+            fiatAmount={fiatAmount}
+            preferredCurrency={preferredCurrency}
+            type={type}
+            fromAccountIndex={fromAccountIndex}
+            accountIndex={accountIndex}
+          />
         </div>
       </div>
     </div>
@@ -65,7 +64,7 @@ function Transaction ({
 
 Transaction.propTypes = {
   type: PropTypes.string.isRequired,
-  fromAccountIndex: PropTypes.string.isRequired,
+  fromAccountIndex: PropTypes.string,
   amount: PropTypes.string.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
   fiatAmount: PropTypes.number.isRequired,

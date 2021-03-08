@@ -1,9 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionConfirmationStyles from './transaction-confirmation.styles'
 import transactionConfirmation from '../../../../images/transaction-confirmation.png'
-import { TransactionType } from '../../transaction.view'
+import FormButton from '../../../shared/form-button/form-button.view'
 
 function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
   const classes = useTransactionConfirmationStyles()
@@ -14,15 +15,15 @@ function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
    */
   function getExplanation () {
     switch (transactionType) {
-      case TransactionType.Deposit:
+      case TxType.Deposit:
         return 'Your transaction is awaiting verification.'
-      case TransactionType.Transfer:
+      case TxType.Transfer:
         return 'Your transaction is completed.'
-      case TransactionType.Exit:
-      case TransactionType.ForceExit:
+      case TxType.Exit:
+      case TxType.ForceExit:
         return 'Withdrawal has been initiated and will require additional confirmation in a few minutes.'
-      case TransactionType.Withdraw:
-      case TransactionType.DelayedWithdrawal:
+      case TxType.Withdraw:
+      case TxType.DelayedWithdrawal:
         return 'Your withdrawal is awaiting verification.'
       default:
         return ''
@@ -37,9 +38,7 @@ function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
         alt='Hermez transaction confirmed'
       />
       <p className={classes.text}>{getExplanation()}</p>
-      <button className={classes.done} onClick={onFinishTransaction}>
-        Done
-      </button>
+      <FormButton label='Done' onClick={onFinishTransaction} />
     </section>
   )
 }

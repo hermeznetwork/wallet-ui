@@ -3,13 +3,13 @@ import { createUseStyles } from 'react-jss'
 const useFormButtonStyles = createUseStyles(theme => ({
   root: {
     cursor: 'pointer',
-    width: '100%',
-    marginTop: theme.spacing(8),
-    padding: `${theme.spacing(2)}px 0`,
+    width: 'auto',
+    marginTop: theme.spacing(6),
+    padding: `${theme.spacing(2)}px ${theme.spacing(7)}px`,
     backgroundColor: theme.palette.secondary.main,
     border: 0,
     outline: 'none',
-    borderRadius: 14,
+    borderRadius: 100,
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.white,
@@ -22,9 +22,8 @@ const useFormButtonStyles = createUseStyles(theme => ({
       cursor: 'default'
     },
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(3)}px 0`,
-      marginTop: theme.spacing(14.5)
+      fontSize: `${theme.spacing(2.5)}px`,
+      padding: `${theme.spacing(3)}px ${theme.spacing(14)}px`
     }
   }
 }))

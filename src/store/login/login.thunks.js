@@ -4,7 +4,7 @@ import { push } from 'connected-react-router'
 
 import * as globalActions from '../global/global.actions'
 import * as loginActions from './login.actions'
-import { AUTH_MESSAGE, ACCOUNT_AUTH_SIGNATURE_KEY, TREZOR_MANIFEST_MAIL } from '../../constants'
+import { ACCOUNT_AUTH_SIGNATURES_KEY, TREZOR_MANIFEST_MAIL } from '../../constants'
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
@@ -73,8 +73,8 @@ function fetchWallet (walletName, accountData) {
       const signerData = await getSignerData(provider, walletName, accountData)
       const signer = await hermez.Signers.getSigner(provider, signerData)
       const address = await signer.getAddress()
-      const signature = await signer.signMessage(AUTH_MESSAGE)
       const hermezAddress = hermez.Addresses.getHermezAddress(address)
+      const signature = await signer.signMessage(hermez.Constants.METAMASK_MESSAGE)
       const hashedSignature = keccak256(signature)
       const signatureBuffer = hermez.Utils.hexToBuffer(hashedSignature)
       const wallet = new hermez.HermezWallet.HermezWallet(signatureBuffer, hermezAddress)
@@ -123,9 +123,13 @@ function loadCreateAccountAuthorization (hermezEthereumAddress) {
  */
 function postCreateAccountAuthorization (wallet) {
   return (dispatch, getState) => {
-    const { login: { accountAuthSignature }, global: { redirectRoute } } = getState()
+    const {
+      login: { accountAuthSignatures },
+      global: { redirectRoute, ethereumNetworkTask }
+    } = getState()
 
-    const currentSignature = accountAuthSignature[wallet.hermezEthereumAddress]
+    const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.chainId] || {}
+    const currentSignature = chainIdSignatures[wallet.hermezEthereumAddress]
     const getSignature = currentSignature
       ? () => Promise.resolve(currentSignature)
       : wallet.signCreateAccountAuthorization.bind(wallet)
@@ -158,14 +162,21 @@ function postCreateAccountAuthorization (wallet) {
  * @param {String} signature
  */
 function setAccountAuthSignature (hermezEthereumAddress, signature) {
-  return (dispatch) => {
-    const accountAuthSignature = JSON.parse(localStorage.getItem(ACCOUNT_AUTH_SIGNATURE_KEY))
+  return (dispatch, getState) => {
+    const { global: { ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+
+    const storage = JSON.parse(localStorage.getItem(ACCOUNT_AUTH_SIGNATURES_KEY))
+    const chainIdStorage = storage[chainId] || {}
     const newAccountAuthSignature = {
-      ...accountAuthSignature,
-      [hermezEthereumAddress]: signature
+      ...storage,
+      [chainId]: {
+        ...chainIdStorage,
+        [hermezEthereumAddress]: signature
+      }
     }
-    localStorage.setItem(ACCOUNT_AUTH_SIGNATURE_KEY, JSON.stringify(newAccountAuthSignature))
-    dispatch(loginActions.setAccountAuthSignature(hermezEthereumAddress, signature))
+    localStorage.setItem(ACCOUNT_AUTH_SIGNATURES_KEY, JSON.stringify(newAccountAuthSignature))
+    dispatch(loginActions.setAccountAuthSignature(chainId, hermezEthereumAddress, signature))
   }
 }
 

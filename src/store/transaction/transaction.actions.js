@@ -3,6 +3,7 @@ export const transactionActionTypes = {
   GO_TO_BUILD_TRANSACTION_STEP: '[TRANSACTION GO TO BUILD TRANSACTION STEP',
   GO_TO_REVIEW_TRANSACTION_STEP: '[TRANSACTION] GO TO REVIEW TRANSACTION STEP',
   GO_TO_FINISH_TRANSACTION_STEP: '[TRANSACTION] GO TO FINISH TRANSACTION STEP',
+  GO_TO_TRANSACTION_ERROR_STEP: '[TRANSACTION] GO TO TRANSACTION ERROR STEP',
   CHANGE_CURRENT_STEP: '[TRANSACTION] CHANGE CURRENT STEP',
   LOAD_ACCOUNT: '[TRANSACTION] LOAD ACCOUNT',
   LOAD_ACCOUNT_SUCCESS: '[TRANSACTION] LOAD ACCOUNT SUCCESS',
@@ -13,6 +14,9 @@ export const transactionActionTypes = {
   LOAD_FEES: '[TRANSACTION] LOAD FEES',
   LOAD_FEES_SUCCESS: '[TRANSACTION] LOAD FEES SUCCESS',
   LOAD_FEES_FAILURE: '[TRANSACTION] LOAD FEES FAILURE',
+  LOAD_POOL_TRANSACTIONS: '[TRANSACTION] LOAD POOL TRANSACTIONS',
+  LOAD_POOL_TRANSACTIONS_SUCCESS: '[TRANSACTION] LOAD POOL TRANSACTIONS SUCCESS',
+  LOAD_POOL_TRANSACTIONS_FAILURE: '[TRANSACTION] LOAD POOL TRANSACTIONS FAILURE',
   LOAD_ACCOUNTS: '[TRANSACTION] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[TRANSACTION] LOAD ACCOUNTS SUCCESS',
   LOAD_ACCOUNTS_FAILURE: '[TRANSACTION] LOAD ACCOUNTS FAILURE',
@@ -48,6 +52,12 @@ function goToFinishTransactionStep () {
   }
 }
 
+function goToTransactionErrorStep () {
+  return {
+    type: transactionActionTypes.GO_TO_TRANSACTION_ERROR_STEP
+  }
+}
+
 function changeCurrentStep (nextStep) {
   return {
     type: transactionActionTypes.CHANGE_CURRENT_STEP,
@@ -72,6 +82,25 @@ function loadAccountsSuccess (transactionType, data) {
 function loadAccountsFailure () {
   return {
     type: transactionActionTypes.LOAD_ACCOUNTS_FAILURE
+  }
+}
+
+function loadPoolTransactions () {
+  return {
+    type: transactionActionTypes.LOAD_POOL_TRANSACTIONS
+  }
+}
+
+function loadPoolTransactionsSuccess (transactions) {
+  return {
+    type: transactionActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
+    transactions
+  }
+}
+
+function loadPoolTransactionsFailure () {
+  return {
+    type: transactionActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE
   }
 }
 
@@ -160,10 +189,14 @@ export {
   goToBuildTransactionStep,
   goToReviewTransactionStep,
   goToFinishTransactionStep,
+  goToTransactionErrorStep,
   changeCurrentStep,
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
+  loadPoolTransactions,
+  loadPoolTransactionsSuccess,
+  loadPoolTransactionsFailure,
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,

@@ -1,4 +1,4 @@
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 function getTransactionAmount (transaction) {
   if (!transaction) {
@@ -9,13 +9,9 @@ function getTransactionAmount (transaction) {
     return transaction.amount
   } else {
     if (transaction.type === TxType.Deposit || transaction.type === TxType.CreateAccountDeposit) {
-      return transaction.L1Info.depositAmountSuccess
-        ? transaction.L1Info.depositAmount
-        : '0'
+      return transaction.L1Info.depositAmount
     } else {
-      return transaction.L1Info.amountSuccess
-        ? transaction.amount
-        : '0'
+      return transaction.amount
     }
   }
 }

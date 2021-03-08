@@ -1,5 +1,6 @@
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+
 import { getPaginationData } from '../../utils/api'
-import { TransactionType } from '../../views/transaction/transaction.view'
 import { transactionActionTypes } from './transaction.actions'
 
 export const STEP_NAME = {
@@ -7,10 +8,14 @@ export const STEP_NAME = {
   CHOOSE_ACCOUNT: 'choose-account',
   BUILD_TRANSACTION: 'build-transaction',
   REVIEW_TRANSACTION: 'review-transaction',
-  FINISH_TRANSACTION: 'finish-transaction'
+  FINISH_TRANSACTION: 'finish-transaction',
+  TRANSACTION_ERROR: 'transaction-error'
 }
 
 const initialTransactionState = {
+  poolTransactionsTask: {
+    status: 'pending'
+  },
   currentStep: STEP_NAME.LOAD_INITIAL_DATA,
   steps: {
     [STEP_NAME.LOAD_INITIAL_DATA]: {
@@ -31,15 +36,6 @@ const initialTransactionState = {
       transaction: undefined,
       isTransactionBeingSigned: false
     }
-  },
-  tokensTask: {
-    status: 'pending'
-  },
-  accountsTask: {
-    status: 'pending'
-  },
-  metaMaskTokensTask: {
-    status: 'pending'
   }
 }
 
@@ -84,10 +80,42 @@ function transactionReducer (state = initialTransactionState, action) {
         currentStep: STEP_NAME.FINISH_TRANSACTION
       }
     }
+    case transactionActionTypes.GO_TO_TRANSACTION_ERROR_STEP: {
+      return {
+        ...state,
+        currentStep: STEP_NAME.TRANSACTION_ERROR
+      }
+    }
     case transactionActionTypes.CHANGE_CURRENT_STEP: {
       return {
         ...state,
         currentStep: action.nextStep
+      }
+    }
+    case transactionActionTypes.LOAD_POOL_TRANSACTIONS: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: 'successful',
+          data: action.transactions
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: 'failed',
+          error: action.error
+        }
       }
     }
     case transactionActionTypes.LOAD_ACCOUNTS: {
@@ -96,6 +124,7 @@ function transactionReducer (state = initialTransactionState, action) {
         steps: {
           ...state.steps,
           [STEP_NAME.CHOOSE_ACCOUNT]: {
+            ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
             accountsTask: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'successful'
               ? { status: 'reloading', data: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data }
               : { status: 'loading' }
@@ -104,12 +133,13 @@ function transactionReducer (state = initialTransactionState, action) {
       }
     }
     case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      if (action.transactionType === TransactionType.Deposit) {
+      if (action.transactionType === TxType.Deposit) {
         return {
           ...state,
           steps: {
             ...state.steps,
             [STEP_NAME.CHOOSE_ACCOUNT]: {
+              ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
               accountsTask: {
                 status: 'successful',
                 data: action.data
@@ -128,6 +158,7 @@ function transactionReducer (state = initialTransactionState, action) {
           steps: {
             ...state.steps,
             [STEP_NAME.CHOOSE_ACCOUNT]: {
+              ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
               accountsTask: {
                 status: 'successful',
                 data: { accounts, pagination }
@@ -143,6 +174,7 @@ function transactionReducer (state = initialTransactionState, action) {
         steps: {
           ...state.steps,
           [STEP_NAME.CHOOSE_ACCOUNT]: {
+            ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
             accountsTask: {
               status: 'failed',
               error: action.error

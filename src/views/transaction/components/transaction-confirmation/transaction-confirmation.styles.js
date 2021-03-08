@@ -11,32 +11,21 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
   },
   image: {
     marginTop: theme.spacing(13.5),
-    width: theme.spacing(32)
+    width: '100%',
+    maxWidth: theme.spacing(33)
   },
   text: {
     fontSize: `${theme.spacing(3)}px`,
     color: theme.palette.black.light,
     fontWeight: theme.fontWeights.bold,
-    marginTop: theme.spacing(6)
-  },
-  done: {
-    cursor: 'pointer',
-    backgroundColor: theme.palette.secondary.main,
-    borderRadius: 18,
-    border: 0,
-    outline: 'none',
-    color: theme.palette.white,
-    fontSize: `${theme.spacing(2.5)}px`,
-    fontWeight: theme.fontWeights.bold,
-    padding: `${theme.spacing(2)}px 0`,
-    width: theme.spacing(24),
-    marginTop: theme.spacing(9),
+    textAlign: 'center',
+    marginTop: theme.spacing(5),
+    marginLeft: theme.spacing(6),
+    marginRight: theme.spacing(6),
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(3)}px 0`,
-      marginTop: theme.spacing(18)
+      marginLeft: theme.spacing(3),
+      marginRight: theme.spacing(3)
     }
-
   }
 }))
 

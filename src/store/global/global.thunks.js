@@ -1,10 +1,13 @@
-import hermezjs from '@hermeznetwork/hermezjs'
+import hermezjs, { CoordinatorAPI, Providers, TxUtils } from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
+import { ethers } from 'ethers'
+import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
-import { PENDING_WITHDRAWS_KEY, PENDING_DELAYED_WITHDRAWS_KEY } from '../../constants'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
+import * as storage from '../../utils/storage'
+import * as constants from '../../constants'
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -27,7 +30,7 @@ function setHermezEnvironment () {
           )
         }
 
-        if (hermezjs.Environment.isEnvironmentSupported(chainId)) {
+        if (process.env.REACT_APP_ENV === 'production' && hermezjs.Environment.isEnvironmentSupported(chainId)) {
           hermezjs.Environment.setEnvironment(chainId)
         }
 
@@ -40,7 +43,8 @@ function setHermezEnvironment () {
               [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
                   process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
             },
-            batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL
+            batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL,
+            etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL
           })
         }
 
@@ -111,20 +115,14 @@ function changeNetworkStatus (newNetworkStatus, backgroundColor) {
  * @param {string} pendingWithdraw - The pendingWithdraw to add to the pool
  * @returns {void}
  */
-function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
-  return (dispatch) => {
-    const pendingWithdrawPool = JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
-    const accountPendingWithdrawPool = pendingWithdrawPool[hermezEthereumAddress]
-    const newAccountPendingWithdrawPool = accountPendingWithdrawPool === undefined
-      ? [pendingWithdraw]
-      : [...accountPendingWithdrawPool, pendingWithdraw]
-    const newPendingWithdrawPool = {
-      ...pendingWithdrawPool,
-      [hermezEthereumAddress]: newAccountPendingWithdrawPool
-    }
+function addPendingWithdraw (pendingWithdraw) {
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
 
-    localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdrawPool))
-    dispatch(globalActions.addPendingWithdraw(hermezEthereumAddress, pendingWithdraw))
+    storage.addItem(constants.PENDING_WITHDRAWS_KEY, chainId, hermezEthereumAddress, pendingWithdraw)
+    dispatch(globalActions.addPendingWithdraw(chainId, hermezEthereumAddress, pendingWithdraw))
   }
 }
 
@@ -135,17 +133,12 @@ function addPendingWithdraw (hermezEthereumAddress, pendingWithdraw) {
  * @returns {void}
  */
 function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
-  return (dispatch) => {
-    const pendingWithdrawPool = JSON.parse(localStorage.getItem(PENDING_WITHDRAWS_KEY))
-    const accountPendingWithdrawPool = pendingWithdrawPool[hermezEthereumAddress]
-    const newAccountPendingWithdrawPool = accountPendingWithdrawPool
-      .filter((pendingWithdraw) => pendingWithdraw !== pendingWithdrawId)
-    const newPendingWithdrawPool = {
-      ...pendingWithdrawPool,
-      [hermezEthereumAddress]: newAccountPendingWithdrawPool
-    }
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
 
-    localStorage.setItem(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdrawPool))
+    storage.removeItem(constants.PENDING_WITHDRAWS_KEY, chainId, hermezEthereumAddress, pendingWithdrawId)
     dispatch(globalActions.removePendingWithdraw(hermezEthereumAddress, pendingWithdrawId))
   }
 }
@@ -157,21 +150,12 @@ function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
  */
 function addPendingDelayedWithdraw (pendingDelayedWithdraw) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
     const { hermezEthereumAddress } = wallet
 
-    const pendingDelayedWithdrawStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
-    const accountPendingDelayedWithdrawStore = pendingDelayedWithdrawStore[hermezEthereumAddress]
-    const newAccountPendingDelayedWithdrawStore = accountPendingDelayedWithdrawStore === undefined
-      ? [pendingDelayedWithdraw]
-      : [...accountPendingDelayedWithdrawStore, pendingDelayedWithdraw]
-    const newPendingDelayedWithdrawStore = {
-      ...pendingDelayedWithdrawStore,
-      [hermezEthereumAddress]: newAccountPendingDelayedWithdrawStore
-    }
-
-    localStorage.setItem(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newPendingDelayedWithdrawStore))
-    dispatch(globalActions.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw))
+    storage.addItem(constants.PENDING_DELAYED_WITHDRAWS_KEY, chainId, hermezEthereumAddress, pendingDelayedWithdraw)
+    dispatch(globalActions.addPendingDelayedWithdraw(chainId, hermezEthereumAddress, pendingDelayedWithdraw))
   }
 }
 
@@ -182,20 +166,120 @@ function addPendingDelayedWithdraw (pendingDelayedWithdraw) {
  */
 function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
     const { hermezEthereumAddress } = wallet
 
-    const pendingDelayedWithdrawStore = JSON.parse(localStorage.getItem(PENDING_DELAYED_WITHDRAWS_KEY))
-    const accountPendingDelayedWithdrawStore = pendingDelayedWithdrawStore[hermezEthereumAddress]
-    const newAccountPendingDelayedWithdrawStore = accountPendingDelayedWithdrawStore
-      .filter((pendingDelayedWithdraw) => pendingDelayedWithdraw.id !== pendingDelayedWithdrawId)
-    const newPendingDelayedWithdrawStore = {
-      ...pendingDelayedWithdrawStore,
-      [hermezEthereumAddress]: newAccountPendingDelayedWithdrawStore
-    }
+    storage.removeItem(constants.PENDING_DELAYED_WITHDRAWS_KEY, chainId, hermezEthereumAddress, pendingDelayedWithdrawId)
+    dispatch(globalActions.removePendingDelayedWithdraw(chainId, hermezEthereumAddress, pendingDelayedWithdrawId))
+  }
+}
 
-    localStorage.setItem(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newPendingDelayedWithdrawStore))
-    dispatch(globalActions.removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId))
+/**
+ * Adds a pendingDeposit to the pendingDeposits store
+ * @param {string} pendingDeposit - The pendingDeposit to add to the store
+ * @returns {void}
+ */
+function addPendingDeposit (pendingDeposit) {
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
+
+    storage.addItem(constants.PENDING_DEPOSITS_KEY, chainId, hermezEthereumAddress, pendingDeposit)
+    dispatch(globalActions.addPendingDeposit(chainId, hermezEthereumAddress, pendingDeposit))
+  }
+}
+
+/**
+ * Removes a pendingDeposit from the pendingDeposit store
+ * @param {string} transactionId - The transaction identifier used to remove a pendingDeposit from the store
+ * @returns {void}
+ */
+function removePendingDeposit (transactionId) {
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
+
+    storage.removeItem(constants.PENDING_DEPOSITS_KEY, chainId, hermezEthereumAddress, transactionId)
+    dispatch(globalActions.removePendingDeposit(chainId, hermezEthereumAddress, transactionId))
+  }
+}
+
+function updatePendingDepositId (transactionHash, transactionId) {
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
+
+    storage.updatePartialItemByCustomProp(
+      constants.PENDING_DEPOSITS_KEY,
+      chainId,
+      hermezEthereumAddress,
+      { name: 'hash', value: transactionHash },
+      { id: transactionId }
+    )
+    dispatch(globalActions.updatePendingDepositId(chainId, hermezEthereumAddress, transactionHash, transactionId))
+  }
+}
+
+function checkPendingDeposits () {
+  return (dispatch, getState) => {
+    const { global: { wallet, pendingDeposits, ethereumNetworkTask } } = getState()
+
+    dispatch(globalActions.checkPendingDeposits())
+    const provider = Providers.getProvider()
+    const accountPendingDeposits = storage.getItemsByHermezAddress(
+      pendingDeposits,
+      ethereumNetworkTask.data.chainId,
+      wallet.hermezEthereumAddress
+    )
+    const pendingDepositsHashes = accountPendingDeposits.map(deposit => deposit.hash)
+    const pendingDepositsTxReceipts = pendingDepositsHashes.map(hash => provider.getTransactionReceipt(hash))
+
+    Promise.all(pendingDepositsTxReceipts).then((txReceipts) => {
+      const transactionHistoryPromises = txReceipts
+        .filter(txReceipt => txReceipt && txReceipt.logs && txReceipt.logs.length > 0)
+        .map((txReceipt) => {
+          const hermezContractInterface = new ethers.utils.Interface(HermezABI)
+          // Need to parse logs, but only events from the Hermez SC. Ignore errors when trying to parse others
+          const parsedLogs = []
+          for (const txReceiptLog of txReceipt.logs) {
+            try {
+              const parsedLog = hermezContractInterface.parseLog(txReceiptLog)
+              parsedLogs.push(parsedLog)
+            } catch (e) {}
+          }
+          const l1UserTxEvent = parsedLogs.find((event) => event.name === 'L1UserTxEvent')
+
+          if (!l1UserTxEvent) {
+            return Promise.resolve()
+          }
+
+          const txId = TxUtils.getL1UserTxId(l1UserTxEvent.args[0], l1UserTxEvent.args[1])
+          const pendingDeposit = accountPendingDeposits.find(deposit => deposit.hash === txReceipt.transactionHash)
+
+          if (pendingDeposit && !pendingDeposit.id) {
+            dispatch(updatePendingDepositId(txReceipt.transactionHash, txId))
+          }
+
+          return CoordinatorAPI.getHistoryTransaction(txId)
+        })
+
+      Promise.all(transactionHistoryPromises)
+        .then((results) => {
+          results
+            .filter(result => result !== undefined)
+            .forEach((transaction) => {
+              if (transaction.batchNum !== null) {
+                dispatch(removePendingDeposit(transaction.id))
+              }
+            })
+          dispatch(globalActions.checkPendingDepositsSuccess())
+        })
+        .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()))
+    })
   }
 }
 
@@ -229,7 +313,7 @@ function disconnectWallet () {
  * @returns {void}
  */
 function reloadApp () {
-  return (dispatch) => {
+  return () => {
     window.location.reload()
   }
 }
@@ -243,6 +327,10 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  addPendingDeposit,
+  removePendingDeposit,
+  updatePendingDepositId,
+  checkPendingDeposits,
   fetchCoordinatorState,
   disconnectWallet,
   reloadApp

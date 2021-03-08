@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { TxType } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import depositedIcon from '../../../../images/icons/deposited.svg'
 import receivedIcon from '../../../../images/icons/received.svg'
@@ -40,7 +40,7 @@ function TransactionType ({ type, fromAccountIndex, accountIndex }) {
   return <img src={getIcon(type)} alt='Transaction type' />
 }
 
-TransactionType.propTypes = {
+TxType.propTypes = {
   type: PropTypes.string.isRequired
 }
 

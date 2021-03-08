@@ -6,7 +6,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     marginBottom: theme.spacing(3),
     paddingTop: theme.spacing(4),
     [theme.breakpoints.upSm]: {
-      paddingTop: theme.spacing(6)
+      paddingTop: theme.spacing(3.5)
     }
   },
   sectionWrapper: {
@@ -22,22 +22,32 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     justifyContent: 'space-between',
     backgroundColor: theme.palette.grey.light,
     borderRadius: 12,
-    height: theme.spacing(10),
+    height: theme.spacing(7.5),
     marginBottom: theme.spacing(2.5),
-    padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
-    fontSize: `${theme.spacing(2.5)}px`,
+    padding: theme.spacing(2.5),
+    fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
     [theme.breakpoints.upSm]: {
-      marginBottom: theme.spacing(6)
+      fontSize: `${theme.spacing(2.5)}px`,
+      height: theme.spacing(8),
+      padding: `${theme.spacing(3)}px ${theme.spacing(5)}px ${theme.spacing(2.5)}px`,
+      marginBottom: theme.spacing(2)
     }
   },
+  tokenSymbolAmount: {
+    fontWeight: theme.fontWeights.medium
+  },
   form: {
-    width: '100%'
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
   selectAmount: {
     border: `solid 2px ${theme.palette.grey.veryLight}`,
-    borderRadius: 12
+    borderRadius: 12,
+    width: '100%'
   },
   selectAmountError: {
     borderColor: theme.palette.red.main
@@ -47,17 +57,18 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    padding: theme.spacing(2),
+    padding: theme.spacing(2.5),
     [theme.breakpoints.upSm]: {
-      padding: theme.spacing(5.5)
+      padding: `${theme.spacing(5)}px ${theme.spacing(6)}px ${theme.spacing(4)}px`
     }
   },
   amountCurrency: {
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
+    marginBottom: theme.spacing(0.5),
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
+      fontSize: `${theme.spacing(2.5)}px`,
       marginBottom: theme.spacing(1.5)
     }
   },
@@ -66,7 +77,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     border: 0,
     outline: 'none',
     caretColor: theme.palette.orange.main,
-    fontSize: `${theme.spacing(6)}px`,
+    fontSize: `${theme.spacing(5)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
     textAlign: 'center',
@@ -76,36 +87,47 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     },
     '&[type=number]': {
       '-moz-appearance': 'textfield'
+    },
+    [theme.breakpoints.upSm]: {
+      fontSize: `${theme.spacing(5)}px`
     }
   },
   amountButtons: {
-    display: 'flex'
+    display: 'flex',
+    borderTop: `solid 2px ${theme.palette.grey.veryLight}`,
+    justifyContent: 'space-between',
+    padding: `0 ${theme.spacing(3)}px`,
+    [theme.breakpoints.upSm]: {
+      padding: `0 ${theme.spacing(6)}px`
+    }
+  },
+  amountButtonsItem: {
+    background: 'none',
+    outline: 'none',
+    border: 0,
+    fontSize: `${theme.spacing(2)}px`,
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.main,
+    padding: `${theme.spacing(2)}px 0`,
+    textAlign: 'center',
+    [theme.breakpoints.upSm]: {
+      fontSize: `${theme.spacing(2.5)}px`,
+      lineHeight: `${theme.spacing(2.5)}px`,
+      padding: `${theme.spacing(2)}px 0 ${theme.spacing(2.5)}px`
+    }
   },
   amountButton: {
     cursor: 'pointer',
-    background: 'none',
-    outline: 'none',
-    border: '0',
-    borderTop: `solid 2px ${theme.palette.grey.veryLight}`,
-    fontSize: `${theme.spacing(2)}px`,
-    fontWeight: theme.fontWeights.bold,
-    color: theme.palette.grey.main,
-    flex: 1,
-    padding: `${theme.spacing(2)}px 0`,
     transition: theme.hoverTransition,
     '&:hover': {
       color: theme.palette.black,
       '& path': {
         fill: theme.palette.black
       }
-    },
-    [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(3.5)}px 0`
     }
   },
-  sendAll: {
-    borderRight: `solid 2px ${theme.palette.grey.veryLight}`
+  amountMax: {
+    fontWeight: theme.fontWeights.bold
   },
   changeCurrency: {
     display: 'flex',
@@ -113,7 +135,7 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     justifyContent: 'center'
   },
   changeCurrencyIcon: {
-    marginRight: theme.spacing(1)
+    height: theme.spacing(2.5)
   },
   errorMessage: {
     display: 'none',
@@ -121,7 +143,8 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     marginTop: theme.spacing(1.5),
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.medium,
-    color: theme.palette.red.main
+    color: theme.palette.red.main,
+    width: '100%'
   },
   selectAmountErrorMessageVisible: {
     display: 'flex'
@@ -131,10 +154,13 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     width: theme.spacing(2.5),
     height: theme.spacing(2.5)
   },
+  receiverWrapper: {
+    width: '100%'
+  },
   receiverInputWrapper: {
     width: '100%',
     position: 'relative',
-    marginTop: theme.spacing(5),
+    marginTop: theme.spacing(4),
     borderRadius: 12,
     border: `solid 2px ${theme.palette.grey.veryLight}`,
     display: 'flex',
@@ -154,8 +180,8 @@ const useTransactionFormStyles = createUseStyles(theme => ({
       opacity: 1
     },
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(5.5)}px ${theme.spacing(2)}px ${theme.spacing(5.5)}px ${theme.spacing(5)}px`
+      fontSize: `${theme.spacing(2.5)}px`,
+      padding: `${theme.spacing(4.5)}px ${theme.spacing(2)}px ${theme.spacing(4)}px ${theme.spacing(5)}px`
     }
   },
   receiverError: {
@@ -199,17 +225,16 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     marginTop: theme.spacing(2.5),
     [theme.breakpoints.upSm]: {
-      marginTop: theme.spacing(4.5)
+      marginTop: theme.spacing(3)
     }
   },
   fee: {
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
-    marginBottom: theme.spacing(1),
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(3)}px`,
-      padding: `${theme.spacing(2)}px 0`
+      fontSize: `${theme.spacing(2.5)}px`,
+      padding: 0
     }
   },
   feeIcon: {

@@ -1,10 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { TxLevel } from '@hermeznetwork/hermezjs/src/tx-utils'
 
 import Transaction from '../transaction/transaction.view'
 import useTransactionListStyles from './transaction-list.styles'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
+import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
 import { getTransactionAmount } from '../../../../utils/transactions'
 
 function TransactionList ({
@@ -36,7 +35,7 @@ function TransactionList ({
 
         return (
           <div
-            key={transaction.id}
+            key={transaction.hash || transaction.id}
             className={classes.transaction}
           >
             <Transaction
@@ -45,14 +44,19 @@ function TransactionList ({
               accountIndex={accountIndex}
               fromAccountIndex={transaction.fromAccountIndex}
               amount={fixedTokenAmount}
-              isL1={transaction.L1orL2 === TxLevel.L1}
               tokenSymbol={transaction.token.symbol}
-              fiatAmount={getTokenAmountInPreferredCurrency(
-                fixedTokenAmount,
-                transaction.historicUSD || transaction.token.USD,
-                preferredCurrency,
-                fiatExchangeRates
-              )}
+              fiatAmount={transaction.historicUSD
+                ? getAmountInPreferredCurrency(
+                    transaction.historicUSD,
+                    preferredCurrency,
+                    fiatExchangeRates
+                  )
+                : getTokenAmountInPreferredCurrency(
+                  fixedTokenAmount,
+                  transaction.token.USD,
+                  preferredCurrency,
+                  fiatExchangeRates
+                )}
               isPending={arePending}
               timestamp={transaction.timestamp}
               preferredCurrency={preferredCurrency}

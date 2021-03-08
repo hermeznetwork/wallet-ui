@@ -1,8 +1,9 @@
 import { homeActionTypes } from './home.actions'
 import { getPaginationData } from '../../utils/api'
+import { PaginationOrder } from '@hermeznetwork/hermezjs/src/api'
 
 const initialHomeState = {
-  totalAccountsBalanceTask: {
+  totalBalanceTask: {
     status: 'pending'
   },
   accountsTask: {
@@ -21,33 +22,39 @@ const initialHomeState = {
 
 function homeReducer (state = initialHomeState, action) {
   switch (action.type) {
-    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE: {
+    case homeActionTypes.LOAD_TOTAL_BALANCE: {
+      const totalBalanceTask = state.totalBalanceTask.status === 'pending'
+        ? { status: 'loading' }
+        : { status: 'reloading', data: state.totalBalanceTask.data }
+
       return {
         ...state,
-        totalAccountsBalanceTask: {
-          status: 'loading'
-        }
+        totalBalanceTask
       }
     }
-    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_SUCCESS: {
+    case homeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS: {
       return {
         ...state,
-        totalAccountsBalanceTask: {
+        totalBalanceTask: {
           status: 'successful',
           data: action.balance
         }
       }
     }
-    case homeActionTypes.LOAD_TOTAL_ACCOUNTS_BALANCE_FAILURE: {
+    case homeActionTypes.LOAD_TOTAL_BALANCE_FAILURE: {
       return {
         ...state,
-        totalAccountsBalanceTask: {
+        totalBalanceTask: {
           status: 'failed',
           error: 'An error ocurred loading the total balance of the accounts'
         }
       }
     }
     case homeActionTypes.LOAD_ACCOUNTS: {
+      if (state.accountsTask.status === 'reloading') {
+        return state
+      }
+
       return {
         ...state,
         accountsTask: state.accountsTask.status === 'successful'
@@ -60,12 +67,15 @@ function homeReducer (state = initialHomeState, action) {
         ? [...state.accountsTask.data.accounts, ...action.data.accounts]
         : action.data.accounts
       const pagination = getPaginationData(action.data.pendingItems, accounts)
+      const fromItemHistory = state.accountsTask.status === 'reloading'
+        ? [...state.accountsTask.data.fromItemHistory, state.accountsTask.data.pagination.fromItem]
+        : []
 
       return {
         ...state,
         accountsTask: {
           status: 'successful',
-          data: { accounts, pagination }
+          data: { accounts, pagination, fromItemHistory }
         }
       }
     }
@@ -76,6 +86,42 @@ function homeReducer (state = initialHomeState, action) {
           status: 'failed',
           error: 'An error ocurred loading the accounts'
         }
+      }
+    }
+    case homeActionTypes.REFRESH_ACCOUNTS: {
+      return {
+        ...state,
+        accountsTask: {
+          ...state.accountsTask,
+          status: 'reloading'
+        }
+      }
+    }
+    case homeActionTypes.REFRESH_ACCOUNTS_SUCCESS: {
+      const pagination = getPaginationData(
+        action.data.pendingItems,
+        action.data.accounts,
+        PaginationOrder.DESC
+      )
+
+      return {
+        ...state,
+        accountsTask: {
+          status: 'successful',
+          data: {
+            ...state.accountsTask.data,
+            accounts: action.data.accounts,
+            pagination
+          }
+        }
+      }
+    }
+    case homeActionTypes.LOAD_POOL_TRANSACTIONS: {
+      return {
+        ...state,
+        poolTransactionsTask: state.poolTransactionsTask.status === 'pending'
+          ? { status: 'loading' }
+          : { ...state.poolTransactionsTask, status: 'reloading' }
       }
     }
     case homeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
@@ -96,38 +142,12 @@ function homeReducer (state = initialHomeState, action) {
         }
       }
     }
-    case homeActionTypes.LOAD_HISTORY_TRANSACTIONS: {
-      return {
-        ...state,
-        historyTransactionsTask: {
-          status: 'loading'
-        }
-      }
-    }
-    case homeActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
-      return {
-        ...state,
-        historyTransactionsTask: {
-          status: 'successful',
-          data: action.transactions
-        }
-      }
-    }
-    case homeActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE: {
-      return {
-        ...state,
-        historyTransactionsTask: {
-          status: 'failed',
-          error: 'An error ocurred loading the transactions from the history'
-        }
-      }
-    }
     case homeActionTypes.LOAD_EXITS: {
       return {
         ...state,
-        exitsTask: {
-          status: 'loading'
-        }
+        exitsTask: state.exitsTask.status === 'pending'
+          ? { status: 'loading' }
+          : { ...state.exitsTask, status: 'reloading' }
       }
     }
     case homeActionTypes.LOAD_EXITS_SUCCESS: {
@@ -149,7 +169,7 @@ function homeReducer (state = initialHomeState, action) {
       }
     }
     case homeActionTypes.RESET_STATE: {
-      return initialHomeState
+      return { ...initialHomeState }
     }
     default: {
       return state

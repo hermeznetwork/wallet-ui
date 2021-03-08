@@ -1,3 +1,6 @@
+import { getFeeValue } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
+
 import { MAX_TOKEN_DECIMALS } from '../constants'
 
 const CurrencySymbol = {
@@ -29,6 +32,27 @@ function getFixedTokenAmount (amount, decimals) {
 }
 
 /**
+ * Converts a USD amount to the preferred currency
+ *
+ * @param {Number} usdAmount
+ * @param {String} preferredCurrency - User preferred currency
+ * @param {String} fiatExchangeRates - Exchange rates for all the supported currencies in the app
+ *
+ * @returns {Number}
+ */
+function getAmountInPreferredCurrency (
+  usdAmount,
+  preferredCurrency,
+  fiatExchangeRates
+) {
+  if (preferredCurrency === CurrencySymbol.USD.code) {
+    return usdAmount
+  }
+
+  return usdAmount * fiatExchangeRates[preferredCurrency]
+}
+
+/**
  * Converts a token amount to a new amount but in the user preferred currency
  *
  * @param {string} amount - The amount to be be converted
@@ -50,15 +74,26 @@ function getTokenAmountInPreferredCurrency (
     return undefined
   }
 
-  if (preferredCurrency === CurrencySymbol.USD.code) {
-    return usdAmount
-  }
+  return getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchangeRates)
+}
 
-  return usdAmount * fiatExchangeRates[preferredCurrency]
+/**
+ * Converts a fee index to USD
+ * @param {Number} feeIndex - The fee index from the Hermez protocol
+ * @param {BigInt} amount - Amount in BigInt string value
+ * @param {Object} token - Token object
+ * @returns {String} Amount in USD
+ */
+function getFeeInUsd (feeIndex, amount, token) {
+  const feeInToken = Number(getTokenAmountString(getFeeValue(feeIndex, amount), token.decimals))
+  const feeInFiat = feeInToken * token.USD
+  return feeInFiat
 }
 
 export {
   CurrencySymbol,
   getFixedTokenAmount,
-  getTokenAmountInPreferredCurrency
+  getAmountInPreferredCurrency,
+  getTokenAmountInPreferredCurrency,
+  getFeeInUsd
 }

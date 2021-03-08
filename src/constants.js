@@ -13,9 +13,7 @@ export const MY_CODE = {
 
 export const ACCOUNT_INDEX_SEPARATOR = ':'
 
-export const SNACKBAR_AUTO_HIDE_DURATION = 5000
-
-export const AUTH_MESSAGE = 'HERMEZ_ACCOUNT. Don\'t share this signature with anyone as this would reveal your Hermez private key. Unless you are in a trusted application, DO NOT SIGN THIS'
+export const SNACKBAR_AUTO_HIDE_DURATION = 3500
 
 export const ETHER_TOKEN_ID = 0
 
@@ -25,10 +23,20 @@ export const PENDING_WITHDRAWS_KEY = 'pendingWithdraws'
 
 export const PENDING_DELAYED_WITHDRAWS_KEY = 'pendingDelayedWithdraws'
 
-export const ACCOUNT_AUTH_SIGNATURE_KEY = 'accountAuthSignature'
+export const PENDING_DEPOSITS_KEY = 'pendingDeposits'
+
+export const ACCOUNT_AUTH_SIGNATURES_KEY = 'accountAuthSignatures'
 
 export const TREZOR_MANIFEST_MAIL = 'hello@hermez.io'
 
 export const PRIVACY_POLICY_URL = 'https://hermez.io/privacy-policy'
 
 export const TERMS_OF_SERVICE_URL = 'https://hermez.io/terms-of-service'
+
+export const AUTO_REFRESH_RATE = 60000 // 1min
+
+export const STORAGE_VERSION_KEY = 'hermezWalletStorageVersion'
+
+export const STORAGE_VERSION = 1
+
+export const REPORT_ISSUE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScvCK2OaRYSXcFYEiWAkbtWzHxWh8fGO4uOn0sIRdPP9Gigeg/viewform'
