@@ -155,6 +155,7 @@ function TransactionDetails ({
                       txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
                       showStatus
+                      showToCopyButton
                     />
                     <ExploreTransactionButton
                       txLevel={transactionTask.data.fromAccountIndex ? TxLevel.L2 : TxLevel.L1}

@@ -2,15 +2,16 @@ import React from 'react'
 import { TxState, TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
-import TransactionInfoTable from '../transaction-info-table/transaction-info-table-row.view'
+import TransactionInfoTable from '../transaction-info-table/transaction-info-table.view'
 import { getPartiallyHiddenEthereumAddress, getPartiallyHiddenHermezAddress } from '../../../utils/addresses'
+import { copyToClipboard } from '../../../utils/browser'
 
 const TxStatus = {
   Confirmed: 'Confirmed',
   Pending: 'Pending'
 }
 
-function TransactionInfo ({ txData, accountIndex, showStatus }) {
+function TransactionInfo ({ txData, accountIndex, showStatus, showToCopyButton }) {
   const date = txData.timestamp && {
     subtitle: new Date(txData.timestamp).toLocaleString()
   }
@@ -29,6 +30,10 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
     }
 
     return { subtitle: TxStatus.Pending }
+  }
+
+  function handleCopyToAddress () {
+    copyToClipboard(txData.toHezEthereumAddress)
   }
 
   switch (txData.type) {
@@ -66,6 +71,8 @@ function TransactionInfo ({ txData, accountIndex, showStatus }) {
             }}
             date={date}
             fee={txData.fee}
+            showToCopyButton={showToCopyButton}
+            onCopyToAddress={handleCopyToAddress}
           />
         )
       } else {
