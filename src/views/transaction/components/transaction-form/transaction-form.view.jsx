@@ -202,7 +202,7 @@ function TransactionForm ({
       const newAmountInToken = getTokenAmountBigInt(newAmountConversion.toString(), account.token.decimals).toString()
       const fixedNewAmountInToken = HermezCompressedAmount.decompressAmount(
         HermezCompressedAmount.floorCompressAmount(newAmountInToken)
-      )
+      ).toString()
 
       setAmountChecks(fixedNewAmountInToken)
       setAmount(fixedNewAmountInToken)
