@@ -12,7 +12,7 @@ const useTransactionErrorStyles = createUseStyles((theme) => ({
   image: {
     marginTop: theme.spacing(20),
     width: '100%',
-    maxWidth: 224
+    maxWidth: theme.spacing(28)
   },
   text: {
     fontSize: `${theme.spacing(3)}px`,

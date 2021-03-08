@@ -12,7 +12,7 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
   image: {
     marginTop: theme.spacing(13.5),
     width: '100%',
-    maxWidth: 265
+    maxWidth: theme.spacing(33)
   },
   text: {
     fontSize: `${theme.spacing(3)}px`,
