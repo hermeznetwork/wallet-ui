@@ -198,11 +198,14 @@ function TransactionForm ({
     } else if (showInFiat) {
       const newAmountInFiat = Number(Number(event.target.value).toFixed(2))
       // Makes sure the converted amount from fiat to tokens is a valid amount in Hermez
-      const newAmountConversion = Number((newAmountInFiat / getAccountFiatRate()).toFixed(10))
+      const newAmountConversion = newAmountInFiat / getAccountFiatRate()
       const newAmountInToken = getTokenAmountBigInt(newAmountConversion.toString(), account.token.decimals).toString()
+      const fixedNewAmountInToken = HermezCompressedAmount.decompressAmount(
+        HermezCompressedAmount.floorCompressAmount(newAmountInToken)
+      )
 
-      setAmountChecks(newAmountInToken)
-      setAmount(newAmountInToken)
+      setAmountChecks(fixedNewAmountInToken)
+      setAmount(fixedNewAmountInToken)
       setAmountFiat(newAmountInFiat)
     } else {
       const newAmountInToken = getTokenAmountBigInt(event.target.value, account.token.decimals).toString()
