@@ -18,6 +18,7 @@ import TransactionConfirmation from './components/transaction-confirmation/trans
 import { changeHeader } from '../../store/global/global.actions'
 import Spinner from '../shared/spinner/spinner.view'
 import * as storage from '../../utils/storage'
+import TransactionError from './components/transaction-error/transaction-error.view'
 
 export const WithdrawRedirectionRoute = {
   Home: 'home',
@@ -196,6 +197,13 @@ function Transaction ({
             return (
               <TransactionConfirmation
                 transactionType={transactionType}
+                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex, redirectTo)}
+              />
+            )
+          }
+          case STEP_NAME.TRANSACTION_ERROR: {
+            return (
+              <TransactionError
                 onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex, redirectTo)}
               />
             )

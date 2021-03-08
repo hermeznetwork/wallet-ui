@@ -1,7 +1,7 @@
 import { createUseStyles } from 'react-jss'
 
-const useTransactionConfirmationStyles = createUseStyles(theme => ({
-  wrapper: {
+const useTransactionErrorStyles = createUseStyles((theme) => ({
+  root: {
     width: '100%',
     minHeight: '100%',
     backgroundColor: theme.palette.primary.main,
@@ -10,9 +10,9 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
     flexDirection: 'column'
   },
   image: {
-    marginTop: theme.spacing(13.5),
+    marginTop: theme.spacing(20),
     width: '100%',
-    maxWidth: theme.spacing(33)
+    maxWidth: theme.spacing(28)
   },
   text: {
     fontSize: `${theme.spacing(3)}px`,
@@ -29,4 +29,4 @@ const useTransactionConfirmationStyles = createUseStyles(theme => ({
   }
 }))
 
-export default useTransactionConfirmationStyles
+export default useTransactionErrorStyles
