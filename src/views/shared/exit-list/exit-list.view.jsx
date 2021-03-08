@@ -19,15 +19,17 @@ function ExitList ({
   return (
     <>
       {transactions.map((transaction) => {
+        const amount = transaction.amount || transaction.balance
         const fixedTokenAmount = getFixedTokenAmount(
-          transaction.amount || transaction.balance,
+          amount,
           transaction.token.decimals
         )
 
         return (
           <Exit
             key={transaction.id || transaction.itemId}
-            amount={transaction.amount || transaction.balance}
+            amount={amount}
+            fixedTokenAmount={fixedTokenAmount}
             token={transaction.token}
             fiatAmount={transaction.historicUSD
               ? getAmountInPreferredCurrency(

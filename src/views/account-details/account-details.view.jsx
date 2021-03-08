@@ -44,7 +44,6 @@ function AccountDetails ({
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
-  onRefresHistoryTransactions,
   onCheckPendingDeposits,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
@@ -69,7 +68,6 @@ function AccountDetails ({
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   )
-  console.log(wallet)
 
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name)
@@ -340,10 +338,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(accountDetailsThunks.fetchExits(tokenId)),
   onRefresHistoryTransactions: (accountIndex) =>
     dispatch(accountDetailsThunks.refreshHistoryTransactions(accountIndex)),
-  onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
-    dispatch(globalThunks.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
-  onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>
-    dispatch(globalThunks.removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId)),
+  onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
+    dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
+  onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
+    dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
   onCleanup: () =>
