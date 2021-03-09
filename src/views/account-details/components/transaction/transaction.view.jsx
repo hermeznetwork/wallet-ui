@@ -5,6 +5,7 @@ import useTransactionStyles from './transaction.styles'
 import TransactionType from '../transaction-type/transaction-type.view'
 import TransactionLabel from '../transaction-label/transaction-label.view'
 import TransactionAmount from '../transaction-amount/transaction-amount.view'
+import { getTxPendingTime } from '../../../../utils/transactions'
 
 function Transaction ({
   accountIndex,
@@ -20,17 +21,6 @@ function Transaction ({
   onClick
 }) {
   const classes = useTransactionStyles()
-
-  /**
-   * Calculates an estimated time until the transaction will be forged
-   */
-  function getTxPendingTime () {
-    const timeToForge = coordinatorState.nodeConfig.forgeDelay || 300
-    const lastBatchForgedInSeconds = Date.parse(coordinatorState.network.lastBatch.timestamp) / 1000
-    const timeSinceTxInSeconds = lastBatchForgedInSeconds - (Date.parse(timestamp) / 1000)
-    const timeLeftToForgeInMinutes = Math.round((timeToForge - timeSinceTxInSeconds) / 60)
-    return timeLeftToForgeInMinutes > 0 ? timeLeftToForgeInMinutes : 0
-  }
 
   return (
     <div className={classes.root} onClick={onClick}>
@@ -59,7 +49,7 @@ function Transaction ({
                   <div className={classes.pendingLabelContainer}>
                     <p className={classes.pendingLabelText}>Pending</p>
                   </div>
-                  {getTxPendingTime() > 0 && <p className={classes.pendingTimer}>{getTxPendingTime()} min</p>}
+                  {getTxPendingTime(coordinatorState, timestamp) > 0 && <p className={classes.pendingTimer}>{getTxPendingTime(coordinatorState, timestamp)} min</p>}
                 </div>
                 )
               : <p>{new Date(timestamp).toLocaleDateString()}</p>
