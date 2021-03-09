@@ -359,64 +359,6 @@ function TransactionForm ({
     }
   }
 
-  /**
-   * Renders the receiver input field if it's a transfer.
-   * @returns {JSX.Element} The receiver input field
-   */
-  function renderReceiver () {
-    console.log(receiver)
-    if (transactionType === TxType.Transfer) {
-      return (
-        <div className={classes.receiverWrapper}>
-          <div className={classes.receiverInputWrapper}>
-            <input
-              disabled={isReceiverValid}
-              className={classes.receiver}
-              value={receiver}
-              onChange={handleReceiverInputChange}
-              type='text'
-              placeholder='To hez:0x2387 ･･･ 5682'
-            />
-            <div className={classes.receiverButtons}>
-              {
-                // Pasting is not supported in firefox
-                receiver.length === 0 && !browser.isFirefox() && (
-                  <button
-                    type='button'
-                    className={classes.receiverButton}
-                    onClick={handlePasteClick}
-                  >
-                    Paste
-                  </button>
-                )
-              }
-              {
-                receiver.length > 0 && (
-                  <button
-                    type='button'
-                    className={classes.receiverButton}
-                    onClick={handleDeleteClick}
-                  >
-                    <CloseIcon className={classes.receiverDeleteButtonIcon} />
-                  </button>
-                )
-              }
-              {receiver.length === 0 && isVideoDeviceAvailable && (
-                <button
-                  type='button'
-                  className={classes.receiverButton}
-                  onClick={handleOpenQRScanner}
-                >
-                  <QRScannerIcon className={classes.receiverButtonIcon} />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )
-    }
-  }
-
   return (
     <div className={classes.root}>
       <Container disableTopGutter>
@@ -498,7 +440,58 @@ function TransactionForm ({
                                 : ''
                         }
                       </p>
-                      {renderReceiver()}
+                      {
+                        transactionType === TxType.Transfer && (
+                          <div className={classes.receiverWrapper}>
+                            <div className={classes.receiverInputWrapper}>
+                              <input
+                                disabled={isReceiverValid}
+                                className={classes.receiver}
+                                value={receiver}
+                                onChange={handleReceiverInputChange}
+                                type='text'
+                                placeholder='To hez:0x2387 ･･･ 5682'
+                              />
+                              <div className={classes.receiverButtons}>
+                                {
+                                  // Pasting is not supported in firefox
+                                  receiver.length === 0 && !browser.isFirefox() && (
+                                    <button
+                                      type='button'
+                                      className={classes.receiverButton}
+                                      onClick={handlePasteClick}
+                                    >
+                                      Paste
+                                    </button>
+                                  )
+                                }
+                                {
+                                  receiver.length > 0 && (
+                                    <button
+                                      type='button'
+                                      className={classes.receiverButton}
+                                      onClick={handleDeleteClick}
+                                    >
+                                      <CloseIcon className={classes.receiverDeleteButtonIcon} />
+                                    </button>
+                                  )
+                                }
+                                {
+                                  receiver.length === 0 && isVideoDeviceAvailable && (
+                                    <button
+                                      type='button'
+                                      className={classes.receiverButton}
+                                      onClick={handleOpenQRScanner}
+                                    >
+                                      <QRScannerIcon className={classes.receiverButtonIcon} />
+                                    </button>
+                                  )
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      }
                       <FormButton
                         type='submit'
                         label='Continue'
