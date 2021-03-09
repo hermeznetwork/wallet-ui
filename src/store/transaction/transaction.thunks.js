@@ -216,8 +216,9 @@ function deposit (amount, account) {
           })
       })
       .catch((error) => {
+        console.error(error)
         dispatch(transactionActions.stopTransactionSigning())
-        console.log(error)
+        dispatch(transactionActions.goToTransactionErrorStep())
       })
   }
 }
@@ -260,8 +261,9 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
 
         dispatch(transactionActions.goToFinishTransactionStep())
       }).catch((error) => {
+        console.error(error)
         dispatch(transactionActions.stopTransactionSigning())
-        console.log(error)
+        dispatch(transactionActions.goToTransactionErrorStep())
       })
     } else {
       return Tx.delayedWithdraw(
@@ -279,8 +281,9 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
           dispatch(transactionActions.goToFinishTransactionStep())
         })
         .catch((error) => {
+          console.error(error)
           dispatch(transactionActions.stopTransactionSigning())
-          console.log(error)
+          dispatch(transactionActions.goToTransactionErrorStep())
         })
     }
   }
@@ -300,8 +303,9 @@ function forceExit (amount, account) {
     )
       .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
       .catch((error) => {
+        console.error(error)
         dispatch(transactionActions.stopTransactionSigning())
-        console.log(error)
+        dispatch(transactionActions.goToTransactionErrorStep())
       })
   }
 }
@@ -318,7 +322,11 @@ function exit (amount, account, fee) {
 
     return Tx.generateAndSendL2Tx(txData, wallet, account.token)
       .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
-      .catch(console.log)
+      .catch((error) => {
+        console.error(error)
+        dispatch(transactionActions.stopTransactionSigning())
+        dispatch(transactionActions.goToTransactionErrorStep())
+      })
   }
 }
 
@@ -335,7 +343,11 @@ function transfer (amount, from, to, fee) {
 
     return Tx.generateAndSendL2Tx(txData, wallet, from.token)
       .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
-      .catch(console.log)
+      .catch((error) => {
+        console.error(error)
+        dispatch(transactionActions.stopTransactionSigning())
+        dispatch(transactionActions.goToTransactionErrorStep())
+      })
   }
 }
 

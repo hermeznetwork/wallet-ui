@@ -5,6 +5,7 @@ import useTransactionStyles from './transaction.styles'
 import TransactionType from '../transaction-type/transaction-type.view'
 import TransactionLabel from '../transaction-label/transaction-label.view'
 import TransactionAmount from '../transaction-amount/transaction-amount.view'
+import { getTxPendingTime } from '../../../../utils/transactions'
 
 function Transaction ({
   accountIndex,
@@ -16,6 +17,7 @@ function Transaction ({
   timestamp,
   isPending,
   preferredCurrency,
+  coordinatorState,
   onClick
 }) {
   const classes = useTransactionStyles()
@@ -43,8 +45,11 @@ function Transaction ({
           {
             isPending
               ? (
-                <div className={classes.pendingLabelContainer}>
-                  <p className={classes.pendingLabelText}>Pending</p>
+                <div className={classes.pendingContainer}>
+                  <div className={classes.pendingLabelContainer}>
+                    <p className={classes.pendingLabelText}>Pending</p>
+                  </div>
+                  {getTxPendingTime(coordinatorState, timestamp) > 0 && <p className={classes.pendingTimer}>{getTxPendingTime(coordinatorState, timestamp)} min</p>}
                 </div>
                 )
               : <p>{new Date(timestamp).toLocaleDateString()}</p>

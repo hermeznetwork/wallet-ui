@@ -256,6 +256,7 @@ function AccountDetails ({
                     fiatExchangeRates={fiatExchangeRatesTask.data}
                     preferredCurrency={preferredCurrency}
                     onTransactionClick={handleTransactionClick}
+                    coordinatorState={coordinatorStateTask.data}
                   />
                   <InfiniteScroll
                     asyncTaskStatus={historyTransactionsTask.status}
@@ -336,8 +337,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem, exits)),
   onLoadExits: (tokenId) =>
     dispatch(accountDetailsThunks.fetchExits(tokenId)),
-  onRefresHistoryTransactions: (accountIndex) =>
-    dispatch(accountDetailsThunks.refreshHistoryTransactions(accountIndex)),
   onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
