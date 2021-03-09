@@ -17,7 +17,8 @@ import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR, MAX_TOKEN_DECIMALS } from '../../constants'
 
-import { getTransactionAmount } from '../../utils/transactions'
+import { ReactComponent as InfoIcon } from '../../images/icons/info.svg'
+import { getTransactionAmount, getTxPendingTime } from '../../utils/transactions'
 import TransactionInfo from '../shared/transaction-info/transaction-info.view'
 import ExploreTransactionButton from './components/explore-transaction-button.view'
 
@@ -25,6 +26,7 @@ function TransactionDetails ({
   transactionTask,
   fiatExchangeRatesTask,
   preferredCurrency,
+  coordinatorStateTask,
   onLoadTransaction,
   onChangeHeader
 }) {
@@ -151,6 +153,11 @@ function TransactionDetails ({
               case 'successful': {
                 return (
                   <>
+                    {getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp) > 0 &&
+                      <p className={classes.timeEstimate}>
+                        <InfoIcon className={classes.timeEstimateIcon} />
+                        <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp)} minutes.</span>
+                      </p>}
                     <TransactionInfo
                       txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
@@ -186,7 +193,8 @@ TransactionDetails.propTypes = {
 const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   transactionTask: state.transactionDetails.transactionTask,
-  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
+  coordinatorStateTask: state.global.coordinatorStateTask
 })
 
 function getHeaderTitle (transactionType) {
