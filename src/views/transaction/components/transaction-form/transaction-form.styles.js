@@ -171,13 +171,17 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     width: '100%',
     padding: `${theme.spacing(3)}px ${theme.spacing(1)}px ${theme.spacing(3)}px ${theme.spacing(2.5)}px`,
     fontSize: `${theme.spacing(2)}px`,
-    color: theme.palette.black.dark,
+    color: theme.palette.black,
     fontWeight: theme.fontWeights.medium,
     outline: 0,
     border: 'none',
     '&::placeholder': {
       color: theme.palette.grey.main,
       opacity: 1
+    },
+    '&:disabled': {
+      color: theme.palette.black,
+      background: theme.palette.white
     },
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(2.5)}px`,

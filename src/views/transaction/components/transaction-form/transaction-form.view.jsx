@@ -15,10 +15,11 @@ import { ReactComponent as ErrorIcon } from '../../../../images/icons/error.svg'
 import { ReactComponent as CloseIcon } from '../../../../images/icons/close.svg'
 import { ReactComponent as QRScannerIcon } from '../../../../images/icons/qr-scanner.svg'
 import Container from '../../../shared/container/container.view'
-import { isAnyVideoDeviceAvailable, readFromClipboard } from '../../../../utils/browser'
 import QRScanner from '../../../shared/qr-scanner/qr-scanner.view'
 import FormButton from '../../../shared/form-button/form-button.view'
 import Spinner from '../../../shared/spinner/spinner.view'
+import * as addresses from '../../../../utils/addresses'
+import * as browser from '../../../../utils/browser'
 
 function TransactionForm ({
   transactionType,
@@ -40,7 +41,7 @@ function TransactionForm ({
   const [isAmountLessThanFunds, setIsAmountLessThanFunds] = React.useState(undefined)
   const [isAmountPositive, setIsAmountPositive] = React.useState(undefined)
   const [isAmountCompressedValid, setIsAmountCompressedValid] = React.useState(undefined)
-  const [isReceiverValid, setIsReceiverValid] = React.useState(undefined)
+  const [isReceiverValid, setIsReceiverValid] = React.useState(false)
   const amountInput = React.useRef(undefined)
 
   React.useEffect(() => {
@@ -61,7 +62,7 @@ function TransactionForm ({
   }, [receiverAddress])
 
   React.useEffect(() => {
-    isAnyVideoDeviceAvailable()
+    browser.isAnyVideoDeviceAvailable()
       .then(setisVideoDeviceAvailable)
       .catch(() => setisVideoDeviceAvailable(false))
   }, [])
@@ -107,15 +108,6 @@ function TransactionForm ({
     const fee = isExistingAccount || transactionType === TxType.Exit ? fees.existingAccount : fees.createAccount
 
     return fee / account.token.USD
-  }
-
-  /**
-   * Checks whether a Hermez address has a valid format
-   * @param {string} address - Hermez address e.g. hez:0x9294cD558F2Db6ca403191Ae3502cD0c2251E995
-   * @returns {boolean} - Result of the test
-   */
-  function isValidHermezAddress (address) {
-    return /^hez:0x[a-fA-F0-9]{40}$/.test(address)
   }
 
   /**
@@ -255,14 +247,26 @@ function TransactionForm ({
   /**
    * Checks if the receiver is a valid Hermez address. Change error state based on that.
    * Check if the continue button should be disabled
-   * @param {Event} event - Change event of the receiver input
+   * @param {Event|string} eventOrAddress - Change event of the receiver input or the pasted address
    * @returns {void}
    */
-  function handleReceiverInputChange (event) {
-    const newReceiver = event.target.value.trim()
+  function handleReceiverInputChange (eventOrAddress) {
+    const newReceiverUntrimmed = typeof eventOrAddress === 'string' ? eventOrAddress : event.target.value
+    const newReceiver = newReceiverUntrimmed.trim()
 
-    setIsReceiverValid(newReceiver === '' ? undefined : isValidHermezAddress(newReceiver))
-    setReceiver(newReceiver)
+    if (addresses.isValidEthereumAddress(newReceiver)) {
+      const address = addresses.getPartiallyHiddenHermezAddress(`hez:${newReceiver}`)
+
+      setReceiver(address)
+      setIsReceiverValid(true)
+    } else if (addresses.isValidHermezAddress(newReceiver)) {
+      const address = addresses.getPartiallyHiddenHermezAddress(newReceiver)
+
+      setReceiver(address)
+      setIsReceiverValid(true)
+    } else {
+      setReceiver(newReceiver)
+    }
   }
 
   /**
@@ -270,10 +274,7 @@ function TransactionForm ({
    * @returns {void}
    */
   function handlePasteClick () {
-    readFromClipboard().then((pastedContent) => {
-      setIsReceiverValid(isValidHermezAddress(pastedContent))
-      setReceiver(pastedContent)
-    })
+    browser.readFromClipboard().then(handleReceiverInputChange)
   }
 
   /**
@@ -295,13 +296,13 @@ function TransactionForm ({
   }
 
   /**
-   * Sets the receiver local state variable with the scanned Hermez Ethereum Address
-   * @param {string} hermezEthereumAddress - Scanned Hermez Ethereum Address
+   * Sets the receiver local state variable with the scanned Hermez or Ethereum Address
+   * @param {string} address - Scanned Hermez or Ethereum Address
    * @returns {void}
    */
-  function handleReceiverScanningSuccess (hermezEthereumAddress) {
+  function handleReceiverScanningSuccess (address) {
     setIsQRScannerOpen(false)
-    setReceiver(hermezEthereumAddress)
+    handleReceiverInputChange(address)
   }
 
   /**
@@ -310,7 +311,7 @@ function TransactionForm ({
    */
   function handleDeleteClick () {
     setReceiver('')
-    setIsReceiverValid(undefined)
+    setIsReceiverValid(false)
   }
 
   /**
@@ -363,15 +364,13 @@ function TransactionForm ({
    * @returns {JSX.Element} The receiver input field
    */
   function renderReceiver () {
+    console.log(receiver)
     if (transactionType === TxType.Transfer) {
       return (
         <div className={classes.receiverWrapper}>
-          <div className={clsx({
-            [classes.receiverInputWrapper]: true,
-            [classes.receiverError]: isReceiverValid === false
-          })}
-          >
+          <div className={classes.receiverInputWrapper}>
             <input
+              disabled={isReceiverValid}
               className={classes.receiver}
               value={receiver}
               onChange={handleReceiverInputChange}
@@ -381,7 +380,7 @@ function TransactionForm ({
             <div className={classes.receiverButtons}>
               {
                 // Pasting is not supported in firefox
-                !receiver.length && !(navigator.userAgent.match(/firefox/i)) && (
+                receiver.length === 0 && !browser.isFirefox() && (
                   <button
                     type='button'
                     className={classes.receiverButton}
@@ -402,27 +401,17 @@ function TransactionForm ({
                   </button>
                 )
               }
-              {!receiver.length && (
+              {receiver.length === 0 && isVideoDeviceAvailable && (
                 <button
                   type='button'
                   className={classes.receiverButton}
                   onClick={handleOpenQRScanner}
-                  disabled={!isVideoDeviceAvailable}
                 >
                   <QRScannerIcon className={classes.receiverButtonIcon} />
                 </button>
               )}
             </div>
           </div>
-
-          <p className={clsx({
-            [classes.errorMessage]: true,
-            [classes.receiverErrorMessageVisible]: isReceiverValid === false
-          })}
-          >
-            <ErrorIcon className={classes.errorIcon} />
-            Please enter a valid address (e.g. hez:0x380ed8Bd696c78395Fb1961BDa42739D2f5242a1). Receiver needs to have signed in to Hermez Wallet at least once.
-          </p>
         </div>
       )
     }
