@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { Redirect } from 'react-router-dom'
+import { isInstantWithdrawalAllowed } from '@hermeznetwork/hermezjs/src/tx'
 
 import useExitStyles from './exit.styles'
 import { CurrencySymbol } from '../../../utils/currencies'
@@ -15,14 +16,15 @@ const STEPS = {
 
 function Exit ({
   amount,
+  fixedTokenAmount,
   token,
   fiatAmount,
-  fiatAmountUSD,
   preferredCurrency,
   exitId,
   merkleProof,
   batchNum,
   accountIndex,
+  babyJubJub,
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorState,
@@ -40,16 +42,24 @@ function Exit ({
 
   React.useEffect(() => {
     if (typeof coordinatorState !== 'undefined') {
-      for (const bucket of coordinatorState.rollup.buckets) {
-        if (fiatAmountUSD < Number(bucket.ceilUSD)) {
-          setIsWithdrawDelayed(Number(bucket.withdrawals) === 0)
-          break
-        }
-      }
+      isInstantWithdrawalAllowed(
+        amount,
+        accountIndex,
+        token,
+        babyJubJub,
+        batchNum,
+        merkleProof?.siblings
+      )
+        .then(() => {
+          setIsWithdrawDelayed(false)
+        })
+        .catch(() => {
+          setIsWithdrawDelayed(true)
+        })
 
       setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode)
     }
-  }, [coordinatorState, fiatAmountUSD, setIsWithdrawDelayed, setIsEmergencyMode])
+  }, [isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode])
 
   /**
    * Calculates in which step is the Exit process in
@@ -87,7 +97,7 @@ function Exit ({
    * @returns {number} - Withdrawal delay in days
    */
   function getWithdrawalDelayerTime () {
-    return Math.round(coordinatorState.withdrawalDelayer.withdrawalDelay / 60 / 60 / 24)
+    return Math.round(coordinatorState.withdrawalDelayer.withdrawalDelay / 60 / 60)
   }
 
   /**
@@ -101,18 +111,15 @@ function Exit ({
     const now = Date.now()
     const difference = now - delayedWithdrawal.date
     if (delayedWithdrawal.instant) {
-      const twoHours = 2 * 60 * 60 * 1000
-      if (difference > twoHours) {
+      const tenMinutes = 10 * 60 * 1000
+      if (difference > tenMinutes) {
         onRemovePendingDelayedWithdraw(exitId)
       } else {
-        const remainingDifference = twoHours - difference
-        // Extracts the hours and minutes from the remaining difference
-        const hours = remainingDifference / 1000 / 60 / 60
-        const hoursFixed = Math.floor(hours)
-        // Minutes are in a value between 0-1, so we need to convert to 0-60
-        const minutes = Math.round((hours - hoursFixed) * 60)
+        const remainingDifference = tenMinutes - difference
+        // Extracts the minutes from the remaining difference
+        const minutes = Math.round(remainingDifference / 1000 / 60)
 
-        return `${hoursFixed}h ${minutes}m`
+        return `${minutes}m`
       }
     } else {
       const delayedTime = coordinatorState.withdrawalDelayer.withdrawalDelay * 1000
@@ -120,13 +127,13 @@ function Exit ({
         setIsDelayedWithdrawalReady(true)
       } else {
         const remainingDifference = delayedTime - difference
-        // Extracts the days and hours from the remaining difference
-        const days = remainingDifference / 1000 / 60 / 60 / 24
-        const daysFixed = Math.floor(days)
-        // Hours are in a value between 0-1, so we need to convert to 0-24
-        const hours = Math.round((days - daysFixed) * 24)
+        // Extracts the hours and minutes from the remaining difference
+        const hours = remainingDifference / 1000 / 60 / 60
+        const hoursFixed = Math.floor(hours)
+        // Minutes are in a value between 0-1, so we need to convert to 0-60
+        const minutes = Math.round((hours - hoursFixed) * 60)
 
-        return `${daysFixed}d ${hours}h`
+        return `${hoursFixed}h ${minutes}m`
       }
     }
   }
@@ -157,7 +164,8 @@ function Exit ({
     onAddPendingDelayedWithdraw({
       id: exitId,
       instant: true,
-      date: Date.now()
+      date: Date.now(),
+      token
     })
   }
 
@@ -178,7 +186,7 @@ function Exit ({
       <p className={classes.step}>Step {getStep()}/3</p>
       <div className={classes.rowTop}>
         <span className={classes.txType}>Withdrawal</span>
-        <span className={classes.tokenAmount}>{amount} {token.symbol}</span>
+        <span className={classes.tokenAmount}>{fixedTokenAmount} {token.symbol}</span>
       </div>
       <div className={classes.rowBottom}>
         <div className={clsx({
@@ -238,8 +246,8 @@ function Exit ({
                   <span className={classes.infoText}>You can try to withdraw your funds later or you can schedule this transaction.</span>
                 </div>
                 <div className={classes.withdrawDelayedButtons}>
-                  <button className={`${classes.withdrawButton} ${classes.withdrawDelayerInstantButton}`} onClick={onCheckAvailabilityClick}>Check availability in 2 hours</button>
-                  <button className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`} onClick={onWithdrawDelayedClick}>Withdraw in {getWithdrawalDelayerTime()} days</button>
+                  <button className={`${classes.withdrawButton} ${classes.withdrawDelayerInstantButton}`} onClick={onCheckAvailabilityClick}>Check availability in 10m</button>
+                  <button className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`} onClick={onWithdrawDelayedClick}>Withdraw in {getWithdrawalDelayerTime()} {getWithdrawalDelayerTime() === 1 ? 'hour' : 'hours'}</button>
                 </div>
               </div>
             )
@@ -265,7 +273,6 @@ Exit.propTypes = {
   amount: PropTypes.string.isRequired,
   token: PropTypes.object.isRequired,
   fiatAmount: PropTypes.number.isRequired,
-  fiatAmountUSD: PropTypes.number.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   merkleProof: PropTypes.object,
   batchNum: PropTypes.number,

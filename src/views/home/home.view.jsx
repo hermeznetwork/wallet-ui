@@ -182,6 +182,7 @@ function Home ({
                   transactions={getPendingExits()}
                   fiatExchangeRates={fiatExchangeRatesTask.data}
                   preferredCurrency={preferredCurrency}
+                  babyJubJub={wallet.publicKeyCompressedHex}
                   pendingWithdraws={accountPendingWithdraws}
                   pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
@@ -201,6 +202,7 @@ function Home ({
                     : undefined
                 }
                   preferredCurrency={preferredCurrency}
+                  babyJubJub={wallet.publicKeyCompressedHex}
                   pendingWithdraws={accountPendingWithdraws}
                   pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
@@ -321,10 +323,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchExits(exitTransactions)),
   onRefreshAccounts: () =>
     dispatch(homeThunks.refreshAccounts()),
-  onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
-    dispatch(globalThunks.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
-  onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>
-    dispatch(globalThunks.removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId)),
+  onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
+    dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
+  onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
+    dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) =>

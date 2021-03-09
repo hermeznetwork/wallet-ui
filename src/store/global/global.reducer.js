@@ -198,7 +198,8 @@ function globalReducer (state = initialGlobalState, action) {
           ...state.pendingDelayedWithdraws,
           [action.chainId]: {
             ...chainIdPendingDelayedWithdraws,
-            [action.hermezEthereumAddress]: [...accountPendingDelayedWithdraws, action.pendingDelayedWithdraw]
+            [action.hermezEthereumAddress]: accountPendingDelayedWithdraws
+              .filter(withdraw => withdraw.id !== action.pendingDelayedWithdrawId)
           }
         }
       }

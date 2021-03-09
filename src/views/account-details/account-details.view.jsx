@@ -337,10 +337,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem, exits)),
   onLoadExits: (tokenId) =>
     dispatch(accountDetailsThunks.fetchExits(tokenId)),
-  onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
-    dispatch(globalThunks.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
-  onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>
-    dispatch(globalThunks.removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId)),
+  onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
+    dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
+  onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
+    dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
   onCleanup: () =>

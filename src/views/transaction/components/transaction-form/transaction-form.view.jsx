@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
-import { Scalar } from 'ffjavascript'
 import { getAccounts, getCreateAccountAuthorization } from '@hermeznetwork/hermezjs/src/api'
 import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
@@ -232,10 +231,10 @@ function TransactionForm ({
       return
     }
 
-    const minFeeInScalar = Scalar.fromString(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
+    const minFeeInBigInt = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
     const newAmount = transactionType === TxType.Deposit
       ? maxAmount.toString()
-      : getMaxAmountFromMinimumFee(minFeeInScalar, maxAmount).toString()
+      : getMaxAmountFromMinimumFee(minFeeInBigInt, maxAmount).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
     const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(newAmount.length - 10).fill(0).join('')}`).toString()
     const newAmountInFiat = getAmountInFiat(newAmountInToken)
