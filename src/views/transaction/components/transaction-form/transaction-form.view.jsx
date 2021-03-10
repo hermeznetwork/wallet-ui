@@ -41,7 +41,8 @@ function TransactionForm ({
   const [isAmountLessThanFunds, setIsAmountLessThanFunds] = React.useState(undefined)
   const [isAmountPositive, setIsAmountPositive] = React.useState(undefined)
   const [isAmountCompressedValid, setIsAmountCompressedValid] = React.useState(undefined)
-  const [isReceiverValid, setIsReceiverValid] = React.useState(false)
+  const [isReceiverValid, setIsReceiverValid] = React.useState(undefined)
+  const [doesReceiverExist, setDoesReceiverExist] = React.useState(undefined)
   const amountInput = React.useRef(undefined)
 
   React.useEffect(() => {
@@ -119,11 +120,17 @@ function TransactionForm ({
 
     if (transactionType !== TxType.Transfer && isAmountValid) {
       return false
-    } else if (isAmountValid && isReceiverValid) {
+    } else if (isAmountValid && isReceiverValid && doesReceiverExist === undefined) {
       return false
     } else {
       return true
     }
+  }
+
+  function getReceiverInputValue () {
+    return isReceiverValid
+      ? addresses.getPartiallyHiddenHermezAddress(receiver)
+      : receiver
   }
 
   function getAmountInputValue () {
@@ -254,18 +261,19 @@ function TransactionForm ({
     const newReceiverUntrimmed = typeof eventOrAddress === 'string' ? eventOrAddress : event.target.value
     const newReceiver = newReceiverUntrimmed.trim()
 
-    if (addresses.isValidEthereumAddress(newReceiver)) {
-      const address = addresses.getPartiallyHiddenHermezAddress(`hez:${newReceiver}`)
+    if (newReceiver === '') {
+      return handleDeleteClick()
+    }
 
-      setReceiver(address)
+    if (addresses.isValidEthereumAddress(newReceiver)) {
+      setReceiver(`hez:${newReceiver}`)
       setIsReceiverValid(true)
     } else if (addresses.isValidHermezAddress(newReceiver)) {
-      const address = addresses.getPartiallyHiddenHermezAddress(newReceiver)
-
-      setReceiver(address)
+      setReceiver(newReceiver)
       setIsReceiverValid(true)
     } else {
       setReceiver(newReceiver)
+      setIsReceiverValid(false)
     }
   }
 
@@ -311,7 +319,8 @@ function TransactionForm ({
    */
   function handleDeleteClick () {
     setReceiver('')
-    setIsReceiverValid(false)
+    setIsReceiverValid(undefined)
+    setDoesReceiverExist(undefined)
   }
 
   /**
@@ -335,17 +344,18 @@ function TransactionForm ({
         return Promise.all(accountChecks)
           .then((res) => {
             const receiverAccount = res[0].accounts[0]
-            if (!receiverAccount && !res[1]) {
-              setIsReceiverValid(false)
-              return
-            }
-            const transactionFee = getFee(fees, receiverAccount)
 
-            onSubmit({
-              amount: amount,
-              to: receiverAccount || { hezEthereumAddress: receiver },
-              fee: transactionFee
-            })
+            if (!receiverAccount && !res[1]) {
+              setDoesReceiverExist(false)
+            } else {
+              const transactionFee = getFee(fees, receiverAccount)
+
+              onSubmit({
+                amount: amount,
+                to: receiverAccount || { hezEthereumAddress: receiver },
+                fee: transactionFee
+              })
+            }
           })
       }
       default: {
@@ -405,6 +415,7 @@ function TransactionForm ({
                           <button
                             type='button'
                             className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.amountMax}`}
+                            tabIndex='-1'
                             onClick={handleSendAllButtonClick}
                           >
                             Max
@@ -418,6 +429,7 @@ function TransactionForm ({
                           <button
                             type='button'
                             className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.changeCurrency}`}
+                            tabIndex='-1'
                             onClick={handleChangeCurrencyButtonClick}
                           >
                             <SwapIcon className={classes.changeCurrencyIcon} />
@@ -447,7 +459,7 @@ function TransactionForm ({
                               <input
                                 disabled={isReceiverValid}
                                 className={classes.receiver}
-                                value={receiver}
+                                value={getReceiverInputValue()}
                                 onChange={handleReceiverInputChange}
                                 type='text'
                                 placeholder='To hez:0x2387 ･･･ 5682'
@@ -459,6 +471,7 @@ function TransactionForm ({
                                     <button
                                       type='button'
                                       className={classes.receiverButton}
+                                      tabIndex='-1'
                                       onClick={handlePasteClick}
                                     >
                                       Paste
@@ -470,6 +483,7 @@ function TransactionForm ({
                                     <button
                                       type='button'
                                       className={classes.receiverButton}
+                                      tabIndex='-1'
                                       onClick={handleDeleteClick}
                                     >
                                       <CloseIcon className={classes.receiverDeleteButtonIcon} />
@@ -481,6 +495,7 @@ function TransactionForm ({
                                     <button
                                       type='button'
                                       className={classes.receiverButton}
+                                      tabIndex='-1'
                                       onClick={handleOpenQRScanner}
                                     >
                                       <QRScannerIcon className={classes.receiverButtonIcon} />
@@ -489,6 +504,20 @@ function TransactionForm ({
                                 }
                               </div>
                             </div>
+                            <p className={clsx({
+                              [classes.errorMessage]: true,
+                              [classes.receiverErrorMessageVisible]: isReceiverValid === false || doesReceiverExist === false
+                            })}
+                            >
+                              <ErrorIcon className={classes.errorIcon} />
+                              {
+                                isReceiverValid === false
+                                  ? 'Please, enter a valid Hermez or Ethereum Address'
+                                  : doesReceiverExist === false
+                                    ? 'Please, enter an existing address. Receiver needs to have signed in to Hermez Wallet at least once.'
+                                    : ''
+                              }
+                            </p>
                           </div>
                         )
                       }
