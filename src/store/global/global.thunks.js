@@ -1,4 +1,4 @@
-import hermezjs, { CoordinatorAPI, Providers, Tx, TxUtils, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
+import hermezjs, { CoordinatorAPI, Providers, Tx, TxUtils } from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
 import { ethers } from 'ethers'
 import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
@@ -293,12 +293,11 @@ function checkPendingTransactions () {
         const tenMinutesInMs = 10 * 60 * 1000
         const oneDayInMs = 24 * 60 * 60 * 1000
         const resendTransactionsRequests = poolTransactions
-          .filter(transaction => transaction !== null)
           .filter(transaction => {
             const txTimestampInMs = new Date(transaction.timestamp).getTime()
             const nowInMs = new Date().getTime()
 
-            // Retry the transaction if it hasn't been forged after 10min and it's not 24h old yet
+            // Retry the transaction if it hasn't been forged after 10min and it's not 24h old yet+
             if (
               transaction.state !== TxState.Forged &&
               txTimestampInMs + tenMinutesInMs < nowInMs &&
@@ -309,14 +308,7 @@ function checkPendingTransactions () {
               return false
             }
           })
-          .map((transaction) => {
-            const txData = {
-              ...transaction,
-              amount: HermezCompressedAmount.compressAmount(transaction.amount)
-            }
-
-            return Tx.generateAndSendL2Tx(txData, wallet, transaction.token)
-          })
+          .map((transaction) => Tx.sendL2Transaction(transaction, wallet.publicKeyCompressedHex))
 
         Promise.all(resendTransactionsRequests)
       })
