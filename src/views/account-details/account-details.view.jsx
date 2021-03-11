@@ -247,6 +247,7 @@ function AccountDetails ({
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       preferredCurrency={preferredCurrency}
                       onTransactionClick={handleTransactionClick}
+                      coordinatorState={coordinatorStateTask.data}
                     />
                   )}
                   <TransactionList

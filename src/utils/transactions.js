@@ -23,6 +23,9 @@ function getTransactionAmount (transaction) {
  * @returns {Number} timeLeftToForgeInMinutes
  */
 function getTxPendingTime (coordinatorState, transactionTimestamp) {
+  if (!coordinatorState) {
+    return 0
+  }
   const timeToForge = coordinatorState.nodeConfig.forgeDelay
   const lastBatchForgedInSeconds = Date.parse(coordinatorState.network.lastBatch.timestamp) / 1000
   const timeSinceTxInSeconds = lastBatchForgedInSeconds - (Date.parse(transactionTimestamp) / 1000)
