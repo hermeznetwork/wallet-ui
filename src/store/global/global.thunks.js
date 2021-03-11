@@ -290,41 +290,35 @@ function checkPendingTransactions () {
 
     hermezjs.TxPool.getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
       .then((poolTransactions) => {
-        const poolTransactionsRequests = poolTransactions
-          .map(poolTransaction => CoordinatorAPI.getPoolTransaction(poolTransaction.id).catch(() => {}))
+        const tenMinutesInMs = 10 * 60 * 1000
+        const oneDayInMs = 24 * 60 * 60 * 1000
+        const resendTransactionsRequests = poolTransactions
+          .filter(transaction => transaction !== null)
+          .filter(transaction => {
+            const txTimestampInMs = new Date(transaction.timestamp).getTime()
+            const nowInMs = new Date().getTime()
 
-        Promise.all(poolTransactionsRequests)
-          .then((poolTransactionsResponses) => {
-            const tenMinutesInMs = 10 * 60 * 1000
-            const oneDayInMs = 24 * 60 * 60 * 1000
-            const resendTransactionsRequests = poolTransactionsResponses
-              .filter(transaction => transaction !== null)
-              .filter(transaction => {
-                const txTimestampInMs = new Date(transaction.timestamp).getTime()
-                const nowInMs = new Date().getTime()
-
-                // Retry the transaction if it hasn't been forged after 10min and it's not 24h old yet
-                if (
-                  transaction.state !== TxState.Forged &&
-                  txTimestampInMs + tenMinutesInMs < nowInMs &&
-                  txTimestampInMs + oneDayInMs > nowInMs
-                ) {
-                  return true
-                } else {
-                  return false
-                }
-              })
-              .map((transaction) => {
-                const txData = {
-                  ...transaction,
-                  amount: HermezCompressedAmount.compressAmount(transaction.amount)
-                }
-
-                return Tx.generateAndSendL2Tx(txData, wallet, transaction.token)
-              })
-
-            Promise.all(resendTransactionsRequests)
+            // Retry the transaction if it hasn't been forged after 10min and it's not 24h old yet
+            if (
+              transaction.state !== TxState.Forged &&
+              txTimestampInMs + tenMinutesInMs < nowInMs &&
+              txTimestampInMs + oneDayInMs > nowInMs
+            ) {
+              return true
+            } else {
+              return false
+            }
           })
+          .map((transaction) => {
+            const txData = {
+              ...transaction,
+              amount: HermezCompressedAmount.compressAmount(transaction.amount)
+            }
+
+            return Tx.generateAndSendL2Tx(txData, wallet, transaction.token)
+          })
+
+        Promise.all(resendTransactionsRequests)
       })
   }
 }

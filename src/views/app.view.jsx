@@ -47,6 +47,7 @@ function App ({
     let intervalId
 
     if (wallet) {
+      console.log('asd')
       intervalId = setInterval(onCheckPendingTransactions, RETRY_POOL_TXS_RATE)
     }
 
