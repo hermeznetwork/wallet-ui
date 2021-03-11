@@ -1,4 +1,4 @@
-import hermezjs, { CoordinatorAPI, Providers, TxUtils } from '@hermeznetwork/hermezjs'
+import hermezjs, { CoordinatorAPI, Providers, Tx, TxUtils, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
 import { ethers } from 'ethers'
 import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
@@ -8,6 +8,7 @@ import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
+import { TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -283,6 +284,51 @@ function checkPendingDeposits () {
   }
 }
 
+function checkPendingTransactions () {
+  return (_, getState) => {
+    const { global: { wallet } } = getState()
+
+    hermezjs.TxPool.getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+      .then((poolTransactions) => {
+        const poolTransactionsRequests = poolTransactions
+          .map(poolTransaction => CoordinatorAPI.getPoolTransaction(poolTransaction.id).catch(() => {}))
+
+        Promise.all(poolTransactionsRequests)
+          .then((poolTransactionsResponses) => {
+            const tenMinutesInMs = 10 * 60 * 1000
+            const oneDayInMs = 24 * 60 * 60 * 1000
+            const resendTransactionsRequests = poolTransactionsResponses
+              .filter(transaction => transaction !== null)
+              .filter(transaction => {
+                const txTimestampInMs = new Date(transaction.timestamp).getTime()
+                const nowInMs = new Date().getTime()
+
+                // Retry the transaction if it hasn't been forged after 10min and it's not 24h old yet
+                if (
+                  transaction.state !== TxState.Forged &&
+                  txTimestampInMs + tenMinutesInMs < nowInMs &&
+                  txTimestampInMs + oneDayInMs > nowInMs
+                ) {
+                  return true
+                } else {
+                  return false
+                }
+              })
+              .map((transaction) => {
+                const txData = {
+                  ...transaction,
+                  amount: HermezCompressedAmount.compressAmount(transaction.amount)
+                }
+
+                return Tx.generateAndSendL2Tx(txData, wallet, transaction.token)
+              })
+
+            Promise.all(resendTransactionsRequests)
+          })
+      })
+  }
+}
+
 /**
  * Fetches the state of the coordinator
  * @returns {void}
@@ -331,6 +377,7 @@ export {
   removePendingDeposit,
   updatePendingDepositId,
   checkPendingDeposits,
+  checkPendingTransactions,
   fetchCoordinatorState,
   disconnectWallet,
   reloadApp

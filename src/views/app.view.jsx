@@ -11,8 +11,10 @@ import routes from '../routing/routes'
 import * as globalThunks from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
 import { CurrencySymbol } from '../utils/currencies'
+import { RETRY_POOL_TXS_RATE } from '../constants'
 
 function App ({
+  wallet,
   ethereumNetworkTask,
   fiatExchangeRatesTask,
   coordinatorStateTask,
@@ -21,6 +23,7 @@ function App ({
   onDisconnectAccount,
   onLoadCoordinatorState,
   onSetHermezEnvironment,
+  onCheckPendingTransactions,
   onReloadApp
 }) {
   const theme = useTheme()
@@ -39,6 +42,16 @@ function App ({
       onLoadCoordinatorState()
     }
   }, [ethereumNetworkTask, onLoadCoordinatorState])
+
+  React.useEffect(() => {
+    let intervalId
+
+    if (wallet) {
+      intervalId = setInterval(onCheckPendingTransactions, RETRY_POOL_TXS_RATE)
+    }
+
+    return () => { intervalId && clearInterval(intervalId) }
+  }, [wallet])
 
   React.useEffect(() => {
     if (coordinatorStateTask.status === 'successful') {
@@ -103,6 +116,7 @@ App.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
+  wallet: state.global.wallet,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   coordinatorStateTask: state.global.coordinatorStateTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask
@@ -118,6 +132,7 @@ const mapDispatchToProps = (dispatch) => ({
           .map((currency) => currency.code)
       )
     ),
+  onCheckPendingTransactions: () => dispatch(globalThunks.checkPendingTransactions()),
   onChangeNetworkStatus: (networkStatus, backgroundColor) =>
     dispatch(globalThunks.changeNetworkStatus(networkStatus, backgroundColor)),
   onDisconnectAccount: () => dispatch(globalThunks.disconnectWallet()),
