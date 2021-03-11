@@ -153,7 +153,7 @@ function TransactionDetails ({
               case 'successful': {
                 return (
                   <>
-                    {getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp) > 0 &&
+                    {!transactionTask.data.batchNum && getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp) > 0 &&
                       <p className={classes.timeEstimate}>
                         <InfoIcon className={classes.timeEstimateIcon} />
                         <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp)} minutes.</span>
