@@ -215,6 +215,7 @@ function AccountDetails ({
                           transactions={getPendingExits(poolTransactionsTask.data)}
                           fiatExchangeRates={fiatExchangeRatesTask.data}
                           preferredCurrency={preferredCurrency}
+                          babyJubJub={wallet.publicKeyCompressedHex}
                           pendingWithdraws={tokenPendingWithdraws}
                           pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
                           onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
@@ -230,6 +231,7 @@ function AccountDetails ({
                           transactions={exitsTask.data.exits}
                           fiatExchangeRates={fiatExchangeRatesTask.data}
                           preferredCurrency={preferredCurrency}
+                          babyJubJub={wallet.publicKeyCompressedHex}
                           pendingWithdraws={tokenPendingWithdraws}
                           pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
                           onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
