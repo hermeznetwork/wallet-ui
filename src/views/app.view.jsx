@@ -3,7 +3,6 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
-import hermez from '@hermeznetwork/hermezjs'
 
 import useAppStyles from './app.styles'
 import Layout from './shared/layout/layout.view'
@@ -47,21 +46,11 @@ function App ({
     let intervalId
 
     if (wallet) {
-      console.log('asd')
       intervalId = setInterval(onCheckPendingTransactions, RETRY_POOL_TXS_RATE)
     }
 
     return () => { intervalId && clearInterval(intervalId) }
   }, [wallet])
-
-  React.useEffect(() => {
-    if (coordinatorStateTask.status === 'successful') {
-      const forgers = coordinatorStateTask.data.network.nextForgers
-      if (forgers && forgers.length > 0) {
-        hermez.CoordinatorAPI.setBaseApiUrl(forgers[0].coordinator.URL)
-      }
-    }
-  }, [coordinatorStateTask])
 
   React.useEffect(() => {
     window.addEventListener('online', () => {

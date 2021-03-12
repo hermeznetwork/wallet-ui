@@ -30,6 +30,7 @@ const initialGlobalState = {
   pendingDepositsCheckTask: {
     status: 'pending'
   },
+  nextForgers: [],
   coordinatorStateTask: {
     status: 'pending'
   }
@@ -280,8 +281,10 @@ function globalReducer (state = initialGlobalState, action) {
       }
     }
     case globalActionTypes.LOAD_COORDINATOR_STATE_SUCCESS: {
+      const nextForgers = [...new Set(action.coordinatorState.network.nextForgers.map((nextForger) => nextForger.coordinator.URL))]
       return {
         ...state,
+        nextForgers,
         coordinatorStateTask: {
           status: 'successful',
           data: action.coordinatorState

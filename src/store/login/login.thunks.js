@@ -125,7 +125,7 @@ function postCreateAccountAuthorization (wallet) {
   return (dispatch, getState) => {
     const {
       login: { accountAuthSignatures },
-      global: { redirectRoute, ethereumNetworkTask }
+      global: { redirectRoute, ethereumNetworkTask, nextForgers }
     } = getState()
 
     const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.chainId] || {}
@@ -141,7 +141,8 @@ function postCreateAccountAuthorization (wallet) {
         return hermez.CoordinatorAPI.postCreateAccountAuthorization(
           wallet.hermezEthereumAddress,
           wallet.publicKeyBase64,
-          signature
+          signature,
+          nextForgers
         )
       })
       .then(() => {
