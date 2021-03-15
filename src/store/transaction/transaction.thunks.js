@@ -334,7 +334,7 @@ function transfer (amount, from, to, fee) {
   return (dispatch, getState) => {
     const { global: { wallet, nextForgers } } = getState()
     const txData = {
-      type: TxType.Transfer,
+      type: to.accountIndex ? TxType.Transfer : TxType.TransferToEthAddr,
       from: from.accountIndex,
       to: to.accountIndex || to.hezEthereumAddress,
       amount: HermezCompressedAmount.compressAmount(amount),
