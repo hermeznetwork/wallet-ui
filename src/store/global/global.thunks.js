@@ -1,14 +1,14 @@
-import hermezjs, { CoordinatorAPI, Providers, Tx, TxUtils } from '@hermeznetwork/hermezjs'
+import hermezjs, { CoordinatorAPI, Providers, Tx, TxUtils, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
 import { ethers } from 'ethers'
 import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
-import { TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -286,7 +286,7 @@ function checkPendingDeposits () {
 
 function checkPendingTransactions () {
   return (_, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, nextForgers } } = getState()
 
     hermezjs.TxPool.getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
       .then((poolTransactions) => {
@@ -299,7 +299,6 @@ function checkPendingTransactions () {
 
             // Retry the transaction if it hasn't been forged after 10min and it's not 24h old yet+
             if (
-              transaction.state !== TxState.Forged &&
               txTimestampInMs + tenMinutesInMs < nowInMs &&
               txTimestampInMs + oneDayInMs > nowInMs
             ) {
@@ -308,7 +307,18 @@ function checkPendingTransactions () {
               return false
             }
           })
-          .map((transaction) => Tx.sendL2Transaction(transaction, wallet.publicKeyCompressedHex))
+          .map((transaction) => {
+            const txData = {
+              type: transaction.type,
+              from: transaction.fromAccountIndex,
+              amount: HermezCompressedAmount.compressAmount(transaction.amount),
+              ...(transaction.type === TxType.Transfer ? { to: transaction.toAccountIndex } : {}),
+              fee: transaction.fee
+            }
+
+            return Tx.generateAndSendL2Tx(txData, wallet, transaction.token, nextForgers, false)
+              .catch(() => {})
+          })
 
         Promise.all(resendTransactionsRequests)
       })
