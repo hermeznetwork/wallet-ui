@@ -2,7 +2,7 @@ import hermezjs, { CoordinatorAPI, Providers, Tx, TxUtils, HermezCompressedAmoun
 import { push } from 'connected-react-router'
 import { ethers } from 'ethers'
 import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
@@ -298,21 +298,22 @@ function checkPendingTransactions () {
             const nowInMs = new Date().getTime()
 
             // Retry the transaction if it hasn't been forged after 10min and it's not 24h old yet+
-            if (
+            return transaction.state !== TxState.Forged &&
               txTimestampInMs + tenMinutesInMs < nowInMs &&
               txTimestampInMs + oneDayInMs > nowInMs
-            ) {
-              return true
-            } else {
-              return false
-            }
           })
           .map((transaction) => {
             const txData = {
               type: transaction.type,
               from: transaction.fromAccountIndex,
               amount: HermezCompressedAmount.compressAmount(transaction.amount),
-              ...(transaction.type === TxType.Transfer ? { to: transaction.toAccountIndex } : {}),
+              ...(
+                transaction.type === TxType.TransferToEthAddr
+                  ? { to: transaction.toHezEthereumAddress }
+                  : transaction.type === TxType.Transfer
+                    ? { to: transaction.toAccountIndex }
+                    : {}
+              ),
               fee: transaction.fee
             }
 
