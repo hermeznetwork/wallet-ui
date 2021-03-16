@@ -12,6 +12,7 @@ function TransactionList ({
   preferredCurrency,
   fiatExchangeRates,
   arePending,
+  coordinatorState,
   onTransactionClick
 }) {
   const classes = useTransactionListStyles()
@@ -60,6 +61,7 @@ function TransactionList ({
               isPending={arePending}
               timestamp={transaction.timestamp}
               preferredCurrency={preferredCurrency}
+              coordinatorState={coordinatorState}
               onClick={() => handleTransactionClick(transaction)}
             />
           </div>

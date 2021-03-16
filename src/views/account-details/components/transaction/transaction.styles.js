@@ -30,6 +30,9 @@ const useTransactionStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main
   },
+  pendingContainer: {
+    display: 'flex'
+  },
   pendingLabelContainer: {
     background: theme.palette.secondary.light,
     padding: theme.spacing(1),
@@ -39,6 +42,9 @@ const useTransactionStyles = createUseStyles(theme => ({
   pendingLabelText: {
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.secondary.dark
+  },
+  pendingTimer: {
+    marginLeft: theme.spacing(1)
   },
   tokenSymbol: {
     fontWeight: theme.fontWeights.bold

@@ -272,7 +272,12 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
         signer
       )
         .then(() => {
-          dispatch(globalThunks.removePendingDelayedWithdraw(withdrawalId))
+          dispatch(globalThunks.addPendingWithdraw({
+            hermezEthereumAddress: wallet.hermezEthereumAddress,
+            id: withdrawalId,
+            amount,
+            token: account.token
+          }))
           dispatch(transactionActions.goToFinishTransactionStep())
         })
         .catch((error) => {
@@ -307,7 +312,7 @@ function forceExit (amount, account) {
 
 function exit (amount, account, fee) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, nextForgers } } = getState()
     const txData = {
       type: TxType.Exit,
       from: account.accountIndex,
@@ -315,7 +320,7 @@ function exit (amount, account, fee) {
       fee
     }
 
-    return Tx.generateAndSendL2Tx(txData, wallet, account.token)
+    return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgers)
       .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
       .catch((error) => {
         console.error(error)
@@ -327,16 +332,16 @@ function exit (amount, account, fee) {
 
 function transfer (amount, from, to, fee) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, nextForgers } } = getState()
     const txData = {
-      type: TxType.Transfer,
+      type: to.accountIndex ? TxType.Transfer : TxType.TransferToEthAddr,
       from: from.accountIndex,
       to: to.accountIndex || to.hezEthereumAddress,
       amount: HermezCompressedAmount.compressAmount(amount),
       fee
     }
 
-    return Tx.generateAndSendL2Tx(txData, wallet, from.token)
+    return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgers)
       .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
       .catch((error) => {
         console.error(error)

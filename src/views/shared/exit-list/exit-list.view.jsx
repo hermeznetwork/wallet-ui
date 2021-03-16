@@ -2,12 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import Exit from '../exit/exit.view'
-import { CurrencySymbol, getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
+import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
 
 function ExitList ({
   transactions,
   preferredCurrency,
   fiatExchangeRates,
+  babyJubJub,
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorState,
@@ -18,15 +19,17 @@ function ExitList ({
   return (
     <>
       {transactions.map((transaction) => {
+        const amount = transaction.amount || transaction.balance
         const fixedTokenAmount = getFixedTokenAmount(
-          transaction.amount || transaction.balance,
+          amount,
           transaction.token.decimals
         )
 
         return (
           <Exit
             key={transaction.id || transaction.itemId}
-            amount={fixedTokenAmount}
+            amount={amount}
+            fixedTokenAmount={fixedTokenAmount}
             token={transaction.token}
             fiatAmount={transaction.historicUSD
               ? getAmountInPreferredCurrency(
@@ -40,17 +43,12 @@ function ExitList ({
                 preferredCurrency,
                 fiatExchangeRates
               )}
-            fiatAmountUSD={transaction.historicUSD || getTokenAmountInPreferredCurrency(
-              fixedTokenAmount,
-              transaction.token.USD,
-              CurrencySymbol.USD.code,
-              fiatExchangeRates
-            )}
             preferredCurrency={preferredCurrency}
             batchNum={transaction.batchNum}
             exitId={transaction.accountIndex + transaction.batchNum}
             merkleProof={transaction.merkleProof}
             accountIndex={transaction.accountIndex}
+            babyJubJub={babyJubJub}
             pendingWithdraws={pendingWithdraws}
             pendingDelayedWithdraws={pendingDelayedWithdraws}
             onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}

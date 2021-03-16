@@ -58,11 +58,16 @@ function isiOsDevice () {
   return /iPhone|iPad|iPod/.test(navigator.userAgent)
 }
 
+function isFirefox () {
+  return navigator.userAgent.match(/firefox/i)
+}
+
 export {
   copyToClipboard,
   readFromClipboard,
   isAnyVideoDeviceAvailable,
   isMobileDevice,
   isAndroidDevice,
-  isiOsDevice
+  isiOsDevice,
+  isFirefox
 }

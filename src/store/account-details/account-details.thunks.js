@@ -47,16 +47,6 @@ function filterExitsFromHistoryTransactions (historyTransactions, exits, pending
   return historyTransactions.filter((transaction) => {
     if (transaction.type === TxType.Exit) {
       const exitId = transaction.fromAccountIndex + transaction.batchNum
-      const pendingWithdraw = pendingWithdraws.find((pendingWithdraw) => pendingWithdraw.id === exitId)
-
-      if (pendingWithdraw) {
-        dispatch(removePendingWithdraw(wallet.hermezEthereumAddress, exitId))
-      }
-
-      const pendingDelayedWithdraw = pendingDelayedWithdraws.find((pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId)
-      if (pendingDelayedWithdraw) {
-        dispatch(removePendingDelayedWithdraw(wallet.hermezEthereumAddress, exitId))
-      }
 
       const exitTx = exits.find((exit) =>
         exit.batchNum === transaction.batchNum &&
@@ -65,6 +55,15 @@ function filterExitsFromHistoryTransactions (historyTransactions, exits, pending
 
       if (exitTx) {
         if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
+          const pendingWithdraw = pendingWithdraws.find((pendingWithdraw) => pendingWithdraw.id === exitId)
+          if (pendingWithdraw) {
+            dispatch(removePendingWithdraw(exitId))
+          }
+
+          const pendingDelayedWithdraw = pendingDelayedWithdraws.find((pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId)
+          if (pendingDelayedWithdraw) {
+            dispatch(removePendingDelayedWithdraw(exitId))
+          }
           return true
         } else {
           return false

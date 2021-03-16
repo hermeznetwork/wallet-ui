@@ -44,7 +44,6 @@ function AccountDetails ({
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
-  onRefresHistoryTransactions,
   onCheckPendingDeposits,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
@@ -216,6 +215,7 @@ function AccountDetails ({
                           transactions={getPendingExits(poolTransactionsTask.data)}
                           fiatExchangeRates={fiatExchangeRatesTask.data}
                           preferredCurrency={preferredCurrency}
+                          babyJubJub={wallet.publicKeyCompressedHex}
                           pendingWithdraws={tokenPendingWithdraws}
                           pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
                           onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
@@ -231,6 +231,7 @@ function AccountDetails ({
                           transactions={exitsTask.data.exits}
                           fiatExchangeRates={fiatExchangeRatesTask.data}
                           preferredCurrency={preferredCurrency}
+                          babyJubJub={wallet.publicKeyCompressedHex}
                           pendingWithdraws={tokenPendingWithdraws}
                           pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
                           onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
@@ -248,6 +249,7 @@ function AccountDetails ({
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       preferredCurrency={preferredCurrency}
                       onTransactionClick={handleTransactionClick}
+                      coordinatorState={coordinatorStateTask.data}
                     />
                   )}
                   <TransactionList
@@ -257,6 +259,7 @@ function AccountDetails ({
                     fiatExchangeRates={fiatExchangeRatesTask.data}
                     preferredCurrency={preferredCurrency}
                     onTransactionClick={handleTransactionClick}
+                    coordinatorState={coordinatorStateTask.data}
                   />
                   <InfiniteScroll
                     asyncTaskStatus={historyTransactionsTask.status}
@@ -337,12 +340,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem, exits)),
   onLoadExits: (tokenId) =>
     dispatch(accountDetailsThunks.fetchExits(tokenId)),
-  onRefresHistoryTransactions: (accountIndex) =>
-    dispatch(accountDetailsThunks.refreshHistoryTransactions(accountIndex)),
-  onAddPendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdraw) =>
-    dispatch(globalThunks.addPendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdraw)),
-  onRemovePendingDelayedWithdraw: (hermezEthereumAddress, pendingDelayedWithdrawId) =>
-    dispatch(globalThunks.removePendingDelayedWithdraw(hermezEthereumAddress, pendingDelayedWithdrawId)),
+  onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
+    dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
+  onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
+    dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
   onCleanup: () =>
