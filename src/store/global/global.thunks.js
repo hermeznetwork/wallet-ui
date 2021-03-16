@@ -1,7 +1,8 @@
-import hermezjs, { CoordinatorAPI, Providers, TxUtils } from '@hermeznetwork/hermezjs'
+import hermezjs, { CoordinatorAPI, Providers, Tx, TxUtils, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
 import { ethers } from 'ethers'
 import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
+import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
@@ -283,6 +284,48 @@ function checkPendingDeposits () {
   }
 }
 
+function checkPendingTransactions () {
+  return (_, getState) => {
+    const { global: { wallet, nextForgers } } = getState()
+
+    hermezjs.TxPool.getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+      .then((poolTransactions) => {
+        const tenMinutesInMs = 10 * 60 * 1000
+        const oneDayInMs = 24 * 60 * 60 * 1000
+        const resendTransactionsRequests = poolTransactions
+          .filter(transaction => {
+            const txTimestampInMs = new Date(transaction.timestamp).getTime()
+            const nowInMs = new Date().getTime()
+
+            // Retry the transaction if it hasn't been forged after 10min and it's not 24h old yet+
+            return transaction.state !== TxState.Forged &&
+              txTimestampInMs + tenMinutesInMs < nowInMs &&
+              txTimestampInMs + oneDayInMs > nowInMs
+          })
+          .map((transaction) => {
+            const txData = {
+              type: transaction.type,
+              from: transaction.fromAccountIndex,
+              amount: HermezCompressedAmount.compressAmount(transaction.amount),
+              ...(
+                transaction.type === TxType.TransferToEthAddr
+                  ? { to: transaction.toHezEthereumAddress }
+                  : transaction.type === TxType.Transfer
+                    ? { to: transaction.toAccountIndex }
+                    : {}
+              ),
+              fee: transaction.fee
+            }
+
+            return Tx.generateAndSendL2Tx(txData, wallet, transaction.token, nextForgers, false)
+              .catch(() => {})
+          })
+
+        Promise.all(resendTransactionsRequests)
+      })
+  }
+}
+
 /**
  * Fetches the state of the coordinator
  * @returns {void}
@@ -331,6 +374,7 @@ export {
   removePendingDeposit,
   updatePendingDepositId,
   checkPendingDeposits,
+  checkPendingTransactions,
   fetchCoordinatorState,
   disconnectWallet,
   reloadApp
