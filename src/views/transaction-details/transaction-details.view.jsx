@@ -109,9 +109,10 @@ function TransactionDetails ({
         } else if (transactionTask.data.L2Info) {
           const feeUsd = transactionTask.data.L2Info.historicFeeUSD
           const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
+          const feeToken = feeUsd / token.USD
           return {
-            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${feePreferredCurrency.toFixed(2)}`,
-            tokens: `${Number((feeUsd / token.USD).toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`
+            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${Number.isInteger(feePreferredCurrency) ? feePreferredCurrency.toFixed(2) : '-'}`,
+            tokens: `${Number.isInteger(feeUsd) ? Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)) : '-'} ${token.symbol}`
           }
         } else {
           return undefined
