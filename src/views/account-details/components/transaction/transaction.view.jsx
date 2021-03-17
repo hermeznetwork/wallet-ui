@@ -22,6 +22,8 @@ function Transaction ({
 }) {
   const classes = useTransactionStyles()
 
+  const pendingTime = getTxPendingTime(coordinatorState)
+
   return (
     <div className={classes.root} onClick={onClick}>
       <div className={classes.type}>
@@ -49,7 +51,7 @@ function Transaction ({
                   <div className={classes.pendingLabelContainer}>
                     <p className={classes.pendingLabelText}>Pending</p>
                   </div>
-                  {getTxPendingTime(coordinatorState, timestamp) > 0 && <p className={classes.pendingTimer}>{getTxPendingTime(coordinatorState, timestamp)} min</p>}
+                  {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
                 </div>
                 )
               : <p>{new Date(timestamp).toLocaleDateString()}</p>
