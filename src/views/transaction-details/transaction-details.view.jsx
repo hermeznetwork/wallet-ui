@@ -152,14 +152,15 @@ function TransactionDetails ({
                 return <Spinner />
               }
               case 'successful': {
+                const pendingTime = getTxPendingTime(coordinatorStateTask.data)
                 return (
                   <>
                     {!transactionTask.data.batchNum &&
                       transactionTask.data.state !== TxState.Forged &&
-                      getTxPendingTime(coordinatorStateTask.data) > 0 &&
+                      pendingTime > 0 &&
                         <p className={classes.timeEstimate}>
                           <InfoIcon className={classes.timeEstimateIcon} />
-                          <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {getTxPendingTime(coordinatorStateTask.data)} minutes.</span>
+                          <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {pendingTime} minutes.</span>
                         </p>}
                     <TransactionInfo
                       txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
