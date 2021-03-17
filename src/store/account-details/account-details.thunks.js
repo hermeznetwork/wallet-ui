@@ -2,6 +2,7 @@ import axios from 'axios'
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { push } from 'connected-react-router'
 
 import * as accountDetailsActions from './account-details.actions'
 import * as storage from '../../utils/storage'
@@ -15,11 +16,19 @@ let refreshCancelTokenSource = axios.CancelToken.source()
  * @returns {void}
  */
 function fetchAccount (accountIndex) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+
     dispatch(accountDetailsActions.loadAccount())
 
     return CoordinatorAPI.getAccount(accountIndex)
-      .then(res => dispatch(accountDetailsActions.loadAccountSuccess(res)))
+      .then((res) => {
+        if (res.hezEthereumAddress !== wallet.hermezEthereumAddress) {
+          dispatch(push('/'))
+        } else {
+          dispatch(accountDetailsActions.loadAccountSuccess(res))
+        }
+      })
       .catch(err => dispatch(accountDetailsActions.loadAccountFailure(err)))
   }
 }
