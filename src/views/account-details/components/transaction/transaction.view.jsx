@@ -49,7 +49,7 @@ function Transaction ({
                   <div className={classes.pendingLabelContainer}>
                     <p className={classes.pendingLabelText}>Pending</p>
                   </div>
-                  {getTxPendingTime(coordinatorState, timestamp) > 0 && <p className={classes.pendingTimer}>{getTxPendingTime(coordinatorState, timestamp)} min</p>}
+                  {getTxPendingTime(coordinatorState) > 0 && <p className={classes.pendingTimer}>{getTxPendingTime(coordinatorState)} min</p>}
                 </div>
                 )
               : <p>{new Date(timestamp).toLocaleDateString()}</p>

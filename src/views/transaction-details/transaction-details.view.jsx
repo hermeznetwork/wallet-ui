@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import { TxType, TxLevel } from '@hermeznetwork/hermezjs/src/enums'
+import { TxType, TxLevel, TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
@@ -154,11 +154,13 @@ function TransactionDetails ({
               case 'successful': {
                 return (
                   <>
-                    {!transactionTask.data.batchNum && getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp) > 0 &&
-                      <p className={classes.timeEstimate}>
-                        <InfoIcon className={classes.timeEstimateIcon} />
-                        <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp)} minutes.</span>
-                      </p>}
+                    {!transactionTask.data.batchNum &&
+                      transactionTask.data.state !== TxState.Forged &&
+                      getTxPendingTime(coordinatorStateTask.data) > 0 &&
+                        <p className={classes.timeEstimate}>
+                          <InfoIcon className={classes.timeEstimateIcon} />
+                          <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {getTxPendingTime(coordinatorStateTask.data)} minutes.</span>
+                        </p>}
                     <TransactionInfo
                       txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
