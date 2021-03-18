@@ -30,7 +30,8 @@ function Exit ({
   coordinatorState,
   redirectTo,
   onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw
+  onRemovePendingDelayedWithdraw,
+  onCheckPendingDelayedWithdraw
 }) {
   const classes = useExitStyles()
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false)
@@ -60,6 +61,13 @@ function Exit ({
       setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode)
     }
   }, [isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode])
+
+  React.useEffect(() => {
+    const pendingDelayedWithdraw = pendingDelayedWithdraws.find((pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId)
+    if (pendingDelayedWithdraw) {
+      onCheckPendingDelayedWithdraw(exitId)
+    }
+  }, [pendingDelayedWithdraws, onCheckPendingDelayedWithdraw])
 
   /**
    * Calculates in which step is the Exit process in
