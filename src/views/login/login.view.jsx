@@ -20,6 +20,7 @@ import { LOAD_ETHEREUM_NETWORK_ERROR } from '../../store/global/global.reducer'
 import ChainIdError from './components/chain-id-error/chain-id-error.view'
 import MetaMaskError from './components/metamask-error/metamask-error.view'
 import { PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../constants'
+import UnderMaintenanceError from './components/under-maintenance-error/under-maintenance-error.view'
 
 export const WalletName = {
   METAMASK: 'metaMask',
@@ -27,8 +28,11 @@ export const WalletName = {
   TREZOR: 'trezor'
 }
 
+const UNDER_MAINTENANCE_ERROR = 'under-maintenance'
+
 function Login ({
   currentStep,
+  hermezStatusTask,
   ethereumNetworkTask,
   steps,
   accountAuthTask,
@@ -45,10 +49,17 @@ function Login ({
 }) {
   const theme = useTheme()
   const classes = useLoginStyles()
+  const stepData = steps[currentStep]
 
   React.useEffect(() => {
     onChangeHeader()
   }, [onChangeHeader])
+
+  React.useEffect(() => {
+    if (hermezStatusTask.status === 'successful' && hermezStatusTask.data.isUnderMaintenance) {
+      onGoToErrorStep(UNDER_MAINTENANCE_ERROR)
+    }
+  }, [hermezStatusTask])
 
   React.useEffect(() => {
     if (ethereumNetworkTask.status === 'failure') {
@@ -91,7 +102,7 @@ function Login ({
           </button>
         )}
         <HermezLogoAlternative className={classes.logo} />
-        {currentStep !== STEP_NAME.ERROR && (
+        {(currentStep !== STEP_NAME.ERROR || (currentStep === STEP_NAME.ERROR && stepData.error === UNDER_MAINTENANCE_ERROR)) && (
           <p className={classes.description}>Secure wallet for low-cost token transfers</p>
         )}
         {
@@ -104,8 +115,6 @@ function Login ({
         }
         {
           (() => {
-            const stepData = steps[currentStep]
-
             switch (currentStep) {
               case STEP_NAME.WALLET_SELECTOR: {
                 return (
@@ -169,6 +178,9 @@ function Login ({
 
                     return <ChainIdError supportedEnvironments={supportedEnvironments} />
                   }
+                  case UNDER_MAINTENANCE_ERROR: {
+                    return <UnderMaintenanceError />
+                  }
                   default: {
                     return <></>
                   }
@@ -206,6 +218,7 @@ function Login ({
 
 const mapStateToProps = (state) => ({
   currentStep: state.login.currentStep,
+  hermezStatusTask: state.global.hermezStatusTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
   steps: state.login.steps,
   accountAuthTask: state.login.accountAuthTask,

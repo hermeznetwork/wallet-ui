@@ -8,6 +8,9 @@ export const LOAD_ETHEREUM_NETWORK_ERROR = {
 }
 
 const initialGlobalState = {
+  hermezStatusTask: {
+    status: 'pending'
+  },
   ethereumNetworkTask: {
     status: 'pending'
   },
@@ -38,6 +41,32 @@ const initialGlobalState = {
 
 function globalReducer (state = initialGlobalState, action) {
   switch (action.type) {
+    case globalActionTypes.LOAD_HERMEZ_STATUS: {
+      return {
+        ...state,
+        hermezStatusTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case globalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS: {
+      return {
+        ...state,
+        hermezStatusTask: {
+          status: 'successful',
+          data: { isUnderMaintenance: Boolean(action.status) }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_HERMEZ_STATUS_FAILURE: {
+      return {
+        ...state,
+        hermezStatusTask: {
+          status: 'failure',
+          error: action.error
+        }
+      }
+    }
     case globalActionTypes.LOAD_ETHEREUM_NETWORK: {
       return {
         ...state,

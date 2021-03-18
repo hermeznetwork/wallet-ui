@@ -14,10 +14,12 @@ import { RETRY_POOL_TXS_RATE } from '../constants'
 
 function App ({
   wallet,
+  hermezStatusTask,
   ethereumNetworkTask,
   fiatExchangeRatesTask,
   coordinatorStateTask,
   onLoadFiatExchangeRates,
+  onCheckHermezStatus,
   onChangeNetworkStatus,
   onDisconnectAccount,
   onLoadCoordinatorState,
@@ -29,12 +31,15 @@ function App ({
   const classes = useAppStyles()
 
   React.useEffect(() => {
-    onSetHermezEnvironment()
-  }, [onSetHermezEnvironment])
+    onCheckHermezStatus()
+  }, [onCheckHermezStatus])
 
   React.useEffect(() => {
-    onLoadFiatExchangeRates()
-  }, [onLoadFiatExchangeRates])
+    if (hermezStatusTask.status === 'successful' && !hermezStatusTask.data.isUnderMaintenance) {
+      onSetHermezEnvironment()
+      onLoadFiatExchangeRates()
+    }
+  }, [hermezStatusTask, onSetHermezEnvironment, onLoadFiatExchangeRates])
 
   React.useEffect(() => {
     if (ethereumNetworkTask.status === 'successful') {
@@ -45,12 +50,12 @@ function App ({
   React.useEffect(() => {
     let intervalId
 
-    if (wallet) {
+    if (ethereumNetworkTask.status === 'successful') {
       intervalId = setInterval(onCheckPendingTransactions, RETRY_POOL_TXS_RATE)
     }
 
     return () => { intervalId && clearInterval(intervalId) }
-  }, [wallet])
+  }, [ethereumNetworkTask, onCheckPendingTransactions])
 
   React.useEffect(() => {
     window.addEventListener('online', () => {
@@ -70,7 +75,8 @@ function App ({
   }, [onDisconnectAccount, onReloadApp])
 
   if (
-    ethereumNetworkTask.status === 'pending' ||
+    hermezStatusTask.status === 'pending' ||
+    hermezStatusTask.status === 'loading' ||
     ethereumNetworkTask.status === 'loading' ||
     coordinatorStateTask.status === 'loading' ||
     coordinatorStateTask.status === 'failure' ||
@@ -107,6 +113,7 @@ App.propTypes = {
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
+  hermezStatusTask: state.global.hermezStatusTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   coordinatorStateTask: state.global.coordinatorStateTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask
@@ -114,6 +121,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onSetHermezEnvironment: () => dispatch(globalThunks.setHermezEnvironment()),
+  onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),
   onLoadFiatExchangeRates: () =>
     dispatch(
       globalThunks.fetchFiatExchangeRates(
