@@ -74,9 +74,6 @@ function AccountDetails ({
   }, [accountTask, onChangeHeader])
 
   React.useEffect(() => {
-  }, [onCheckPendingDeposits])
-
-  React.useEffect(() => {
     const loadInitialData = () => {
       onCheckPendingDeposits()
       onLoadAccount(accountIndex)

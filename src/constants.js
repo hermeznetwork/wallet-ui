@@ -35,6 +35,8 @@ export const TERMS_OF_SERVICE_URL = 'https://hermez.io/terms-of-service'
 
 export const AUTO_REFRESH_RATE = 60000 // 1min
 
+export const RETRY_POOL_TXS_RATE = 60000 // 10min
+
 export const STORAGE_VERSION_KEY = 'hermezWalletStorageVersion'
 
 export const STORAGE_VERSION = 1

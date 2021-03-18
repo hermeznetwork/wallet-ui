@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import { TxType, TxLevel } from '@hermeznetwork/hermezjs/src/enums'
+import { TxType, TxLevel, TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
@@ -109,9 +109,10 @@ function TransactionDetails ({
         } else if (transactionTask.data.L2Info) {
           const feeUsd = transactionTask.data.L2Info.historicFeeUSD
           const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
+          const feeToken = feeUsd / token.USD
           return {
-            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${feePreferredCurrency.toFixed(2)}`,
-            tokens: `${Number((feeUsd / token.USD).toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`
+            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${Number.isInteger(feePreferredCurrency) ? feePreferredCurrency.toFixed(2) : '-'}`,
+            tokens: `${Number.isInteger(feeUsd) ? Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)) : '-'} ${token.symbol}`
           }
         } else {
           return undefined
@@ -151,13 +152,16 @@ function TransactionDetails ({
                 return <Spinner />
               }
               case 'successful': {
+                const pendingTime = getTxPendingTime(coordinatorStateTask.data)
                 return (
                   <>
-                    {!transactionTask.data.batchNum && getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp) > 0 &&
-                      <p className={classes.timeEstimate}>
-                        <InfoIcon className={classes.timeEstimateIcon} />
-                        <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp)} minutes.</span>
-                      </p>}
+                    {!transactionTask.data.batchNum &&
+                      transactionTask.data.state !== TxState.Forged &&
+                      pendingTime > 0 &&
+                        <p className={classes.timeEstimate}>
+                          <InfoIcon className={classes.timeEstimateIcon} />
+                          <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {pendingTime} minutes.</span>
+                        </p>}
                     <TransactionInfo
                       txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
