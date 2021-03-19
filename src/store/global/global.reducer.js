@@ -312,11 +312,15 @@ function globalReducer (state = initialGlobalState, action) {
       }
     }
     case globalActionTypes.LOAD_COORDINATOR_STATE: {
+      if (state.coordinatorStateTask.status === 'reloading') {
+        return state
+      }
+
       return {
         ...state,
-        coordinatorStateTask: {
-          status: 'loading'
-        }
+        coordinatorStateTask: state.coordinatorStateTask.status === 'successful'
+          ? { status: 'reloading', data: state.coordinatorStateTask.data }
+          : { status: 'loading' }
       }
     }
     case globalActionTypes.LOAD_COORDINATOR_STATE_SUCCESS: {

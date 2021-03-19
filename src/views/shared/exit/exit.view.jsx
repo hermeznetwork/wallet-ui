@@ -6,6 +6,7 @@ import { isInstantWithdrawalAllowed } from '@hermeznetwork/hermezjs/src/tx'
 
 import useExitStyles from './exit.styles'
 import { CurrencySymbol } from '../../../utils/currencies'
+import { getTxPendingTime } from '../../../utils/transactions'
 import { ReactComponent as InfoIcon } from '../../../images/icons/info.svg'
 
 const STEPS = {
@@ -60,7 +61,7 @@ function Exit ({
 
       setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode)
     }
-  }, [isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode])
+  }, [coordinatorState, isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode])
 
   React.useEffect(() => {
     const pendingDelayedWithdraw = pendingDelayedWithdraws.find((pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId)
@@ -105,7 +106,7 @@ function Exit ({
    * @returns {number} - Withdrawal delay in days
    */
   function getWithdrawalDelayerTime () {
-    return Math.round(coordinatorState.withdrawalDelayer.withdrawalDelay / 60 / 60)
+    return Math.round(coordinatorState?.withdrawalDelayer.withdrawalDelay / 60 / 60)
   }
 
   /**
@@ -130,7 +131,7 @@ function Exit ({
         return `${minutes}m`
       }
     } else {
-      const delayedTime = coordinatorState.withdrawalDelayer.withdrawalDelay * 1000
+      const delayedTime = coordinatorState?.withdrawalDelayer.withdrawalDelay * 1000
       if (difference > delayedTime) {
         setIsDelayedWithdrawalReady(true)
       } else {
@@ -189,6 +190,8 @@ function Exit ({
     return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true&redirectTo=${redirectTo}`} />
   }
 
+  const pendingTime = getTxPendingTime(coordinatorState, true)
+
   return (
     <div className={classes.root}>
       <p className={classes.step}>Step {getStep()}/3</p>
@@ -197,17 +200,21 @@ function Exit ({
         <span className={classes.tokenAmount}>{fixedTokenAmount} {token.symbol}</span>
       </div>
       <div className={classes.rowBottom}>
-        <div className={clsx({
-          [classes.stepTagWrapper]: true,
-          [classes.stepTagWrapperTwo]: getStep() === STEPS.second
-        })}
-        >
-          <span className={clsx({
-            [classes.stepTag]: true,
-            [classes.stepTagTwo]: getStep() === STEPS.second
+        <div className={classes.pendingContainer}>
+          <div className={clsx({
+            [classes.stepTagWrapper]: true,
+            [classes.stepTagWrapperTwo]: getStep() === STEPS.second
           })}
-          >{getTag()}
-          </span>
+          >
+            <span className={clsx({
+              [classes.stepTag]: true,
+              [classes.stepTagTwo]: getStep() === STEPS.second
+            })}
+            >
+              {getTag()}
+            </span>
+          </div>
+          {pendingTime > 0 && getStep() !== STEPS.second && <p className={classes.pendingTimer}>{pendingTime} min</p>}
         </div>
         <span className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol}{fiatAmount.toFixed(2)}</span>
       </div>
