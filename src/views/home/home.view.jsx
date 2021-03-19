@@ -47,9 +47,9 @@ function Home ({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
-  onRefreshAccounts,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
+  onCheckPendingDelayedWithdraw,
   onNavigateToAccountDetails,
   onOpenSnackbar,
   onCleanup
@@ -187,6 +187,7 @@ function Home ({
                   pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                   onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                  onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
                   coordinatorState={coordinatorStateTask.data}
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
@@ -207,6 +208,7 @@ function Home ({
                   pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                   onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                  onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
                   coordinatorState={coordinatorStateTask.data}
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
@@ -327,6 +329,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
+  onCheckPendingDelayedWithdraw: (exitId) =>
+    dispatch(globalThunks.checkPendingDelayedWithdraw(exitId)),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) =>

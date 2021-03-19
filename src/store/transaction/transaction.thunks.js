@@ -241,7 +241,7 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
         exit.merkleProof.siblings,
         instantWithdrawal,
         signer
-      ).then(() => {
+      ).then((txData) => {
         if (instantWithdrawal) {
           dispatch(globalThunks.addPendingWithdraw({
             hermezEthereumAddress: wallet.hermezEthereumAddress,
@@ -251,6 +251,7 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
           }))
         } else {
           dispatch(globalThunks.addPendingDelayedWithdraw({
+            hash: txData.hash,
             id: withdrawalId,
             instant: false,
             date: Date.now(),
