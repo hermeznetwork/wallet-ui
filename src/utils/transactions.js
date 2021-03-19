@@ -18,10 +18,14 @@ function getTransactionAmount (transaction) {
 
 /**
  * Calculates an estimated time until the transaction will be forged
+ * If it's an L1 transaction, it adds the forgeDelay again
+ *
  * @param {Object} coordinatorState - As returned from the API
+ * @param {Boolean} isL1 - Whether it is an L1 transaction
+ *
  * @returns {Number} timeLeftToForgeInMinutes
  */
-function getTxPendingTime (coordinatorState) {
+function getTxPendingTime (coordinatorState, isL1) {
   if (!coordinatorState) {
     return 0
   }
@@ -29,7 +33,8 @@ function getTxPendingTime (coordinatorState) {
   const lastBatchForgedInSeconds = Date.parse(coordinatorState.network.lastBatch.timestamp) / 1000
   const whenToForgeInSeconds = timeToForge + lastBatchForgedInSeconds
   const nowInSeconds = Date.now() / 1000
-  const timeLeftToForgeInMinutes = Math.round((whenToForgeInSeconds - nowInSeconds) / 60)
+  const timeLeftToForgeInSeconds = whenToForgeInSeconds - nowInSeconds + (isL1 ? timeToForge : 0)
+  const timeLeftToForgeInMinutes = Math.round(timeLeftToForgeInSeconds / 60)
   return timeLeftToForgeInMinutes > 0 ? timeLeftToForgeInMinutes : 0
 }
 

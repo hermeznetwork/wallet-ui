@@ -187,7 +187,7 @@ function Home ({
                   pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                   onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                  coordinatorState={coordinatorStateTask.data}
+                  coordinatorState={coordinatorStateTask?.data}
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
               : <></>
@@ -207,7 +207,7 @@ function Home ({
                   pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                   onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                  coordinatorState={coordinatorStateTask.data}
+                  coordinatorState={coordinatorStateTask?.data}
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
               : <></>

@@ -59,7 +59,7 @@ function Exit ({
 
       setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode)
     }
-  }, [isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode])
+  }, [coordinatorState, isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode])
 
   /**
    * Calculates in which step is the Exit process in
@@ -97,7 +97,7 @@ function Exit ({
    * @returns {number} - Withdrawal delay in days
    */
   function getWithdrawalDelayerTime () {
-    return Math.round(coordinatorState.withdrawalDelayer.withdrawalDelay / 60 / 60)
+    return Math.round(coordinatorState?.withdrawalDelayer.withdrawalDelay / 60 / 60)
   }
 
   /**
@@ -122,7 +122,7 @@ function Exit ({
         return `${minutes}m`
       }
     } else {
-      const delayedTime = coordinatorState.withdrawalDelayer.withdrawalDelay * 1000
+      const delayedTime = coordinatorState?.withdrawalDelayer.withdrawalDelay * 1000
       if (difference > delayedTime) {
         setIsDelayedWithdrawalReady(true)
       } else {

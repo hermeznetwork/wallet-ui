@@ -16,7 +16,6 @@ function App ({
   wallet,
   ethereumNetworkTask,
   fiatExchangeRatesTask,
-  coordinatorStateTask,
   onLoadFiatExchangeRates,
   onChangeNetworkStatus,
   onDisconnectAccount,
@@ -72,8 +71,6 @@ function App ({
   if (
     ethereumNetworkTask.status === 'pending' ||
     ethereumNetworkTask.status === 'loading' ||
-    coordinatorStateTask.status === 'loading' ||
-    coordinatorStateTask.status === 'failure' ||
     fiatExchangeRatesTask.status === 'loading' ||
     fiatExchangeRatesTask.status === 'failure'
   ) {
@@ -108,7 +105,6 @@ App.propTypes = {
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  coordinatorStateTask: state.global.coordinatorStateTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask
 })
 
