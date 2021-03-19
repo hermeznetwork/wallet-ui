@@ -25,7 +25,7 @@ function getTxPendingTime (coordinatorState) {
   if (!coordinatorState) {
     return 0
   }
-  const timeToForge = coordinatorState.nodeConfig.forgeDelay
+  const timeToForge = coordinatorState.node.forgeDelay
   const lastBatchForgedInSeconds = Date.parse(coordinatorState.network.lastBatch.timestamp) / 1000
   const whenToForgeInSeconds = timeToForge + lastBatchForgedInSeconds
   const nowInSeconds = Date.now() / 1000
