@@ -9,9 +9,8 @@ import '../../../utils/accounts'
 function AccountList ({
   accounts,
   preferredCurrency,
-  fiatExchangeRates,
   pendingDeposits,
-  poolTransactions,
+  coordinatorState,
   disabledTokenIds,
   onAccountClick
 }) {
@@ -56,6 +55,7 @@ function AccountList ({
               token={account.token}
               hasPendingDeposit={hasAccountPendingDeposit(account)}
               isDisabled={isAccountDisabled(account)}
+              coordinatorState={coordinatorState}
               onClick={() => handleAccountListItemClick(account)}
             />
           </div>

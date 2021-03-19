@@ -237,6 +237,7 @@ function Home ({
                         preferredCurrency={preferredCurrency}
                         fiatExchangeRates={fiatExchangeRatesTask.data}
                         onAccountClick={() => onOpenSnackbar('This token account is being created')}
+                        coordinatorState={coordinatorStateTask?.data}
                       />
                     )}
                     <InfiniteScroll
@@ -259,8 +260,8 @@ function Home ({
                         preferredCurrency={preferredCurrency}
                         fiatExchangeRates={fiatExchangeRatesTask.data}
                         pendingDeposits={pendingOnTopDeposits}
-                        poolTransactions={poolTransactionsTask.data}
                         onAccountClick={handleAccountClick}
+                        coordinatorState={coordinatorStateTask?.data}
                       />
                     </InfiniteScroll>
                   </>
