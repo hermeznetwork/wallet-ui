@@ -50,7 +50,7 @@ function App ({
   React.useEffect(() => {
     let intervalId
 
-    if (ethereumNetworkTask.status === 'successful') {
+    if (wallet && ethereumNetworkTask.status === 'successful') {
       intervalId = setInterval(onCheckPendingTransactions, RETRY_POOL_TXS_RATE)
     }
 
@@ -85,7 +85,6 @@ function App ({
     (
       ethereumNetworkTask.status === 'pending' ||
       ethereumNetworkTask.status === 'loading' ||
-      coordinatorStateTask.status === 'pending' ||
       coordinatorStateTask.status === 'loading' ||
       coordinatorStateTask.status === 'failure' ||
       fiatExchangeRatesTask.status === 'pending' ||

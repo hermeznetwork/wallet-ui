@@ -106,7 +106,8 @@ function Login ({
           <p className={classes.description}>Secure wallet for low-cost token transfers</p>
         )}
         {
-          ethereumNetworkTask.status === 'successful' && (
+          ethereumNetworkTask.status === 'successful' &&
+          (currentStep !== STEP_NAME.ERROR || (currentStep === STEP_NAME.ERROR && stepData.error !== UNDER_MAINTENANCE_ERROR)) && (
             <Button
               text={capitalizeLabel(ethereumNetworkTask.data.name)}
               className={classes.networkName}
