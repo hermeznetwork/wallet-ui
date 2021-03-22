@@ -75,13 +75,23 @@ function App ({
   }, [onDisconnectAccount, onReloadApp])
 
   if (
-    hermezStatusTask.status === 'pending' ||
-    hermezStatusTask.status === 'loading' ||
-    ethereumNetworkTask.status === 'loading' ||
-    coordinatorStateTask.status === 'loading' ||
-    coordinatorStateTask.status === 'failure' ||
-    fiatExchangeRatesTask.status === 'loading' ||
-    fiatExchangeRatesTask.status === 'failure'
+    (
+      hermezStatusTask.status !== 'successful' ||
+      (
+        hermezStatusTask.status === 'successful' &&
+        hermezStatusTask.data.isUnderMaintenance === false
+      )
+    ) &&
+    (
+      ethereumNetworkTask.status === 'pending' ||
+      ethereumNetworkTask.status === 'loading' ||
+      coordinatorStateTask.status === 'pending' ||
+      coordinatorStateTask.status === 'loading' ||
+      coordinatorStateTask.status === 'failure' ||
+      fiatExchangeRatesTask.status === 'pending' ||
+      fiatExchangeRatesTask.status === 'loading' ||
+      fiatExchangeRatesTask.status === 'failure'
+    )
   ) {
     return (
       <div className={classes.root}>
