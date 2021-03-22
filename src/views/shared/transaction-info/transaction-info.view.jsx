@@ -92,9 +92,7 @@ function TransactionInfo ({ txData, accountIndex, showStatus, showToCopyButton }
         )
       }
     }
-    case TxType.Withdraw:
-    case TxType.Exit:
-    case TxType.ForceExit: {
+    case TxType.Exit: {
       return (
         <TransactionInfoTable
           status={getTransactionStatus()}
@@ -110,6 +108,25 @@ function TransactionInfo ({ txData, accountIndex, showStatus, showToCopyButton }
           }}
           date={date}
           fee={txData.fee}
+        />
+      )
+    }
+    case TxType.Withdraw:
+    case TxType.ForceExit: {
+      return (
+        <TransactionInfoTable
+          status={getTransactionStatus()}
+          from={{
+            subtitle: 'My Hermez address',
+            value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
+          }}
+          to={{
+            subtitle: 'My Ethereum address',
+            value: getPartiallyHiddenEthereumAddress(
+              getEthereumAddress(txData.fromHezEthereumAddress)
+            )
+          }}
+          date={date}
         />
       )
     }

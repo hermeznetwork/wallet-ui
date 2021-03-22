@@ -107,12 +107,14 @@ function TransactionDetails ({
             tokens: `${Number((feeUsd / token.USD).toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`
           }
         } else if (transactionTask.data.L2Info) {
+          console.log(transactionTask.data.L2Info)
           const feeUsd = transactionTask.data.L2Info.historicFeeUSD
+          console.log(feeUsd, !isNaN(feeUsd))
           const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
           const feeToken = feeUsd / token.USD
           return {
-            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${Number.isInteger(feePreferredCurrency) ? feePreferredCurrency.toFixed(2) : '-'}`,
-            tokens: `${Number.isInteger(feeUsd) ? Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)) : '-'} ${token.symbol}`
+            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${!isNaN(feePreferredCurrency) ? feePreferredCurrency.toFixed(2) : '-'}`,
+            tokens: `${!isNaN(feeUsd) ? Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)) : '-'} ${token.symbol}`
           }
         } else {
           return undefined
