@@ -191,6 +191,13 @@ function TransactionForm ({
    * @returns {void}
    */
   function handleAmountInputChange (event) {
+    const maxSupportedAmountLength = event.target.value.includes('.')
+      ? 20
+      : 21
+
+    if (event.target.value.length > maxSupportedAmountLength) {
+      return
+    }
     if (event.target.value === '') {
       resetAmounts()
     } else if (showInFiat) {
