@@ -1,4 +1,7 @@
 export const globalActionTypes = {
+  LOAD_HERMEZ_STATUS: '[GLOBAL] LOAD HERMEZ STATUS',
+  LOAD_HERMEZ_STATUS_SUCCESS: '[GLOBAL] LOAD HERMEZ STATUS SUCCESS',
+  LOAD_HERMEZ_STATUS_FAILURE: '[GLOBAL] LOAD HERMEZ STATUS FAILURE',
   LOAD_ETHEREUM_NETWORK: '[GLOBAL] LOAD ETHEREUM NETWORK',
   LOAD_ETHEREUM_NETWORK_SUCCESS: '[GLOBAL] LOAD ETHEREUM NETWORK SUCCESS',
   LOAD_ETHEREUM_NETWORK_FAILURE: '[GLOBAL] LOAD ETHEREUM NETWORK FAILURE',
@@ -34,6 +37,26 @@ export const globalActionTypes = {
   LOAD_COORDINATOR_STATE: '[GLOBAL] LOAD COORDINATOR STATE',
   LOAD_COORDINATOR_STATE_SUCCESS: '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
   LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE'
+}
+
+function loadHermezStatus () {
+  return {
+    type: globalActionTypes.LOAD_HERMEZ_STATUS
+  }
+}
+
+function loadHermezStatusSuccess (status) {
+  return {
+    type: globalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS,
+    status
+  }
+}
+
+function loadHermezStatusFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_HERMEZ_STATUS_FAILURE,
+    error
+  }
 }
 
 function loadEthereumNetwork () {
@@ -250,6 +273,9 @@ function loadCoordinatorStateFailure (error) {
 }
 
 export {
+  loadHermezStatus,
+  loadHermezStatusSuccess,
+  loadHermezStatusFailure,
   loadEthereumNetwork,
   loadEthereumNetworkSuccess,
   loadEthereumNetworkFailure,

@@ -7,6 +7,7 @@ import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
+import * as hermezWebApi from '../../apis/hermez-web'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
 
@@ -107,6 +108,16 @@ function changeNetworkStatus (newNetworkStatus, backgroundColor) {
     }
 
     dispatch(globalActions.changeNetworkStatus(newNetworkStatus))
+  }
+}
+
+function checkHermezStatus () {
+  return (dispatch) => {
+    dispatch(globalActions.loadHermezStatus())
+
+    return hermezWebApi.getNetworkStatus()
+      .then((res) => dispatch(globalActions.loadHermezStatusSuccess(res)))
+      .catch(() => dispatch(globalActions.loadHermezStatusFailure('An error occurred loading Hermez status')))
   }
 }
 
@@ -419,6 +430,7 @@ export {
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,
+  checkHermezStatus,
   addPendingWithdraw,
   removePendingWithdraw,
   addPendingDelayedWithdraw,
