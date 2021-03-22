@@ -51,6 +51,14 @@ const useExitStyles = createUseStyles(theme => ({
   stepTagTwo: {
     color: theme.palette.red.main
   },
+  pendingContainer: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  pendingTimer: {
+    marginLeft: theme.spacing(1),
+    color: theme.palette.grey.dark
+  },
   tokenAmount: {
     color: theme.palette.white,
     fontWeight: theme.fontWeights.bold,

@@ -7,6 +7,7 @@ import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
+import * as hermezWebApi from '../../apis/hermez-web'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
 
@@ -110,6 +111,16 @@ function changeNetworkStatus (newNetworkStatus, backgroundColor) {
   }
 }
 
+function checkHermezStatus () {
+  return (dispatch) => {
+    dispatch(globalActions.loadHermezStatus())
+
+    return hermezWebApi.getNetworkStatus()
+      .then((res) => dispatch(globalActions.loadHermezStatusSuccess(res)))
+      .catch(() => dispatch(globalActions.loadHermezStatusFailure('An error occurred loading Hermez status')))
+  }
+}
+
 /**
  * Adds a pendingWithdraw to the pendingWithdraw pool
  * @param {string} hermezEthereumAddress - The account with which the pendingWithdraw was made
@@ -173,6 +184,59 @@ function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
 
     storage.removeItem(constants.PENDING_DELAYED_WITHDRAWS_KEY, chainId, hermezEthereumAddress, pendingDelayedWithdrawId)
     dispatch(globalActions.removePendingDelayedWithdraw(chainId, hermezEthereumAddress, pendingDelayedWithdrawId))
+  }
+}
+
+/**
+ * Updates the date in a delayed withdraw transaction
+ * to the time when the transaction was mined
+ * @param {String} transactionHash - The L1 transaction hash for a non-instant withdraw
+ * @param {Number} pendingDelayedWithdrawDate - The date when the L1 transaction was mined
+ */
+function updatePendingDelayedWithdrawDate (transactionHash, pendingDelayedWithdrawDate) {
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
+
+    storage.updatePartialItemByCustomProp(
+      constants.PENDING_DELAYED_WITHDRAWS_KEY,
+      chainId,
+      hermezEthereumAddress,
+      { name: 'hash', value: transactionHash },
+      { date: pendingDelayedWithdrawDate }
+    )
+    dispatch(globalActions.updatePendingDelayedWithdrawDate(chainId, hermezEthereumAddress, transactionHash, pendingDelayedWithdrawDate))
+  }
+}
+
+function checkPendingDelayedWithdraw (exitId) {
+  return (dispatch, getState) => {
+    const { global: { wallet, pendingDelayedWithdraws, ethereumNetworkTask } } = getState()
+
+    dispatch(globalActions.checkPendingDelayedWithdraw())
+    const provider = Providers.getProvider()
+    const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
+      pendingDelayedWithdraws,
+      ethereumNetworkTask.data.chainId,
+      wallet.hermezEthereumAddress
+    )
+
+    const pendingDelayedWithdraw = accountPendingDelayedWithdraws.find((delayedWithdraw) => delayedWithdraw.id === exitId)
+    if (pendingDelayedWithdraw) {
+      provider.getTransaction(pendingDelayedWithdraw.hash).then((transaction) => {
+        provider.getBlock(transaction.blockNumber).then((block) => {
+          // Converts timestamp from s to ms
+          const newTimestamp = block.timestamp * 1000
+          if (pendingDelayedWithdraw.date !== newTimestamp) {
+            dispatch(updatePendingDelayedWithdrawDate(pendingDelayedWithdraw.hash, newTimestamp))
+          }
+          dispatch(globalActions.checkPendingDelayedWithdrawSuccess())
+        })
+      }).catch(console.log)
+    } else {
+      dispatch(globalActions.checkPendingDelayedWithdrawSuccess())
+    }
   }
 }
 
@@ -366,10 +430,13 @@ export {
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,
+  checkHermezStatus,
   addPendingWithdraw,
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  updatePendingDelayedWithdrawDate,
+  checkPendingDelayedWithdraw,
   addPendingDeposit,
   removePendingDeposit,
   updatePendingDepositId,

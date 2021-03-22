@@ -1,4 +1,7 @@
 export const globalActionTypes = {
+  LOAD_HERMEZ_STATUS: '[GLOBAL] LOAD HERMEZ STATUS',
+  LOAD_HERMEZ_STATUS_SUCCESS: '[GLOBAL] LOAD HERMEZ STATUS SUCCESS',
+  LOAD_HERMEZ_STATUS_FAILURE: '[GLOBAL] LOAD HERMEZ STATUS FAILURE',
   LOAD_ETHEREUM_NETWORK: '[GLOBAL] LOAD ETHEREUM NETWORK',
   LOAD_ETHEREUM_NETWORK_SUCCESS: '[GLOBAL] LOAD ETHEREUM NETWORK SUCCESS',
   LOAD_ETHEREUM_NETWORK_FAILURE: '[GLOBAL] LOAD ETHEREUM NETWORK FAILURE',
@@ -23,6 +26,9 @@ export const globalActionTypes = {
   REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW',
   ADD_PENDING_DELAYED_WITHDRAW: '[GLOBAL] ADD PENDING DELAYED WITHRAW',
   REMOVE_PENDING_DELAYED_WITHDRAW: '[GLOBAL] REMOVE PENDING DELAYED WITHRAW',
+  UPDATE_PENDING_DELAYED_WITHDRAW_DATE: '[GLOBAL] UPDATE PENDING DELAYED WITHDRAW DATE',
+  CHECK_PENDING_DELAYED_WITHDRAW: '[GLOBAL] CHECK PENDING DELAYED WITHDRAW',
+  CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS: '[GLOBAL] CHECK PENDING DELAYD WITHDRAW',
   ADD_PENDING_DEPOSIT: '[GLOBAL] ADD PENDING DEPOSIT',
   REMOVE_PENDING_DEPOSIT: '[GLOBAL] REMOVE PENDING DEPOSIT',
   UPDATE_PENDING_DEPOSIT_ID: '[GLOBAL] UPDATE PENDING DEPOSIT ID',
@@ -31,6 +37,26 @@ export const globalActionTypes = {
   LOAD_COORDINATOR_STATE: '[GLOBAL] LOAD COORDINATOR STATE',
   LOAD_COORDINATOR_STATE_SUCCESS: '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
   LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE'
+}
+
+function loadHermezStatus () {
+  return {
+    type: globalActionTypes.LOAD_HERMEZ_STATUS
+  }
+}
+
+function loadHermezStatusSuccess (status) {
+  return {
+    type: globalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS,
+    status
+  }
+}
+
+function loadHermezStatusFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_HERMEZ_STATUS_FAILURE,
+    error
+  }
 }
 
 function loadEthereumNetwork () {
@@ -164,6 +190,28 @@ function removePendingDelayedWithdraw (chainId, hermezEthereumAddress, pendingDe
   }
 }
 
+function updatePendingDelayedWithdrawDate (chainId, hermezEthereumAddress, transactionHash, transactionDate) {
+  return {
+    type: globalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE,
+    chainId,
+    hermezEthereumAddress,
+    transactionHash,
+    transactionDate
+  }
+}
+
+function checkPendingDelayedWithdraw () {
+  return {
+    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW
+  }
+}
+
+function checkPendingDelayedWithdrawSuccess () {
+  return {
+    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS
+  }
+}
+
 function addPendingDeposit (chainId, hermezEthereumAddress, pendingDeposit) {
   return {
     type: globalActionTypes.ADD_PENDING_DEPOSIT,
@@ -225,6 +273,9 @@ function loadCoordinatorStateFailure (error) {
 }
 
 export {
+  loadHermezStatus,
+  loadHermezStatusSuccess,
+  loadHermezStatusFailure,
   loadEthereumNetwork,
   loadEthereumNetworkSuccess,
   loadEthereumNetworkFailure,
@@ -243,6 +294,9 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  updatePendingDelayedWithdrawDate,
+  checkPendingDelayedWithdraw,
+  checkPendingDelayedWithdrawSuccess,
   addPendingDeposit,
   removePendingDeposit,
   updatePendingDepositId,

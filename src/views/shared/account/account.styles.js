@@ -45,8 +45,12 @@ const useAccountStyles = createUseStyles(theme => ({
   fiatBalance: {
     fontWeight: theme.fontWeights.medium
   },
-  bottomRow: {
-    color: theme.palette.grey.main
+  bottomRow: ({ hasPendingDeposit }) => ({
+    color: hasPendingDeposit ? theme.palette.grey.dark : theme.palette.grey.main
+  }),
+  pendingContainer: {
+    display: 'flex',
+    alignItems: 'center'
   },
   pendingLabelContainer: {
     backgroundColor: theme.palette.orange.light,
@@ -57,6 +61,9 @@ const useAccountStyles = createUseStyles(theme => ({
   pendingLabelText: {
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.secondary.dark
+  },
+  pendingTimer: {
+    marginLeft: theme.spacing(1)
   }
 }))
 

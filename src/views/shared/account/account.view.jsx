@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import useAccountStyles from './account.styles'
 import { CurrencySymbol, getFixedTokenAmount } from '../../../utils/currencies'
+import { getTxPendingTime } from '../../../utils/transactions'
 
 function Account ({
   balance,
@@ -11,12 +12,15 @@ function Account ({
   preferredCurrency,
   hasPendingDeposit,
   isDisabled,
+  coordinatorState,
   onClick
 }) {
   const classes = useAccountStyles({
     hasPendingDeposit,
     isDisabled
   })
+
+  const pendingTime = getTxPendingTime(coordinatorState, true)
 
   return (
     <div
@@ -35,8 +39,11 @@ function Account ({
         {
           hasPendingDeposit
             ? (
-              <div className={classes.pendingLabelContainer}>
-                <p className={classes.pendingLabelText}>Pending</p>
+              <div className={classes.pendingContainer}>
+                <div className={classes.pendingLabelContainer}>
+                  <p className={classes.pendingLabelText}>Pending</p>
+                </div>
+                {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
               </div>
               )
             : <p className={classes.tokenName}>{token.name}</p>
@@ -52,6 +59,7 @@ Account.propTypes = {
   fiatBalance: PropTypes.number.isRequired,
   token: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
+  coordinatorState: PropTypes.object,
   onClick: PropTypes.func
 }
 
