@@ -108,7 +108,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeHeader({
       type: 'page',
       data: {
-        title: 'My code',
+        title: 'My Code',
         goBackAction:
           from === 'my-account'
             ? push('/my-account')
