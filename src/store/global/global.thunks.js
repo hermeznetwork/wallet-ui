@@ -188,6 +188,59 @@ function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
 }
 
 /**
+ * Updates the date in a delayed withdraw transaction
+ * to the time when the transaction was mined
+ * @param {String} transactionHash - The L1 transaction hash for a non-instant withdraw
+ * @param {Number} pendingDelayedWithdrawDate - The date when the L1 transaction was mined
+ */
+function updatePendingDelayedWithdrawDate (transactionHash, pendingDelayedWithdrawDate) {
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
+
+    storage.updatePartialItemByCustomProp(
+      constants.PENDING_DELAYED_WITHDRAWS_KEY,
+      chainId,
+      hermezEthereumAddress,
+      { name: 'hash', value: transactionHash },
+      { date: pendingDelayedWithdrawDate }
+    )
+    dispatch(globalActions.updatePendingDelayedWithdrawDate(chainId, hermezEthereumAddress, transactionHash, pendingDelayedWithdrawDate))
+  }
+}
+
+function checkPendingDelayedWithdraw (exitId) {
+  return (dispatch, getState) => {
+    const { global: { wallet, pendingDelayedWithdraws, ethereumNetworkTask } } = getState()
+
+    dispatch(globalActions.checkPendingDelayedWithdraw())
+    const provider = Providers.getProvider()
+    const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
+      pendingDelayedWithdraws,
+      ethereumNetworkTask.data.chainId,
+      wallet.hermezEthereumAddress
+    )
+
+    const pendingDelayedWithdraw = accountPendingDelayedWithdraws.find((delayedWithdraw) => delayedWithdraw.id === exitId)
+    if (pendingDelayedWithdraw) {
+      provider.getTransaction(pendingDelayedWithdraw.hash).then((transaction) => {
+        provider.getBlock(transaction.blockNumber).then((block) => {
+          // Converts timestamp from s to ms
+          const newTimestamp = block.timestamp * 1000
+          if (pendingDelayedWithdraw.date !== newTimestamp) {
+            dispatch(updatePendingDelayedWithdrawDate(pendingDelayedWithdraw.hash, newTimestamp))
+          }
+          dispatch(globalActions.checkPendingDelayedWithdrawSuccess())
+        })
+      }).catch(console.log)
+    } else {
+      dispatch(globalActions.checkPendingDelayedWithdrawSuccess())
+    }
+  }
+}
+
+/**
  * Adds a pendingDeposit to the pendingDeposits store
  * @param {string} pendingDeposit - The pendingDeposit to add to the store
  * @returns {void}
@@ -382,6 +435,8 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  updatePendingDelayedWithdrawDate,
+  checkPendingDelayedWithdraw,
   addPendingDeposit,
   removePendingDeposit,
   updatePendingDepositId,

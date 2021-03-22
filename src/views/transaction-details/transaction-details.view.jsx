@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import { TxType, TxLevel } from '@hermeznetwork/hermezjs/src/enums'
+import { TxType, TxLevel, TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
@@ -13,6 +13,7 @@ import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency, getFeeInUsd, CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
+import { fetchCoordinatorState } from '../../store/global/global.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR, MAX_TOKEN_DECIMALS } from '../../constants'
@@ -28,12 +29,17 @@ function TransactionDetails ({
   preferredCurrency,
   coordinatorStateTask,
   onLoadTransaction,
+  onLoadCoordinatorState,
   onChangeHeader
 }) {
   const theme = useTheme()
   const classes = useTransactionDetailsStyles()
   const { accountIndex, transactionId } = useParams()
   const [, accountTokenSymbol] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
+
+  React.useEffect(() => {
+    onLoadCoordinatorState()
+  }, [])
 
   React.useEffect(() => {
     onLoadTransaction(transactionId)
@@ -152,13 +158,20 @@ function TransactionDetails ({
                 return <Spinner />
               }
               case 'successful': {
+                const type = transactionTask.data.type
+                const isL1 = type === TxType.Deposit ||
+                  type === TxType.CreateAccountDeposit ||
+                  type === TxType.ForceExit
+                const pendingTime = getTxPendingTime(coordinatorStateTask?.data, isL1)
                 return (
                   <>
-                    {!transactionTask.data.batchNum && getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp) > 0 &&
-                      <p className={classes.timeEstimate}>
-                        <InfoIcon className={classes.timeEstimateIcon} />
-                        <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {getTxPendingTime(coordinatorStateTask.data, transactionTask.data.timestamp)} minutes.</span>
-                      </p>}
+                    {!transactionTask.data.batchNum &&
+                      transactionTask.data.state !== TxState.Forged &&
+                      pendingTime > 0 &&
+                        <p className={classes.timeEstimate}>
+                          <InfoIcon className={classes.timeEstimateIcon} />
+                          <span className={classes.timeEstimateText}>The next block will be produced to Layer 2 in an estimated time of {pendingTime} minutes.</span>
+                        </p>}
                     <TransactionInfo
                       txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
@@ -222,6 +235,7 @@ function getHeaderTitle (transactionType) {
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionIdOrHash) =>
     dispatch(transactionDetailsThunks.fetchTransaction(transactionIdOrHash)),
+  onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
   onChangeHeader: (transactionType, accountIndex) =>
     dispatch(
       changeHeader({

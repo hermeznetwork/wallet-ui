@@ -17,7 +17,6 @@ function App ({
   hermezStatusTask,
   ethereumNetworkTask,
   fiatExchangeRatesTask,
-  coordinatorStateTask,
   onLoadFiatExchangeRates,
   onCheckHermezStatus,
   onChangeNetworkStatus,
@@ -85,8 +84,6 @@ function App ({
     (
       ethereumNetworkTask.status === 'pending' ||
       ethereumNetworkTask.status === 'loading' ||
-      coordinatorStateTask.status === 'loading' ||
-      coordinatorStateTask.status === 'failure' ||
       fiatExchangeRatesTask.status === 'pending' ||
       fiatExchangeRatesTask.status === 'loading' ||
       fiatExchangeRatesTask.status === 'failure'
@@ -124,7 +121,6 @@ const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
   hermezStatusTask: state.global.hermezStatusTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  coordinatorStateTask: state.global.coordinatorStateTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask
 })
 

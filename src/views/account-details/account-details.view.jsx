@@ -47,6 +47,8 @@ function AccountDetails ({
   onCheckPendingDeposits,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
+  onLoadCoordinatorState,
+  onCheckPendingDelayedWithdraw,
   onNavigateToTransactionDetails,
   onCleanup
 }) {
@@ -72,6 +74,10 @@ function AccountDetails ({
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name)
   }, [accountTask, onChangeHeader])
+
+  React.useEffect(() => {
+    onLoadCoordinatorState()
+  }, [])
 
   React.useEffect(() => {
     const loadInitialData = () => {
@@ -217,7 +223,8 @@ function AccountDetails ({
                           pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
                           onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                           onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                          coordinatorState={coordinatorStateTask.data}
+                          coordinatorState={coordinatorStateTask?.data}
+                          onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
                           redirectTo={WithdrawRedirectionRoute.AccountDetails}
                         />
                       : <></>
@@ -233,7 +240,8 @@ function AccountDetails ({
                           pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
                           onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                           onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                          coordinatorState={coordinatorStateTask.data}
+                          coordinatorState={coordinatorStateTask?.data}
+                          onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
                           redirectTo={WithdrawRedirectionRoute.AccountDetails}
                         />
                       : <></>
@@ -246,7 +254,7 @@ function AccountDetails ({
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       preferredCurrency={preferredCurrency}
                       onTransactionClick={handleTransactionClick}
-                      coordinatorState={coordinatorStateTask.data}
+                      coordinatorState={coordinatorStateTask?.data}
                     />
                   )}
                   <TransactionList
@@ -256,7 +264,7 @@ function AccountDetails ({
                     fiatExchangeRates={fiatExchangeRatesTask.data}
                     preferredCurrency={preferredCurrency}
                     onTransactionClick={handleTransactionClick}
-                    coordinatorState={coordinatorStateTask.data}
+                    coordinatorState={coordinatorStateTask?.data}
                   />
                   <InfiniteScroll
                     asyncTaskStatus={historyTransactionsTask.status}
@@ -341,6 +349,9 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
+  onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
+  onCheckPendingDelayedWithdraw: (exitId) =>
+    dispatch(globalThunks.checkPendingDelayedWithdraw(exitId)),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
   onCleanup: () =>

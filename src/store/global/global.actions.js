@@ -26,6 +26,9 @@ export const globalActionTypes = {
   REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW',
   ADD_PENDING_DELAYED_WITHDRAW: '[GLOBAL] ADD PENDING DELAYED WITHRAW',
   REMOVE_PENDING_DELAYED_WITHDRAW: '[GLOBAL] REMOVE PENDING DELAYED WITHRAW',
+  UPDATE_PENDING_DELAYED_WITHDRAW_DATE: '[GLOBAL] UPDATE PENDING DELAYED WITHDRAW DATE',
+  CHECK_PENDING_DELAYED_WITHDRAW: '[GLOBAL] CHECK PENDING DELAYED WITHDRAW',
+  CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS: '[GLOBAL] CHECK PENDING DELAYD WITHDRAW',
   ADD_PENDING_DEPOSIT: '[GLOBAL] ADD PENDING DEPOSIT',
   REMOVE_PENDING_DEPOSIT: '[GLOBAL] REMOVE PENDING DEPOSIT',
   UPDATE_PENDING_DEPOSIT_ID: '[GLOBAL] UPDATE PENDING DEPOSIT ID',
@@ -187,6 +190,28 @@ function removePendingDelayedWithdraw (chainId, hermezEthereumAddress, pendingDe
   }
 }
 
+function updatePendingDelayedWithdrawDate (chainId, hermezEthereumAddress, transactionHash, transactionDate) {
+  return {
+    type: globalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE,
+    chainId,
+    hermezEthereumAddress,
+    transactionHash,
+    transactionDate
+  }
+}
+
+function checkPendingDelayedWithdraw () {
+  return {
+    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW
+  }
+}
+
+function checkPendingDelayedWithdrawSuccess () {
+  return {
+    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS
+  }
+}
+
 function addPendingDeposit (chainId, hermezEthereumAddress, pendingDeposit) {
   return {
     type: globalActionTypes.ADD_PENDING_DEPOSIT,
@@ -269,6 +294,9 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  updatePendingDelayedWithdrawDate,
+  checkPendingDelayedWithdraw,
+  checkPendingDelayedWithdrawSuccess,
   addPendingDeposit,
   removePendingDeposit,
   updatePendingDepositId,

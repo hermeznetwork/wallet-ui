@@ -29,6 +29,9 @@ const initialGlobalState = {
   networkStatus: 'online',
   pendingWithdraws: storage.getStorage(constants.PENDING_WITHDRAWS_KEY),
   pendingDelayedWithdraws: storage.getStorage(constants.PENDING_DELAYED_WITHDRAWS_KEY),
+  pendingDelayedWithdrawCheckTask: {
+    status: 'pending'
+  },
   pendingDeposits: storage.getStorage(constants.PENDING_DEPOSITS_KEY),
   pendingDepositsCheckTask: {
     status: 'pending'
@@ -234,6 +237,42 @@ function globalReducer (state = initialGlobalState, action) {
         }
       }
     }
+    case globalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE: {
+      const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {}
+      const accountPendingDelayedWithdraws = chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || []
+
+      return {
+        ...state,
+        pendingDelayedWithdraws: {
+          ...state.pendingDelayedWithdraws,
+          [action.chainId]: {
+            ...chainIdPendingDelayedWithdraws,
+            [action.hermezEthereumAddress]: accountPendingDelayedWithdraws.map((delayedWithdraw) => {
+              if (delayedWithdraw.hash === action.transactionHash) {
+                return { ...delayedWithdraw, date: action.transactionDate }
+              }
+              return delayedWithdraw
+            })
+          }
+        }
+      }
+    }
+    case globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW: {
+      return {
+        ...state,
+        pendingDelayedWithdrawCheckTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS: {
+      return {
+        ...state,
+        pendingDelayedWithdrawCheckTask: {
+          status: 'successful'
+        }
+      }
+    }
     case globalActionTypes.ADD_PENDING_DEPOSIT: {
       const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {}
       const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || []
@@ -302,11 +341,15 @@ function globalReducer (state = initialGlobalState, action) {
       }
     }
     case globalActionTypes.LOAD_COORDINATOR_STATE: {
+      if (state.coordinatorStateTask.status === 'reloading') {
+        return state
+      }
+
       return {
         ...state,
-        coordinatorStateTask: {
-          status: 'loading'
-        }
+        coordinatorStateTask: state.coordinatorStateTask.status === 'successful'
+          ? { status: 'reloading', data: state.coordinatorStateTask.data }
+          : { status: 'loading' }
       }
     }
     case globalActionTypes.LOAD_COORDINATOR_STATE_SUCCESS: {
