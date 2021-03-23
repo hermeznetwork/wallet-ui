@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionStyles from './transaction.styles'
 import TransactionType from '../transaction-type/transaction-type.view'
@@ -22,7 +23,10 @@ function Transaction ({
 }) {
   const classes = useTransactionStyles()
 
-  const pendingTime = getTxPendingTime(coordinatorState)
+  const isL1 = type === TxType.Deposit ||
+    type === TxType.CreateAccountDeposit ||
+    type === TxType.ForceExit
+  const pendingTime = getTxPendingTime(coordinatorState, isL1, timestamp)
 
   return (
     <div className={classes.root} onClick={onClick}>

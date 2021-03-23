@@ -139,7 +139,7 @@ function TransactionForm ({
     if (amount === undefined) {
       return ''
     }
-    return showInFiat ? Number(amountFiat.toFixed(2)) : Number(getTokenAmountString(amount, account.token.decimals))
+    return showInFiat ? Number(amountFiat.toFixed(2)).toString() : Number(getTokenAmountString(amount, account.token.decimals)).toString()
   }
 
   /**
@@ -208,7 +208,11 @@ function TransactionForm ({
       setAmount(fixedNewAmountInToken)
       setAmountFiat(newAmountInFiat)
     } else {
-      const newAmountInToken = getTokenAmountBigInt(event.target.value, account.token.decimals).toString()
+      const [whole, decimals] = event.target.value.split('.')
+      const newValue = decimals === undefined
+        ? whole
+        : [whole, decimals.substring(0, account.token.decimals)].join('.')
+      const newAmountInToken = getTokenAmountBigInt(newValue, account.token.decimals).toString()
       const newAmountInFiat = getAmountInFiat(newAmountInToken)
 
       setAmountChecks(newAmountInToken)

@@ -9,20 +9,23 @@ import '../../../utils/accounts'
 function AccountList ({
   accounts,
   preferredCurrency,
-  fiatExchangeRates,
   pendingDeposits,
-  poolTransactions,
+  coordinatorState,
   disabledTokenIds,
   onAccountClick
 }) {
   const classes = useAccountListStyles()
+
+  function getAccountPendingDeposit (account) {
+    return pendingDeposits?.find((deposit) => deposit.token.id === account.token.id)
+  }
 
   function hasAccountPendingDeposit (account) {
     if (!pendingDeposits) {
       return false
     }
 
-    return pendingDeposits.find((deposit) => deposit.token.id === account.token.id) !== undefined
+    return getAccountPendingDeposit(account) !== undefined
   }
 
   function isAccountDisabled (account) {
@@ -56,6 +59,8 @@ function AccountList ({
               token={account.token}
               hasPendingDeposit={hasAccountPendingDeposit(account)}
               isDisabled={isAccountDisabled(account)}
+              coordinatorState={coordinatorState}
+              timestamp={getAccountPendingDeposit(account)?.timestamp}
               onClick={() => handleAccountListItemClick(account)}
             />
           </div>
