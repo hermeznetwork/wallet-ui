@@ -57,6 +57,23 @@ function removeItem (key, chainId, hermezEthereumAddress, id) {
   return newStorage
 }
 
+function removeItemByCustomProp (key, chainId, hermezEthereumAddress, prop) {
+  const storage = getStorage(key)
+  const chainIdStorage = storage[chainId] || {}
+  const accountStorage = chainIdStorage[hermezEthereumAddress] || []
+  const newStorage = {
+    ...storage,
+    [chainId]: {
+      ...chainIdStorage,
+      [hermezEthereumAddress]: accountStorage.filter(item => item[prop.name] !== prop.value)
+    }
+  }
+
+  localStorage.setItem(key, JSON.stringify(newStorage))
+
+  return newStorage
+}
+
 function updatePartialItemByCustomProp (key, chainId, hermezEthereumAddress, prop, partialItem) {
   const storage = getStorage(key)
   const chainIdStorage = storage[chainId] || {}
@@ -90,6 +107,7 @@ export {
   getStorage,
   addItem,
   removeItem,
+  removeItemByCustomProp,
   updatePartialItemByCustomProp,
   getItemsByHermezAddress
 }

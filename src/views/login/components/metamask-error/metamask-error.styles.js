@@ -15,10 +15,10 @@ const useMetaMaskErrorStyles = createUseStyles((theme) => ({
     textAlign: 'center'
   },
   href: {
-    fontSize: theme.spacing(3),
+    fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.bold,
-    marginTop: theme.spacing(10),
-    padding: `${theme.spacing(3.5)}px ${theme.spacing(6)}px`,
+    marginTop: theme.spacing(6),
+    padding: `${theme.spacing(3)}px ${theme.spacing(9)}px`,
     color: theme.palette.white,
     backgroundColor: theme.palette.secondary.main,
     border: 0,

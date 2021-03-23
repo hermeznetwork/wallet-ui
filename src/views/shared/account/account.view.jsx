@@ -13,6 +13,7 @@ function Account ({
   hasPendingDeposit,
   isDisabled,
   coordinatorState,
+  timestamp,
   onClick
 }) {
   const classes = useAccountStyles({
@@ -20,7 +21,7 @@ function Account ({
     isDisabled
   })
 
-  const pendingTime = getTxPendingTime(coordinatorState, true)
+  const pendingTime = getTxPendingTime(coordinatorState, true, timestamp)
 
   return (
     <div

@@ -26,7 +26,7 @@ function Transaction ({
   const isL1 = type === TxType.Deposit ||
     type === TxType.CreateAccountDeposit ||
     type === TxType.ForceExit
-  const pendingTime = getTxPendingTime(coordinatorState, isL1)
+  const pendingTime = getTxPendingTime(coordinatorState, isL1, timestamp)
 
   return (
     <div className={classes.root} onClick={onClick}>

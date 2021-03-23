@@ -105,20 +105,21 @@ function TransactionDetails ({
 
         const token = transactionTask.data.token
 
-        if (transactionTask.data.fee) {
-          const feeUsd = getFeeInUsd(transactionTask.data.fee, transactionTask.data.amount, token)
-          const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
-          return {
-            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${feePreferredCurrency.toFixed(2)}`,
-            tokens: `${Number((feeUsd / token.USD).toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`
-          }
-        } else if (transactionTask.data.L2Info) {
+        if (transactionTask.data.L2Info?.historicFeeUSD) {
           const feeUsd = transactionTask.data.L2Info.historicFeeUSD
           const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
           const feeToken = feeUsd / token.USD
           return {
-            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${Number.isInteger(feePreferredCurrency) ? feePreferredCurrency.toFixed(2) : '-'}`,
-            tokens: `${Number.isInteger(feeUsd) ? Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)) : '-'} ${token.symbol}`
+            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${!isNaN(feePreferredCurrency) ? feePreferredCurrency.toFixed(2) : '-'}`,
+            tokens: `${!isNaN(feeUsd) ? Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)) : '-'} ${token.symbol}`
+          }
+        } else if (transactionTask.data.fee || transactionTask.data.L2Info?.fee) {
+          const feeUsd = getFeeInUsd(transactionTask.data.fee || transactionTask.data.L2Info?.fee, transactionTask.data.amount, token)
+          const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
+          const feeToken = feeUsd / token.USD
+          return {
+            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${!isNaN(feePreferredCurrency) ? feePreferredCurrency.toFixed(2) : '-'}`,
+            tokens: `${!isNaN(feeUsd) ? Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)) : '-'} ${token.symbol}`
           }
         } else {
           return undefined
