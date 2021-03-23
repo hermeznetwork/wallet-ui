@@ -104,7 +104,6 @@ function MyAccount ({
             <div className={classes.settingHeader}>
               <ExitIcon />
               <p className={classes.settingTitle} onClick={onNavigateToForceExit}>Force withdrawal</p>
-              <div className={classes.break} />
               <p className={classes.settingSubTitle}>Forces the coordinator to process the transaction (more Gas is required).</p>
             </div>
           </div>
