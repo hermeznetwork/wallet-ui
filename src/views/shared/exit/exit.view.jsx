@@ -29,7 +29,6 @@ function Exit ({
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorState,
-  timestamp,
   redirectTo,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
