@@ -257,18 +257,34 @@ function addPendingDeposit (pendingDeposit) {
 }
 
 /**
- * Removes a pendingDeposit from the pendingDeposit store
+ * Removes a pendingDeposit from the pendingDeposit store by id
  * @param {string} transactionId - The transaction identifier used to remove a pendingDeposit from the store
  * @returns {void}
  */
-function removePendingDeposit (transactionId) {
+function removePendingDepositById (transactionId) {
   return (dispatch, getState) => {
     const { global: { wallet, ethereumNetworkTask } } = getState()
     const { data: { chainId } } = ethereumNetworkTask
     const { hermezEthereumAddress } = wallet
 
     storage.removeItem(constants.PENDING_DEPOSITS_KEY, chainId, hermezEthereumAddress, transactionId)
-    dispatch(globalActions.removePendingDeposit(chainId, hermezEthereumAddress, transactionId))
+    dispatch(globalActions.removePendingDepositById(chainId, hermezEthereumAddress, transactionId))
+  }
+}
+
+/**
+ * Removes a pendingDeposit from the pendingDeposit store by hash
+ * @param {string} transactionId - The transaction identifier used to remove a pendingDeposit from the store
+ * @returns {void}
+ */
+function removePendingDepositByHash (hash) {
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
+
+    storage.removeItemByCustomProp(constants.PENDING_DEPOSITS_KEY, chainId, hermezEthereumAddress, { name: 'hash', value: hash })
+    dispatch(globalActions.removePendingDepositByHash(chainId, hermezEthereumAddress, hash))
   }
 }
 
@@ -305,7 +321,7 @@ function checkPendingDeposits () {
 
     Promise.all(pendingDepositsTxReceipts).then((txReceipts) => {
       const transactionHistoryPromises = txReceipts
-        .filter(txReceipt => txReceipt && txReceipt.logs && txReceipt.logs.length > 0)
+        .filter(txReceipt => txReceipt && txReceipt.status === 1 && txReceipt.logs && txReceipt.logs.length > 0)
         .map((txReceipt) => {
           const hermezContractInterface = new ethers.utils.Interface(HermezABI)
           // Need to parse logs, but only events from the Hermez SC. Ignore errors when trying to parse others
@@ -332,13 +348,17 @@ function checkPendingDeposits () {
           return CoordinatorAPI.getHistoryTransaction(txId)
         })
 
+      txReceipts
+        .filter(txReceipt => txReceipt && txReceipt.status === 0)
+        .forEach(txReceipt => dispatch(removePendingDepositByHash(txReceipt.transactionHash)))
+
       Promise.all(transactionHistoryPromises)
         .then((results) => {
           results
             .filter(result => result !== undefined)
             .forEach((transaction) => {
               if (transaction.batchNum !== null) {
-                dispatch(removePendingDeposit(transaction.id))
+                dispatch(removePendingDepositById(transaction.id))
               }
             })
           dispatch(globalActions.checkPendingDepositsSuccess())
@@ -438,7 +458,8 @@ export {
   updatePendingDelayedWithdrawDate,
   checkPendingDelayedWithdraw,
   addPendingDeposit,
-  removePendingDeposit,
+  removePendingDepositById,
+  removePendingDepositByHash,
   updatePendingDepositId,
   checkPendingDeposits,
   checkPendingTransactions,
