@@ -16,7 +16,7 @@ function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
   function getExplanation () {
     switch (transactionType) {
       case TxType.Deposit:
-        return 'Your transaction is awaiting verification.'
+        return 'Your transaction has been submitted.'
       case TxType.Transfer:
         return 'Your transaction is completed.'
       case TxType.Exit:
