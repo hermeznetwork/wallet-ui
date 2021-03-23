@@ -23,7 +23,7 @@ const useFormButtonStyles = createUseStyles(theme => ({
     },
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(2.5)}px`,
-      padding: `${theme.spacing(3)}px ${theme.spacing(14)}px`
+      padding: `${theme.spacing(3)}px ${theme.spacing(9)}px`
     }
   }
 }))
