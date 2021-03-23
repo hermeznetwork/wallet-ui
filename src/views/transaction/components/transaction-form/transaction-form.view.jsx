@@ -9,7 +9,7 @@ import { getMaxAmountFromMinimumFee } from '@hermeznetwork/hermezjs/src/tx-utils
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
-import { MAX_TOKEN_DECIMALS } from '../../../../constants'
+import { MAX_TOKEN_DECIMALS, MAX_FEE_USD } from '../../../../constants'
 import { ReactComponent as SwapIcon } from '../../../../images/icons/swap.svg'
 import { ReactComponent as ErrorIcon } from '../../../../images/icons/error.svg'
 import { ReactComponent as CloseIcon } from '../../../../images/icons/close.svg'
@@ -106,7 +106,9 @@ function TransactionForm ({
       return 0
     }
 
-    const fee = isExistingAccount || transactionType === TxType.Exit ? fees.existingAccount : fees.createAccount
+    const feeApi = isExistingAccount || transactionType === TxType.Exit ? fees.existingAccount : fees.createAccount
+    // Limits the fee, in case a crazy fee is returned
+    const fee = feeApi > MAX_FEE_USD ? MAX_FEE_USD : feeApi
 
     return fee / account.token.USD
   }
