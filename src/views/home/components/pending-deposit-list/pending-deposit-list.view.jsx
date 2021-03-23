@@ -28,6 +28,7 @@ function PendingDepositList ({ deposits, preferredCurrency, fiatExchangeRates, c
                 token={deposit.token}
                 preferredCurrency={preferredCurrency}
                 coordinatorState={coordinatorState}
+                timestamp={deposit.timestamp}
                 onClick={onAccountClick}
               />
             </div>

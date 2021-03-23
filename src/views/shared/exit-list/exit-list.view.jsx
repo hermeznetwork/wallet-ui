@@ -26,6 +26,8 @@ function ExitList ({
           transaction.token.decimals
         )
 
+        console.log(transaction)
+
         return (
           <Exit
             key={transaction.id || transaction.itemId}
@@ -56,6 +58,7 @@ function ExitList ({
             onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
             onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
             coordinatorState={coordinatorState}
+            timestamp={transaction.timestamp}
             redirectTo={redirectTo}
           />
         )

@@ -29,6 +29,7 @@ function Exit ({
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorState,
+  timestamp,
   redirectTo,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
@@ -190,7 +191,7 @@ function Exit ({
     return <Redirect to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true&redirectTo=${redirectTo}`} />
   }
 
-  const pendingTime = getTxPendingTime(coordinatorState, true)
+  const pendingTime = getTxPendingTime(coordinatorState, false)
 
   return (
     <div className={classes.root}>
@@ -214,7 +215,7 @@ function Exit ({
               {getTag()}
             </span>
           </div>
-          {pendingTime > 0 && getStep() !== STEPS.second && <p className={classes.pendingTimer}>{pendingTime} min</p>}
+          {pendingTime > 0 && getStep() === STEPS.first && <p className={classes.pendingTimer}>{pendingTime} min</p>}
         </div>
         <span className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol}{fiatAmount.toFixed(2)}</span>
       </div>
