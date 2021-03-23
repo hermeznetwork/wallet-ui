@@ -3,6 +3,7 @@ import { HttpStatusCode } from '@hermeznetwork/hermezjs/src/http'
 import { push } from 'connected-react-router'
 
 import * as transactionDetailsActionTypes from './transaction-details.actions'
+import * as storage from '../../utils/storage'
 
 /**
  * Fetches the details of a transaction
@@ -10,9 +11,12 @@ import * as transactionDetailsActionTypes from './transaction-details.actions'
  */
 function fetchTransaction (transactionIdOrHash) {
   return (dispatch, getState) => {
-    const { global: { wallet, pendingDeposits } } = getState()
-    const accountPendingDeposits = pendingDeposits[wallet.hermezEthereumAddress]
-
+    const { global: { wallet, ethereumNetworkTask, pendingDeposits } } = getState()
+    const accountPendingDeposits = storage.getItemsByHermezAddress(
+      pendingDeposits,
+      ethereumNetworkTask.data.chainId,
+      wallet.hermezEthereumAddress
+    )
     dispatch(transactionDetailsActionTypes.loadTransaction())
 
     const transactionPromise = new Promise((resolve, reject) => {
