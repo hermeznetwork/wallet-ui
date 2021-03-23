@@ -80,7 +80,7 @@ function QRScanner ({ hideMyCode, onSuccess, onError, onClose }) {
                         Icon={<QRCodeIcon />}
                         onClick={onClose}
                       />
-                      <p className={classes.myCodeLabel}>My code</p>
+                      <p className={classes.myCodeLabel}>My Code</p>
                     </>
                   )}
                 </div>
