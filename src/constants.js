@@ -19,6 +19,8 @@ export const ETHER_TOKEN_ID = 0
 
 export const MAX_TOKEN_DECIMALS = 6
 
+export const MAX_FEE_USD = 10
+
 export const PENDING_WITHDRAWS_KEY = 'pendingWithdraws'
 
 export const PENDING_DELAYED_WITHDRAWS_KEY = 'pendingDelayedWithdraws'
