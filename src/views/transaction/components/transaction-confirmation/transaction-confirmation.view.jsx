@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import useTransactionConfirmationStyles from './transaction-confirmation.styles'
-import transactionConfirmation from '../../../../images/transaction-confirmation.png'
+import transactionConfirmation from '../../../../images/transaction-confirmation.svg'
 import FormButton from '../../../shared/form-button/form-button.view'
 
 function TransactionConfirmation ({ transactionType, onFinishTransaction }) {
