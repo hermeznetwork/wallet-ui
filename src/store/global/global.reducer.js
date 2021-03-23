@@ -288,7 +288,7 @@ function globalReducer (state = initialGlobalState, action) {
         }
       }
     }
-    case globalActionTypes.REMOVE_PENDING_DEPOSIT: {
+    case globalActionTypes.REMOVE_PENDING_DEPOSIT_BY_HASH: {
       const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {}
       const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || []
 
@@ -299,7 +299,23 @@ function globalReducer (state = initialGlobalState, action) {
           [action.chainId]: {
             ...chainIdPendingDeposits,
             [action.hermezEthereumAddress]: accountPendingDeposits
-              .filter(deposit => deposit.id !== action.transactionId)
+              .filter(deposit => deposit.hash !== action.hash)
+          }
+        }
+      }
+    }
+    case globalActionTypes.REMOVE_PENDING_DEPOSIT_BY_ID: {
+      const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {}
+      const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || []
+
+      return {
+        ...state,
+        pendingDeposits: {
+          ...state.pendingDeposits,
+          [action.chainId]: {
+            ...chainIdPendingDeposits,
+            [action.hermezEthereumAddress]: accountPendingDeposits
+              .filter(deposit => deposit.id !== action.id)
           }
         }
       }

@@ -139,7 +139,7 @@ function TransactionForm ({
     if (amount === undefined) {
       return ''
     }
-    return showInFiat ? Number(amountFiat.toFixed(2)).toString() : Number(getTokenAmountString(amount, account.token.decimals)).toString()
+    return showInFiat ? Number(amountFiat.toFixed(2)) : Number(getTokenAmountString(amount, account.token.decimals))
   }
 
   /**

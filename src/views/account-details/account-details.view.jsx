@@ -205,6 +205,7 @@ function AccountDetails ({
             ) {
               const tokenPendingDeposits = accountPendingDeposits
                 .filter(deposit => deposit.token.id === accountTask.data.token.id)
+                .reverse()
               const tokenPendingWithdraws = accountPendingWithdraws
                 .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
               const tokenPendingDelayedWithdraws = accountPendingDelayedWithdraws
