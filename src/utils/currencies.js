@@ -85,6 +85,9 @@ function getTokenAmountInPreferredCurrency (
  * @returns {String} Amount in USD
  */
 function getFeeInUsd (feeIndex, amount, token) {
+  if (!feeIndex) {
+    return '-'
+  }
   const feeInToken = Number(getTokenAmountString(getFeeValue(feeIndex, amount), token.decimals))
   const feeInFiat = feeInToken * token.USD
   return feeInFiat

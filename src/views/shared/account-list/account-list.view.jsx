@@ -16,12 +16,16 @@ function AccountList ({
 }) {
   const classes = useAccountListStyles()
 
+  function getAccountPendingDeposit (account) {
+    return pendingDeposits?.find((deposit) => deposit.token.id === account.token.id)
+  }
+
   function hasAccountPendingDeposit (account) {
     if (!pendingDeposits) {
       return false
     }
 
-    return pendingDeposits.find((deposit) => deposit.token.id === account.token.id) !== undefined
+    return getAccountPendingDeposit(account) !== undefined
   }
 
   function isAccountDisabled (account) {
@@ -56,6 +60,7 @@ function AccountList ({
               hasPendingDeposit={hasAccountPendingDeposit(account)}
               isDisabled={isAccountDisabled(account)}
               coordinatorState={coordinatorState}
+              timestamp={getAccountPendingDeposit(account)?.timestamp}
               onClick={() => handleAccountListItemClick(account)}
             />
           </div>
