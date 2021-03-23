@@ -1,17 +1,18 @@
 import React from 'react'
 
 import useChainIdErrorStyles from './chain-id-error.styles'
+import { ReactComponent as SwitchNetworkIcon } from '../../../../images/icons/switch-network.svg'
 
 function ChainIdError ({ supportedEnvironments }) {
   const classes = useChainIdErrorStyles()
-  const supportedEnvironmentNames = supportedEnvironments
-    .map((ethereumNetwork) => ethereumNetwork.name)
-    .join(', ')
 
   return (
     <div className={classes.root}>
+      <SwitchNetworkIcon className={classes.image} />
       <h1 className={classes.errorTitle}>Switch network</h1>
-      <p className={classes.errorDescription}>Switch your wallet's network to one of these networks: {supportedEnvironmentNames} and connect your wallet again.</p>
+      <p className={classes.errorDescription}>
+        Select the Mainnet or Rinkeby network in your Metamask wallet to connect your Hermez wallet.
+      </p>
     </div>
   )
 }
