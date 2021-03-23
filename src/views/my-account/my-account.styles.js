@@ -53,11 +53,21 @@ const useMyAccountStyles = createUseStyles(theme => ({
   },
   settingHeader: {
     display: 'flex',
+    flexWrap: 'wrap',
     alignItems: 'center'
   },
   settingTitle: {
     fontWeight: theme.fontWeights.bold,
     marginLeft: theme.spacing(2)
+  },
+  settingSubTitle: {
+    color: theme.palette.grey.main,
+    fontWeight: theme.fontWeights.medium,
+    marginTop: theme.spacing(1),
+    paddingLeft: theme.spacing(4.5)
+  },
+  break: {
+
   },
   settingContent: {
     marginTop: theme.spacing(1.75),
