@@ -1,3 +1,5 @@
+import { getFeeValue } from '@hermeznetwork/hermezjs/src/tx-utils'
+
 /** */
 function getAccountBalance (account, poolTransactions, pendingDeposits) {
   if (!account) {
@@ -19,6 +21,7 @@ function getAccountBalance (account, poolTransactions, pendingDeposits) {
 
     accountPoolTransactions.forEach((pendingTransaction) => {
       totalBalance -= BigInt(pendingTransaction.amount)
+      totalBalance -= BigInt(getFeeValue(pendingTransaction.fee, pendingTransaction.amount))
     })
   }
 
