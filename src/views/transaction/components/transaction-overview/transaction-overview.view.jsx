@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { getFeeIndex, getFeeValue } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -101,6 +103,20 @@ function TransactionOverview ({
     }
   }
 
+  /**
+   * Calculates the actual fee that will be paid for a specific transaction
+   * taking into account the type of transaction, the amount and minimum fee
+   * @param {Number} minimumFee - The minimum fee that needs to be payed to the coordinator in token value
+   * @returns {Number} The real fee that will be paid for this transaction
+   */
+  function getRealFee (minimumFee) {
+    const decimals = account.token.decimals
+    const minimumFeeBigInt = getTokenAmountBigInt(minimumFee.toFixed(decimals), decimals).toString()
+    const feeIndex = getFeeIndex(minimumFeeBigInt, amount)
+    const fee = getFeeValue(feeIndex, amount)
+    return Number(getTokenAmountString(fee, decimals))
+  }
+
   return (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
@@ -126,8 +142,8 @@ function TransactionOverview ({
               toHezEthereumAddress: to.hezEthereumAddress,
               fee: fee
                 ? {
-                    fiat: `${CurrencySymbol[preferredCurrency].symbol} ${(Number(fee) * account.token.USD).toFixed(2)}`,
-                    tokens: `${Number(fee).toFixed(MAX_TOKEN_DECIMALS)} ${account.token.symbol}`
+                    fiat: `${CurrencySymbol[preferredCurrency].symbol} ${(Number(getRealFee(fee)) * account.token.USD).toFixed(2)}`,
+                    tokens: `${Number(getRealFee(fee)).toFixed(MAX_TOKEN_DECIMALS)} ${account.token.symbol}`
                   }
                 : undefined
             }}

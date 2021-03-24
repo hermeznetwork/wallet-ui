@@ -109,7 +109,7 @@ function TransactionForm ({
     const feeApi = isExistingAccount || transactionType === TxType.Exit ? fees.existingAccount : fees.createAccount
     // Limits the fee, in case a crazy fee is returned
     const fee = feeApi > MAX_FEE_USD ? MAX_FEE_USD : feeApi
-
+    console.log(fee, account.token.USD, fee / account.token.USD)
     return fee / account.token.USD
   }
 
@@ -356,6 +356,7 @@ function TransactionForm ({
               setDoesReceiverExist(false)
             } else {
               const transactionFee = getFee(fees, receiverAccount)
+              console.log(transactionFee, fees)
 
               onSubmit({
                 amount: amount,
