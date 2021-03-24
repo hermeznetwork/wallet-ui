@@ -241,7 +241,8 @@ function TransactionForm ({
       ? maxAmount.toString()
       : getMaxAmountFromMinimumFee(minFeeInBigInt, maxAmount).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
-    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(newAmount.length - 10).fill(0).join('')}`).toString()
+    const digitsToZero = newAmount.length - 10 > 0 ? newAmount.length - 10 : 0
+    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(digitsToZero).fill(0).join('')}`).toString()
     const newAmountInFiat = getAmountInFiat(newAmountInToken)
 
     setAmountChecks(newAmountInToken)
