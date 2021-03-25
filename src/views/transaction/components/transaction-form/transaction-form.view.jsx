@@ -57,8 +57,7 @@ function TransactionForm ({
 
   React.useEffect(() => {
     if (receiverAddress) {
-      setReceiver(receiverAddress)
-      setIsReceiverValid(true)
+      handleReceiverInputChange(receiverAddress)
     }
   }, [receiverAddress])
 
