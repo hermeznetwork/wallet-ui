@@ -109,7 +109,6 @@ function TransactionForm ({
     const feeApi = isExistingAccount || transactionType === TxType.Exit ? fees.existingAccount : fees.createAccount
     // Limits the fee, in case a crazy fee is returned
     const fee = feeApi > MAX_FEE_USD ? MAX_FEE_USD : feeApi
-
     return fee / account.token.USD
   }
 
