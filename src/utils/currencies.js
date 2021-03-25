@@ -11,6 +11,10 @@ const CurrencySymbol = {
   EUR: {
     symbol: '€',
     code: 'EUR'
+  },
+  CNY: {
+    symbol: '¥',
+    code: 'CNY'
   }
 }
 
