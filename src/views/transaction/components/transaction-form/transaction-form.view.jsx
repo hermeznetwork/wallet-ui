@@ -4,8 +4,10 @@ import clsx from 'clsx'
 import { getAccounts, getCreateAccountAuthorization } from '@hermeznetwork/hermezjs/src/api'
 import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { GAS_LIMIT_LOW } from '@hermeznetwork/hermezjs/src/constants'
 import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compressed-amount'
 import { getMaxAmountFromMinimumFee } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -113,11 +115,28 @@ function TransactionForm ({
   }
 
   /**
+   * Calculates the maximum Eth that can be sent by substracting estimated Gas cost
+   * Return the amount if it's an ERC-20 token
+   * @param {BigInt} maxAmount - The amount in the balance
+   * @returns {BigInt} The maximum amount that can be sent
+   */
+  async function getMaxAmountForDeposit (maxAmount) {
+    if (account.token.id === 0) {
+      const gasPrice = await getProvider().getGasPrice()
+      console.log(maxAmount, BigInt(GAS_LIMIT_LOW), BigInt(gasPrice.toString()), BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice.toString()))
+      return maxAmount - BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice.toString())
+    } else {
+      return maxAmount
+    }
+  }
+
+  /**
    * Checks whether the continue button should be disabled or not
    * @returns {boolean} - Whether the continue button should be disabled or not
    */
   function isContinueDisabled () {
-    const isAmountValid = isAmountLessThanFunds && isAmountPositive && isAmountCompressedValid && BigInt(amount.toString()) > 0
+    console.log(amount)
+    const isAmountValid = isAmountLessThanFunds && isAmountPositive && isAmountCompressedValid && amount && BigInt(amount.toString()) > 0
 
     if (transactionType !== TxType.Transfer && isAmountValid) {
       return false
@@ -135,9 +154,11 @@ function TransactionForm ({
   }
 
   function getAmountInputValue () {
-    if (amount === undefined) {
+    console.log('here')
+    if (amount === undefined || amountFiat === undefined) {
       return ''
     }
+    console.log(amount, getTokenAmountString(amount, account.token.decimals))
     return showInFiat ? Number(amountFiat.toFixed(2)) : Number(getTokenAmountString(amount, account.token.decimals))
   }
 
@@ -159,10 +180,10 @@ function TransactionForm ({
 
   /**
    * Makes the appropriate checks that the amount is valid
-   * @param {ethers.BigNumber} newAmount - The new amount as a BigNumber
+   * @param {BigInt} newAmount - The new amount as a BigInt
    */
   function setAmountChecks (newAmount) {
-    // Convert from ethers.BigNumber to native BigInt
+    // Convert from ethers.BigNumber to native BigInt if necessary
     const newAmountBigInt = BigInt(newAmount.toString())
     const fee = transactionType === TxType.Deposit
       ? BigInt(0)
@@ -226,7 +247,7 @@ function TransactionForm ({
    * Checks if the continue button should be disabled.
    * @returns {void}
    */
-  function handleSendAllButtonClick () {
+  async function handleSendAllButtonClick () {
     const maxAmount = BigInt(account.balance)
     if (maxAmount === 0) {
       setAmountChecks(BigInt(0))
@@ -237,12 +258,14 @@ function TransactionForm ({
 
     const minFeeInBigInt = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
     const newAmount = transactionType === TxType.Deposit
-      ? maxAmount.toString()
+      ? (await getMaxAmountForDeposit(maxAmount)).toString()
       : getMaxAmountFromMinimumFee(minFeeInBigInt, maxAmount).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
+    console.log(newAmount)
     const digitsToZero = newAmount.length - 10 > 0 ? newAmount.length - 10 : 0
-    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(digitsToZero).fill(0).join('')}`).toString()
+    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(digitsToZero).fill(0).join('')}`)
     const newAmountInFiat = getAmountInFiat(newAmountInToken)
+    console.log(newAmountInToken)
 
     setAmountChecks(newAmountInToken)
     setAmount(newAmountInToken)
