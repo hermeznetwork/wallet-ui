@@ -11,7 +11,13 @@ const TxStatus = {
   Pending: 'Pending'
 }
 
-function TransactionInfo ({ txData, accountIndex, showStatus, showToCopyButton }) {
+function TransactionInfo ({
+  txData,
+  accountIndex,
+  showStatus,
+  showToCopyButton,
+  onToCopyClick
+}) {
   const date = txData.timestamp && {
     subtitle: new Date(txData.timestamp).toLocaleString()
   }
@@ -34,6 +40,7 @@ function TransactionInfo ({ txData, accountIndex, showStatus, showToCopyButton }
 
   function handleCopyToAddress () {
     copyToClipboard(txData.toHezEthereumAddress)
+    onToCopyClick()
   }
 
   switch (txData.type) {

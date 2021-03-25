@@ -13,7 +13,7 @@ const useSnackbarStyles = createUseStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     background: backgroundColor || theme.palette.white,
-    padding: theme.spacing(2.5),
+    padding: theme.spacing(2),
     borderRadius: theme.spacing(2),
     color: backgroundColor ? theme.palette.white : theme.palette.black,
     fontWeight: theme.fontWeights.bold,
