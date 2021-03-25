@@ -317,13 +317,25 @@ function checkPendingDeposits () {
       wallet.hermezEthereumAddress
     )
     const pendingDepositsHashes = accountPendingDeposits.map(deposit => deposit.hash)
-    const pendingDepositsTxReceipts = pendingDepositsHashes.map(hash => provider.getTransactionReceipt(hash))
+    const pendingDepositsTxs = pendingDepositsHashes.map((hash) => {
+      return provider.getTransaction(hash).then((tx) => {
+        if (tx === null) {
+          dispatch(removePendingDepositByHash(hash))
+        }
 
-    Promise.all(pendingDepositsTxReceipts).then((txReceipts) => {
-      const transactionHistoryPromises = txReceipts
-        .filter(txReceipt => txReceipt && txReceipt.status === 1 && txReceipt.logs && txReceipt.logs.length > 0)
-        .map((txReceipt) => {
-          const hermezContractInterface = new ethers.utils.Interface(HermezABI)
+        return tx
+      })
+    })
+
+    Promise.all(pendingDepositsTxs).then((txs) => {
+      const minedTxs = txs.filter(tx => tx !== null && tx.blockNumber !== null)
+      const pendingDepositsTxReceipts = minedTxs.map(tx => provider.getTransactionReceipt(tx.hash))
+
+      Promise.all(pendingDepositsTxReceipts).then((txReceipts) => {
+        const hermezContractInterface = new ethers.utils.Interface(HermezABI)
+        const revertedTxReceipts = txReceipts.filter(txReceipt => txReceipt.status === 0)
+        const successfulTxReceipts = txReceipts.filter(txReceipt => txReceipt.status === 1 && txReceipt.logs && txReceipt.logs.length > 0)
+        const transactionHistoryPromises = successfulTxReceipts.map((txReceipt) => {
           // Need to parse logs, but only events from the Hermez SC. Ignore errors when trying to parse others
           const parsedLogs = []
           for (const txReceiptLog of txReceipt.logs) {
@@ -348,22 +360,23 @@ function checkPendingDeposits () {
           return CoordinatorAPI.getHistoryTransaction(txId)
         })
 
-      txReceipts
-        .filter(txReceipt => txReceipt && txReceipt.status === 0)
-        .forEach(txReceipt => dispatch(removePendingDepositByHash(txReceipt.transactionHash)))
-
-      Promise.all(transactionHistoryPromises)
-        .then((results) => {
-          results
-            .filter(result => result !== undefined)
-            .forEach((transaction) => {
-              if (transaction.batchNum !== null) {
-                dispatch(removePendingDepositById(transaction.id))
-              }
-            })
-          dispatch(globalActions.checkPendingDepositsSuccess())
+        revertedTxReceipts.forEach((tx) => {
+          dispatch(removePendingDepositByHash(tx.transactionHash))
         })
-        .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()))
+
+        Promise.all(transactionHistoryPromises)
+          .then((results) => {
+            results
+              .filter(result => result !== undefined)
+              .forEach((transaction) => {
+                if (transaction.batchNum !== null) {
+                  dispatch(removePendingDepositById(transaction.id))
+                }
+              })
+            dispatch(globalActions.checkPendingDepositsSuccess())
+          })
+          .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()))
+      })
     })
   }
 }
