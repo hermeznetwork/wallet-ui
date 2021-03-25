@@ -32,7 +32,7 @@ function QRScanner ({ hideMyCode, onSuccess, onError, onClose }) {
    * @returns {void}
    */
   function handleQRScan (result) {
-    if ((result && Addresses.isHermezEthereumAddress(result)) || (result && Addresses.isEthereumAddress(result))) {
+    if (result && (Addresses.isHermezEthereumAddress(result) || Addresses.isEthereumAddress(result))) {
       onSuccess(result)
     }
   }
