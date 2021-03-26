@@ -12,7 +12,7 @@ import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency, getFeeInUsd, CurrencySymbol } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
-import { changeHeader } from '../../store/global/global.actions'
+import { changeHeader, openSnackbar } from '../../store/global/global.actions'
 import { fetchCoordinatorState } from '../../store/global/global.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
@@ -30,7 +30,8 @@ function TransactionDetails ({
   coordinatorStateTask,
   onLoadTransaction,
   onLoadCoordinatorState,
-  onChangeHeader
+  onChangeHeader,
+  onOpenSnackbar
 }) {
   const theme = useTheme()
   const classes = useTransactionDetailsStyles()
@@ -178,6 +179,7 @@ function TransactionDetails ({
                       accountIndex={accountIndex}
                       showStatus
                       showToCopyButton
+                      onToCopyClick={() => onOpenSnackbar('Copied')}
                     />
                     <ExploreTransactionButton
                       txLevel={transactionTask.data.fromAccountIndex ? TxLevel.L2 : TxLevel.L1}
@@ -237,6 +239,7 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionIdOrHash) =>
     dispatch(transactionDetailsThunks.fetchTransaction(transactionIdOrHash)),
   onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onChangeHeader: (transactionType, accountIndex) =>
     dispatch(
       changeHeader({

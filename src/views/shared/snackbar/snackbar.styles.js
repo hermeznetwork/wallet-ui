@@ -12,12 +12,13 @@ const useSnackbarStyles = createUseStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: backgroundColor || theme.palette.black,
-    padding: theme.spacing(2.5),
-    borderRadius: theme.spacing(1),
-    color: theme.palette.white,
+    background: backgroundColor || theme.palette.white,
+    padding: theme.spacing(2),
+    borderRadius: theme.spacing(2),
+    color: backgroundColor ? theme.palette.white : theme.palette.black,
     fontWeight: theme.fontWeights.bold,
-    marginBottom: theme.spacing(3)
+    marginBottom: theme.spacing(3),
+    border: backgroundColor ? 'none' : `solid 1.5px ${theme.palette.grey.veryLight}`
   }),
   message: {
     textAlign: 'center'
