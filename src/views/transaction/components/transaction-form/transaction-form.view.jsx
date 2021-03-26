@@ -45,11 +45,16 @@ function TransactionForm ({
   const [isAmountCompressedValid, setIsAmountCompressedValid] = React.useState(undefined)
   const [isReceiverValid, setIsReceiverValid] = React.useState(undefined)
   const [doesReceiverExist, setDoesReceiverExist] = React.useState(undefined)
+  const [gasPrice, setGasPrice] = React.useState(undefined)
   const amountInput = React.useRef(undefined)
 
   React.useEffect(() => {
     onLoadFees()
   }, [onLoadFees])
+
+  React.useEffect(() => {
+    getProvider().getGasPrice().then(gasPrice => setGasPrice(gasPrice.toString()))
+  }, [getProvider])
 
   React.useEffect(() => {
     if (feesTask.status === 'successful' && amountInput.current) {
@@ -120,11 +125,10 @@ function TransactionForm ({
    * @param {BigInt} maxAmount - The amount in the balance
    * @returns {BigInt} The maximum amount that can be sent
    */
-  async function getMaxAmountForDeposit (maxAmount) {
+  function getMaxAmountForDeposit (maxAmount) {
     if (account.token.id === 0) {
-      const gasPrice = await getProvider().getGasPrice()
-      console.log(maxAmount, BigInt(GAS_LIMIT_LOW), BigInt(gasPrice.toString()), BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice.toString()))
-      return maxAmount - BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice.toString())
+      console.log(maxAmount, BigInt(GAS_LIMIT_LOW), BigInt(gasPrice), BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice))
+      return maxAmount - BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice)
     } else {
       return maxAmount
     }
@@ -247,7 +251,7 @@ function TransactionForm ({
    * Checks if the continue button should be disabled.
    * @returns {void}
    */
-  async function handleSendAllButtonClick () {
+  function handleSendAllButtonClick () {
     const maxAmount = BigInt(account.balance)
     if (maxAmount === 0) {
       setAmountChecks(BigInt(0))
@@ -258,7 +262,7 @@ function TransactionForm ({
 
     const minFeeInBigInt = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
     const newAmount = transactionType === TxType.Deposit
-      ? (await getMaxAmountForDeposit(maxAmount)).toString()
+      ? getMaxAmountForDeposit(maxAmount).toString()
       : getMaxAmountFromMinimumFee(minFeeInBigInt, maxAmount).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
     console.log(newAmount)
@@ -445,6 +449,7 @@ function TransactionForm ({
                             type='button'
                             className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.amountMax}`}
                             tabIndex='-1'
+                            disabled={gasPrice === undefined}
                             onClick={handleSendAllButtonClick}
                           >
                             Max
