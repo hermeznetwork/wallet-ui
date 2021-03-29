@@ -60,7 +60,7 @@ function Transaction ({
   const classes = useTransactionStyles()
   const { search } = useLocation()
   const urlSearchParams = new URLSearchParams(search)
-  const accountIndex = urlSearchParams.get('accountIndex')
+  let accountIndex = urlSearchParams.get('accountIndex')
   const tokenId = urlSearchParams.get('tokenId')
   const batchNum = urlSearchParams.get('batchNum')
   const receiver = urlSearchParams.get('receiver')
@@ -194,6 +194,10 @@ function Transaction ({
             )
           }
           case STEP_NAME.FINISH_TRANSACTION: {
+            const stepData = steps[STEP_NAME.REVIEW_TRANSACTION]
+            if (!accountIndex) {
+              accountIndex = stepData.transaction.from.accountIndex
+            }
             return (
               <TransactionConfirmation
                 transactionType={transactionType}
@@ -339,7 +343,7 @@ const mapDispatchToProps = (dispatch) => ({
   onGoToTransactionOverviewStep: (transaction) =>
     dispatch(transactionActions.goToReviewTransactionStep(transaction)),
   onFinishTransaction: (transactionType, accountIndex, redirectTo) => {
-    if (transactionType === TxType.Withdraw) {
+    if (transactionType === TxType.Withdraw || transactionType === TxType.Deposit) {
       if (redirectTo === WithdrawRedirectionRoute.Home) {
         dispatch(push('/'))
       } else {

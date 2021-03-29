@@ -357,6 +357,7 @@ function TransactionForm ({
 
               onSubmit({
                 amount: amount,
+                from: { accountIndex: account.accountIndex },
                 to: receiverAccount || { hezEthereumAddress: receiver },
                 fee: transactionFee
               })
@@ -367,6 +368,7 @@ function TransactionForm ({
         const transactionFee = getFee(fees, true)
         return onSubmit({
           amount: amount,
+          from: { accountIndex: account.accountIndex },
           to: {},
           fee: transactionFee
         })
