@@ -7,7 +7,7 @@ import { ReactComponent as SendIcon } from '../../../images/icons/send.svg'
 import { ReactComponent as DepositIcon } from '../../../images/icons/deposit.svg'
 import { ReactComponent as WithdrawIcon } from '../../../images/icons/withdraw.svg'
 
-function TransactionActions ({ hideWithdraw, hideSend, accountIndex, tokenId }) {
+function TransactionActions ({ hideWithdraw, hideSend, hideDeposit, accountIndex, tokenId }) {
   const classes = useTransactionActionsStyles()
   const baseQueryString = accountIndex !== undefined ? `?accountIndex=${accountIndex}` : ''
   const depositQueryString = tokenId !== undefined ? `?accountIndex=${accountIndex}&tokenId=${tokenId}` : ''
@@ -26,12 +26,18 @@ function TransactionActions ({ hideWithdraw, hideSend, accountIndex, tokenId }) 
             </div>
             )
       }
-      <div className={classes.action}>
-        <Link to={`/deposit${depositQueryString}`} className={classes.button}>
-          <DepositIcon className={classes.buttonIcon} />
-        </Link>
-        <p className={classes.buttonText}>Deposit</p>
-      </div>
+      {
+        hideDeposit
+          ? <></>
+          : (
+            <div className={classes.action}>
+              <Link to={`/deposit${depositQueryString}`} className={classes.button}>
+                <DepositIcon className={classes.buttonIcon} />
+              </Link>
+              <p className={classes.buttonText}>Deposit</p>
+            </div>
+            )
+      }
       {
         hideWithdraw
           ? <></>

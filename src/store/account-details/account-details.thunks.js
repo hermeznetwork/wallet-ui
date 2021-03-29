@@ -6,6 +6,7 @@ import { push } from 'connected-react-router'
 
 import * as accountDetailsActions from './account-details.actions'
 import * as storage from '../../utils/storage'
+import * as ethereum from '../../utils/ethereum'
 import { removePendingWithdraw, removePendingDelayedWithdraw } from '../global/global.thunks'
 
 let refreshCancelTokenSource = axios.CancelToken.source()
@@ -30,6 +31,29 @@ function fetchAccount (accountIndex) {
         }
       })
       .catch(err => dispatch(accountDetailsActions.loadAccountFailure(err)))
+  }
+}
+
+/**
+ * Checks whether the Ethereum account has >0 balance for the token
+ * @param {Object} token - Hermez token object for the loaded account
+ * @returns {void}
+ */
+function fetchL1TokenBalance (token) {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+
+    dispatch(accountDetailsActions.loadL1TokenBalance())
+
+    return ethereum.getTokens(wallet, [token])
+      .then(metamaskTokens => {
+        if (metamaskTokens[0]) {
+          dispatch(accountDetailsActions.loadL1TokenBalanceSuccess())
+        } else {
+          dispatch(accountDetailsActions.loadL1TokenBalanceFailure())
+        }
+      })
+      .catch(_ => dispatch(accountDetailsActions.loadL1TokenBalanceFailure()))
   }
 }
 
@@ -235,6 +259,7 @@ function fetchExits (tokenId) {
 
 export {
   fetchAccount,
+  fetchL1TokenBalance,
   fetchPoolTransactions,
   fetchHistoryTransactions,
   refreshHistoryTransactions,
