@@ -127,7 +127,6 @@ function TransactionForm ({
    */
   function getMaxAmountForDeposit (maxAmount) {
     if (account.token.id === 0) {
-      console.log(maxAmount, BigInt(GAS_LIMIT_LOW), BigInt(gasPrice), BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice))
       return maxAmount - BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice)
     } else {
       return maxAmount
@@ -139,7 +138,6 @@ function TransactionForm ({
    * @returns {boolean} - Whether the continue button should be disabled or not
    */
   function isContinueDisabled () {
-    console.log(amount)
     const isAmountValid = isAmountLessThanFunds && isAmountPositive && isAmountCompressedValid && amount && BigInt(amount.toString()) > 0
 
     if (transactionType !== TxType.Transfer && isAmountValid) {
@@ -158,11 +156,10 @@ function TransactionForm ({
   }
 
   function getAmountInputValue () {
-    console.log('here')
     if (amount === undefined || amountFiat === undefined) {
       return ''
     }
-    console.log(amount, getTokenAmountString(amount, account.token.decimals))
+
     return showInFiat ? Number(amountFiat.toFixed(2)) : Number(getTokenAmountString(amount, account.token.decimals))
   }
 
@@ -265,11 +262,9 @@ function TransactionForm ({
       ? getMaxAmountForDeposit(maxAmount).toString()
       : getMaxAmountFromMinimumFee(minFeeInBigInt, maxAmount).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
-    console.log(newAmount)
     const digitsToZero = newAmount.length - 10 > 0 ? newAmount.length - 10 : 0
     const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(digitsToZero).fill(0).join('')}`)
     const newAmountInFiat = getAmountInFiat(newAmountInToken)
-    console.log(newAmountInToken)
 
     setAmountChecks(newAmountInToken)
     setAmount(newAmountInToken)
