@@ -2,6 +2,9 @@ export const accountDetailsActionTypes = {
   LOAD_ACCOUNT: '[ACCOUNT DETAILS] LOAD ACCOUNT',
   LOAD_ACCOUNT_SUCCESS: '[ACCOUNT DETAILS] LOAD ACCOUNT SUCCESS',
   LOAD_ACCOUNT_FAILURE: '[ACCOUNT DETAILS] LOAD ACCOUNT FAILURE',
+  LOAD_L1_TOKEN_BALANCE: '[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE',
+  LOAD_L1_TOKEN_BALANCE_SUCCESS: '[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE SUCCESS',
+  LOAD_L1_TOKEN_BALANCE_FAILURE: '[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE FAILURE',
   LOAD_POOL_TRANSACTIONS: '[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS',
   LOAD_POOL_TRANSACTIONS_SUCCESS: '[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS SUCCESS',
   LOAD_POOL_TRANSACTIONS_FAILURE: '[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS FAILURE',
@@ -32,6 +35,25 @@ function loadAccountSuccess (account) {
 function loadAccountFailure () {
   return {
     type: accountDetailsActionTypes.LOAD_ACCOUNT_FAILURE
+  }
+}
+
+function loadL1TokenBalance () {
+  return {
+    type: accountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE
+  }
+}
+
+function loadL1TokenBalanceSuccess (account) {
+  return {
+    type: accountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS,
+    account
+  }
+}
+
+function loadL1TokenBalanceFailure () {
+  return {
+    type: accountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE
   }
 }
 
@@ -116,6 +138,9 @@ export {
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,
+  loadL1TokenBalance,
+  loadL1TokenBalanceSuccess,
+  loadL1TokenBalanceFailure,
   loadPoolTransactions,
   loadPoolTransactionsSuccess,
   loadPoolTransactionsFailure,

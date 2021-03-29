@@ -7,6 +7,9 @@ const initialAccountDetailsState = {
   accountTask: {
     status: 'pending'
   },
+  l1TokenBalanceTask: {
+    status: 'pending'
+  },
   poolTransactionsTask: {
     status: 'pending'
   },
@@ -43,6 +46,30 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         accountTask: {
           status: 'failed',
           error: 'An error ocurred loading the account'
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE: {
+      return {
+        ...state,
+        l1TokenBalanceTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS: {
+      return {
+        ...state,
+        l1TokenBalanceTask: {
+          status: 'successful'
+        }
+      }
+    }
+    case accountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE: {
+      return {
+        ...state,
+        l1TokenBalanceTask: {
+          status: 'failed'
         }
       }
     }
