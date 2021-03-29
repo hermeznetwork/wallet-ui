@@ -150,8 +150,12 @@ function postCreateAccountAuthorization (wallet) {
         dispatch(push(redirectRoute))
       })
       .catch((error) => {
+        const errorMessage = error.code === -32603
+          ? 'Sorry, hardware wallets are not supported in Hermez yet'
+          : error.message
+
         dispatch(loginActions.addAccountAuthFailure(error))
-        dispatch(globalActions.openSnackbar(error.message))
+        dispatch(globalActions.openSnackbar(errorMessage))
         dispatch(loginActions.goToWalletSelectorStep())
       })
   }
