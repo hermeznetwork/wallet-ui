@@ -163,6 +163,24 @@ function TransactionForm ({
   }
 
   /**
+   * A precise calculation of the leftover amount after substracting fee
+   * @param {BigInt} amount - The amount in the transaction
+   * @param {Object} fees - Fees object as returned from the API
+   * @param {Object} token - The token object as returned from the API
+   * @param {String} transactionType - A value of the enum TxType
+   * @returns {BigInt} Final amount after substracting fee
+   */
+  function getAmountFromFee (amount, fees, token, transactionType) {
+    const minFeeInBigInt = BigInt(getTokenAmountBigInt(getFee(fees).toFixed(token.decimals), token.decimals).toString())
+    const newAmount = transactionType === TxType.Deposit
+      ? getMaxAmountForDeposit(amount).toString()
+      : getMaxAmountFromMinimumFee(minFeeInBigInt, amount).toString()
+    // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
+    const digitsToZero = newAmount.length - 10 > 0 ? newAmount.length - 10 : 0
+    return BigInt(`${newAmount.substr(0, 10)}${Array(digitsToZero).fill(0).join('')}`)
+  }
+
+  /**
    * Checks whether the selected amount is supported by the compression
    * used in the Hermez network
    * @param {Number} amount - Selector amount
@@ -185,12 +203,9 @@ function TransactionForm ({
   function setAmountChecks (newAmount) {
     // Convert from ethers.BigNumber to native BigInt if necessary
     const newAmountBigInt = BigInt(newAmount.toString())
-    const fee = transactionType === TxType.Deposit
-      ? BigInt(0)
-      : BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
     setIsAmountPositive(newAmountBigInt >= 0)
     setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountBigInt))
-    setIsAmountLessThanFunds(newAmountBigInt <= BigInt(account.balance.toString()) - fee)
+    setIsAmountLessThanFunds(newAmountBigInt <= getAmountFromFee(BigInt(account.balance.toString()), feesTask.data, account.token, transactionType))
   }
 
   /**
@@ -256,13 +271,7 @@ function TransactionForm ({
       return
     }
 
-    const minFeeInBigInt = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
-    const newAmount = transactionType === TxType.Deposit
-      ? getMaxAmountForDeposit(maxAmount).toString()
-      : getMaxAmountFromMinimumFee(minFeeInBigInt, maxAmount).toString()
-    // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
-    const digitsToZero = newAmount.length - 10 > 0 ? newAmount.length - 10 : 0
-    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(digitsToZero).fill(0).join('')}`)
+    const newAmountInToken = getAmountFromFee(maxAmount, feesTask.data, account.token, transactionType)
     const newAmountInFiat = getAmountInFiat(newAmountInToken)
 
     setAmountChecks(newAmountInToken)
