@@ -210,6 +210,7 @@ function deposit (amount, account) {
               amount: amount.toString(),
               state: TxState.Pending,
               timestamp: new Date().toISOString(),
+              account: res.accounts.length && res.accounts[0],
               type: res.accounts.length ? TxType.Deposit : TxType.CreateAccountDeposit
             }))
             dispatch(transactionActions.goToFinishTransactionStep())
