@@ -368,7 +368,7 @@ function TransactionForm ({
         const transactionFee = getFee(fees, true)
         return onSubmit({
           amount: amount,
-          from: { accountIndex: account.accountIndex },
+          from: {},
           to: {},
           fee: transactionFee
         })
