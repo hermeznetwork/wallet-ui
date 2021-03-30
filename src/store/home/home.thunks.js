@@ -1,10 +1,11 @@
 import axios from 'axios'
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
-import { getAccountBalance } from '../../utils/accounts'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 
 import * as homeActions from './home.actions'
+import { getAccountBalance } from '../../utils/accounts'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 
 let refreshCancelTokenSource = axios.CancelToken.source()
 
@@ -41,11 +42,25 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
           return { ...res, accounts }
         })
         .then((res) => {
+          const pendingCreateAccountDeposits = pendingDeposits
+            .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
+          const totalPendingCreateAccountDepositsBalance = pendingCreateAccountDeposits.reduce((totalBalance, deposit) => {
+            const fixedTokenAmount = getFixedTokenAmount(deposit.amount, deposit.token.decimals)
+            const fiatBalance = getTokenAmountInPreferredCurrency(
+              fixedTokenAmount,
+              deposit.token.USD,
+              preferredCurrency,
+              fiatExchangeRates
+            )
+
+            return totalBalance + Number(fiatBalance)
+          }, 0)
           const totalAccountsBalance = res.accounts.reduce((totalBalance, account) => {
             return totalBalance + Number(account.fiatBalance)
           }, 0)
+          const totalBalance = totalPendingCreateAccountDepositsBalance + totalAccountsBalance
 
-          dispatch(homeActions.loadTotalBalanceSuccess(totalAccountsBalance))
+          dispatch(homeActions.loadTotalBalanceSuccess(totalBalance))
         })
         .catch((err) => dispatch(homeActions.loadTotalBalanceFailure(err)))
     }
