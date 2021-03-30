@@ -48,7 +48,7 @@ function ExitList ({
             batchNum={transaction.batchNum}
             exitId={transaction.accountIndex + transaction.batchNum}
             merkleProof={transaction.merkleProof}
-            accountIndex={transaction.accountIndex}
+            accountIndex={transaction.accountIndex || transaction.fromAccountIndex}
             babyJubJub={babyJubJub}
             pendingWithdraws={pendingWithdraws}
             pendingDelayedWithdraws={pendingDelayedWithdraws}

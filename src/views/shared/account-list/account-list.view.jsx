@@ -17,7 +17,7 @@ function AccountList ({
   const classes = useAccountListStyles()
 
   function getAccountPendingDeposit (account) {
-    return pendingDeposits?.find((deposit) => deposit.token.id === account.token.id)
+    return pendingDeposits?.find((deposit) => deposit.account?.accountIndex === account.accountIndex)
   }
 
   function hasAccountPendingDeposit (account) {
