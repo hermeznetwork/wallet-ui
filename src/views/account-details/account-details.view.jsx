@@ -29,6 +29,7 @@ import * as storage from '../../utils/storage'
 function AccountDetails ({
   preferredCurrency,
   accountTask,
+  l1TokenBalanceTask,
   ethereumNetworkTask,
   poolTransactionsTask,
   historyTransactionsTask,
@@ -41,6 +42,7 @@ function AccountDetails ({
   coordinatorStateTask,
   onChangeHeader,
   onLoadAccount,
+  onLoadL1TokenBalance,
   onLoadPoolTransactions,
   onLoadHistoryTransactions,
   onLoadExits,
@@ -91,6 +93,12 @@ function AccountDetails ({
 
     return () => { clearInterval(intervalId) }
   }, [accountIndex, onCheckPendingDeposits, onLoadAccount, onLoadPoolTransactions])
+
+  React.useEffect(() => {
+    if (accountTask.status === 'successful') {
+      onLoadL1TokenBalance(accountTask.data.token)
+    }
+  }, [accountTask, onLoadL1TokenBalance])
 
   React.useEffect(() => {
     if (accountTask.status === 'successful') {
@@ -176,7 +184,11 @@ function AccountDetails ({
               currency={preferredCurrency}
             />
           </div>
-          <TransactionActions accountIndex={accountIndex} tokenId={accountTask.data?.token.id} />
+          <TransactionActions
+            accountIndex={accountIndex}
+            tokenId={accountTask.data?.token.id}
+            hideDeposit={l1TokenBalanceTask.status !== 'successful'}
+          />
         </section>
       </Container>
       <Container>
@@ -204,7 +216,7 @@ function AccountDetails ({
               exitsTask.status === 'reloading')
             ) {
               const tokenPendingDeposits = accountPendingDeposits
-                .filter(deposit => deposit.token.id === accountTask.data.token.id)
+                .filter(deposit => deposit.account?.accountIndex === accountTask.data.accountIndex)
                 .reverse()
               const tokenPendingWithdraws = accountPendingWithdraws
                 .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
@@ -316,6 +328,7 @@ AccountDetails.propTypes = {
 const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
+  l1TokenBalanceTask: state.accountDetails.l1TokenBalanceTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
   poolTransactionsTask: state.accountDetails.poolTransactionsTask,
   historyTransactionsTask: state.accountDetails.historyTransactionsTask,
@@ -331,6 +344,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccount: (accountIndex) =>
     dispatch(accountDetailsThunks.fetchAccount(accountIndex)),
+  onLoadL1TokenBalance: (account) =>
+    dispatch(accountDetailsThunks.fetchL1TokenBalance(account)),
   onChangeHeader: (tokenName) =>
     dispatch(changeHeader({
       type: 'page',

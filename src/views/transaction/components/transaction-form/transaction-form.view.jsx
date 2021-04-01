@@ -4,8 +4,10 @@ import clsx from 'clsx'
 import { getAccounts, getCreateAccountAuthorization } from '@hermeznetwork/hermezjs/src/api'
 import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { GAS_LIMIT_LOW } from '@hermeznetwork/hermezjs/src/constants'
 import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compressed-amount'
 import { getMaxAmountFromMinimumFee } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -43,11 +45,16 @@ function TransactionForm ({
   const [isAmountCompressedValid, setIsAmountCompressedValid] = React.useState(undefined)
   const [isReceiverValid, setIsReceiverValid] = React.useState(undefined)
   const [doesReceiverExist, setDoesReceiverExist] = React.useState(undefined)
+  const [gasPrice, setGasPrice] = React.useState(undefined)
   const amountInput = React.useRef(undefined)
 
   React.useEffect(() => {
     onLoadFees()
   }, [onLoadFees])
+
+  React.useEffect(() => {
+    getProvider().getGasPrice().then(gasPrice => setGasPrice(gasPrice.toString()))
+  }, [getProvider])
 
   React.useEffect(() => {
     if (feesTask.status === 'successful' && amountInput.current) {
@@ -112,11 +119,25 @@ function TransactionForm ({
   }
 
   /**
+   * Calculates the maximum Eth that can be sent by substracting estimated Gas cost
+   * Return the amount if it's an ERC-20 token
+   * @param {BigInt} maxAmount - The amount in the balance
+   * @returns {BigInt} The maximum amount that can be sent
+   */
+  function getMaxAmountForDeposit (maxAmount) {
+    if (account.token.id === 0) {
+      return maxAmount - BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice)
+    } else {
+      return maxAmount
+    }
+  }
+
+  /**
    * Checks whether the continue button should be disabled or not
    * @returns {boolean} - Whether the continue button should be disabled or not
    */
   function isContinueDisabled () {
-    const isAmountValid = isAmountLessThanFunds && isAmountPositive && isAmountCompressedValid && BigInt(amount.toString()) > 0
+    const isAmountValid = isAmountLessThanFunds && isAmountPositive && isAmountCompressedValid && amount && BigInt(amount.toString()) > 0
 
     if (transactionType !== TxType.Transfer && isAmountValid) {
       return false
@@ -134,10 +155,29 @@ function TransactionForm ({
   }
 
   function getAmountInputValue () {
-    if (amount === undefined) {
+    if (amount === undefined || amountFiat === undefined) {
       return ''
     }
+
     return showInFiat ? Number(amountFiat.toFixed(2)) : Number(getTokenAmountString(amount, account.token.decimals))
+  }
+
+  /**
+   * A precise calculation of the leftover amount after substracting fee
+   * @param {BigInt} amount - The amount in the transaction
+   * @param {Object} fees - Fees object as returned from the API
+   * @param {Object} token - The token object as returned from the API
+   * @param {String} transactionType - A value of the enum TxType
+   * @returns {BigInt} Final amount after substracting fee
+   */
+  function getAmountFromFee (amount, fees, token, transactionType) {
+    const minFeeInBigInt = BigInt(getTokenAmountBigInt(getFee(fees).toFixed(token.decimals), token.decimals).toString())
+    const newAmount = transactionType === TxType.Deposit
+      ? getMaxAmountForDeposit(amount).toString()
+      : getMaxAmountFromMinimumFee(minFeeInBigInt, amount).toString()
+    // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
+    const digitsToZero = newAmount.length - 10 > 0 ? newAmount.length - 10 : 0
+    return BigInt(`${newAmount.substr(0, 10)}${Array(digitsToZero).fill(0).join('')}`)
   }
 
   /**
@@ -158,17 +198,14 @@ function TransactionForm ({
 
   /**
    * Makes the appropriate checks that the amount is valid
-   * @param {ethers.BigNumber} newAmount - The new amount as a BigNumber
+   * @param {BigInt} newAmount - The new amount as a BigInt
    */
   function setAmountChecks (newAmount) {
-    // Convert from ethers.BigNumber to native BigInt
+    // Convert from ethers.BigNumber to native BigInt if necessary
     const newAmountBigInt = BigInt(newAmount.toString())
-    const fee = transactionType === TxType.Deposit
-      ? BigInt(0)
-      : BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
     setIsAmountPositive(newAmountBigInt >= 0)
     setIsAmountCompressedValid(getIsAmountCompressedValid(newAmountBigInt))
-    setIsAmountLessThanFunds(newAmountBigInt <= BigInt(account.balance.toString()) - fee)
+    setIsAmountLessThanFunds(newAmountBigInt <= getAmountFromFee(BigInt(account.balance.toString()), feesTask.data, account.token, transactionType))
   }
 
   /**
@@ -234,13 +271,7 @@ function TransactionForm ({
       return
     }
 
-    const minFeeInBigInt = BigInt(getTokenAmountBigInt(getFee(feesTask.data).toFixed(account.token.decimals), account.token.decimals).toString())
-    const newAmount = transactionType === TxType.Deposit
-      ? maxAmount.toString()
-      : getMaxAmountFromMinimumFee(minFeeInBigInt, maxAmount).toString()
-    // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
-    const digitsToZero = newAmount.length - 10 > 0 ? newAmount.length - 10 : 0
-    const newAmountInToken = BigInt(`${newAmount.substr(0, 10)}${Array(digitsToZero).fill(0).join('')}`).toString()
+    const newAmountInToken = getAmountFromFee(maxAmount, feesTask.data, account.token, transactionType)
     const newAmountInFiat = getAmountInFiat(newAmountInToken)
 
     setAmountChecks(newAmountInToken)
@@ -423,6 +454,7 @@ function TransactionForm ({
                             type='button'
                             className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.amountMax}`}
                             tabIndex='-1'
+                            disabled={gasPrice === undefined}
                             onClick={handleSendAllButtonClick}
                           >
                             Max

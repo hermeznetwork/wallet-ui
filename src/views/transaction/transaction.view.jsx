@@ -127,9 +127,12 @@ function Transaction ({
     }
   }, [pendingDepositsCheckTask, poolTransactionsTask, tokenId, batchNum, accountIndex, onLoadExit, onLoadMetaMaskAccount, onLoadHermezAccount, onGoToChooseAccountStep])
 
-  // React.useEffect(() => {
-  //   handleSetAccountIndex()
-  // }, [accountIndex])
+  React.useEffect(() => {
+    const stepData = steps[STEP_NAME.LOAD_INITIAL_DATA]
+    if (stepData.status === 'failed') {
+      onGoToChooseAccountStep()
+    }
+  }, [steps, onGoToChooseAccountStep])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
