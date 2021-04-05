@@ -234,7 +234,6 @@ function TransactionForm ({
       const newAmountInFiat = Number(Number(event.target.value).toFixed(2))
       // Makes sure the converted amount from fiat to tokens is a valid amount in Hermez
       const newAmountConversion = newAmountInFiat / getAccountFiatRate()
-      console.log(newAmountInFiat, getAccountFiatRate(), newAmountConversion)
       const newAmountInToken = getTokenAmountBigInt(newAmountConversion.toFixed(account.token.decimals), account.token.decimals).toString()
       const fixedNewAmountInToken = HermezCompressedAmount.decompressAmount(
         HermezCompressedAmount.floorCompressAmount(newAmountInToken)
