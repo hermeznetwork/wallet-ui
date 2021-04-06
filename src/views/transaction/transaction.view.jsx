@@ -60,13 +60,13 @@ function Transaction ({
   const classes = useTransactionStyles()
   const { search } = useLocation()
   const urlSearchParams = new URLSearchParams(search)
-  const accountIndex = urlSearchParams.get('accountIndex')
   const tokenId = urlSearchParams.get('tokenId')
   const batchNum = urlSearchParams.get('batchNum')
   const receiver = urlSearchParams.get('receiver')
   const instantWithdrawal = urlSearchParams.get('instantWithdrawal') === 'true'
   const completeDelayedWithdrawal = urlSearchParams.get('completeDelayedWithdrawal') === 'true'
   const redirectTo = urlSearchParams.get('redirectTo')
+  const accountIndex = urlSearchParams.get('accountIndex')
   const accountPendingDeposits = storage.getItemsByHermezAddress(
     pendingDeposits,
     ethereumNetworkTask.data.chainId,
@@ -201,10 +201,13 @@ function Transaction ({
             )
           }
           case STEP_NAME.FINISH_TRANSACTION: {
+            const stepData = steps[STEP_NAME.REVIEW_TRANSACTION]
+            const txAccountIndex = accountIndex || stepData.transaction.from.accountIndex
+
             return (
               <TransactionConfirmation
                 transactionType={transactionType}
-                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex, redirectTo)}
+                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex, redirectTo)}
               />
             )
           }
@@ -346,14 +349,10 @@ const mapDispatchToProps = (dispatch) => ({
   onGoToTransactionOverviewStep: (transaction) =>
     dispatch(transactionActions.goToReviewTransactionStep(transaction)),
   onFinishTransaction: (transactionType, accountIndex, redirectTo) => {
-    if (transactionType === TxType.Withdraw) {
-      if (redirectTo === WithdrawRedirectionRoute.Home) {
-        dispatch(push('/'))
-      } else {
-        dispatch(push(`/accounts/${accountIndex}`))
-      }
+    if (transactionType === TxType.Withdraw || transactionType === TxType.Deposit) {
+      dispatch(push('/'))
     } else {
-      dispatch(accountIndex ? push(`/accounts/${accountIndex}`) : push('/'))
+      dispatch(push(`/accounts/${accountIndex}`))
     }
   },
   onDeposit: (amount, account) =>
