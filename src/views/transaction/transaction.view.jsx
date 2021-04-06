@@ -67,7 +67,6 @@ function Transaction ({
   const completeDelayedWithdrawal = urlSearchParams.get('completeDelayedWithdrawal') === 'true'
   const redirectTo = urlSearchParams.get('redirectTo')
   const accountIndex = urlSearchParams.get('accountIndex')
-  // const [accountIndex, setAccountIndex] = React.useState(urlSearchParams.get('accountIndex'))
   const accountPendingDeposits = storage.getItemsByHermezAddress(
     pendingDeposits,
     ethereumNetworkTask.data.chainId,
@@ -83,12 +82,6 @@ function Transaction ({
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   )
-
-  //
-  // function handleSetAccountIndex (param) {
-  //   console.log("param: ", param)
-  //   setAccountIndex(param)
-  // }
 
   React.useEffect(() => {
     onChangeHeader(currentStep, transactionType, accountIndex, redirectTo)
@@ -210,12 +203,7 @@ function Transaction ({
           case STEP_NAME.FINISH_TRANSACTION: {
             const stepData = steps[STEP_NAME.REVIEW_TRANSACTION]
             const txAccountIndex = accountIndex || stepData.transaction.from.accountIndex
-            // if (!accountIndex) {
-            //   //accountIndex = stepData.transaction.from.accountIndex
-            //   // console.log("stepData.transaction.from.accountIndex: ", stepData.transaction.from.accountIndex)
-            //   // handleSetAccountIndex(stepData.transaction.from.accountIndex)
-            //   // console.log("accountIndex: ", accountIndex)
-            // }
+
             return (
               <TransactionConfirmation
                 transactionType={transactionType}
@@ -362,14 +350,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionActions.goToReviewTransactionStep(transaction)),
   onFinishTransaction: (transactionType, accountIndex, redirectTo) => {
     if (transactionType === TxType.Withdraw || transactionType === TxType.Deposit) {
-      // if (redirectTo === WithdrawRedirectionRoute.Home) {
-      //   dispatch(push('/'))
-      // } else {
-      //  dispatch(push(`/accounts/${accountIndex}`))
-      // }
       dispatch(push('/'))
     } else {
-      // dispatch(accountIndex ? push(`/accounts/${accountIndex}`) : push('/'))
       dispatch(push(`/accounts/${accountIndex}`))
     }
   },
