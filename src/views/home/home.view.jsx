@@ -50,6 +50,7 @@ function Home ({
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdraw,
+  onCheckPendingWithdrawals,
   onNavigateToAccountDetails,
   onOpenSnackbar,
   onCleanup
@@ -91,6 +92,7 @@ function Home ({
       onCheckPendingDeposits()
       onLoadPoolTransactions()
       onLoadExits()
+      onCheckPendingWithdrawals()
     }, AUTO_REFRESH_RATE)
 
     return () => { clearInterval(intervalId) }
@@ -332,6 +334,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onCheckPendingDelayedWithdraw: (exitId) =>
     dispatch(globalThunks.checkPendingDelayedWithdraw(exitId)),
+  onCheckPendingWithdrawals: () =>
+    dispatch(globalThunks.checkPendingWithdrawals()),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) =>

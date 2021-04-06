@@ -247,6 +247,8 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
           dispatch(globalThunks.addPendingWithdraw({
             hermezEthereumAddress: wallet.hermezEthereumAddress,
             id: withdrawalId,
+            accountIndex: account.accountIndex,
+            batchNum: exit.batchNum,
             amount,
             token: account.token
           }))
@@ -277,6 +279,8 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
           dispatch(globalThunks.addPendingWithdraw({
             hermezEthereumAddress: wallet.hermezEthereumAddress,
             id: withdrawalId,
+            accountIndex: account.accountIndex,
+            batchNum: exit.batchNum,
             amount,
             token: account.token
           }))
