@@ -6,7 +6,7 @@ import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
-import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
+// import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as hermezWebApi from '../../apis/hermez-web'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
@@ -83,7 +83,15 @@ function fetchFiatExchangeRates (symbols) {
   return (dispatch) => {
     dispatch(globalActions.loadFiatExchangeRates())
 
-    return fiatExchangeRatesApi.getFiatExchangeRates(symbols)
+    return Promise.resolve({
+      rates: {
+        ...symbols.map((code) => {
+          return {
+            [code]: 0.85
+          }
+        })
+      }
+    })
       .then(res => dispatch(globalActions.loadFiatExchangeRatesSuccess(res.rates)))
       .catch(err => dispatch(globalActions.loadFiatExchangeRatesFailure(err)))
   }
@@ -140,11 +148,10 @@ function addPendingWithdraw (pendingWithdraw) {
 
 /**
  * Removes a pendingWithdraw from the pendingWithdraw pool
- * @param {string} hermezEthereumAddress - The account with which the pendingWithdraw was originally made
  * @param {string} pendingWithdrawId - The pendingWithdraw identifier to remove from the pool
  * @returns {void}
  */
-function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
+function removePendingWithdraw (pendingWithdrawId) {
   return (dispatch, getState) => {
     const { global: { wallet, ethereumNetworkTask } } = getState()
     const { data: { chainId } } = ethereumNetworkTask
@@ -237,6 +244,37 @@ function checkPendingDelayedWithdraw (exitId) {
     } else {
       dispatch(globalActions.checkPendingDelayedWithdrawSuccess())
     }
+  }
+}
+
+/**
+ * Checks pending exits to see if they have been completed
+ * and delete them from storage
+ * @returns {void}
+ */
+function checkPendingWithdrawals () {
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask, pendingWithdraws } } = getState()
+
+    dispatch(globalActions.checkPendingWithdrawals())
+
+    const pendingWithdrawsAccount = storage.getItemsByHermezAddress(
+      pendingWithdraws,
+      ethereumNetworkTask.data.chainId,
+      wallet.hermezEthereumAddress
+    )
+
+    return Promise.all(pendingWithdrawsAccount.map((pendingWithdraw) => {
+      return CoordinatorAPI.getExit(pendingWithdraw.batchNum, pendingWithdraw.accountIndex)
+        .then((exitTx) => {
+          if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
+            dispatch(removePendingWithdraw(pendingWithdraw.id))
+          }
+        })
+        .catch(() => {})
+    }))
+      .then(() => dispatch(globalActions.checkPendingWithdrawalsSuccess()))
+      .catch(() => dispatch(globalActions.checkPendingWithdrawalsSuccess()))
   }
 }
 
@@ -470,6 +508,7 @@ export {
   removePendingDelayedWithdraw,
   updatePendingDelayedWithdrawDate,
   checkPendingDelayedWithdraw,
+  checkPendingWithdrawals,
   addPendingDeposit,
   removePendingDepositById,
   removePendingDepositByHash,

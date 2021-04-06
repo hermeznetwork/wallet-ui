@@ -51,6 +51,7 @@ function AccountDetails ({
   onRemovePendingDelayedWithdraw,
   onLoadCoordinatorState,
   onCheckPendingDelayedWithdraw,
+  onCheckPendingWithdrawals,
   onNavigateToTransactionDetails,
   onCleanup
 }) {
@@ -86,6 +87,7 @@ function AccountDetails ({
       onCheckPendingDeposits()
       onLoadAccount(accountIndex)
       onLoadPoolTransactions(accountIndex)
+      onCheckPendingWithdrawals()
     }
     const intervalId = setInterval(loadInitialData, AUTO_REFRESH_RATE)
 
@@ -368,6 +370,8 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onCheckPendingDelayedWithdraw: (exitId) =>
     dispatch(globalThunks.checkPendingDelayedWithdraw(exitId)),
+  onCheckPendingWithdrawals: () =>
+    dispatch(globalThunks.checkPendingWithdrawals()),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
   onCleanup: () =>
