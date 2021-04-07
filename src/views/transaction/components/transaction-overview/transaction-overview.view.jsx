@@ -139,7 +139,7 @@ function TransactionOverview ({
             txData={{
               type: transactionType,
               fromHezEthereumAddress: wallet.hermezEthereumAddress,
-              toHezEthereumAddress: to.hezEthereumAddress,
+              toHezEthereumAddress: to.hezEthereumAddress || to.hezBjjAddress,
               fee: fee
                 ? {
                     fiat: `${CurrencySymbol[preferredCurrency].symbol} ${(Number(getRealFee(fee)) * account.token.USD).toFixed(2)}`,

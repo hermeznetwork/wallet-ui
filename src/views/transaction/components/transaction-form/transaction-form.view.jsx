@@ -8,6 +8,7 @@ import { GAS_LIMIT_LOW } from '@hermeznetwork/hermezjs/src/constants'
 import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compressed-amount'
 import { getMaxAmountFromMinimumFee } from '@hermeznetwork/hermezjs/src/tx-utils'
 import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
+import { isHermezBjjAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -112,7 +113,11 @@ function TransactionForm ({
       return 0
     }
 
-    const feeApi = isExistingAccount || transactionType === TxType.Exit ? fees.existingAccount : fees.createAccount
+    const feeApi = isExistingAccount || transactionType === TxType.Exit
+      ? fees.existingAccount
+      : isHermezBjjAddress(receiver)
+        ? fees.createAccountInternal
+        : fees.createAccount
     // Limits the fee, in case a crazy fee is returned
     const fee = feeApi > MAX_FEE_USD ? MAX_FEE_USD : feeApi
     return fee / account.token.USD
@@ -304,7 +309,7 @@ function TransactionForm ({
     if (addresses.isValidEthereumAddress(newReceiver)) {
       setReceiver(`hez:${newReceiver}`)
       setIsReceiverValid(true)
-    } else if (addresses.isValidHermezAddress(newReceiver)) {
+    } else if (addresses.isValidHermezAddress(newReceiver) || isHermezBjjAddress(newReceiver)) {
       setReceiver(newReceiver)
       setIsReceiverValid(true)
     } else {
@@ -379,9 +384,9 @@ function TransactionForm ({
         ]
         return Promise.all(accountChecks)
           .then((res) => {
-            const receiverAccount = res[0].accounts[0]
+            const receiverAccount = res[0]?.accounts[0]
 
-            if (!receiverAccount && !res[1]) {
+            if (!receiverAccount && !res[1] && !isHermezBjjAddress(receiver)) {
               setDoesReceiverExist(false)
             } else {
               const transactionFee = getFee(fees, receiverAccount)
@@ -389,7 +394,9 @@ function TransactionForm ({
               onSubmit({
                 amount: amount,
                 from: { accountIndex: account.accountIndex },
-                to: receiverAccount || { hezEthereumAddress: receiver },
+                to: (isHermezBjjAddress(receiver) && { hezBjjAddress: receiver }) ||
+                  receiverAccount ||
+                  (addresses.isValidHermezAddress(receiver) && { hezEthereumAddress: receiver }),
                 fee: transactionFee
               })
             }
