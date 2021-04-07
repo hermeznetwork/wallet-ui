@@ -36,6 +36,7 @@ function TransactionOverview ({
 }) {
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
 
   /**
    * Converts the transaction amount to fiat in the preferred currency
@@ -98,6 +99,8 @@ function TransactionOverview ({
         return onExit(amount, account, fee)
       }
       default: {
+        setIsButtonDisabled(true)
+
         return onTransfer(amount, account, to, fee)
       }
     }
@@ -162,6 +165,7 @@ function TransactionOverview ({
                 <FormButton
                   label={getButtonLabel()}
                   onClick={handleFormSubmit}
+                  disabled={isButtonDisabled}
                 />
                 )
           }
