@@ -85,8 +85,6 @@ function TransactionOverview ({
    * @returns {void}
    */
   async function handleFormSubmit () {
-    setIsButtonDisabled(true)
-
     switch (transactionType) {
       case TxType.Deposit: {
         return onDeposit(amount, account)
@@ -101,6 +99,8 @@ function TransactionOverview ({
         return onExit(amount, account, fee)
       }
       default: {
+        setIsButtonDisabled(true)
+
         return onTransfer(amount, account, to, fee)
       }
     }
