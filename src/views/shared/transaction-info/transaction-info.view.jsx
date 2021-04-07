@@ -1,6 +1,7 @@
 import React from 'react'
 import { TxState, TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
+import { INTERNAL_ACCOUNT_ETH_ADDR } from '@hermeznetwork/hermezjs/src/constants'
 
 import TransactionInfoTable from '../transaction-info-table/transaction-info-table.view'
 import { getPartiallyHiddenEthereumAddress, getPartiallyHiddenHermezAddress } from '../../../utils/addresses'
@@ -64,6 +65,7 @@ function TransactionInfo ({
       )
     }
     case TxType.Transfer:
+    case TxType.TransferToBJJ:
     case TxType.TransferToEthAddr: {
       if (accountIndex === txData.fromAccountIndex) {
         return (
@@ -74,7 +76,9 @@ function TransactionInfo ({
               value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
             }}
             to={{
-              subtitle: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
+              subtitle: txData.toHezEthereumAddress === INTERNAL_ACCOUNT_ETH_ADDR
+                ? getPartiallyHiddenHermezAddress(txData.toBjj || txData.toBJJ)
+                : getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
             }}
             date={date}
             fee={txData.fee}
