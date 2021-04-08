@@ -12,7 +12,6 @@ export const globalActionTypes = {
   CHANGE_REDIRECT_ROUTE: '[GLOBAL] CHANGE REDIRECT ROUTE',
   LOAD_FIAT_EXCHANGE_RATES: '[GLOBAL] LOAD FIAT EXCHANGE RATES',
   LOAD_FIAT_EXCHANGE_RATES_SUCCESS: '[GLOBAL] LOAD FIAT EXCHANGE RATES SUCCESS',
-  LOAD_FIAT_EXCHANGE_RATES_FAILURE: '[GLOBAL] LOAD FIAT EXCHANGE RATES FAILURE',
   LOAD_GAS_MULTIPLIER: '[GLOBAL] LOAD GAS MULTIPLIER',
   LOAD_CURRENT_BATCH: '[GLOBAL] LOAD CURRENT BATCH',
   LOAD_CURRENT_BATCH_SUCCESS: '[GLOBAL] LOAD CURRENT BATCH SUCCESS',
@@ -126,13 +125,6 @@ function loadFiatExchangeRatesSuccess (fiatExchangeRates) {
   return {
     type: globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_SUCCESS,
     fiatExchangeRates
-  }
-}
-
-function loadFiatExchangeRatesFailure (error) {
-  return {
-    type: globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE,
-    error: error.message
   }
 }
 
@@ -310,7 +302,6 @@ export {
   changeRedirectRoute,
   loadFiatExchangeRates,
   loadFiatExchangeRatesSuccess,
-  loadFiatExchangeRatesFailure,
   openSnackbar,
   closeSnackbar,
   changeNetworkStatus,

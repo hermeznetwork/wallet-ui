@@ -145,15 +145,6 @@ function globalReducer (state = initialGlobalState, action) {
         }
       }
     }
-    case globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE: {
-      return {
-        ...state,
-        fiatExchangeRatesTask: {
-          status: 'failure',
-          error: action.error
-        }
-      }
-    }
     case globalActionTypes.OPEN_SNACKBAR: {
       return {
         ...state,
