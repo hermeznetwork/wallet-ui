@@ -6,7 +6,7 @@ import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
-// import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
+import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as hermezWebApi from '../../apis/hermez-web'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
@@ -83,15 +83,7 @@ function fetchFiatExchangeRates (symbols) {
   return (dispatch) => {
     dispatch(globalActions.loadFiatExchangeRates())
 
-    return Promise.resolve({
-      rates: {
-        ...symbols.map((code) => {
-          return {
-            [code]: 0.85
-          }
-        })
-      }
-    })
+    return fiatExchangeRatesApi.getFiatExchangeRates(symbols)
       .then(res => dispatch(globalActions.loadFiatExchangeRatesSuccess(res.rates)))
       .catch(err => dispatch(globalActions.loadFiatExchangeRatesFailure(err)))
   }
