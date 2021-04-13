@@ -32,6 +32,9 @@ const initialGlobalState = {
   pendingDelayedWithdrawCheckTask: {
     status: 'pending'
   },
+  pendingWithdrawalsCheckTask: {
+    status: 'pending'
+  },
   pendingDeposits: storage.getStorage(constants.PENDING_DEPOSITS_KEY),
   pendingDepositsCheckTask: {
     status: 'pending'
@@ -139,15 +142,6 @@ function globalReducer (state = initialGlobalState, action) {
         fiatExchangeRatesTask: {
           status: 'successful',
           data: action.fiatExchangeRates
-        }
-      }
-    }
-    case globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE: {
-      return {
-        ...state,
-        fiatExchangeRatesTask: {
-          status: 'failure',
-          error: action.error
         }
       }
     }
@@ -269,6 +263,22 @@ function globalReducer (state = initialGlobalState, action) {
       return {
         ...state,
         pendingDelayedWithdrawCheckTask: {
+          status: 'successful'
+        }
+      }
+    }
+    case globalActionTypes.CHECK_PENDING_WITHDRAWALS: {
+      return {
+        ...state,
+        pendingWithdrawalsCheckTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case globalActionTypes.CHECK_PENDING_WITHDRAWALS_SUCCESS: {
+      return {
+        ...state,
+        pendingWithdrawalsCheckTask: {
           status: 'successful'
         }
       }

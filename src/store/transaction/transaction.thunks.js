@@ -247,6 +247,8 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
           dispatch(globalThunks.addPendingWithdraw({
             hermezEthereumAddress: wallet.hermezEthereumAddress,
             id: withdrawalId,
+            accountIndex: account.accountIndex,
+            batchNum: exit.batchNum,
             amount,
             token: account.token
           }))
@@ -277,6 +279,8 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
           dispatch(globalThunks.addPendingWithdraw({
             hermezEthereumAddress: wallet.hermezEthereumAddress,
             id: withdrawalId,
+            accountIndex: account.accountIndex,
+            batchNum: exit.batchNum,
             amount,
             token: account.token
           }))
@@ -335,10 +339,10 @@ function exit (amount, account, fee) {
 function transfer (amount, from, to, fee) {
   return (dispatch, getState) => {
     const { global: { wallet, nextForgers } } = getState()
+
     const txData = {
-      type: to.accountIndex ? TxType.Transfer : TxType.TransferToEthAddr,
       from: from.accountIndex,
-      to: to.accountIndex || to.hezEthereumAddress,
+      to: to.accountIndex || to.hezEthereumAddress || to.hezBjjAddress,
       amount: HermezCompressedAmount.compressAmount(amount),
       fee
     }

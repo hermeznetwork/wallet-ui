@@ -85,7 +85,14 @@ function fetchFiatExchangeRates (symbols) {
 
     return fiatExchangeRatesApi.getFiatExchangeRates(symbols)
       .then(res => dispatch(globalActions.loadFiatExchangeRatesSuccess(res.rates)))
-      .catch(err => dispatch(globalActions.loadFiatExchangeRatesFailure(err)))
+      .catch(() => {
+        const rates = {}
+        for (const rate of symbols) {
+          rates[rate] = undefined
+        }
+
+        dispatch(globalActions.loadFiatExchangeRatesSuccess(rates))
+      })
   }
 }
 
@@ -140,11 +147,10 @@ function addPendingWithdraw (pendingWithdraw) {
 
 /**
  * Removes a pendingWithdraw from the pendingWithdraw pool
- * @param {string} hermezEthereumAddress - The account with which the pendingWithdraw was originally made
  * @param {string} pendingWithdrawId - The pendingWithdraw identifier to remove from the pool
  * @returns {void}
  */
-function removePendingWithdraw (hermezEthereumAddress, pendingWithdrawId) {
+function removePendingWithdraw (pendingWithdrawId) {
   return (dispatch, getState) => {
     const { global: { wallet, ethereumNetworkTask } } = getState()
     const { data: { chainId } } = ethereumNetworkTask
@@ -237,6 +243,37 @@ function checkPendingDelayedWithdraw (exitId) {
     } else {
       dispatch(globalActions.checkPendingDelayedWithdrawSuccess())
     }
+  }
+}
+
+/**
+ * Checks pending exits to see if they have been completed
+ * and delete them from storage
+ * @returns {void}
+ */
+function checkPendingWithdrawals () {
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask, pendingWithdraws } } = getState()
+
+    dispatch(globalActions.checkPendingWithdrawals())
+
+    const pendingWithdrawsAccount = storage.getItemsByHermezAddress(
+      pendingWithdraws,
+      ethereumNetworkTask.data.chainId,
+      wallet.hermezEthereumAddress
+    )
+
+    return Promise.all(pendingWithdrawsAccount.map((pendingWithdraw) => {
+      return CoordinatorAPI.getExit(pendingWithdraw.batchNum, pendingWithdraw.accountIndex)
+        .then((exitTx) => {
+          if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
+            dispatch(removePendingWithdraw(pendingWithdraw.id))
+          }
+        })
+        .catch(() => {})
+    }))
+      .then(() => dispatch(globalActions.checkPendingWithdrawalsSuccess()))
+      .catch(() => dispatch(globalActions.checkPendingWithdrawalsSuccess()))
   }
 }
 
@@ -470,6 +507,7 @@ export {
   removePendingDelayedWithdraw,
   updatePendingDelayedWithdrawDate,
   checkPendingDelayedWithdraw,
+  checkPendingWithdrawals,
   addPendingDeposit,
   removePendingDepositById,
   removePendingDepositByHash,

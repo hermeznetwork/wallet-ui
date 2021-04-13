@@ -226,6 +226,7 @@ function getHeaderTitle (transactionType) {
       return 'Withdrawn'
     }
     case TxType.TransferToEthAddr:
+    case TxType.TransferToBJJ:
     case TxType.Transfer: {
       return 'Transfer'
     }

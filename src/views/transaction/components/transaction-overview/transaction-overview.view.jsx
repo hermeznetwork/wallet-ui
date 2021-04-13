@@ -36,6 +36,7 @@ function TransactionOverview ({
 }) {
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
 
   /**
    * Converts the transaction amount to fiat in the preferred currency
@@ -84,6 +85,8 @@ function TransactionOverview ({
    * @returns {void}
    */
   async function handleFormSubmit () {
+    setIsButtonDisabled(true)
+
     switch (transactionType) {
       case TxType.Deposit: {
         return onDeposit(amount, account)
@@ -139,7 +142,7 @@ function TransactionOverview ({
             txData={{
               type: transactionType,
               fromHezEthereumAddress: wallet.hermezEthereumAddress,
-              toHezEthereumAddress: to.hezEthereumAddress,
+              toHezEthereumAddress: to.hezEthereumAddress || to.hezBjjAddress,
               fee: fee
                 ? {
                     fiat: `${CurrencySymbol[preferredCurrency].symbol} ${(Number(getRealFee(fee)) * account.token.USD).toFixed(2)}`,
@@ -162,6 +165,7 @@ function TransactionOverview ({
                 <FormButton
                   label={getButtonLabel()}
                   onClick={handleFormSubmit}
+                  disabled={isButtonDisabled}
                 />
                 )
           }

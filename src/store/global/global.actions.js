@@ -12,7 +12,6 @@ export const globalActionTypes = {
   CHANGE_REDIRECT_ROUTE: '[GLOBAL] CHANGE REDIRECT ROUTE',
   LOAD_FIAT_EXCHANGE_RATES: '[GLOBAL] LOAD FIAT EXCHANGE RATES',
   LOAD_FIAT_EXCHANGE_RATES_SUCCESS: '[GLOBAL] LOAD FIAT EXCHANGE RATES SUCCESS',
-  LOAD_FIAT_EXCHANGE_RATES_FAILURE: '[GLOBAL] LOAD FIAT EXCHANGE RATES FAILURE',
   LOAD_GAS_MULTIPLIER: '[GLOBAL] LOAD GAS MULTIPLIER',
   LOAD_CURRENT_BATCH: '[GLOBAL] LOAD CURRENT BATCH',
   LOAD_CURRENT_BATCH_SUCCESS: '[GLOBAL] LOAD CURRENT BATCH SUCCESS',
@@ -28,7 +27,9 @@ export const globalActionTypes = {
   REMOVE_PENDING_DELAYED_WITHDRAW: '[GLOBAL] REMOVE PENDING DELAYED WITHRAW',
   UPDATE_PENDING_DELAYED_WITHDRAW_DATE: '[GLOBAL] UPDATE PENDING DELAYED WITHDRAW DATE',
   CHECK_PENDING_DELAYED_WITHDRAW: '[GLOBAL] CHECK PENDING DELAYED WITHDRAW',
-  CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS: '[GLOBAL] CHECK PENDING DELAYD WITHDRAW',
+  CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS: '[GLOBAL] CHECK PENDING DELAYED WITHDRAW',
+  CHECK_PENDING_WITHDRAWALS: '[GLOBAL] CHECK PENDING WITHDRAWALS',
+  CHECK_PENDING_WITHDRAWALS_SUCCESS: '[GLOBAL] CHECK PENDING WITHDRAWALS SUCCESS',
   ADD_PENDING_DEPOSIT: '[GLOBAL] ADD PENDING DEPOSIT',
   REMOVE_PENDING_DEPOSIT_BY_HASH: '[GLOBAL] REMOVE PENDING DEPOSIT BY HASH',
   REMOVE_PENDING_DEPOSIT_BY_ID: '[GLOBAL] REMOVE PENDING DEPOSIT BY ID',
@@ -127,13 +128,6 @@ function loadFiatExchangeRatesSuccess (fiatExchangeRates) {
   }
 }
 
-function loadFiatExchangeRatesFailure (error) {
-  return {
-    type: globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE,
-    error: error.message
-  }
-}
-
 function openSnackbar (message, backgroundColor) {
   return {
     type: globalActionTypes.OPEN_SNACKBAR,
@@ -210,6 +204,18 @@ function checkPendingDelayedWithdraw () {
 function checkPendingDelayedWithdrawSuccess () {
   return {
     type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS
+  }
+}
+
+function checkPendingWithdrawals () {
+  return {
+    type: globalActionTypes.CHECK_PENDING_WITHDRAWALS
+  }
+}
+
+function checkPendingWithdrawalsSuccess () {
+  return {
+    type: globalActionTypes.CHECK_PENDING_WITHDRAWALS_SUCCESS
   }
 }
 
@@ -296,7 +302,6 @@ export {
   changeRedirectRoute,
   loadFiatExchangeRates,
   loadFiatExchangeRatesSuccess,
-  loadFiatExchangeRatesFailure,
   openSnackbar,
   closeSnackbar,
   changeNetworkStatus,
@@ -307,6 +312,8 @@ export {
   updatePendingDelayedWithdrawDate,
   checkPendingDelayedWithdraw,
   checkPendingDelayedWithdrawSuccess,
+  checkPendingWithdrawals,
+  checkPendingWithdrawalsSuccess,
   addPendingDeposit,
   removePendingDepositByHash,
   removePendingDepositById,
