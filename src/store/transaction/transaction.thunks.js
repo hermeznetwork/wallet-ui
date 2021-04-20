@@ -219,7 +219,10 @@ function deposit (amount, account) {
       .catch((error) => {
         console.error(error)
         dispatch(transactionActions.stopTransactionSigning())
-        dispatch(transactionActions.goToTransactionErrorStep())
+        // 4001 erro code means that user denied tx signature
+        if (error.code !== 4001) {
+          dispatch(transactionActions.goToTransactionErrorStep())
+        }
       })
   }
 }
@@ -267,7 +270,10 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
       }).catch((error) => {
         console.error(error)
         dispatch(transactionActions.stopTransactionSigning())
-        dispatch(transactionActions.goToTransactionErrorStep())
+        // 4001 erro code means that user denied tx signature
+        if (error.code !== 4001) {
+          dispatch(transactionActions.goToTransactionErrorStep())
+        }
       })
     } else {
       return Tx.delayedWithdraw(
@@ -289,7 +295,10 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
         .catch((error) => {
           console.error(error)
           dispatch(transactionActions.stopTransactionSigning())
-          dispatch(transactionActions.goToTransactionErrorStep())
+          // 4001 erro code means that user denied tx signature
+          if (error.code !== 4001) {
+            dispatch(transactionActions.goToTransactionErrorStep())
+          }
         })
     }
   }
@@ -311,7 +320,10 @@ function forceExit (amount, account) {
       .catch((error) => {
         console.error(error)
         dispatch(transactionActions.stopTransactionSigning())
-        dispatch(transactionActions.goToTransactionErrorStep())
+        // 4001 erro code means that user denied tx signature
+        if (error.code !== 4001) {
+          dispatch(transactionActions.goToTransactionErrorStep())
+        }
       })
   }
 }
