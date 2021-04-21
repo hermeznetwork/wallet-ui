@@ -85,8 +85,8 @@ function TransactionOverview ({
    * @returns {void}
    */
   async function handleFormSubmit () {
-    setIsButtonDisabled(true)
-
+    // We only need to disable the button on L2 txs, as L1 txs are going to display an
+    // spinner which will prevent the user from submitting the form twice
     switch (transactionType) {
       case TxType.Deposit: {
         return onDeposit(amount, account)
@@ -98,9 +98,11 @@ function TransactionOverview ({
         return onWithdraw(amount, account, exit, completeDelayedWithdrawal, instantWithdrawal)
       }
       case TxType.Exit: {
+        setIsButtonDisabled(true)
         return onExit(amount, account, fee)
       }
       default: {
+        setIsButtonDisabled(true)
         return onTransfer(amount, account, to, fee)
       }
     }
