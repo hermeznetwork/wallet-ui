@@ -39,8 +39,10 @@ function TransactionInfo ({
     return { subtitle: TxStatus.Pending }
   }
 
-  function handleCopyToAddress (bjjOrHezEthereumAddress) {
-    copyToClipboard(bjjOrHezEthereumAddress === 'HezEthereumAddress' ? txData.toHezEthereumAddress : txData.toBjj || txData.toBJJ)
+  function handleCopyToAddress () {
+    copyToClipboard(txData.toHezEthereumAddress === INTERNAL_ACCOUNT_ETH_ADDR
+      ? (txData.toBjj || txData.toBJJ)
+      : txData.toHezEthereumAddress)
     onToCopyClick()
   }
 
@@ -84,7 +86,7 @@ function TransactionInfo ({
             date={date}
             fee={txData.fee}
             showToCopyButton={showToCopyButton}
-            onCopyToAddress={handleCopyToAddress(txData.toHezEthereumAddress === INTERNAL_ACCOUNT_ETH_ADDR ? 'BJJ' : 'HezEthereumAddress')}
+            onCopyToAddress={handleCopyToAddress}
           />
         )
       } else {
