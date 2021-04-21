@@ -17,7 +17,9 @@ function TransactionInfo ({
   accountIndex,
   showStatus,
   showToCopyButton,
-  onToCopyClick
+  showFromCopyButton,
+  onToCopyClick,
+  onFromCopyClick
 }) {
   const date = txData.timestamp && {
     subtitle: new Date(txData.timestamp).toLocaleString()
@@ -42,6 +44,11 @@ function TransactionInfo ({
   function handleCopyToAddress () {
     copyToClipboard(txData.toHezEthereumAddress)
     onToCopyClick()
+  }
+
+  function handleCopyFromAddress () {
+    copyToClipboard(txData.fromHezEthereumAddress)
+    onFromCopyClick()
   }
 
   switch (txData.type) {
@@ -83,7 +90,9 @@ function TransactionInfo ({
             date={date}
             fee={txData.fee}
             showToCopyButton={showToCopyButton}
+            showFromCopyButton={showFromCopyButton}
             onCopyToAddress={handleCopyToAddress}
+            onCopyFromAddress={handleCopyFromAddress}
           />
         )
       } else {
