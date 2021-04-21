@@ -39,8 +39,8 @@ function TransactionInfo ({
     return { subtitle: TxStatus.Pending }
   }
 
-  function handleCopyToAddress () {
-    copyToClipboard(txData.toHezEthereumAddress)
+  function handleCopyToAddress (bjjOrHezEthereumAddress) {
+    copyToClipboard(bjjOrHezEthereumAddress === 'HezEthereumAddress' ? txData.toHezEthereumAddress : txData.toBjj || txData.toBJJ)
     onToCopyClick()
   }
 
@@ -68,6 +68,7 @@ function TransactionInfo ({
     case TxType.TransferToBJJ:
     case TxType.TransferToEthAddr: {
       if (accountIndex === txData.fromAccountIndex) {
+        console.log('txData: ', txData)
         return (
           <TransactionInfoTable
             status={getTransactionStatus()}
@@ -83,7 +84,7 @@ function TransactionInfo ({
             date={date}
             fee={txData.fee}
             showToCopyButton={showToCopyButton}
-            onCopyToAddress={handleCopyToAddress}
+            onCopyToAddress={handleCopyToAddress(txData.toHezEthereumAddress === INTERNAL_ACCOUNT_ETH_ADDR ? 'BJJ' : 'HezEthereumAddress')}
           />
         )
       } else {
