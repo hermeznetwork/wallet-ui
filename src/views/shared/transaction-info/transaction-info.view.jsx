@@ -40,7 +40,9 @@ function TransactionInfo ({
   }
 
   function handleCopyToAddress () {
-    copyToClipboard(txData.toHezEthereumAddress)
+    copyToClipboard(txData.toHezEthereumAddress === INTERNAL_ACCOUNT_ETH_ADDR
+      ? (txData.toBjj || txData.toBJJ)
+      : txData.toHezEthereumAddress)
     onToCopyClick()
   }
 
