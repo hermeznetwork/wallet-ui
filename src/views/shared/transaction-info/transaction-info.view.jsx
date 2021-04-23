@@ -70,7 +70,6 @@ function TransactionInfo ({
     case TxType.TransferToBJJ:
     case TxType.TransferToEthAddr: {
       if (accountIndex === txData.fromAccountIndex) {
-        console.log('txData: ', txData)
         return (
           <TransactionInfoTable
             status={getTransactionStatus()}
