@@ -179,7 +179,9 @@ function TransactionDetails ({
                       accountIndex={accountIndex}
                       showStatus
                       showToCopyButton
+                      showFromCopyButton
                       onToCopyClick={() => onOpenSnackbar('Copied')}
+                      onFromCopyClick={() => onOpenSnackbar('Copied')}
                     />
                     <ExploreTransactionButton
                       txLevel={transactionTask.data.fromAccountIndex ? TxLevel.L2 : TxLevel.L1}
