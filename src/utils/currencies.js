@@ -15,6 +15,14 @@ const CurrencySymbol = {
   CNY: {
     symbol: '¥',
     code: 'CNY'
+  },
+  JPY: {
+    symbol: '¥',
+    code: 'JPY'
+  },
+  GBP: {
+    symbol: '£',
+    code: 'GBP'
   }
 }
 
