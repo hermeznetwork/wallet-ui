@@ -33,9 +33,6 @@ const initialLoginState = {
       error: undefined
     }
   },
-  accountAuthTask: {
-    status: 'pending'
-  },
   addAccountAuthTask: {
     status: 'pending'
   },
@@ -158,31 +155,6 @@ function loginReducer (state = initialLoginState, action) {
         }
       }
     }
-    case loginActionTypes.LOAD_ACCOUNT_AUTH: {
-      return {
-        ...state,
-        accountAuthTask: {
-          status: 'loading'
-        }
-      }
-    }
-    case loginActionTypes.LOAD_ACCOUNT_AUTH_SUCCESS: {
-      return {
-        ...state,
-        accountAuthTask: {
-          status: 'successful'
-        }
-      }
-    }
-    case loginActionTypes.LOAD_ACCOUNT_AUTH_FAILURE: {
-      return {
-        ...state,
-        accountAuthTask: {
-          status: 'failure',
-          error: action.error
-        }
-      }
-    }
     case loginActionTypes.ADD_ACCOUNT_AUTH: {
       return {
         ...state,
@@ -217,7 +189,7 @@ function loginReducer (state = initialLoginState, action) {
           ...state.accountAuthSignatures,
           [action.chainId]: {
             ...chainIdAuthSignatures,
-            [action.hermezEthereumAddress]: action.signature
+            [action.hermezEthereumAddress]: [action.signature]
           }
         }
       }

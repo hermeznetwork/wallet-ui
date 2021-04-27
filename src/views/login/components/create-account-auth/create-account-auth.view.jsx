@@ -5,41 +5,26 @@ import Spinner from '../../../shared/spinner/spinner.view'
 import { STEP_NAME } from '../../../../store/login/login.reducer'
 
 function CreateAccountAuth ({
-  accountAuthTask,
+  hermezAddressAuthSignatures,
   addAccountAuthTask,
   steps,
-  onLoadCreateAccountAuthorization,
   onCreateAccountAuthorization
 }) {
   const classes = useCreateAccountAuthStyles()
   const wallet = steps[STEP_NAME.CREATE_ACCOUNT_AUTH].wallet
 
   React.useEffect(() => {
-    onLoadCreateAccountAuthorization(wallet.hermezEthereumAddress)
-  }, [onLoadCreateAccountAuthorization, wallet])
+    onCreateAccountAuthorization(wallet)
+  }, [wallet, onCreateAccountAuthorization])
 
-  React.useEffect(() => {
-    if (accountAuthTask.status === 'failure') {
-      onCreateAccountAuthorization(wallet)
-    }
-  }, [onCreateAccountAuthorization, accountAuthTask, wallet])
-
-  if (accountAuthTask.status === 'failure') {
-    switch (addAccountAuthTask.status) {
-      case 'pending':
-      case 'loading':
-        return (
-          <div className={classes.accountAuth}>
-            <h2 className={classes.accountAuthTitle}>Create accounts for new tokens</h2>
-            <p className={classes.accountAuthText}>Confirm with your signature that Hermez will automatically create accounts for your new tokens.</p>
-            <Spinner />
-          </div>
-        )
-      default:
-        return <></>
-    }
-  } else if (accountAuthTask.status === 'successful') {
-    return <></>
+  if (hermezAddressAuthSignatures.length === 0) {
+    return (
+      <div className={classes.accountAuth}>
+        <h2 className={classes.accountAuthTitle}>Create accounts for new tokens</h2>
+        <p className={classes.accountAuthText}>Confirm with your signature that Hermez will automatically create accounts for your new tokens.</p>
+        <Spinner />
+      </div>
+    )
   } else {
     return <Spinner />
   }

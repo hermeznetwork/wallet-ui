@@ -8,6 +8,7 @@ import { ACCOUNT_AUTH_SIGNATURES_KEY, TREZOR_MANIFEST_MAIL } from '../../constan
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
+import * as storage from '../../utils/storage'
 
 async function getSignerData (provider, walletName, accountData) {
   switch (walletName) {
@@ -98,26 +99,6 @@ function fetchWallet (walletName, accountData) {
 }
 
 /**
- * Checks whether current Hermez account has performed a create account authorization
- * with current Coordinator
- * @param {String} hermezEthereumAddress - Hermez Ethereum address to check
- */
-function loadCreateAccountAuthorization (hermezEthereumAddress) {
-  return (dispatch, getState) => {
-    dispatch(loginActions.loadAccountAuth)
-
-    const { global: { redirectRoute } } = getState()
-
-    return hermez.CoordinatorAPI.getCreateAccountAuthorization(hermezEthereumAddress)
-      .then(() => {
-        dispatch(loginActions.loadAccountAuthSuccess())
-        dispatch(push(redirectRoute))
-      })
-      .catch(error => dispatch(loginActions.loadAccountAuthFailure(error)))
-  }
-}
-
-/**
  * Sends a create account authorization request if it hasn't been done
  * for the current coordinator
  */
@@ -128,11 +109,14 @@ function postCreateAccountAuthorization (wallet) {
       global: { redirectRoute, ethereumNetworkTask, nextForgers }
     } = getState()
 
-    const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.chainId] || {}
-    const currentSignature = chainIdSignatures[wallet.hermezEthereumAddress]
-    const getSignature = currentSignature
-      ? () => Promise.resolve(currentSignature)
-      : wallet.signCreateAccountAuthorization.bind(wallet)
+    const hermezAddressAuthSignatures = storage.getItemsByHermezAddress(
+      accountAuthSignatures,
+      ethereumNetworkTask.data.chainId,
+      wallet.hermezEthereumAddress
+    )
+    const getSignature = hermezAddressAuthSignatures.length === 0
+      ? wallet.signCreateAccountAuthorization.bind(wallet)
+      : () => Promise.resolve(hermezAddressAuthSignatures[0])
 
     getSignature()
       .then((signature) => {
@@ -145,7 +129,7 @@ function postCreateAccountAuthorization (wallet) {
           nextForgers
         )
       })
-      .then(() => {
+      .then((res) => {
         dispatch(loginActions.addAccountAuthSuccess())
         dispatch(push(redirectRoute))
       })
@@ -153,7 +137,7 @@ function postCreateAccountAuthorization (wallet) {
         const errorMessage = error.code === -32603
           ? 'Sorry, hardware wallets are not supported in Hermez yet'
           : error.message
-
+        console.log(error)
         dispatch(loginActions.addAccountAuthFailure(error))
         dispatch(globalActions.openSnackbar(errorMessage))
         dispatch(loginActions.goToWalletSelectorStep())
@@ -171,23 +155,13 @@ function setAccountAuthSignature (hermezEthereumAddress, signature) {
     const { global: { ethereumNetworkTask } } = getState()
     const { data: { chainId } } = ethereumNetworkTask
 
-    const storage = JSON.parse(localStorage.getItem(ACCOUNT_AUTH_SIGNATURES_KEY))
-    const chainIdStorage = storage[chainId] || {}
-    const newAccountAuthSignature = {
-      ...storage,
-      [chainId]: {
-        ...chainIdStorage,
-        [hermezEthereumAddress]: signature
-      }
-    }
-    localStorage.setItem(ACCOUNT_AUTH_SIGNATURES_KEY, JSON.stringify(newAccountAuthSignature))
+    storage.addItem(ACCOUNT_AUTH_SIGNATURES_KEY, chainId, hermezEthereumAddress, signature)
     dispatch(loginActions.setAccountAuthSignature(chainId, hermezEthereumAddress, signature))
   }
 }
 
 export {
   fetchWallet,
-  loadCreateAccountAuthorization,
   postCreateAccountAuthorization,
   setAccountAuthSignature
 }

@@ -71,25 +71,6 @@ function loadWalletFailure (error) {
   }
 }
 
-function loadAccountAuth () {
-  return {
-    type: loginActionTypes.LOAD_ACCOUNT_AUTH
-  }
-}
-
-function loadAccountAuthSuccess () {
-  return {
-    type: loginActionTypes.LOAD_ACCOUNT_AUTH_SUCCESS
-  }
-}
-
-function loadAccountAuthFailure (error) {
-  return {
-    type: loginActionTypes.LOAD_ACCOUNT_AUTH_FAILURE,
-    error
-  }
-}
-
 function addAccountAuth () {
   return {
     type: loginActionTypes.ADD_ACCOUNT_AUTH
@@ -133,9 +114,6 @@ export {
   goToPreviousStep,
   loadWallet,
   loadWalletFailure,
-  loadAccountAuth,
-  loadAccountAuthSuccess,
-  loadAccountAuthFailure,
   addAccountAuth,
   addAccountAuthSuccess,
   addAccountAuthFailure,
