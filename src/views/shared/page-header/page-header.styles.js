@@ -15,7 +15,8 @@ const usePageHeaderStyles = createUseStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative'
+    position: 'relative',
+    marginTop: theme.spacing(3)
   },
   buttonBase: {
     position: 'absolute',
@@ -36,9 +37,19 @@ const usePageHeaderStyles = createUseStyles(theme => ({
     right: 0,
     marginRight: -(theme.spacing(2))
   },
+  titleWrapper: {
+    textAlign: 'center'
+  },
   title: {
     fontSize: theme.spacing(3),
     fontWeight: theme.fontWeights.extraBold
+  },
+  subTitle: {
+    fontSize: theme.spacing(2),
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.dark,
+    paddingTop: theme.spacing(1.5),
+    margin: 0
   }
 }))
 

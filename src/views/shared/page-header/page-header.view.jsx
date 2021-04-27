@@ -9,6 +9,7 @@ import { ReactComponent as CloseIcon } from '../../../images/icons/close.svg'
 
 function PageHeader ({
   title,
+  subTitle,
   goBackAction,
   closeAction,
   onGoBack,
@@ -31,7 +32,10 @@ function PageHeader ({
               <ArrowBackIcon />
             </button>
           )}
-          <h1 className={classes.title}>{title || ''}</h1>
+          <div className={classes.titleWrapper}>
+            <h1 className={classes.title}>{title || ''}</h1>
+            <h4 className={classes.subTitle}>{subTitle || ''}</h4>
+          </div>
           {closeAction && (
             <button
               className={clsx({
@@ -51,6 +55,7 @@ function PageHeader ({
 
 PageHeader.propTypes = {
   title: PropTypes.string,
+  subTitle: PropTypes.string,
   goBackAction: PropTypes.object,
   closeAction: PropTypes.object,
   onGoBack: PropTypes.func.isRequired,
