@@ -180,7 +180,9 @@ function TransactionForm ({
     const minFeeInBigInt = BigInt(getTokenAmountBigInt(getFee(fees).toFixed(token.decimals), token.decimals).toString())
     const newAmount = transactionType === TxType.Deposit
       ? getMaxAmountForDeposit(amount).toString()
-      : getMaxAmountFromMinimumFee(minFeeInBigInt, amount).toString()
+      : transactionType === TxType.ForceExit
+        ? amount.toString()
+        : getMaxAmountFromMinimumFee(minFeeInBigInt, amount).toString()
     // Rounds down the value to 10 significant digits (maximum supported by Hermez compression)
     const digitsToZero = newAmount.length - 10 > 0 ? newAmount.length - 10 : 0
     return BigInt(`${newAmount.substr(0, 10)}${Array(digitsToZero).fill(0).join('')}`)
