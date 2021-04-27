@@ -34,7 +34,7 @@ function PageHeader ({
           )}
           <div className={classes.titleWrapper}>
             <h1 className={classes.title}>{title || ''}</h1>
-            <h4 className={classes.subtitle}>{subtitle || ''}</h4>
+            {subtitle && <h4 className={classes.subtitle}>{subtitle}</h4>}
           </div>
           {closeAction && (
             <button
