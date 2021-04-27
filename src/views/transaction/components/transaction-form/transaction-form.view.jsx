@@ -131,7 +131,8 @@ function TransactionForm ({
    */
   function getMaxAmountForDeposit (maxAmount) {
     if (account.token.id === 0) {
-      return maxAmount - BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice)
+      const amount = maxAmount - BigInt(GAS_LIMIT_LOW) * BigInt(gasPrice)
+      return amount > 0 ? amount : BigInt(0)
     } else {
       return maxAmount
     }

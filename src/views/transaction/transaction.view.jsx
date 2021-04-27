@@ -348,11 +348,11 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionActions.goToBuildTransactionStep(account, receiver)),
   onGoToTransactionOverviewStep: (transaction) =>
     dispatch(transactionActions.goToReviewTransactionStep(transaction)),
-  onFinishTransaction: (transactionType, accountIndex, redirectTo) => {
-    if (transactionType === TxType.Withdraw || transactionType === TxType.Deposit) {
-      dispatch(push('/'))
-    } else {
+  onFinishTransaction: (transactionType, accountIndex) => {
+    if (transactionType === TxType.Transfer) {
       dispatch(push(`/accounts/${accountIndex}`))
+    } else {
+      dispatch(push('/'))
     }
   },
   onDeposit: (amount, account) =>
