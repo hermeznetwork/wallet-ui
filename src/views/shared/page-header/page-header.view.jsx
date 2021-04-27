@@ -9,7 +9,7 @@ import { ReactComponent as CloseIcon } from '../../../images/icons/close.svg'
 
 function PageHeader ({
   title,
-  subTitle,
+  subtitle,
   goBackAction,
   closeAction,
   onGoBack,
@@ -34,7 +34,7 @@ function PageHeader ({
           )}
           <div className={classes.titleWrapper}>
             <h1 className={classes.title}>{title || ''}</h1>
-            <h4 className={classes.subTitle}>{subTitle || ''}</h4>
+            <h4 className={classes.subtitle}>{subtitle || ''}</h4>
           </div>
           {closeAction && (
             <button
@@ -55,7 +55,7 @@ function PageHeader ({
 
 PageHeader.propTypes = {
   title: PropTypes.string,
-  subTitle: PropTypes.string,
+  subtitle: PropTypes.string,
   goBackAction: PropTypes.object,
   closeAction: PropTypes.object,
   onGoBack: PropTypes.func.isRequired,

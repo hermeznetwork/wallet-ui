@@ -44,7 +44,7 @@ const usePageHeaderStyles = createUseStyles(theme => ({
     fontSize: theme.spacing(3),
     fontWeight: theme.fontWeights.extraBold
   },
-  subTitle: {
+  subtitle: {
     fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.dark,

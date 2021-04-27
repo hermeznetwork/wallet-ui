@@ -109,7 +109,7 @@ const mapDispatchToProps = (dispatch) => ({
       type: 'page',
       data: {
         title: 'Hermez Internal Address',
-        subTitle: 'Read this code from another Hermez account',
+        subtitle: 'Read this code from another Hermez account',
         goBackAction:
           from === 'my-account'
             ? push('/my-account')
