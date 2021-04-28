@@ -2,7 +2,7 @@ FROM node:alpine AS base
 
 RUN apk update
 RUN apk upgrade
-RUN apk add bash g++ make python git
+RUN apk add bash g++ make python3 git
 
 ARG GIT_VERSION=0
 LABEL vcs-ref=$GIT_VERSION
