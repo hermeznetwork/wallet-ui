@@ -108,7 +108,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeHeader({
       type: 'page',
       data: {
-        title: 'My Code',
+        title: 'Hermez Internal Address',
+        subtitle: 'Read this code from another Hermez account',
         goBackAction:
           from === 'my-account'
             ? push('/my-account')

@@ -25,6 +25,7 @@ function Layout ({
       {header.type === 'page' && (
         <PageHeader
           title={header.data.title}
+          subtitle={header.data.subtitle}
           goBackAction={header.data.goBackAction}
           closeAction={header.data.closeAction}
           onGoBack={onGoBack}
