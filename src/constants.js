@@ -45,4 +45,6 @@ export const STORAGE_VERSION = 1
 
 export const REPORT_ISSUE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScvCK2OaRYSXcFYEiWAkbtWzHxWh8fGO4uOn0sIRdPP9Gigeg/viewform'
 
+export const HERMEZ_HELP_CENTER_URL = 'https://docs.hermez.io/#/faq/end-users'
+
 export const HERMEZ_WEB_URL = 'https://hermez.io'
