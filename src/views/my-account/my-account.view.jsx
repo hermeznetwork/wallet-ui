@@ -23,6 +23,9 @@ import Button from '../shared/button/button.view'
 import { copyToClipboard } from '../../utils/browser'
 import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
 
+const packagejson = require('../../../package.json')
+const packagejsonVersion = 'version ' + packagejson.version
+
 function MyAccount ({
   wallet,
   preferredCurrency,
@@ -150,6 +153,7 @@ const mapDispatchToProps = (dispatch) => ({
       type: 'page',
       data: {
         title: 'My Account',
+        subtitle: packagejsonVersion,
         goBackAction: push('/')
       }
     })),
