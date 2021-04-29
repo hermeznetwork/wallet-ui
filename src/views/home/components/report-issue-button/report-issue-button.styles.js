@@ -9,11 +9,13 @@ const reportIssueButtonStyles = createUseStyles((theme) => ({
     background: theme.palette.white
   },
   text: {
-    width: '100%',
-    textAlign: 'center',
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
     padding: `${theme.spacing(1.5)}px 0`
+  },
+  separator: {
+    color: theme.palette.grey.main,
+    padding: theme.spacing(1.5)
   }
 }))
 
