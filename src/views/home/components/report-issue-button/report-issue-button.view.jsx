@@ -16,7 +16,7 @@ function ReportIssueButton () {
       >
         Report an issue
       </a>
-      <span className={classes.separator}> | </span>
+      <span className={classes.separator}>|</span>
       <a
         className={classes.text}
         href={HERMEZ_HELP_CENTER_URL}
