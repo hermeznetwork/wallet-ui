@@ -22,9 +22,7 @@ import { ReactComponent as CopyIcon } from '../../images/icons/copy.svg'
 import Button from '../shared/button/button.view'
 import { copyToClipboard } from '../../utils/browser'
 import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
-
-const packagejson = require('../../../package.json')
-const packagejsonVersion = 'version ' + packagejson.version
+import { version as packagejsonVersion } from '../../../package.json'
 
 function MyAccount ({
   wallet,
