@@ -151,7 +151,7 @@ const mapDispatchToProps = (dispatch) => ({
       type: 'page',
       data: {
         title: 'My Account',
-        subtitle: packagejsonVersion,
+        subtitle: `version ${packagejsonVersion}`,
         goBackAction: push('/')
       }
     })),
