@@ -22,6 +22,7 @@ import { ReactComponent as CopyIcon } from '../../images/icons/copy.svg'
 import Button from '../shared/button/button.view'
 import { copyToClipboard } from '../../utils/browser'
 import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
+import { version as packagejsonVersion } from '../../../package.json'
 
 function MyAccount ({
   wallet,
@@ -150,6 +151,7 @@ const mapDispatchToProps = (dispatch) => ({
       type: 'page',
       data: {
         title: 'My Account',
+        subtitle: `version ${packagejsonVersion}`,
         goBackAction: push('/')
       }
     })),
