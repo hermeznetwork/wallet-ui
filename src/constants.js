@@ -48,3 +48,5 @@ export const REPORT_ISSUE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLS
 export const HERMEZ_HELP_CENTER_URL = 'https://docs.hermez.io/#/faq/end-users'
 
 export const HERMEZ_WEB_URL = 'https://hermez.io'
+
+export const DEPOSIT_TX_TIMEOUT = 86400000 // 24h

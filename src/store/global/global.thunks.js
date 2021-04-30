@@ -1,4 +1,4 @@
-import hermezjs, { CoordinatorAPI, Providers, Tx, TxUtils, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
+import hermezjs, { CoordinatorAPI, Providers, Tx, TxUtils, HermezCompressedAmount, Addresses } from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
 import { ethers } from 'ethers'
 import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
@@ -343,21 +343,30 @@ function updatePendingDepositId (transactionHash, transactionId) {
 }
 
 function checkPendingDeposits () {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const { global: { wallet, pendingDeposits, ethereumNetworkTask } } = getState()
 
     dispatch(globalActions.checkPendingDeposits())
+
     const provider = Providers.getProvider()
+    const accountEthBalance = BigInt(await provider.getBalance(Addresses.getEthereumAddress(wallet.hermezEthereumAddress)))
     const accountPendingDeposits = storage.getItemsByHermezAddress(
       pendingDeposits,
       ethereumNetworkTask.data.chainId,
       wallet.hermezEthereumAddress
     )
-    const pendingDepositsHashes = accountPendingDeposits.map(deposit => deposit.hash)
-    const pendingDepositsTxs = pendingDepositsHashes.map((hash) => {
-      return provider.getTransaction(hash).then((tx) => {
+    const pendingDepositsTxs = accountPendingDeposits.map((pendingDeposit) => {
+      return provider.getTransaction(pendingDeposit.hash).then((tx) => {
         if (tx === null) {
-          dispatch(removePendingDepositByHash(hash))
+          dispatch(removePendingDepositByHash(pendingDeposit.hash))
+        }
+
+        if (tx !== null && tx.blockNumber === null) {
+          const maxTxFee = BigInt(tx.gasLimit) * BigInt(tx.gasPrice)
+
+          if (Date.now() > new Date(pendingDeposit.timestamp).getTime() + constants.DEPOSIT_TX_TIMEOUT || maxTxFee > accountEthBalance) {
+            dispatch(removePendingDepositByHash(pendingDeposit.hash))
+          }
         }
 
         return tx
