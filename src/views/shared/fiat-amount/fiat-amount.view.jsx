@@ -9,7 +9,7 @@ function FiatAmount ({ amount, currency }) {
 
   return (
     <div className={classes.root}>
-      {CurrencySymbol[currency].symbol} {amount?.toFixed(2) || '--'}
+      {CurrencySymbol[currency].symbol} {amount ? amount.toFixed(2) : '--'}
     </div>
   )
 }
