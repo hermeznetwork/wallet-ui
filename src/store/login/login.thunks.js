@@ -9,6 +9,7 @@ import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
 import * as storage from '../../utils/storage'
+import { HttpStatusCode } from '../../utils/http'
 
 async function getSignerData (provider, walletName, accountData) {
   switch (walletName) {
@@ -127,7 +128,13 @@ function postCreateAccountAuthorization (wallet) {
           wallet.publicKeyBase64,
           signature,
           nextForgers
-        )
+        ).catch((error) => {
+          // If the coordinators already have the CreateAccountsAuth signature,
+          // we ignore the error
+          if (error.response.status !== HttpStatusCode.DUPLICATED) {
+            throw error
+          }
+        })
       })
       .then((res) => {
         dispatch(loginActions.addAccountAuthSuccess())
@@ -137,7 +144,8 @@ function postCreateAccountAuthorization (wallet) {
         const errorMessage = error.code === -32603
           ? 'Sorry, hardware wallets are not supported in Hermez yet'
           : error.message
-        console.log(error)
+
+        console.error(error)
         dispatch(loginActions.addAccountAuthFailure(error))
         dispatch(globalActions.openSnackbar(errorMessage))
         dispatch(loginActions.goToWalletSelectorStep())

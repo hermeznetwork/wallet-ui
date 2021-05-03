@@ -1,5 +1,6 @@
 const HttpStatusCode = {
-  NOT_FOUND: 404
+  NOT_FOUND: 404,
+  DUPLICATED: 409
 }
 
 /**
