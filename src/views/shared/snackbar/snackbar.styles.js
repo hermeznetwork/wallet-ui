@@ -18,7 +18,8 @@ const useSnackbarStyles = createUseStyles(theme => ({
     color: backgroundColor ? theme.palette.white : theme.palette.black,
     fontWeight: theme.fontWeights.bold,
     marginBottom: theme.spacing(3),
-    border: backgroundColor ? 'none' : `solid 1.5px ${theme.palette.grey.veryLight}`
+    border: backgroundColor ? 'none' : `solid 1.5px ${theme.palette.grey.veryLight}`,
+    boxShadow: '0 7px 22px -2px rgba(136, 139, 170, 0.15)'
   }),
   message: {
     textAlign: 'center'
