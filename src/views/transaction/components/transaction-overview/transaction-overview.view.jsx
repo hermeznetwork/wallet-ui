@@ -6,7 +6,7 @@ import { getFeeIndex, getFeeValue } from '@hermeznetwork/hermezjs/src/tx-utils'
 import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
-import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount, getAmountInPreferredCurrency } from '../../../../utils/currencies'
 import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
 import Container from '../../../shared/container/container.view'
 import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
@@ -14,6 +14,7 @@ import TokenBalance from '../../../shared/token-balance/token-balance.view'
 import Spinner from '../../../shared/spinner/spinner.view'
 import FormButton from '../../../shared/form-button/form-button.view'
 import { MAX_TOKEN_DECIMALS } from '../../../../constants'
+import { ReactComponent as InfoIcon } from '../../../../images/icons/info.svg'
 
 function TransactionOverview ({
   wallet,
@@ -26,8 +27,10 @@ function TransactionOverview ({
   instantWithdrawal,
   completeDelayedWithdrawal,
   account,
+  estimatedWithdrawFeeTask,
   preferredCurrency,
   fiatExchangeRates,
+  onLoadEstimatedWithdrawFee,
   onDeposit,
   onForceExit,
   onWithdraw,
@@ -37,6 +40,12 @@ function TransactionOverview ({
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
+
+  React.useEffect(() => {
+    if (transactionType === TxType.Exit) {
+      onLoadEstimatedWithdrawFee(account.token, amount)
+    }
+  }, [transactionType, account, amount])
 
   /**
    * Converts the transaction amount to fiat in the preferred currency
@@ -58,6 +67,12 @@ function TransactionOverview ({
     )
   }
 
+  function getEstimatedWithdrawFee () {
+    return estimatedWithdrawFeeTask.status === 'successful'
+      ? getAmountInPreferredCurrency(estimatedWithdrawFeeTask.data, preferredCurrency, fiatExchangeRates).toFixed(2)
+      : '--'
+  }
+
   /**
    * Converts the transaction type to a readable button label
    *
@@ -70,7 +85,7 @@ function TransactionOverview ({
       case TxType.Transfer:
         return 'Send'
       case TxType.Exit:
-        return 'Withdraw'
+        return 'Initiate withdraw'
       case TxType.Withdraw:
         return 'Withdraw'
       case TxType.ForceExit:
@@ -170,6 +185,21 @@ function TransactionOverview ({
                   disabled={isButtonDisabled}
                 />
                 )
+          }
+          {
+            transactionType === TxType.Exit && (
+              <div className={classes.exitInfoWrapper}>
+                <div className={classes.exitHelperTextWrapper}>
+                  <InfoIcon className={classes.exitHelperIcon} />
+                  <p className={classes.exitHelperText}>
+                    This step is not revertible. Once initiated, the withdrawal process must be completed.
+                  </p>
+                </div>
+                <p className={classes.exitEstimatedFeeHelperText}>
+                  The estimated fee for step 2 of the withdrawal process is {getEstimatedWithdrawFee()} {preferredCurrency}
+                </p>
+              </div>
+            )
           }
         </section>
       </Container>

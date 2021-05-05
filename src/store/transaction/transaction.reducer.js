@@ -34,6 +34,9 @@ const initialTransactionState = {
     },
     [STEP_NAME.REVIEW_TRANSACTION]: {
       transaction: undefined,
+      estimatedWithdrawFeeTask: {
+        status: 'pending'
+      },
       isTransactionBeingSigned: false
     }
   }
@@ -290,6 +293,50 @@ function transactionReducer (state = initialTransactionState, action) {
           }
         }
       }
+    case transactionActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.REVIEW_TRANSACTION]: {
+            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+            estimatedWithdrawFeeTask: {
+              status: 'loading'
+            }
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.REVIEW_TRANSACTION]: {
+            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+            estimatedWithdrawFeeTask: {
+              status: 'successful',
+              data: action.estimatedFee
+            }
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.REVIEW_TRANSACTION]: {
+            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+            estimatedWithdrawFeeTask: {
+              status: 'failed',
+              error: action.error
+            }
+          }
+        }
+      }
+    }
     case transactionActionTypes.START_TRANSACTION_SIGNING: {
       return {
         ...state,

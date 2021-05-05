@@ -20,6 +20,9 @@ export const transactionActionTypes = {
   LOAD_ACCOUNTS: '[TRANSACTION] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[TRANSACTION] LOAD ACCOUNTS SUCCESS',
   LOAD_ACCOUNTS_FAILURE: '[TRANSACTION] LOAD ACCOUNTS FAILURE',
+  LOAD_ESTIMATED_WITHDRAW_FEE: '[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE',
+  LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS: '[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE SUCCESS',
+  LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE: '[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE FAILURE',
   START_TRANSACTION_SIGNING: '[TRANSACTION] START TRANSACTION SIGNING',
   STOP_TRANSACTION_SIGNING: '[TRANSACTION] STOP TRANSACTION SIGNING',
   RESET_STATE: '[TRANSACTION] RESET STATE'
@@ -166,6 +169,26 @@ function loadFeesFailure (error) {
   }
 }
 
+function loadEstimatedWithdrawFee () {
+  return {
+    type: transactionActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE
+  }
+}
+
+function loadEstimatedWithdrawFeeSuccess (estimatedFee) {
+  return {
+    type: transactionActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS,
+    estimatedFee
+  }
+}
+
+function loadEstimatedWithdrawFeeFailure (error) {
+  return {
+    type: transactionActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE,
+    error
+  }
+}
+
 function startTransactionSigning () {
   return {
     type: transactionActionTypes.START_TRANSACTION_SIGNING
@@ -206,6 +229,9 @@ export {
   loadFees,
   loadFeesSuccess,
   loadFeesFailure,
+  loadEstimatedWithdrawFee,
+  loadEstimatedWithdrawFeeSuccess,
+  loadEstimatedWithdrawFeeFailure,
   startTransactionSigning,
   stopTransactionSigning,
   resetState
