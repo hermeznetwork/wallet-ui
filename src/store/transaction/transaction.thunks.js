@@ -1,12 +1,15 @@
-import { CoordinatorAPI, Tx, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
+import { CoordinatorAPI, Tx, TxFees, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
 import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
+import * as ethers from 'ethers'
 
 import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
 import { getAccountBalance } from '../../utils/accounts'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { getProvider } from '@hermeznetwork/hermezjs/dist/node/providers'
+import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/dist/node/constants'
 
 /**
  * Fetches the account details for a token id in MetaMask.
@@ -183,6 +186,28 @@ function fetchFees () {
     return CoordinatorAPI.getState()
       .then(res => dispatch(transactionActions.loadFeesSuccess(res.recommendedFee)))
       .catch(err => dispatch(transactionActions.loadFeesFailure(err)))
+  }
+}
+
+function fetchEstimatedWithdrawFee (token, amount) {
+  return async (dispatch, getState) => {
+    dispatch(transactionActions.loadEstimatedWithdrawFee())
+
+    try {
+      const { global: { signer } } = getState()
+      const provider = getProvider()
+      const gasPrice = await provider.getGasPrice()
+      const estimatedMerkleSiblingsLength = 4
+      const overrides = { gasPrice }
+      const gasLimit = await TxFees.estimateWithdrawGasLimit(token, estimatedMerkleSiblingsLength, amount, overrides, signer)
+      const feeBigInt = BigInt(gasLimit) * BigInt(gasPrice)
+      const ethToken = await CoordinatorAPI.getToken(ETHER_TOKEN_ID)
+      const fee = Number(ethers.utils.formatEther(feeBigInt)) * ethToken.USD
+
+      dispatch(transactionActions.loadEstimatedWithdrawFeeSuccess(fee))
+    } catch (err) {
+      dispatch(transactionActions.loadEstimatedWithdrawFeeFailure(err))
+    }
   }
 }
 
@@ -376,6 +401,7 @@ export {
   fetchPoolTransactions,
   fetchAccounts,
   fetchFees,
+  fetchEstimatedWithdrawFee,
   deposit,
   withdraw,
   forceExit,
