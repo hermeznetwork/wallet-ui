@@ -5,7 +5,7 @@ import Spinner from '../../../shared/spinner/spinner.view'
 import { STEP_NAME } from '../../../../store/login/login.reducer'
 
 function CreateAccountAuth ({
-  hermezAddressAuthSignatures,
+  hermezAddressAuthSignature,
   addAccountAuthTask,
   steps,
   onCreateAccountAuthorization
@@ -17,7 +17,7 @@ function CreateAccountAuth ({
     onCreateAccountAuthorization(wallet)
   }, [wallet, onCreateAccountAuthorization])
 
-  if (hermezAddressAuthSignatures.length === 0) {
+  if (!hermezAddressAuthSignature) {
     return (
       <div className={classes.accountAuth}>
         <h2 className={classes.accountAuthTitle}>Create accounts for new tokens</h2>
