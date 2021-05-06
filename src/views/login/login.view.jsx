@@ -21,7 +21,6 @@ import ChainIdError from './components/chain-id-error/chain-id-error.view'
 import MetaMaskError from './components/metamask-error/metamask-error.view'
 import { PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../constants'
 import UnderMaintenanceError from './components/under-maintenance-error/under-maintenance-error.view'
-import * as storage from '../../utils/storage'
 
 export const WalletName = {
   METAMASK: 'metaMask',
@@ -158,15 +157,12 @@ function Login ({
                 )
               }
               case STEP_NAME.CREATE_ACCOUNT_AUTH: {
-                const hermezAddressAuthSignatures = storage.getItemsByHermezAddress(
-                  accountAuthSignatures,
-                  ethereumNetworkTask.data.chainId,
-                  stepData.wallet.hermezEthereumAddress
-                )
+                const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.data.chainId] || {}
+                const hermezAddressAuthSignature = chainIdSignatures[stepData.wallet.hermezEthereumAddress]
 
                 return (
                   <CreateAccountAuth
-                    hermezAddressAuthSignatures={hermezAddressAuthSignatures}
+                    hermezAddressAuthSignature={hermezAddressAuthSignature}
                     steps={steps}
                     onCreateAccountAuthorization={onCreateAccountAuthorization}
                   />

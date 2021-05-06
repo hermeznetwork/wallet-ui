@@ -8,7 +8,6 @@ import { ACCOUNT_AUTH_SIGNATURES_KEY, TREZOR_MANIFEST_MAIL } from '../../constan
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
-import * as storage from '../../utils/storage'
 import { HttpStatusCode } from '../../utils/http'
 
 async function getSignerData (provider, walletName, accountData) {
@@ -110,14 +109,11 @@ function postCreateAccountAuthorization (wallet) {
       global: { redirectRoute, ethereumNetworkTask, nextForgers }
     } = getState()
 
-    const hermezAddressAuthSignatures = storage.getItemsByHermezAddress(
-      accountAuthSignatures,
-      ethereumNetworkTask.data.chainId,
-      wallet.hermezEthereumAddress
-    )
-    const getSignature = hermezAddressAuthSignatures.length === 0
-      ? wallet.signCreateAccountAuthorization.bind(wallet)
-      : () => Promise.resolve(hermezAddressAuthSignatures[0])
+    const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.data.chainId] || {}
+    const currentSignature = chainIdSignatures[wallet.hermezEthereumAddress]
+    const getSignature = currentSignature
+      ? () => Promise.resolve(currentSignature)
+      : wallet.signCreateAccountAuthorization.bind(wallet)
 
     getSignature()
       .then((signature) => {
@@ -163,7 +159,16 @@ function setAccountAuthSignature (hermezEthereumAddress, signature) {
     const { global: { ethereumNetworkTask } } = getState()
     const { data: { chainId } } = ethereumNetworkTask
 
-    storage.addItem(ACCOUNT_AUTH_SIGNATURES_KEY, chainId, hermezEthereumAddress, signature)
+    const storage = JSON.parse(localStorage.getItem(ACCOUNT_AUTH_SIGNATURES_KEY))
+    const chainIdStorage = storage[chainId] || {}
+    const newAccountAuthSignature = {
+      ...storage,
+      [chainId]: {
+        ...chainIdStorage,
+        [hermezEthereumAddress]: signature
+      }
+    }
+    localStorage.setItem(ACCOUNT_AUTH_SIGNATURES_KEY, JSON.stringify(newAccountAuthSignature))
     dispatch(loginActions.setAccountAuthSignature(chainId, hermezEthereumAddress, signature))
   }
 }

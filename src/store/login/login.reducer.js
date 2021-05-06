@@ -189,7 +189,7 @@ function loginReducer (state = initialLoginState, action) {
           ...state.accountAuthSignatures,
           [action.chainId]: {
             ...chainIdAuthSignatures,
-            [action.hermezEthereumAddress]: [action.signature]
+            [action.hermezEthereumAddress]: action.signature
           }
         }
       }
