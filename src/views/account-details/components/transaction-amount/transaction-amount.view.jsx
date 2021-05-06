@@ -26,12 +26,12 @@ function TransactionAmount ({
     case TxType.Withdraw:
     case TxType.Exit:
     case TxType.ForceExit: {
-      return <p className={classes.root}>- {currencySymbol}{(fiatAmount).toFixed(2)}</p>
+      return <p className={classes.root}>- {currencySymbol} {(fiatAmount).toFixed(2)}</p>
     }
     case TxType.Transfer:
     case TxType.TransferToEthAddr: {
       if (fromAccountIndex === accountIndex) {
-        return <p className={classes.root}>- {currencySymbol}{(fiatAmount).toFixed(2)}</p>
+        return <p className={classes.root}>- {currencySymbol} {(fiatAmount).toFixed(2)}</p>
       } else {
         return (
           <p className={`${classes.root} ${classes.depositAmount}`}>

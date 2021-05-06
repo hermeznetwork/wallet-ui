@@ -196,7 +196,7 @@ function TransactionOverview ({
                   </p>
                 </div>
                 <p className={classes.exitEstimatedFeeHelperText}>
-                  The estimated fee for step 2 of the withdrawal process is {getEstimatedWithdrawFee()} {CurrencySymbol[preferredCurrency].symbol}
+                  The estimated gas fee for step 2 of the withdrawal process is {CurrencySymbol[preferredCurrency].symbol} {getEstimatedWithdrawFee()}
                 </p>
               </div>
             )
