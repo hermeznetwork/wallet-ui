@@ -192,7 +192,7 @@ function TransactionOverview ({
                 <div className={classes.exitHelperTextWrapper}>
                   <InfoIcon className={classes.exitHelperIcon} />
                   <p className={classes.exitHelperText}>
-                    This step is not revertible. Once initiated, the withdrawal process must be completed.
+                    This step is not reversible. Once initiated, the withdrawal process must be completed.
                   </p>
                 </div>
                 <p className={classes.exitEstimatedFeeHelperText}>
