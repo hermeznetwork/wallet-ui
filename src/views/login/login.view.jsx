@@ -21,6 +21,7 @@ import ChainIdError from './components/chain-id-error/chain-id-error.view'
 import MetaMaskError from './components/metamask-error/metamask-error.view'
 import { PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../constants'
 import UnderMaintenanceError from './components/under-maintenance-error/under-maintenance-error.view'
+import * as storage from '../../utils/storage'
 
 export const WalletName = {
   METAMASK: 'metaMask',
@@ -35,15 +36,13 @@ function Login ({
   hermezStatusTask,
   ethereumNetworkTask,
   steps,
-  accountAuthTask,
-  addAccountAuthTask,
+  accountAuthSignatures,
   onChangeHeader,
   onGoToAccountSelectorStep,
   onGoToWalletLoaderStep,
   onGoToErrorStep,
   onGoToPreviousStep,
   onLoadWallet,
-  onLoadCreateAccountAuthorization,
   onCreateAccountAuthorization,
   onCleanup
 }) {
@@ -159,12 +158,16 @@ function Login ({
                 )
               }
               case STEP_NAME.CREATE_ACCOUNT_AUTH: {
+                const hermezAddressAuthSignatures = storage.getItemsByHermezAddress(
+                  accountAuthSignatures,
+                  ethereumNetworkTask.data.chainId,
+                  stepData.wallet.hermezEthereumAddress
+                )
+
                 return (
                   <CreateAccountAuth
-                    accountAuthTask={accountAuthTask}
-                    addAccountAuthTask={addAccountAuthTask}
+                    hermezAddressAuthSignatures={hermezAddressAuthSignatures}
                     steps={steps}
-                    onLoadCreateAccountAuthorization={onLoadCreateAccountAuthorization}
                     onCreateAccountAuthorization={onCreateAccountAuthorization}
                   />
                 )
@@ -222,8 +225,7 @@ const mapStateToProps = (state) => ({
   hermezStatusTask: state.global.hermezStatusTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
   steps: state.login.steps,
-  accountAuthTask: state.login.accountAuthTask,
-  addAccountAuthTask: state.login.addAccountAuthTask
+  accountAuthSignatures: state.login.accountAuthSignatures
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -237,8 +239,6 @@ const mapDispatchToProps = (dispatch) => ({
   onGoToPreviousStep: () => dispatch(loginActions.goToPreviousStep()),
   onLoadWallet: (walletName, accountData) =>
     dispatch(loginThunks.fetchWallet(walletName, accountData)),
-  onLoadCreateAccountAuthorization: (hermezEthereumAddress) =>
-    dispatch(loginThunks.loadCreateAccountAuthorization(hermezEthereumAddress)),
   onCreateAccountAuthorization: (wallet) =>
     dispatch(loginThunks.postCreateAccountAuthorization(wallet)),
   onCleanup: () =>
