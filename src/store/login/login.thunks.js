@@ -8,7 +8,7 @@ import { ACCOUNT_AUTH_SIGNATURES_KEY, TREZOR_MANIFEST_MAIL } from '../../constan
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
-import { HttpStatusCode } from '../../utils/http'
+// import { HttpStatusCode } from '../../utils/http'
 
 async function getSignerData (provider, walletName, accountData) {
   switch (walletName) {
@@ -127,9 +127,10 @@ function postCreateAccountAuthorization (wallet) {
         ).catch((error) => {
           // If the coordinators already have the CreateAccountsAuth signature,
           // we ignore the error
-          if (error.response.status !== HttpStatusCode.DUPLICATED) {
-            throw error
-          }
+          console.log(error)
+          // if (error.response.status !== HttpStatusCode.DUPLICATED) {
+          //   throw error
+          // }
         })
       })
       .then((res) => {
