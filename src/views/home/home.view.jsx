@@ -177,7 +177,7 @@ function Home ({
         </section>
       </Container>
       <Container fullHeight>
-        <section className={classes.section}>
+        <section className={`${classes.section} ${classes.sectionLast}`}>
           {
             poolTransactionsTask.status === 'successful' || poolTransactionsTask.status === 'reloading'
               ? <ExitList

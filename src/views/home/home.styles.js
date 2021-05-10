@@ -12,6 +12,9 @@ const useHomeStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
+  sectionLast: {
+    marginBottom: theme.spacing(3)
+  },
   walletAddress: {
     marginTop: theme.spacing(2)
   },
