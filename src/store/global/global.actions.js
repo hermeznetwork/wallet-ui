@@ -158,12 +158,12 @@ function addPendingWithdraw (chainId, hermezEthereumAddress, pendingWithdraw) {
   }
 }
 
-function removePendingWithdraw (chainId, hermezEthereumAddress, pendingWithdrawId) {
+function removePendingWithdraw (chainId, hermezEthereumAddress, hash) {
   return {
     type: globalActionTypes.REMOVE_PENDING_WITHDRAW,
     chainId,
     hermezEthereumAddress,
-    pendingWithdrawId
+    hash
   }
 }
 

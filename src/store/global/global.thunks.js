@@ -147,17 +147,17 @@ function addPendingWithdraw (pendingWithdraw) {
 
 /**
  * Removes a pendingWithdraw from the pendingWithdraw pool
- * @param {string} pendingWithdrawId - The pendingWithdraw identifier to remove from the pool
+ * @param {string} hash - The transaction hash used to remove a pendingWithdraw from the store
  * @returns {void}
  */
-function removePendingWithdraw (pendingWithdrawId) {
+function removePendingWithdraw (hash) {
   return (dispatch, getState) => {
     const { global: { wallet, ethereumNetworkTask } } = getState()
     const { data: { chainId } } = ethereumNetworkTask
     const { hermezEthereumAddress } = wallet
 
-    storage.removeItem(constants.PENDING_WITHDRAWS_KEY, chainId, hermezEthereumAddress, pendingWithdrawId)
-    dispatch(globalActions.removePendingWithdraw(hermezEthereumAddress, pendingWithdrawId))
+    storage.removeItemByCustomProp(constants.PENDING_WITHDRAWS_KEY, chainId, hermezEthereumAddress, { name: 'hash', value: hash })
+    dispatch(globalActions.removePendingWithdraw(chainId, hermezEthereumAddress, hash))
   }
 }
 
@@ -252,28 +252,60 @@ function checkPendingDelayedWithdraw (exitId) {
  * @returns {void}
  */
 function checkPendingWithdrawals () {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const { global: { wallet, ethereumNetworkTask, pendingWithdraws } } = getState()
 
     dispatch(globalActions.checkPendingWithdrawals())
 
-    const pendingWithdrawsAccount = storage.getItemsByHermezAddress(
+    const provider = Providers.getProvider()
+    const accountEthBalance = BigInt(await provider.getBalance(Addresses.getEthereumAddress(wallet.hermezEthereumAddress)))
+    const accountPendingWithdraws = storage.getItemsByHermezAddress(
       pendingWithdraws,
       ethereumNetworkTask.data.chainId,
       wallet.hermezEthereumAddress
     )
+    const pendingWithdrawsTxs = accountPendingWithdraws.map((pendingWithdraw) => {
+      return provider.getTransaction(pendingWithdraw.hash).then((tx) => {
+        if (tx === null) {
+          dispatch(removePendingWithdraw(pendingWithdraw.hash))
+        }
 
-    return Promise.all(pendingWithdrawsAccount.map((pendingWithdraw) => {
-      return CoordinatorAPI.getExit(pendingWithdraw.batchNum, pendingWithdraw.accountIndex)
-        .then((exitTx) => {
-          if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
-            dispatch(removePendingWithdraw(pendingWithdraw.id))
+        if (tx !== null && tx.blockNumber === null) {
+          const maxTxFee = BigInt(tx.gasLimit) * BigInt(tx.gasPrice)
+
+          if (Date.now() > new Date(pendingWithdraw.timestamp).getTime() + constants.DEPOSIT_TX_TIMEOUT || maxTxFee > accountEthBalance) {
+            dispatch(removePendingWithdraw(pendingWithdraw.hash))
           }
+        }
+
+        return tx
+      })
+    })
+
+    Promise.all(pendingWithdrawsTxs).then((txs) => {
+      const minedTxs = txs.filter(tx => tx !== null && tx.blockNumber !== null)
+      const pendingWithdrawsTxReceipts = minedTxs.map(tx => provider.getTransactionReceipt(tx.hash))
+
+      Promise.all(pendingWithdrawsTxReceipts).then((txReceipts) => {
+        const revertedTxReceipts = txReceipts.filter(txReceipt => txReceipt.status === 0)
+
+        revertedTxReceipts.forEach((tx) => {
+          dispatch(removePendingWithdraw(tx.transactionHash))
         })
-        .catch(() => {})
-    }))
-      .then(() => dispatch(globalActions.checkPendingWithdrawalsSuccess()))
-      .catch(() => dispatch(globalActions.checkPendingWithdrawalsSuccess()))
+
+        Promise.all(accountPendingWithdraws.map((pendingWithdraw) => {
+          return CoordinatorAPI.getExit(pendingWithdraw.batchNum, pendingWithdraw.accountIndex)
+            .then((exitTx) => {
+              if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
+                dispatch(removePendingWithdraw(pendingWithdraw.hash))
+              }
+            })
+        }))
+          .finally(() => dispatch(globalActions.checkPendingWithdrawalsSuccess()))
+      })
+    })
+
+    // dispatch(globalActions.checkPendingWithdrawalsSuccess())
   }
 }
 
@@ -311,7 +343,7 @@ function removePendingDepositById (transactionId) {
 
 /**
  * Removes a pendingDeposit from the pendingDeposit store by hash
- * @param {string} transactionId - The transaction identifier used to remove a pendingDeposit from the store
+ * @param {string} hash - The transaction hash used to remove a pendingDeposit from the store
  * @returns {void}
  */
 function removePendingDepositByHash (hash) {

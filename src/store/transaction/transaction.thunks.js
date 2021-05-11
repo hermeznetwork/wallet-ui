@@ -273,6 +273,7 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
       ).then((txData) => {
         if (instantWithdrawal) {
           dispatch(globalThunks.addPendingWithdraw({
+            hash: txData.hash,
             hermezEthereumAddress: wallet.hermezEthereumAddress,
             id: withdrawalId,
             accountIndex: account.accountIndex,
