@@ -118,7 +118,7 @@ function Exit ({
    */
   function getDateString (delayedWithdrawal) {
     const now = Date.now()
-    const difference = now - delayedWithdrawal.date
+    const difference = now - new Date(delayedWithdrawal.timestamp).getTime()
     if (delayedWithdrawal.instant) {
       const tenMinutes = 10 * 60 * 1000
       if (difference > tenMinutes) {
@@ -173,7 +173,7 @@ function Exit ({
     onAddPendingDelayedWithdraw({
       id: exitId,
       instant: true,
-      date: Date.now(),
+      timestamp: new Date().toISOString(),
       token
     })
   }

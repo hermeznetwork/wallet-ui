@@ -279,16 +279,17 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
             accountIndex: account.accountIndex,
             batchNum: exit.batchNum,
             amount,
-            token: account.token
+            token: account.token,
+            timestamp: new Date().toISOString()
           }))
         } else {
           dispatch(globalThunks.addPendingDelayedWithdraw({
             hash: txData.hash,
             id: withdrawalId,
             instant: false,
-            date: Date.now(),
             amount,
-            token: account.token
+            token: account.token,
+            timestamp: new Date().toISOString()
           }))
         }
 

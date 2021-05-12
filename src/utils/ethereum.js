@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import hermezjs from '@hermeznetwork/hermezjs'
 
-import { ETHER_TOKEN_ID } from '../constants'
+import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from '../constants'
 
 /**
  * Fetches token balances in the user's MetaMask account. Only for those tokens registered in Hermez and Ether.
@@ -62,6 +62,57 @@ async function getTokens (wallet, hermezTokens) {
   }
 }
 
+/**
+ * Checks if an Ethereum transaction has been canceled by the user
+ * @param {Object} tx - Ethereum transaction
+ * @returns {Boolean}
+ */
+function isTxCanceled (tx) {
+  return tx === null
+}
+
+/**
+ * Checks if an Ethereum transaction has been mined
+ * @param {Object} tx - Ethereum transaction
+ * @returns {Boolean}
+ */
+function isTxMined (tx) {
+  return tx !== null && tx.blockNumber !== null
+}
+
+/**
+ * Checks if an Ethereum transaction is expected to fail. We expect a transaction to fail
+ * if it exceeds a timeout (24h by default) or if the user doesn't have enough ETH in his
+ * account to pay the maximum fee estimated for the tx.
+ * @param {Object} tx - Ethereum transaction
+ * @param {Date} date - Date the transaction was sent
+ * @returns {Boolean}
+ */
+function isTxExpectedToFail (tx, date, accountEthBalance) {
+  if (tx !== null && tx.blockNumber === null) {
+    const maxTxFee = BigInt(tx.gasLimit) * BigInt(tx.gasPrice)
+
+    if (Date.now() > new Date(date).getTime() + DEPOSIT_TX_TIMEOUT || maxTxFee > accountEthBalance) {
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
+ * Checks if an Ethereum transaction has been reverted
+ * @param {Object} txReceipt - Ethereum transaction receipt
+ * @returns {Boolean}
+ */
+function hasTxBeenReverted (txReceipt) {
+  return txReceipt.status === 0
+}
+
 export {
-  getTokens
+  getTokens,
+  isTxCanceled,
+  isTxMined,
+  isTxExpectedToFail,
+  hasTxBeenReverted
 }

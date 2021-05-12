@@ -10,6 +10,7 @@ import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as hermezWebApi from '../../apis/hermez-web'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
+import { hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from '../../utils/ethereum'
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -210,7 +211,7 @@ function updatePendingDelayedWithdrawDate (transactionHash, pendingDelayedWithdr
       chainId,
       hermezEthereumAddress,
       { name: 'hash', value: transactionHash },
-      { date: pendingDelayedWithdrawDate }
+      { timestamp: pendingDelayedWithdrawDate }
     )
     dispatch(globalActions.updatePendingDelayedWithdrawDate(chainId, hermezEthereumAddress, transactionHash, pendingDelayedWithdrawDate))
   }
@@ -234,8 +235,8 @@ function checkPendingDelayedWithdraw (exitId) {
         provider.getBlock(transaction.blockNumber).then((block) => {
           // Converts timestamp from s to ms
           const newTimestamp = block.timestamp * 1000
-          if (pendingDelayedWithdraw.date !== newTimestamp) {
-            dispatch(updatePendingDelayedWithdrawDate(pendingDelayedWithdraw.hash, newTimestamp))
+          if (new Date(pendingDelayedWithdraw.timestamp).getTime() !== newTimestamp) {
+            dispatch(updatePendingDelayedWithdrawDate(pendingDelayedWithdraw.hash, new Date(newTimestamp).toISOString()))
           }
           dispatch(globalActions.checkPendingDelayedWithdrawSuccess())
         })
@@ -266,16 +267,8 @@ function checkPendingWithdrawals () {
     )
     const pendingWithdrawsTxs = accountPendingWithdraws.map((pendingWithdraw) => {
       return provider.getTransaction(pendingWithdraw.hash).then((tx) => {
-        if (tx === null) {
+        if (isTxCanceled(tx) || isTxExpectedToFail(tx, pendingWithdraw.timestamp, accountEthBalance)) {
           dispatch(removePendingWithdraw(pendingWithdraw.hash))
-        }
-
-        if (tx !== null && tx.blockNumber === null) {
-          const maxTxFee = BigInt(tx.gasLimit) * BigInt(tx.gasPrice)
-
-          if (Date.now() > new Date(pendingWithdraw.timestamp).getTime() + constants.DEPOSIT_TX_TIMEOUT || maxTxFee > accountEthBalance) {
-            dispatch(removePendingWithdraw(pendingWithdraw.hash))
-          }
         }
 
         return tx
@@ -287,7 +280,7 @@ function checkPendingWithdrawals () {
       const pendingWithdrawsTxReceipts = minedTxs.map(tx => provider.getTransactionReceipt(tx.hash))
 
       Promise.all(pendingWithdrawsTxReceipts).then((txReceipts) => {
-        const revertedTxReceipts = txReceipts.filter(txReceipt => txReceipt.status === 0)
+        const revertedTxReceipts = txReceipts.filter(hasTxBeenReverted)
 
         revertedTxReceipts.forEach((tx) => {
           dispatch(removePendingWithdraw(tx.transactionHash))
@@ -389,16 +382,8 @@ function checkPendingDeposits () {
     )
     const pendingDepositsTxs = accountPendingDeposits.map((pendingDeposit) => {
       return provider.getTransaction(pendingDeposit.hash).then((tx) => {
-        if (tx === null) {
+        if (isTxCanceled(tx) || isTxExpectedToFail(tx, pendingDeposit.timestamp, accountEthBalance)) {
           dispatch(removePendingDepositByHash(pendingDeposit.hash))
-        }
-
-        if (tx !== null && tx.blockNumber === null) {
-          const maxTxFee = BigInt(tx.gasLimit) * BigInt(tx.gasPrice)
-
-          if (Date.now() > new Date(pendingDeposit.timestamp).getTime() + constants.DEPOSIT_TX_TIMEOUT || maxTxFee > accountEthBalance) {
-            dispatch(removePendingDepositByHash(pendingDeposit.hash))
-          }
         }
 
         return tx
@@ -411,7 +396,7 @@ function checkPendingDeposits () {
 
       Promise.all(pendingDepositsTxReceipts).then((txReceipts) => {
         const hermezContractInterface = new ethers.utils.Interface(HermezABI)
-        const revertedTxReceipts = txReceipts.filter(txReceipt => txReceipt.status === 0)
+        const revertedTxReceipts = txReceipts.filter(hasTxBeenReverted)
         const successfulTxReceipts = txReceipts.filter(txReceipt => txReceipt.status === 1 && txReceipt.logs && txReceipt.logs.length > 0)
         const transactionHistoryPromises = successfulTxReceipts.map((txReceipt) => {
           // Need to parse logs, but only events from the Hermez SC. Ignore errors when trying to parse others
