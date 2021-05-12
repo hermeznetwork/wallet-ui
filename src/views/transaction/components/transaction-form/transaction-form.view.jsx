@@ -383,7 +383,7 @@ function TransactionForm ({
       case TxType.Transfer: {
         const accountChecks = [
           getAccounts(receiver, [account.token.id]),
-          !isHermezBjjAddress(receiver) ? getCreateAccountAuthorization(receiver).catch(() => {}) : {}
+          ...(!isHermezBjjAddress(receiver) ? [getCreateAccountAuthorization(receiver).catch(() => {})] : [])
         ]
         return Promise.all(accountChecks)
           .then((res) => {
