@@ -86,6 +86,7 @@ function isTxMined (tx) {
  * account to pay the maximum fee estimated for the tx.
  * @param {Object} tx - Ethereum transaction
  * @param {Date} date - Date the transaction was sent
+ * @param {BigInt} accountEthBalance - ETH balance of the account which the transaction has been sent from
  * @returns {Boolean}
  */
 function isTxExpectedToFail (tx, date, accountEthBalance) {

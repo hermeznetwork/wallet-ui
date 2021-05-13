@@ -297,8 +297,6 @@ function checkPendingWithdrawals () {
           .finally(() => dispatch(globalActions.checkPendingWithdrawalsSuccess()))
       })
     })
-
-    // dispatch(globalActions.checkPendingWithdrawalsSuccess())
   }
 }
 
