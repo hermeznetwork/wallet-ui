@@ -8,8 +8,8 @@ import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
 import { getAccountBalance } from '../../utils/accounts'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
-import { getProvider } from '@hermeznetwork/hermezjs/dist/node/providers'
-import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/dist/node/constants'
+import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
+import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/src/constants'
 
 /**
  * Fetches the account details for a token id in MetaMask.
