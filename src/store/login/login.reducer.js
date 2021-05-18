@@ -43,7 +43,10 @@ function loginReducer (state = initialLoginState, action) {
   switch (action.type) {
     case loginActionTypes.GO_TO_WALLET_SELECTOR_STEP: {
       return {
-        ...initialLoginState
+        ...state,
+        currentStep: initialLoginState.currentStep,
+        steps: { ...initialLoginState.steps },
+        addAccountAuthTask: { ...initialLoginState.addAccountAuthTask }
       }
     }
     case loginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP: {
@@ -221,7 +224,12 @@ function loginReducer (state = initialLoginState, action) {
       }
     }
     case loginActionTypes.RESET_STATE: {
-      return initialLoginState
+      return {
+        ...state,
+        currentStep: initialLoginState.currentStep,
+        steps: { ...initialLoginState.steps },
+        addAccountAuthTask: { ...initialLoginState.addAccountAuthTask }
+      }
     }
     default: {
       return state
