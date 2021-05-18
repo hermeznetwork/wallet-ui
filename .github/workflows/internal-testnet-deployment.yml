@@ -1,0 +1,29 @@
+name: Internal testnet deployment
+
+on:
+  push:
+    tags:
+      - '*rc*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create .env file
+        run: echo "REACT_APP_ENV=production" >> .env
+
+      - name: Generate production build
+        run: npm run build
+
+      - name: Deploy to S3 Bucket
+        run: aws s3 sync ./build s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
