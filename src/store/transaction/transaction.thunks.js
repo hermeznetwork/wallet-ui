@@ -8,8 +8,8 @@ import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
 import { getAccountBalance } from '../../utils/accounts'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
-import { getProvider } from '@hermeznetwork/hermezjs/dist/node/providers'
-import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/dist/node/constants'
+import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
+import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/src/constants'
 
 /**
  * Fetches the account details for a token id in MetaMask.
@@ -273,21 +273,23 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
       ).then((txData) => {
         if (instantWithdrawal) {
           dispatch(globalThunks.addPendingWithdraw({
+            hash: txData.hash,
             hermezEthereumAddress: wallet.hermezEthereumAddress,
             id: withdrawalId,
             accountIndex: account.accountIndex,
             batchNum: exit.batchNum,
             amount,
-            token: account.token
+            token: account.token,
+            timestamp: new Date().toISOString()
           }))
         } else {
           dispatch(globalThunks.addPendingDelayedWithdraw({
             hash: txData.hash,
             id: withdrawalId,
             instant: false,
-            date: Date.now(),
             amount,
-            token: account.token
+            token: account.token,
+            timestamp: new Date().toISOString()
           }))
         }
 

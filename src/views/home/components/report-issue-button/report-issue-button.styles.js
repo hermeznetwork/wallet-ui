@@ -6,7 +6,9 @@ const reportIssueButtonStyles = createUseStyles((theme) => ({
     display: 'flex',
     justifyContent: 'center',
     borderTop: `0.5px solid ${theme.palette.grey.veryLight}`,
-    background: theme.palette.white
+    background: theme.palette.white,
+    position: 'fixed',
+    bottom: 0
   },
   text: {
     fontWeight: theme.fontWeights.medium,
