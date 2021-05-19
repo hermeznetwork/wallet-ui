@@ -9,7 +9,7 @@ function TokenBalance ({ amount, symbol }) {
   return (
     <p className={classes.root}>
       <span className={classes.amount}>
-        {!isNaN(amount) ? amount.toFixed(2) : '--'} {symbol || <></>}
+        {!isNaN(amount) ? amount : '--'} {symbol || <></>}
       </span>
     </p>
   )
