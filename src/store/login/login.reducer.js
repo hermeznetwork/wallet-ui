@@ -41,7 +41,7 @@ function getInitialLoginState () {
   }
 }
 
-function loginReducer (state = getInitialLoginState, action) {
+function loginReducer (state = getInitialLoginState(), action) {
   switch (action.type) {
     case loginActionTypes.GO_TO_WALLET_SELECTOR_STEP: {
       const initialLoginState = getInitialLoginState()
