@@ -43,7 +43,6 @@ function runV2Migration () {
   }, {})
 
   setStorage(PENDING_DELAYED_WITHDRAWS_KEY, newPendingDelayedWithdraws)
-  console.log('Storage set up')
 }
 
 function checkVersion () {
