@@ -43,6 +43,7 @@ function runV2Migration () {
   }, {})
 
   setStorage(PENDING_DELAYED_WITHDRAWS_KEY, newPendingDelayedWithdraws)
+  console.log('Storage set up')
 }
 
 function checkVersion () {
@@ -53,9 +54,9 @@ function checkVersion () {
   }
 
   // LocalStorage migrations
-  if (currentStorageVersion && currentStorageVersion > STORAGE_VERSION) {
+  if (currentStorageVersion && STORAGE_VERSION > currentStorageVersion) {
     // Added L1 withdraws tracking
-    if (STORAGE_VERSION === 2) {
+    if (STORAGE_VERSION >= 2) {
       runV2Migration()
     }
 
@@ -97,7 +98,7 @@ function addItem (key, chainId, hermezEthereumAddress, item) {
     }
   }
 
-  setStorage(newStorage)
+  setStorage(key, newStorage)
 
   return newStorage
 }
@@ -114,7 +115,7 @@ function removeItem (key, chainId, hermezEthereumAddress, id) {
     }
   }
 
-  setStorage(newStorage)
+  setStorage(key, newStorage)
 
   return newStorage
 }
@@ -131,7 +132,7 @@ function removeItemByCustomProp (key, chainId, hermezEthereumAddress, prop) {
     }
   }
 
-  setStorage(newStorage)
+  setStorage(key, newStorage)
 
   return newStorage
 }
@@ -153,7 +154,7 @@ function updatePartialItemByCustomProp (key, chainId, hermezEthereumAddress, pro
     }
   }
 
-  setStorage(newStorage)
+  setStorage(key, newStorage)
 
   return newStorage
 }
