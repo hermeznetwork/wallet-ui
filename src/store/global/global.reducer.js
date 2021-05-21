@@ -7,45 +7,47 @@ export const LOAD_ETHEREUM_NETWORK_ERROR = {
   CHAIN_ID_NOT_SUPPORTED: 'chain-id-not-supported'
 }
 
-const initialGlobalState = {
-  hermezStatusTask: {
-    status: 'pending'
-  },
-  ethereumNetworkTask: {
-    status: 'pending'
-  },
-  wallet: undefined,
-  signer: undefined,
-  header: {
-    type: undefined
-  },
-  redirectRoute: '/',
-  fiatExchangeRatesTask: {
-    status: 'pending'
-  },
-  snackbar: {
-    status: 'closed'
-  },
-  networkStatus: 'online',
-  pendingWithdraws: storage.getStorage(constants.PENDING_WITHDRAWS_KEY),
-  pendingDelayedWithdraws: storage.getStorage(constants.PENDING_DELAYED_WITHDRAWS_KEY),
-  pendingDelayedWithdrawCheckTask: {
-    status: 'pending'
-  },
-  pendingWithdrawalsCheckTask: {
-    status: 'pending'
-  },
-  pendingDeposits: storage.getStorage(constants.PENDING_DEPOSITS_KEY),
-  pendingDepositsCheckTask: {
-    status: 'pending'
-  },
-  nextForgers: [],
-  coordinatorStateTask: {
-    status: 'pending'
+function getInitialGlobalState () {
+  return {
+    hermezStatusTask: {
+      status: 'pending'
+    },
+    ethereumNetworkTask: {
+      status: 'pending'
+    },
+    wallet: undefined,
+    signer: undefined,
+    header: {
+      type: undefined
+    },
+    redirectRoute: '/',
+    fiatExchangeRatesTask: {
+      status: 'pending'
+    },
+    snackbar: {
+      status: 'closed'
+    },
+    networkStatus: 'online',
+    pendingWithdraws: storage.getStorage(constants.PENDING_WITHDRAWS_KEY),
+    pendingDelayedWithdraws: storage.getStorage(constants.PENDING_DELAYED_WITHDRAWS_KEY),
+    pendingDelayedWithdrawCheckTask: {
+      status: 'pending'
+    },
+    pendingWithdrawalsCheckTask: {
+      status: 'pending'
+    },
+    pendingDeposits: storage.getStorage(constants.PENDING_DEPOSITS_KEY),
+    pendingDepositsCheckTask: {
+      status: 'pending'
+    },
+    nextForgers: [],
+    coordinatorStateTask: {
+      status: 'pending'
+    }
   }
 }
 
-function globalReducer (state = initialGlobalState, action) {
+function globalReducer (state = getInitialGlobalState(), action) {
   switch (action.type) {
     case globalActionTypes.LOAD_HERMEZ_STATUS: {
       return {

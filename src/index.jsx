@@ -8,8 +8,11 @@ import 'normalize.css/normalize.css'
 
 import * as serviceWorker from './serviceWorker'
 import configureStore from './store'
+import * as storage from './utils/storage'
 import theme from './styles/theme'
 import App from './views/app.view'
+
+storage.checkVersion()
 
 const history = createBrowserHistory()
 const store = configureStore(history)

@@ -1,4 +1,67 @@
-import { STORAGE_VERSION, STORAGE_VERSION_KEY } from '../constants'
+import { PENDING_DELAYED_WITHDRAWS_KEY, PENDING_WITHDRAWS_KEY, STORAGE_VERSION, STORAGE_VERSION_KEY } from '../constants'
+
+// MIGRATIONS
+function runV2Migration () {
+  const pendingWithdraws = getStorage(PENDING_WITHDRAWS_KEY)
+  const newPendingWithdraws = Object.keys(pendingWithdraws).reduce((currentChainPendingWithdraws, chainId) => {
+    const chainPendingWithdraws = pendingWithdraws[chainId]
+    const newChainPendingWithdraws = Object.keys(chainPendingWithdraws).reduce((currentAccountPendingWithdraws, hezEthereumAddress) => {
+      const accountPendingWithdraws = chainPendingWithdraws[hezEthereumAddress]
+      const newAccountPendingWithdraws = accountPendingWithdraws.filter((pendingWithdraw) => pendingWithdraw.hash !== undefined)
+
+      return {
+        ...currentAccountPendingWithdraws,
+        [hezEthereumAddress]: newAccountPendingWithdraws
+      }
+    }, {})
+
+    return {
+      ...currentChainPendingWithdraws,
+      [chainId]: newChainPendingWithdraws
+    }
+  }, {})
+
+  setStorage(PENDING_WITHDRAWS_KEY, newPendingWithdraws)
+
+  const pendingDelayedWithdraws = getStorage(PENDING_DELAYED_WITHDRAWS_KEY)
+  const newPendingDelayedWithdraws = Object.keys(pendingDelayedWithdraws).reduce((currentChainPendingDelayedWithdraws, chainId) => {
+    const chainPendingDelayedWithdraws = pendingDelayedWithdraws[chainId]
+    const newChainPendingDelayedWithdraws = Object.keys(chainPendingDelayedWithdraws).reduce((currentAccountPendingDelayedWithdraws, hezEthereumAddress) => {
+      const accountPendingDelayedWithdraws = chainPendingDelayedWithdraws[hezEthereumAddress]
+      const newAccountPendingDelayedWithdraws = accountPendingDelayedWithdraws.filter((pendingDelayedWithdraw) => pendingDelayedWithdraw.hash !== undefined)
+
+      return {
+        ...currentAccountPendingDelayedWithdraws,
+        [hezEthereumAddress]: newAccountPendingDelayedWithdraws
+      }
+    }, {})
+
+    return {
+      ...currentChainPendingDelayedWithdraws,
+      [chainId]: newChainPendingDelayedWithdraws
+    }
+  }, {})
+
+  setStorage(PENDING_DELAYED_WITHDRAWS_KEY, newPendingDelayedWithdraws)
+}
+
+function checkVersion () {
+  const currentStorageVersion = JSON.parse(localStorage.getItem(STORAGE_VERSION_KEY))
+
+  if (!currentStorageVersion) {
+    localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION)
+  }
+
+  // LocalStorage migrations
+  if (currentStorageVersion && STORAGE_VERSION > currentStorageVersion) {
+    // Added L1 withdraws tracking
+    if (STORAGE_VERSION >= 2) {
+      runV2Migration()
+    }
+
+    localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION)
+  }
+}
 
 function initStorage (key) {
   const initialStorage = {}
@@ -10,17 +73,16 @@ function initStorage (key) {
 
 function getStorage (key) {
   const storage = JSON.parse(localStorage.getItem(key))
-  const storageVersion = JSON.parse(localStorage.getItem(STORAGE_VERSION_KEY))
 
-  if (!storageVersion) {
-    localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION)
-  }
-
-  if (!storage || storageVersion !== STORAGE_VERSION) {
+  if (!storage) {
     return initStorage(key)
   }
 
   return storage
+}
+
+function setStorage (key, storage) {
+  localStorage.setItem(key, JSON.stringify(storage))
 }
 
 function addItem (key, chainId, hermezEthereumAddress, item) {
@@ -35,7 +97,7 @@ function addItem (key, chainId, hermezEthereumAddress, item) {
     }
   }
 
-  localStorage.setItem(key, JSON.stringify(newStorage))
+  setStorage(key, newStorage)
 
   return newStorage
 }
@@ -52,7 +114,7 @@ function removeItem (key, chainId, hermezEthereumAddress, id) {
     }
   }
 
-  localStorage.setItem(key, JSON.stringify(newStorage))
+  setStorage(key, newStorage)
 
   return newStorage
 }
@@ -69,7 +131,7 @@ function removeItemByCustomProp (key, chainId, hermezEthereumAddress, prop) {
     }
   }
 
-  localStorage.setItem(key, JSON.stringify(newStorage))
+  setStorage(key, newStorage)
 
   return newStorage
 }
@@ -91,7 +153,7 @@ function updatePartialItemByCustomProp (key, chainId, hermezEthereumAddress, pro
     }
   }
 
-  localStorage.setItem(key, JSON.stringify(newStorage))
+  setStorage(key, newStorage)
 
   return newStorage
 }
@@ -104,6 +166,7 @@ function getItemsByHermezAddress (storage, chainId, hermezEthereumAddress) {
 }
 
 export {
+  checkVersion,
   getStorage,
   addItem,
   removeItem,
