@@ -11,7 +11,7 @@ const baseApiUrl = FIAT_EXCHANGE_RATES_API_URL
  * @returns {Object} - USD exchange rates for the requested symbols
  */
 function getFiatExchangeRates (symbols) {
-  const params = { base: CurrencySymbol.USD.code, symbols: symbols.join(','), access_key: process.env.REACT_APP_EXCHANGERATES_API_KEY }
+  const params = { base: CurrencySymbol.USD.code, symbols: symbols.join(','), access_key: process.env.REACT_APP_EXCHANGE_RATES_API_KEY }
 
   return axios.get(`${baseApiUrl}/latest`, { params })
     .then(res => res.data)
