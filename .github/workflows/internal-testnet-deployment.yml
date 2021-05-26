@@ -30,7 +30,7 @@ jobs:
           echo 'REACT_APP_ETHERSCAN_URL=${{ secrets.INTERNAL_TESTNET_ETHERSCAN_URL }}' >> .env
 
       - name: Install dependencies
-        run: npm run i
+        run: npm i
 
       - name: Generate production build
         run: npm run build
