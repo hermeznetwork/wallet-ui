@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
@@ -26,6 +26,8 @@ import PendingDepositList from './components/pending-deposit-list/pending-deposi
 import { AUTO_REFRESH_RATE } from '../../constants'
 import * as storage from '../../utils/storage'
 import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
+import SlidingPanel from 'react-sliding-side-panel'
+import { ReactComponent as AngleDownIcon } from '../../images/icons/angle-down.svg'
 
 function Home ({
   wallet,
@@ -76,6 +78,7 @@ function Home ({
     .filter(deposit => deposit.type === TxType.Deposit)
   const pendingCreateAccountDeposits = accountPendingDeposits
     .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
+  const [openPanel, setOpenPanel] = useState(false)
 
   React.useEffect(() => {
     onChangeHeader(theme.palette.primary.main)
@@ -153,6 +156,34 @@ function Home ({
 
   return wallet && (
     <div className={classes.root}>
+      {/* <div className={classes.slidingPanelContainer}>
+        <div>
+          <button onClick={() => setOpenPanel(true)}>Open</button>
+        </div> */}
+      <SlidingPanel
+        type='right'
+        isOpen={openPanel}
+          // isOpen={true}
+        size={30}
+        panelContainerClassName={classes.panelContainer}
+        panelClassName={classes.panel}
+        noBackdrop
+      >
+        <>
+          <Button
+            className={classes.hidePanel}
+            onClick={() => setOpenPanel(false)}
+            text='Hide'
+            Icon={<AngleDownIcon />}
+          />
+          <h3 className={classes.panelTitle}>Deposit funds to Hermez to earn rewards.</h3>
+          <p className={classes.eligibilityTitle}>Eligibility criteria:</p>
+          <p className={classes.eligibilityText}>Make at least 2 transactions to other Hermez accounts.</p>
+          <img />
+          <p className={classes.panelTimeLeft}>3d 22h 20m left</p>
+        </>
+      </SlidingPanel>
+      {/* </div> */}
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
           <Button

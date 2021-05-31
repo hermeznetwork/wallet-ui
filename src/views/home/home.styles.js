@@ -46,6 +46,42 @@ const useHomeStyles = createUseStyles(theme => ({
   },
   buttonText: {
     fontWeight: theme.fontWeights.bold
+  },
+  panelContainer: {
+    height: '100% !important',
+    position: 'absolute !important',
+    zIndex: '1',
+    boxShadow: '-5px 14px 30px rgba(136, 139, 170, 0.15)',
+    borderRadius: '30px 0 0 30px'
+  },
+  panel: {
+    backgroundColor: theme.palette.white,
+    height: '100%',
+    padding: theme.spacing(3)
+  },
+  hidePanel: {
+    background: theme.palette.grey.light,
+    borderRadius: '100px',
+    marginTop: theme.spacing(3),
+    fontWeight: theme.fontWeights.bold,
+    lineHeight: `${theme.spacing(2)}px`,
+    padding: `${theme.spacing(1.25)}px ${theme.spacing(2)}px`,
+    color: theme.palette.black
+  },
+  panelTitle: {
+    fontWeight: theme.fontWeights.bold,
+    fontSize: theme.spacing(3),
+    lineHeight: `${theme.spacing(4.75)}px`
+  },
+  panelTimeLeft: {
+    width: '100%',
+    height: theme.spacing(4),
+    background: theme.palette.grey.light,
+    borderRadius: '100px',
+    fontWeight: theme.fontWeights.bold,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 }))
 
