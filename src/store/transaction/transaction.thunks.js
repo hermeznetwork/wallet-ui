@@ -202,9 +202,9 @@ function fetchEstimatedWithdrawFee (token, amount) {
       const gasLimit = await TxFees.estimateWithdrawGasLimit(token, estimatedMerkleSiblingsLength, amount, overrides, signer)
       const feeBigInt = BigInt(gasLimit) * BigInt(gasPrice)
       const ethToken = await CoordinatorAPI.getToken(ETHER_TOKEN_ID)
-      const fee = Number(ethers.utils.formatEther(feeBigInt)) * ethToken.USD
+      const feeUSD = Number(ethers.utils.formatEther(feeBigInt)) * ethToken.USD
 
-      dispatch(transactionActions.loadEstimatedWithdrawFeeSuccess(fee))
+      dispatch(transactionActions.loadEstimatedWithdrawFeeSuccess({ amount: feeBigInt, USD: feeUSD }))
     } catch (err) {
       dispatch(transactionActions.loadEstimatedWithdrawFeeFailure(err))
     }

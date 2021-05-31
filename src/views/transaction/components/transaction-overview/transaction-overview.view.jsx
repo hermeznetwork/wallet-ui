@@ -30,7 +30,6 @@ function TransactionOverview ({
   estimatedWithdrawFeeTask,
   preferredCurrency,
   fiatExchangeRates,
-  onLoadEstimatedWithdrawFee,
   onDeposit,
   onForceExit,
   onWithdraw,
@@ -40,12 +39,6 @@ function TransactionOverview ({
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
-
-  React.useEffect(() => {
-    if (transactionType === TxType.Exit) {
-      onLoadEstimatedWithdrawFee(account.token, amount)
-    }
-  }, [transactionType, account, amount])
 
   /**
    * Converts the transaction amount to fiat in the preferred currency
@@ -69,7 +62,7 @@ function TransactionOverview ({
 
   function getEstimatedWithdrawFee () {
     return estimatedWithdrawFeeTask.status === 'successful'
-      ? getAmountInPreferredCurrency(estimatedWithdrawFeeTask.data, preferredCurrency, fiatExchangeRates).toFixed(2)
+      ? getAmountInPreferredCurrency(estimatedWithdrawFeeTask.data.USD, preferredCurrency, fiatExchangeRates).toFixed(2)
       : '--'
   }
 
