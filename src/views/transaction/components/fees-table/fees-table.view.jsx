@@ -35,10 +35,12 @@ function FeesTable ({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fia
         <TransactionInfoRow
           title='Hermez fee'
           subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getL2FeeInFiat().toFixed(2)}`}
+          hint='Step 1'
           value={`${Number(l2Fee.toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`}
         />
         <TransactionInfoRow
           title='Ethereum fee (estimated)'
+          hint='Step 2'
           subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getEstimatedWithdrawFeeInFiat().toFixed(2)}`}
           value={`${getFormattedWithdrawFee().toFixed(MAX_TOKEN_DECIMALS)} ETH`}
         />

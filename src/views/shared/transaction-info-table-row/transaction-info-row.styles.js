@@ -4,17 +4,20 @@ const useTransactionInfoRowStyles = createUseStyles(theme => ({
   root: {
     padding: `${theme.spacing(3.5)}px 0 ${theme.spacing(3)}px`,
     display: 'flex',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     borderBottom: `1px solid ${theme.palette.grey.veryLight}`
+  },
+  row: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  topRow: {
+    marginBottom: `${theme.spacing(1.5)}px`
   },
   title: {
     color: theme.palette.black.dark,
     fontWeight: theme.fontWeights.medium
-  },
-  content: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-end'
   },
   copyButton: {
     display: 'flex',
@@ -37,8 +40,11 @@ const useTransactionInfoRowStyles = createUseStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     color: theme.palette.black.dark,
-    fontWeight: theme.fontWeights.bold,
-    marginBottom: `${theme.spacing(1.5)}px`
+    fontWeight: theme.fontWeights.bold
+  },
+  hint: {
+    color: theme.palette.grey.main,
+    fontWeight: theme.fontWeights.medium
   },
   value: {
     color: theme.palette.grey.main,
