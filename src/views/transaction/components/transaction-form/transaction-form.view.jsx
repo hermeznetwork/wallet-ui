@@ -584,6 +584,7 @@ function TransactionForm ({
                     </form>
                     <Fee
                       transactionType={transactionType}
+                      amount={amount || 0}
                       l2Fee={getFee(feesTask.data)}
                       estimatedWithdrawFee={estimatedWithdrawFeeTask.data}
                       token={account.token}
