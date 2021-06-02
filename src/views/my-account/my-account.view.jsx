@@ -87,6 +87,21 @@ function MyAccount ({
         </section>
       </Container>
       <Container>
+        <div className={classes.airdropCard}>
+          <div className={classes.cardHeader}>
+            <h3 className={classes.cardHeading}>Your earnings</h3>
+            <Button
+              className={classes.moreInfo}
+              text='More Info'
+              // TODO: onClick open panel
+              onClick={() => {}}
+            />
+          </div>
+          <p className={classes.rewardText}>Today’s reward is <span className={classes.rewardPercentage}>+48%</span> so you can receive 0 HEZ</p>
+          <p className={classes.rewardText}>You earned so far 0 HEZ</p>
+        </div>
+      </Container>
+      <Container>
         <section className={classes.bottomSection}>
           <div className={classes.settingContainer}>
             <div className={classes.settingHeader}>

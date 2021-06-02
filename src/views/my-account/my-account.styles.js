@@ -72,6 +72,39 @@ const useMyAccountStyles = createUseStyles(theme => ({
   settingContent: {
     marginTop: theme.spacing(1.75),
     marginLeft: theme.spacing(4.5)
+  },
+  airdropCard: {
+    marginTop: theme.spacing(5),
+    padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px ${theme.spacing(2.5)}px ${theme.spacing(4)}px `,
+    borderRadius: theme.spacing(2),
+    backgroundColor: theme.palette.black,
+    color: theme.palette.white,
+    width: '100%'
+  },
+  cardHeader: {
+    borderBottom: '1px solid rgba(122, 124, 137, 0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: theme.spacing(1)
+  },
+  cardHeading: {
+    margin: 0
+  },
+  moreInfo: {
+    fontSize: theme.spacing(1.75),
+    width: 'fit-content',
+    padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`,
+    borderRadius: theme.spacing(2),
+    backgroundColor: 'rgba(122, 124, 137, 0.5)',
+    color: theme.palette.white
+  },
+  rewardText: {
+    fontWeight: theme.fontWeights.bold,
+    marginTop: theme.spacing(1.5)
+  },
+  rewardPercentage: {
+    color: theme.palette.green
   }
 }))
 
