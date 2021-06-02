@@ -50,3 +50,5 @@ export const HERMEZ_HELP_CENTER_URL = 'https://docs.hermez.io/#/faq/end-users'
 export const HERMEZ_WEB_URL = 'https://hermez.io'
 
 export const DEPOSIT_TX_TIMEOUT = 86400000 // 24h
+
+export const AIRDROP_MORE_INFO_URL = 'https://blog.hermez.io/' // TODO: add link to the post when it is published
