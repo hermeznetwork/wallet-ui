@@ -204,7 +204,7 @@ function fetchEstimatedWithdrawFee (token, amount) {
       const ethToken = await CoordinatorAPI.getToken(ETHER_TOKEN_ID)
       const feeUSD = Number(ethers.utils.formatEther(feeBigInt)) * ethToken.USD
 
-      dispatch(transactionActions.loadEstimatedWithdrawFeeSuccess({ amount: feeBigInt, USD: feeUSD }))
+      dispatch(transactionActions.loadEstimatedWithdrawFeeSuccess({ amount: feeBigInt.toString(), USD: feeUSD }))
     } catch (err) {
       dispatch(transactionActions.loadEstimatedWithdrawFeeFailure(err))
     }
