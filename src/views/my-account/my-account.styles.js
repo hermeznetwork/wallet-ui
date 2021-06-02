@@ -74,7 +74,6 @@ const useMyAccountStyles = createUseStyles(theme => ({
     marginLeft: theme.spacing(4.5)
   },
   airdropCard: {
-    marginTop: theme.spacing(5),
     padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px ${theme.spacing(2.5)}px ${theme.spacing(4)}px `,
     borderRadius: theme.spacing(2),
     backgroundColor: theme.palette.black,

@@ -13,6 +13,9 @@ export const homeActionTypes = {
   LOAD_EXITS_FAILURE: '[HOME] LOAD EXITS FAILURE',
   REFRESH_ACCOUNTS: '[HOME] REFRESH ACCOUNTS',
   REFRESH_ACCOUNTS_SUCCESS: '[HOME] REFRESH ACCOUNTS SUCCESS',
+  LOAD_ESTIMATED_REWARD: '[HOME] LOAD ESTIMATED REWARD',
+  LOAD_ESTIMATED_REWARD_SUCCESS: '[HOME] LOAD ESTIMATED REWARD SUCCESS',
+  LOAD_ESTIMATED_REWARD_FAILURE: '[HOME] LOAD ESTIMATED REWARD FAILURE',
   RESET_STATE: '[HOME] RESET STATE'
 }
 
@@ -106,6 +109,26 @@ function refreshAccountsSuccess (data) {
   }
 }
 
+function loadEstimatedReward () {
+  return {
+    type: homeActionTypes.LOAD_ESTIMATED_REWARD
+  }
+}
+
+function loadEstimatedRewardSuccess (data) {
+  return {
+    type: homeActionTypes.LOAD_ESTIMATED_REWARD_SUCCESS,
+    data
+  }
+}
+
+function loadEstimatedRewardFailure (error) {
+  return {
+    type: homeActionTypes.LOAD_ESTIMATED_REWARD_FAILURE,
+    error
+  }
+}
+
 function resetState () {
   return {
     type: homeActionTypes.RESET_STATE
@@ -127,5 +150,8 @@ export {
   loadExitsFailure,
   refreshAccounts,
   refreshAccountsSuccess,
+  loadEstimatedReward,
+  loadEstimatedRewardSuccess,
+  loadEstimatedRewardFailure,
   resetState
 }

@@ -42,6 +42,7 @@ function Home ({
   accountsTask,
   poolTransactionsTask,
   exitsTask,
+  estimatedRewardTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   pendingDeposits,
@@ -54,6 +55,7 @@ function Home ({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
+  onLoadEstimatedReward,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdraw,
@@ -93,18 +95,22 @@ function Home ({
     onCheckPendingDeposits()
     onLoadPoolTransactions()
     onLoadExits()
-  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
+    onLoadEstimatedReward()
+  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits, onLoadEstimatedReward])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
       onCheckPendingDeposits()
       onLoadPoolTransactions()
       onLoadExits()
+      onLoadEstimatedReward()
       onCheckPendingWithdrawals()
     }, AUTO_REFRESH_RATE)
 
     return () => { clearInterval(intervalId) }
   }, [onLoadPoolTransactions])
+
+console.log("wallet: ", wallet)
 
   React.useEffect(() => {
     if (
@@ -126,6 +132,9 @@ function Home ({
         accountPendingDeposits,
         fiatExchangeRatesTask.data,
         preferredCurrency
+      )
+      onLoadEstimatedReward(
+        wallet.hermezEthereumAddress.split(":").pop()
       )
     }
   }, [pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts])
@@ -158,6 +167,8 @@ function Home ({
     copyToClipboard(hermezEthereumAddress)
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
+
+  console.log("estimatedRewardTask.data: ", estimatedRewardTask.data)
 
   return wallet && (
     <div className={classes.root}>
@@ -338,12 +349,14 @@ Home.propTypes = {
   fiatExchangeRatesTask: PropTypes.object,
   poolTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
+  estimatedRewardTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
   onLoadTotalBalance: PropTypes.func.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
+  onLoadEstimatedReward: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
@@ -359,6 +372,7 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
+  estimatedRewardTask: state.home.estimatedRewardTask,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
@@ -377,6 +391,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
+
+  onLoadEstimatedReward: (ethAddr) =>
+    dispatch(homeThunks.fetchEstimatedReward(ethAddr)),
+
   onRefreshAccounts: () =>
     dispatch(homeThunks.refreshAccounts()),
   onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
