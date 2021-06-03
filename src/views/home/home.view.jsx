@@ -43,6 +43,7 @@ function Home ({
   poolTransactionsTask,
   exitsTask,
   estimatedRewardTask,
+  earnedRewardTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   pendingDeposits,
@@ -56,6 +57,7 @@ function Home ({
   onLoadPoolTransactions,
   onLoadExits,
   onLoadEstimatedReward,
+  onLoadEarnedReward,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdraw,
@@ -96,7 +98,8 @@ function Home ({
     onLoadPoolTransactions()
     onLoadExits()
     onLoadEstimatedReward()
-  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits, onLoadEstimatedReward])
+    onLoadEarnedReward()
+  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits, onLoadEstimatedReward, onLoadEarnedReward])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
@@ -104,13 +107,12 @@ function Home ({
       onLoadPoolTransactions()
       onLoadExits()
       onLoadEstimatedReward()
+      onLoadEarnedReward()
       onCheckPendingWithdrawals()
     }, AUTO_REFRESH_RATE)
 
     return () => { clearInterval(intervalId) }
   }, [onLoadPoolTransactions])
-
-console.log("wallet: ", wallet)
 
   React.useEffect(() => {
     if (
@@ -136,8 +138,11 @@ console.log("wallet: ", wallet)
       onLoadEstimatedReward(
         wallet.hermezEthereumAddress.split(":").pop()
       )
+      onLoadEarnedReward(
+        wallet.hermezEthereumAddress.split(":").pop()
+      )
     }
-  }, [pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts])
+  }, [pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts, onLoadEstimatedReward, onLoadEarnedReward])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -167,8 +172,6 @@ console.log("wallet: ", wallet)
     copyToClipboard(hermezEthereumAddress)
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
-
-  console.log("estimatedRewardTask.data: ", estimatedRewardTask.data)
 
   return wallet && (
     <div className={classes.root}>
@@ -201,9 +204,9 @@ console.log("wallet: ", wallet)
             <p className={classes.panelHighlightedText}>Today’s reward</p>
             <p className={`${classes.reward} ${classes.rewardPercentage}`}>0%</p>
             <p className={classes.panelHighlightedText}>Today’s estimated reward for your funds in Hermez</p>
-            <p className={classes.reward}>$0</p>
+            <p className={classes.reward}>{estimatedRewardTask.data} HEZ</p>
             <p className={classes.panelHighlightedText}>You earned so far</p>
-            <p className={classes.reward}>$0</p>
+            <p className={classes.reward}>{earnedRewardTask.data} HEZ</p>
           </div>
           <p className={classes.rewardText}><InfoGreyIcon />You will receive your reward at the end of the program.</p>
           <a
@@ -350,6 +353,7 @@ Home.propTypes = {
   poolTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
   estimatedRewardTask: PropTypes.object.isRequired,
+  earnedRewardTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
   onLoadTotalBalance: PropTypes.func.isRequired,
@@ -357,6 +361,7 @@ Home.propTypes = {
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
   onLoadEstimatedReward: PropTypes.func.isRequired,
+  onLoadEarnedReward: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
@@ -373,6 +378,7 @@ const mapStateToProps = (state) => ({
   poolTransactionsTask: state.home.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
   estimatedRewardTask: state.home.estimatedRewardTask,
+  earnedRewardTask: state.home.earnedRewardTask,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
@@ -391,10 +397,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
-
   onLoadEstimatedReward: (ethAddr) =>
     dispatch(homeThunks.fetchEstimatedReward(ethAddr)),
-
+  onLoadEarnedReward: (ethAddr) =>
+    dispatch(homeThunks.fetchEarnedReward(ethAddr)),
   onRefreshAccounts: () =>
     dispatch(homeThunks.refreshAccounts()),
   onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>

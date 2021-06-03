@@ -7,7 +7,7 @@ import hermezjs from '@hermeznetwork/hermezjs'
 
 import useMyAccountStyles from './my-account.styles'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
-import { changePreferredCurrency } from '../../store/my-account/my-account.thunks'
+import * as myAccountThunks from '../../store/my-account/my-account.thunks'
 import { disconnectWallet } from '../../store/global/global.thunks'
 import Container from '../shared/container/container.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -32,14 +32,20 @@ function MyAccount ({
   onDisconnectWallet,
   onOpenSnackbar,
   onNavigateToForceExit,
-  onNavigateToMyCode
+  onNavigateToMyCode,
+  estimatedRewardTask,
+  earnedRewardTask,
+  onLoadEstimatedReward,
+  onLoadEarnedReward
 }) {
   const theme = useTheme()
   const classes = useMyAccountStyles()
 
   React.useEffect(() => {
     onChangeHeader()
-  }, [onChangeHeader])
+    onLoadEstimatedReward(wallet.hermezEthereumAddress.split(":").pop())
+    onLoadEarnedReward(wallet.hermezEthereumAddress.split(":").pop())
+  }, [onChangeHeader, onLoadEstimatedReward, onLoadEarnedReward])
 
   /**
    * Copies the Hermez Ethereum address to the clipboard when it's clicked
@@ -97,8 +103,8 @@ function MyAccount ({
               onClick={() => {}}
             />
           </div>
-          <p className={classes.rewardText}>Today’s reward is <span className={classes.rewardPercentage}>+48%</span> so you can receive 0 HEZ</p>
-          <p className={classes.rewardText}>You earned so far 0 HEZ</p>
+          <p className={classes.rewardText}>Today’s reward is <span className={classes.rewardPercentage}>+48%</span> so you can receive {estimatedRewardTask.data} HEZ</p>
+          <p className={classes.rewardText}>You earned so far {earnedRewardTask.data} HEZ</p>
         </div>
       </Container>
       <Container>
@@ -152,12 +158,18 @@ function MyAccount ({
 }
 
 MyAccount.propTypes = {
-  onChangePreferredCurrency: PropTypes.func
+  onChangePreferredCurrency: PropTypes.func,
+  estimatedRewardTask: PropTypes.object.isRequired,
+  earnedRewardTask: PropTypes.object.isRequired,
+  onLoadEstimatedReward: PropTypes.func.isRequired,
+  onLoadEarnedReward: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
-  preferredCurrency: state.myAccount.preferredCurrency
+  preferredCurrency: state.myAccount.preferredCurrency,
+  estimatedRewardTask: state.myAccount.estimatedRewardTask,
+  earnedRewardTask: state.myAccount.earnedRewardTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -172,10 +184,14 @@ const mapDispatchToProps = (dispatch) => ({
     })),
   onNavigateToMyCode: () =>
     dispatch(push('/my-code?from=my-account')),
-  onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
+  onChangePreferredCurrency: (currency) => dispatch(myAccountThunks.changePreferredCurrency(currency)),
   onDisconnectWallet: () => dispatch(disconnectWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
-  onNavigateToForceExit: () => dispatch(push('/force-withdrawal'))
+  onNavigateToForceExit: () => dispatch(push('/force-withdrawal')),
+  onLoadEstimatedReward: (ethAddr) =>
+    dispatch(myAccountThunks.fetchEstimatedReward(ethAddr)),
+  onLoadEarnedReward: (ethAddr) =>
+    dispatch(myAccountThunks.fetchEarnedReward(ethAddr))
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(MyAccount))

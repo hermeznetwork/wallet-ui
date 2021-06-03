@@ -234,11 +234,26 @@ function fetchEstimatedReward (ethAddr) {
   }
 }
 
+/**
+ * Fetches Airdrop earned reward for a given ethAddr
+ * @returns {void}
+ */
+ function fetchEarnedReward (ethAddr) {
+  return (dispatch) => {
+    dispatch(homeActions.loadEarnedReward())
+
+    return airdropApi.getEarnedReward(ethAddr)
+      .then((res) => dispatch(homeActions.loadEarnedRewardSuccess(res)))
+      .catch(() => dispatch(homeActions.loadEarnedRewardFailure('An error occurred loading earned reward.')))
+  }
+}
+
 export {
   fetchTotalBalance,
   fetchAccounts,
   refreshAccounts,
   fetchPoolTransactions,
   fetchExits,
-  fetchEstimatedReward
+  fetchEstimatedReward,
+  fetchEarnedReward
 }

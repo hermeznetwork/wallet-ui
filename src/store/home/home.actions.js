@@ -16,6 +16,9 @@ export const homeActionTypes = {
   LOAD_ESTIMATED_REWARD: '[HOME] LOAD ESTIMATED REWARD',
   LOAD_ESTIMATED_REWARD_SUCCESS: '[HOME] LOAD ESTIMATED REWARD SUCCESS',
   LOAD_ESTIMATED_REWARD_FAILURE: '[HOME] LOAD ESTIMATED REWARD FAILURE',
+  LOAD_EARNED_REWARD: '[HOME] LOAD EARNED REWARD',
+  LOAD_EARNED_REWARD_SUCCESS: '[HOME] LOAD EARNED REWARD SUCCESS',
+  LOAD_EARNED_REWARD_FAILURE: '[HOME] LOAD EARNED REWARD FAILURE',
   RESET_STATE: '[HOME] RESET STATE'
 }
 
@@ -129,6 +132,26 @@ function loadEstimatedRewardFailure (error) {
   }
 }
 
+function loadEarnedReward () {
+  return {
+    type: homeActionTypes.LOAD_EARNED_REWARD
+  }
+}
+
+function loadEarnedRewardSuccess (data) {
+  return {
+    type: homeActionTypes.LOAD_EARNED_REWARD_SUCCESS,
+    data
+  }
+}
+
+function loadEarnedRewardFailure (error) {
+  return {
+    type: homeActionTypes.LOAD_EARNED_REWARD_FAILURE,
+    error
+  }
+}
+
 function resetState () {
   return {
     type: homeActionTypes.RESET_STATE
@@ -153,5 +176,8 @@ export {
   loadEstimatedReward,
   loadEstimatedRewardSuccess,
   loadEstimatedRewardFailure,
+  loadEarnedReward,
+  loadEarnedRewardSuccess,
+  loadEarnedRewardFailure,
   resetState
 }

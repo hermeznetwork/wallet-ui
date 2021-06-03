@@ -6,7 +6,7 @@ import axios from 'axios'
 const baseApiUrl = 'http://52.29.96.190'
 
 /**
- * Fetches Airdrop data
+ * Fetches Airdrop estimated reward
  * @returns {number} - estimatedReward
  */
 function getEstimatedReward (ethAddr) {
@@ -14,4 +14,13 @@ function getEstimatedReward (ethAddr) {
     .then(res => res.data.estimatedReward)
 }
 
-export { getEstimatedReward }
+/**
+ * Fetches Airdrop earned reward
+ * @returns {number} - earnedReward
+ */
+ function getEarnedReward (ethAddr) {
+  return axios.get(`${baseApiUrl}/airdrop/v1/earned-reward?ethAddr=${ethAddr}&airdropID=2`)
+    .then(res => res.data.earnedReward)
+}
+
+export { getEstimatedReward, getEarnedReward }
