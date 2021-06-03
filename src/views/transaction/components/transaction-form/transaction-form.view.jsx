@@ -12,7 +12,7 @@ import { isHermezBjjAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
-import { MAX_TOKEN_DECIMALS, MAX_FEE_USD } from '../../../../constants'
+import { MAX_FEE_USD } from '../../../../constants'
 import { ReactComponent as SwapIcon } from '../../../../images/icons/swap.svg'
 import { ReactComponent as ErrorIcon } from '../../../../images/icons/error.svg'
 import { ReactComponent as CloseIcon } from '../../../../images/icons/close.svg'
@@ -23,6 +23,7 @@ import FormButton from '../../../shared/form-button/form-button.view'
 import Spinner from '../../../shared/spinner/spinner.view'
 import * as addresses from '../../../../utils/addresses'
 import * as browser from '../../../../utils/browser'
+import Fee from '../fee/fee.view'
 
 function TransactionForm ({
   transactionType,
@@ -31,7 +32,9 @@ function TransactionForm ({
   preferredCurrency,
   fiatExchangeRates,
   feesTask,
+  estimatedWithdrawFeeTask,
   onLoadFees,
+  onLoadEstimatedWithdrawFee,
   onSubmit
 }) {
   const classes = useTransactionFormStyles()
@@ -51,7 +54,10 @@ function TransactionForm ({
 
   React.useEffect(() => {
     onLoadFees()
-  }, [onLoadFees])
+    if (transactionType === TxType.Exit) {
+      onLoadEstimatedWithdrawFee(account.token, amount)
+    }
+  }, [transactionType, onLoadFees])
 
   React.useEffect(() => {
     getProvider().getGasPrice().then(gasPrice => setGasPrice(gasPrice.toString()))
@@ -576,15 +582,15 @@ function TransactionForm ({
                         disabled={isContinueDisabled()}
                       />
                     </form>
-                    {
-                      transactionType !== TxType.Deposit && transactionType !== TxType.ForceExit && (
-                        <div className={classes.feeWrapper}>
-                          <p className={classes.fee}>
-                            Fee {`${Number(getFee(feesTask.data).toFixed(MAX_TOKEN_DECIMALS))} ${account.token.symbol}`}
-                          </p>
-                        </div>
-                      )
-                    }
+                    <Fee
+                      transactionType={transactionType}
+                      amount={amount || 0}
+                      l2Fee={getFee(feesTask.data)}
+                      estimatedWithdrawFee={estimatedWithdrawFeeTask.data}
+                      token={account.token}
+                      preferredCurrency={preferredCurrency}
+                      fiatExchangeRates={fiatExchangeRates}
+                    />
                   </>
                 )
               }

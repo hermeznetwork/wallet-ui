@@ -170,7 +170,9 @@ function Transaction ({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}
                 feesTask={stepData.feesTask}
+                estimatedWithdrawFeeTask={stepData.estimatedWithdrawFeeTask}
                 onLoadFees={onLoadFees}
+                onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
                 onSubmit={onGoToTransactionOverviewStep}
               />
             )
@@ -193,8 +195,7 @@ function Transaction ({
                 exit={stepData.transaction.exit}
                 instantWithdrawal={instantWithdrawal}
                 completeDelayedWithdrawal={completeDelayedWithdrawal}
-                estimatedWithdrawFeeTask={stepData.estimatedWithdrawFeeTask}
-                onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
+                estimatedWithdrawFeeTask={buildTransactionStepData.estimatedWithdrawFeeTask}
                 onDeposit={onDeposit}
                 onForceExit={onForceExit}
                 onWithdraw={onWithdraw}

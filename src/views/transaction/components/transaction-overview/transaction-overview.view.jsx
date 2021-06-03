@@ -2,19 +2,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useTheme } from 'react-jss'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
-import { getFeeIndex, getFeeValue } from '@hermeznetwork/hermezjs/src/tx-utils'
-import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
 
 import useTransactionOverviewStyles from './transaction-overview.styles'
-import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount, getAmountInPreferredCurrency } from '../../../../utils/currencies'
+import { getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
 import TransactionInfo from '../../../shared/transaction-info/transaction-info.view'
 import Container from '../../../shared/container/container.view'
 import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../../../shared/token-balance/token-balance.view'
 import Spinner from '../../../shared/spinner/spinner.view'
 import FormButton from '../../../shared/form-button/form-button.view'
-import { MAX_TOKEN_DECIMALS } from '../../../../constants'
-import { ReactComponent as InfoIcon } from '../../../../images/icons/info.svg'
+import { getRealFee } from '../../../../utils/fees'
 
 function TransactionOverview ({
   wallet,
@@ -30,7 +27,6 @@ function TransactionOverview ({
   estimatedWithdrawFeeTask,
   preferredCurrency,
   fiatExchangeRates,
-  onLoadEstimatedWithdrawFee,
   onDeposit,
   onForceExit,
   onWithdraw,
@@ -40,12 +36,6 @@ function TransactionOverview ({
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
-
-  React.useEffect(() => {
-    if (transactionType === TxType.Exit) {
-      onLoadEstimatedWithdrawFee(account.token, amount)
-    }
-  }, [transactionType, account, amount])
 
   /**
    * Converts the transaction amount to fiat in the preferred currency
@@ -65,12 +55,6 @@ function TransactionOverview ({
       preferredCurrency,
       fiatExchangeRates
     )
-  }
-
-  function getEstimatedWithdrawFee () {
-    return estimatedWithdrawFeeTask.status === 'successful'
-      ? getAmountInPreferredCurrency(estimatedWithdrawFeeTask.data, preferredCurrency, fiatExchangeRates).toFixed(2)
-      : '--'
   }
 
   /**
@@ -123,20 +107,6 @@ function TransactionOverview ({
     }
   }
 
-  /**
-   * Calculates the actual fee that will be paid for a specific transaction
-   * taking into account the type of transaction, the amount and minimum fee
-   * @param {Number} minimumFee - The minimum fee that needs to be payed to the coordinator in token value
-   * @returns {Number} The real fee that will be paid for this transaction
-   */
-  function getRealFee (minimumFee) {
-    const decimals = account.token.decimals
-    const minimumFeeBigInt = getTokenAmountBigInt(minimumFee.toFixed(decimals), decimals).toString()
-    const feeIndex = getFeeIndex(minimumFeeBigInt, amount)
-    const fee = getFeeValue(feeIndex, amount)
-    return Number(getTokenAmountString(fee, decimals))
-  }
-
   return (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
@@ -160,13 +130,16 @@ function TransactionOverview ({
               type: transactionType,
               fromHezEthereumAddress: wallet.hermezEthereumAddress,
               toHezEthereumAddress: to.hezEthereumAddress || to.hezBjjAddress,
+              estimatedWithdrawFee: estimatedWithdrawFeeTask.data,
               fee: fee
                 ? {
-                    fiat: `${CurrencySymbol[preferredCurrency].symbol} ${(Number(getRealFee(fee)) * account.token.USD).toFixed(2)}`,
-                    tokens: `${Number(getRealFee(fee)).toFixed(MAX_TOKEN_DECIMALS)} ${account.token.symbol}`
+                    value: Number(getRealFee(amount, account.token, fee)),
+                    token: account.token
                   }
                 : undefined
             }}
+            preferredCurrency={preferredCurrency}
+            fiatExchangeRates={fiatExchangeRates}
           />
           {
             isTransactionBeingSigned
@@ -185,21 +158,6 @@ function TransactionOverview ({
                   disabled={isButtonDisabled}
                 />
                 )
-          }
-          {
-            transactionType === TxType.Exit && (
-              <div className={classes.exitInfoWrapper}>
-                <div className={classes.exitHelperTextWrapper}>
-                  <InfoIcon className={classes.exitHelperIcon} />
-                  <p className={classes.exitHelperText}>
-                    This step is not reversible. Once initiated, the withdrawal process must be completed.
-                  </p>
-                </div>
-                <p className={classes.exitEstimatedFeeHelperText}>
-                  The estimated gas fee for step 2 of the withdrawal process is {CurrencySymbol[preferredCurrency].symbol} {getEstimatedWithdrawFee()}
-                </p>
-              </div>
-            )
           }
         </section>
       </Container>

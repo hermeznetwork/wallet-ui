@@ -3,8 +3,22 @@ import PropTypes from 'prop-types'
 
 import useTransactionInfoTableRowStyles from './transaction-info-table.styles'
 import TransactionInfoRow from '../transaction-info-table-row/transaction-info-row.view'
+import FeesTable from '../../transaction/components/fees-table/fees-table.view'
 
-function TransactionInfoTableRow ({ status, from, to, date, fee, showToCopyButton, showFromCopyButton, onCopyToAddress, onCopyFromAddress }) {
+function TransactionInfoTableRow ({
+  status,
+  from,
+  to,
+  date,
+  fee,
+  estimatedWithdrawFee,
+  preferredCurrency,
+  fiatExchangeRates,
+  showToCopyButton,
+  showFromCopyButton,
+  onCopyToAddress,
+  onCopyFromAddress
+}) {
   const classes = useTransactionInfoTableRowStyles()
 
   return (
@@ -13,7 +27,15 @@ function TransactionInfoTableRow ({ status, from, to, date, fee, showToCopyButto
       {from && <TransactionInfoRow title='From' subtitle={from.subtitle} value={from.value} showCopyButton={showFromCopyButton} onCopySubtitle={onCopyFromAddress} />}
       {to && <TransactionInfoRow title='To' subtitle={to.subtitle} value={to.value} showCopyButton={showToCopyButton} onCopySubtitle={onCopyToAddress} />}
       {date && <TransactionInfoRow title='Date' subtitle={date.subtitle} value={date.value} />}
-      {fee && <TransactionInfoRow title='Fee' subtitle={fee.fiat} value={fee.tokens} />}
+      {fee && (
+        <FeesTable
+          l2Fee={fee.value}
+          estimatedWithdrawFee={estimatedWithdrawFee}
+          token={fee.token}
+          preferredCurrency={preferredCurrency}
+          fiatExchangeRates={fiatExchangeRates}
+        />
+      )}
     </div>
   )
 }
