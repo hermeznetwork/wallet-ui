@@ -30,13 +30,13 @@ const initialTransactionState = {
       feesTask: {
         status: 'pending'
       },
+      estimatedWithdrawFeeTask: {
+        status: 'pending'
+      },
       account: undefined
     },
     [STEP_NAME.REVIEW_TRANSACTION]: {
       transaction: undefined,
-      estimatedWithdrawFeeTask: {
-        status: 'pending'
-      },
       isTransactionBeingSigned: false
     }
   }
@@ -298,8 +298,8 @@ function transactionReducer (state = initialTransactionState, action) {
         ...state,
         steps: {
           ...state.steps,
-          [STEP_NAME.REVIEW_TRANSACTION]: {
-            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             estimatedWithdrawFeeTask: {
               status: 'loading'
             }
@@ -312,8 +312,8 @@ function transactionReducer (state = initialTransactionState, action) {
         ...state,
         steps: {
           ...state.steps,
-          [STEP_NAME.REVIEW_TRANSACTION]: {
-            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             estimatedWithdrawFeeTask: {
               status: 'successful',
               data: action.estimatedFee
@@ -327,8 +327,8 @@ function transactionReducer (state = initialTransactionState, action) {
         ...state,
         steps: {
           ...state.steps,
-          [STEP_NAME.REVIEW_TRANSACTION]: {
-            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             estimatedWithdrawFeeTask: {
               status: 'failed',
               error: action.error

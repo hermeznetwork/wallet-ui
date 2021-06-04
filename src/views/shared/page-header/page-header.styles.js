@@ -7,7 +7,7 @@ const usePageHeaderStyles = createUseStyles(theme => ({
     height: theme.headerHeight,
     display: 'flex',
     alignItems: 'center',
-    zIndex: 999,
+    zIndex: 998,
     background: 'transparent'
   },
   headerContent: {
