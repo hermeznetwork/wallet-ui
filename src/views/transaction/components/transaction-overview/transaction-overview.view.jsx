@@ -12,6 +12,8 @@ import TokenBalance from '../../../shared/token-balance/token-balance.view'
 import Spinner from '../../../shared/spinner/spinner.view'
 import FormButton from '../../../shared/form-button/form-button.view'
 import { getRealFee } from '../../../../utils/fees'
+import Alert from '../../../shared/alert/alert.view'
+import WithdrawInfoSidenav from '../withdraw-info-sidenav/withdraw-info-sidenav.view'
 
 function TransactionOverview ({
   wallet,
@@ -36,6 +38,7 @@ function TransactionOverview ({
   const theme = useTheme()
   const classes = useTransactionOverviewStyles()
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
+  const [isWithdrawInfoSidenavOpen, setIsWithdrawInfoSidenavOpen] = React.useState(false)
 
   /**
    * Converts the transaction amount to fiat in the preferred currency
@@ -77,6 +80,14 @@ function TransactionOverview ({
       default:
         return ''
     }
+  }
+
+  function handleOpenWithdrawInfoSidenav () {
+    setIsWithdrawInfoSidenavOpen(true)
+  }
+
+  function handleCloseWithdrawInfoSidenav () {
+    setIsWithdrawInfoSidenavOpen(false)
   }
 
   /**
@@ -125,6 +136,13 @@ function TransactionOverview ({
       </Container>
       <Container>
         <section className={classes.section}>
+          {transactionType === TxType.Exit && (
+            <Alert
+              showHelpButton
+              message='Withdrawal of funds has 2 steps. Once initiated it can’t be canceled.'
+              onHelpClick={handleOpenWithdrawInfoSidenav}
+            />
+          )}
           <TransactionInfo
             txData={{
               type: transactionType,
@@ -161,6 +179,11 @@ function TransactionOverview ({
           }
         </section>
       </Container>
+      {isWithdrawInfoSidenavOpen && (
+        <WithdrawInfoSidenav
+          onClose={handleCloseWithdrawInfoSidenav}
+        />
+      )}
     </div>
   )
 }
