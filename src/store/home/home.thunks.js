@@ -6,7 +6,6 @@ import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 import * as homeActions from './home.actions'
 import { getAccountBalance } from '../../utils/accounts'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
-import * as airdropApi from '../../apis/airdrop'
 
 let refreshCancelTokenSource = axios.CancelToken.source()
 
@@ -220,40 +219,10 @@ function fetchExits () {
   }
 }
 
-/**
- * Fetches Airdrop estimated reward for a given ethAddr
- * @returns {void}
- */
-function fetchEstimatedReward (ethAddr) {
-  return (dispatch) => {
-    dispatch(homeActions.loadEstimatedReward())
-
-    return airdropApi.getEstimatedReward(ethAddr)
-      .then((res) => dispatch(homeActions.loadEstimatedRewardSuccess(res)))
-      .catch(() => dispatch(homeActions.loadEstimatedRewardFailure('An error occurred loading estimated reward.')))
-  }
-}
-
-/**
- * Fetches Airdrop earned reward for a given ethAddr
- * @returns {void}
- */
- function fetchEarnedReward (ethAddr) {
-  return (dispatch) => {
-    dispatch(homeActions.loadEarnedReward())
-
-    return airdropApi.getEarnedReward(ethAddr)
-      .then((res) => dispatch(homeActions.loadEarnedRewardSuccess(res)))
-      .catch(() => dispatch(homeActions.loadEarnedRewardFailure('An error occurred loading earned reward.')))
-  }
-}
-
 export {
   fetchTotalBalance,
   fetchAccounts,
   refreshAccounts,
   fetchPoolTransactions,
-  fetchExits,
-  fetchEstimatedReward,
-  fetchEarnedReward
+  fetchExits
 }

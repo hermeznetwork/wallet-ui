@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import { AIRDROP_MORE_INFO_URL, AUTO_REFRESH_RATE } from '../../constants'
+import { AUTO_REFRESH_RATE } from '../../constants'
 
 import useHomeStyles from './home.styles'
 import * as globalThunks from '../../store/global/global.thunks'
@@ -24,14 +24,10 @@ import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
-
 import * as storage from '../../utils/storage'
 import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
 import Sidenav from '../shared/sidenav/sidenav.view'
-import { ReactComponent as ExternalLinkIcon } from '../../images/icons/external-link.svg'
-import { ReactComponent as GreenCircleWhiteThickIcon } from '../../images/icons/green-circle-white-thick.svg'
-import { ReactComponent as InfoGreyIcon } from '../../images/icons/info-grey.svg'
-import heztoken from '../../images/heztoken.svg'
+import AirdropPanel from '../shared/airdrop-panel/airdrop-panel.view'
 
 function Home ({
   wallet,
@@ -41,8 +37,6 @@ function Home ({
   accountsTask,
   poolTransactionsTask,
   exitsTask,
-  estimatedRewardTask,
-  earnedRewardTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   pendingDeposits,
@@ -55,8 +49,6 @@ function Home ({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
-  onLoadEstimatedReward,
-  onLoadEarnedReward,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdraw,
@@ -96,17 +88,13 @@ function Home ({
     onCheckPendingDeposits()
     onLoadPoolTransactions()
     onLoadExits()
-    onLoadEstimatedReward()
-    onLoadEarnedReward()
-  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits, onLoadEstimatedReward, onLoadEarnedReward])
+  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
       onCheckPendingDeposits()
       onLoadPoolTransactions()
       onLoadExits()
-      onLoadEstimatedReward()
-      onLoadEarnedReward()
       onCheckPendingWithdrawals()
     }, AUTO_REFRESH_RATE)
 
@@ -134,14 +122,8 @@ function Home ({
         fiatExchangeRatesTask.data,
         preferredCurrency
       )
-      onLoadEstimatedReward(
-        wallet.hermezEthereumAddress.split(':').pop()
-      )
-      onLoadEarnedReward(
-        wallet.hermezEthereumAddress.split(':').pop()
-      )
     }
-  }, [pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts, onLoadEstimatedReward, onLoadEarnedReward])
+  }, [pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -175,34 +157,7 @@ function Home ({
   return wallet && (
     <div className={classes.root}>
       <Sidenav onClose={onClose}>
-        <>
-          <h3 className={classes.panelTitle}>Deposit funds to Hermez to earn rewards.</h3>
-          <img
-            className={classes.tokenImage}
-            src={heztoken}
-            alt='Hermez token'
-          />
-          <p className={classes.panelTimeLeft}>3d 22h 20m left</p>
-          <p className={classes.panelHighlightedText}>Eligibility criteria:</p>
-          <p className={classes.eligibilityCriteriaText}>Make at least 2 transactions to other Hermez accounts.</p>
-          <p className={classes.eligibileText}><GreenCircleWhiteThickIcon />You are eligible to earn rewards.</p>
-          <div className={classes.rewardCard}>
-            <p className={classes.panelHighlightedText}>Today’s reward</p>
-            <p className={`${classes.reward} ${classes.rewardPercentage}`}>0%</p>
-            <p className={classes.panelHighlightedText}>Today’s estimated reward for your funds in Hermez</p>
-            <p className={classes.reward}>{estimatedRewardTask.data} HEZ</p>
-            <p className={classes.panelHighlightedText}>You earned so far</p>
-            <p className={classes.reward}>{earnedRewardTask.data} HEZ</p>
-          </div>
-          <p className={classes.rewardText}><InfoGreyIcon />You will receive your reward at the end of the program.</p>
-          <a
-            className={classes.moreInfo}
-            href={AIRDROP_MORE_INFO_URL}
-            target='_blank'
-            rel='noopener noreferrer'
-          >More Info <ExternalLinkIcon />
-          </a>
-        </>
+        <AirdropPanel hermezEthereumAddress={wallet.hermezEthereumAddress.split(':').pop()} />
       </Sidenav>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
@@ -338,16 +293,12 @@ Home.propTypes = {
   fiatExchangeRatesTask: PropTypes.object,
   poolTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
-  estimatedRewardTask: PropTypes.object.isRequired,
-  earnedRewardTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
   onLoadTotalBalance: PropTypes.func.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
-  onLoadEstimatedReward: PropTypes.func.isRequired,
-  onLoadEarnedReward: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
@@ -363,8 +314,6 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
-  estimatedRewardTask: state.home.estimatedRewardTask,
-  earnedRewardTask: state.home.earnedRewardTask,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
@@ -383,10 +332,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) =>
     dispatch(homeThunks.fetchExits(exitTransactions)),
-  onLoadEstimatedReward: (ethAddr) =>
-    dispatch(homeThunks.fetchEstimatedReward(ethAddr)),
-  onLoadEarnedReward: (ethAddr) =>
-    dispatch(homeThunks.fetchEarnedReward(ethAddr)),
   onRefreshAccounts: () =>
     dispatch(homeThunks.refreshAccounts()),
   onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>

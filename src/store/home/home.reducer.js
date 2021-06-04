@@ -17,12 +17,6 @@ const initialHomeState = {
   },
   exitsTask: {
     status: 'pending'
-  },
-  estimatedRewardTask: {
-    status: 'pending'
-  },
-  earnedRewardTask: {
-    status: 'pending'
   }
 }
 
@@ -169,58 +163,6 @@ function homeReducer (state = initialHomeState, action) {
       return {
         ...state,
         exitsTask: {
-          status: 'failed',
-          error: action.error
-        }
-      }
-    }
-    case homeActionTypes.LOAD_ESTIMATED_REWARD: {
-      return {
-        ...state,
-        estimatedRewardTask: {
-          status: 'loading'
-        }
-      }
-    }
-    case homeActionTypes.LOAD_ESTIMATED_REWARD_SUCCESS: {
-      return {
-        ...state,
-        estimatedRewardTask: {
-          status: 'successful',
-          data: action.data
-        }
-      }
-    }
-    case homeActionTypes.LOAD_ESTIMATED_REWARD_FAILURE: {
-      return {
-        ...state,
-        estimatedRewardTask: {
-          status: 'failed',
-          error: action.error
-        }
-      }
-    }
-    case homeActionTypes.LOAD_EARNED_REWARD: {
-      return {
-        ...state,
-        earnedRewardTask: {
-          status: 'loading'
-        }
-      }
-    }
-    case homeActionTypes.LOAD_EARNED_REWARD_SUCCESS: {
-      return {
-        ...state,
-        earnedRewardTask: {
-          status: 'successful',
-          data: action.data
-        }
-      }
-    }
-    case homeActionTypes.LOAD_EARNED_REWARD_FAILURE: {
-      return {
-        ...state,
-        earnedRewardTask: {
           status: 'failed',
           error: action.error
         }
