@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import { AIRDROP_MORE_INFO_URL } from '../../constants'
+import { AIRDROP_MORE_INFO_URL, AUTO_REFRESH_RATE } from '../../constants'
 
 import useHomeStyles from './home.styles'
 import * as globalThunks from '../../store/global/global.thunks'
@@ -24,11 +24,10 @@ import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
-import { AUTO_REFRESH_RATE } from '../../constants'
+
 import * as storage from '../../utils/storage'
 import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
-import SlidingPanel from 'react-sliding-side-panel'
-import { ReactComponent as AngleRightIcon } from '../../images/icons/angle-right.svg'
+import Sidenav from '../shared/sidenav/sidenav.view'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icons/external-link.svg'
 import { ReactComponent as GreenCircleWhiteThickIcon } from '../../images/icons/green-circle-white-thick.svg'
 import { ReactComponent as InfoGreyIcon } from '../../images/icons/info-grey.svg'
@@ -64,7 +63,8 @@ function Home ({
   onCheckPendingWithdrawals,
   onNavigateToAccountDetails,
   onOpenSnackbar,
-  onCleanup
+  onCleanup,
+  onClose
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
@@ -87,7 +87,6 @@ function Home ({
     .filter(deposit => deposit.type === TxType.Deposit)
   const pendingCreateAccountDeposits = accountPendingDeposits
     .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
-  const [openPanel, setOpenPanel] = useState(false)
 
   React.useEffect(() => {
     onChangeHeader(theme.palette.primary.main)
@@ -136,10 +135,10 @@ function Home ({
         preferredCurrency
       )
       onLoadEstimatedReward(
-        wallet.hermezEthereumAddress.split(":").pop()
+        wallet.hermezEthereumAddress.split(':').pop()
       )
       onLoadEarnedReward(
-        wallet.hermezEthereumAddress.split(":").pop()
+        wallet.hermezEthereumAddress.split(':').pop()
       )
     }
   }, [pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts, onLoadEstimatedReward, onLoadEarnedReward])
@@ -175,27 +174,14 @@ function Home ({
 
   return wallet && (
     <div className={classes.root}>
-      {/* <div className={classes.slidingPanelContainer}>
-        <div>
-          <button onClick={() => setOpenPanel(true)}>Open</button>
-        </div> */}
-      <SlidingPanel
-        type='right'
-        //isOpen={openPanel}
-        isOpen={true}
-        size={30}
-        panelContainerClassName={classes.panelContainer}
-        panelClassName={classes.panel}
-        noBackdrop
-      >
+      <Sidenav onClose={onClose}>
         <>
-          <button className={classes.hidePanel} onClick={() => setOpenPanel(false)}>Hide <AngleRightIcon /></button>
           <h3 className={classes.panelTitle}>Deposit funds to Hermez to earn rewards.</h3>
           <img
             className={classes.tokenImage}
             src={heztoken}
             alt='Hermez token'
-          />          
+          />
           <p className={classes.panelTimeLeft}>3d 22h 20m left</p>
           <p className={classes.panelHighlightedText}>Eligibility criteria:</p>
           <p className={classes.eligibilityCriteriaText}>Make at least 2 transactions to other Hermez accounts.</p>
@@ -214,10 +200,10 @@ function Home ({
             href={AIRDROP_MORE_INFO_URL}
             target='_blank'
             rel='noopener noreferrer'
-          >More Info <ExternalLinkIcon /></a>
+          >More Info <ExternalLinkIcon />
+          </a>
         </>
-      </SlidingPanel>
-      {/* </div> */}
+      </Sidenav>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
           <Button

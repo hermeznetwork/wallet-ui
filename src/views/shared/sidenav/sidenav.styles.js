@@ -2,19 +2,22 @@ import { createUseStyles } from 'react-jss'
 
 const useSidenavStyles = createUseStyles((theme) => ({
   root: {
-    position: 'fixed',
     top: 0,
     right: 0,
     bottom: 0,
     left: 0,
     display: 'flex',
-    zIndex: 999
+    zIndex: 999,
+    position: 'absolute',
+    height: 'fit-content',
+    minHeight: '100vh',
+    justifyContent: 'flex-end'
   },
   outerSpace: {
     flex: 1
   },
   content: {
-    width: 295,
+    width: theme.sideBarWidth,
     background: theme.palette.white,
     padding: theme.spacing(3),
     borderRadius: `${theme.spacing(4)}px 0 0 ${theme.spacing(4)}px`,
