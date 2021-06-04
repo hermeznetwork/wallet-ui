@@ -38,7 +38,13 @@ export const globalActionTypes = {
   CHECK_PENDING_DEPOSITS_SUCCESS: '[GLOBAL] CHECK PENDING DEPOSITS SUCCESS',
   LOAD_COORDINATOR_STATE: '[GLOBAL] LOAD COORDINATOR STATE',
   LOAD_COORDINATOR_STATE_SUCCESS: '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
-  LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE'
+  LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE',
+  LOAD_ESTIMATED_REWARD: '[GLOBAL] LOAD ESTIMATED REWARD',
+  LOAD_ESTIMATED_REWARD_SUCCESS: '[GLOBAL] LOAD ESTIMATED REWARD SUCCESS',
+  LOAD_ESTIMATED_REWARD_FAILURE: '[GLOBAL] LOAD ESTIMATED REWARD FAILURE',
+  LOAD_EARNED_REWARD: '[GLOBAL] LOAD EARNED REWARD',
+  LOAD_EARNED_REWARD_SUCCESS: '[GLOBAL] LOAD EARNED REWARD SUCCESS',
+  LOAD_EARNED_REWARD_FAILURE: '[GLOBAL] LOAD EARNED REWARD FAILURE'
 }
 
 function loadHermezStatus () {
@@ -288,6 +294,46 @@ function loadCoordinatorStateFailure (error) {
   }
 }
 
+function loadEstimatedReward () {
+  return {
+    type: globalActionTypes.LOAD_ESTIMATED_REWARD
+  }
+}
+
+function loadEstimatedRewardSuccess (data) {
+  return {
+    type: globalActionTypes.LOAD_ESTIMATED_REWARD_SUCCESS,
+    data
+  }
+}
+
+function loadEstimatedRewardFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_ESTIMATED_REWARD_FAILURE,
+    error
+  }
+}
+
+function loadEarnedReward () {
+  return {
+    type: globalActionTypes.LOAD_EARNED_REWARD
+  }
+}
+
+function loadEarnedRewardSuccess (data) {
+  return {
+    type: globalActionTypes.LOAD_EARNED_REWARD_SUCCESS,
+    data
+  }
+}
+
+function loadEarnedRewardFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_EARNED_REWARD_FAILURE,
+    error
+  }
+}
+
 export {
   loadHermezStatus,
   loadHermezStatusSuccess,
@@ -322,5 +368,11 @@ export {
   checkPendingDepositsSuccess,
   loadCoordinatorState,
   loadCoordinatorStateSuccess,
-  loadCoordinatorStateFailure
+  loadCoordinatorStateFailure,
+  loadEstimatedReward,
+  loadEstimatedRewardSuccess,
+  loadEstimatedRewardFailure,
+  loadEarnedReward,
+  loadEarnedRewardSuccess,
+  loadEarnedRewardFailure
 }

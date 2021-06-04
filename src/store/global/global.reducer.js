@@ -43,6 +43,12 @@ function getInitialGlobalState () {
     nextForgers: [],
     coordinatorStateTask: {
       status: 'pending'
+    },
+    estimatedRewardTask: {
+      status: 'pending'
+    },
+    earnedRewardTask: {
+      status: 'pending'
     }
   }
 }
@@ -396,6 +402,58 @@ function globalReducer (state = getInitialGlobalState(), action) {
         ...state,
         coordinatorStateTask: {
           status: 'failure',
+          error: action.error
+        }
+      }
+    }
+    case globalActionTypes.LOAD_ESTIMATED_REWARD: {
+      return {
+        ...state,
+        estimatedRewardTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case globalActionTypes.LOAD_ESTIMATED_REWARD_SUCCESS: {
+      return {
+        ...state,
+        estimatedRewardTask: {
+          status: 'successful',
+          data: action.data
+        }
+      }
+    }
+    case globalActionTypes.LOAD_ESTIMATED_REWARD_FAILURE: {
+      return {
+        ...state,
+        estimatedRewardTask: {
+          status: 'failed',
+          error: action.error
+        }
+      }
+    }
+    case globalActionTypes.LOAD_EARNED_REWARD: {
+      return {
+        ...state,
+        earnedRewardTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case globalActionTypes.LOAD_EARNED_REWARD_SUCCESS: {
+      return {
+        ...state,
+        earnedRewardTask: {
+          status: 'successful',
+          data: action.data
+        }
+      }
+    }
+    case globalActionTypes.LOAD_EARNED_REWARD_FAILURE: {
+      return {
+        ...state,
+        earnedRewardTask: {
+          status: 'failed',
           error: action.error
         }
       }

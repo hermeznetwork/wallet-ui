@@ -8,6 +8,7 @@ import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as hermezWebApi from '../../apis/hermez-web'
+import * as airdropApi from '../../apis/airdrop'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
 import { hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from '../../utils/ethereum'
@@ -519,6 +520,34 @@ function reloadApp () {
   }
 }
 
+/**
+ * Fetches Airdrop estimated reward for a given ethAddr
+ * @returns {void}
+ */
+function fetchEstimatedReward (ethAddr) {
+  return (dispatch) => {
+    dispatch(globalActions.loadEstimatedReward())
+
+    return airdropApi.getEstimatedReward(ethAddr)
+      .then((res) => dispatch(globalActions.loadEstimatedRewardSuccess(res)))
+      .catch(() => dispatch(globalActions.loadEstimatedRewardFailure('An error occurred loading estimated reward.')))
+  }
+}
+
+/**
+ * Fetches Airdrop earned reward for a given ethAddr
+ * @returns {void}
+ */
+function fetchEarnedReward (ethAddr) {
+  return (dispatch) => {
+    dispatch(globalActions.loadEarnedReward())
+
+    return airdropApi.getEarnedReward(ethAddr)
+      .then((res) => dispatch(globalActions.loadEarnedRewardSuccess(res)))
+      .catch(() => dispatch(globalActions.loadEarnedRewardFailure('An error occurred loading earned reward.')))
+  }
+}
+
 export {
   setHermezEnvironment,
   changeRedirectRoute,
@@ -540,5 +569,7 @@ export {
   checkPendingTransactions,
   fetchCoordinatorState,
   disconnectWallet,
-  reloadApp
+  reloadApp,
+  fetchEstimatedReward,
+  fetchEarnedReward
 }
