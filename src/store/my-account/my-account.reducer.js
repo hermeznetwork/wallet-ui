@@ -12,13 +12,7 @@ function getInitialPreferredCurrency () {
 }
 
 const initialmyAccountState = {
-  preferredCurrency: getInitialPreferredCurrency(),
-  estimatedRewardTask: {
-    status: 'pending'
-  },
-  earnedRewardTask: {
-    status: 'pending'
-  }
+  preferredCurrency: getInitialPreferredCurrency()
 }
 
 function myAccountReducer (state = initialmyAccountState, action) {
@@ -27,58 +21,6 @@ function myAccountReducer (state = initialmyAccountState, action) {
       return {
         ...state,
         preferredCurrency: action.preferredCurrency
-      }
-    }
-    case myAccountActionTypes.LOAD_ESTIMATED_REWARD: {
-      return {
-        ...state,
-        estimatedRewardTask: {
-          status: 'loading'
-        }
-      }
-    }
-    case myAccountActionTypes.LOAD_ESTIMATED_REWARD_SUCCESS: {
-      return {
-        ...state,
-        estimatedRewardTask: {
-          status: 'successful',
-          data: action.data
-        }
-      }
-    }
-    case myAccountActionTypes.LOAD_ESTIMATED_REWARD_FAILURE: {
-      return {
-        ...state,
-        estimatedRewardTask: {
-          status: 'failed',
-          error: action.error
-        }
-      }
-    }
-    case myAccountActionTypes.LOAD_EARNED_REWARD: {
-      return {
-        ...state,
-        earnedRewardTask: {
-          status: 'loading'
-        }
-      }
-    }
-    case myAccountActionTypes.LOAD_EARNED_REWARD_SUCCESS: {
-      return {
-        ...state,
-        earnedRewardTask: {
-          status: 'successful',
-          data: action.data
-        }
-      }
-    }
-    case myAccountActionTypes.LOAD_EARNED_REWARD_FAILURE: {
-      return {
-        ...state,
-        earnedRewardTask: {
-          status: 'failed',
-          error: action.error
-        }
       }
     }
     default: {
