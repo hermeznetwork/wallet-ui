@@ -95,7 +95,7 @@ function Home ({
     onLoadExits()
     onLoadEstimatedReward()
     onLoadEarnedReward()
-  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits, onLoadEstimatedReward, onLoadEarnedReward])
+  }, [onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits, onLoadEstimatedReward, onLoadEarnedReward])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {

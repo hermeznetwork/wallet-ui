@@ -7,7 +7,7 @@ const usePortalStyles = createUseStyles((theme) => ({
     left: 'auto',
     right: 0,
     bottom: 0,
-    width: 295
+    width: theme.sideBarWidth
   }
 }))
 

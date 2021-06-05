@@ -3,6 +3,8 @@ import axios from 'axios'
 //import { HERMEZ_WEB_URL } from '../constants'
 
 //const baseApiUrl = HERMEZ_WEB_URL
+
+// TODO: change back proper hermez web URL
 const baseApiUrl = 'http://52.29.96.190'
 
 /**

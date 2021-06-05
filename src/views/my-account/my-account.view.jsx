@@ -4,10 +4,11 @@ import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 import hermezjs from '@hermeznetwork/hermezjs'
+import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import useMyAccountStyles from './my-account.styles'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
-import * as myAccountThunks from '../../store/my-account/my-account.thunks'
+import { changePreferredCurrency } from '../../store/my-account/my-account.thunks'
 import * as globalThunks from '../../store/global/global.thunks'
 import { disconnectWallet } from '../../store/global/global.thunks'
 import Container from '../shared/container/container.view'
@@ -47,8 +48,8 @@ function MyAccount ({
 
   React.useEffect(() => {
     onChangeHeader()
-    onLoadEstimatedReward(wallet.hermezEthereumAddress.split(":").pop())
-    onLoadEarnedReward(wallet.hermezEthereumAddress.split(":").pop())
+    onLoadEstimatedReward(getEthereumAddress(wallet.hermezEthereumAddress))
+    onLoadEarnedReward(getEthereumAddress(wallet.hermezEthereumAddress))
   }, [onChangeHeader, onLoadEstimatedReward, onLoadEarnedReward])
 
   /**
@@ -199,7 +200,7 @@ const mapDispatchToProps = (dispatch) => ({
     })),
   onNavigateToMyCode: () =>
     dispatch(push('/my-code?from=my-account')),
-  onChangePreferredCurrency: (currency) => dispatch(myAccountThunks.changePreferredCurrency(currency)),
+  onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
   onDisconnectWallet: () => dispatch(disconnectWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onNavigateToForceExit: () => dispatch(push('/force-withdrawal')),
