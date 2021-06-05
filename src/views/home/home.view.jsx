@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 import { AUTO_REFRESH_RATE } from '../../constants'
+import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import useHomeStyles from './home.styles'
 import * as globalThunks from '../../store/global/global.thunks'
@@ -37,6 +38,8 @@ function Home ({
   accountsTask,
   poolTransactionsTask,
   exitsTask,
+  estimatedRewardTask,
+  earnedRewardTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   pendingDeposits,
@@ -49,6 +52,8 @@ function Home ({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
+  onLoadEstimatedReward,
+  onLoadEarnedReward,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdraw,
@@ -88,7 +93,9 @@ function Home ({
     onCheckPendingDeposits()
     onLoadPoolTransactions()
     onLoadExits()
-  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
+    onLoadEstimatedReward()
+    onLoadEarnedReward()
+  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits, onLoadEstimatedReward, onLoadEarnedReward])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
@@ -125,6 +132,15 @@ function Home ({
     }
   }, [pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts])
 
+  React.useEffect(() => {
+    onLoadEstimatedReward(
+      getEthereumAddress(wallet.hermezEthereumAddress)
+    )
+    onLoadEarnedReward(
+      getEthereumAddress(wallet.hermezEthereumAddress)
+    )
+  }, [onLoadEstimatedReward, onLoadEarnedReward])
+
   React.useEffect(() => onCleanup, [onCleanup])
 
   /**
@@ -153,12 +169,16 @@ function Home ({
     copyToClipboard(hermezEthereumAddress)
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
-
+  
   return wallet && (
     <div className={classes.root}>
-      <Sidenav onClose={onClose}>
-        <AirdropPanel hermezEthereumAddress={wallet.hermezEthereumAddress.split(':').pop()} />
-      </Sidenav>
+      {
+        estimatedRewardTask.status === 'successful' && earnedRewardTask.status === 'successful' 
+          ? <Sidenav onClose={onClose}>
+              <AirdropPanel estimatedReward={estimatedRewardTask.data} earnedReward={earnedRewardTask.data}/>
+            </Sidenav>
+          : <></>
+      }
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
           <Button
@@ -293,12 +313,16 @@ Home.propTypes = {
   fiatExchangeRatesTask: PropTypes.object,
   poolTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
+  estimatedRewardTask: PropTypes.object.isRequired,
+  earnedRewardTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
   onLoadTotalBalance: PropTypes.func.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
+  onLoadEstimatedReward: PropTypes.func.isRequired,
+  onLoadEarnedReward: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
@@ -314,6 +338,8 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
+  estimatedRewardTask: state.global.estimatedRewardTask,
+  earnedRewardTask: state.global.earnedRewardTask,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
@@ -334,6 +360,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchExits(exitTransactions)),
   onRefreshAccounts: () =>
     dispatch(homeThunks.refreshAccounts()),
+  onLoadEstimatedReward: (ethAddr) =>
+    dispatch(globalThunks.fetchEstimatedReward(ethAddr)),
+  onLoadEarnedReward: (ethAddr) =>
+    dispatch(globalThunks.fetchEarnedReward(ethAddr)),
   onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>

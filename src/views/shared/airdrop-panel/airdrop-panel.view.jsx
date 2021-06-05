@@ -1,29 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
 import { AIRDROP_MORE_INFO_URL } from '../../../constants'
 
 import useAirdropPanelStyles from './airdrop-panel.styles'
-import * as globalThunks from '../../../store/global/global.thunks'
-import withAuthGuard from '../with-auth-guard/with-auth-guard.view.jsx'
 import { ReactComponent as ExternalLinkIcon } from '../../../images/icons/external-link.svg'
 import { ReactComponent as GreenCircleWhiteThickIcon } from '../../../images/icons/green-circle-white-thick.svg'
 import { ReactComponent as InfoGreyIcon } from '../../../images/icons/info-grey.svg'
 import heztoken from '../../../images/heztoken.svg'
 
-function AirdropPanel ({
-  estimatedRewardTask,
-  earnedRewardTask,
-  onLoadEstimatedReward,
-  onLoadEarnedReward,
-  hermezEthereumAddress
+function AirdropPanel ({  
+  estimatedReward,
+  earnedReward
 }) {
   const classes = useAirdropPanelStyles()
-
-  React.useEffect(() => {
-    onLoadEstimatedReward(hermezEthereumAddress)
-    onLoadEarnedReward(hermezEthereumAddress)
-  }, [onLoadEstimatedReward, onLoadEarnedReward])
 
   return (
     <>
@@ -41,9 +30,9 @@ function AirdropPanel ({
         <p className={classes.panelHighlightedText}>Today’s reward</p>
         <p className={`${classes.reward} ${classes.rewardPercentage}`}>0%</p>
         <p className={classes.panelHighlightedText}>Today’s estimated reward for your funds in Hermez</p>
-        <p className={classes.reward}>{estimatedRewardTask.data} HEZ</p>
+        <p className={classes.reward}>{estimatedReward} HEZ</p>
         <p className={classes.panelHighlightedText}>You earned so far</p>
-        <p className={classes.reward}>{earnedRewardTask.data} HEZ</p>
+        <p className={classes.reward}>{earnedReward} HEZ</p>
       </div>
       <p className={classes.rewardText}><InfoGreyIcon />You will receive your reward at the end of the program.</p>
       <a
@@ -58,22 +47,8 @@ function AirdropPanel ({
 }
 
 AirdropPanel.propTypes = {
-  estimatedRewardTask: PropTypes.object.isRequired,
-  earnedRewardTask: PropTypes.object.isRequired,
-  onLoadEstimatedReward: PropTypes.func.isRequired,
-  onLoadEarnedReward: PropTypes.func.isRequired
+  estimatedReward: PropTypes.string.isRequired,
+  earnedReward: PropTypes.string.isRequired
 }
 
-const mapStateToProps = (state) => ({
-  estimatedRewardTask: state.global.estimatedRewardTask,
-  earnedRewardTask: state.global.earnedRewardTask
-})
-
-const mapDispatchToProps = (dispatch) => ({
-  onLoadEstimatedReward: (ethAddr) =>
-    dispatch(globalThunks.fetchEstimatedReward(ethAddr)),
-  onLoadEarnedReward: (ethAddr) =>
-    dispatch(globalThunks.fetchEarnedReward(ethAddr))
-})
-
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AirdropPanel))
+export default AirdropPanel
