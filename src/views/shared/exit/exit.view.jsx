@@ -72,7 +72,7 @@ function Exit ({
 
   /**
    * Calculates in which step is the Exit process in
-   * @returns {number} - Step of the exit
+   * @returns {Number} - Step of the exit
    */
   function getStep () {
     if (!merkleProof) {
@@ -103,7 +103,7 @@ function Exit ({
 
   /**
    * Converts the withdraw delay from seconds to days
-   * @returns {number} - Withdrawal delay in days
+   * @returns {Number} - Withdrawal delay in days
    */
   function getWithdrawalDelayerTime () {
     return Math.round(coordinatorState?.withdrawalDelayer.withdrawalDelay / 60 / 60)

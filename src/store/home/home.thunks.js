@@ -69,7 +69,7 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
 
 /**
  * Fetches the accounts for a Hermez Ethereum address
- * @param {number} fromItem - id of the first account to be returned from the API
+ * @param {Number} fromItem - id of the first account to be returned from the API
  * @returns {void}
  */
 function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
