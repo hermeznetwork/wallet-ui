@@ -9,6 +9,7 @@ import { HermezCompressedAmount } from '@hermeznetwork/hermezjs/src/hermez-compr
 import { getMaxAmountFromMinimumFee } from '@hermeznetwork/hermezjs/src/tx-utils'
 import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
 import { isHermezBjjAddress } from '@hermeznetwork/hermezjs/src/addresses'
+import { ethers } from 'ethers'
 
 import useTransactionFormStyles from './transaction-form.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency, getFixedTokenAmount } from '../../../../utils/currencies'
@@ -24,6 +25,7 @@ import Spinner from '../../../shared/spinner/spinner.view'
 import * as addresses from '../../../../utils/addresses'
 import * as browser from '../../../../utils/browser'
 import Fee from '../fee/fee.view'
+import Alert from '../../../shared/alert/alert.view'
 
 function TransactionForm ({
   transactionType,
@@ -31,8 +33,10 @@ function TransactionForm ({
   receiverAddress,
   preferredCurrency,
   fiatExchangeRates,
+  accountBalanceTask,
   feesTask,
   estimatedWithdrawFeeTask,
+  onLoadAccountBalance,
   onLoadFees,
   onLoadEstimatedWithdrawFee,
   onSubmit
@@ -49,12 +53,14 @@ function TransactionForm ({
   const [isAmountCompressedValid, setIsAmountCompressedValid] = React.useState(undefined)
   const [isReceiverValid, setIsReceiverValid] = React.useState(undefined)
   const [doesReceiverExist, setDoesReceiverExist] = React.useState(undefined)
+  const [doesUserHaveEnoughEthForWithdraw, setDoesUserHaveEnoughEthForWithdraw] = React.useState(undefined)
   const [gasPrice, setGasPrice] = React.useState(undefined)
   const amountInput = React.useRef(undefined)
 
   React.useEffect(() => {
     onLoadFees()
     if (transactionType === TxType.Exit) {
+      onLoadAccountBalance()
       onLoadEstimatedWithdrawFee(account.token, amount)
     }
   }, [transactionType, onLoadFees])
@@ -74,6 +80,14 @@ function TransactionForm ({
       handleReceiverInputChange(receiverAddress)
     }
   }, [receiverAddress])
+
+  React.useEffect(() => {
+    if (accountBalanceTask.status === 'successful' && estimatedWithdrawFeeTask.status === 'successful') {
+      const formattedEstimatedWithdrawFee = ethers.utils.formatUnits(estimatedWithdrawFeeTask.data.amount)
+
+      setDoesUserHaveEnoughEthForWithdraw(accountBalanceTask.data >= formattedEstimatedWithdrawFee)
+    }
+  }, [accountBalanceTask, estimatedWithdrawFeeTask])
 
   React.useEffect(() => {
     browser.isAnyVideoDeviceAvailable()
@@ -151,7 +165,9 @@ function TransactionForm ({
   function isContinueDisabled () {
     const isAmountValid = isAmountLessThanFunds && isAmountPositive && isAmountCompressedValid && amount && BigInt(amount.toString()) > 0
 
-    if (transactionType !== TxType.Transfer && isAmountValid) {
+    if (transactionType === TxType.Exit && !doesUserHaveEnoughEthForWithdraw) {
+      return false
+    } else if (transactionType !== TxType.Transfer && isAmountValid) {
       return false
     } else if (isAmountValid && isReceiverValid && doesReceiverExist === undefined) {
       return false
@@ -427,178 +443,176 @@ function TransactionForm ({
     <div className={classes.root}>
       <Container disableTopGutter>
         <section className={classes.sectionWrapper}>
-          {(() => {
-            switch (feesTask.status) {
-              case 'successful': {
-                return (
-                  <>
-                    <div className={classes.token}>
-                      <p className={classes.tokenName}>{account.token.name}</p>
-                      {
-                        showInFiat
-                          ? <p><span>{preferredCurrency}</span> <span>{getAmountInFiat(account.balance).toFixed(2)}</span></p>
-                          : <p className={classes.tokenSymbolAmount}><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
-                      }
-                    </div>
-                    <form
-                      className={classes.form}
-                      onSubmit={(event) => {
-                        event.preventDefault()
-                        handleContinueButton(feesTask.data)
-                      }}
-                    >
-                      <div className={clsx({
-                        [classes.selectAmount]: true,
-                        [classes.selectAmountError]: isAmountPositive === false || isAmountLessThanFunds === false
-                      })}
-                      >
-                        <div className={classes.amount}>
-                          <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
-                          <input
-                            ref={amountInput}
-                            className={classes.amountInput}
-                            value={getAmountInputValue()}
-                            placeholder='0.00'
-                            type='number'
-                            onChange={handleAmountInputChange}
-                            onFocus={(e) => { e.target.placeholder = '' }}
-                            onBlur={(e) => { e.target.placeholder = '0.00' }}
-                          />
-                        </div>
-                        <div className={classes.amountButtons}>
-                          <button
-                            type='button'
-                            className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.amountMax}`}
-                            tabIndex='-1'
-                            disabled={gasPrice === undefined}
-                            onClick={handleSendAllButtonClick}
-                          >
-                            Max
-                          </button>
-                          <div className={classes.amountButtonsItem}>
-                            <p>
-                              <span>{showInFiat ? (getFixedTokenAmount(amount || 0, account.token.decimals)) : (amountFiat || 0).toFixed(2)} </span>
-                              <span>{(showInFiat) ? account.token.symbol : preferredCurrency}</span>
-                            </p>
-                          </div>
-                          <button
-                            type='button'
-                            className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.changeCurrency}`}
-                            tabIndex='-1'
-                            onClick={handleChangeCurrencyButtonClick}
-                          >
-                            <SwapIcon className={classes.changeCurrencyIcon} />
-                          </button>
-                        </div>
-                      </div>
-                      <p className={clsx({
-                        [classes.errorMessage]: true,
-                        [classes.selectAmountErrorMessageVisible]: isAmountPositive === false || isAmountLessThanFunds === false || isAmountCompressedValid === false
-                      })}
-                      >
-                        <ErrorIcon className={classes.errorIcon} />
-                        {
-                          isAmountPositive === false
-                            ? 'The amount should be positive'
-                            : isAmountLessThanFunds === false
-                              ? 'You don\'t have enough funds'
-                              : isAmountCompressedValid === false
-                                ? 'The amount introduced is not supported by Hermez\'s compression algorithm. It needs to have a maximum of 10 significant digits'
-                                : ''
-                        }
-                      </p>
-                      {
-                        transactionType === TxType.Transfer && (
-                          <div className={classes.receiverWrapper}>
-                            <div className={classes.receiverInputWrapper}>
-                              <input
-                                disabled={isReceiverValid}
-                                className={classes.receiver}
-                                value={getReceiverInputValue()}
-                                onChange={handleReceiverInputChange}
-                                type='text'
-                                placeholder='To hez:0x2387 ･･･ 5682'
-                              />
-                              <div className={classes.receiverButtons}>
-                                {
-                                  // Pasting is not supported in firefox
-                                  receiver.length === 0 && !browser.isFirefox() && (
-                                    <button
-                                      type='button'
-                                      className={classes.receiverButton}
-                                      tabIndex='-1'
-                                      onClick={handlePasteClick}
-                                    >
-                                      Paste
-                                    </button>
-                                  )
-                                }
-                                {
-                                  receiver.length > 0 && (
-                                    <button
-                                      type='button'
-                                      className={classes.receiverButton}
-                                      tabIndex='-1'
-                                      onClick={handleDeleteClick}
-                                    >
-                                      <CloseIcon className={classes.receiverDeleteButtonIcon} />
-                                    </button>
-                                  )
-                                }
-                                {
-                                  receiver.length === 0 && isVideoDeviceAvailable && (
-                                    <button
-                                      type='button'
-                                      className={classes.receiverButton}
-                                      tabIndex='-1'
-                                      onClick={handleOpenQRScanner}
-                                    >
-                                      <QRScannerIcon className={classes.receiverButtonIcon} />
-                                    </button>
-                                  )
-                                }
-                              </div>
-                            </div>
-                            <p className={clsx({
-                              [classes.errorMessage]: true,
-                              [classes.receiverErrorMessageVisible]: isReceiverValid === false || doesReceiverExist === false
-                            })}
-                            >
-                              <ErrorIcon className={classes.errorIcon} />
-                              {
-                                isReceiverValid === false
-                                  ? 'Please, enter a valid Hermez or Ethereum Address'
-                                  : doesReceiverExist === false
-                                    ? 'Please, enter an existing address. Receiver needs to have signed in to Hermez Wallet at least once.'
-                                    : ''
-                              }
-                            </p>
-                          </div>
-                        )
-                      }
-                      <FormButton
-                        type='submit'
-                        label='Continue'
-                        disabled={isContinueDisabled()}
+          {feesTask.status === 'successful'
+            ? (
+              <>
+                <div className={classes.token}>
+                  <p className={classes.tokenName}>{account.token.name}</p>
+                  {
+                      showInFiat
+                        ? <p><span>{preferredCurrency}</span> <span>{getAmountInFiat(account.balance).toFixed(2)}</span></p>
+                        : <p className={classes.tokenSymbolAmount}><span>{account.token.symbol}</span> <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span></p>
+                    }
+                </div>
+                {transactionType === TxType.Exit && doesUserHaveEnoughEthForWithdraw === false && estimatedWithdrawFeeTask.status === 'successful' && (
+                  <Alert
+                    message={`You don’t have enough ETH to cover withdrawal transaction fee (you need at least ${ethers.utils.formatUnits(estimatedWithdrawFeeTask.data.amount)} ETH)`}
+                  />
+                )}
+                <form
+                  className={classes.form}
+                  onSubmit={(event) => {
+                    event.preventDefault()
+                    handleContinueButton(feesTask.data)
+                  }}
+                >
+                  <div className={clsx({
+                    [classes.selectAmount]: true,
+                    [classes.selectAmountError]: isAmountPositive === false || isAmountLessThanFunds === false
+                  })}
+                  >
+                    <div className={classes.amount}>
+                      <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
+                      <input
+                        ref={amountInput}
+                        className={classes.amountInput}
+                        value={getAmountInputValue()}
+                        placeholder='0.00'
+                        type='number'
+                        onChange={handleAmountInputChange}
+                        onFocus={(e) => { e.target.placeholder = '' }}
+                        onBlur={(e) => { e.target.placeholder = '0.00' }}
                       />
-                    </form>
-                    <Fee
-                      transactionType={transactionType}
-                      amount={amount || 0}
-                      l2Fee={getFee(feesTask.data)}
-                      estimatedWithdrawFee={estimatedWithdrawFeeTask.data}
-                      token={account.token}
-                      preferredCurrency={preferredCurrency}
-                      fiatExchangeRates={fiatExchangeRates}
-                    />
-                  </>
-                )
-              }
-              default: {
-                return <Spinner />
-              }
-            }
-          })()}
+                    </div>
+                    <div className={classes.amountButtons}>
+                      <button
+                        type='button'
+                        className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.amountMax}`}
+                        tabIndex='-1'
+                        disabled={gasPrice === undefined}
+                        onClick={handleSendAllButtonClick}
+                      >
+                        Max
+                      </button>
+                      <div className={classes.amountButtonsItem}>
+                        <p>
+                          <span>{showInFiat ? (getFixedTokenAmount(amount || 0, account.token.decimals)) : (amountFiat || 0).toFixed(2)} </span>
+                          <span>{(showInFiat) ? account.token.symbol : preferredCurrency}</span>
+                        </p>
+                      </div>
+                      <button
+                        type='button'
+                        className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.changeCurrency}`}
+                        tabIndex='-1'
+                        onClick={handleChangeCurrencyButtonClick}
+                      >
+                        <SwapIcon className={classes.changeCurrencyIcon} />
+                      </button>
+                    </div>
+                  </div>
+                  <p className={clsx({
+                    [classes.errorMessage]: true,
+                    [classes.selectAmountErrorMessageVisible]: isAmountPositive === false || isAmountLessThanFunds === false || isAmountCompressedValid === false
+                  })}
+                  >
+                    <ErrorIcon className={classes.errorIcon} />
+                    {
+                        isAmountPositive === false
+                          ? 'The amount should be positive'
+                          : isAmountLessThanFunds === false
+                            ? 'You don\'t have enough funds'
+                            : isAmountCompressedValid === false
+                              ? 'The amount introduced is not supported by Hermez\'s compression algorithm. It needs to have a maximum of 10 significant digits'
+                              : ''
+                      }
+                  </p>
+                  {
+                      transactionType === TxType.Transfer && (
+                        <div className={classes.receiverWrapper}>
+                          <div className={classes.receiverInputWrapper}>
+                            <input
+                              disabled={isReceiverValid}
+                              className={classes.receiver}
+                              value={getReceiverInputValue()}
+                              onChange={handleReceiverInputChange}
+                              type='text'
+                              placeholder='To hez:0x2387 ･･･ 5682'
+                            />
+                            <div className={classes.receiverButtons}>
+                              {
+                                // Pasting is not supported in firefox
+                                receiver.length === 0 && !browser.isFirefox() && (
+                                  <button
+                                    type='button'
+                                    className={classes.receiverButton}
+                                    tabIndex='-1'
+                                    onClick={handlePasteClick}
+                                  >
+                                    Paste
+                                  </button>
+                                )
+                              }
+                              {
+                                receiver.length > 0 && (
+                                  <button
+                                    type='button'
+                                    className={classes.receiverButton}
+                                    tabIndex='-1'
+                                    onClick={handleDeleteClick}
+                                  >
+                                    <CloseIcon className={classes.receiverDeleteButtonIcon} />
+                                  </button>
+                                )
+                              }
+                              {
+                                receiver.length === 0 && isVideoDeviceAvailable && (
+                                  <button
+                                    type='button'
+                                    className={classes.receiverButton}
+                                    tabIndex='-1'
+                                    onClick={handleOpenQRScanner}
+                                  >
+                                    <QRScannerIcon className={classes.receiverButtonIcon} />
+                                  </button>
+                                )
+                              }
+                            </div>
+                          </div>
+                          <p className={clsx({
+                            [classes.errorMessage]: true,
+                            [classes.receiverErrorMessageVisible]: isReceiverValid === false || doesReceiverExist === false
+                          })}
+                          >
+                            <ErrorIcon className={classes.errorIcon} />
+                            {
+                              isReceiverValid === false
+                                ? 'Please, enter a valid Hermez or Ethereum Address'
+                                : doesReceiverExist === false
+                                  ? 'Please, enter an existing address. Receiver needs to have signed in to Hermez Wallet at least once.'
+                                  : ''
+                            }
+                          </p>
+                        </div>
+                      )
+                    }
+                  <FormButton
+                    type='submit'
+                    label='Continue'
+                    disabled={isContinueDisabled()}
+                  />
+                </form>
+                <Fee
+                  transactionType={transactionType}
+                  amount={amount || 0}
+                  l2Fee={getFee(feesTask.data)}
+                  estimatedWithdrawFee={estimatedWithdrawFeeTask.data}
+                  token={account.token}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRates={fiatExchangeRates}
+                />
+              </>
+              )
+            : <Spinner />}
         </section>
         {isVideoDeviceAvailable && isQRScannerOpen && (
           <QRScanner

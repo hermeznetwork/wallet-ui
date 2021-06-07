@@ -42,7 +42,8 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: theme.spacing(2)
   },
   selectAmount: {
     border: `solid 2px ${theme.palette.grey.veryLight}`,

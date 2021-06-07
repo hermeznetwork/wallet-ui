@@ -10,6 +10,7 @@ import { getAccountBalance } from '../../utils/accounts'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
 import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/src/constants'
+import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 /**
  * Fetches the account details for a token id in MetaMask.
@@ -172,6 +173,21 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
         .then(res => dispatch(transactionActions.loadAccountsSuccess(transactionType, res)))
         .catch(err => dispatch(transactionActions.loadAccountsFailure(err)))
     }
+  }
+}
+
+function fetchAccountBalance () {
+  return async (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+
+    dispatch(transactionActions.loadAccountBalance())
+
+    const ethereumAddress = getEthereumAddress(wallet.hermezEthereumAddress)
+    const provider = getProvider()
+
+    return provider.getBalance(ethereumAddress)
+      .then((balance) => dispatch(transactionActions.loadAccountBalanceSuccess(ethers.utils.formatUnits(balance))))
+      .catch((err) => dispatch(transactionActions.loadAccountBalanceFailure(err)))
   }
 }
 
@@ -402,6 +418,7 @@ export {
   fetchExit,
   fetchPoolTransactions,
   fetchAccounts,
+  fetchAccountBalance,
   fetchFees,
   fetchEstimatedWithdrawFee,
   deposit,
