@@ -8,14 +8,23 @@ import Main from '../main/main.view'
 import PageHeader from '../page-header/page-header.view'
 import Snackbar from '../snackbar/snackbar.view'
 import { closeSnackbar } from '../../../store/global/global.actions'
+import { FEATURE_TOGGLES } from '../../../constants'
+import AirdropPanel from '../../shared/airdrop-panel/airdrop-panel.view'
+import * as globalThunks from '../../../store/global/global.thunks'
+import * as globalActions from '../../../store/global/global.actions'
 
 function Layout ({
   header,
   snackbar,
+  wallet,
+  rewards,
   children,
   onGoBack,
   onClose,
-  onCloseSnackbar
+  onCloseSnackbar,
+  onLoadEstimatedReward,
+  onLoadEarnedReward,
+  onCloseRewardsSidenav
 }) {
   const classes = useLayoutStyles()
 
@@ -42,6 +51,16 @@ function Layout ({
           onClose={onCloseSnackbar}
         />
       )}
+      {FEATURE_TOGGLES.REWARDS_SIDENAV && rewards.sidenav.status === 'open' && (
+        <AirdropPanel
+          wallet={wallet}
+          estimatedRewardTask={rewards.estimatedRewardTask}
+          earnedRewardTask={rewards.earnedRewardTask}
+          onLoadEstimatedReward={onLoadEstimatedReward}
+          onLoadEarnedReward={onLoadEarnedReward}
+          onClose={onCloseRewardsSidenav}
+        />
+      )}
     </div>
   )
 }
@@ -52,11 +71,19 @@ Layout.propTypes = {
 
 const mapStateToProps = (state) => ({
   header: state.global.header,
-  snackbar: state.global.snackbar
+  snackbar: state.global.snackbar,
+  wallet: state.global.wallet,
+  rewards: state.global.rewards
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onCloseSnackbar: () => dispatch(closeSnackbar()),
+  onLoadEstimatedReward: (ethAddr) =>
+    dispatch(globalThunks.fetchEstimatedReward(ethAddr)),
+  onLoadEarnedReward: (ethAddr) =>
+    dispatch(globalThunks.fetchEarnedReward(ethAddr)),
+  onCloseRewardsSidenav: () =>
+    dispatch(globalActions.closeRewardsSidenav()),
   onGoBack: (action) => dispatch(action),
   onClose: (action) => dispatch(action)
 })

@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { AIRDROP_MORE_INFO_URL } from '../../../constants'
+import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import useAirdropPanelStyles from './airdrop-panel.styles'
 import { ReactComponent as ExternalLinkIcon } from '../../../images/icons/external-link.svg'
@@ -9,12 +10,21 @@ import { ReactComponent as InfoGreyIcon } from '../../../images/icons/info-grey.
 import heztoken from '../../../images/heztoken.svg'
 import Sidenav from '../../shared/sidenav/sidenav.view'
 
-function AirdropPanel ({  
+function AirdropPanel ({
+  wallet,
   estimatedReward,
   earnedReward,
+  onLoadEstimatedReward,
+  onLoadEarnedReward,
   onClose
 }) {
   const classes = useAirdropPanelStyles()
+  const accountEthereumAddress = getEthereumAddress(wallet.hermezEthereumAddress)
+
+  React.useEffect(() => {
+    onLoadEstimatedReward(accountEthereumAddress)
+    onLoadEarnedReward(accountEthereumAddress)
+  }, [])
 
   return (
     <Sidenav onClose={onClose}>
@@ -49,8 +59,8 @@ function AirdropPanel ({
 }
 
 AirdropPanel.propTypes = {
-  estimatedReward: PropTypes.string.isRequired,
-  earnedReward: PropTypes.string.isRequired
+  estimatedRewardTask: PropTypes.object.isRequired,
+  earnedRewardTask: PropTypes.object.isRequired
 }
 
 export default AirdropPanel

@@ -45,6 +45,10 @@ function getInitialGlobalState () {
       status: 'pending'
     },
     rewards: {
+      sidenav: {
+        status: 'closed'
+      },
+      hasSidenavBeenClosedByTheUser: false,
       estimatedRewardTask: {
         status: 'pending'
       },
@@ -405,6 +409,29 @@ function globalReducer (state = getInitialGlobalState(), action) {
         coordinatorStateTask: {
           status: 'failure',
           error: action.error
+        }
+      }
+    }
+    case globalActionTypes.OPEN_REWARDS_SIDENAV: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          sidenav: {
+            status: 'open'
+          }
+        }
+      }
+    }
+    case globalActionTypes.CLOSE_REWARDS_SIDENAV: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          sidenav: {
+            status: 'closed'
+          },
+          hasSidenavBeenClosedByTheUser: true
         }
       }
     }

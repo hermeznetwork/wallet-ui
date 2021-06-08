@@ -8,10 +8,10 @@ const useSidenavStyles = createUseStyles((theme) => ({
     left: 0,
     display: 'flex',
     zIndex: 999,
-    position: 'absolute',
-    height: 'fit-content',
+    position: 'fixed',
     minHeight: '100vh',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
+    overflow: 'hidden'
   },
   outerSpace: {
     flex: 1
@@ -21,7 +21,8 @@ const useSidenavStyles = createUseStyles((theme) => ({
     background: theme.palette.white,
     padding: theme.spacing(3),
     borderRadius: `${theme.spacing(4)}px 0 0 ${theme.spacing(4)}px`,
-    boxShadow: '-5px 0 30px 0 rgba(136, 139, 170, 0.15)'
+    boxShadow: '-5px 0 30px 0 rgba(136, 139, 170, 0.15)',
+    overflowY: 'auto'
   },
   hideButton: {
     fontWeight: theme.fontWeights.bold,

@@ -4,12 +4,10 @@ import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 import hermezjs from '@hermeznetwork/hermezjs'
-import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import useMyAccountStyles from './my-account.styles'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
 import { changePreferredCurrency } from '../../store/my-account/my-account.thunks'
-import * as globalThunks from '../../store/global/global.thunks'
 import { disconnectWallet } from '../../store/global/global.thunks'
 import Container from '../shared/container/container.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
@@ -25,30 +23,27 @@ import Button from '../shared/button/button.view'
 import { copyToClipboard } from '../../utils/browser'
 import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
 import { version as packagejsonVersion } from '../../../package.json'
-import AirdropPanel from '../shared/airdrop-panel/airdrop-panel.view'
+import { FEATURE_TOGGLES } from '../../constants'
+import * as globalActions from '../../store/global/global.actions'
 
 function MyAccount ({
   wallet,
   preferredCurrency,
+  rewards,
   onChangeHeader,
   onChangePreferredCurrency,
   onDisconnectWallet,
   onOpenSnackbar,
   onNavigateToForceExit,
   onNavigateToMyCode,
-  estimatedRewardTask,
-  earnedRewardTask,
-  onLoadEstimatedReward,
-  onLoadEarnedReward
+  onOpenRewardsSidenav
 }) {
   const theme = useTheme()
   const classes = useMyAccountStyles()
 
   React.useEffect(() => {
     onChangeHeader()
-    onLoadEstimatedReward(getEthereumAddress(wallet.hermezEthereumAddress))
-    onLoadEarnedReward(getEthereumAddress(wallet.hermezEthereumAddress))
-  }, [onChangeHeader, onLoadEstimatedReward, onLoadEarnedReward])
+  }, [onChangeHeader])
 
   /**
    * Copies the Hermez Ethereum address to the clipboard when it's clicked
@@ -71,11 +66,6 @@ function MyAccount ({
 
   return (
     <div className={classes.root}>
-      {
-        estimatedRewardTask.status === 'successful' && earnedRewardTask.status === 'successful' 
-          ? <AirdropPanel estimatedReward={estimatedRewardTask.data} earnedReward={earnedRewardTask.data}/>
-          : <></>
-      }
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
         <section className={classes.topSection}>
           {wallet && (
@@ -101,8 +91,9 @@ function MyAccount ({
         </section>
       </Container>
       {
-        estimatedRewardTask.status === 'successful' && earnedRewardTask.status === 'successful' 
-          ? <Container>
+        FEATURE_TOGGLES.REWARDS_SIDENAV && rewards.estimatedRewardTask.status === 'successful' && rewards.earnedRewardTask.status === 'successful'
+          ? (
+            <Container>
               <div className={classes.airdropCard}>
                 <div className={classes.cardHeader}>
                   <h3 className={classes.cardHeading}>Your earnings</h3>
@@ -113,12 +104,13 @@ function MyAccount ({
                     onClick={() => {}}
                   />
                 </div>
-                <p className={classes.rewardText}>Today’s reward is <span className={classes.rewardPercentage}>+48%</span> so you can receive {estimatedRewardTask.data} HEZ</p>
-                <p className={classes.rewardText}>You earned so far {earnedRewardTask.data} HEZ</p>
+                <p className={classes.rewardText}>Today’s reward is <span className={classes.rewardPercentage}>+48%</span> so you can receive {rewards.estimatedRewardTask.data} HEZ</p>
+                <p className={classes.rewardText}>You earned so far {rewards.earnedRewardTask.data} HEZ</p>
               </div>
             </Container>
+            )
           : <></>
-      }      
+      }
       <Container>
         <section className={classes.bottomSection}>
           <div className={classes.settingContainer}>
@@ -171,16 +163,13 @@ function MyAccount ({
 
 MyAccount.propTypes = {
   onChangePreferredCurrency: PropTypes.func,
-  estimatedRewardTask: PropTypes.object.isRequired,
-  earnedRewardTask: PropTypes.object.isRequired,
-  onLoadEstimatedReward: PropTypes.func.isRequired,
-  onLoadEarnedReward: PropTypes.func.isRequired
+  rewards: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
   preferredCurrency: state.myAccount.preferredCurrency,
-  estimatedRewardTask: state.global.rewards.estimatedRewardTask,
+  rewards: state.global.rewards,
   earnedRewardTask: state.global.rewards.earnedRewardTask
 })
 
@@ -200,10 +189,7 @@ const mapDispatchToProps = (dispatch) => ({
   onDisconnectWallet: () => dispatch(disconnectWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onNavigateToForceExit: () => dispatch(push('/force-withdrawal')),
-  onLoadEstimatedReward: (ethAddr) =>
-    dispatch(globalThunks.fetchEstimatedReward(ethAddr)),
-  onLoadEarnedReward: (ethAddr) =>
-    dispatch(globalThunks.fetchEarnedReward(ethAddr))
+  onOpenRewardsSidenav: () => dispatch(globalActions.openRewardsSidenav())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(MyAccount))

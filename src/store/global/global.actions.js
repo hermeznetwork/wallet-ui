@@ -39,6 +39,8 @@ export const globalActionTypes = {
   LOAD_COORDINATOR_STATE: '[GLOBAL] LOAD COORDINATOR STATE',
   LOAD_COORDINATOR_STATE_SUCCESS: '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
   LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE',
+  OPEN_REWARDS_SIDENAV: '[GLOBAL] OPEN REWARDS SIDENAV',
+  CLOSE_REWARDS_SIDENAV: '[GLOBAL] CLOSE REWARDS SIDENAV',
   LOAD_ESTIMATED_REWARD: '[GLOBAL] LOAD ESTIMATED REWARD',
   LOAD_ESTIMATED_REWARD_SUCCESS: '[GLOBAL] LOAD ESTIMATED REWARD SUCCESS',
   LOAD_ESTIMATED_REWARD_FAILURE: '[GLOBAL] LOAD ESTIMATED REWARD FAILURE',
@@ -294,6 +296,18 @@ function loadCoordinatorStateFailure (error) {
   }
 }
 
+function openRewardsSidenav () {
+  return {
+    type: globalActionTypes.OPEN_REWARDS_SIDENAV
+  }
+}
+
+function closeRewardsSidenav () {
+  return {
+    type: globalActionTypes.CLOSE_REWARDS_SIDENAV
+  }
+}
+
 function loadEstimatedReward () {
   return {
     type: globalActionTypes.LOAD_ESTIMATED_REWARD
@@ -369,6 +383,8 @@ export {
   loadCoordinatorState,
   loadCoordinatorStateSuccess,
   loadCoordinatorStateFailure,
+  openRewardsSidenav,
+  closeRewardsSidenav,
   loadEstimatedReward,
   loadEstimatedRewardSuccess,
   loadEstimatedRewardFailure,

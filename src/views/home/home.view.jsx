@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import useHomeStyles from './home.styles'
 import * as globalThunks from '../../store/global/global.thunks'
@@ -26,8 +25,8 @@ import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
 import * as storage from '../../utils/storage'
 import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
-import AirdropPanel from '../shared/airdrop-panel/airdrop-panel.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
+import * as globalActions from '../../store/global/global.actions'
 
 function Home ({
   wallet,
@@ -37,14 +36,13 @@ function Home ({
   accountsTask,
   poolTransactionsTask,
   exitsTask,
-  estimatedRewardTask,
-  earnedRewardTask,
   fiatExchangeRatesTask,
   preferredCurrency,
   pendingDeposits,
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorStateTask,
+  rewards,
   onChangeHeader,
   onCheckPendingDeposits,
   onLoadTotalBalance,
@@ -59,6 +57,7 @@ function Home ({
   onCheckPendingWithdrawals,
   onNavigateToAccountDetails,
   onOpenSnackbar,
+  onOpenRewardsSidenav,
   onCleanup
 }) {
   const theme = useTheme()
@@ -129,13 +128,9 @@ function Home ({
   }, [pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts])
 
   React.useEffect(() => {
-    onLoadEstimatedReward(
-      getEthereumAddress(wallet.hermezEthereumAddress)
-    )
-    onLoadEarnedReward(
-      getEthereumAddress(wallet.hermezEthereumAddress)
-    )
-  }, [onLoadEstimatedReward, onLoadEarnedReward])
+    console.log(rewards)
+    onOpenRewardsSidenav()
+  }, [])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -165,14 +160,9 @@ function Home ({
     copyToClipboard(hermezEthereumAddress)
     onOpenSnackbar('The Hermez address has been copied to the clipboard!')
   }
-  
+
   return wallet && (
     <div className={classes.root}>
-      {
-        estimatedRewardTask.status === 'successful' && earnedRewardTask.status === 'successful' 
-          ? <AirdropPanel estimatedReward={estimatedRewardTask.data} earnedReward={earnedRewardTask.data}/>
-          : <></>
-      }
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
           <Button
@@ -235,7 +225,7 @@ function Home ({
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
               : <></>
-}
+          }
           {(() => {
             switch (accountsTask.status) {
               case 'pending':
@@ -307,16 +297,12 @@ Home.propTypes = {
   fiatExchangeRatesTask: PropTypes.object,
   poolTransactionsTask: PropTypes.object.isRequired,
   exitsTask: PropTypes.object.isRequired,
-  estimatedRewardTask: PropTypes.object.isRequired,
-  earnedRewardTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
   onLoadTotalBalance: PropTypes.func.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
-  onLoadEstimatedReward: PropTypes.func.isRequired,
-  onLoadEarnedReward: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired
@@ -332,12 +318,11 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
-  estimatedRewardTask: state.global.rewards.estimatedRewardTask,
-  earnedRewardTask: state.global.rewards.earnedRewardTask,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
-  coordinatorStateTask: state.global.coordinatorStateTask
+  coordinatorStateTask: state.global.coordinatorStateTask,
+  rewards: state.global.rewards
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -354,10 +339,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(homeThunks.fetchExits(exitTransactions)),
   onRefreshAccounts: () =>
     dispatch(homeThunks.refreshAccounts()),
-  onLoadEstimatedReward: (ethAddr) =>
-    dispatch(globalThunks.fetchEstimatedReward(ethAddr)),
-  onLoadEarnedReward: (ethAddr) =>
-    dispatch(globalThunks.fetchEarnedReward(ethAddr)),
   onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
@@ -370,6 +351,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) =>
     dispatch(openSnackbar(message)),
+  onOpenRewardsSidenav: () =>
+    dispatch(globalActions.openRewardsSidenav()),
   onCleanup: () => dispatch(resetState())
 })
 
