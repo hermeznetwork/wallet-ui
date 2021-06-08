@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { AIRDROP_MORE_INFO_URL } from '../../../constants'
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
 
 import useAirdropPanelStyles from './airdrop-panel.styles'
 import { ReactComponent as ExternalLinkIcon } from '../../../images/icons/external-link.svg'
@@ -30,9 +31,16 @@ function AirdropPanel ({
         <p className={classes.panelHighlightedText}>Today’s reward</p>
         <p className={`${classes.reward} ${classes.rewardPercentage}`}>0%</p>
         <p className={classes.panelHighlightedText}>Today’s estimated reward for your funds in Hermez</p>
-        <p className={classes.reward}>{estimatedReward} HEZ</p>
+        <p className={classes.reward}>{getFixedTokenAmount(estimatedReward, 18)} HEZ</p>
         <p className={classes.panelHighlightedText}>You earned so far</p>
-        <p className={classes.reward}>{earnedReward} HEZ</p>
+        <p className={classes.reward}>{getFixedTokenAmount(earnedReward, 18)} HEZ</p>
+
+        {/* getTokenAmountInPreferredCurrency(
+                  getFixedTokenAmount(deposit.amount, deposit.token.decimals),
+                  deposit.token.USD,
+                  preferredCurrency,
+                  fiatExchangeRates
+                ) */}
       </div>
       <p className={classes.rewardText}><InfoGreyIcon />You will receive your reward at the end of the program.</p>
       <a

@@ -548,6 +548,15 @@ function fetchEarnedReward (ethAddr) {
   }
 }
 
+/**
+ * Fetches details for a specific token
+ * @param {Number} tokenId - A token ID
+ * @returns {Object} Response data with a specific token
+ */
+function fetchToken (tokenId) {
+  return CoordinatorAPI.getToken(tokenId)
+}
+
 export {
   setHermezEnvironment,
   changeRedirectRoute,
@@ -571,5 +580,6 @@ export {
   disconnectWallet,
   reloadApp,
   fetchEstimatedReward,
-  fetchEarnedReward
+  fetchEarnedReward,
+  fetchToken
 }

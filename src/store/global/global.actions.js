@@ -44,7 +44,10 @@ export const globalActionTypes = {
   LOAD_ESTIMATED_REWARD_FAILURE: '[GLOBAL] LOAD ESTIMATED REWARD FAILURE',
   LOAD_EARNED_REWARD: '[GLOBAL] LOAD EARNED REWARD',
   LOAD_EARNED_REWARD_SUCCESS: '[GLOBAL] LOAD EARNED REWARD SUCCESS',
-  LOAD_EARNED_REWARD_FAILURE: '[GLOBAL] LOAD EARNED REWARD FAILURE'
+  LOAD_EARNED_REWARD_FAILURE: '[GLOBAL] LOAD EARNED REWARD FAILURE',
+  LOAD_TOKEN: '[GLOBAL] LOAD TOKEN',
+  LOAD_TOKEN_SUCCESS: '[GLOBAL] LOAD TOKEN SUCCESS',
+  LOAD_TOKEN_FAILURE: '[GLOBAL] LOAD TOKEN FAILURE'
 }
 
 function loadHermezStatus () {
@@ -334,6 +337,26 @@ function loadEarnedRewardFailure (error) {
   }
 }
 
+function loadToken () {
+  return {
+    type: globalActionTypes.LOAD_TOKEN
+  }
+}
+
+function loadTokenSuccess (data) {
+  return {
+    type: globalActionTypes.LOAD_TOKEN_SUCCESS,
+    data
+  }
+}
+
+function loadTokenFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_TOKEN_FAILURE,
+    error
+  }
+}
+
 export {
   loadHermezStatus,
   loadHermezStatusSuccess,
@@ -374,5 +397,8 @@ export {
   loadEstimatedRewardFailure,
   loadEarnedReward,
   loadEarnedRewardSuccess,
-  loadEarnedRewardFailure
+  loadEarnedRewardFailure,
+  loadToken,
+  loadTokenSuccess,
+  loadTokenFailure
 }
