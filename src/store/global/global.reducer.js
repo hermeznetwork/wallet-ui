@@ -44,11 +44,13 @@ function getInitialGlobalState () {
     coordinatorStateTask: {
       status: 'pending'
     },
-    estimatedRewardTask: {
-      status: 'pending'
-    },
-    earnedRewardTask: {
-      status: 'pending'
+    rewards: {
+      estimatedRewardTask: {
+        status: 'pending'
+      },
+      earnedRewardTask: {
+        status: 'pending'
+      }
     }
   }
 }

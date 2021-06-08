@@ -49,6 +49,10 @@ export const HERMEZ_HELP_CENTER_URL = 'https://docs.hermez.io/#/faq/end-users'
 
 export const HERMEZ_WEB_URL = 'https://hermez.io'
 
+export const HERMEZ_AIRDROP_WEB_URL = 'http://63.32.111.74:8092/airdrop/v1/'
+
+export const HERMEZ_AIRDROP_ID = '3'
+
 export const DEPOSIT_TX_TIMEOUT = 86400000 // 24h
 
 export const AIRDROP_MORE_INFO_URL = 'https://blog.hermez.io/' // TODO: add link to the post when it is published
