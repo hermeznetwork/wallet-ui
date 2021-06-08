@@ -184,8 +184,8 @@ MyAccount.propTypes = {
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
   preferredCurrency: state.myAccount.preferredCurrency,
-  estimatedRewardTask: state.global.estimatedRewardTask,
-  earnedRewardTask: state.global.earnedRewardTask
+  estimatedRewardTask: state.global.rewards.estimatedRewardTask,
+  earnedRewardTask: state.global.rewards.earnedRewardTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
