@@ -7,15 +7,17 @@ import { ReactComponent as ExternalLinkIcon } from '../../../images/icons/extern
 import { ReactComponent as GreenCircleWhiteThickIcon } from '../../../images/icons/green-circle-white-thick.svg'
 import { ReactComponent as InfoGreyIcon } from '../../../images/icons/info-grey.svg'
 import heztoken from '../../../images/heztoken.svg'
+import Sidenav from '../../shared/sidenav/sidenav.view'
 
 function AirdropPanel ({  
   estimatedReward,
-  earnedReward
+  earnedReward,
+  onClose
 }) {
   const classes = useAirdropPanelStyles()
 
   return (
-    <>
+    <Sidenav onClose={onClose}>
       <h3 className={classes.panelTitle}>Deposit funds to Hermez to earn rewards.</h3>
       <img
         className={classes.tokenImage}
@@ -42,7 +44,7 @@ function AirdropPanel ({
         rel='noopener noreferrer'
       >More Info <ExternalLinkIcon />
       </a>
-    </>
+    </Sidenav>
   )
 }
 
