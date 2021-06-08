@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
-import { AUTO_REFRESH_RATE } from '../../constants'
 import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import useHomeStyles from './home.styles'
@@ -27,8 +26,8 @@ import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
 import * as storage from '../../utils/storage'
 import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
-import Sidenav from '../shared/sidenav/sidenav.view'
 import AirdropPanel from '../shared/airdrop-panel/airdrop-panel.view'
+import { AUTO_REFRESH_RATE } from '../../constants'
 
 function Home ({
   wallet,
@@ -60,8 +59,7 @@ function Home ({
   onCheckPendingWithdrawals,
   onNavigateToAccountDetails,
   onOpenSnackbar,
-  onCleanup,
-  onClose
+  onCleanup
 }) {
   const theme = useTheme()
   const classes = useHomeStyles()
@@ -93,9 +91,7 @@ function Home ({
     onCheckPendingDeposits()
     onLoadPoolTransactions()
     onLoadExits()
-    onLoadEstimatedReward()
-    onLoadEarnedReward()
-  }, [onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits, onLoadEstimatedReward, onLoadEarnedReward])
+  }, [onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
@@ -174,9 +170,7 @@ function Home ({
     <div className={classes.root}>
       {
         estimatedRewardTask.status === 'successful' && earnedRewardTask.status === 'successful' 
-          ? <Sidenav onClose={onClose}>
-              <AirdropPanel estimatedReward={estimatedRewardTask.data} earnedReward={earnedRewardTask.data}/>
-            </Sidenav>
+          ? <AirdropPanel estimatedReward={estimatedRewardTask.data} earnedReward={earnedRewardTask.data}/>
           : <></>
       }
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
@@ -338,8 +332,8 @@ const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   poolTransactionsTask: state.home.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
-  estimatedRewardTask: state.global.estimatedRewardTask,
-  earnedRewardTask: state.global.earnedRewardTask,
+  estimatedRewardTask: state.global.rewards.estimatedRewardTask,
+  earnedRewardTask: state.global.rewards.earnedRewardTask,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,

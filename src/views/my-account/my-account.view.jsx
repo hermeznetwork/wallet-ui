@@ -25,7 +25,6 @@ import Button from '../shared/button/button.view'
 import { copyToClipboard } from '../../utils/browser'
 import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
 import { version as packagejsonVersion } from '../../../package.json'
-import Sidenav from '../shared/sidenav/sidenav.view'
 import AirdropPanel from '../shared/airdrop-panel/airdrop-panel.view'
 
 function MyAccount ({
@@ -40,8 +39,7 @@ function MyAccount ({
   estimatedRewardTask,
   earnedRewardTask,
   onLoadEstimatedReward,
-  onLoadEarnedReward,
-  onClose
+  onLoadEarnedReward
 }) {
   const theme = useTheme()
   const classes = useMyAccountStyles()
@@ -75,9 +73,7 @@ function MyAccount ({
     <div className={classes.root}>
       {
         estimatedRewardTask.status === 'successful' && earnedRewardTask.status === 'successful' 
-          ? <Sidenav onClose={onClose}>
-              <AirdropPanel estimatedReward={estimatedRewardTask.data} earnedReward={earnedRewardTask.data}/>
-            </Sidenav>
+          ? <AirdropPanel estimatedReward={estimatedRewardTask.data} earnedReward={earnedRewardTask.data}/>
           : <></>
       }
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
@@ -184,8 +180,8 @@ MyAccount.propTypes = {
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
   preferredCurrency: state.myAccount.preferredCurrency,
-  estimatedRewardTask: state.global.estimatedRewardTask,
-  earnedRewardTask: state.global.earnedRewardTask
+  estimatedRewardTask: state.global.rewards.estimatedRewardTask,
+  earnedRewardTask: state.global.rewards.earnedRewardTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
