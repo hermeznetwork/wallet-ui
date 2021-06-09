@@ -56,6 +56,9 @@ function getInitialGlobalState () {
       },
       rewardPercentageTask: {
         status: 'pending'
+      },
+      accountEligibilityTask: {
+        status: 'pending'
       }
     }
   }
@@ -535,6 +538,41 @@ function globalReducer (state = getInitialGlobalState(), action) {
         rewards: {
           ...state.rewards,
           rewardPercentageTask: {
+            status: 'failed',
+            error: action.error
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          accountEligibilityTask: state.rewards.accountEligibilityTask.status === 'pending'
+            ? { status: 'loading' }
+            : { status: 'reloading', data: state.rewards.accountEligibilityTask.data }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          accountEligibilityTask: {
+            status: 'successful',
+            data: action.data
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          accountEligibilityTask: {
             status: 'failed',
             error: action.error
           }

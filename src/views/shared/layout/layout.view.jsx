@@ -9,14 +9,13 @@ import PageHeader from '../page-header/page-header.view'
 import Snackbar from '../snackbar/snackbar.view'
 import { closeSnackbar } from '../../../store/global/global.actions'
 import { FEATURE_TOGGLES } from '../../../constants'
-import AirdropPanel from '../../shared/airdrop-panel/airdrop-panel.view'
+import RewardsSidenav from '../../shared/rewards-sidenav/rewards-sidenav.view'
 import * as globalThunks from '../../../store/global/global.thunks'
 import * as globalActions from '../../../store/global/global.actions'
 
 function Layout ({
   header,
   snackbar,
-  wallet,
   rewards,
   children,
   onGoBack,
@@ -25,6 +24,7 @@ function Layout ({
   onLoadEstimatedReward,
   onLoadEarnedReward,
   onLoadRewardPercentage,
+  onLoadRewardAccountEligibility,
   onCloseRewardsSidenav
 }) {
   const classes = useLayoutStyles()
@@ -53,13 +53,15 @@ function Layout ({
         />
       )}
       {FEATURE_TOGGLES.REWARDS_SIDENAV && rewards.sidenav.status === 'open' && (
-        <AirdropPanel
-          wallet={wallet}
+        <RewardsSidenav
           estimatedRewardTask={rewards.estimatedRewardTask}
           earnedRewardTask={rewards.earnedRewardTask}
+          rewardPercentageTask={rewards.rewardPercentageTask}
+          accountEligibilityTask={rewards.accountEligibilityTask}
           onLoadEstimatedReward={onLoadEstimatedReward}
           onLoadEarnedReward={onLoadEarnedReward}
           onLoadRewardPercentage={onLoadRewardPercentage}
+          onLoadRewardAccountEligibility={onLoadRewardAccountEligibility}
           onClose={onCloseRewardsSidenav}
         />
       )}
@@ -74,18 +76,19 @@ Layout.propTypes = {
 const mapStateToProps = (state) => ({
   header: state.global.header,
   snackbar: state.global.snackbar,
-  wallet: state.global.wallet,
   rewards: state.global.rewards
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onCloseSnackbar: () => dispatch(closeSnackbar()),
-  onLoadEstimatedReward: (ethAddr) =>
-    dispatch(globalThunks.fetchEstimatedReward(ethAddr)),
-  onLoadEarnedReward: (ethAddr) =>
-    dispatch(globalThunks.fetchEarnedReward(ethAddr)),
+  onLoadEstimatedReward: () =>
+    dispatch(globalThunks.fetchEstimatedReward()),
+  onLoadEarnedReward: () =>
+    dispatch(globalThunks.fetchEarnedReward()),
   onLoadRewardPercentage: () =>
     dispatch(globalThunks.fetchRewardPercentage()),
+  onLoadRewardAccountEligibility: () =>
+    dispatch(globalThunks.fetchRewardAccountEligibility()),
   onCloseRewardsSidenav: () =>
     dispatch(globalActions.closeRewardsSidenav()),
   onGoBack: (action) => dispatch(action),

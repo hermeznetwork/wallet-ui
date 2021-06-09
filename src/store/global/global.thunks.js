@@ -8,10 +8,11 @@ import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as hermezWebApi from '../../apis/hermez-web'
-import * as airdropApi from '../../apis/airdrop'
+import * as airdropApi from '../../apis/rewards'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
 import { hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from '../../utils/ethereum'
+import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -527,11 +528,13 @@ function reloadApp () {
  * Fetches Airdrop estimated reward for a given ethAddr
  * @returns {void}
  */
-function fetchEstimatedReward (ethAddr) {
-  return (dispatch) => {
+function fetchEstimatedReward () {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+
     dispatch(globalActions.loadEstimatedReward())
 
-    return airdropApi.getEstimatedReward(ethAddr)
+    return airdropApi.getEstimatedReward(getEthereumAddress(wallet.hermezEthereumAddress))
       .then((res) => dispatch(globalActions.loadEstimatedRewardSuccess(res)))
       .catch(() => dispatch(globalActions.loadEstimatedRewardFailure('An error occurred loading estimated reward.')))
   }
@@ -541,11 +544,13 @@ function fetchEstimatedReward (ethAddr) {
  * Fetches Airdrop earned reward for a given ethAddr
  * @returns {void}
  */
-function fetchEarnedReward (ethAddr) {
-  return (dispatch) => {
+function fetchEarnedReward () {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+
     dispatch(globalActions.loadEarnedReward())
 
-    return airdropApi.getEarnedReward(ethAddr)
+    return airdropApi.getEarnedReward(getEthereumAddress(wallet.hermezEthereumAddress))
       .then((res) => dispatch(globalActions.loadEarnedRewardSuccess(res)))
       .catch(() => dispatch(globalActions.loadEarnedRewardFailure('An error occurred loading earned reward.')))
   }
@@ -562,6 +567,22 @@ function fetchRewardPercentage () {
     return airdropApi.getRewardPercentage()
       .then((res) => dispatch(globalActions.loadRewardPercentageSuccess(res)))
       .catch(() => dispatch(globalActions.loadRewardPercentageFailure('An error occurred loading reward percentage.')))
+  }
+}
+
+/**
+ * Checks if an account is eligible for the Airdrop
+ * @returns {void}
+ */
+function fetchRewardAccountEligibility () {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+
+    dispatch(globalActions.loadRewardAccountEligilibity())
+
+    return airdropApi.getAccountEligibility(getEthereumAddress(wallet.hermezEthereumAddress))
+      .then((res) => dispatch(globalActions.loadRewardAccountEligilibitySuccess(res)))
+      .catch(() => dispatch(globalActions.loadRewardAccountEligilibityFailure('An error occurred loading account eligibility.')))
   }
 }
 
@@ -589,5 +610,6 @@ export {
   reloadApp,
   fetchEstimatedReward,
   fetchEarnedReward,
-  fetchRewardPercentage
+  fetchRewardPercentage,
+  fetchRewardAccountEligibility
 }

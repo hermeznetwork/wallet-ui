@@ -25,24 +25,24 @@ function RewardsCard ({ estimatedRewardTask, earnedRewardTask, rewardPercentageT
         </button>
       </div>
       {
-        estimatedRewardTask.status === 'successful' || estimatedRewardTask.status === 'reloading'
+        estimatedRewardTask.status === 'failed'
           ? (
-            <>
-              <p className={classes.rewardText}>
-                Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}</span> so you can receive {estimatedRewardTask.data} HEZ
-              </p>
-              <p className={classes.rewardText}>
-                You earned so far {earnedRewardTask.data} HEZ
-              </p>
-            </>
-            )
-          : (
             <>
               <p className={classes.rewardText}>
                 Thank kou for participating in the Hermez reward program.
               </p>
               <p className={classes.rewardText}>
                 Your total reward is {earnedRewardTask.data} HEZ
+              </p>
+            </>
+            )
+          : (
+            <>
+              <p className={classes.rewardText}>
+                Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}%</span> so you can receive {estimatedRewardTask.data} HEZ
+              </p>
+              <p className={classes.rewardText}>
+                You earned so far {earnedRewardTask.data} HEZ
               </p>
             </>
             )
