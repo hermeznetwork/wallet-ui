@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import usePortalStyles from './portal.styles'
 
-function Portal ({ children }) {
+function Portal ({ selector, children }) {
   const classes = usePortalStyles()
   const portalRoot = document.querySelector('#portal-root')
   const [divElement] = React.useState(() => {

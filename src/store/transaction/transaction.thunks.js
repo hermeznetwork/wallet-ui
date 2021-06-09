@@ -10,6 +10,7 @@ import { getAccountBalance } from '../../utils/accounts'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
 import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/src/constants'
+import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
@@ -175,6 +176,21 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
   }
 }
 
+function fetchAccountBalance () {
+  return async (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+
+    dispatch(transactionActions.loadAccountBalance())
+
+    const ethereumAddress = getEthereumAddress(wallet.hermezEthereumAddress)
+    const provider = getProvider()
+
+    return provider.getBalance(ethereumAddress)
+      .then((balance) => dispatch(transactionActions.loadAccountBalanceSuccess(ethers.utils.formatUnits(balance))))
+      .catch((err) => dispatch(transactionActions.loadAccountBalanceFailure(err)))
+  }
+}
+
 /**
  * Fetches the recommended fees from the Coordinator
  * @returns {void}
@@ -202,9 +218,9 @@ function fetchEstimatedWithdrawFee (token, amount) {
       const gasLimit = await TxFees.estimateWithdrawGasLimit(token, estimatedMerkleSiblingsLength, amount, overrides, signer)
       const feeBigInt = BigInt(gasLimit) * BigInt(gasPrice)
       const ethToken = await CoordinatorAPI.getToken(ETHER_TOKEN_ID)
-      const fee = Number(ethers.utils.formatEther(feeBigInt)) * ethToken.USD
+      const feeUSD = Number(ethers.utils.formatEther(feeBigInt)) * ethToken.USD
 
-      dispatch(transactionActions.loadEstimatedWithdrawFeeSuccess(fee))
+      dispatch(transactionActions.loadEstimatedWithdrawFeeSuccess({ amount: feeBigInt.toString(), USD: feeUSD }))
     } catch (err) {
       dispatch(transactionActions.loadEstimatedWithdrawFeeFailure(err))
     }
@@ -402,6 +418,7 @@ export {
   fetchExit,
   fetchPoolTransactions,
   fetchAccounts,
+  fetchAccountBalance,
   fetchFees,
   fetchEstimatedWithdrawFee,
   deposit,

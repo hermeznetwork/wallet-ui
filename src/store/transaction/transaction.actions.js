@@ -11,6 +11,9 @@ export const transactionActionTypes = {
   LOAD_EXIT: '[TRANSACTION] LOAD EXIT',
   LOAD_EXIT_SUCCESS: '[TRANSACTION] LOAD EXIT SUCCESS',
   LOAD_EXIT_FAILURE: '[TRANSACTION] LOAD EXIT FAILURE',
+  LOAD_ACCOUNT_BALANCE: '[TRANSACTION] LOAD ACCOUNT BALANCE',
+  LOAD_ACCOUNT_BALANCE_SUCCESS: '[TRANSACTION] LOAD ACCOUNT BALANCE SUCCESS',
+  LOAD_ACCOUNT_BALANCE_FAILURE: '[TRANSACTION] LOAD ACCOUNT BALANCE FAILURE',
   LOAD_FEES: '[TRANSACTION] LOAD FEES',
   LOAD_FEES_SUCCESS: '[TRANSACTION] LOAD FEES SUCCESS',
   LOAD_FEES_FAILURE: '[TRANSACTION] LOAD FEES FAILURE',
@@ -149,6 +152,25 @@ function loadExitFailure (error) {
   }
 }
 
+function loadAccountBalance () {
+  return {
+    type: transactionActionTypes.LOAD_ACCOUNT_BALANCE
+  }
+}
+
+function loadAccountBalanceSuccess (accountBalance) {
+  return {
+    type: transactionActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS,
+    accountBalance
+  }
+}
+
+function loadAccountBalanceFailure () {
+  return {
+    type: transactionActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE
+  }
+}
+
 function loadFees () {
   return {
     type: transactionActionTypes.LOAD_FEES
@@ -226,6 +248,9 @@ export {
   loadExit,
   loadExitSuccess,
   loadExitFailure,
+  loadAccountBalance,
+  loadAccountBalanceSuccess,
+  loadAccountBalanceFailure,
   loadFees,
   loadFeesSuccess,
   loadFeesFailure,

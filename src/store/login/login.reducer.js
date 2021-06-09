@@ -10,38 +10,42 @@ export const STEP_NAME = {
   ERROR: 'error'
 }
 
-const initialLoginState = {
-  currentStep: STEP_NAME.WALLET_SELECTOR,
-  networkNameTask: {
-    status: 'pending'
-  },
-  steps: {
-    [STEP_NAME.ACCOUNT_SELECTOR]: {
-      walletName: undefined
+function getInitialLoginState () {
+  return {
+    currentStep: STEP_NAME.WALLET_SELECTOR,
+    networkNameTask: {
+      status: 'pending'
     },
-    [STEP_NAME.WALLET_LOADER]: {
-      walletName: undefined,
-      accountData: undefined,
-      walletTask: {
-        status: 'pending'
+    steps: {
+      [STEP_NAME.ACCOUNT_SELECTOR]: {
+        walletName: undefined
+      },
+      [STEP_NAME.WALLET_LOADER]: {
+        walletName: undefined,
+        accountData: undefined,
+        walletTask: {
+          status: 'pending'
+        }
+      },
+      [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
+        wallet: undefined
+      },
+      [STEP_NAME.ERROR]: {
+        error: undefined
       }
     },
-    [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
-      wallet: undefined
+    addAccountAuthTask: {
+      status: 'pending'
     },
-    [STEP_NAME.ERROR]: {
-      error: undefined
-    }
-  },
-  addAccountAuthTask: {
-    status: 'pending'
-  },
-  accountAuthSignatures: getStorage(ACCOUNT_AUTH_SIGNATURES_KEY)
+    accountAuthSignatures: getStorage(ACCOUNT_AUTH_SIGNATURES_KEY)
+  }
 }
 
-function loginReducer (state = initialLoginState, action) {
+function loginReducer (state = getInitialLoginState(), action) {
   switch (action.type) {
     case loginActionTypes.GO_TO_WALLET_SELECTOR_STEP: {
+      const initialLoginState = getInitialLoginState()
+
       return {
         ...state,
         currentStep: initialLoginState.currentStep,
@@ -100,6 +104,8 @@ function loginReducer (state = initialLoginState, action) {
       }
     }
     case loginActionTypes.GO_TO_PREVIOUS_STEP: {
+      const initialLoginState = getInitialLoginState()
+
       switch (state.currentStep) {
         case STEP_NAME.ACCOUNT_SELECTOR: {
           return {
@@ -120,8 +126,7 @@ function loginReducer (state = initialLoginState, action) {
               : STEP_NAME.ACCOUNT_SELECTOR,
             steps: {
               ...state.steps,
-              [STEP_NAME.WALLET_LOADER]:
-                initialLoginState.steps[STEP_NAME.WALLET_LOADER]
+              [STEP_NAME.WALLET_LOADER]: initialLoginState.steps[STEP_NAME.WALLET_LOADER]
             }
           }
         }
@@ -225,6 +230,8 @@ function loginReducer (state = initialLoginState, action) {
       }
     }
     case loginActionTypes.RESET_STATE: {
+      const initialLoginState = getInitialLoginState()
+
       return {
         ...state,
         currentStep: initialLoginState.currentStep,

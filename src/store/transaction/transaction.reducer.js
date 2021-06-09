@@ -27,16 +27,19 @@ const initialTransactionState = {
       }
     },
     [STEP_NAME.BUILD_TRANSACTION]: {
+      accountBalanceTask: {
+        status: 'pending'
+      },
       feesTask: {
+        status: 'pending'
+      },
+      estimatedWithdrawFeeTask: {
         status: 'pending'
       },
       account: undefined
     },
     [STEP_NAME.REVIEW_TRANSACTION]: {
       transaction: undefined,
-      estimatedWithdrawFeeTask: {
-        status: 'pending'
-      },
       isTransactionBeingSigned: false
     }
   }
@@ -252,6 +255,50 @@ function transactionReducer (state = initialTransactionState, action) {
         }
       }
     }
+    case transactionActionTypes.LOAD_ACCOUNT_BALANCE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            accountBalanceTask: {
+              status: 'loading'
+            }
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            accountBalanceTask: {
+              status: 'successful',
+              data: action.accountBalance
+            }
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            accountBalanceTask: {
+              status: 'failed',
+              error: action.error
+            }
+          }
+        }
+      }
+    }
     case transactionActionTypes.LOAD_FEES:
       return {
         ...state,
@@ -298,8 +345,8 @@ function transactionReducer (state = initialTransactionState, action) {
         ...state,
         steps: {
           ...state.steps,
-          [STEP_NAME.REVIEW_TRANSACTION]: {
-            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             estimatedWithdrawFeeTask: {
               status: 'loading'
             }
@@ -312,8 +359,8 @@ function transactionReducer (state = initialTransactionState, action) {
         ...state,
         steps: {
           ...state.steps,
-          [STEP_NAME.REVIEW_TRANSACTION]: {
-            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             estimatedWithdrawFeeTask: {
               status: 'successful',
               data: action.estimatedFee
@@ -327,8 +374,8 @@ function transactionReducer (state = initialTransactionState, action) {
         ...state,
         steps: {
           ...state.steps,
-          [STEP_NAME.REVIEW_TRANSACTION]: {
-            ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             estimatedWithdrawFeeTask: {
               status: 'failed',
               error: action.error

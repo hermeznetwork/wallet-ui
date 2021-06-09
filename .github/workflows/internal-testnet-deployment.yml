@@ -1,0 +1,40 @@
+name: Internal testnet deployment
+
+on:
+  push:
+    tags:
+      - '*rc*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create .env file
+        run: |
+          echo 'REACT_APP_ENV=development' >> .env
+          echo 'REACT_APP_ENABLE_HARDWARE_WALLETS=false' >> .env
+          echo 'REACT_APP_EXCHANGE_RATES_API_KEY=${{ secrets.INTERNAL_TESTNET_EXCHANGE_RATES_API_KEY }}' >> .env
+          echo 'REACT_APP_HERMEZ_API_URL=${{ secrets.INTERNAL_TESTNET_HERMEZ_API_URL }}' >> .env
+          echo 'REACT_APP_HERMEZ_CONTRACT_ADDRESS=${{ secrets.INTERNAL_TESTNET_HERMEZ_CONTRACT_ADDRESS }}' >> .env
+          echo 'REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.INTERNAL_TESTNET_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}' >> .env
+          echo 'REACT_APP_BATCH_EXPLORER_URL=${{ secrets.INTERNAL_TESTNET_BATCH_EXPLORER_URL }}' >> .env
+          echo 'REACT_APP_ETHERSCAN_URL=${{ secrets.INTERNAL_TESTNET_ETHERSCAN_URL }}' >> .env
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Generate production build
+        run: npm run build
+
+      - name: Deploy to S3 Bucket
+        run: aws s3 sync ./build s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
