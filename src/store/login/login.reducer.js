@@ -114,7 +114,8 @@ function loginReducer (state = initialLoginState, action) {
         case STEP_NAME.WALLET_LOADER: {
           return {
             ...state,
-            currentStep: state.steps[STEP_NAME.WALLET_LOADER].walletName === 'metaMask'
+            currentStep: state.steps[STEP_NAME.WALLET_LOADER].walletName === 'metaMask' ||
+              state.steps[STEP_NAME.WALLET_LOADER].walletName === 'wallet connect'
               ? STEP_NAME.WALLET_SELECTOR
               : STEP_NAME.ACCOUNT_SELECTOR,
             steps: {

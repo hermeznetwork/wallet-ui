@@ -18,12 +18,12 @@ import CreateAccountAuth from './components/create-account-auth/create-account-a
 import Button from '../shared/button/button.view'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from '../../store/global/global.reducer'
 import ChainIdError from './components/chain-id-error/chain-id-error.view'
-import MetaMaskError from './components/metamask-error/metamask-error.view'
 import { PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../constants'
 import UnderMaintenanceError from './components/under-maintenance-error/under-maintenance-error.view'
 
 export const WalletName = {
   METAMASK: 'metaMask',
+  WALLET_CONNECT: 'wallet connect',
   LEDGER: 'ledger',
   TREZOR: 'trezor'
 }
@@ -76,6 +76,9 @@ function Login ({
       case WalletName.METAMASK: {
         return onGoToWalletLoaderStep(walletName)
       }
+      case WalletName.WALLET_CONNECT: {
+        return onGoToWalletLoaderStep(walletName)
+      }
       case WalletName.LEDGER:
       case WalletName.TREZOR: {
         return onGoToAccountSelectorStep(walletName)
@@ -124,6 +127,7 @@ function Login ({
                 )
               }
               case STEP_NAME.ACCOUNT_SELECTOR: {
+                console.log(currentStep, stepData.walletName)
                 const walletLabel = capitalizeLabel(stepData.walletName)
 
                 return (
@@ -170,9 +174,6 @@ function Login ({
               }
               case STEP_NAME.ERROR: {
                 switch (stepData.error) {
-                  case LOAD_ETHEREUM_NETWORK_ERROR.METAMASK_NOT_INSTALLED: {
-                    return <MetaMaskError />
-                  }
                   case LOAD_ETHEREUM_NETWORK_ERROR.CHAIN_ID_NOT_SUPPORTED: {
                     const supportedEnvironments = hermezjs.Environment.getSupportedEnvironments()
 

@@ -6,7 +6,6 @@ import { STEP_NAME } from '../../../../store/login/login.reducer'
 
 function CreateAccountAuth ({
   hermezAddressAuthSignature,
-  addAccountAuthTask,
   steps,
   onCreateAccountAuthorization
 }) {
@@ -21,7 +20,7 @@ function CreateAccountAuth ({
     return (
       <div className={classes.accountAuth}>
         <h2 className={classes.accountAuthTitle}>Create accounts for new tokens</h2>
-        <p className={classes.accountAuthText}>Confirm with your signature that Hermez will automatically create accounts for your new tokens.</p>
+        <p className={classes.accountAuthText}>Confirm with your signature in your connected wallet that Hermez will automatically create accounts for your new tokens.</p>
         <Spinner />
       </div>
     )
