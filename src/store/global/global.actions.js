@@ -46,7 +46,10 @@ export const globalActionTypes = {
   LOAD_ESTIMATED_REWARD_FAILURE: '[GLOBAL] LOAD ESTIMATED REWARD FAILURE',
   LOAD_EARNED_REWARD: '[GLOBAL] LOAD EARNED REWARD',
   LOAD_EARNED_REWARD_SUCCESS: '[GLOBAL] LOAD EARNED REWARD SUCCESS',
-  LOAD_EARNED_REWARD_FAILURE: '[GLOBAL] LOAD EARNED REWARD FAILURE'
+  LOAD_EARNED_REWARD_FAILURE: '[GLOBAL] LOAD EARNED REWARD FAILURE',
+  LOAD_REWARD_PERCENTAGE: '[GLOBAL] LOAD REWARD PERCENTAGE',
+  LOAD_REWARD_PERCENTAGE_SUCCESS: '[GLOBAL] LOAD REWARD PERCENTAGE SUCCESS',
+  LOAD_REWARD_PERCENTAGE_FAILURE: '[GLOBAL] LOAD REWARD PERCENTAGE FAILURE'
 }
 
 function loadHermezStatus () {
@@ -348,6 +351,26 @@ function loadEarnedRewardFailure (error) {
   }
 }
 
+function loadRewardPercentage () {
+  return {
+    type: globalActionTypes.LOAD_REWARD_PERCENTAGE
+  }
+}
+
+function loadRewardPercentageSuccess (data) {
+  return {
+    type: globalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS,
+    data
+  }
+}
+
+function loadRewardPercentageFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE,
+    error
+  }
+}
+
 export {
   loadHermezStatus,
   loadHermezStatusSuccess,
@@ -390,5 +413,8 @@ export {
   loadEstimatedRewardFailure,
   loadEarnedReward,
   loadEarnedRewardSuccess,
-  loadEarnedRewardFailure
+  loadEarnedRewardFailure,
+  loadRewardPercentage,
+  loadRewardPercentageSuccess,
+  loadRewardPercentageFailure
 }

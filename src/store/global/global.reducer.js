@@ -48,11 +48,13 @@ function getInitialGlobalState () {
       sidenav: {
         status: 'closed'
       },
-      hasSidenavBeenClosedByTheUser: false,
       estimatedRewardTask: {
         status: 'pending'
       },
       earnedRewardTask: {
+        status: 'pending'
+      },
+      rewardPercentageTask: {
         status: 'pending'
       }
     }
@@ -430,60 +432,112 @@ function globalReducer (state = getInitialGlobalState(), action) {
           ...state.rewards,
           sidenav: {
             status: 'closed'
-          },
-          hasSidenavBeenClosedByTheUser: true
+          }
         }
       }
     }
     case globalActionTypes.LOAD_ESTIMATED_REWARD: {
       return {
         ...state,
-        estimatedRewardTask: {
-          status: 'loading'
+        rewards: {
+          ...state.rewards,
+          estimatedRewardTask: state.rewards.estimatedRewardTask.status === 'pending'
+            ? { status: 'loading' }
+            : { status: 'reloading', data: state.rewards.estimatedRewardTask.data }
         }
       }
     }
     case globalActionTypes.LOAD_ESTIMATED_REWARD_SUCCESS: {
       return {
         ...state,
-        estimatedRewardTask: {
-          status: 'successful',
-          data: action.data
+        rewards: {
+          ...state.rewards,
+          estimatedRewardTask: {
+            status: 'successful',
+            data: action.data
+          }
         }
       }
     }
     case globalActionTypes.LOAD_ESTIMATED_REWARD_FAILURE: {
       return {
         ...state,
-        estimatedRewardTask: {
-          status: 'failed',
-          error: action.error
+        rewards: {
+          ...state.rewards,
+          estimatedRewardTask: {
+            status: 'failed',
+            error: action.error
+          }
         }
       }
     }
     case globalActionTypes.LOAD_EARNED_REWARD: {
       return {
         ...state,
-        earnedRewardTask: {
-          status: 'loading'
+        rewards: {
+          ...state.rewards,
+          earnedRewardTask: state.rewards.earnedRewardTask.status === 'pending'
+            ? { status: 'loading' }
+            : { status: 'reloading', data: state.rewards.earnedRewardTask.data }
         }
       }
     }
     case globalActionTypes.LOAD_EARNED_REWARD_SUCCESS: {
       return {
         ...state,
-        earnedRewardTask: {
-          status: 'successful',
-          data: action.data
+        rewards: {
+          ...state.rewards,
+          earnedRewardTask: {
+            status: 'successful',
+            data: action.data
+          }
         }
       }
     }
     case globalActionTypes.LOAD_EARNED_REWARD_FAILURE: {
       return {
         ...state,
-        earnedRewardTask: {
-          status: 'failed',
-          error: action.error
+        rewards: {
+          ...state.rewards,
+          earnedRewardTask: {
+            status: 'failed',
+            error: action.error
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_PERCENTAGE: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          rewardPercentageTask: state.rewards.rewardPercentageTask.status === 'pending'
+            ? { status: 'loading' }
+            : { status: 'reloading', data: state.rewards.rewardPercentageTask.data }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          rewardPercentageTask: {
+            status: 'successful',
+            data: action.data
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          rewardPercentageTask: {
+            status: 'failed',
+            error: action.error
+          }
         }
       }
     }

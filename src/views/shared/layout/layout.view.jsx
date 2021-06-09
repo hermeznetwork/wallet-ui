@@ -24,6 +24,7 @@ function Layout ({
   onCloseSnackbar,
   onLoadEstimatedReward,
   onLoadEarnedReward,
+  onLoadRewardPercentage,
   onCloseRewardsSidenav
 }) {
   const classes = useLayoutStyles()
@@ -58,6 +59,7 @@ function Layout ({
           earnedRewardTask={rewards.earnedRewardTask}
           onLoadEstimatedReward={onLoadEstimatedReward}
           onLoadEarnedReward={onLoadEarnedReward}
+          onLoadRewardPercentage={onLoadRewardPercentage}
           onClose={onCloseRewardsSidenav}
         />
       )}
@@ -82,6 +84,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.fetchEstimatedReward(ethAddr)),
   onLoadEarnedReward: (ethAddr) =>
     dispatch(globalThunks.fetchEarnedReward(ethAddr)),
+  onLoadRewardPercentage: () =>
+    dispatch(globalThunks.fetchRewardPercentage()),
   onCloseRewardsSidenav: () =>
     dispatch(globalActions.closeRewardsSidenav()),
   onGoBack: (action) => dispatch(action),

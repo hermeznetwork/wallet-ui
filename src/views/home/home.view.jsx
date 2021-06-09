@@ -127,11 +127,6 @@ function Home ({
     }
   }, [pendingDepositsCheckTask, poolTransactionsTask, fiatExchangeRatesTask, wallet, onLoadTotalBalance, onLoadAccounts])
 
-  React.useEffect(() => {
-    console.log(rewards)
-    onOpenRewardsSidenav()
-  }, [])
-
   React.useEffect(() => onCleanup, [onCleanup])
 
   /**

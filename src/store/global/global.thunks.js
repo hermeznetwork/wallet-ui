@@ -507,6 +507,9 @@ function disconnectWallet () {
   return (dispatch) => {
     dispatch(globalActions.unloadWallet())
     dispatch(push('/login'))
+    if (constants.FEATURE_TOGGLES.REWARDS_SIDENAV) {
+      dispatch(globalActions.closeRewardsSidenav())
+    }
   }
 }
 
@@ -548,6 +551,20 @@ function fetchEarnedReward (ethAddr) {
   }
 }
 
+/**
+ * Fetches Airdrop reward percentage
+ * @returns {void}
+ */
+function fetchRewardPercentage () {
+  return (dispatch) => {
+    dispatch(globalActions.loadRewardPercentage())
+
+    return airdropApi.getRewardPercentage()
+      .then((res) => dispatch(globalActions.loadRewardPercentageSuccess(res)))
+      .catch(() => dispatch(globalActions.loadRewardPercentageFailure('An error occurred loading reward percentage.')))
+  }
+}
+
 export {
   setHermezEnvironment,
   changeRedirectRoute,
@@ -571,5 +588,6 @@ export {
   disconnectWallet,
   reloadApp,
   fetchEstimatedReward,
-  fetchEarnedReward
+  fetchEarnedReward,
+  fetchRewardPercentage
 }

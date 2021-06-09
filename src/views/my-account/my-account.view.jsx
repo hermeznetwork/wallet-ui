@@ -25,6 +25,7 @@ import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
 import { version as packagejsonVersion } from '../../../package.json'
 import { FEATURE_TOGGLES } from '../../constants'
 import * as globalActions from '../../store/global/global.actions'
+import RewardsCard from './components/rewards-card/rewards-card.view'
 
 function MyAccount ({
   wallet,
@@ -90,29 +91,18 @@ function MyAccount ({
           )}
         </section>
       </Container>
-      {
-        FEATURE_TOGGLES.REWARDS_SIDENAV && rewards.estimatedRewardTask.status === 'successful' && rewards.earnedRewardTask.status === 'successful'
-          ? (
-            <Container>
-              <div className={classes.airdropCard}>
-                <div className={classes.cardHeader}>
-                  <h3 className={classes.cardHeading}>Your earnings</h3>
-                  <Button
-                    className={classes.moreInfo}
-                    text='More Info'
-                    // TODO: onClick open panel
-                    onClick={() => {}}
-                  />
-                </div>
-                <p className={classes.rewardText}>Today’s reward is <span className={classes.rewardPercentage}>+48%</span> so you can receive {rewards.estimatedRewardTask.data} HEZ</p>
-                <p className={classes.rewardText}>You earned so far {rewards.earnedRewardTask.data} HEZ</p>
-              </div>
-            </Container>
-            )
-          : <></>
-      }
       <Container>
         <section className={classes.bottomSection}>
+          {FEATURE_TOGGLES.REWARDS_SIDENAV && (
+            <div className={classes.rewardsCard}>
+              <RewardsCard
+                estimatedRewardTask={rewards.estimatedRewardTask}
+                earnedRewardTask={rewards.earnedRewardTask}
+                rewardPercentageTask={rewards.rewardPercentageTask}
+                onOpenRewardsSidenav={onOpenRewardsSidenav}
+              />
+            </div>
+          )}
           <div className={classes.settingContainer}>
             <div className={classes.settingHeader}>
               <ExchangeIcon />

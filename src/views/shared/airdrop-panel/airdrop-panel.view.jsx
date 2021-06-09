@@ -16,14 +16,17 @@ function AirdropPanel ({
   earnedReward,
   onLoadEstimatedReward,
   onLoadEarnedReward,
+  onLoadRewardPercentage,
   onClose
 }) {
   const classes = useAirdropPanelStyles()
-  const accountEthereumAddress = getEthereumAddress(wallet.hermezEthereumAddress)
 
   React.useEffect(() => {
+    const accountEthereumAddress = getEthereumAddress(wallet.hermezEthereumAddress)
+
     onLoadEstimatedReward(accountEthereumAddress)
     onLoadEarnedReward(accountEthereumAddress)
+    onLoadRewardPercentage()
   }, [])
 
   return (

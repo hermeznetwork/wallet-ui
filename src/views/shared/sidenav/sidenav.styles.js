@@ -5,23 +5,19 @@ const useSidenavStyles = createUseStyles((theme) => ({
     top: 0,
     right: 0,
     bottom: 0,
-    left: 0,
+    width: theme.sideBarWidth,
     display: 'flex',
     zIndex: 999,
     position: 'fixed',
     minHeight: '100vh',
     justifyContent: 'flex-end',
-    overflow: 'hidden'
-  },
-  outerSpace: {
-    flex: 1
+    overflow: 'hidden',
+    boxShadow: '-5px 0 30px 0 rgba(136, 139, 170, 0.15)',
+    background: theme.palette.white
   },
   content: {
-    width: theme.sideBarWidth,
-    background: theme.palette.white,
     padding: theme.spacing(3),
     borderRadius: `${theme.spacing(4)}px 0 0 ${theme.spacing(4)}px`,
-    boxShadow: '-5px 0 30px 0 rgba(136, 139, 170, 0.15)',
     overflowY: 'auto'
   },
   hideButton: {
