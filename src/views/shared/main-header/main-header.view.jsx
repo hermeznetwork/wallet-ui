@@ -15,8 +15,10 @@ function MainHeader ({ showNotificationsIndicator }) {
       <Container disableVerticalGutters>
         <div className={classes.headerContent}>
           <Link to='/my-account' className={`${classes.link} ${classes.myAccountLink}`}>
-            <UserAccountIcon className={classes.myAccountIcon} />
-            {showNotificationsIndicator && <div className={classes.notificationsIndicator} />}
+            <div className={classes.myAccountIconWrapper}>
+              <UserAccountIcon />
+              {showNotificationsIndicator && <div className={classes.notificationsIndicator} />}
+            </div>
             <p className={classes.linkText}>My Account</p>
           </Link>
           <h1>

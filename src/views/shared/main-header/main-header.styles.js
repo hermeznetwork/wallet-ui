@@ -40,13 +40,18 @@ const useMainHeaderStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.bold,
     whiteSpace: 'nowrap'
   },
-  myAccountIcon: {
-    marginRight: theme.spacing(1.5)
+  myAccountIconWrapper: {
+    marginRight: theme.spacing(1.5),
+    position: 'relative'
   },
   notificationsIndicator: {
     width: theme.spacing(1.25),
     height: theme.spacing(1.25),
-    background: theme.palette.secondary.main
+    borderRadius: '50%',
+    background: theme.palette.secondary.main,
+    position: 'absolute',
+    bottom: 2,
+    right: -1
   },
   myCodeIcon: {
     marginLeft: theme.spacing(1.5)
