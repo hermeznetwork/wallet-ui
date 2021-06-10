@@ -140,16 +140,27 @@ function RewardsSidenav ({
                 <div className={classes.rewardCard}>
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>Today’s reward</p>
-                    <p className={`${classes.reward} ${classes.rewardPercentage}`}>{Number(rewardPercentageTask.data).toFixed(2)}%</p>
+                    <p className={`${classes.reward} ${classes.rewardPercentage}`}>{rewardPercentageTask.data}%</p>
                   </div>
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>
                       You earned so far
                     </p>
-                    <p className={classes.reward}>
-                      {Number(earnedRewardTask.data).toFixed(2)} HEZ
-                      ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
-                    </p>
+                    {
+                      accountEligibilityTask.data
+                        ? (
+                          <p className={classes.reward}>
+                            {Number(earnedRewardTask.data).toFixed(2)} HEZ
+                            ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
+                          </p>
+                          )
+                        : (
+                          <p className={classes.reward}>
+                            0.00 HEZ
+                            ({CurrencySymbol[preferredCurrency].symbol}0.00)
+                          </p>
+                          )
+                    }
                   </div>
                 </div>
                 {

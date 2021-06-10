@@ -7,6 +7,7 @@ function RewardsCard ({
   rewardTask,
   earnedRewardTask,
   rewardPercentageTask,
+  accountEligibilityTask,
   tokenTask,
   preferredCurrency,
   fiatExchangeRatesTask,
@@ -38,7 +39,9 @@ function RewardsCard ({
     rewardPercentageTask.status === 'pending' ||
     rewardPercentageTask.status === 'loading' ||
     tokenTask.status === 'pending' ||
-    tokenTask.status === 'loading'
+    tokenTask.status === 'loading' ||
+    accountEligibilityTask.status === 'pending' ||
+    accountEligibilityTask.status === 'loading'
   ) {
     return <></>
   }
@@ -66,8 +69,16 @@ function RewardsCard ({
           : (
             <>
               <p className={classes.rewardText}>
-                Today’s reward is <span className={classes.rewardPercentage}>{Number(rewardPercentageTask.data).toFixed(2)}%</span>.
-                You earned so far {earnedRewardTask.data} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)}).
+                Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}%</span>.&nbsp;
+                {
+                  accountEligibilityTask.data
+                    ? (
+                      <span>You earned so far {earnedRewardTask.data} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)}).</span>
+                      )
+                    : (
+                      <span>You earned so far 0.00 HEZ ({CurrencySymbol[preferredCurrency].symbol}0.00).</span>
+                      )
+                }
               </p>
             </>
             )

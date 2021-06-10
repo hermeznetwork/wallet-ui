@@ -100,6 +100,7 @@ function MyAccount ({
                 rewardTask={rewards.rewardTask}
                 earnedRewardTask={rewards.earnedRewardTask}
                 rewardPercentageTask={rewards.rewardPercentageTask}
+                accountEligibilityTask={rewards.accountEligibilityTask}
                 tokenTask={rewards.tokenTask}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRatesTask={fiatExchangeRatesTask}

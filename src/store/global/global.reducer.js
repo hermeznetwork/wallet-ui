@@ -587,9 +587,9 @@ function globalReducer (state = getInitialGlobalState(), action) {
         ...state,
         rewards: {
           ...state.rewards,
-          tokenTask: {
-            status: 'loading'
-          }
+          tokenTask: state.rewards.tokenTask.status === 'pending'
+            ? { status: 'loading' }
+            : { status: 'reloading', data: state.rewards.tokenTask.data }
         }
       }
     }
