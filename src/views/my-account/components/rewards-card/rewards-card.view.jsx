@@ -32,17 +32,17 @@ function RewardsCard ({ estimatedRewardTask, earnedRewardTask, rewardPercentageT
                 Thank kou for participating in the Hermez reward program.
               </p>
               <p className={classes.rewardText}>
-                Your total reward is {earnedRewardTask.data} HEZ
+                Your total reward is {Number(earnedRewardTask.data).toFixed(2)} HEZ
               </p>
             </>
             )
           : (
             <>
               <p className={classes.rewardText}>
-                Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}%</span> so you can receive {estimatedRewardTask.data} HEZ
+                Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}%</span> so you can receive {Number(estimatedRewardTask.data).toFixed(2)} HEZ
               </p>
               <p className={classes.rewardText}>
-                You earned so far {earnedRewardTask.data} HEZ
+                You earned so far {Number(earnedRewardTask.data).toFixed(2)} HEZ
               </p>
             </>
             )
