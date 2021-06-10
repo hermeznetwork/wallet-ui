@@ -82,7 +82,7 @@ function RewardsSidenav ({
                     </p>
                     <p className={classes.reward}>
                       {Number(earnedRewardTask.data).toFixed(2)} HEZ
-                      {getRewardAmountInPreferredCurrency(earnedRewardTask.data)} USD
+                      (${getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
                     </p>
                   </div>
                 </div>
@@ -117,7 +117,7 @@ function RewardsSidenav ({
                     <p className={classes.rewardTitle}>Today’s estimated reward for your funds in Hermez</p>
                     <p className={classes.reward}>
                       {Number(estimatedRewardTask.data).toFixed(2)} HEZ
-                      ({getRewardAmountInPreferredCurrency(estimatedRewardTask.data)} USD)
+                      (${getRewardAmountInPreferredCurrency(estimatedRewardTask.data)})
                     </p>
                   </div>
                   <div className={classes.rewardGroup}>
@@ -126,7 +126,7 @@ function RewardsSidenav ({
                     </p>
                     <p className={classes.reward}>
                       {Number(earnedRewardTask.data).toFixed(2)} HEZ
-                      ({getRewardAmountInPreferredCurrency(earnedRewardTask.data)} USD)
+                      (${getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
                     </p>
                   </div>
                 </div>
