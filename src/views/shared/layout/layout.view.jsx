@@ -17,7 +17,6 @@ function Layout ({
   header,
   snackbar,
   rewards,
-  tokenTask,
   children,
   onGoBack,
   onClose,
@@ -35,7 +34,11 @@ function Layout ({
 
   return (
     <div className={classes.root}>
-      {header.type === 'main' && <MainHeader />}
+      {header.type === 'main' && (
+        <MainHeader
+          showNotificationsIndicator={rewards.sidenav.status === 'closed'}
+        />
+      )}
       {header.type === 'page' && (
         <PageHeader
           title={header.data.title}
@@ -62,7 +65,7 @@ function Layout ({
           earnedRewardTask={rewards.earnedRewardTask}
           rewardPercentageTask={rewards.rewardPercentageTask}
           accountEligibilityTask={rewards.accountEligibilityTask}
-          tokenTask={tokenTask}
+          tokenTask={rewards.tokenTask}
           preferredCurrency={preferredCurrency}
           fiatExchangeRatesTask={fiatExchangeRatesTask}
           onLoadEstimatedReward={onLoadEstimatedReward}
@@ -85,7 +88,6 @@ const mapStateToProps = (state) => ({
   header: state.global.header,
   snackbar: state.global.snackbar,
   rewards: state.global.rewards,
-  tokenTask: state.global.tokenTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency
 })
@@ -101,7 +103,7 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadRewardAccountEligibility: () =>
     dispatch(globalThunks.fetchRewardAccountEligibility()),
   onLoadToken: () =>
-    dispatch(globalThunks.fetchToken(1)),
+    dispatch(globalThunks.fetchRewardToken()),
   onCloseRewardsSidenav: () =>
     dispatch(globalActions.closeRewardsSidenav()),
   onGoBack: (action) => dispatch(action),

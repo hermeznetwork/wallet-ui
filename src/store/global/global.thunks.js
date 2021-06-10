@@ -587,17 +587,17 @@ function fetchRewardAccountEligibility () {
 }
 
 /**
- * Fetches details for a specific token
+ * Fetches details for the token used for the rewards
  * @param {Number} tokenId - A token ID
  * @returns {Object} Response data with a specific token
  */
-function fetchToken (tokenId) {
+function fetchRewardToken () {
   return (dispatch) => {
-    dispatch(globalActions.loadToken())
+    dispatch(globalActions.loadRewardToken())
 
-    return CoordinatorAPI.getToken(tokenId)
-      .then((res) => dispatch(globalActions.loadTokenSuccess(res)))
-      .catch(() => (globalActions.loadTokenFailure('An error occured loading token.')))
+    return CoordinatorAPI.getToken(constants.HEZ_TOKEN_ID)
+      .then((res) => dispatch(globalActions.loadRewardTokenSuccess(res)))
+      .catch(() => (globalActions.loadRewardTokenFailure('An error occured loading token.')))
   }
 }
 
@@ -627,5 +627,5 @@ export {
   fetchEarnedReward,
   fetchRewardPercentage,
   fetchRewardAccountEligibility,
-  fetchToken
+  fetchRewardToken
 }

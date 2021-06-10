@@ -582,29 +582,38 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_TOKEN: {
+    case globalActionTypes.LOAD_REWARD_TOKEN: {
       return {
         ...state,
-        tokenTask: {
-          status: 'loading'
+        rewards: {
+          ...state.rewards,
+          tokenTask: {
+            status: 'loading'
+          }
         }
       }
     }
-    case globalActionTypes.LOAD_TOKEN_SUCCESS: {
+    case globalActionTypes.LOAD_REWARD_TOKEN_SUCCESS: {
       return {
         ...state,
-        tokenTask: {
-          status: 'successful',
-          data: action.data
+        rewards: {
+          ...state.rewards,
+          tokenTask: {
+            status: 'successful',
+            data: action.data
+          }
         }
       }
     }
-    case globalActionTypes.LOAD_TOKEN_FAILURE: {
+    case globalActionTypes.LOAD_REWARD_TOKEN_FAILURE: {
       return {
         ...state,
-        tokenTask: {
-          status: 'failed',
-          error: action.error
+        rewards: {
+          ...state.rewards,
+          tokenTask: {
+            status: 'failed',
+            error: action.error
+          }
         }
       }
     }
