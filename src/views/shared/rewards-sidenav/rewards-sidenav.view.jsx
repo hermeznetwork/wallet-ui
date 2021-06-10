@@ -14,10 +14,12 @@ function RewardsSidenav ({
   earnedRewardTask,
   rewardPercentageTask,
   accountEligibilityTask,
+  tokenTask,
   onLoadEstimatedReward,
   onLoadEarnedReward,
   onLoadRewardPercentage,
   onLoadRewardAccountEligibility,
+  onLoadToken,
   onClose
 }) {
   const classes = useRewardsSidenavStyles()
@@ -27,6 +29,7 @@ function RewardsSidenav ({
     onLoadEarnedReward()
     onLoadRewardAccountEligibility()
     onLoadRewardPercentage()
+    onLoadToken()
   }, [])
 
   return (
@@ -47,7 +50,9 @@ function RewardsSidenav ({
             rewardPercentageTask.status === 'pending' ||
             rewardPercentageTask.status === 'loading' ||
             accountEligibilityTask.status === 'pending' ||
-            accountEligibilityTask.status === 'loading'
+            accountEligibilityTask.status === 'loading' ||
+            tokenTask.status === 'pending' ||
+            tokenTask.status === 'loading'
           ) {
             return <></>
           }

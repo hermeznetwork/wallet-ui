@@ -586,6 +586,21 @@ function fetchRewardAccountEligibility () {
   }
 }
 
+/**
+ * Fetches details for a specific token
+ * @param {Number} tokenId - A token ID
+ * @returns {Object} Response data with a specific token
+ */
+function fetchToken (tokenId) {
+  return (dispatch) => {
+    dispatch(globalActions.loadToken())
+
+    return CoordinatorAPI.getToken(tokenId)
+      .then((res) => dispatch(globalActions.loadTokenSuccess(res)))
+      .catch(() => (globalActions.loadTokenFailure('An error occured loading token.')))
+  }
+}
+
 export {
   setHermezEnvironment,
   changeRedirectRoute,
@@ -611,5 +626,6 @@ export {
   fetchEstimatedReward,
   fetchEarnedReward,
   fetchRewardPercentage,
-  fetchRewardAccountEligibility
+  fetchRewardAccountEligibility,
+  fetchToken
 }

@@ -25,6 +25,7 @@ function Layout ({
   onLoadEarnedReward,
   onLoadRewardPercentage,
   onLoadRewardAccountEligibility,
+  onLoadToken,
   onCloseRewardsSidenav
 }) {
   const classes = useLayoutStyles()
@@ -62,6 +63,7 @@ function Layout ({
           onLoadEarnedReward={onLoadEarnedReward}
           onLoadRewardPercentage={onLoadRewardPercentage}
           onLoadRewardAccountEligibility={onLoadRewardAccountEligibility}
+          onLoadToken={onLoadToken}
           onClose={onCloseRewardsSidenav}
         />
       )}
@@ -76,7 +78,8 @@ Layout.propTypes = {
 const mapStateToProps = (state) => ({
   header: state.global.header,
   snackbar: state.global.snackbar,
-  rewards: state.global.rewards
+  rewards: state.global.rewards,
+  tokenTask: state.global.tokenTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -89,6 +92,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.fetchRewardPercentage()),
   onLoadRewardAccountEligibility: () =>
     dispatch(globalThunks.fetchRewardAccountEligibility()),
+  onLoadToken: () =>
+    dispatch(globalThunks.fetchToken(1)),
   onCloseRewardsSidenav: () =>
     dispatch(globalActions.closeRewardsSidenav()),
   onGoBack: (action) => dispatch(action),

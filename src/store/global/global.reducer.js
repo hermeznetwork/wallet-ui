@@ -60,6 +60,9 @@ function getInitialGlobalState () {
       accountEligibilityTask: {
         status: 'pending'
       }
+    },
+    tokenTask: {
+      status: 'pending'
     }
   }
 }
@@ -576,6 +579,32 @@ function globalReducer (state = getInitialGlobalState(), action) {
             status: 'failed',
             error: action.error
           }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_TOKEN: {
+      return {
+        ...state,
+        tokenTask: {
+          status: 'loading'
+        }
+      }
+    }
+    case globalActionTypes.LOAD_TOKEN_SUCCESS: {
+      return {
+        ...state,
+        tokenTask: {
+          status: 'successful',
+          data: action.data
+        }
+      }
+    }
+    case globalActionTypes.LOAD_TOKEN_FAILURE: {
+      return {
+        ...state,
+        tokenTask: {
+          status: 'failed',
+          error: action.error
         }
       }
     }
