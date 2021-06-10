@@ -21,7 +21,7 @@ function Layout ({
   onGoBack,
   onClose,
   onCloseSnackbar,
-  onLoadEstimatedReward,
+  onLoadReward,
   onLoadEarnedReward,
   onLoadRewardPercentage,
   onLoadRewardAccountEligibility,
@@ -59,12 +59,12 @@ function Layout ({
       )}
       {FEATURE_TOGGLES.REWARDS_SIDENAV && rewards.sidenav.status === 'open' && (
         <RewardsSidenav
-          estimatedRewardTask={rewards.estimatedRewardTask}
+          rewardTask={rewards.rewardTask}
           earnedRewardTask={rewards.earnedRewardTask}
           rewardPercentageTask={rewards.rewardPercentageTask}
           accountEligibilityTask={rewards.accountEligibilityTask}
           tokenTask={rewards.tokenTask}
-          onLoadEstimatedReward={onLoadEstimatedReward}
+          onLoadReward={onLoadReward}
           onLoadEarnedReward={onLoadEarnedReward}
           onLoadRewardPercentage={onLoadRewardPercentage}
           onLoadRewardAccountEligibility={onLoadRewardAccountEligibility}
@@ -89,8 +89,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onCloseSnackbar: () => dispatch(closeSnackbar()),
-  onLoadEstimatedReward: () =>
-    dispatch(globalThunks.fetchEstimatedReward()),
+  onLoadReward: () =>
+    dispatch(globalThunks.fetchReward()),
   onLoadEarnedReward: () =>
     dispatch(globalThunks.fetchEarnedReward()),
   onLoadRewardPercentage: () =>

@@ -528,15 +528,13 @@ function reloadApp () {
  * Fetches Airdrop estimated reward for a given ethAddr
  * @returns {void}
  */
-function fetchEstimatedReward () {
+function fetchReward () {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    dispatch(globalActions.loadReward())
 
-    dispatch(globalActions.loadEstimatedReward())
-
-    return airdropApi.getEstimatedReward(getEthereumAddress(wallet.hermezEthereumAddress))
-      .then((res) => dispatch(globalActions.loadEstimatedRewardSuccess(res)))
-      .catch(() => dispatch(globalActions.loadEstimatedRewardFailure('An error occurred loading estimated reward.')))
+    return airdropApi.getReward()
+      .then((res) => dispatch(globalActions.loadRewardSuccess(res)))
+      .catch(() => dispatch(globalActions.loadRewardFailure('An error occurred loading estimated reward.')))
   }
 }
 
@@ -623,7 +621,7 @@ export {
   fetchCoordinatorState,
   disconnectWallet,
   reloadApp,
-  fetchEstimatedReward,
+  fetchReward,
   fetchEarnedReward,
   fetchRewardPercentage,
   fetchRewardAccountEligibility,

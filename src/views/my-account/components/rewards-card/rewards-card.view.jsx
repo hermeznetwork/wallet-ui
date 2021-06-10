@@ -2,12 +2,19 @@ import React from 'react'
 
 import useRewardsCardStyles from './rewards-card.styles'
 
-function RewardsCard ({ estimatedRewardTask, earnedRewardTask, rewardPercentageTask, onOpenRewardsSidenav }) {
+function RewardsCard ({ rewardTask, earnedRewardTask, rewardPercentageTask, onOpenRewardsSidenav }) {
   const classes = useRewardsCardStyles()
 
+  function hasRewardExpired (reward) {
+    const now = new Date().getTime()
+    const rewardEndingTime = (reward.initTimestamp + reward.duration) * 1000
+
+    return rewardEndingTime <= now
+  }
+
   if (
-    estimatedRewardTask.status === 'pending' ||
-    estimatedRewardTask.status === 'loading' ||
+    rewardTask.status === 'pending' ||
+    rewardTask.status === 'loading' ||
     earnedRewardTask.status === 'pending' ||
     earnedRewardTask.status === 'loading' ||
     rewardPercentageTask.status === 'pending' ||
@@ -25,7 +32,7 @@ function RewardsCard ({ estimatedRewardTask, earnedRewardTask, rewardPercentageT
         </button>
       </div>
       {
-        estimatedRewardTask.status === 'failed'
+        hasRewardExpired(rewardTask)
           ? (
             <>
               <p className={classes.rewardText}>
@@ -39,10 +46,7 @@ function RewardsCard ({ estimatedRewardTask, earnedRewardTask, rewardPercentageT
           : (
             <>
               <p className={classes.rewardText}>
-                Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}%</span> so you can receive {estimatedRewardTask.data} HEZ
-              </p>
-              <p className={classes.rewardText}>
-                You earned so far {earnedRewardTask.data} HEZ
+                Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}%</span>. You earned so far {earnedRewardTask.data} HEZ.
               </p>
             </>
             )

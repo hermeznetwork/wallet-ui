@@ -3,14 +3,12 @@ import axios from 'axios'
 import { HERMEZ_AIRDROP_WEB_URL, HERMEZ_AIRDROP_ID } from '../constants'
 
 /**
- * Fetches Airdrop estimated reward
- * @returns {String} - estimatedReward
+ * Fetches Airdrop data
+ * @returns {Object} - airdrop
  */
-function getEstimatedReward (ethAddr) {
-  const params = { airdropID: HERMEZ_AIRDROP_ID, ethAddr }
-
-  return axios.get(`${HERMEZ_AIRDROP_WEB_URL}/estimated-reward`, { params })
-    .then(res => res.data.estimatedReward)
+function getReward (ethAddr) {
+  return axios.get(`${HERMEZ_AIRDROP_WEB_URL}/airdrops/${HERMEZ_AIRDROP_ID}`)
+    .then(res => res.data.airdrop)
 }
 
 /**
@@ -47,7 +45,7 @@ function getAccountEligibility (ethAddr) {
 }
 
 export {
-  getEstimatedReward,
+  getReward,
   getEarnedReward,
   getRewardPercentage,
   getAccountEligibility

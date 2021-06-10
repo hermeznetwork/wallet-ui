@@ -37,10 +37,7 @@ const useRewardsCardStyles = createUseStyles((theme) => ({
   rewardText: {
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.grey.light,
-    lineHeight: `${theme.spacing(3)}px`,
-    '&:first-of-type': {
-      marginBottom: theme.spacing(0.5)
-    }
+    lineHeight: `${theme.spacing(3)}px`
   },
   rewardPercentage: {
     color: theme.palette.green

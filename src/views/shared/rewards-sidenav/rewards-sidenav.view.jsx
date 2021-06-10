@@ -8,14 +8,15 @@ import { ReactComponent as GreenCircleWhiteThickIcon } from '../../../images/ico
 import { ReactComponent as InfoGreyIcon } from '../../../images/icons/info-grey.svg'
 import heztoken from '../../../images/heztoken.svg'
 import Sidenav from '../sidenav/sidenav.view'
+import * as date from '../../../utils/date'
 
 function RewardsSidenav ({
-  estimatedRewardTask,
+  rewardTask,
   earnedRewardTask,
   rewardPercentageTask,
   accountEligibilityTask,
   tokenTask,
-  onLoadEstimatedReward,
+  onLoadReward,
   onLoadEarnedReward,
   onLoadRewardPercentage,
   onLoadRewardAccountEligibility,
@@ -23,14 +24,40 @@ function RewardsSidenav ({
   onClose
 }) {
   const classes = useRewardsSidenavStyles()
+  const [rewardRemainingTime, setRewardRemainingTime] = React.useState(undefined)
 
   React.useEffect(() => {
-    onLoadEstimatedReward()
+    onLoadReward()
     onLoadEarnedReward()
     onLoadRewardAccountEligibility()
     onLoadRewardPercentage()
     onLoadToken()
   }, [])
+
+  React.useEffect(() => {
+    const updateTimer = () => {
+      if (rewardTask.status === 'successful') {
+        const rewardEndingTime = (rewardTask.data.initTimestamp + rewardTask.data.duration) * 1000
+        const rewardRemaningTime = rewardEndingTime - new Date().getTime()
+
+        if (!hasRewardExpired(rewardTask.data)) {
+          setRewardRemainingTime(rewardRemaningTime)
+        }
+      }
+    }
+    const intervalId = setInterval(updateTimer, 1000)
+
+    updateTimer()
+
+    return () => { clearInterval(intervalId) }
+  }, [rewardTask])
+
+  function hasRewardExpired (reward) {
+    const now = new Date().getTime()
+    const rewardEndingTime = (reward.initTimestamp + reward.duration) * 1000
+
+    return rewardEndingTime <= now
+  }
 
   return (
     <Sidenav onClose={onClose}>
@@ -43,8 +70,8 @@ function RewardsSidenav ({
         />
         {(() => {
           if (
-            estimatedRewardTask.status === 'pending' ||
-            estimatedRewardTask.status === 'loading' ||
+            rewardTask.status === 'pending' ||
+            rewardTask.status === 'loading' ||
             earnedRewardTask.status === 'pending' ||
             earnedRewardTask.status === 'loading' ||
             rewardPercentageTask.status === 'pending' ||
@@ -57,7 +84,7 @@ function RewardsSidenav ({
             return <></>
           }
 
-          return estimatedRewardTask.status === 'failed'
+          return hasRewardExpired(rewardTask.data)
             ? (
               <>
                 <p className={classes.finishedText}>
@@ -77,7 +104,9 @@ function RewardsSidenav ({
               )
             : (
               <>
-                <p className={classes.timeLeft}>XXd XXh XXm left</p>
+                <p className={classes.timeLeft}>
+                  {date.getTimeLeft(rewardRemainingTime)}
+                </p>
                 {
                   accountEligibilityTask.data
                     ? (
@@ -99,10 +128,6 @@ function RewardsSidenav ({
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>Today’s reward</p>
                     <p className={`${classes.reward} ${classes.rewardPercentage}`}>{rewardPercentageTask.data}%</p>
-                  </div>
-                  <div className={classes.rewardGroup}>
-                    <p className={classes.rewardTitle}>Today’s estimated reward for your funds in Hermez</p>
-                    <p className={classes.reward}>{estimatedRewardTask.data} HEZ</p>
                   </div>
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>
@@ -140,7 +165,7 @@ function RewardsSidenav ({
 }
 
 RewardsSidenav.propTypes = {
-  estimatedRewardTask: PropTypes.object.isRequired,
+  rewardTask: PropTypes.object.isRequired,
   earnedRewardTask: PropTypes.object.isRequired
 }
 

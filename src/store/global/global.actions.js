@@ -41,9 +41,9 @@ export const globalActionTypes = {
   LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE',
   OPEN_REWARDS_SIDENAV: '[GLOBAL] OPEN REWARDS SIDENAV',
   CLOSE_REWARDS_SIDENAV: '[GLOBAL] CLOSE REWARDS SIDENAV',
-  LOAD_ESTIMATED_REWARD: '[GLOBAL] LOAD ESTIMATED REWARD',
-  LOAD_ESTIMATED_REWARD_SUCCESS: '[GLOBAL] LOAD ESTIMATED REWARD SUCCESS',
-  LOAD_ESTIMATED_REWARD_FAILURE: '[GLOBAL] LOAD ESTIMATED REWARD FAILURE',
+  LOAD_REWARD: '[GLOBAL] LOAD REWARD',
+  LOAD_REWARD_SUCCESS: '[GLOBAL] LOAD REWARD SUCCESS',
+  LOAD_REWARD_FAILURE: '[GLOBAL] LOAD REWARD FAILURE',
   LOAD_EARNED_REWARD: '[GLOBAL] LOAD EARNED REWARD',
   LOAD_EARNED_REWARD_SUCCESS: '[GLOBAL] LOAD EARNED REWARD SUCCESS',
   LOAD_EARNED_REWARD_FAILURE: '[GLOBAL] LOAD EARNED REWARD FAILURE',
@@ -317,22 +317,22 @@ function closeRewardsSidenav () {
   }
 }
 
-function loadEstimatedReward () {
+function loadReward () {
   return {
-    type: globalActionTypes.LOAD_ESTIMATED_REWARD
+    type: globalActionTypes.LOAD_REWARD
   }
 }
 
-function loadEstimatedRewardSuccess (data) {
+function loadRewardSuccess (data) {
   return {
-    type: globalActionTypes.LOAD_ESTIMATED_REWARD_SUCCESS,
+    type: globalActionTypes.LOAD_REWARD_SUCCESS,
     data
   }
 }
 
-function loadEstimatedRewardFailure (error) {
+function loadRewardFailure (error) {
   return {
-    type: globalActionTypes.LOAD_ESTIMATED_REWARD_FAILURE,
+    type: globalActionTypes.LOAD_REWARD_FAILURE,
     error
   }
 }
@@ -454,9 +454,9 @@ export {
   loadCoordinatorStateFailure,
   openRewardsSidenav,
   closeRewardsSidenav,
-  loadEstimatedReward,
-  loadEstimatedRewardSuccess,
-  loadEstimatedRewardFailure,
+  loadReward,
+  loadRewardSuccess,
+  loadRewardFailure,
   loadEarnedReward,
   loadEarnedRewardSuccess,
   loadEarnedRewardFailure,

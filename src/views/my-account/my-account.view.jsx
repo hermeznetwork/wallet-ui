@@ -96,7 +96,7 @@ function MyAccount ({
           {FEATURE_TOGGLES.REWARDS_SIDENAV && (
             <div className={classes.rewardsCard}>
               <RewardsCard
-                estimatedRewardTask={rewards.estimatedRewardTask}
+                rewardTask={rewards.rewardTask}
                 earnedRewardTask={rewards.earnedRewardTask}
                 rewardPercentageTask={rewards.rewardPercentageTask}
                 onOpenRewardsSidenav={onOpenRewardsSidenav}

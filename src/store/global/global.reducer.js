@@ -48,7 +48,7 @@ function getInitialGlobalState () {
       sidenav: {
         status: 'closed'
       },
-      estimatedRewardTask: {
+      rewardTask: {
         status: 'pending'
       },
       earnedRewardTask: {
@@ -442,35 +442,35 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_ESTIMATED_REWARD: {
+    case globalActionTypes.LOAD_REWARD: {
       return {
         ...state,
         rewards: {
           ...state.rewards,
-          estimatedRewardTask: state.rewards.estimatedRewardTask.status === 'pending'
+          rewardTask: state.rewards.rewardTask.status === 'pending'
             ? { status: 'loading' }
-            : { status: 'reloading', data: state.rewards.estimatedRewardTask.data }
+            : { status: 'reloading', data: state.rewards.rewardTask.data }
         }
       }
     }
-    case globalActionTypes.LOAD_ESTIMATED_REWARD_SUCCESS: {
+    case globalActionTypes.LOAD_REWARD_SUCCESS: {
       return {
         ...state,
         rewards: {
           ...state.rewards,
-          estimatedRewardTask: {
+          rewardTask: {
             status: 'successful',
             data: action.data
           }
         }
       }
     }
-    case globalActionTypes.LOAD_ESTIMATED_REWARD_FAILURE: {
+    case globalActionTypes.LOAD_REWARD_FAILURE: {
       return {
         ...state,
         rewards: {
           ...state.rewards,
-          estimatedRewardTask: {
+          rewardTask: {
             status: 'failed',
             error: action.error
           }
