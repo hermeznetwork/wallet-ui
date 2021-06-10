@@ -30,7 +30,6 @@ function RewardsSidenav ({
   const [rewardRemainingTime, setRewardRemainingTime] = React.useState(undefined)
 
   function getRewardAmountInPreferredCurrency (rewardAmount) {
-    console.log(rewardAmount)
     return getTokenAmountInPreferredCurrency(
       rewardAmount,
       tokenTask.data.USD,

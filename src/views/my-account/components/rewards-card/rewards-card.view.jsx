@@ -22,8 +22,6 @@ function RewardsCard ({
   }
 
   function getRewardAmountInPreferredCurrency (rewardAmount) {
-    console.log(tokenTask)
-    console.log(fiatExchangeRatesTask)
     return getTokenAmountInPreferredCurrency(
       rewardAmount,
       tokenTask.data.USD,
@@ -54,14 +52,14 @@ function RewardsCard ({
         </button>
       </div>
       {
-        hasRewardExpired(rewardTask)
+        hasRewardExpired(rewardTask.data)
           ? (
             <>
               <p className={classes.rewardText}>
                 Thank kou for participating in the Hermez reward program.
               </p>
               <p className={classes.rewardText}>
-                Your total reward is {Number(earnedRewardTask.data).toFixed(2)} HEZ
+                Your total reward is {Number(earnedRewardTask.data).toFixed(2)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
               </p>
             </>
             )
