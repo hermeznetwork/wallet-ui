@@ -43,6 +43,11 @@ const useMainHeaderStyles = createUseStyles(theme => ({
   myAccountIcon: {
     marginRight: theme.spacing(1.5)
   },
+  notificationsIndicator: {
+    width: theme.spacing(1.25),
+    height: theme.spacing(1.25),
+    background: theme.palette.secondary.main
+  },
   myCodeIcon: {
     marginLeft: theme.spacing(1.5)
   }

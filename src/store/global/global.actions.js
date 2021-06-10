@@ -53,9 +53,9 @@ export const globalActionTypes = {
   LOAD_REWARD_ACCOUNT_ELIGIBILITY: '[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY',
   LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS: '[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY SUCCESS',
   LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE: '[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY FAILURE',
-  LOAD_TOKEN: '[GLOBAL] LOAD TOKEN',
-  LOAD_TOKEN_SUCCESS: '[GLOBAL] LOAD TOKEN SUCCESS',
-  LOAD_TOKEN_FAILURE: '[GLOBAL] LOAD TOKEN FAILURE'
+  LOAD_REWARD_TOKEN: '[GLOBAL] LOAD REWARD TOKEN',
+  LOAD_REWARD_TOKEN_SUCCESS: '[GLOBAL] LOAD REWARD TOKEN SUCCESS',
+  LOAD_REWARD_TOKEN_FAILURE: '[GLOBAL] LOAD REWARD TOKEN FAILURE'
 }
 
 function loadHermezStatus () {
@@ -397,22 +397,22 @@ function loadRewardAccountEligilibityFailure (error) {
   }
 }
 
-function loadToken () {
+function loadRewardToken () {
   return {
-    type: globalActionTypes.LOAD_TOKEN
+    type: globalActionTypes.LOAD_REWARD_TOKEN
   }
 }
 
-function loadTokenSuccess (data) {
+function loadRewardTokenSuccess (data) {
   return {
-    type: globalActionTypes.LOAD_TOKEN_SUCCESS,
+    type: globalActionTypes.LOAD_REWARD_TOKEN_SUCCESS,
     data
   }
 }
 
-function loadTokenFailure (error) {
+function loadRewardTokenFailure (error) {
   return {
-    type: globalActionTypes.LOAD_TOKEN_FAILURE,
+    type: globalActionTypes.LOAD_REWARD_TOKEN_FAILURE,
     error
   }
 }
@@ -466,7 +466,7 @@ export {
   loadRewardAccountEligilibity,
   loadRewardAccountEligilibitySuccess,
   loadRewardAccountEligilibityFailure,
-  loadToken,
-  loadTokenSuccess,
-  loadTokenFailure
+  loadRewardToken,
+  loadRewardTokenSuccess,
+  loadRewardTokenFailure
 }

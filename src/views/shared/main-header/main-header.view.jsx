@@ -7,7 +7,7 @@ import { ReactComponent as UserAccountIcon } from '../../../images/icons/user-ac
 import { ReactComponent as QRCodeIcon } from '../../../images/icons/qr-code.svg'
 import Container from '../container/container.view'
 
-function MainHeader () {
+function MainHeader ({ showNotificationsIndicator }) {
   const classes = useMainHeaderStyles()
 
   return (
@@ -16,6 +16,7 @@ function MainHeader () {
         <div className={classes.headerContent}>
           <Link to='/my-account' className={`${classes.link} ${classes.myAccountLink}`}>
             <UserAccountIcon className={classes.myAccountIcon} />
+            {showNotificationsIndicator && <div className={classes.notificationsIndicator} />}
             <p className={classes.linkText}>My Account</p>
           </Link>
           <h1>

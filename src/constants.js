@@ -60,3 +60,5 @@ export const AIRDROP_MORE_INFO_URL = 'https://blog.hermez.io/' // TODO: add link
 export const FEATURE_TOGGLES = {
   REWARDS_SIDENAV: true
 }
+
+export const HEZ_TOKEN_ID = 1

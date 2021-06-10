@@ -32,7 +32,11 @@ function Layout ({
 
   return (
     <div className={classes.root}>
-      {header.type === 'main' && <MainHeader />}
+      {header.type === 'main' && (
+        <MainHeader
+          showNotificationsIndicator={rewards.sidenav.status === 'closed'}
+        />
+      )}
       {header.type === 'page' && (
         <PageHeader
           title={header.data.title}
@@ -59,6 +63,7 @@ function Layout ({
           earnedRewardTask={rewards.earnedRewardTask}
           rewardPercentageTask={rewards.rewardPercentageTask}
           accountEligibilityTask={rewards.accountEligibilityTask}
+          tokenTask={rewards.tokenTask}
           onLoadEstimatedReward={onLoadEstimatedReward}
           onLoadEarnedReward={onLoadEarnedReward}
           onLoadRewardPercentage={onLoadRewardPercentage}
@@ -93,7 +98,7 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadRewardAccountEligibility: () =>
     dispatch(globalThunks.fetchRewardAccountEligibility()),
   onLoadToken: () =>
-    dispatch(globalThunks.fetchToken(1)),
+    dispatch(globalThunks.fetchRewardToken()),
   onCloseRewardsSidenav: () =>
     dispatch(globalActions.closeRewardsSidenav()),
   onGoBack: (action) => dispatch(action),
