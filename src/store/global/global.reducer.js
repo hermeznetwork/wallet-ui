@@ -59,10 +59,10 @@ function getInitialGlobalState () {
       },
       accountEligibilityTask: {
         status: 'pending'
+      },
+      tokenTask: {
+        status: 'pending'
       }
-    },
-    tokenTask: {
-      status: 'pending'
     }
   }
 }

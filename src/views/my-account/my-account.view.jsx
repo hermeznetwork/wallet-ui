@@ -30,6 +30,7 @@ import RewardsCard from './components/rewards-card/rewards-card.view'
 function MyAccount ({
   wallet,
   preferredCurrency,
+  fiatExchangeRatesTask,
   rewards,
   onChangeHeader,
   onChangePreferredCurrency,
@@ -99,6 +100,9 @@ function MyAccount ({
                 rewardTask={rewards.rewardTask}
                 earnedRewardTask={rewards.earnedRewardTask}
                 rewardPercentageTask={rewards.rewardPercentageTask}
+                tokenTask={rewards.tokenTask}
+                preferredCurrency={preferredCurrency}
+                fiatExchangeRatesTask={fiatExchangeRatesTask}
                 onOpenRewardsSidenav={onOpenRewardsSidenav}
               />
             </div>
@@ -160,7 +164,8 @@ const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
   preferredCurrency: state.myAccount.preferredCurrency,
   rewards: state.global.rewards,
-  earnedRewardTask: state.global.rewards.earnedRewardTask
+  earnedRewardTask: state.global.rewards.earnedRewardTask,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({

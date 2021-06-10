@@ -1,8 +1,17 @@
 import React from 'react'
 
 import useRewardsCardStyles from './rewards-card.styles'
+import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies.js'
 
-function RewardsCard ({ rewardTask, earnedRewardTask, rewardPercentageTask, onOpenRewardsSidenav }) {
+function RewardsCard ({
+  rewardTask,
+  earnedRewardTask,
+  rewardPercentageTask,
+  tokenTask,
+  preferredCurrency,
+  fiatExchangeRatesTask,
+  onOpenRewardsSidenav
+}) {
   const classes = useRewardsCardStyles()
 
   function hasRewardExpired (reward) {
@@ -12,13 +21,26 @@ function RewardsCard ({ rewardTask, earnedRewardTask, rewardPercentageTask, onOp
     return rewardEndingTime <= now
   }
 
+  function getRewardAmountInPreferredCurrency (rewardAmount) {
+    console.log(tokenTask)
+    console.log(fiatExchangeRatesTask)
+    return getTokenAmountInPreferredCurrency(
+      rewardAmount,
+      tokenTask.data.USD,
+      preferredCurrency,
+      fiatExchangeRatesTask.data
+    ).toFixed(2)
+  }
+
   if (
     rewardTask.status === 'pending' ||
     rewardTask.status === 'loading' ||
     earnedRewardTask.status === 'pending' ||
     earnedRewardTask.status === 'loading' ||
     rewardPercentageTask.status === 'pending' ||
-    rewardPercentageTask.status === 'loading'
+    rewardPercentageTask.status === 'loading' ||
+    tokenTask.status === 'pending' ||
+    tokenTask.status === 'loading'
   ) {
     return <></>
   }
@@ -39,14 +61,15 @@ function RewardsCard ({ rewardTask, earnedRewardTask, rewardPercentageTask, onOp
                 Thank kou for participating in the Hermez reward program.
               </p>
               <p className={classes.rewardText}>
-                Your total reward is {earnedRewardTask.data} HEZ
+                Your total reward is {Number(earnedRewardTask.data).toFixed(2)} HEZ
               </p>
             </>
             )
           : (
             <>
               <p className={classes.rewardText}>
-                Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}%</span>. You earned so far {earnedRewardTask.data} HEZ.
+                Today’s reward is <span className={classes.rewardPercentage}>{Number(rewardPercentageTask.data).toFixed(2)}%</span>.
+                You earned so far {earnedRewardTask.data} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)}).
               </p>
             </>
             )

@@ -26,7 +26,9 @@ function Layout ({
   onLoadRewardPercentage,
   onLoadRewardAccountEligibility,
   onLoadToken,
-  onCloseRewardsSidenav
+  onCloseRewardsSidenav,
+  preferredCurrency,
+  fiatExchangeRatesTask
 }) {
   const classes = useLayoutStyles()
 
@@ -64,6 +66,8 @@ function Layout ({
           rewardPercentageTask={rewards.rewardPercentageTask}
           accountEligibilityTask={rewards.accountEligibilityTask}
           tokenTask={rewards.tokenTask}
+          preferredCurrency={preferredCurrency}
+          fiatExchangeRatesTask={fiatExchangeRatesTask}
           onLoadReward={onLoadReward}
           onLoadEarnedReward={onLoadEarnedReward}
           onLoadRewardPercentage={onLoadRewardPercentage}
@@ -84,7 +88,8 @@ const mapStateToProps = (state) => ({
   header: state.global.header,
   snackbar: state.global.snackbar,
   rewards: state.global.rewards,
-  tokenTask: state.global.tokenTask
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
+  preferredCurrency: state.myAccount.preferredCurrency
 })
 
 const mapDispatchToProps = (dispatch) => ({

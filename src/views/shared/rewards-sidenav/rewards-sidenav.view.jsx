@@ -9,6 +9,7 @@ import { ReactComponent as InfoGreyIcon } from '../../../images/icons/info-grey.
 import heztoken from '../../../images/heztoken.svg'
 import Sidenav from '../sidenav/sidenav.view'
 import * as date from '../../../utils/date'
+import { getTokenAmountInPreferredCurrency, CurrencySymbol } from '../../../utils/currencies'
 
 function RewardsSidenav ({
   rewardTask,
@@ -16,6 +17,8 @@ function RewardsSidenav ({
   rewardPercentageTask,
   accountEligibilityTask,
   tokenTask,
+  preferredCurrency,
+  fiatExchangeRatesTask,
   onLoadReward,
   onLoadEarnedReward,
   onLoadRewardPercentage,
@@ -25,6 +28,16 @@ function RewardsSidenav ({
 }) {
   const classes = useRewardsSidenavStyles()
   const [rewardRemainingTime, setRewardRemainingTime] = React.useState(undefined)
+
+  function getRewardAmountInPreferredCurrency (rewardAmount) {
+    console.log(rewardAmount)
+    return getTokenAmountInPreferredCurrency(
+      rewardAmount,
+      tokenTask.data.USD,
+      preferredCurrency,
+      fiatExchangeRatesTask.data
+    ).toFixed(2)
+  }
 
   React.useEffect(() => {
     onLoadReward()
@@ -96,7 +109,8 @@ function RewardsSidenav ({
                       Your total reward
                     </p>
                     <p className={classes.reward}>
-                      {earnedRewardTask.data} HEZ
+                      {Number(earnedRewardTask.data).toFixed(2)} HEZ
+                      (${getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
                     </p>
                   </div>
                 </div>
@@ -127,14 +141,15 @@ function RewardsSidenav ({
                 <div className={classes.rewardCard}>
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>Today’s reward</p>
-                    <p className={`${classes.reward} ${classes.rewardPercentage}`}>{rewardPercentageTask.data}%</p>
+                    <p className={`${classes.reward} ${classes.rewardPercentage}`}>{Number(rewardPercentageTask.data).toFixed(2)}%</p>
                   </div>
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>
                       You earned so far
                     </p>
                     <p className={classes.reward}>
-                      {earnedRewardTask.data} HEZ
+                      {Number(earnedRewardTask.data).toFixed(2)} HEZ
+                      ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
                     </p>
                   </div>
                 </div>
@@ -166,7 +181,8 @@ function RewardsSidenav ({
 
 RewardsSidenav.propTypes = {
   rewardTask: PropTypes.object.isRequired,
-  earnedRewardTask: PropTypes.object.isRequired
+  earnedRewardTask: PropTypes.object.isRequired,
+  tokenTask: PropTypes.object.isRequired
 }
 
 export default RewardsSidenav
