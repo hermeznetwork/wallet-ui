@@ -3,6 +3,7 @@ import { push } from 'connected-react-router'
 import { ethers } from 'ethers'
 import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
 import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
+import { HttpStatusCode } from '@hermeznetwork/hermezjs/src/http'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
@@ -550,7 +551,14 @@ function fetchEarnedReward () {
 
     return airdropApi.getEarnedReward(getEthereumAddress(wallet.hermezEthereumAddress))
       .then((res) => dispatch(globalActions.loadEarnedRewardSuccess(res)))
-      .catch(() => dispatch(globalActions.loadEarnedRewardFailure('An error occurred loading earned reward.')))
+      .catch(err => {
+        console.log('err.response.status: ', err.response.status)
+        if (err.response.status === HttpStatusCode.NOT_FOUND) {
+          dispatch(globalActions.loadEarnedRewardSuccess(0))
+        } else {
+          globalActions.loadRewardFailure('An error occurred loading estimated reward.')
+        }
+      })
   }
 }
 
