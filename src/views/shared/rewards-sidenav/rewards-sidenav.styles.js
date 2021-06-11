@@ -6,9 +6,13 @@ const useRewardsSidenavStyles = createUseStyles(theme => ({
     flexDirection: 'column'
   },
   panelTitle: {
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(3),
+      lineHeight: `${theme.spacing(3.5)}px`
+    },
+    fontSize: theme.spacing(2),
+    lineHeight: `${theme.spacing(2.5)}px`,
     fontWeight: theme.fontWeights.bold,
-    fontSize: theme.spacing(3),
-    lineHeight: `${theme.spacing(3.5)}px`,
     marginTop: 0,
     marginBottom: theme.spacing(2)
   },
@@ -16,9 +20,15 @@ const useRewardsSidenavStyles = createUseStyles(theme => ({
     width: '100%'
   },
   finishedText: {
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(2),
+      lineHeight: `${theme.spacing(3)}px`,
+      marginTop: theme.spacing(3)
+    },
+    fontSize: theme.spacing(1.75),
+    lineHeight: `${theme.spacing(2.75)}px`,
     fontWeight: theme.fontWeights.bold,
-    lineHeight: `${theme.spacing(3)}px`,
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2)
   },
   timeLeft: {
@@ -40,8 +50,11 @@ const useRewardsSidenavStyles = createUseStyles(theme => ({
     marginBottom: theme.spacing(0.75)
   },
   eligibilityCriteriaText: {
+    [theme.breakpoints.upSm]: {
+      lineHeight: `${theme.spacing(3)}px`
+    },
     fontWeight: theme.fontWeights.bold,
-    lineHeight: `${theme.spacing(3)}px`,
+    lineHeight: `${theme.spacing(2.5)}px`,
     marginBottom: theme.spacing(3)
   },
   eligibleTextWrapper: {
@@ -56,9 +69,12 @@ const useRewardsSidenavStyles = createUseStyles(theme => ({
     flex: '1 0 auto'
   },
   rewardCard: {
+    [theme.breakpoints.upSm]: {
+      padding: theme.spacing(3)
+    },
+    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
     background: theme.palette.grey.light,
-    borderRadius: theme.spacing(2),
-    padding: theme.spacing(3)
+    borderRadius: theme.spacing(2)
   },
   rewardGroup: {
     display: 'flex',
@@ -75,8 +91,11 @@ const useRewardsSidenavStyles = createUseStyles(theme => ({
     marginBottom: theme.spacing(1)
   },
   reward: {
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(2.5)
+    },
+    fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.bold,
-    fontSize: theme.spacing(2.5),
     lineHeight: `${theme.spacing(2.5)}px`
   },
   rewardPercentage: {
@@ -98,6 +117,10 @@ const useRewardsSidenavStyles = createUseStyles(theme => ({
     flex: '1 0 auto'
   },
   moreInfoLink: {
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(2)
+    },
+    fontSize: theme.spacing(1.75),
     background: theme.palette.grey.light,
     borderRadius: 100,
     color: theme.palette.grey.main,
@@ -110,6 +133,10 @@ const useRewardsSidenavStyles = createUseStyles(theme => ({
     marginTop: theme.spacing(4)
   },
   moreInfoLinkIcon: {
+    [theme.breakpoints.upSm]: {
+      width: theme.spacing(1.85)
+    },
+    width: theme.spacing(1.5),
     marginLeft: theme.spacing(1)
   }
 }))

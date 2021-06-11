@@ -163,6 +163,14 @@ function RewardsSidenav ({
                     }
                   </div>
                 </div>
+
+                <div className={classes.infoTextWrapper}>
+                  <InfoGreyIcon className={classes.infoIcon} />
+                  <p className={classes.infoText}>
+                    You will receive your reward at the end of the program.
+                  </p>
+                </div>
+
                 {
                   accountEligibilityTask.data && (
                     <div className={classes.infoTextWrapper}>

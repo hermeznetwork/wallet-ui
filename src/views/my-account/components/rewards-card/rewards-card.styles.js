@@ -17,6 +17,10 @@ const useRewardsCardStyles = createUseStyles((theme) => ({
     marginBottom: theme.spacing(1)
   },
   cardHeading: {
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(2.5)
+    },
+    fontSize: theme.spacing(2),
     margin: 0
   },
   moreInfoButton: {
@@ -35,9 +39,14 @@ const useRewardsCardStyles = createUseStyles((theme) => ({
     }
   },
   rewardText: {
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(2),
+      lineHeight: `${theme.spacing(3)}px`
+    },
+    fontSize: theme.spacing(1.75),
+    lineHeight: `${theme.spacing(2.25)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.grey.light,
-    lineHeight: `${theme.spacing(3)}px`
+    color: theme.palette.grey.light
   },
   rewardPercentage: {
     color: theme.palette.green
