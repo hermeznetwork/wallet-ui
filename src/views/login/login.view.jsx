@@ -23,7 +23,7 @@ import UnderMaintenanceError from './components/under-maintenance-error/under-ma
 
 export const WalletName = {
   METAMASK: 'metaMask',
-  WALLET_CONNECT: 'wallet connect',
+  WALLET_CONNECT: 'walletConnect',
   LEDGER: 'ledger',
   TREZOR: 'trezor'
 }
@@ -73,9 +73,7 @@ function Login ({
    */
   function handleWalletClick (walletName) {
     switch (walletName) {
-      case WalletName.METAMASK: {
-        return onGoToWalletLoaderStep(walletName)
-      }
+      case WalletName.METAMASK:
       case WalletName.WALLET_CONNECT: {
         return onGoToWalletLoaderStep(walletName)
       }
@@ -127,7 +125,6 @@ function Login ({
                 )
               }
               case STEP_NAME.ACCOUNT_SELECTOR: {
-                console.log(currentStep, stepData.walletName)
                 const walletLabel = capitalizeLabel(stepData.walletName)
 
                 return (

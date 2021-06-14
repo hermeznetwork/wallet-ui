@@ -79,7 +79,7 @@ function signMessageHelper (walletName, providerOrSigner, message, address) {
 function fetchWallet (walletName, accountData) {
   return async (dispatch, getState) => {
     try {
-      if (walletName === WalletName.LEDGER && walletName === WalletName.TREZOR) {
+      if (walletName === WalletName.LEDGER || walletName === WalletName.TREZOR) {
         hermez.Providers.setProvider(process.env.REACT_APP_HARDWARE_WALLETS_PROVIDER)
       }
 
@@ -98,7 +98,7 @@ function fetchWallet (walletName, accountData) {
         try {
           await provider.send('eth_requestAccounts')
         } catch (err) {
-          console.log(err)
+          console.error(err)
         }
       }
 
@@ -128,7 +128,6 @@ function fetchWallet (walletName, accountData) {
         dispatch(loginActions.goToCreateAccountAuthStep(wallet))
       }
     } catch (error) {
-      console.log(error)
       const { login: { currentStep } } = getState()
 
       if (currentStep === STEP_NAME.WALLET_LOADER) {

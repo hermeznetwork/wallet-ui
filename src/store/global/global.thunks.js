@@ -22,7 +22,7 @@ function setHermezEnvironment () {
     hermezjs.TxPool.initializeTransactionPool()
 
     if (!window.ethereum) {
-      return dispatch(globalActions.loadEthereumNetworkSuccess({ name: 'mainnet' }))
+      return dispatch(globalActions.loadEthereumNetworkSuccess({ name: '' }))
     }
 
     hermezjs.Providers.getProvider().getNetwork()

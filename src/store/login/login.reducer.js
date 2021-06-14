@@ -1,6 +1,7 @@
 import { loginActionTypes } from './login.actions'
 import { ACCOUNT_AUTH_SIGNATURES_KEY } from '../../constants'
 import { getStorage } from '../../utils/storage'
+import { WalletName } from '../../views/login/login.view'
 
 export const STEP_NAME = {
   WALLET_SELECTOR: 'wallet-selector',
@@ -120,8 +121,8 @@ function loginReducer (state = getInitialLoginState(), action) {
         case STEP_NAME.WALLET_LOADER: {
           return {
             ...state,
-            currentStep: state.steps[STEP_NAME.WALLET_LOADER].walletName === 'metaMask' ||
-              state.steps[STEP_NAME.WALLET_LOADER].walletName === 'wallet connect'
+            currentStep: state.steps[STEP_NAME.WALLET_LOADER].walletName === WalletName.METAMASK ||
+              state.steps[STEP_NAME.WALLET_LOADER].walletName === WalletName.WALLET_CONNECT
               ? STEP_NAME.WALLET_SELECTOR
               : STEP_NAME.ACCOUNT_SELECTOR,
             steps: {
