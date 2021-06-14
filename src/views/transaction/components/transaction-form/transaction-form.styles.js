@@ -42,7 +42,8 @@ const useTransactionFormStyles = createUseStyles(theme => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: theme.spacing(2)
   },
   selectAmount: {
     border: `solid 2px ${theme.palette.grey.veryLight}`,
@@ -221,29 +222,6 @@ const useTransactionFormStyles = createUseStyles(theme => ({
   receiverDeleteButtonIcon: {
     width: 32,
     height: 32
-  },
-  feeWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    marginTop: theme.spacing(2.5),
-    [theme.breakpoints.upSm]: {
-      marginTop: theme.spacing(3)
-    }
-  },
-  fee: {
-    fontSize: `${theme.spacing(2)}px`,
-    fontWeight: theme.fontWeights.medium,
-    color: theme.palette.grey.main,
-    [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(2.5)}px`,
-      padding: 0
-    }
-  },
-  feeIcon: {
-    width: theme.spacing(2),
-    height: theme.spacing(2)
   }
 }))
 

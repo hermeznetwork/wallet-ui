@@ -4,13 +4,13 @@ import PropTypes from 'prop-types'
 import useTransactionInfoRowStyles from './transaction-info-row.styles'
 import { ReactComponent as CopyIcon } from '../../../images/icons/copy.svg'
 
-function TransactionInfoRow ({ title, subtitle, value, showCopyButton, onCopySubtitle }) {
+function TransactionInfoRow ({ title, subtitle, hint, value, showCopyButton, onCopySubtitle }) {
   const classes = useTransactionInfoRowStyles()
 
   return (
     <div className={classes.root}>
-      <p className={classes.title}>{title}</p>
-      <div className={classes.content}>
+      <div className={`${classes.row} ${classes.topRow}`}>
+        <p className={classes.title}>{title}</p>
         <div className={classes.subtitle}>
           {
             showCopyButton && (
@@ -21,6 +21,9 @@ function TransactionInfoRow ({ title, subtitle, value, showCopyButton, onCopySub
           }
           <p>{subtitle}</p>
         </div>
+      </div>
+      <div className={classes.row}>
+        {hint ? <p className={classes.hint}>{hint}</p> : <p className={classes.hint}>&nbsp;</p>}
         {value ? <p className={classes.value}>{value}</p> : <p className={classes.value}>&nbsp;</p>}
       </div>
     </div>

@@ -10,7 +10,7 @@ import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
-import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency, getFeeInUsd, CurrencySymbol } from '../../utils/currencies'
+import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency, getFeeInUsd } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
 import { fetchCoordinatorState } from '../../store/global/global.thunks'
@@ -108,20 +108,18 @@ function TransactionDetails ({
 
         if (transactionTask.data.L2Info?.historicFeeUSD) {
           const feeUsd = transactionTask.data.L2Info.historicFeeUSD
-          const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
           const feeToken = feeUsd / token.USD
-          return {
-            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${!isNaN(feePreferredCurrency) ? feePreferredCurrency.toFixed(2) : '-'}`,
-            tokens: `${!isNaN(feeUsd) ? Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)) : '-'} ${token.symbol}`
-          }
+
+          return !isNaN(feeUsd)
+            ? { value: Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)), token }
+            : undefined
         } else if (transactionTask.data.fee || transactionTask.data.L2Info?.fee) {
           const feeUsd = getFeeInUsd(transactionTask.data.fee || transactionTask.data.L2Info?.fee, transactionTask.data.amount, token)
-          const feePreferredCurrency = getAmountInPreferredCurrency(feeUsd, preferredCurrency, fiatExchangeRatesTask.data)
           const feeToken = feeUsd / token.USD
-          return {
-            fiat: `${CurrencySymbol[preferredCurrency].symbol} ${!isNaN(feePreferredCurrency) ? feePreferredCurrency.toFixed(2) : '-'}`,
-            tokens: `${!isNaN(feeUsd) ? Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)) : '-'} ${token.symbol}`
-          }
+
+          return !isNaN(feeUsd)
+            ? { value: Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)), token }
+            : undefined
         } else {
           return undefined
         }
@@ -177,6 +175,8 @@ function TransactionDetails ({
                     <TransactionInfo
                       txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
+                      preferredCurrency={preferredCurrency}
+                      fiatExchangeRates={fiatExchangeRatesTask}
                       showStatus
                       showToCopyButton
                       showFromCopyButton

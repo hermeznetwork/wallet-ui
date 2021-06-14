@@ -15,6 +15,8 @@ const TxStatus = {
 function TransactionInfo ({
   txData,
   accountIndex,
+  preferredCurrency,
+  fiatExchangeRates,
   showStatus,
   showToCopyButton,
   showFromCopyButton,
@@ -91,6 +93,8 @@ function TransactionInfo ({
             }}
             date={date}
             fee={txData.fee}
+            preferredCurrency={preferredCurrency}
+            fiatExchangeRates={fiatExchangeRates}
             showToCopyButton={showToCopyButton}
             showFromCopyButton={showFromCopyButton}
             onCopyToAddress={handleCopyToAddress}
@@ -110,6 +114,8 @@ function TransactionInfo ({
             }}
             date={date}
             fee={txData.fee}
+            preferredCurrency={preferredCurrency}
+            fiatExchangeRates={fiatExchangeRates}
           />
         )
       }
@@ -130,6 +136,9 @@ function TransactionInfo ({
           }}
           date={date}
           fee={txData.fee}
+          estimatedWithdrawFee={txData.estimatedWithdrawFee}
+          preferredCurrency={preferredCurrency}
+          fiatExchangeRates={fiatExchangeRates}
         />
       )
     }
