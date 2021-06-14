@@ -82,8 +82,7 @@ function RewardsSidenav ({
         />
         {(() => {
           if (
-            rewardTask.status === 'pending' ||
-            rewardTask.status === 'loading' ||
+            rewardTask.status !== 'successful' ||
             earnedRewardTask.status === 'pending' ||
             earnedRewardTask.status === 'loading' ||
             rewardPercentageTask.status === 'pending' ||

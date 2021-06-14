@@ -552,7 +552,7 @@ function fetchEarnedReward () {
     return airdropApi.getEarnedReward(getEthereumAddress(wallet.hermezEthereumAddress))
       .then((res) => dispatch(globalActions.loadEarnedRewardSuccess(res)))
       .catch(err => {
-        if (err.response.status === HttpStatusCode.NOT_FOUND) {
+        if (err.response?.status === HttpStatusCode.NOT_FOUND) {
           dispatch(globalActions.loadEarnedRewardSuccess(0))
         } else {
           globalActions.loadRewardFailure('An error occurred loading estimated reward.')

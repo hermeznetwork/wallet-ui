@@ -108,48 +108,50 @@ function MyAccount ({
               />
             </div>
           )}
-          <div className={classes.settingContainer}>
-            <div className={classes.settingHeader}>
-              <ExchangeIcon />
-              <p className={classes.settingTitle}>Currency conversion</p>
+          <div className={classes.settings}>
+            <div className={classes.settingContainer}>
+              <div className={classes.settingHeader}>
+                <ExchangeIcon />
+                <p className={classes.settingTitle}>Currency conversion</p>
+              </div>
+              <div className={classes.settingContent}>
+                <PreferredCurrencySelector
+                  preferredCurrency={preferredCurrency}
+                  currencies={Object.values(CurrencySymbol)}
+                  onChange={onChangePreferredCurrency}
+                />
+              </div>
             </div>
-            <div className={classes.settingContent}>
-              <PreferredCurrencySelector
-                preferredCurrency={preferredCurrency}
-                currencies={Object.values(CurrencySymbol)}
-                onChange={onChangePreferredCurrency}
-              />
+            <div className={classes.settingContainer}>
+              <div className={classes.settingHeader} onClick={onNavigateToForceExit}>
+                <ExitIcon />
+                <p className={classes.settingTitle}>Force withdrawal</p>
+                <p className={classes.settingSubTitle}>Forces the coordinator to process the transaction (more Gas is required).</p>
+              </div>
             </div>
-          </div>
-          <div className={classes.settingContainer}>
-            <div className={classes.settingHeader} onClick={onNavigateToForceExit}>
-              <ExitIcon />
-              <p className={classes.settingTitle}>Force withdrawal</p>
-              <p className={classes.settingSubTitle}>Forces the coordinator to process the transaction (more Gas is required).</p>
-            </div>
-          </div>
-          {wallet && (
-            <a
+            {wallet && (
+              <a
+                className={classes.settingContainer}
+                href={`${hermezjs.Environment.getBatchExplorerUrl()}/user-account/${wallet.hermezEthereumAddress}`}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <div className={classes.settingHeader}>
+                  <OpenInNewTabIcon />
+                  <p className={classes.settingTitle}>View in batch explorer</p>
+                </div>
+              </a>
+            )}
+            <button
               className={classes.settingContainer}
-              href={`${hermezjs.Environment.getBatchExplorerUrl()}/user-account/${wallet.hermezEthereumAddress}`}
-              target='_blank'
-              rel='noopener noreferrer'
+              onClick={handleOnDisconnectWallet}
             >
               <div className={classes.settingHeader}>
-                <OpenInNewTabIcon />
-                <p className={classes.settingTitle}>View in batch explorer</p>
+                <PowerOffIcon />
+                <p className={classes.settingTitle}>Disconnect wallet</p>
               </div>
-            </a>
-          )}
-          <button
-            className={classes.settingContainer}
-            onClick={handleOnDisconnectWallet}
-          >
-            <div className={classes.settingHeader}>
-              <PowerOffIcon />
-              <p className={classes.settingTitle}>Disconnect wallet</p>
-            </div>
-          </button>
+            </button>
+          </div>
         </section>
       </Container>
     </div>
