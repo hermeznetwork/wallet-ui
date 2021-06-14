@@ -227,6 +227,7 @@ function transactionReducer (state = initialTransactionState, action) {
             status: 'successful'
           },
           [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             account: action.account
           },
           [STEP_NAME.REVIEW_TRANSACTION]: {
