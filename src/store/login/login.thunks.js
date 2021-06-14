@@ -106,7 +106,7 @@ function fetchWallet (walletName, accountData) {
       const signer = await hermez.Signers.getSigner(provider, signerData)
       if (walletName === WalletName.WALLET_CONNECT) {
         // #enable shows the QR or uses the stored session
-        await provider.provider.enable().then(console.log).catch(console.log)
+        await provider.provider.enable()
         const chainId = (await provider.getNetwork()).chainId
         if (process.env.REACT_APP_ENV === 'production' && hermez.Environment.isEnvironmentSupported(chainId)) {
           hermez.Environment.setEnvironment(chainId)
