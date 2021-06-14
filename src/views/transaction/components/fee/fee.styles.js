@@ -40,6 +40,7 @@ const useFeeStyles = createUseStyles((theme) => ({
     padding: `${theme.spacing(0.5)}px ${theme.spacing(1)}px`
   },
   withdrawFeeButtonText: {
+    fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.medium,
     marginRight: theme.spacing(1),
     color: theme.palette.grey.main
