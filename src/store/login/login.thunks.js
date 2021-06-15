@@ -1,6 +1,8 @@
 import { keccak256 } from 'js-sha3'
 import hermez from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
+import { utils } from 'ethers'
+import WalletConnectProvider from '@walletconnect/web3-provider'
 
 import * as globalActions from '../global/global.actions'
 import * as loginActions from './login.actions'
@@ -11,7 +13,8 @@ import { WalletName } from '../../views/login/login.view'
 
 async function getSignerData (provider, walletName, accountData) {
   switch (walletName) {
-    case WalletName.METAMASK: {
+    case WalletName.METAMASK:
+    case WalletName.WALLET_CONNECT: {
       return {
         type: hermez.Signers.SignerType.JSON_RPC
       }
@@ -47,6 +50,28 @@ async function getSignerData (provider, walletName, accountData) {
 }
 
 /**
+ * Helper function that signs the authentication message depending on Wallet type
+ * @param {String} walletName
+ * @param {Object} providerOrSigner
+ * @param {String} message
+ * @param {String} address
+ * @returns {Promise} A promise that resolves to the signature
+ */
+function signMessageHelper (walletName, providerOrSigner, message, address) {
+  if (walletName === WalletName.WALLET_CONNECT) {
+    const rawMessageLength = new Blob([message]).size
+    const messageInBytes = utils.toUtf8Bytes('\x19Ethereum Signed Message:\n' + rawMessageLength + message)
+    const msgParams = [
+      address.toLowerCase(),
+      utils.keccak256(messageInBytes)
+    ]
+    return providerOrSigner.provider.connector.signMessage(msgParams)
+  } else {
+    return providerOrSigner.signMessage(message)
+  }
+}
+
+/**
  * Asks the user to login using a compatible wallet and stores its data in the Redux
  * store
  * @returns {void}
@@ -54,8 +79,15 @@ async function getSignerData (provider, walletName, accountData) {
 function fetchWallet (walletName, accountData) {
   return async (dispatch, getState) => {
     try {
-      if (walletName !== WalletName.METAMASK) {
+      if (walletName === WalletName.LEDGER || walletName === WalletName.TREZOR) {
         hermez.Providers.setProvider(process.env.REACT_APP_HARDWARE_WALLETS_PROVIDER)
+      }
+
+      if (walletName === WalletName.WALLET_CONNECT) {
+        const walletConnectProvider = new WalletConnectProvider({
+          infuraId: process.env.REACT_APP_INFURA_KEY
+        })
+        hermez.Providers.setProvider(walletConnectProvider, hermez.Providers.PROVIDER_TYPES.WEB3)
       }
 
       const provider = hermez.Providers.getProvider()
@@ -66,15 +98,25 @@ function fetchWallet (walletName, accountData) {
         try {
           await provider.send('eth_requestAccounts')
         } catch (err) {
-          console.log(err)
+          console.error(err)
         }
       }
 
       const signerData = await getSignerData(provider, walletName, accountData)
       const signer = await hermez.Signers.getSigner(provider, signerData)
+      if (walletName === WalletName.WALLET_CONNECT) {
+        // #enable shows the QR or uses the stored session
+        await provider.provider.enable()
+        const chainId = (await provider.getNetwork()).chainId
+        if (process.env.REACT_APP_ENV === 'production' && hermez.Environment.isEnvironmentSupported(chainId)) {
+          hermez.Environment.setEnvironment(chainId)
+        }
+      }
+
       const address = await signer.getAddress()
       const hermezAddress = hermez.Addresses.getHermezAddress(address)
-      const signature = await signer.signMessage(hermez.Constants.METAMASK_MESSAGE)
+      const providerOrSigner = walletName === WalletName.WALLET_CONNECT ? provider : signer
+      const signature = await signMessageHelper(walletName, providerOrSigner, hermez.Constants.METAMASK_MESSAGE, address)
       const hashedSignature = keccak256(signature)
       const signatureBuffer = hermez.Utils.hexToBuffer(hashedSignature)
       const wallet = new hermez.HermezWallet.HermezWallet(signatureBuffer, hermezAddress)
