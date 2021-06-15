@@ -38,7 +38,7 @@ function getRewardPercentage () {
  * @returns {Boolean} - isUserEligible
  */
 function getAccountEligibility (ethAddr) {
-  const params = { accountIndex: 256, airdropID: HERMEZ_AIRDROP_ID }
+  const params = { ethAddr, airdropID: HERMEZ_AIRDROP_ID }
 
   return axios.get(`${HERMEZ_AIRDROP_WEB_URL}/check-user-eligibility`, { params })
     .then(res => res.data.isUserEligible)

@@ -19,6 +19,11 @@ const useRewardsSidenavStyles = createUseStyles(theme => ({
   tokenImage: {
     width: '100%'
   },
+  apiNotAvailableError: {
+    marginTop: theme.spacing(3),
+    fontWeight: theme.fontWeights.bold,
+    lineHeight: 1.5
+  },
   finishedText: {
     [theme.breakpoints.upSm]: {
       fontSize: theme.spacing(2),

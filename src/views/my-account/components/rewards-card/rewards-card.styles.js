@@ -38,6 +38,10 @@ const useRewardsCardStyles = createUseStyles((theme) => ({
       background: theme.palette.grey.hover
     }
   },
+  apiNotAvailableError: {
+    fontWeight: theme.fontWeights.bold,
+    lineHeight: 1.5
+  },
   rewardText: {
     [theme.breakpoints.upSm]: {
       fontSize: theme.spacing(2),

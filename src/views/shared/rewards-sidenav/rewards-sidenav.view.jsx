@@ -52,7 +52,7 @@ function RewardsSidenav ({
         const rewardEndingTime = (rewardTask.data.initTimestamp + rewardTask.data.duration) * 1000
         const rewardRemaningTime = rewardEndingTime - new Date().getTime()
 
-        if (!hasRewardExpired(rewardTask.data)) {
+        if (rewardTask.data && !hasRewardExpired(rewardTask.data)) {
           setRewardRemainingTime(rewardRemaningTime)
         }
       }
@@ -82,7 +82,8 @@ function RewardsSidenav ({
         />
         {(() => {
           if (
-            rewardTask.status !== 'successful' ||
+            rewardTask.status === 'pending' ||
+            rewardTask.status === 'loading' ||
             earnedRewardTask.status === 'pending' ||
             earnedRewardTask.status === 'loading' ||
             rewardPercentageTask.status === 'pending' ||
@@ -93,6 +94,20 @@ function RewardsSidenav ({
             tokenTask.status === 'loading'
           ) {
             return <></>
+          }
+
+          if (
+            rewardTask.status === 'failed' ||
+            earnedRewardTask.status === 'failed' ||
+            rewardPercentageTask.status === 'failed' ||
+            accountEligibilityTask.status === 'failed' ||
+            tokenTask.status === 'failed'
+          ) {
+            return (
+              <p className={classes.apiNotAvailableError}>
+                There was a problem loading the information on this page. Please, try to access it again later.
+              </p>
+            )
           }
 
           return hasRewardExpired(rewardTask.data)

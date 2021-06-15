@@ -447,9 +447,9 @@ function globalReducer (state = getInitialGlobalState(), action) {
         ...state,
         rewards: {
           ...state.rewards,
-          rewardTask: state.rewards.rewardTask.status === 'pending'
-            ? { status: 'loading' }
-            : { status: 'reloading', data: state.rewards.rewardTask.data }
+          rewardTask: state.rewards.rewardTask.status === 'successful'
+            ? { status: 'reloading', data: state.rewards.rewardTask.data }
+            : { status: 'loading' }
         }
       }
     }
@@ -482,9 +482,9 @@ function globalReducer (state = getInitialGlobalState(), action) {
         ...state,
         rewards: {
           ...state.rewards,
-          earnedRewardTask: state.rewards.earnedRewardTask.status === 'pending'
-            ? { status: 'loading' }
-            : { status: 'reloading', data: state.rewards.earnedRewardTask.data }
+          earnedRewardTask: state.rewards.earnedRewardTask.status === 'successful'
+            ? { status: 'reloading', data: state.rewards.earnedRewardTask.data }
+            : { status: 'loading' }
         }
       }
     }
@@ -517,9 +517,9 @@ function globalReducer (state = getInitialGlobalState(), action) {
         ...state,
         rewards: {
           ...state.rewards,
-          rewardPercentageTask: state.rewards.rewardPercentageTask.status === 'pending'
-            ? { status: 'loading' }
-            : { status: 'reloading', data: state.rewards.rewardPercentageTask.data }
+          rewardPercentageTask: state.rewards.rewardPercentageTask.status === 'successful'
+            ? { status: 'reloading', data: state.rewards.rewardPercentageTask.data }
+            : { status: 'loading' }
         }
       }
     }
@@ -552,9 +552,9 @@ function globalReducer (state = getInitialGlobalState(), action) {
         ...state,
         rewards: {
           ...state.rewards,
-          accountEligibilityTask: state.rewards.accountEligibilityTask.status === 'pending'
-            ? { status: 'loading' }
-            : { status: 'reloading', data: state.rewards.accountEligibilityTask.data }
+          accountEligibilityTask: state.rewards.accountEligibilityTask.status === 'successful'
+            ? { status: 'reloading', data: state.rewards.accountEligibilityTask.data }
+            : { status: 'loading' }
         }
       }
     }
@@ -587,9 +587,9 @@ function globalReducer (state = getInitialGlobalState(), action) {
         ...state,
         rewards: {
           ...state.rewards,
-          tokenTask: state.rewards.tokenTask.status === 'pending'
-            ? { status: 'loading' }
-            : { status: 'reloading', data: state.rewards.tokenTask.data }
+          tokenTask: state.rewards.tokenTask.status === 'successful'
+            ? { status: 'reloading', data: state.rewards.tokenTask.data }
+            : { status: 'loading' }
         }
       }
     }
