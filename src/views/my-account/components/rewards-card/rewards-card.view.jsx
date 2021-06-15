@@ -76,7 +76,7 @@ function RewardsCard ({
             ? (
               <>
                 <p className={classes.rewardText}>
-                  Thank kou for participating in the Hermez reward program.
+                  Thank you for participating in the Hermez reward program.
                 </p>
                 <p className={classes.rewardText}>
                   Your total reward is {Number(earnedRewardTask.data).toFixed(2)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
