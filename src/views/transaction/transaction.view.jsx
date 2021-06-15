@@ -43,6 +43,7 @@ function Transaction ({
   onLoadMetaMaskAccount,
   onLoadHermezAccount,
   onLoadExit,
+  onLoadAccountBalance,
   onLoadFees,
   onLoadPoolTransactions,
   onLoadAccounts,
@@ -169,8 +170,10 @@ function Transaction ({
                 receiverAddress={stepData.receiver}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}
+                accountBalanceTask={stepData.accountBalanceTask}
                 feesTask={stepData.feesTask}
                 estimatedWithdrawFeeTask={stepData.estimatedWithdrawFeeTask}
+                onLoadAccountBalance={onLoadAccountBalance}
                 onLoadFees={onLoadFees}
                 onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
                 onSubmit={onGoToTransactionOverviewStep}
@@ -340,6 +343,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionThunks.fetchHermezAccount(accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onLoadExit: (accountIndex, batchNum) =>
     dispatch(transactionThunks.fetchExit(accountIndex, batchNum)),
+  onLoadAccountBalance: () =>
+    dispatch(transactionThunks.fetchAccountBalance()),
   onLoadFees: () =>
     dispatch(transactionThunks.fetchFees()),
   onLoadPoolTransactions: () =>

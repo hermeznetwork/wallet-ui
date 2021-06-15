@@ -27,6 +27,9 @@ const initialTransactionState = {
       }
     },
     [STEP_NAME.BUILD_TRANSACTION]: {
+      accountBalanceTask: {
+        status: 'pending'
+      },
       feesTask: {
         status: 'pending'
       },
@@ -224,6 +227,7 @@ function transactionReducer (state = initialTransactionState, action) {
             status: 'successful'
           },
           [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             account: action.account
           },
           [STEP_NAME.REVIEW_TRANSACTION]: {
@@ -248,6 +252,50 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.LOAD_INITIAL_DATA]: {
             status: 'failed',
             error: action.error
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNT_BALANCE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            accountBalanceTask: {
+              status: 'loading'
+            }
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            accountBalanceTask: {
+              status: 'successful',
+              data: action.accountBalance
+            }
+          }
+        }
+      }
+    }
+    case transactionActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            accountBalanceTask: {
+              status: 'failed',
+              error: action.error
+            }
           }
         }
       }

@@ -10,9 +10,9 @@ import { getTxPendingTime } from '../../../utils/transactions'
 import { ReactComponent as InfoIcon } from '../../../images/icons/info.svg'
 
 const STEPS = {
-  first: 1,
-  second: 2,
-  third: 3
+  FIRST: 1,
+  SECOND: 2,
+  THIRD: 3
 }
 
 function Exit ({
@@ -76,11 +76,21 @@ function Exit ({
    */
   function getStep () {
     if (!merkleProof) {
-      return STEPS.first
+      return STEPS.FIRST
     } else if (!pendingWithdraws || (pendingWithdraws && !pendingWithdraws.find((pendingWithdraw) => pendingWithdraw.id === exitId))) {
-      return STEPS.second
+      return STEPS.SECOND
     } else {
-      return STEPS.third
+      return STEPS.THIRD
+    }
+  }
+
+  function getStepLabel () {
+    switch (getStep()) {
+      case STEPS.FIRST: {
+        return 'Step 1/2'
+      }
+      default:
+        return 'Step 2/2'
     }
   }
 
@@ -90,11 +100,11 @@ function Exit ({
    */
   function getTag () {
     switch (getStep()) {
-      case STEPS.first:
+      case STEPS.FIRST:
         return 'Initiated'
-      case STEPS.second:
+      case STEPS.SECOND:
         return 'On hold'
-      case STEPS.third:
+      case STEPS.THIRD:
         return 'Pending'
       default:
         return ''
@@ -194,7 +204,7 @@ function Exit ({
 
   return (
     <div className={classes.root}>
-      <p className={classes.step}>Step {getStep()}/3</p>
+      <p className={classes.step}>{getStepLabel()}</p>
       <div className={classes.rowTop}>
         <span className={classes.txType}>Withdrawal</span>
         <span className={classes.tokenAmount}>{fixedTokenAmount} {token.symbol}</span>
@@ -203,23 +213,23 @@ function Exit ({
         <div className={classes.pendingContainer}>
           <div className={clsx({
             [classes.stepTagWrapper]: true,
-            [classes.stepTagWrapperTwo]: getStep() === STEPS.second
+            [classes.stepTagWrapperTwo]: getStep() === STEPS.SECOND
           })}
           >
             <span className={clsx({
               [classes.stepTag]: true,
-              [classes.stepTagTwo]: getStep() === STEPS.second
+              [classes.stepTagTwo]: getStep() === STEPS.SECOND
             })}
             >
               {getTag()}
             </span>
           </div>
-          {pendingTime > 0 && getStep() === STEPS.first && <p className={classes.pendingTimer}>{pendingTime} min</p>}
+          {pendingTime > 0 && getStep() === STEPS.FIRST && <p className={classes.pendingTimer}>{pendingTime} min</p>}
         </div>
         <span className={classes.amountFiat}>{CurrencySymbol[preferredCurrency].symbol}{fiatAmount.toFixed(2)}</span>
       </div>
       {(() => {
-        if (getStep() !== STEPS.second) {
+        if (getStep() !== STEPS.SECOND) {
           return <></>
         }
 

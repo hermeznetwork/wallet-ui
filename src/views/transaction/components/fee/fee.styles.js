@@ -40,13 +40,14 @@ const useFeeStyles = createUseStyles((theme) => ({
     padding: `${theme.spacing(0.5)}px ${theme.spacing(1)}px`
   },
   withdrawFeeButtonText: {
-    fontWeight: theme.fontWeights.bold,
+    fontSize: theme.spacing(2),
+    fontWeight: theme.fontWeights.medium,
     marginRight: theme.spacing(1),
-    color: theme.palette.black
+    color: theme.palette.grey.main
   },
   withdrawFeeButtonIconPath: {
     '& path': {
-      fill: theme.palette.black
+      fill: theme.palette.grey.main
     }
   },
   withdrawFeeButtonIcon: ({ isWithdrawFeeExpanded }) => ({
