@@ -8,7 +8,6 @@ import Main from '../main/main.view'
 import PageHeader from '../page-header/page-header.view'
 import Snackbar from '../snackbar/snackbar.view'
 import { closeSnackbar } from '../../../store/global/global.actions'
-import { FEATURE_TOGGLES } from '../../../constants'
 import RewardsSidenav from '../../shared/rewards-sidenav/rewards-sidenav.view'
 import * as globalThunks from '../../../store/global/global.thunks'
 import * as globalActions from '../../../store/global/global.actions'
@@ -36,7 +35,10 @@ function Layout ({
     <div className={classes.root}>
       {header.type === 'main' && (
         <MainHeader
-          showNotificationsIndicator={rewards.sidenav.status === 'closed'}
+          showNotificationsIndicator={
+            process.env.REACT_APP_ENABLE_AIRDROP === 'true' &&
+            rewards.sidenav.status === 'closed'
+          }
         />
       )}
       {header.type === 'page' && (
@@ -59,7 +61,7 @@ function Layout ({
           onClose={onCloseSnackbar}
         />
       )}
-      {FEATURE_TOGGLES.REWARDS_SIDENAV && rewards.sidenav.status === 'open' && (
+      {process.env.REACT_APP_ENABLE_AIRDROP === 'true' && rewards.sidenav.status === 'open' && (
         <RewardsSidenav
           rewardTask={rewards.rewardTask}
           earnedRewardTask={rewards.earnedRewardTask}

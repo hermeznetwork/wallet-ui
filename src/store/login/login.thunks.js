@@ -4,11 +4,10 @@ import { push } from 'connected-react-router'
 
 import * as globalActions from '../global/global.actions'
 import * as loginActions from './login.actions'
-import { ACCOUNT_AUTH_SIGNATURES_KEY, FEATURE_TOGGLES, TREZOR_MANIFEST_MAIL } from '../../constants'
+import { ACCOUNT_AUTH_SIGNATURES_KEY, TREZOR_MANIFEST_MAIL } from '../../constants'
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
-// import { HttpStatusCode } from '../../utils/http'
 
 async function getSignerData (provider, walletName, accountData) {
   switch (walletName) {
@@ -136,7 +135,7 @@ function postCreateAccountAuthorization (wallet) {
       .then((res) => {
         dispatch(loginActions.addAccountAuthSuccess())
         dispatch(push(redirectRoute))
-        if (FEATURE_TOGGLES.REWARDS_SIDENAV) {
+        if (process.env.REACT_APP_ENABLE_AIRDROP === 'true') {
           dispatch(globalActions.openRewardsSidenav())
         }
       })

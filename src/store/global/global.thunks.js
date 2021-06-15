@@ -509,7 +509,7 @@ function disconnectWallet () {
   return (dispatch) => {
     dispatch(globalActions.unloadWallet())
     dispatch(push('/login'))
-    if (constants.FEATURE_TOGGLES.REWARDS_SIDENAV) {
+    if (process.env.REACT_APP_ENABLE_AIRDROP === 'true') {
       dispatch(globalActions.closeRewardsSidenav())
     }
   }

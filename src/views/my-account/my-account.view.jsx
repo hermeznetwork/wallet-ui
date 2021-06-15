@@ -23,7 +23,6 @@ import Button from '../shared/button/button.view'
 import { copyToClipboard } from '../../utils/browser'
 import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
 import { version as packagejsonVersion } from '../../../package.json'
-import { FEATURE_TOGGLES } from '../../constants'
 import * as globalActions from '../../store/global/global.actions'
 import RewardsCard from './components/rewards-card/rewards-card.view'
 
@@ -94,7 +93,7 @@ function MyAccount ({
       </Container>
       <Container>
         <section className={classes.bottomSection}>
-          {FEATURE_TOGGLES.REWARDS_SIDENAV && (
+          {process.env.REACT_APP_ENABLE_AIRDROP === 'true' && (
             <div className={classes.rewardsCard}>
               <RewardsCard
                 rewardTask={rewards.rewardTask}

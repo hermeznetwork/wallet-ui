@@ -1,13 +1,14 @@
 import axios from 'axios'
 
-import { HERMEZ_AIRDROP_WEB_URL, HERMEZ_AIRDROP_ID } from '../constants'
+const baseApiUrl = `${process.env.REACT_APP_AIRDROP_API_URL}/airdrop/v1`
+const airdropId = process.env.REACT_APP_AIRDROP_ID
 
 /**
  * Fetches Airdrop data
  * @returns {Object} - airdrop
  */
 function getReward (ethAddr) {
-  return axios.get(`${HERMEZ_AIRDROP_WEB_URL}/airdrops/${HERMEZ_AIRDROP_ID}`)
+  return axios.get(`${baseApiUrl}/airdrops/${airdropId}`)
     .then(res => res.data.airdrop)
 }
 
@@ -16,9 +17,9 @@ function getReward (ethAddr) {
  * @returns {String} - earnedReward
  */
 function getEarnedReward (ethAddr) {
-  const params = { airdropID: HERMEZ_AIRDROP_ID, ethAddr }
+  const params = { airdropID: airdropId, ethAddr }
 
-  return axios.get(`${HERMEZ_AIRDROP_WEB_URL}/earned-reward`, { params })
+  return axios.get(`${baseApiUrl}/earned-reward`, { params })
     .then(res => res.data.earnedReward)
 }
 
@@ -27,9 +28,9 @@ function getEarnedReward (ethAddr) {
  * @returns {String} - rewardPercentage
  */
 function getRewardPercentage () {
-  const params = { airdropID: HERMEZ_AIRDROP_ID }
+  const params = { airdropID: airdropId }
 
-  return axios.get(`${HERMEZ_AIRDROP_WEB_URL}/reward-percentage`, { params })
+  return axios.get(`${baseApiUrl}/reward-percentage`, { params })
     .then(res => res.data.percentage)
 }
 
@@ -38,9 +39,9 @@ function getRewardPercentage () {
  * @returns {Boolean} - isUserEligible
  */
 function getAccountEligibility (ethAddr) {
-  const params = { ethAddr, airdropID: HERMEZ_AIRDROP_ID }
+  const params = { ethAddr, airdropID: airdropId }
 
-  return axios.get(`${HERMEZ_AIRDROP_WEB_URL}/check-user-eligibility`, { params })
+  return axios.get(`${baseApiUrl}/check-user-eligibility`, { params })
     .then(res => res.data.isUserEligible)
 }
 
