@@ -3,14 +3,17 @@ import { push } from 'connected-react-router'
 import { ethers } from 'ethers'
 import HermezABI from '@hermeznetwork/hermezjs/src/abis/HermezABI'
 import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
+import { HttpStatusCode } from '@hermeznetwork/hermezjs/src/http'
 
 import * as globalActions from './global.actions'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as hermezWebApi from '../../apis/hermez-web'
+import * as airdropApi from '../../apis/rewards'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
 import { hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from '../../utils/ethereum'
+import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -512,6 +515,9 @@ function disconnectWallet () {
     }
     dispatch(globalActions.unloadWallet())
     dispatch(push('/login'))
+    if (process.env.REACT_APP_ENABLE_AIRDROP === 'true') {
+      dispatch(globalActions.closeRewardsSidenav())
+    }
   }
 }
 
@@ -522,6 +528,87 @@ function disconnectWallet () {
 function reloadApp () {
   return () => {
     window.location.reload()
+  }
+}
+
+/**
+ * Fetches Airdrop estimated reward for a given ethAddr
+ * @returns {void}
+ */
+function fetchReward () {
+  return (dispatch, getState) => {
+    dispatch(globalActions.loadReward())
+
+    return airdropApi.getReward()
+      .then((res) => dispatch(globalActions.loadRewardSuccess(res)))
+      .catch(() => dispatch(globalActions.loadRewardFailure('An error occurred loading estimated reward.')))
+  }
+}
+
+/**
+ * Fetches Airdrop earned reward for a given ethAddr
+ * @returns {void}
+ */
+function fetchEarnedReward () {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+
+    dispatch(globalActions.loadEarnedReward())
+
+    return airdropApi.getEarnedReward(getEthereumAddress(wallet.hermezEthereumAddress))
+      .then((res) => dispatch(globalActions.loadEarnedRewardSuccess(res)))
+      .catch(err => {
+        if (err.response?.status === HttpStatusCode.NOT_FOUND) {
+          dispatch(globalActions.loadEarnedRewardSuccess(0))
+        } else {
+          dispatch(globalActions.loadEarnedRewardFailure('An error occurred loading estimated reward.'))
+        }
+      })
+  }
+}
+
+/**
+ * Fetches Airdrop reward percentage
+ * @returns {void}
+ */
+function fetchRewardPercentage () {
+  return (dispatch) => {
+    dispatch(globalActions.loadRewardPercentage())
+
+    return airdropApi.getRewardPercentage()
+      .then((res) => dispatch(globalActions.loadRewardPercentageSuccess(res)))
+      .catch(() => dispatch(globalActions.loadRewardPercentageFailure('An error occurred loading reward percentage.')))
+  }
+}
+
+/**
+ * Checks if an account is eligible for the Airdrop
+ * @returns {void}
+ */
+function fetchRewardAccountEligibility () {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
+
+    dispatch(globalActions.loadRewardAccountEligilibity())
+
+    return airdropApi.getAccountEligibility(getEthereumAddress(wallet.hermezEthereumAddress))
+      .then((res) => dispatch(globalActions.loadRewardAccountEligilibitySuccess(res)))
+      .catch(() => dispatch(globalActions.loadRewardAccountEligilibityFailure('An error occurred loading account eligibility.')))
+  }
+}
+
+/**
+ * Fetches details for the token used for the rewards
+ * @param {Number} tokenId - A token ID
+ * @returns {Object} Response data with a specific token
+ */
+function fetchRewardToken () {
+  return (dispatch) => {
+    dispatch(globalActions.loadRewardToken())
+
+    return CoordinatorAPI.getToken(constants.HEZ_TOKEN_ID)
+      .then((res) => dispatch(globalActions.loadRewardTokenSuccess(res)))
+      .catch(() => (globalActions.loadRewardTokenFailure('An error occured loading token.')))
   }
 }
 
@@ -546,5 +633,10 @@ export {
   checkPendingTransactions,
   fetchCoordinatorState,
   disconnectWallet,
-  reloadApp
+  reloadApp,
+  fetchReward,
+  fetchEarnedReward,
+  fetchRewardPercentage,
+  fetchRewardAccountEligibility,
+  fetchRewardToken
 }

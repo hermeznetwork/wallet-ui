@@ -34,8 +34,13 @@ const useMyAccountStyles = createUseStyles(theme => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start',
-    marginTop: -theme.spacing(2)
+    alignItems: 'flex-start'
+  },
+  rewardsCard: {
+    width: '100%'
+  },
+  settings: {
+    marginTop: theme.spacing(4)
   },
   settingContainer: {
     display: 'flex',
@@ -65,9 +70,6 @@ const useMyAccountStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.medium,
     marginTop: theme.spacing(1),
     paddingLeft: theme.spacing(4.5)
-  },
-  break: {
-
   },
   settingContent: {
     marginTop: theme.spacing(1.75),

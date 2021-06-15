@@ -25,7 +25,6 @@ function Sidenav ({ children, onClose }) {
   return (
     <Portal>
       <div className={classes.root}>
-        <div className={classes.outerSpace} onClick={onClose} />
         <div ref={sidenavContentRef} className={classes.content} tabIndex={0} onKeyDown={handleKeyDown}>
           <button className={classes.hideButton} onClick={onClose}>
             Hide

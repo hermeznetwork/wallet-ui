@@ -23,16 +23,21 @@ import Button from '../shared/button/button.view'
 import { copyToClipboard } from '../../utils/browser'
 import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
 import { version as packagejsonVersion } from '../../../package.json'
+import * as globalActions from '../../store/global/global.actions'
+import RewardsCard from './components/rewards-card/rewards-card.view'
 
 function MyAccount ({
   wallet,
   preferredCurrency,
+  fiatExchangeRatesTask,
+  rewards,
   onChangeHeader,
   onChangePreferredCurrency,
   onDisconnectWallet,
   onOpenSnackbar,
   onNavigateToForceExit,
-  onNavigateToMyCode
+  onNavigateToMyCode,
+  onOpenRewardsSidenav
 }) {
   const theme = useTheme()
   const classes = useMyAccountStyles()
@@ -88,48 +93,64 @@ function MyAccount ({
       </Container>
       <Container>
         <section className={classes.bottomSection}>
-          <div className={classes.settingContainer}>
-            <div className={classes.settingHeader}>
-              <ExchangeIcon />
-              <p className={classes.settingTitle}>Currency conversion</p>
-            </div>
-            <div className={classes.settingContent}>
-              <PreferredCurrencySelector
+          {process.env.REACT_APP_ENABLE_AIRDROP === 'true' && (
+            <div className={classes.rewardsCard}>
+              <RewardsCard
+                rewardTask={rewards.rewardTask}
+                earnedRewardTask={rewards.earnedRewardTask}
+                rewardPercentageTask={rewards.rewardPercentageTask}
+                accountEligibilityTask={rewards.accountEligibilityTask}
+                tokenTask={rewards.tokenTask}
                 preferredCurrency={preferredCurrency}
-                currencies={Object.values(CurrencySymbol)}
-                onChange={onChangePreferredCurrency}
+                fiatExchangeRatesTask={fiatExchangeRatesTask}
+                onOpenRewardsSidenav={onOpenRewardsSidenav}
               />
             </div>
-          </div>
-          <div className={classes.settingContainer}>
-            <div className={classes.settingHeader} onClick={onNavigateToForceExit}>
-              <ExitIcon />
-              <p className={classes.settingTitle}>Force withdrawal</p>
-              <p className={classes.settingSubTitle}>Forces the coordinator to process the transaction (more Gas is required).</p>
+          )}
+          <div className={classes.settings}>
+            <div className={classes.settingContainer}>
+              <div className={classes.settingHeader}>
+                <ExchangeIcon />
+                <p className={classes.settingTitle}>Currency conversion</p>
+              </div>
+              <div className={classes.settingContent}>
+                <PreferredCurrencySelector
+                  preferredCurrency={preferredCurrency}
+                  currencies={Object.values(CurrencySymbol)}
+                  onChange={onChangePreferredCurrency}
+                />
+              </div>
             </div>
-          </div>
-          {wallet && (
-            <a
+            <div className={classes.settingContainer}>
+              <div className={classes.settingHeader} onClick={onNavigateToForceExit}>
+                <ExitIcon />
+                <p className={classes.settingTitle}>Force withdrawal</p>
+                <p className={classes.settingSubTitle}>Forces the coordinator to process the transaction (more Gas is required).</p>
+              </div>
+            </div>
+            {wallet && (
+              <a
+                className={classes.settingContainer}
+                href={`${hermezjs.Environment.getBatchExplorerUrl()}/user-account/${wallet.hermezEthereumAddress}`}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <div className={classes.settingHeader}>
+                  <OpenInNewTabIcon />
+                  <p className={classes.settingTitle}>View in batch explorer</p>
+                </div>
+              </a>
+            )}
+            <button
               className={classes.settingContainer}
-              href={`${hermezjs.Environment.getBatchExplorerUrl()}/user-account/${wallet.hermezEthereumAddress}`}
-              target='_blank'
-              rel='noopener noreferrer'
+              onClick={handleOnDisconnectWallet}
             >
               <div className={classes.settingHeader}>
-                <OpenInNewTabIcon />
-                <p className={classes.settingTitle}>View in batch explorer</p>
+                <PowerOffIcon />
+                <p className={classes.settingTitle}>Disconnect wallet</p>
               </div>
-            </a>
-          )}
-          <button
-            className={classes.settingContainer}
-            onClick={handleOnDisconnectWallet}
-          >
-            <div className={classes.settingHeader}>
-              <PowerOffIcon />
-              <p className={classes.settingTitle}>Disconnect wallet</p>
-            </div>
-          </button>
+            </button>
+          </div>
         </section>
       </Container>
     </div>
@@ -137,12 +158,16 @@ function MyAccount ({
 }
 
 MyAccount.propTypes = {
-  onChangePreferredCurrency: PropTypes.func
+  onChangePreferredCurrency: PropTypes.func,
+  rewards: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
-  preferredCurrency: state.myAccount.preferredCurrency
+  preferredCurrency: state.myAccount.preferredCurrency,
+  rewards: state.global.rewards,
+  earnedRewardTask: state.global.rewards.earnedRewardTask,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -160,7 +185,8 @@ const mapDispatchToProps = (dispatch) => ({
   onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
   onDisconnectWallet: () => dispatch(disconnectWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
-  onNavigateToForceExit: () => dispatch(push('/force-withdrawal'))
+  onNavigateToForceExit: () => dispatch(push('/force-withdrawal')),
+  onOpenRewardsSidenav: () => dispatch(globalActions.openRewardsSidenav())
 })
 
 export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(MyAccount))

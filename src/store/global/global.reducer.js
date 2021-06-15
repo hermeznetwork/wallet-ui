@@ -43,6 +43,26 @@ function getInitialGlobalState () {
     nextForgers: [],
     coordinatorStateTask: {
       status: 'pending'
+    },
+    rewards: {
+      sidenav: {
+        status: 'closed'
+      },
+      rewardTask: {
+        status: 'pending'
+      },
+      earnedRewardTask: {
+        status: 'pending'
+      },
+      rewardPercentageTask: {
+        status: 'pending'
+      },
+      accountEligibilityTask: {
+        status: 'pending'
+      },
+      tokenTask: {
+        status: 'pending'
+      }
     }
   }
 }
@@ -397,6 +417,203 @@ function globalReducer (state = getInitialGlobalState(), action) {
         coordinatorStateTask: {
           status: 'failure',
           error: action.error
+        }
+      }
+    }
+    case globalActionTypes.OPEN_REWARDS_SIDENAV: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          sidenav: {
+            status: 'open'
+          }
+        }
+      }
+    }
+    case globalActionTypes.CLOSE_REWARDS_SIDENAV: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          sidenav: {
+            status: 'closed'
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          rewardTask: state.rewards.rewardTask.status === 'successful'
+            ? { status: 'reloading', data: state.rewards.rewardTask.data }
+            : { status: 'loading' }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_SUCCESS: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          rewardTask: {
+            status: 'successful',
+            data: action.data
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_FAILURE: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          rewardTask: {
+            status: 'failed',
+            error: action.error
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_EARNED_REWARD: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          earnedRewardTask: state.rewards.earnedRewardTask.status === 'successful'
+            ? { status: 'reloading', data: state.rewards.earnedRewardTask.data }
+            : { status: 'loading' }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_EARNED_REWARD_SUCCESS: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          earnedRewardTask: {
+            status: 'successful',
+            data: action.data
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_EARNED_REWARD_FAILURE: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          earnedRewardTask: {
+            status: 'failed',
+            error: action.error
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_PERCENTAGE: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          rewardPercentageTask: state.rewards.rewardPercentageTask.status === 'successful'
+            ? { status: 'reloading', data: state.rewards.rewardPercentageTask.data }
+            : { status: 'loading' }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          rewardPercentageTask: {
+            status: 'successful',
+            data: action.data
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          rewardPercentageTask: {
+            status: 'failed',
+            error: action.error
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          accountEligibilityTask: state.rewards.accountEligibilityTask.status === 'successful'
+            ? { status: 'reloading', data: state.rewards.accountEligibilityTask.data }
+            : { status: 'loading' }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          accountEligibilityTask: {
+            status: 'successful',
+            data: action.data
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          accountEligibilityTask: {
+            status: 'failed',
+            error: action.error
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_TOKEN: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          tokenTask: state.rewards.tokenTask.status === 'successful'
+            ? { status: 'reloading', data: state.rewards.tokenTask.data }
+            : { status: 'loading' }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_TOKEN_SUCCESS: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          tokenTask: {
+            status: 'successful',
+            data: action.data
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_REWARD_TOKEN_FAILURE: {
+      return {
+        ...state,
+        rewards: {
+          ...state.rewards,
+          tokenTask: {
+            status: 'failed',
+            error: action.error
+          }
         }
       }
     }
