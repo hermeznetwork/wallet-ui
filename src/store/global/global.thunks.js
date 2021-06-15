@@ -22,7 +22,8 @@ function setHermezEnvironment () {
     hermezjs.TxPool.initializeTransactionPool()
 
     if (!window.ethereum) {
-      return dispatch(globalActions.loadEthereumNetworkSuccess({ name: '' }))
+      // Dispatch an empty object as we don't know the network name at this point
+      return dispatch(globalActions.loadEthereumNetworkSuccess({}))
     }
 
     hermezjs.Providers.getProvider().getNetwork()
