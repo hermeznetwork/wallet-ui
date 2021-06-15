@@ -9,11 +9,20 @@ function WalletButtonList ({ onClick }) {
 
   return (
     <div className={classes.root}>
+      {window.ethereum && (
+        <div className={classes.walletButtonContainer}>
+          <WalletButton
+            isClickable
+            walletName={WalletName.METAMASK}
+            onClick={() => onClick(WalletName.METAMASK)}
+          />
+        </div>
+      )}
       <div className={classes.walletButtonContainer}>
         <WalletButton
           isClickable
-          walletName={WalletName.METAMASK}
-          onClick={() => onClick(WalletName.METAMASK)}
+          walletName={WalletName.WALLET_CONNECT}
+          onClick={() => onClick(WalletName.WALLET_CONNECT)}
         />
       </div>
       {

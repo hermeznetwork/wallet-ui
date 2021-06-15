@@ -39,9 +39,7 @@ function WalletLoader ({
         isClickable={false}
       />
       <p className={classes.followInstructionsText}>
-        Follow the instructions in {
-          walletName === 'ledger' ? 'your device' : 'the pop up'
-        }.
+        Sign to confirm in your connected wallet.
       </p>
     </div>
   )

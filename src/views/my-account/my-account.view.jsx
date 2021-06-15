@@ -52,7 +52,7 @@ function MyAccount ({
   }
 
   /**
-   * Disconnects the currently connected MetaMask wallet when the disconnect wallet button
+   * Disconnects the currently connected Ethereum wallet when the disconnect wallet button
    * is clicked
    * @returns {void}
    */

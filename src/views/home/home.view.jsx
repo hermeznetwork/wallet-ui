@@ -42,6 +42,7 @@ function Home ({
   pendingDelayedWithdraws,
   coordinatorStateTask,
   onChangeHeader,
+  onLoadCoordinatorState,
   onCheckPendingDeposits,
   onLoadTotalBalance,
   onLoadAccounts,
@@ -82,10 +83,16 @@ function Home ({
   }, [theme, onChangeHeader])
 
   React.useEffect(() => {
-    onCheckPendingDeposits()
-    onLoadPoolTransactions()
-    onLoadExits()
-  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
+    onLoadCoordinatorState()
+  }, [])
+
+  React.useEffect(() => {
+    if (coordinatorStateTask.status === 'successful') {
+      onCheckPendingDeposits()
+      onLoadPoolTransactions()
+      onLoadExits()
+    }
+  }, [coordinatorStateTask])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
@@ -96,7 +103,7 @@ function Home ({
     }, AUTO_REFRESH_RATE)
 
     return () => { clearInterval(intervalId) }
-  }, [onLoadPoolTransactions])
+  }, [])
 
   React.useEffect(() => {
     if (
@@ -318,6 +325,7 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
+  onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onLoadTotalBalance: (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
     dispatch(homeThunks.fetchTotalBalance(hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onLoadAccounts: (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>

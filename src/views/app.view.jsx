@@ -21,7 +21,6 @@ function App ({
   onCheckHermezStatus,
   onChangeNetworkStatus,
   onDisconnectAccount,
-  onLoadCoordinatorState,
   onSetHermezEnvironment,
   onCheckPendingTransactions,
   onReloadApp
@@ -39,12 +38,6 @@ function App ({
       onLoadFiatExchangeRates()
     }
   }, [hermezStatusTask, onSetHermezEnvironment, onLoadFiatExchangeRates])
-
-  React.useEffect(() => {
-    if (ethereumNetworkTask.status === 'successful') {
-      onLoadCoordinatorState()
-    }
-  }, [ethereumNetworkTask, onLoadCoordinatorState])
 
   React.useEffect(() => {
     let intervalId
@@ -139,7 +132,6 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeNetworkStatus: (networkStatus, backgroundColor) =>
     dispatch(globalThunks.changeNetworkStatus(networkStatus, backgroundColor)),
   onDisconnectAccount: () => dispatch(globalThunks.disconnectWallet()),
-  onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onReloadApp: () => dispatch(globalThunks.reloadApp())
 })
 

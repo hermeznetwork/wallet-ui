@@ -22,7 +22,8 @@ function setHermezEnvironment () {
     hermezjs.TxPool.initializeTransactionPool()
 
     if (!window.ethereum) {
-      return dispatch(globalActions.loadEthereumNetworkFailure(LOAD_ETHEREUM_NETWORK_ERROR.METAMASK_NOT_INSTALLED))
+      // Dispatch an empty object as we don't know the network name at this point
+      return dispatch(globalActions.loadEthereumNetworkSuccess({}))
     }
 
     hermezjs.Providers.getProvider().getNetwork()
@@ -504,6 +505,11 @@ function fetchCoordinatorState () {
  */
 function disconnectWallet () {
   return (dispatch) => {
+    const provider = Providers.getProvider()
+    if (provider.provider?.connector) {
+      // Kills the stored Web Connect session to show QR with next login
+      provider.provider.connector.killSession()
+    }
     dispatch(globalActions.unloadWallet())
     dispatch(push('/login'))
   }

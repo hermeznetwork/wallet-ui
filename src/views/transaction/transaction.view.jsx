@@ -40,7 +40,7 @@ function Transaction ({
   pendingDelayedWithdraws,
   onChangeHeader,
   onCheckPendingDeposits,
-  onLoadMetaMaskAccount,
+  onLoadEthereumAccount,
   onLoadHermezAccount,
   onLoadExit,
   onLoadAccountBalance,
@@ -103,7 +103,7 @@ function Transaction ({
       poolTransactionsTask.status === 'successful'
     ) {
       if (accountIndex && tokenId) {
-        onLoadMetaMaskAccount(Number(tokenId))
+        onLoadEthereumAccount(Number(tokenId))
       } else if (accountIndex && !tokenId) {
         if (batchNum) {
           onLoadExit(accountIndex, Number(batchNum))
@@ -120,7 +120,7 @@ function Transaction ({
         onGoToChooseAccountStep()
       }
     }
-  }, [pendingDepositsCheckTask, poolTransactionsTask, tokenId, batchNum, accountIndex, onLoadExit, onLoadMetaMaskAccount, onLoadHermezAccount, onGoToChooseAccountStep])
+  }, [pendingDepositsCheckTask, poolTransactionsTask, tokenId, batchNum, accountIndex, onLoadExit, onLoadEthereumAccount, onLoadHermezAccount, onGoToChooseAccountStep])
 
   React.useEffect(() => {
     const stepData = steps[STEP_NAME.LOAD_INITIAL_DATA]
@@ -337,8 +337,8 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: (currentStep, transactionType, accountIndex, redirectTo) =>
     dispatch(changeHeader(getHeader(currentStep, transactionType, accountIndex, redirectTo))),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
-  onLoadMetaMaskAccount: (tokenId) =>
-    dispatch(transactionThunks.fetchMetaMaskAccount(tokenId)),
+  onLoadEthereumAccount: (tokenId) =>
+    dispatch(transactionThunks.fetchEthereumAccount(tokenId)),
   onLoadHermezAccount: (accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
     dispatch(transactionThunks.fetchHermezAccount(accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onLoadExit: (accountIndex, batchNum) =>

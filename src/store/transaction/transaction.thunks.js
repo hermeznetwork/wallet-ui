@@ -13,25 +13,25 @@ import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/src/constants'
 import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 /**
- * Fetches the account details for a token id in MetaMask.
+ * Fetches the account details for a token id in an Ethereum wallet.
  * @param {string} tokenId - id of the token of the account
  * @returns {void}
  */
-function fetchMetaMaskAccount (tokenId) {
+function fetchEthereumAccount (tokenId) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
 
     dispatch(transactionActions.loadAccount())
 
     if (!wallet) {
-      return dispatch(transactionActions.loadAccountFailure('MetaMask wallet is not loaded'))
+      return dispatch(transactionActions.loadAccountFailure('Ethereum wallet is not loaded'))
     }
 
     return CoordinatorAPI.getTokens(undefined, undefined, undefined, undefined, 2049)
       .then((res) => {
         ethereum.getTokens(wallet, res.tokens)
-          .then(metaMaskTokens => {
-            const account = metaMaskTokens.find((token) => token.token.id === tokenId)
+          .then(ethereumTokens => {
+            const account = ethereumTokens.find((token) => token.token.id === tokenId)
 
             if (account) {
               dispatch(transactionActions.loadAccountSuccess(account))
@@ -56,7 +56,7 @@ function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, fi
     dispatch(transactionActions.loadAccount())
 
     if (!wallet) {
-      return dispatch(transactionActions.loadAccountFailure('MetaMask wallet is not loaded'))
+      return dispatch(transactionActions.loadAccountFailure('Ethereum wallet is not loaded'))
     }
 
     return CoordinatorAPI.getAccount(accountIndex)
@@ -88,7 +88,7 @@ function fetchExit (accountIndex, batchNum) {
     const { global: { wallet } } = getState()
 
     if (!wallet) {
-      return dispatch(transactionActions.loadExitFailure('MetaMask wallet is not loaded'))
+      return dispatch(transactionActions.loadExitFailure('Ethereum wallet is not loaded'))
     }
 
     dispatch(transactionActions.loadExit())
@@ -120,7 +120,7 @@ function fetchPoolTransactions () {
 
 /**
  * Fetches the accounts to use in the transaction. If the transaction is a deposit it will
- * look for them on MetaMask, otherwise it will look for them on the rollup api
+ * look for them on Ethereum, otherwise it will look for them on the rollup api
  * @param {string} transactionType - Transaction type
  * @param {number} fromItem - id of the first account to be returned from the api
  * @returns {void}
@@ -413,7 +413,7 @@ function transfer (amount, from, to, fee) {
 }
 
 export {
-  fetchMetaMaskAccount,
+  fetchEthereumAccount,
   fetchHermezAccount,
   fetchExit,
   fetchPoolTransactions,
