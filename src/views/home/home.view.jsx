@@ -92,12 +92,10 @@ function Home ({
   }, [])
 
   React.useEffect(() => {
-    if (coordinatorStateTask.status === 'successful') {
-      onCheckPendingDeposits()
-      onLoadPoolTransactions()
-      onLoadExits()
-    }
-  }, [coordinatorStateTask])
+    onCheckPendingDeposits()
+    onLoadPoolTransactions()
+    onLoadExits()
+  }, [])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
