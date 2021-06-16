@@ -593,7 +593,13 @@ function fetchRewardAccountEligibility () {
 
     return airdropApi.getAccountEligibility(getEthereumAddress(wallet.hermezEthereumAddress))
       .then((res) => dispatch(globalActions.loadRewardAccountEligilibitySuccess(res)))
-      .catch(() => dispatch(globalActions.loadRewardAccountEligilibityFailure('An error occurred loading account eligibility.')))
+      .catch((err) => {
+        if (err.response?.status === HttpStatusCode.NOT_FOUND) {
+          dispatch(globalActions.loadRewardAccountEligilibitySuccess(false))
+        } else {
+          dispatch(globalActions.loadRewardAccountEligilibityFailure('An error occurred loading account eligibility.'))
+        }
+      })
   }
 }
 
