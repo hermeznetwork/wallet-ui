@@ -13,11 +13,11 @@ const useSidenavStyles = createUseStyles((theme) => ({
     justifyContent: 'flex-end',
     overflow: 'hidden',
     boxShadow: '-5px 0 30px 0 rgba(136, 139, 170, 0.15)',
-    background: theme.palette.white
+    background: theme.palette.white,
+    borderRadius: `${theme.spacing(4)}px 0 0 ${theme.spacing(4)}px`
   },
   content: {
     padding: theme.spacing(3),
-    borderRadius: `${theme.spacing(4)}px 0 0 ${theme.spacing(4)}px`,
     overflowY: 'auto'
   },
   hideButton: {
