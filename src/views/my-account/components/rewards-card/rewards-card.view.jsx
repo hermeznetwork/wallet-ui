@@ -88,14 +88,14 @@ function RewardsCard ({
                 <p className={classes.rewardText}>
                   Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}%</span>.&nbsp;
                   {
-                  accountEligibilityTask.data
-                    ? (
-                      <span>You earned so far {earnedRewardTask.data} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)}).</span>
-                      )
-                    : (
-                      <span>You earned so far 0.00 HEZ ({CurrencySymbol[preferredCurrency].symbol}0.00).</span>
-                      )
-                }
+                    accountEligibilityTask.data
+                      ? (
+                        <span>You earned so far {Number(earnedRewardTask.data).toFixed(2)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)}).</span>
+                        )
+                      : (
+                        <span>You earned so far 0.00 HEZ ({CurrencySymbol[preferredCurrency].symbol}0.00).</span>
+                        )
+                  }
                 </p>
               </>
               )
