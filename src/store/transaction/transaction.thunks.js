@@ -80,7 +80,7 @@ function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, fi
 /**
  * Fetches the details of an exit
  * @param {string} accountIndex - account index
- * @param {number} batchNum - batch number
+ * @param {Number} batchNum - batch number
  * @returns {void}
  */
 function fetchExit (accountIndex, batchNum) {
@@ -122,7 +122,7 @@ function fetchPoolTransactions () {
  * Fetches the accounts to use in the transaction. If the transaction is a deposit it will
  * look for them on Ethereum, otherwise it will look for them on the rollup api
  * @param {string} transactionType - Transaction type
- * @param {number} fromItem - id of the first account to be returned from the api
+ * @param {Number} fromItem - id of the first account to be returned from the api
  * @returns {void}
  */
 function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {

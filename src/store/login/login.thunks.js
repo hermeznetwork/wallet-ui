@@ -85,7 +85,7 @@ function fetchWallet (walletName, accountData) {
 
       if (walletName === WalletName.WALLET_CONNECT) {
         const walletConnectProvider = new WalletConnectProvider({
-          infuraId: process.env.REACT_APP_INFURA_KEY
+          infuraId: process.env.REACT_APP_INFURA_API_KEY
         })
         hermez.Providers.setProvider(walletConnectProvider, hermez.Providers.PROVIDER_TYPES.WEB3)
       }
@@ -177,6 +177,9 @@ function postCreateAccountAuthorization (wallet) {
       .then((res) => {
         dispatch(loginActions.addAccountAuthSuccess())
         dispatch(push(redirectRoute))
+        if (process.env.REACT_APP_ENABLE_AIRDROP === 'true') {
+          dispatch(globalActions.openRewardsSidenav())
+        }
       })
       .catch((error) => {
         const errorMessage = error.code === -32603

@@ -106,6 +106,7 @@ function Login ({
         )}
         {
           ethereumNetworkTask.status === 'successful' &&
+          ethereumNetworkTask.data.name &&
           (currentStep !== STEP_NAME.ERROR || (currentStep === STEP_NAME.ERROR && stepData.error !== UNDER_MAINTENANCE_ERROR)) && (
             <Button
               text={capitalizeLabel(ethereumNetworkTask.data.name)}

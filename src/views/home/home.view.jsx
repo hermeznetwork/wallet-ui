@@ -23,9 +23,10 @@ import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
-import { AUTO_REFRESH_RATE } from '../../constants'
 import * as storage from '../../utils/storage'
 import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
+import { AUTO_REFRESH_RATE } from '../../constants'
+import * as globalActions from '../../store/global/global.actions'
 
 function Home ({
   wallet,
@@ -41,6 +42,7 @@ function Home ({
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorStateTask,
+  rewards,
   onChangeHeader,
   onLoadCoordinatorState,
   onCheckPendingDeposits,
@@ -48,12 +50,15 @@ function Home ({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
+  onLoadEstimatedReward,
+  onLoadEarnedReward,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
   onNavigateToAccountDetails,
   onOpenSnackbar,
+  onOpenRewardsSidenav,
   onCleanup
 }) {
   const theme = useTheme()
@@ -87,14 +92,12 @@ function Home ({
   }, [])
 
   React.useEffect(() => {
-    if (coordinatorStateTask.status === 'successful') {
-      onCheckPendingDeposits()
-      onLoadPoolTransactions()
-      onLoadExits()
-      onCheckPendingWithdrawals()
-      onCheckPendingDelayedWithdrawals()
-    }
-  }, [coordinatorStateTask])
+    onCheckPendingDeposits()
+    onLoadPoolTransactions()
+    onLoadExits()
+    onCheckPendingWithdrawals()
+    onCheckPendingDelayedWithdrawals()
+  }, [])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
@@ -223,7 +226,7 @@ function Home ({
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
               : <></>
-}
+          }
           {(() => {
             switch (accountsTask.status) {
               case 'pending':
@@ -319,7 +322,8 @@ const mapStateToProps = (state) => ({
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
-  coordinatorStateTask: state.global.coordinatorStateTask
+  coordinatorStateTask: state.global.coordinatorStateTask,
+  rewards: state.global.rewards
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -349,6 +353,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) =>
     dispatch(openSnackbar(message)),
+  onOpenRewardsSidenav: () =>
+    dispatch(globalActions.openRewardsSidenav()),
   onCleanup: () => dispatch(resetState())
 })
 

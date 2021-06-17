@@ -99,7 +99,7 @@ function TransactionForm ({
    * Returns the conversion rate from the selected token to the selected preferred
    * currency
    *
-   * @returns {number} - Conversion rate from the selected token to fiat
+   * @returns {Number} - Conversion rate from the selected token to fiat
    */
   function getAccountFiatRate () {
     return preferredCurrency === CurrencySymbol.USD.code
@@ -109,7 +109,7 @@ function TransactionForm ({
 
   /**
    * Converts the account balance to fiat in the preferred currency
-   * @returns {number} - Accont balance in the preferred currency
+   * @returns {Number} - Accont balance in the preferred currency
    */
   function getAmountInFiat (amount) {
     return getTokenAmountInPreferredCurrency(
@@ -126,7 +126,7 @@ function TransactionForm ({
    * and converts it to token value.
    * @param {Object} fees - The recommended Fee object feturned by the Coordinator
    * @param {Boolean} iExistingAccount - Whether it's a existingAccount transfer
-   * @returns {number} - Transaction fee
+   * @returns {Number} - Transaction fee
    */
   function getFee (fees, isExistingAccount) {
     if (account.token.USD === 0) {
@@ -165,7 +165,7 @@ function TransactionForm ({
   function isContinueDisabled () {
     const isAmountValid = isAmountLessThanFunds && isAmountPositive && isAmountCompressedValid && amount && BigInt(amount.toString()) > 0
 
-    if (transactionType === TxType.Exit && !doesUserHaveEnoughEthForWithdraw) {
+    if (transactionType === TxType.Exit && doesUserHaveEnoughEthForWithdraw === false) {
       return false
     } else if (transactionType !== TxType.Transfer && isAmountValid) {
       return false
