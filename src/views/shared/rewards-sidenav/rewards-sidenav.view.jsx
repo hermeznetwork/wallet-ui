@@ -10,6 +10,7 @@ import heztoken from '../../../images/heztoken.svg'
 import Sidenav from '../sidenav/sidenav.view'
 import * as date from '../../../utils/date'
 import { getTokenAmountInPreferredCurrency, CurrencySymbol } from '../../../utils/currencies'
+import { getFormattedEarnedReward } from '../../../utils/rewards'
 
 function RewardsSidenav ({
   rewardTask,
@@ -139,7 +140,7 @@ function RewardsSidenav ({
                       Your total reward
                     </p>
                     <p className={classes.reward}>
-                      {Number(earnedRewardTask.data).toFixed(2)} HEZ
+                      {getFormattedEarnedReward(earnedRewardTask.data)} HEZ
                       (${getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
                     </p>
                   </div>
@@ -183,7 +184,7 @@ function RewardsSidenav ({
                       accountEligibilityTask.data
                         ? (
                           <p className={classes.reward}>
-                            {Number(earnedRewardTask.data).toFixed(2)} HEZ
+                            {getFormattedEarnedReward(earnedRewardTask.data)} HEZ
                             ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
                           </p>
                           )
