@@ -50,6 +50,16 @@ function RewardsCard ({
     ).toFixed(2)
   }
 
+  function getFormattedEarnedReward (earnedReward) {
+    const earnedRewardNumber = Number(earnedReward)
+
+    if (earnedRewardNumber > 0 && earnedRewardNumber < 0.01) {
+      return '< 0.01'
+    } else {
+      return earnedRewardNumber.toFixed(2)
+    }
+  }
+
   if (
     rewardTask.status === 'pending' ||
     rewardTask.status === 'loading' ||
@@ -93,7 +103,7 @@ function RewardsCard ({
                   Thank you for participating in the Hermez reward program.
                 </p>
                 <p className={classes.rewardText}>
-                  Your total reward is {Number(earnedRewardTask.data).toFixed(2)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
+                  Your total reward is {getFormattedEarnedReward(earnedRewardTask.data)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
                 </p>
               </>
               )
@@ -104,7 +114,7 @@ function RewardsCard ({
                   {
                     accountEligibilityTask.data
                       ? (
-                        <span>You earned so far {Number(earnedRewardTask.data).toFixed(2)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)}).</span>
+                        <span>You earned so far {getFormattedEarnedReward(earnedRewardTask.data)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)}).</span>
                         )
                       : (
                         <span>You earned so far 0.00 HEZ ({CurrencySymbol[preferredCurrency].symbol}0.00).</span>

@@ -93,6 +93,16 @@ function RewardsSidenav ({
     return rewardEndingTime <= now
   }
 
+  function getFormattedEarnedReward (earnedReward) {
+    const earnedRewardNumber = Number(earnedReward)
+
+    if (earnedRewardNumber > 0 && earnedRewardNumber < 0.01) {
+      return '< 0.01'
+    } else {
+      return earnedRewardNumber.toFixed(2)
+    }
+  }
+
   return (
     <Sidenav onClose={onClose}>
       <div className={classes.root}>
@@ -139,7 +149,7 @@ function RewardsSidenav ({
                       Your total reward
                     </p>
                     <p className={classes.reward}>
-                      {Number(earnedRewardTask.data).toFixed(2)} HEZ
+                      {getFormattedEarnedReward(earnedRewardTask.data)} HEZ
                       (${getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
                     </p>
                   </div>
@@ -183,7 +193,7 @@ function RewardsSidenav ({
                       accountEligibilityTask.data
                         ? (
                           <p className={classes.reward}>
-                            {Number(earnedRewardTask.data).toFixed(2)} HEZ
+                            {getFormattedEarnedReward(earnedRewardTask.data)} HEZ
                             ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
                           </p>
                           )
