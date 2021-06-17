@@ -14,6 +14,25 @@ function RewardsCard ({
   onOpenRewardsSidenav
 }) {
   const classes = useRewardsCardStyles()
+  const [isRewardActive, setIsRewardActive] = React.useState(undefined)
+
+  React.useEffect(() => {
+    const updateTimer = () => {
+      if (rewardTask.status === 'successful') {
+        if (hasRewardExpired(rewardTask.data)) {
+          setIsRewardActive(false)
+          clearInterval(intervalId)
+        } else {
+          setIsRewardActive(true)
+        }
+      }
+    }
+    const intervalId = setInterval(updateTimer, 1000)
+
+    updateTimer()
+
+    return () => { clearInterval(intervalId) }
+  }, [rewardTask])
 
   function hasRewardExpired (reward) {
     const now = new Date().getTime()
@@ -67,7 +86,7 @@ function RewardsCard ({
             )
           }
 
-          return hasRewardExpired(rewardTask.data)
+          return isRewardActive === false
             ? (
               <>
                 <p className={classes.rewardText}>
@@ -81,7 +100,7 @@ function RewardsCard ({
             : (
               <>
                 <p className={classes.rewardText}>
-                  Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask ? rewardPercentageTask.data : '--'}%</span>.&nbsp;
+                  Today's reward is <span className={classes.rewardPercentage}>{rewardPercentageTask ? rewardPercentageTask.data : '--'}%</span>.&nbsp;
                   {
                     accountEligibilityTask.data
                       ? (
