@@ -36,10 +36,6 @@ function RewardsCard ({
     rewardTask.status === 'loading' ||
     earnedRewardTask.status === 'pending' ||
     earnedRewardTask.status === 'loading' ||
-    rewardPercentageTask.status === 'pending' ||
-    rewardPercentageTask.status === 'loading' ||
-    accountEligibilityTask.status === 'pending' ||
-    accountEligibilityTask.status === 'loading' ||
     tokenTask.status === 'pending' ||
     tokenTask.status === 'loading'
   ) {
@@ -59,7 +55,6 @@ function RewardsCard ({
           if (
             rewardTask.status === 'failed' ||
             earnedRewardTask.status === 'failed' ||
-            rewardPercentageTask.status === 'failed' ||
             accountEligibilityTask.status === 'failed' ||
             tokenTask.status === 'failed'
           ) {
@@ -86,16 +81,16 @@ function RewardsCard ({
             : (
               <>
                 <p className={classes.rewardText}>
-                  Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}%</span>.&nbsp;
+                  Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask ? rewardPercentageTask.data : '--'}%</span>.&nbsp;
                   {
-                  accountEligibilityTask.data
-                    ? (
-                      <span>You earned so far {earnedRewardTask.data} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)}).</span>
-                      )
-                    : (
-                      <span>You earned so far 0.00 HEZ ({CurrencySymbol[preferredCurrency].symbol}0.00).</span>
-                      )
-                }
+                    accountEligibilityTask.data
+                      ? (
+                        <span>You earned so far {Number(earnedRewardTask.data).toFixed(2)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)}).</span>
+                        )
+                      : (
+                        <span>You earned so far 0.00 HEZ ({CurrencySymbol[preferredCurrency].symbol}0.00).</span>
+                        )
+                  }
                 </p>
               </>
               )

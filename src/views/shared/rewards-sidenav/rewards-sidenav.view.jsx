@@ -86,10 +86,6 @@ function RewardsSidenav ({
             rewardTask.status === 'loading' ||
             earnedRewardTask.status === 'pending' ||
             earnedRewardTask.status === 'loading' ||
-            rewardPercentageTask.status === 'pending' ||
-            rewardPercentageTask.status === 'loading' ||
-            accountEligibilityTask.status === 'pending' ||
-            accountEligibilityTask.status === 'loading' ||
             tokenTask.status === 'pending' ||
             tokenTask.status === 'loading'
           ) {
@@ -99,7 +95,6 @@ function RewardsSidenav ({
           if (
             rewardTask.status === 'failed' ||
             earnedRewardTask.status === 'failed' ||
-            rewardPercentageTask.status === 'failed' ||
             accountEligibilityTask.status === 'failed' ||
             tokenTask.status === 'failed'
           ) {
@@ -154,7 +149,9 @@ function RewardsSidenav ({
                 <div className={classes.rewardCard}>
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>Today’s reward</p>
-                    <p className={`${classes.reward} ${classes.rewardPercentage}`}>{rewardPercentageTask.data}%</p>
+                    <p className={`${classes.reward} ${classes.rewardPercentage}`}>
+                      {rewardPercentageTask.data ? rewardPercentageTask.data : '--'}%
+                    </p>
                   </div>
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>
@@ -177,14 +174,6 @@ function RewardsSidenav ({
                     }
                   </div>
                 </div>
-
-                <div className={classes.infoTextWrapper}>
-                  <InfoGreyIcon className={classes.infoIcon} />
-                  <p className={classes.infoText}>
-                    You will receive your reward at the end of the program.
-                  </p>
-                </div>
-
                 {
                   accountEligibilityTask.data && (
                     <div className={classes.infoTextWrapper}>
