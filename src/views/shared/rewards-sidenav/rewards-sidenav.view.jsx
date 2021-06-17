@@ -67,14 +67,14 @@ function RewardsSidenav ({
     const updateTimer = () => {
       if (rewardTask.status === 'successful') {
         const rewardEndingTime = (rewardTask.data.initTimestamp + rewardTask.data.duration) * 1000
-        const rewardRemainingTime = rewardEndingTime - new Date().getTime()
+        const rewardTimeToEnd = rewardEndingTime - new Date().getTime()
 
         if (hasRewardExpired(rewardTask.data)) {
           setRewardRemainingTime(0)
           setIsRewardActive(false)
           clearInterval(intervalId)
         } else {
-          setRewardRemainingTime(rewardRemainingTime)
+          setRewardRemainingTime(rewardTimeToEnd)
           setIsRewardActive(true)
         }
       }
