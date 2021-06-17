@@ -36,10 +36,6 @@ function RewardsCard ({
     rewardTask.status === 'loading' ||
     earnedRewardTask.status === 'pending' ||
     earnedRewardTask.status === 'loading' ||
-    rewardPercentageTask.status === 'pending' ||
-    rewardPercentageTask.status === 'loading' ||
-    accountEligibilityTask.status === 'pending' ||
-    accountEligibilityTask.status === 'loading' ||
     tokenTask.status === 'pending' ||
     tokenTask.status === 'loading'
   ) {
