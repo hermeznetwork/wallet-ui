@@ -59,7 +59,6 @@ function RewardsCard ({
           if (
             rewardTask.status === 'failed' ||
             earnedRewardTask.status === 'failed' ||
-            rewardPercentageTask.status === 'failed' ||
             accountEligibilityTask.status === 'failed' ||
             tokenTask.status === 'failed'
           ) {
@@ -86,7 +85,7 @@ function RewardsCard ({
             : (
               <>
                 <p className={classes.rewardText}>
-                  Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data}%</span>.&nbsp;
+                  Today’s reward is <span className={classes.rewardPercentage}>{rewardPercentageTask ? rewardPercentageTask.data : '--'}%</span>.&nbsp;
                   {
                     accountEligibilityTask.data
                       ? (

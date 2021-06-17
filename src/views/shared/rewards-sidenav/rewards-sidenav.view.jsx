@@ -99,7 +99,6 @@ function RewardsSidenav ({
           if (
             rewardTask.status === 'failed' ||
             earnedRewardTask.status === 'failed' ||
-            rewardPercentageTask.status === 'failed' ||
             accountEligibilityTask.status === 'failed' ||
             tokenTask.status === 'failed'
           ) {
@@ -154,7 +153,9 @@ function RewardsSidenav ({
                 <div className={classes.rewardCard}>
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>Today’s reward</p>
-                    <p className={`${classes.reward} ${classes.rewardPercentage}`}>{rewardPercentageTask.data}%</p>
+                    <p className={`${classes.reward} ${classes.rewardPercentage}`}>
+                      {rewardPercentageTask.data ? rewardPercentageTask.data : '--'}%
+                    </p>
                   </div>
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>
