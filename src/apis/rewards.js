@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const baseApiUrl = `${process.env.REACT_APP_AIRDROP_API_URL}/airdrop/v1`
 const airdropId = process.env.REACT_APP_AIRDROP_ID
-const accumulatedAirdropIds = process.env.REACT_APP_ACCUMULATED_AIRDROP_IDS
+const accumulatedAirdropIds = process.env.REACT_APP_ACCUMULATED_AIRDROP_IDS || ''
 
 /**
  * Fetches Airdrop data
