@@ -10,7 +10,7 @@ import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as hermezWebApi from '../../apis/hermez-web'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
-import { hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from '../../utils/ethereum'
+import { isTxMined, hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from '../../utils/ethereum'
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -196,6 +196,22 @@ function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
 }
 
 /**
+ * Removes a pendingWithdraw from the pendingDelayedWithdraw store by hash
+ * @param {string} pendingDelayedWithdrawHash - The pendingDelayedWithdraw hash to remove from the store
+ * @returns {void}
+ */
+function removePendingDelayedWithdrawByHash (pendingDelayedWithdrawHash) {
+  return (dispatch, getState) => {
+    const { global: { wallet, ethereumNetworkTask } } = getState()
+    const { data: { chainId } } = ethereumNetworkTask
+    const { hermezEthereumAddress } = wallet
+
+    storage.removeItemByCustomProp(constants.PENDING_DELAYED_WITHDRAWS_KEY, chainId, hermezEthereumAddress, { name: 'hash', value: pendingDelayedWithdrawHash })
+    dispatch(globalActions.removePendingDelayedWithdrawByHash(chainId, hermezEthereumAddress, pendingDelayedWithdrawHash))
+  }
+}
+
+/**
  * Updates the date in a delayed withdraw transaction
  * to the time when the transaction was mined
  * @param {String} transactionHash - The L1 transaction hash for a non-instant withdraw
@@ -218,33 +234,62 @@ function updatePendingDelayedWithdrawDate (transactionHash, pendingDelayedWithdr
   }
 }
 
-function checkPendingDelayedWithdraw (exitId) {
-  return (dispatch, getState) => {
+/**
+ * Checks L1 transactions for pending delayed withdrawal.
+ * If they have failed, clear from storage.
+ * Updates the date the transaction happened if necessary.
+ * @returns {void}
+ */
+function checkPendingDelayedWithdrawals () {
+  return async (dispatch, getState) => {
     const { global: { wallet, pendingDelayedWithdraws, ethereumNetworkTask } } = getState()
 
-    dispatch(globalActions.checkPendingDelayedWithdraw())
+    dispatch(globalActions.checkPendingDelayedWithdrawals())
+
     const provider = Providers.getProvider()
+    const accountEthBalance = BigInt(await provider.getBalance(Addresses.getEthereumAddress(wallet.hermezEthereumAddress)))
     const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
       pendingDelayedWithdraws,
       ethereumNetworkTask.data.chainId,
       wallet.hermezEthereumAddress
     )
 
-    const pendingDelayedWithdraw = accountPendingDelayedWithdraws.find((delayedWithdraw) => delayedWithdraw.id === exitId)
-    if (pendingDelayedWithdraw) {
-      provider.getTransaction(pendingDelayedWithdraw.hash).then((transaction) => {
-        provider.getBlock(transaction.blockNumber).then((block) => {
+    // Gets the actual transaction and checks if it doesn't exist or is expected to fail
+    const pendingDelayedWithdrawsTxs = accountPendingDelayedWithdraws.map((pendingDelayedWithdraw) => {
+      return provider.getTransaction(pendingDelayedWithdraw.hash).then((tx) => {
+        // Checks whether the date of pendingDelayedWithdraw needs to be updated
+        provider.getBlock(tx.blockNumber).then((block) => {
           // Converts timestamp from s to ms
           const newTimestamp = block.timestamp * 1000
           if (new Date(pendingDelayedWithdraw.timestamp).getTime() !== newTimestamp) {
             dispatch(updatePendingDelayedWithdrawDate(pendingDelayedWithdraw.hash, new Date(newTimestamp).toISOString()))
           }
-          dispatch(globalActions.checkPendingDelayedWithdrawSuccess())
         })
-      }).catch(console.log)
-    } else {
-      dispatch(globalActions.checkPendingDelayedWithdrawSuccess())
-    }
+
+        // Checks here to have access to pendingDelayedWithdraw.timestamp
+        if (isTxCanceled(tx) || isTxExpectedToFail(tx, pendingDelayedWithdraw.timestamp, accountEthBalance)) {
+          dispatch(removePendingDelayedWithdrawByHash(pendingDelayedWithdraw.hash))
+        }
+        return tx
+      })
+    })
+
+    Promise.all(pendingDelayedWithdrawsTxs)
+      .then((txs) => {
+        const minedTxs = txs.filter(isTxMined)
+        const pendingDelayedWithdrawsTxReceipts = minedTxs.map(tx => provider.getTransactionReceipt(tx.hash))
+
+        // Checks receipts to see if transactions have been reverted
+        Promise.all(pendingDelayedWithdrawsTxReceipts)
+          .then((txReceipts) => {
+            const revertedTxReceipts = txReceipts.filter(hasTxBeenReverted)
+
+            revertedTxReceipts.forEach((tx) => {
+              dispatch(removePendingDelayedWithdrawByHash(tx.transactionHash))
+            })
+          })
+          .finally(() => dispatch(globalActions.checkPendingDelayedWithdrawalsSuccess()))
+      })
   }
 }
 
@@ -266,38 +311,46 @@ function checkPendingWithdrawals () {
       ethereumNetworkTask.data.chainId,
       wallet.hermezEthereumAddress
     )
+
+    // Gets the actual transaction and checks if it doesn't exist or is expected to fail
     const pendingWithdrawsTxs = accountPendingWithdraws.map((pendingWithdraw) => {
       return provider.getTransaction(pendingWithdraw.hash).then((tx) => {
+        // Checks here to have access to pendingWithdraw.timestamp
         if (isTxCanceled(tx) || isTxExpectedToFail(tx, pendingWithdraw.timestamp, accountEthBalance)) {
           dispatch(removePendingWithdraw(pendingWithdraw.hash))
         }
-
         return tx
       })
     })
 
-    Promise.all(pendingWithdrawsTxs).then((txs) => {
-      const minedTxs = txs.filter(tx => tx !== null && tx.blockNumber !== null)
-      const pendingWithdrawsTxReceipts = minedTxs.map(tx => provider.getTransactionReceipt(tx.hash))
+    Promise.all(pendingWithdrawsTxs)
+      .then((txs) => {
+        const minedTxs = txs.filter(isTxMined)
+        const pendingWithdrawsTxReceipts = minedTxs.map(tx => provider.getTransactionReceipt(tx.hash))
 
-      Promise.all(pendingWithdrawsTxReceipts).then((txReceipts) => {
-        const revertedTxReceipts = txReceipts.filter(hasTxBeenReverted)
+        // Checks receipts to see if transactions have been reverted
+        Promise.all(pendingWithdrawsTxReceipts)
+          .then((txReceipts) => {
+            const revertedTxReceipts = txReceipts.filter(hasTxBeenReverted)
 
-        revertedTxReceipts.forEach((tx) => {
-          dispatch(removePendingWithdraw(tx.transactionHash))
-        })
-
-        Promise.all(accountPendingWithdraws.map((pendingWithdraw) => {
-          return CoordinatorAPI.getExit(pendingWithdraw.batchNum, pendingWithdraw.accountIndex)
-            .then((exitTx) => {
-              if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
-                dispatch(removePendingWithdraw(pendingWithdraw.hash))
-              }
+            revertedTxReceipts.forEach((tx) => {
+              dispatch(removePendingWithdraw(tx.transactionHash))
             })
-        }))
-          .finally(() => dispatch(globalActions.checkPendingWithdrawalsSuccess()))
+
+            // Checks with Coordinator API if exit has been withdrawn
+            const exitsApiPromises = accountPendingWithdraws.map((pendingWithdraw) => {
+              return CoordinatorAPI.getExit(pendingWithdraw.batchNum, pendingWithdraw.accountIndex)
+                .then((exitTx) => {
+                  // Checks here to have access to pendingWithdraw.hash
+                  if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
+                    dispatch(removePendingWithdraw(pendingWithdraw.hash))
+                  }
+                })
+            })
+
+            Promise.all(exitsApiPromises).finally(() => dispatch(globalActions.checkPendingWithdrawalsSuccess()))
+          })
       })
-    })
   }
 }
 
@@ -536,7 +589,7 @@ export {
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
   updatePendingDelayedWithdrawDate,
-  checkPendingDelayedWithdraw,
+  checkPendingDelayedWithdrawals,
   checkPendingWithdrawals,
   addPendingDeposit,
   removePendingDepositById,

@@ -50,7 +50,7 @@ function AccountDetails ({
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onLoadCoordinatorState,
-  onCheckPendingDelayedWithdraw,
+  onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
   onNavigateToTransactionDetails,
   onCleanup
@@ -88,6 +88,7 @@ function AccountDetails ({
       onLoadAccount(accountIndex)
       onLoadPoolTransactions(accountIndex)
       onCheckPendingWithdrawals()
+      onCheckPendingDelayedWithdrawals()
     }
     const intervalId = setInterval(loadInitialData, AUTO_REFRESH_RATE)
 
@@ -239,7 +240,6 @@ function AccountDetails ({
                           onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                           onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                           coordinatorState={coordinatorStateTask?.data}
-                          onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
                           redirectTo={WithdrawRedirectionRoute.AccountDetails}
                         />
                       : <></>
@@ -256,7 +256,6 @@ function AccountDetails ({
                           onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                           onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                           coordinatorState={coordinatorStateTask?.data}
-                          onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
                           redirectTo={WithdrawRedirectionRoute.AccountDetails}
                         />
                       : <></>
@@ -368,10 +367,10 @@ const mapDispatchToProps = (dispatch) => ({
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
-  onCheckPendingDelayedWithdraw: (exitId) =>
-    dispatch(globalThunks.checkPendingDelayedWithdraw(exitId)),
   onCheckPendingWithdrawals: () =>
     dispatch(globalThunks.checkPendingWithdrawals()),
+  onCheckPendingDelayedWithdrawals: () =>
+    dispatch(globalThunks.checkPendingDelayedWithdrawals()),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
   onCleanup: () =>

@@ -25,9 +25,10 @@ export const globalActionTypes = {
   REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW',
   ADD_PENDING_DELAYED_WITHDRAW: '[GLOBAL] ADD PENDING DELAYED WITHRAW',
   REMOVE_PENDING_DELAYED_WITHDRAW: '[GLOBAL] REMOVE PENDING DELAYED WITHRAW',
+  REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH: '[GLOBAL] REMOVE PENDING DELAYED WITHRAW BY HASH',
   UPDATE_PENDING_DELAYED_WITHDRAW_DATE: '[GLOBAL] UPDATE PENDING DELAYED WITHDRAW DATE',
-  CHECK_PENDING_DELAYED_WITHDRAW: '[GLOBAL] CHECK PENDING DELAYED WITHDRAW',
-  CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS: '[GLOBAL] CHECK PENDING DELAYED WITHDRAW',
+  CHECK_PENDING_DELAYED_WITHDRAWALS: '[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS',
+  CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS: '[GLOBAL] CHECK PENDING DELAYED WITHDRAW',
   CHECK_PENDING_WITHDRAWALS: '[GLOBAL] CHECK PENDING WITHDRAWALS',
   CHECK_PENDING_WITHDRAWALS_SUCCESS: '[GLOBAL] CHECK PENDING WITHDRAWALS SUCCESS',
   ADD_PENDING_DEPOSIT: '[GLOBAL] ADD PENDING DEPOSIT',
@@ -185,6 +186,15 @@ function removePendingDelayedWithdraw (chainId, hermezEthereumAddress, pendingDe
   }
 }
 
+function removePendingDelayedWithdrawByHash (chainId, hermezEthereumAddress, pendingDelayedWithdrawHash) {
+  return {
+    type: globalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH,
+    chainId,
+    hermezEthereumAddress,
+    pendingDelayedWithdrawHash
+  }
+}
+
 function updatePendingDelayedWithdrawDate (chainId, hermezEthereumAddress, transactionHash, transactionDate) {
   return {
     type: globalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE,
@@ -195,15 +205,15 @@ function updatePendingDelayedWithdrawDate (chainId, hermezEthereumAddress, trans
   }
 }
 
-function checkPendingDelayedWithdraw () {
+function checkPendingDelayedWithdrawals () {
   return {
-    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW
+    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS
   }
 }
 
-function checkPendingDelayedWithdrawSuccess () {
+function checkPendingDelayedWithdrawalsSuccess () {
   return {
-    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS
+    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS
   }
 }
 
@@ -309,9 +319,10 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  removePendingDelayedWithdrawByHash,
   updatePendingDelayedWithdrawDate,
-  checkPendingDelayedWithdraw,
-  checkPendingDelayedWithdrawSuccess,
+  checkPendingDelayedWithdrawals,
+  checkPendingDelayedWithdrawalsSuccess,
   checkPendingWithdrawals,
   checkPendingWithdrawalsSuccess,
   addPendingDeposit,
