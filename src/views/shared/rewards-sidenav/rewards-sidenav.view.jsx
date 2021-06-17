@@ -28,6 +28,7 @@ function RewardsSidenav ({
 }) {
   const classes = useRewardsSidenavStyles()
   const [rewardRemainingTime, setRewardRemainingTime] = React.useState(undefined)
+  const [isRewardActive, setIsRewardActive] = React.useState(undefined)
 
   function getRewardAmountInPreferredCurrency (rewardAmount) {
     return getTokenAmountInPreferredCurrency(
@@ -41,19 +42,40 @@ function RewardsSidenav ({
   React.useEffect(() => {
     onLoadReward()
     onLoadEarnedReward()
-    onLoadRewardAccountEligibility()
     onLoadRewardPercentage()
+    onLoadRewardAccountEligibility()
     onLoadToken()
   }, [])
+
+  React.useEffect(() => {
+    let intervalId
+
+    if (rewardTask.status === 'successful') {
+      intervalId = setInterval(() => {
+        if (!hasRewardExpired(rewardTask.data)) {
+          onLoadRewardAccountEligibility()
+        } else {
+          clearInterval(intervalId)
+        }
+      }, 10000)
+    }
+
+    return () => { clearInterval(intervalId) }
+  }, [rewardTask])
 
   React.useEffect(() => {
     const updateTimer = () => {
       if (rewardTask.status === 'successful') {
         const rewardEndingTime = (rewardTask.data.initTimestamp + rewardTask.data.duration) * 1000
-        const rewardRemaningTime = rewardEndingTime - new Date().getTime()
+        const rewardRemainingTime = rewardEndingTime - new Date().getTime()
 
-        if (rewardTask.data && !hasRewardExpired(rewardTask.data)) {
-          setRewardRemainingTime(rewardRemaningTime)
+        if (hasRewardExpired(rewardTask.data)) {
+          setRewardRemainingTime(0)
+          setIsRewardActive(false)
+          clearInterval(intervalId)
+        } else {
+          setRewardRemainingTime(rewardRemainingTime)
+          setIsRewardActive(true)
         }
       }
     }
@@ -105,7 +127,7 @@ function RewardsSidenav ({
             )
           }
 
-          return hasRewardExpired(rewardTask.data)
+          return isRewardActive === false
             ? (
               <>
                 <p className={classes.finishedText}>
@@ -148,7 +170,7 @@ function RewardsSidenav ({
                 }
                 <div className={classes.rewardCard}>
                   <div className={classes.rewardGroup}>
-                    <p className={classes.rewardTitle}>Today’s reward</p>
+                    <p className={classes.rewardTitle}>Today's reward</p>
                     <p className={`${classes.reward} ${classes.rewardPercentage}`}>
                       {rewardPercentageTask.data ? rewardPercentageTask.data : '--'}%
                     </p>
