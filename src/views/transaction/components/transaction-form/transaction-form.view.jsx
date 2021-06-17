@@ -165,7 +165,7 @@ function TransactionForm ({
   function isContinueDisabled () {
     const isAmountValid = isAmountLessThanFunds && isAmountPositive && isAmountCompressedValid && amount && BigInt(amount.toString()) > 0
 
-    if (transactionType === TxType.Exit && !doesUserHaveEnoughEthForWithdraw) {
+    if (transactionType === TxType.Exit && doesUserHaveEnoughEthForWithdraw === false) {
       return false
     } else if (transactionType !== TxType.Transfer && isAmountValid) {
       return false

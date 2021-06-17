@@ -95,6 +95,7 @@ function Home ({
     onCheckPendingDeposits()
     onLoadPoolTransactions()
     onLoadExits()
+    onCheckPendingWithdrawals()
   }, [])
 
   React.useEffect(() => {
