@@ -10,6 +10,7 @@ import heztoken from '../../../images/heztoken.svg'
 import Sidenav from '../sidenav/sidenav.view'
 import * as date from '../../../utils/date'
 import { getTokenAmountInPreferredCurrency, CurrencySymbol } from '../../../utils/currencies'
+import { getFormattedEarnedReward } from '../../../utils/rewards'
 
 function RewardsSidenav ({
   rewardTask,
@@ -91,16 +92,6 @@ function RewardsSidenav ({
     const rewardEndingTime = (reward.initTimestamp + reward.duration) * 1000
 
     return rewardEndingTime <= now
-  }
-
-  function getFormattedEarnedReward (earnedReward) {
-    const earnedRewardNumber = Number(earnedReward)
-
-    if (earnedRewardNumber > 0 && earnedRewardNumber < 0.01) {
-      return '< 0.01'
-    } else {
-      return earnedRewardNumber.toFixed(2)
-    }
   }
 
   return (

@@ -2,6 +2,7 @@ import React from 'react'
 
 import useRewardsCardStyles from './rewards-card.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies.js'
+import { getFormattedEarnedReward } from '../../../../utils/rewards'
 
 function RewardsCard ({
   rewardTask,
@@ -48,16 +49,6 @@ function RewardsCard ({
       preferredCurrency,
       fiatExchangeRatesTask.data
     ).toFixed(2)
-  }
-
-  function getFormattedEarnedReward (earnedReward) {
-    const earnedRewardNumber = Number(earnedReward)
-
-    if (earnedRewardNumber > 0 && earnedRewardNumber < 0.01) {
-      return '< 0.01'
-    } else {
-      return earnedRewardNumber.toFixed(2)
-    }
   }
 
   if (
