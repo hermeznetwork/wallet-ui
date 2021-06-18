@@ -3,8 +3,14 @@ import React from 'react'
 import useAlertStyles from './alert.styles'
 import { ReactComponent as InfoIcon } from '../../../images/icons/info.svg'
 
-function Alert ({ message, showHelpButton, onHelpClick }) {
-  const classes = useAlertStyles()
+export const AlertVariant = {
+  DARK: 'dark',
+  LIGHT: 'light'
+}
+
+function Alert ({ message, variant = AlertVariant.DARK, showHelpButton, helpButtonLink, onHelpClick }) {
+  const classes = useAlertStyles({ variant })
+  const Button = helpButtonLink ? 'a' : 'button'
 
   return (
     <div className={classes.root}>
@@ -15,9 +21,12 @@ function Alert ({ message, showHelpButton, onHelpClick }) {
         </p>
       </div>
       {showHelpButton && (
-        <button className={classes.helpButton} onClick={onHelpClick}>
+        <Button
+          className={classes.helpButton}
+          {...(helpButtonLink ? { href: helpButtonLink, target: '_blank' } : { onClick: onHelpClick })}
+        >
           More info
-        </button>
+        </Button>
       )}
     </div>
   )
