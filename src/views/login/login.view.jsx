@@ -18,8 +18,9 @@ import CreateAccountAuth from './components/create-account-auth/create-account-a
 import Button from '../shared/button/button.view'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from '../../store/global/global.reducer'
 import ChainIdError from './components/chain-id-error/chain-id-error.view'
-import { PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../constants'
+import { METAMASK_UPDATE_HELP_LINK, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../constants'
 import UnderMaintenanceError from './components/under-maintenance-error/under-maintenance-error.view'
+import Alert, { AlertVariant } from '../shared/alert/alert.view'
 
 export const WalletName = {
   METAMASK: 'metaMask',
@@ -191,6 +192,14 @@ function Login ({
             }
           })()
         }
+        <div className={classes.updateMetaMaskAlert}>
+          <Alert
+            message="If you're unable to login with Metamask make sure you have the latest version."
+            variant={AlertVariant.LIGHT}
+            showHelpButton
+            helpButtonLink={METAMASK_UPDATE_HELP_LINK}
+          />
+        </div>
         <div className={classes.legalContainer}>
           <a
             href={PRIVACY_POLICY_URL}
