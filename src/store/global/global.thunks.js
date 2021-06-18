@@ -199,7 +199,7 @@ function removePendingDelayedWithdraw (pendingDelayedWithdrawId) {
 }
 
 /**
- * Removes a pendingWithdraw from the pendingDelayedWithdraw store by hash
+ * Removes a pendingWithdraw from the pendingDelayedWithdraws store by hash
  * @param {string} pendingDelayedWithdrawHash - The pendingDelayedWithdraw hash to remove from the store
  * @returns {void}
  */
@@ -238,7 +238,7 @@ function updatePendingDelayedWithdrawDate (transactionHash, pendingDelayedWithdr
 }
 
 /**
- * Checks L1 transactions for pending delayed withdrawal.
+ * Checks L1 transactions for pending delayed withdrawals.
  * If they have failed, clear from storage.
  * Updates the date the transaction happened if necessary.
  * @returns {void}
