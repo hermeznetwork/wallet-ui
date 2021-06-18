@@ -71,6 +71,7 @@ const useRewardsSidenavStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.bold
   },
   eligibleIcon: {
+    width: theme.spacing(2),
     flex: '1 0 auto'
   },
   rewardCard: {
