@@ -37,10 +37,8 @@ const useMyAccountStyles = createUseStyles(theme => ({
     alignItems: 'flex-start'
   },
   rewardsCard: {
-    width: '100%'
-  },
-  settings: {
-    marginTop: theme.spacing(4)
+    width: '100%',
+    marginBottom: theme.spacing(4)
   },
   settingContainer: {
     display: 'flex',

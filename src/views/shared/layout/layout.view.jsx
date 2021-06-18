@@ -11,6 +11,7 @@ import { closeSnackbar } from '../../../store/global/global.actions'
 import RewardsSidenav from '../../shared/rewards-sidenav/rewards-sidenav.view'
 import * as globalThunks from '../../../store/global/global.thunks'
 import * as globalActions from '../../../store/global/global.actions'
+import { hasRewardStarted } from '../../../utils/rewards'
 
 function Layout ({
   header,
@@ -61,23 +62,27 @@ function Layout ({
           onClose={onCloseSnackbar}
         />
       )}
-      {process.env.REACT_APP_ENABLE_AIRDROP === 'true' && rewards.sidenav.status === 'open' && (
-        <RewardsSidenav
-          rewardTask={rewards.rewardTask}
-          earnedRewardTask={rewards.earnedRewardTask}
-          rewardPercentageTask={rewards.rewardPercentageTask}
-          accountEligibilityTask={rewards.accountEligibilityTask}
-          tokenTask={rewards.tokenTask}
-          preferredCurrency={preferredCurrency}
-          fiatExchangeRatesTask={fiatExchangeRatesTask}
-          onLoadReward={onLoadReward}
-          onLoadEarnedReward={onLoadEarnedReward}
-          onLoadRewardPercentage={onLoadRewardPercentage}
-          onLoadRewardAccountEligibility={onLoadRewardAccountEligibility}
-          onLoadToken={onLoadToken}
-          onClose={onCloseRewardsSidenav}
-        />
-      )}
+      {
+        process.env.REACT_APP_ENABLE_AIRDROP === 'true' &&
+        (rewards.rewardTask.status === 'successful' || rewards.rewardTask.status === 'reloading') &&
+        hasRewardStarted(rewards.rewardTask.data) &&
+        rewards.sidenav.status === 'open' && (
+          <RewardsSidenav
+            rewardTask={rewards.rewardTask}
+            earnedRewardTask={rewards.earnedRewardTask}
+            rewardPercentageTask={rewards.rewardPercentageTask}
+            accountEligibilityTask={rewards.accountEligibilityTask}
+            tokenTask={rewards.tokenTask}
+            preferredCurrency={preferredCurrency}
+            fiatExchangeRatesTask={fiatExchangeRatesTask}
+            onLoadEarnedReward={onLoadEarnedReward}
+            onLoadRewardPercentage={onLoadRewardPercentage}
+            onLoadRewardAccountEligibility={onLoadRewardAccountEligibility}
+            onLoadToken={onLoadToken}
+            onClose={onCloseRewardsSidenav}
+          />
+        )
+      }
     </div>
   )
 }
@@ -96,8 +101,6 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onCloseSnackbar: () => dispatch(closeSnackbar()),
-  onLoadReward: () =>
-    dispatch(globalThunks.fetchReward()),
   onLoadEarnedReward: () =>
     dispatch(globalThunks.fetchEarnedReward()),
   onLoadRewardPercentage: () =>

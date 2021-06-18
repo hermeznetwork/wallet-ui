@@ -20,7 +20,6 @@ function RewardsSidenav ({
   tokenTask,
   preferredCurrency,
   fiatExchangeRatesTask,
-  onLoadReward,
   onLoadEarnedReward,
   onLoadRewardPercentage,
   onLoadRewardAccountEligibility,
@@ -41,7 +40,6 @@ function RewardsSidenav ({
   }
 
   React.useEffect(() => {
-    onLoadReward()
     onLoadEarnedReward()
     onLoadRewardPercentage()
     onLoadRewardAccountEligibility()
