@@ -253,6 +253,22 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
+    case globalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH: {
+      const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {}
+      const accountPendingDelayedWithdraws = chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || []
+
+      return {
+        ...state,
+        pendingDelayedWithdraws: {
+          ...state.pendingDelayedWithdraws,
+          [action.chainId]: {
+            ...chainIdPendingDelayedWithdraws,
+            [action.hermezEthereumAddress]: accountPendingDelayedWithdraws
+              .filter(withdraw => withdraw.hash !== action.pendingDelayedWithdrawHash)
+          }
+        }
+      }
+    }
     case globalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE: {
       const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {}
       const accountPendingDelayedWithdraws = chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || []
@@ -273,7 +289,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW: {
+    case globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS: {
       return {
         ...state,
         pendingDelayedWithdrawCheckTask: {
@@ -281,7 +297,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS: {
+    case globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS: {
       return {
         ...state,
         pendingDelayedWithdrawCheckTask: {

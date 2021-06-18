@@ -9,6 +9,6 @@ function changePreferredCurrency (preferredCurrency) {
   }
 }
 
-export { 
+export {
   changePreferredCurrency
 }

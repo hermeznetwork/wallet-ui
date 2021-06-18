@@ -54,7 +54,7 @@ function Home ({
   onLoadEarnedReward,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
-  onCheckPendingDelayedWithdraw,
+  onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
   onNavigateToAccountDetails,
   onOpenSnackbar,
@@ -96,6 +96,7 @@ function Home ({
     onLoadPoolTransactions()
     onLoadExits()
     onCheckPendingWithdrawals()
+    onCheckPendingDelayedWithdrawals()
   }, [])
 
   React.useEffect(() => {
@@ -104,6 +105,7 @@ function Home ({
       onLoadPoolTransactions()
       onLoadExits()
       onCheckPendingWithdrawals()
+      onCheckPendingDelayedWithdrawals()
     }, AUTO_REFRESH_RATE)
 
     return () => { clearInterval(intervalId) }
@@ -201,7 +203,6 @@ function Home ({
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                   onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                   coordinatorState={coordinatorStateTask?.data}
-                  onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
               : <></>
@@ -222,7 +223,6 @@ function Home ({
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                   onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                   coordinatorState={coordinatorStateTask?.data}
-                  onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
               : <></>
@@ -345,10 +345,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
-  onCheckPendingDelayedWithdraw: (exitId) =>
-    dispatch(globalThunks.checkPendingDelayedWithdraw(exitId)),
   onCheckPendingWithdrawals: () =>
     dispatch(globalThunks.checkPendingWithdrawals()),
+  onCheckPendingDelayedWithdrawals: () =>
+    dispatch(globalThunks.checkPendingDelayedWithdrawals()),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) =>
