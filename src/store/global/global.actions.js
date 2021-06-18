@@ -25,9 +25,10 @@ export const globalActionTypes = {
   REMOVE_PENDING_WITHDRAW: '[GLOBAL] REMOVE PENDING WITHRAW',
   ADD_PENDING_DELAYED_WITHDRAW: '[GLOBAL] ADD PENDING DELAYED WITHRAW',
   REMOVE_PENDING_DELAYED_WITHDRAW: '[GLOBAL] REMOVE PENDING DELAYED WITHRAW',
+  REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH: '[GLOBAL] REMOVE PENDING DELAYED WITHRAW BY HASH',
   UPDATE_PENDING_DELAYED_WITHDRAW_DATE: '[GLOBAL] UPDATE PENDING DELAYED WITHDRAW DATE',
-  CHECK_PENDING_DELAYED_WITHDRAW: '[GLOBAL] CHECK PENDING DELAYED WITHDRAW',
-  CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS: '[GLOBAL] CHECK PENDING DELAYED WITHDRAW',
+  CHECK_PENDING_DELAYED_WITHDRAWALS: '[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS',
+  CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS: '[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS SUCCESS',
   CHECK_PENDING_WITHDRAWALS: '[GLOBAL] CHECK PENDING WITHDRAWALS',
   CHECK_PENDING_WITHDRAWALS_SUCCESS: '[GLOBAL] CHECK PENDING WITHDRAWALS SUCCESS',
   ADD_PENDING_DEPOSIT: '[GLOBAL] ADD PENDING DEPOSIT',
@@ -38,7 +39,24 @@ export const globalActionTypes = {
   CHECK_PENDING_DEPOSITS_SUCCESS: '[GLOBAL] CHECK PENDING DEPOSITS SUCCESS',
   LOAD_COORDINATOR_STATE: '[GLOBAL] LOAD COORDINATOR STATE',
   LOAD_COORDINATOR_STATE_SUCCESS: '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
-  LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE'
+  LOAD_COORDINATOR_STATE_FAILURE: '[GLOBAL] LOAD COORDINATOR STATE FAILURE',
+  OPEN_REWARDS_SIDENAV: '[GLOBAL] OPEN REWARDS SIDENAV',
+  CLOSE_REWARDS_SIDENAV: '[GLOBAL] CLOSE REWARDS SIDENAV',
+  LOAD_REWARD: '[GLOBAL] LOAD REWARD',
+  LOAD_REWARD_SUCCESS: '[GLOBAL] LOAD REWARD SUCCESS',
+  LOAD_REWARD_FAILURE: '[GLOBAL] LOAD REWARD FAILURE',
+  LOAD_EARNED_REWARD: '[GLOBAL] LOAD EARNED REWARD',
+  LOAD_EARNED_REWARD_SUCCESS: '[GLOBAL] LOAD EARNED REWARD SUCCESS',
+  LOAD_EARNED_REWARD_FAILURE: '[GLOBAL] LOAD EARNED REWARD FAILURE',
+  LOAD_REWARD_PERCENTAGE: '[GLOBAL] LOAD REWARD PERCENTAGE',
+  LOAD_REWARD_PERCENTAGE_SUCCESS: '[GLOBAL] LOAD REWARD PERCENTAGE SUCCESS',
+  LOAD_REWARD_PERCENTAGE_FAILURE: '[GLOBAL] LOAD REWARD PERCENTAGE FAILURE',
+  LOAD_REWARD_ACCOUNT_ELIGIBILITY: '[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY',
+  LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS: '[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY SUCCESS',
+  LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE: '[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY FAILURE',
+  LOAD_REWARD_TOKEN: '[GLOBAL] LOAD REWARD TOKEN',
+  LOAD_REWARD_TOKEN_SUCCESS: '[GLOBAL] LOAD REWARD TOKEN SUCCESS',
+  LOAD_REWARD_TOKEN_FAILURE: '[GLOBAL] LOAD REWARD TOKEN FAILURE'
 }
 
 function loadHermezStatus () {
@@ -185,6 +203,15 @@ function removePendingDelayedWithdraw (chainId, hermezEthereumAddress, pendingDe
   }
 }
 
+function removePendingDelayedWithdrawByHash (chainId, hermezEthereumAddress, pendingDelayedWithdrawHash) {
+  return {
+    type: globalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH,
+    chainId,
+    hermezEthereumAddress,
+    pendingDelayedWithdrawHash
+  }
+}
+
 function updatePendingDelayedWithdrawDate (chainId, hermezEthereumAddress, transactionHash, transactionDate) {
   return {
     type: globalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE,
@@ -195,15 +222,15 @@ function updatePendingDelayedWithdrawDate (chainId, hermezEthereumAddress, trans
   }
 }
 
-function checkPendingDelayedWithdraw () {
+function checkPendingDelayedWithdrawals () {
   return {
-    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW
+    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS
   }
 }
 
-function checkPendingDelayedWithdrawSuccess () {
+function checkPendingDelayedWithdrawalsSuccess () {
   return {
-    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAW_SUCCESS
+    type: globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS
   }
 }
 
@@ -288,6 +315,118 @@ function loadCoordinatorStateFailure (error) {
   }
 }
 
+function openRewardsSidenav () {
+  return {
+    type: globalActionTypes.OPEN_REWARDS_SIDENAV
+  }
+}
+
+function closeRewardsSidenav () {
+  return {
+    type: globalActionTypes.CLOSE_REWARDS_SIDENAV
+  }
+}
+
+function loadReward () {
+  return {
+    type: globalActionTypes.LOAD_REWARD
+  }
+}
+
+function loadRewardSuccess (data) {
+  return {
+    type: globalActionTypes.LOAD_REWARD_SUCCESS,
+    data
+  }
+}
+
+function loadRewardFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_REWARD_FAILURE,
+    error
+  }
+}
+
+function loadEarnedReward () {
+  return {
+    type: globalActionTypes.LOAD_EARNED_REWARD
+  }
+}
+
+function loadEarnedRewardSuccess (data) {
+  return {
+    type: globalActionTypes.LOAD_EARNED_REWARD_SUCCESS,
+    data
+  }
+}
+
+function loadEarnedRewardFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_EARNED_REWARD_FAILURE,
+    error
+  }
+}
+
+function loadRewardPercentage () {
+  return {
+    type: globalActionTypes.LOAD_REWARD_PERCENTAGE
+  }
+}
+
+function loadRewardPercentageSuccess (data) {
+  return {
+    type: globalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS,
+    data
+  }
+}
+
+function loadRewardPercentageFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE,
+    error
+  }
+}
+
+function loadRewardAccountEligilibity () {
+  return {
+    type: globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY
+  }
+}
+
+function loadRewardAccountEligilibitySuccess (data) {
+  return {
+    type: globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS,
+    data
+  }
+}
+
+function loadRewardAccountEligilibityFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE,
+    error
+  }
+}
+
+function loadRewardToken () {
+  return {
+    type: globalActionTypes.LOAD_REWARD_TOKEN
+  }
+}
+
+function loadRewardTokenSuccess (data) {
+  return {
+    type: globalActionTypes.LOAD_REWARD_TOKEN_SUCCESS,
+    data
+  }
+}
+
+function loadRewardTokenFailure (error) {
+  return {
+    type: globalActionTypes.LOAD_REWARD_TOKEN_FAILURE,
+    error
+  }
+}
+
 export {
   loadHermezStatus,
   loadHermezStatusSuccess,
@@ -309,9 +448,10 @@ export {
   removePendingWithdraw,
   addPendingDelayedWithdraw,
   removePendingDelayedWithdraw,
+  removePendingDelayedWithdrawByHash,
   updatePendingDelayedWithdrawDate,
-  checkPendingDelayedWithdraw,
-  checkPendingDelayedWithdrawSuccess,
+  checkPendingDelayedWithdrawals,
+  checkPendingDelayedWithdrawalsSuccess,
   checkPendingWithdrawals,
   checkPendingWithdrawalsSuccess,
   addPendingDeposit,
@@ -322,5 +462,22 @@ export {
   checkPendingDepositsSuccess,
   loadCoordinatorState,
   loadCoordinatorStateSuccess,
-  loadCoordinatorStateFailure
+  loadCoordinatorStateFailure,
+  openRewardsSidenav,
+  closeRewardsSidenav,
+  loadReward,
+  loadRewardSuccess,
+  loadRewardFailure,
+  loadEarnedReward,
+  loadEarnedRewardSuccess,
+  loadEarnedRewardFailure,
+  loadRewardPercentage,
+  loadRewardPercentageSuccess,
+  loadRewardPercentageFailure,
+  loadRewardAccountEligilibity,
+  loadRewardAccountEligilibitySuccess,
+  loadRewardAccountEligilibityFailure,
+  loadRewardToken,
+  loadRewardTokenSuccess,
+  loadRewardTokenFailure
 }

@@ -29,7 +29,7 @@ const CurrencySymbol = {
 /**
  * Gets the string representation of a token amount with fixed decimals
  * @param {string} amount - Amount to be be converted in a bigint format
- * @param {number} decimals - Decimals that the amount should have in its string representation
+ * @param {Number} decimals - Decimals that the amount should have in its string representation
  * @returns {string}
  */
 function getFixedTokenAmount (amount, decimals) {
@@ -72,7 +72,7 @@ function getAmountInPreferredCurrency (
  * @param {string} preferredCurrency - User preferred currency
  * @param {string} fiatExchangeRates - Exchange rates for all the supported currencies in the app
  *
- * @returns {number}
+ * @returns {Number}
  */
 function getTokenAmountInPreferredCurrency (
   amount,

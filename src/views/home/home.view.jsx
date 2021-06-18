@@ -23,9 +23,10 @@ import { resetState } from '../../store/home/home.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
-import { AUTO_REFRESH_RATE } from '../../constants'
 import * as storage from '../../utils/storage'
 import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
+import { AUTO_REFRESH_RATE } from '../../constants'
+import * as globalActions from '../../store/global/global.actions'
 
 function Home ({
   wallet,
@@ -41,18 +42,23 @@ function Home ({
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorStateTask,
+  rewards,
   onChangeHeader,
+  onLoadCoordinatorState,
   onCheckPendingDeposits,
   onLoadTotalBalance,
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
+  onLoadEstimatedReward,
+  onLoadEarnedReward,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
-  onCheckPendingDelayedWithdraw,
+  onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
   onNavigateToAccountDetails,
   onOpenSnackbar,
+  onOpenRewardsSidenav,
   onCleanup
 }) {
   const theme = useTheme()
@@ -82,10 +88,16 @@ function Home ({
   }, [theme, onChangeHeader])
 
   React.useEffect(() => {
+    onLoadCoordinatorState()
+  }, [])
+
+  React.useEffect(() => {
     onCheckPendingDeposits()
     onLoadPoolTransactions()
     onLoadExits()
-  }, [onCheckPendingDeposits, onCheckPendingDeposits, onLoadPoolTransactions, onLoadExits])
+    onCheckPendingWithdrawals()
+    onCheckPendingDelayedWithdrawals()
+  }, [])
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
@@ -93,10 +105,11 @@ function Home ({
       onLoadPoolTransactions()
       onLoadExits()
       onCheckPendingWithdrawals()
+      onCheckPendingDelayedWithdrawals()
     }, AUTO_REFRESH_RATE)
 
     return () => { clearInterval(intervalId) }
-  }, [onLoadPoolTransactions])
+  }, [])
 
   React.useEffect(() => {
     if (
@@ -190,7 +203,6 @@ function Home ({
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                   onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                   coordinatorState={coordinatorStateTask?.data}
-                  onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
               : <></>
@@ -211,11 +223,10 @@ function Home ({
                   onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                   onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                   coordinatorState={coordinatorStateTask?.data}
-                  onCheckPendingDelayedWithdraw={onCheckPendingDelayedWithdraw}
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
               : <></>
-}
+          }
           {(() => {
             switch (accountsTask.status) {
               case 'pending':
@@ -311,13 +322,15 @@ const mapStateToProps = (state) => ({
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
-  coordinatorStateTask: state.global.coordinatorStateTask
+  coordinatorStateTask: state.global.coordinatorStateTask,
+  rewards: state.global.rewards
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
+  onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onLoadTotalBalance: (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
     dispatch(homeThunks.fetchTotalBalance(hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onLoadAccounts: (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
@@ -332,14 +345,16 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
-  onCheckPendingDelayedWithdraw: (exitId) =>
-    dispatch(globalThunks.checkPendingDelayedWithdraw(exitId)),
   onCheckPendingWithdrawals: () =>
     dispatch(globalThunks.checkPendingWithdrawals()),
+  onCheckPendingDelayedWithdrawals: () =>
+    dispatch(globalThunks.checkPendingDelayedWithdrawals()),
   onNavigateToAccountDetails: (accountIndex) =>
     dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) =>
     dispatch(openSnackbar(message)),
+  onOpenRewardsSidenav: () =>
+    dispatch(globalActions.openRewardsSidenav()),
   onCleanup: () => dispatch(resetState())
 })
 

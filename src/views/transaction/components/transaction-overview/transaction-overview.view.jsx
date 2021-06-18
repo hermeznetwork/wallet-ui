@@ -43,7 +43,7 @@ function TransactionOverview ({
   /**
    * Converts the transaction amount to fiat in the preferred currency
    *
-   * @returns {number} - Token amount in the user's preferred currency
+   * @returns {Number} - Token amount in the user's preferred currency
    */
   function getAmountInFiat (value) {
     const token = account.token
@@ -165,7 +165,7 @@ function TransactionOverview ({
                 <div className={classes.signingSpinnerWrapper}>
                   <Spinner />
                   <p className={classes.signingText}>
-                    Sign in with MetaMask to confirm transaction
+                    Sign in your connected wallet to confirm transaction
                   </p>
                 </div>
                 )

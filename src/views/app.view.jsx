@@ -19,9 +19,9 @@ function App ({
   fiatExchangeRatesTask,
   onLoadFiatExchangeRates,
   onCheckHermezStatus,
+  onLoadReward,
   onChangeNetworkStatus,
   onDisconnectAccount,
-  onLoadCoordinatorState,
   onSetHermezEnvironment,
   onCheckPendingTransactions,
   onReloadApp
@@ -34,17 +34,17 @@ function App ({
   }, [onCheckHermezStatus])
 
   React.useEffect(() => {
+    if (process.env.REACT_APP_ENABLE_AIRDROP) {
+      onLoadReward()
+    }
+  }, [])
+
+  React.useEffect(() => {
     if (hermezStatusTask.status === 'successful' && !hermezStatusTask.data.isUnderMaintenance) {
       onSetHermezEnvironment()
       onLoadFiatExchangeRates()
     }
   }, [hermezStatusTask, onSetHermezEnvironment, onLoadFiatExchangeRates])
-
-  React.useEffect(() => {
-    if (ethereumNetworkTask.status === 'successful') {
-      onLoadCoordinatorState()
-    }
-  }, [ethereumNetworkTask, onLoadCoordinatorState])
 
   React.useEffect(() => {
     let intervalId
@@ -127,6 +127,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onSetHermezEnvironment: () => dispatch(globalThunks.setHermezEnvironment()),
   onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),
+  onLoadReward: () =>
+    dispatch(globalThunks.fetchReward()),
   onLoadFiatExchangeRates: () =>
     dispatch(
       globalThunks.fetchFiatExchangeRates(
@@ -139,7 +141,6 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeNetworkStatus: (networkStatus, backgroundColor) =>
     dispatch(globalThunks.changeNetworkStatus(networkStatus, backgroundColor)),
   onDisconnectAccount: () => dispatch(globalThunks.disconnectWallet()),
-  onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onReloadApp: () => dispatch(globalThunks.reloadApp())
 })
 

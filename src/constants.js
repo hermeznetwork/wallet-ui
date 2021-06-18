@@ -50,3 +50,9 @@ export const HERMEZ_HELP_CENTER_URL = 'https://docs.hermez.io/#/faq/end-users'
 export const HERMEZ_WEB_URL = 'https://hermez.io'
 
 export const DEPOSIT_TX_TIMEOUT = 86400000 // 24h
+
+export const AIRDROP_MORE_INFO_URL = 'https://blog.hermez.io/hermez-community-rewards'
+
+export const HEZ_TOKEN_ID = 1
+
+export const METAMASK_UPDATE_HELP_LINK = 'https://twitter.com/hermez_network/status/1405812176053538817'

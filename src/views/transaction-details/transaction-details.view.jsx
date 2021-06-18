@@ -53,7 +53,7 @@ function TransactionDetails ({
   /**
    * Converts the transaction amount in USD to an amount in the user's preferred currency
    * @param {Object} transactionTask - Asynchronous task of the transaction
-   * @returns {number}
+   * @returns {Number}
    */
   function getTransactionFiatAmount (transactionTask) {
     switch (transactionTask.status) {
@@ -176,7 +176,7 @@ function TransactionDetails ({
                       txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
                       preferredCurrency={preferredCurrency}
-                      fiatExchangeRates={fiatExchangeRatesTask}
+                      fiatExchangeRates={fiatExchangeRatesTask.data}
                       showStatus
                       showToCopyButton
                       showFromCopyButton

@@ -4,7 +4,7 @@ import hermezjs from '@hermeznetwork/hermezjs'
 import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from '../constants'
 
 /**
- * Fetches token balances in the user's MetaMask account. Only for those tokens registered in Hermez and Ether.
+ * Fetches token balances in the user's Ethereum account. Only for those tokens registered in Hermez and Ether.
  * Throws an error if the user has no balances for any registered token in Hermez or an error comes up from fetching the balances on-chain.
  *
  * @param {Object[]} hermezTokens - List of registered tokens in Hermez
@@ -58,7 +58,7 @@ async function getTokens (wallet, hermezTokens) {
 
     return balances
   } else {
-    throw Error('MetaMask wallet has not loaded')
+    throw Error('Ethereum wallet has not loaded')
   }
 }
 

@@ -31,8 +31,7 @@ function Exit ({
   coordinatorState,
   redirectTo,
   onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw,
-  onCheckPendingDelayedWithdraw
+  onRemovePendingDelayedWithdraw
 }) {
   const classes = useExitStyles()
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false)
@@ -63,16 +62,9 @@ function Exit ({
     }
   }, [coordinatorState, isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode])
 
-  React.useEffect(() => {
-    const pendingDelayedWithdraw = pendingDelayedWithdraws.find((pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId)
-    if (pendingDelayedWithdraw) {
-      onCheckPendingDelayedWithdraw(exitId)
-    }
-  }, [pendingDelayedWithdraws, onCheckPendingDelayedWithdraw])
-
   /**
    * Calculates in which step is the Exit process in
-   * @returns {number} - Step of the exit
+   * @returns {Number} - Step of the exit
    */
   function getStep () {
     if (!merkleProof) {
@@ -113,7 +105,7 @@ function Exit ({
 
   /**
    * Converts the withdraw delay from seconds to days
-   * @returns {number} - Withdrawal delay in days
+   * @returns {Number} - Withdrawal delay in days
    */
   function getWithdrawalDelayerTime () {
     return Math.round(coordinatorState?.withdrawalDelayer.withdrawalDelay / 60 / 60)

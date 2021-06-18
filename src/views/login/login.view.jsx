@@ -18,12 +18,13 @@ import CreateAccountAuth from './components/create-account-auth/create-account-a
 import Button from '../shared/button/button.view'
 import { LOAD_ETHEREUM_NETWORK_ERROR } from '../../store/global/global.reducer'
 import ChainIdError from './components/chain-id-error/chain-id-error.view'
-import MetaMaskError from './components/metamask-error/metamask-error.view'
-import { PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../constants'
+import { METAMASK_UPDATE_HELP_LINK, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../constants'
 import UnderMaintenanceError from './components/under-maintenance-error/under-maintenance-error.view'
+import Alert, { AlertVariant } from '../shared/alert/alert.view'
 
 export const WalletName = {
   METAMASK: 'metaMask',
+  WALLET_CONNECT: 'walletConnect',
   LEDGER: 'ledger',
   TREZOR: 'trezor'
 }
@@ -73,7 +74,8 @@ function Login ({
    */
   function handleWalletClick (walletName) {
     switch (walletName) {
-      case WalletName.METAMASK: {
+      case WalletName.METAMASK:
+      case WalletName.WALLET_CONNECT: {
         return onGoToWalletLoaderStep(walletName)
       }
       case WalletName.LEDGER:
@@ -105,6 +107,7 @@ function Login ({
         )}
         {
           ethereumNetworkTask.status === 'successful' &&
+          ethereumNetworkTask.data.name &&
           (currentStep !== STEP_NAME.ERROR || (currentStep === STEP_NAME.ERROR && stepData.error !== UNDER_MAINTENANCE_ERROR)) && (
             <Button
               text={capitalizeLabel(ethereumNetworkTask.data.name)}
@@ -170,9 +173,6 @@ function Login ({
               }
               case STEP_NAME.ERROR: {
                 switch (stepData.error) {
-                  case LOAD_ETHEREUM_NETWORK_ERROR.METAMASK_NOT_INSTALLED: {
-                    return <MetaMaskError />
-                  }
                   case LOAD_ETHEREUM_NETWORK_ERROR.CHAIN_ID_NOT_SUPPORTED: {
                     const supportedEnvironments = hermezjs.Environment.getSupportedEnvironments()
 
@@ -192,6 +192,14 @@ function Login ({
             }
           })()
         }
+        <div className={classes.updateMetaMaskAlert}>
+          <Alert
+            message="If you're unable to login with Metamask make sure you have the latest version."
+            variant={AlertVariant.LIGHT}
+            showHelpButton
+            helpButtonLink={METAMASK_UPDATE_HELP_LINK}
+          />
+        </div>
         <div className={classes.legalContainer}>
           <a
             href={PRIVACY_POLICY_URL}

@@ -56,13 +56,17 @@ const useLoginStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.bold,
     marginBottom: theme.spacing(6)
   },
+  updateMetaMaskAlert: {
+    marginTop: theme.spacing(5),
+    maxWidth: 564
+  },
   legalContainer: {
     width: '100%',
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: theme.spacing(21),
+    marginTop: theme.spacing(12.5),
     color: theme.palette.grey.dark
   },
   legalSeparator: {
