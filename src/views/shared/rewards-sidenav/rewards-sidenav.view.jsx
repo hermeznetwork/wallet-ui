@@ -6,6 +6,7 @@ import useRewardsSidenavStyles from './rewards-sidenav.styles'
 import { ReactComponent as ExternalLinkIcon } from '../../../images/icons/external-link.svg'
 import { ReactComponent as GreenCircleWhiteThickIcon } from '../../../images/icons/green-circle-white-thick.svg'
 import { ReactComponent as InfoGreyIcon } from '../../../images/icons/info-grey.svg'
+import { ReactComponent as InfoRedIcon } from '../../../images/icons/error.svg'
 import heztoken from '../../../images/heztoken.svg'
 import Sidenav from '../sidenav/sidenav.view'
 import * as date from '../../../utils/date'
@@ -162,14 +163,19 @@ function RewardsSidenav ({
                       )
                     : (
                       <>
-                        <p className={classes.eligibilityCriteriaTitle}>Eligibility criteria:</p>
-                        <p className={classes.eligibilityCriteriaText}>Make at least 2 transactions to other Hermez accounts.</p>
+                        <p className={classes.eligibilityCriteriaTitle}>Action required for eligibility</p>
+                        <div className={classes.eligibleTextWrapper}>
+                          <InfoRedIcon className={classes.eligibleIcon} />
+                          <p className={classes.eligibleText}>
+                            Make at least 2 transactions to other Hermez accounts.
+                          </p>
+                        </div>
                       </>
                       )
                 }
                 <div className={classes.rewardCard}>
                   <div className={classes.rewardGroup}>
-                    <p className={classes.rewardTitle}>Today's reward</p>
+                    <p className={classes.rewardTitle}>Reward during the program</p>
                     <p className={`${classes.reward} ${classes.rewardPercentage}`}>
                       {rewardPercentageTask.data ? rewardPercentageTask.data : '--'}%
                     </p>
@@ -200,7 +206,7 @@ function RewardsSidenav ({
                     <div className={classes.infoTextWrapper}>
                       <InfoGreyIcon className={classes.infoIcon} />
                       <p className={classes.infoText}>
-                        You will receive your reward at the end of the program.
+                        Values are estimated and updated once per day. You will receive your reward at the end of the program.
                       </p>
                     </div>
                   )

@@ -101,7 +101,7 @@ function RewardsCard ({
             : (
               <>
                 <p className={classes.rewardText}>
-                  Today's reward is <span className={classes.rewardPercentage}>{rewardPercentageTask.data || '--'}%</span>.&nbsp;
+                  Reward during the program is <span className={classes.rewardPercentage}>{rewardPercentageTask.data || '--'}%</span>.&nbsp;
                   {
                     accountEligibilityTask.data
                       ? (
