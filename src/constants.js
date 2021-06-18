@@ -51,6 +51,6 @@ export const HERMEZ_WEB_URL = 'https://hermez.io'
 
 export const DEPOSIT_TX_TIMEOUT = 86400000 // 24h
 
-export const AIRDROP_MORE_INFO_URL = 'https://blog.hermez.io/' // TODO: add link to the post when it is published
+export const AIRDROP_MORE_INFO_URL = 'https://blog.hermez.io/hermez-community-rewards'
 
 export const HEZ_TOKEN_ID = 1
