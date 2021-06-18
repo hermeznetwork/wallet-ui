@@ -176,7 +176,7 @@ function TransactionDetails ({
                       txData={{ ...transactionTask.data, ...{ fee: getTransactionFee(transactionTask) } }}
                       accountIndex={accountIndex}
                       preferredCurrency={preferredCurrency}
-                      fiatExchangeRates={fiatExchangeRatesTask?.data}
+                      fiatExchangeRates={fiatExchangeRatesTask.data}
                       showStatus
                       showToCopyButton
                       showFromCopyButton
