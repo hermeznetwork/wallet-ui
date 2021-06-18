@@ -347,6 +347,7 @@ function checkPendingWithdrawals () {
                   // Checks here to have access to pendingWithdraw.hash
                   if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
                     dispatch(removePendingWithdraw(pendingWithdraw.hash))
+                    dispatch(removePendingDelayedWithdrawByHash(pendingWithdraw.hash))
                   }
                 })
             })
