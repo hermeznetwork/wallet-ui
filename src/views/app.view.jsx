@@ -19,6 +19,7 @@ function App ({
   fiatExchangeRatesTask,
   onLoadFiatExchangeRates,
   onCheckHermezStatus,
+  onLoadReward,
   onChangeNetworkStatus,
   onDisconnectAccount,
   onSetHermezEnvironment,
@@ -31,6 +32,12 @@ function App ({
   React.useEffect(() => {
     onCheckHermezStatus()
   }, [onCheckHermezStatus])
+
+  React.useEffect(() => {
+    if (process.env.REACT_APP_ENABLE_AIRDROP) {
+      onLoadReward()
+    }
+  }, [])
 
   React.useEffect(() => {
     if (hermezStatusTask.status === 'successful' && !hermezStatusTask.data.isUnderMaintenance) {
@@ -120,6 +127,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onSetHermezEnvironment: () => dispatch(globalThunks.setHermezEnvironment()),
   onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),
+  onLoadReward: () =>
+    dispatch(globalThunks.fetchReward()),
   onLoadFiatExchangeRates: () =>
     dispatch(
       globalThunks.fetchFiatExchangeRates(

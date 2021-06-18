@@ -25,6 +25,7 @@ import { ReactComponent as QRCodeIcon } from '../../images/icons/qr-code.svg'
 import { version as packagejsonVersion } from '../../../package.json'
 import * as globalActions from '../../store/global/global.actions'
 import RewardsCard from './components/rewards-card/rewards-card.view'
+import { hasRewardStarted } from '../../utils/rewards'
 
 function MyAccount ({
   wallet,
@@ -93,21 +94,25 @@ function MyAccount ({
       </Container>
       <Container>
         <section className={classes.bottomSection}>
-          {process.env.REACT_APP_ENABLE_AIRDROP === 'true' && (
-            <div className={classes.rewardsCard}>
-              <RewardsCard
-                rewardTask={rewards.rewardTask}
-                earnedRewardTask={rewards.earnedRewardTask}
-                rewardPercentageTask={rewards.rewardPercentageTask}
-                accountEligibilityTask={rewards.accountEligibilityTask}
-                tokenTask={rewards.tokenTask}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRatesTask={fiatExchangeRatesTask}
-                onOpenRewardsSidenav={onOpenRewardsSidenav}
-              />
-            </div>
-          )}
-          <div className={classes.settings}>
+          {
+            process.env.REACT_APP_ENABLE_AIRDROP === 'true' &&
+            (rewards.rewardTask.status === 'successful' || rewards.rewardTask.status === 'reloading') &&
+            hasRewardStarted(rewards.rewardTask.data) && (
+              <div className={classes.rewardsCard}>
+                <RewardsCard
+                  rewardTask={rewards.rewardTask}
+                  earnedRewardTask={rewards.earnedRewardTask}
+                  rewardPercentageTask={rewards.rewardPercentageTask}
+                  accountEligibilityTask={rewards.accountEligibilityTask}
+                  tokenTask={rewards.tokenTask}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRatesTask={fiatExchangeRatesTask}
+                  onOpenRewardsSidenav={onOpenRewardsSidenav}
+                />
+              </div>
+            )
+          }
+          <div>
             <div className={classes.settingContainer}>
               <div className={classes.settingHeader}>
                 <ExchangeIcon />

@@ -13,4 +13,16 @@ function getFormattedEarnedReward (earnedReward) {
   }
 }
 
-export { getFormattedEarnedReward }
+/**
+ * Checks if a reward has started or not
+ * @param {Object} reward - Reward information
+ * @returns - Flag indicating if the reward has started or not
+ */
+function hasRewardStarted (reward) {
+  const initRewardTime = reward.initTimestamp * 1000
+  const currentTime = Date.now()
+
+  return initRewardTime <= currentTime
+}
+
+export { getFormattedEarnedReward, hasRewardStarted }
