@@ -93,9 +93,19 @@ function RewardsCard ({
                 <p className={classes.rewardText}>
                   Thank you for participating in the Hermez reward program.
                 </p>
-                <p className={classes.rewardText}>
-                  Your total reward is {getFormattedEarnedReward(earnedRewardTask.data)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
-                </p>
+                {
+                  accountEligibilityTask.data
+                    ? (
+                      <p className={classes.rewardText}>
+                        Your total reward is {getFormattedEarnedReward(earnedRewardTask.data)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
+                      </p>
+                      )
+                    : (
+                      <p className={classes.rewardText}>
+                        Your total reward is 0.00 HEZ ({CurrencySymbol[preferredCurrency].symbol}0.00).
+                      </p>
+                      )
+                }
               </>
               )
             : (

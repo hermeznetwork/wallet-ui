@@ -138,10 +138,21 @@ function RewardsSidenav ({
                     <p className={classes.rewardTitle}>
                       Your total reward
                     </p>
-                    <p className={classes.reward}>
-                      {getFormattedEarnedReward(earnedRewardTask.data)} HEZ
-                      (${getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
-                    </p>
+                    {
+                      accountEligibilityTask.data
+                        ? (
+                          <p className={classes.reward}>
+                            {getFormattedEarnedReward(earnedRewardTask.data)} HEZ
+                            (${getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
+                          </p>
+                          )
+                        : (
+                          <p className={classes.reward}>
+                            0.00 HEZ
+                            ({CurrencySymbol[preferredCurrency].symbol}0.00)
+                          </p>
+                          )
+                    }
                   </div>
                 </div>
               </>
