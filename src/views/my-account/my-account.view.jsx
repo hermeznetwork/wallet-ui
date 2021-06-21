@@ -100,6 +100,7 @@ function MyAccount ({
             hasRewardStarted(rewards.rewardTask.data) && (
               <div className={classes.rewardsCard}>
                 <RewardsCard
+                  rewardSidenav={rewards.sidenav}
                   rewardTask={rewards.rewardTask}
                   earnedRewardTask={rewards.earnedRewardTask}
                   rewardPercentageTask={rewards.rewardPercentageTask}

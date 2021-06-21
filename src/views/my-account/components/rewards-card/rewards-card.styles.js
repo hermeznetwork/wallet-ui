@@ -5,7 +5,6 @@ const useRewardsCardStyles = createUseStyles((theme) => ({
     padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px ${theme.spacing(2.5)}px ${theme.spacing(4)}px `,
     borderRadius: theme.spacing(2),
     backgroundColor: theme.palette.black,
-    color: theme.palette.white,
     width: '100%'
   },
   cardHeader: {
@@ -14,7 +13,9 @@ const useRewardsCardStyles = createUseStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingBottom: theme.spacing(1.25),
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
+    color: theme.palette.grey.light,
+    minHeight: 44
   },
   cardHeading: {
     [theme.breakpoints.upSm]: {
