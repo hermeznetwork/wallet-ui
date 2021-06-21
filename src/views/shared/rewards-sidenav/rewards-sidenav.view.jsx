@@ -212,16 +212,12 @@ function RewardsSidenav ({
                     }
                   </div>
                 </div>
-                {
-                  accountEligibilityTask.data && (
-                    <div className={classes.infoTextWrapper}>
-                      <InfoGreyIcon className={classes.infoIcon} />
-                      <p className={classes.infoText}>
-                        Values are estimated and updated once per day. You will receive your reward at the end of the program.
-                      </p>
-                    </div>
-                  )
-                }
+                <div className={classes.infoTextWrapper}>
+                  <InfoGreyIcon className={classes.infoIcon} />
+                  <p className={classes.infoText}>
+                    Values are estimated and updated once per day. You will receive your reward at the end of the program.
+                  </p>
+                </div>
                 <a
                   className={classes.moreInfoLink}
                   href={AIRDROP_MORE_INFO_URL}
