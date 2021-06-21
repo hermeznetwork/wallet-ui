@@ -2,7 +2,7 @@ import React from 'react'
 
 import useRewardsCardStyles from './rewards-card.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies.js'
-import { getFormattedEarnedReward } from '../../../../utils/rewards'
+import { getFormattedEarnedReward, getFormattedPercentage } from '../../../../utils/rewards'
 
 function RewardsCard ({
   rewardTask,
@@ -111,7 +111,7 @@ function RewardsCard ({
             : (
               <>
                 <p className={classes.rewardText}>
-                  Reward during the program is <span className={classes.rewardPercentage}>{rewardPercentageTask.data || '--'}%</span>.&nbsp;
+                  Reward during the program is <span className={classes.rewardPercentage}>{getFormattedPercentage(rewardPercentageTask.data) || '--'}%</span>.&nbsp;
                   {
                     accountEligibilityTask.data
                       ? (

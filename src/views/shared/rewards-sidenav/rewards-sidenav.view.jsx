@@ -11,7 +11,7 @@ import heztoken from '../../../images/heztoken.svg'
 import Sidenav from '../sidenav/sidenav.view'
 import * as date from '../../../utils/date'
 import { getTokenAmountInPreferredCurrency, CurrencySymbol } from '../../../utils/currencies'
-import { getFormattedEarnedReward } from '../../../utils/rewards'
+import { getFormattedEarnedReward, getFormattedPercentage } from '../../../utils/rewards'
 
 function RewardsSidenav ({
   rewardTask,
@@ -188,7 +188,7 @@ function RewardsSidenav ({
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>Reward during the program</p>
                     <p className={`${classes.reward} ${classes.rewardPercentage}`}>
-                      {rewardPercentageTask.data ? rewardPercentageTask.data : '--'}%
+                      {rewardPercentageTask.data ? getFormattedPercentage(rewardPercentageTask.data) : '--'}%
                     </p>
                   </div>
                   <div className={classes.rewardGroup}>
