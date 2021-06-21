@@ -5,6 +5,7 @@ import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../u
 import { getFormattedEarnedReward, getFormattedPercentage } from '../../../../utils/rewards'
 
 function RewardsCard ({
+  rewardSidenav,
   rewardTask,
   earnedRewardTask,
   rewardPercentageTask,
@@ -66,9 +67,13 @@ function RewardsCard ({
     <div className={classes.root}>
       <div className={classes.cardHeader}>
         <h3 className={classes.cardHeading}>Your earnings</h3>
-        <button className={classes.moreInfoButton} onClick={onOpenRewardsSidenav}>
-          More info
-        </button>
+        {
+          rewardSidenav.status === 'closed' && (
+            <button className={classes.moreInfoButton} onClick={onOpenRewardsSidenav}>
+              More info
+            </button>
+          )
+        }
       </div>
       {
         (() => {

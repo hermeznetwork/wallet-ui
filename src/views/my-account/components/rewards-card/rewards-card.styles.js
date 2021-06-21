@@ -14,7 +14,8 @@ const useRewardsCardStyles = createUseStyles((theme) => ({
     justifyContent: 'space-between',
     paddingBottom: theme.spacing(1.25),
     marginBottom: theme.spacing(1),
-    color: theme.palette.grey.light
+    color: theme.palette.grey.light,
+    minHeight: 44
   },
   cardHeading: {
     [theme.breakpoints.upSm]: {
