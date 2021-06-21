@@ -2,9 +2,10 @@ import React from 'react'
 
 import useRewardsCardStyles from './rewards-card.styles'
 import { CurrencySymbol, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies.js'
-import { getFormattedEarnedReward } from '../../../../utils/rewards'
+import { getFormattedEarnedReward, getFormattedPercentage } from '../../../../utils/rewards'
 
 function RewardsCard ({
+  rewardSidenav,
   rewardTask,
   earnedRewardTask,
   rewardPercentageTask,
@@ -66,9 +67,13 @@ function RewardsCard ({
     <div className={classes.root}>
       <div className={classes.cardHeader}>
         <h3 className={classes.cardHeading}>Your earnings</h3>
-        <button className={classes.moreInfoButton} onClick={onOpenRewardsSidenav}>
-          More info
-        </button>
+        {
+          rewardSidenav.status === 'closed' && (
+            <button className={classes.moreInfoButton} onClick={onOpenRewardsSidenav}>
+              More info
+            </button>
+          )
+        }
       </div>
       {
         (() => {
@@ -93,15 +98,25 @@ function RewardsCard ({
                 <p className={classes.rewardText}>
                   Thank you for participating in the Hermez reward program.
                 </p>
-                <p className={classes.rewardText}>
-                  Your total reward is {getFormattedEarnedReward(earnedRewardTask.data)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
-                </p>
+                {
+                  accountEligibilityTask.data
+                    ? (
+                      <p className={classes.rewardText}>
+                        Your total reward is {getFormattedEarnedReward(earnedRewardTask.data)} HEZ ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
+                      </p>
+                      )
+                    : (
+                      <p className={classes.rewardText}>
+                        Your total reward is 0.00 HEZ ({CurrencySymbol[preferredCurrency].symbol}0.00).
+                      </p>
+                      )
+                }
               </>
               )
             : (
               <>
                 <p className={classes.rewardText}>
-                  Reward during the program is <span className={classes.rewardPercentage}>{rewardPercentageTask.data || '--'}%</span>.&nbsp;
+                  Reward during the program is <span className={classes.rewardPercentage}>{getFormattedPercentage(rewardPercentageTask.data) || '--'}%</span>.&nbsp;
                   {
                     accountEligibilityTask.data
                       ? (

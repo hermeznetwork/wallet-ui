@@ -14,6 +14,15 @@ function getFormattedEarnedReward (earnedReward) {
 }
 
 /**
+ * Formats the percentage of a reward
+ * @param {String} earnedReward - Percentage of the reward
+ * @returns - Formatted reward percentage
+ */
+function getFormattedPercentage (percentage) {
+  return Number(percentage).toFixed(2)
+}
+
+/**
  * Checks if a reward has started or not
  * @param {Object} reward - Reward information
  * @returns - Flag indicating if the reward has started or not
@@ -25,4 +34,8 @@ function hasRewardStarted (reward) {
   return initRewardTime <= currentTime
 }
 
-export { getFormattedEarnedReward, hasRewardStarted }
+export {
+  getFormattedEarnedReward,
+  getFormattedPercentage,
+  hasRewardStarted
+}

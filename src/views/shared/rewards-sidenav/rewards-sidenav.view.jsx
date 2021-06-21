@@ -11,7 +11,7 @@ import heztoken from '../../../images/heztoken.svg'
 import Sidenav from '../sidenav/sidenav.view'
 import * as date from '../../../utils/date'
 import { getTokenAmountInPreferredCurrency, CurrencySymbol } from '../../../utils/currencies'
-import { getFormattedEarnedReward } from '../../../utils/rewards'
+import { getFormattedEarnedReward, getFormattedPercentage } from '../../../utils/rewards'
 
 function RewardsSidenav ({
   rewardTask,
@@ -138,10 +138,21 @@ function RewardsSidenav ({
                     <p className={classes.rewardTitle}>
                       Your total reward
                     </p>
-                    <p className={classes.reward}>
-                      {getFormattedEarnedReward(earnedRewardTask.data)} HEZ
-                      (${getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
-                    </p>
+                    {
+                      accountEligibilityTask.data
+                        ? (
+                          <p className={classes.reward}>
+                            {getFormattedEarnedReward(earnedRewardTask.data)} HEZ
+                            (${getRewardAmountInPreferredCurrency(earnedRewardTask.data)})
+                          </p>
+                          )
+                        : (
+                          <p className={classes.reward}>
+                            0.00 HEZ
+                            ({CurrencySymbol[preferredCurrency].symbol}0.00)
+                          </p>
+                          )
+                    }
                   </div>
                 </div>
               </>
@@ -177,7 +188,7 @@ function RewardsSidenav ({
                   <div className={classes.rewardGroup}>
                     <p className={classes.rewardTitle}>Reward during the program</p>
                     <p className={`${classes.reward} ${classes.rewardPercentage}`}>
-                      {rewardPercentageTask.data ? rewardPercentageTask.data : '--'}%
+                      {rewardPercentageTask.data ? getFormattedPercentage(rewardPercentageTask.data) : '--'}%
                     </p>
                   </div>
                   <div className={classes.rewardGroup}>
@@ -201,16 +212,12 @@ function RewardsSidenav ({
                     }
                   </div>
                 </div>
-                {
-                  accountEligibilityTask.data && (
-                    <div className={classes.infoTextWrapper}>
-                      <InfoGreyIcon className={classes.infoIcon} />
-                      <p className={classes.infoText}>
-                        Values are estimated and updated once per day. You will receive your reward at the end of the program.
-                      </p>
-                    </div>
-                  )
-                }
+                <div className={classes.infoTextWrapper}>
+                  <InfoGreyIcon className={classes.infoIcon} />
+                  <p className={classes.infoText}>
+                    Values are estimated and updated once per day. You will receive your reward at the end of the program.
+                  </p>
+                </div>
                 <a
                   className={classes.moreInfoLink}
                   href={AIRDROP_MORE_INFO_URL}
