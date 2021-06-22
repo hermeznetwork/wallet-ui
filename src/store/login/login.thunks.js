@@ -8,7 +8,7 @@ import * as globalActions from '../global/global.actions'
 import * as loginActions from './login.actions'
 import { ACCOUNT_AUTH_SIGNATURES_KEY, TREZOR_MANIFEST_MAIL } from '../../constants'
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
-import { HttpStatusCode } from '../../utils/http'
+// import { HttpStatusCode } from '../../utils/http'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
 
@@ -170,9 +170,9 @@ function postCreateAccountAuthorization (wallet) {
           // If the coordinators already have the CreateAccountsAuth signature,
           // we ignore the error
           console.log(error)
-          if (error.response.status !== HttpStatusCode.DUPLICATED) {
-            throw error
-          }
+          // if (error.response.status !== HttpStatusCode.DUPLICATED) {
+          //   throw error
+          // }
         })
       })
       .then(() => {
