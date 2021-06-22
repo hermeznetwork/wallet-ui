@@ -155,6 +155,12 @@ function RewardsSidenav ({
                     }
                   </div>
                 </div>
+                <div className={classes.infoTextWrapper}>
+                  <InfoGreyIcon className={classes.infoIcon} />
+                  <p className={classes.infoText}>
+                    The value of the reward is estimated, it may vary slightly from the reward finally received.
+                  </p>
+                </div>
               </>
               )
             : (
