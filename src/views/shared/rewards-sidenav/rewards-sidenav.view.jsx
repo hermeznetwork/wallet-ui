@@ -192,7 +192,7 @@ function RewardsSidenav ({
                 }
                 <div className={classes.rewardCard}>
                   <div className={classes.rewardGroup}>
-                    <p className={classes.rewardTitle}>Reward during the program</p>
+                    <p className={classes.rewardTitle}>Reward over your funds</p>
                     <p className={`${classes.reward} ${classes.rewardPercentage}`}>
                       {rewardPercentageTask.data ? getFormattedPercentage(rewardPercentageTask.data) : '--'}%
                     </p>

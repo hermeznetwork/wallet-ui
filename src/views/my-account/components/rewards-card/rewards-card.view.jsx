@@ -116,7 +116,7 @@ function RewardsCard ({
             : (
               <>
                 <p className={classes.rewardText}>
-                  Reward during the program is <span className={classes.rewardPercentage}>{getFormattedPercentage(rewardPercentageTask.data) || '--'}%</span>.&nbsp;
+                  Reward over your funds is <span className={classes.rewardPercentage}>{getFormattedPercentage(rewardPercentageTask.data) || '--'}%</span>.&nbsp;
                   {
                     accountEligibilityTask.data
                       ? (
