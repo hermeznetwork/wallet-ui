@@ -49,7 +49,6 @@ function AccountDetails ({
   onCheckPendingDeposits,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
-  onLoadCoordinatorState,
   onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
   onNavigateToTransactionDetails,
@@ -77,10 +76,6 @@ function AccountDetails ({
   React.useEffect(() => {
     onChangeHeader(accountTask.data?.token.name)
   }, [accountTask, onChangeHeader])
-
-  React.useEffect(() => {
-    onLoadCoordinatorState()
-  }, [])
 
   React.useEffect(() => {
     const loadInitialData = () => {
@@ -366,7 +361,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
-  onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onCheckPendingWithdrawals: () =>
     dispatch(globalThunks.checkPendingWithdrawals()),
   onCheckPendingDelayedWithdrawals: () =>

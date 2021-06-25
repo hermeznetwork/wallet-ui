@@ -13,7 +13,6 @@ import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency, getFeeInUsd } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
-import { fetchCoordinatorState } from '../../store/global/global.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import TokenBalance from '../shared/token-balance/token-balance.view'
 import { ACCOUNT_INDEX_SEPARATOR, MAX_TOKEN_DECIMALS } from '../../constants'
@@ -29,7 +28,6 @@ function TransactionDetails ({
   preferredCurrency,
   coordinatorStateTask,
   onLoadTransaction,
-  onLoadCoordinatorState,
   onChangeHeader,
   onOpenSnackbar
 }) {
@@ -37,10 +35,6 @@ function TransactionDetails ({
   const classes = useTransactionDetailsStyles()
   const { accountIndex, transactionId } = useParams()
   const [, accountTokenSymbol] = accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
-
-  React.useEffect(() => {
-    onLoadCoordinatorState()
-  }, [])
 
   React.useEffect(() => {
     onLoadTransaction(transactionId)
@@ -241,7 +235,6 @@ function getHeaderTitle (transactionType) {
 const mapDispatchToProps = (dispatch) => ({
   onLoadTransaction: (transactionIdOrHash) =>
     dispatch(transactionDetailsThunks.fetchTransaction(transactionIdOrHash)),
-  onLoadCoordinatorState: () => dispatch(fetchCoordinatorState()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onChangeHeader: (transactionType, accountIndex) =>
     dispatch(

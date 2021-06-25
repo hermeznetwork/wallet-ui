@@ -196,7 +196,9 @@ function fetchAccountBalance () {
  * @returns {void}
  */
 function fetchFees () {
-  return function (dispatch) {
+  return function (dispatch, getState) {
+    const { global: { coordinatorStateTask } } = getState()
+    console.log(coordinatorStateTask)
     dispatch(transactionActions.loadFees())
 
     return CoordinatorAPI.getState()

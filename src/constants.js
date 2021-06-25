@@ -35,9 +35,11 @@ export const PRIVACY_POLICY_URL = 'https://hermez.io/privacy-policy'
 
 export const TERMS_OF_SERVICE_URL = 'https://hermez.io/terms-of-service'
 
-export const AUTO_REFRESH_RATE = 60000 // 1min
+export const AUTO_REFRESH_RATE = 60_000 // 1min
 
-export const RETRY_POOL_TXS_RATE = 60000 // 10min
+export const RETRY_POOL_TXS_RATE = 6000_000 // 10min
+
+export const COORDINATOR_STATE_REFRESH_RATE = 30_000 // 30s
 
 export const STORAGE_VERSION_KEY = 'hermezWalletStorageVersion'
 
@@ -49,7 +51,7 @@ export const HERMEZ_HELP_CENTER_URL = 'https://docs.hermez.io/#/faq/end-users'
 
 export const HERMEZ_WEB_URL = 'https://hermez.io'
 
-export const DEPOSIT_TX_TIMEOUT = 86400000 // 24h
+export const DEPOSIT_TX_TIMEOUT = 8_640_0000 // 24h
 
 export const AIRDROP_MORE_INFO_URL = 'https://blog.hermez.io/hermez-community-rewards'
 
