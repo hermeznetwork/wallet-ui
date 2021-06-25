@@ -2,14 +2,10 @@ import { createUseStyles } from 'react-jss'
 
 const useSidenavStyles = createUseStyles((theme) => ({
   root: {
-    top: 0,
-    right: 0,
-    bottom: 0,
-    width: theme.sideBarWidth,
     display: 'flex',
-    zIndex: 999,
-    position: 'fixed',
     minHeight: '100vh',
+    height: '100%',
+    width: '100%',
     justifyContent: 'flex-end',
     overflow: 'hidden',
     boxShadow: '-5px 0 30px 0 rgba(136, 139, 170, 0.15)',

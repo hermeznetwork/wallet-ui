@@ -44,7 +44,7 @@ const theme = {
   },
   spacing: (value) => value * 8,
   headerHeight: 80,
-  sideBarWidth: 295
+  sidenavWidth: 295
 }
 
 export default theme
