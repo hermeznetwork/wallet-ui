@@ -99,7 +99,7 @@ function RewardsSidenav ({
         <h3 className={classes.panelTitle}>{(
           isRewardActive
             ? 'Deposit funds to Hermez to earn rewards.'
-            : 'Community Rewards Programme is over'
+            : 'Community Rewards Round is over'
         )}
         </h3>
         <img
