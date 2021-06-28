@@ -10,7 +10,6 @@ import { changeHeader, openSnackbar } from '../../store/global/global.actions'
 import { changePreferredCurrency } from '../../store/my-account/my-account.thunks'
 import { disconnectWallet } from '../../store/global/global.thunks'
 import Container from '../shared/container/container.view'
-import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { ReactComponent as ExchangeIcon } from '../../images/icons/exchange.svg'
 import { ReactComponent as ExitIcon } from '../../images/icons/exit.svg'
 import { ReactComponent as OpenInNewTabIcon } from '../../images/icons/open-in-new-tab.svg'
@@ -195,4 +194,4 @@ const mapDispatchToProps = (dispatch) => ({
   onOpenRewardsSidenav: () => dispatch(globalActions.openRewardsSidenav())
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(MyAccount))
+export default connect(mapStateToProps, mapDispatchToProps)(MyAccount)
