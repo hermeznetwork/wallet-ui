@@ -96,7 +96,12 @@ function RewardsSidenav ({
   return (
     <Sidenav onClose={onClose}>
       <div className={classes.root}>
-        <h3 className={classes.panelTitle}>Deposit funds to Hermez to earn rewards.</h3>
+        <h3 className={classes.panelTitle}>{(
+          isRewardActive
+            ? 'Deposit funds to Hermez to earn rewards.'
+            : 'Community Rewards Programme is over'
+        )}
+        </h3>
         <img
           className={classes.tokenImage}
           src={heztoken}
