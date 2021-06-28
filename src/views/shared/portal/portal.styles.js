@@ -1,13 +1,20 @@
 import { createUseStyles } from 'react-jss'
 
 const usePortalStyles = createUseStyles((theme) => ({
-  root: {
-    position: 'absolute',
+  fullScreenModalRoot: {
+    position: 'fixed',
     top: 0,
-    left: 'auto',
+    left: 0,
+    right: 0,
+    bottom: 0
+  },
+  sidenavRoot: {
+    width: theme.sidenavWidth,
+    position: 'fixed',
+    top: 0,
     right: 0,
     bottom: 0,
-    width: theme.sideBarWidth
+    left: 'auto'
   }
 }))
 
