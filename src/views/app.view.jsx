@@ -90,6 +90,13 @@ function App ({
 
   if (
     (
+      hermezStatusTask.status !== 'successful' ||
+      (
+        hermezStatusTask.status === 'successful' &&
+        hermezStatusTask.data.isUnderMaintenance === false
+      )
+    ) &&
+    (
       hermezStatusTask.status === 'pending' ||
       hermezStatusTask.status === 'loading' ||
       ethereumNetworkTask.status === 'pending' ||
