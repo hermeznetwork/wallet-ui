@@ -10,7 +10,6 @@ import * as homeThunks from '../../store/home/home.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
-import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
 import Container from '../shared/container/container.view'
 import { copyToClipboard } from '../../utils/browser'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
@@ -352,4 +351,4 @@ const mapDispatchToProps = (dispatch) => ({
   onCleanup: () => dispatch(resetState())
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))
+export default connect(mapStateToProps, mapDispatchToProps)(Home)

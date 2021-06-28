@@ -11,7 +11,6 @@ import * as globalThunks from '../../store/global/global.thunks'
 import * as accountDetailsThunks from '../../store/account-details/account-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
 import TransactionList from './components/transaction-list/transaction-list.view'
-import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
@@ -371,4 +370,4 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(resetState())
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(AccountDetails))
+export default connect(mapStateToProps, mapDispatchToProps)(AccountDetails)

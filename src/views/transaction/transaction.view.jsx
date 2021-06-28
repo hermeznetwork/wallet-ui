@@ -11,7 +11,6 @@ import * as globalThunks from '../../store/global/global.thunks'
 import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
 import TransactionOverview from './components/transaction-overview/transaction-overview.view'
-import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { STEP_NAME } from '../../store/transaction/transaction.reducer'
 import AccountSelector from './components/account-selector/account-selector.view'
 import TransactionConfirmation from './components/transaction-confirmation/transaction-confirmation.view'
@@ -381,4 +380,4 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionActions.resetState())
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Transaction))
+export default connect(mapStateToProps, mapDispatchToProps)(Transaction)

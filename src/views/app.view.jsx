@@ -10,6 +10,7 @@ import routes from '../routing/routes'
 import * as globalThunks from '../store/global/global.thunks'
 import Spinner from './shared/spinner/spinner.view'
 import { COORDINATOR_STATE_REFRESH_RATE, RETRY_POOL_TXS_RATE } from '../constants'
+import PrivateRoute from './shared/private-route/private-route.view'
 
 function App ({
   wallet,
@@ -17,6 +18,7 @@ function App ({
   ethereumNetworkTask,
   coordinatorStateTask,
   fiatExchangeRatesTask,
+  onChangeRedirectRoute,
   onLoadCoordinatorState,
   onLoadFiatExchangeRates,
   onCheckHermezStatus,
@@ -108,14 +110,27 @@ function App ({
   return (
     <Layout>
       <Switch>
-        {routes.map(route =>
-          <Route
-            exact
-            key={route.path}
-            path={route.path}
-            render={route.render}
-          />
-        )}
+        <>
+          {routes.map((route) => (
+            route.isPublic
+              ? (
+                <Route
+                  exact
+                  key={route.path}
+                  path={route.path}
+                  render={route.render}
+                />
+                )
+              : (
+                <PrivateRoute
+                  key={route.path}
+                  isUserLoggedIn={wallet !== undefined}
+                  route={route}
+                  onChangeRedirectRoute={onChangeRedirectRoute}
+                />
+                )
+          ))}
+        </>
         <Redirect to='/' />
       </Switch>
     </Layout>
@@ -135,6 +150,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  onChangeRedirectRoute: (redirectRoute) => dispatch(globalThunks.changeRedirectRoute(redirectRoute)),
   onSetHermezEnvironment: () => dispatch(globalThunks.setHermezEnvironment()),
   onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),
   onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),

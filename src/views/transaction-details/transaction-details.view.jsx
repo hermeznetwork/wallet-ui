@@ -9,7 +9,6 @@ import { TxType, TxLevel, TxState } from '@hermeznetwork/hermezjs/src/enums'
 import useTransactionDetailsStyles from './transaction-details.styles'
 import * as transactionDetailsThunks from '../../store/transaction-details/transaction-details.thunks'
 import Spinner from '../shared/spinner/spinner.view'
-import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency, getFeeInUsd } from '../../utils/currencies'
 import Container from '../shared/container/container.view'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
@@ -248,4 +247,4 @@ const mapDispatchToProps = (dispatch) => ({
     )
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(TransactionDetails))
+export default connect(mapStateToProps, mapDispatchToProps)(TransactionDetails)
