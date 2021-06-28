@@ -85,7 +85,7 @@ function changeRedirectRoute (redirectRoute) {
  * @param {string[]} symbols - ISO 4217 currency codes
  * @returns {void}
  */
-function fetchFiatExchangeRates (symbols) {
+function fetchFiatExchangeRates () {
   return (dispatch) => {
     const symbols = Object.values(CurrencySymbol)
       .filter(currency => currency.code !== CurrencySymbol.USD.code)
