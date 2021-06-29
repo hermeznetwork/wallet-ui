@@ -30,7 +30,10 @@ function getNextForgerUrls (coordinatorState) {
 }
 
 /**
- * Returns the next best forger of the network
+ * Returns the next best forger of the network. The next best forger is the one which will
+ * be forging for at least enough time to pick the transaction that we are going to send
+ * afterwards. If it's about to finish forging, the next forger matching this criteria
+ * will be picked up
  * @param {Object} coordinatorState - Coordinator state returned by the Hermez API
  * @returns Next best forger
  */
