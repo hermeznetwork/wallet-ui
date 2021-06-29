@@ -15,6 +15,7 @@ import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
 import { isTxMined, hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from '../../utils/ethereum'
 import { CurrencySymbol } from '../../utils/currencies'
+import { getNextForgerUrls } from '../../utils/coordinator'
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -507,7 +508,8 @@ function checkPendingDeposits () {
 
 function checkPendingTransactions () {
   return (_, getState) => {
-    const { global: { wallet, nextForgers } } = getState()
+    const { global: { wallet, coordinatorStateTask } } = getState()
+    const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data)
 
     hermezjs.TxPool.getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
       .then((poolTransactions) => {
@@ -538,7 +540,7 @@ function checkPendingTransactions () {
               fee: transaction.fee
             }
 
-            return Tx.generateAndSendL2Tx(txData, wallet, transaction.token, nextForgers, false)
+            return Tx.generateAndSendL2Tx(txData, wallet, transaction.token, nextForgerUrls, false)
               .catch(() => {})
           })
 
