@@ -11,7 +11,7 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../ut
 import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
 import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/src/constants'
 import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
-import { getNextForgerUrls } from '../../utils/coordinator'
+import { getNextForgers, getNextForgerUrls } from '../../utils/coordinator'
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
@@ -198,6 +198,9 @@ function fetchAccountBalance () {
  */
 function fetchFees () {
   return function (dispatch, getState) {
+    const { global: { coordinatorStateTask } } = getState()
+    console.log(getNextForgers(coordinatorStateTask.data))
+
     dispatch(transactionActions.loadFees())
 
     return CoordinatorAPI.getState()
