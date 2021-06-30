@@ -12,7 +12,7 @@
     "lint:fix": "standard --fix"
   },
   "dependencies": {
-    "@hermeznetwork/hermezjs": "1.1.6",
+    "@hermeznetwork/hermezjs": "1.1.7",
     "@walletconnect/web3-provider": "^1.4.1",
     "axios": "^0.21.1",
     "big-integer": "^1.6.48",
