@@ -8,7 +8,7 @@ const useMyAccountStyles = createUseStyles(theme => ({
     fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.medium,
     textAlign: 'center',
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(3.5),
     marginBottom: theme.spacing(2.5)
   },
   topSection: {
