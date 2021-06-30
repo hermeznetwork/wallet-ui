@@ -11,6 +11,7 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../ut
 import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
 import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/src/constants'
 import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
+import { getNextBestForger, getNextForgerUrls } from '../../utils/coordinator'
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
@@ -197,9 +198,12 @@ function fetchAccountBalance () {
  */
 function fetchFees () {
   return function (dispatch, getState) {
+    const { global: { coordinatorStateTask } } = getState()
+    const nextForger = getNextBestForger(coordinatorStateTask.data)
+
     dispatch(transactionActions.loadFees())
 
-    return CoordinatorAPI.getState()
+    return CoordinatorAPI.getState({}, nextForger.coordinator.URL)
       .then(res => dispatch(transactionActions.loadFeesSuccess(res.recommendedFee)))
       .catch(err => dispatch(transactionActions.loadFeesFailure(err)))
   }
@@ -374,7 +378,8 @@ function forceExit (amount, account) {
 
 function exit (amount, account, fee) {
   return (dispatch, getState) => {
-    const { global: { wallet, nextForgers } } = getState()
+    const { global: { wallet, coordinatorStateTask } } = getState()
+    const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data)
     const txData = {
       type: TxType.Exit,
       from: account.accountIndex,
@@ -382,7 +387,7 @@ function exit (amount, account, fee) {
       fee
     }
 
-    return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgers)
+    return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
       .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
       .catch((error) => {
         console.error(error)
@@ -394,8 +399,8 @@ function exit (amount, account, fee) {
 
 function transfer (amount, from, to, fee) {
   return (dispatch, getState) => {
-    const { global: { wallet, nextForgers } } = getState()
-
+    const { global: { wallet, coordinatorStateTask } } = getState()
+    const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data)
     const txData = {
       from: from.accountIndex,
       to: to.accountIndex || to.hezEthereumAddress || to.hezBjjAddress,
@@ -403,7 +408,7 @@ function transfer (amount, from, to, fee) {
       fee
     }
 
-    return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgers)
+    return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
       .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
       .catch((error) => {
         console.error(error)

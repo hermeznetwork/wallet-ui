@@ -58,3 +58,5 @@ export const AIRDROP_MORE_INFO_URL = 'https://blog.hermez.io/hermez-community-re
 export const HEZ_TOKEN_ID = 1
 
 export const METAMASK_UPDATE_HELP_LINK = 'https://twitter.com/hermez_network/status/1405812176053538817'
+
+export const DELAY_TO_NEXT_FORGER = 30_000 // 30s
