@@ -213,14 +213,14 @@ function Transaction ({
             return (
               <TransactionConfirmation
                 transactionType={transactionType}
-                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex, redirectTo)}
+                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex)}
               />
             )
           }
           case STEP_NAME.TRANSACTION_ERROR: {
             return (
               <TransactionError
-                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex, redirectTo)}
+                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex)}
               />
             )
           }
