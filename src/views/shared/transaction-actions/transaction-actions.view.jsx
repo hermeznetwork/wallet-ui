@@ -50,6 +50,12 @@ function TransactionActions ({ hideWithdraw, hideSend, hideDeposit, accountIndex
             </div>
             )
       }
+      <div className={classes.action}>
+        <Link to='/token-swap' className={classes.button}>
+          <WithdrawIcon className={classes.buttonIcon} />
+        </Link>
+        <p className={classes.buttonText}>Swap</p>
+      </div>
     </div>
   )
 }
