@@ -6,6 +6,7 @@ import useTransactionActionsStyles from './transaction-actions.styles'
 import { ReactComponent as SendIcon } from '../../../images/icons/send.svg'
 import { ReactComponent as DepositIcon } from '../../../images/icons/deposit.svg'
 import { ReactComponent as WithdrawIcon } from '../../../images/icons/withdraw.svg'
+import { ReactComponent as TokenSwapIcon } from '../../../images/icons/token-swap.svg'
 
 function TransactionActions ({ hideWithdraw, hideSend, hideDeposit, accountIndex, tokenId }) {
   const classes = useTransactionActionsStyles()
@@ -52,7 +53,7 @@ function TransactionActions ({ hideWithdraw, hideSend, hideDeposit, accountIndex
       }
       <div className={classes.action}>
         <Link to='/token-swap' className={classes.button}>
-          <WithdrawIcon className={classes.buttonIcon} />
+          <TokenSwapIcon className={classes.buttonIcon} />
         </Link>
         <p className={classes.buttonText}>Swap</p>
       </div>
