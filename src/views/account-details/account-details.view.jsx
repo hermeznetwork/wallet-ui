@@ -185,6 +185,7 @@ function AccountDetails ({
             accountIndex={accountIndex}
             tokenId={accountTask.data?.token.id}
             hideDeposit={l1TokenBalanceTask.status !== 'successful'}
+            hideSwap
           />
         </section>
       </Container>
