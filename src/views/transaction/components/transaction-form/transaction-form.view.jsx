@@ -609,6 +609,7 @@ function TransactionForm ({
                   token={account.token}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={fiatExchangeRates}
+                  showInFiat={showInFiat}
                 />
               </>
               )
