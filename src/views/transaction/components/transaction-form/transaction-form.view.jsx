@@ -472,7 +472,7 @@ function TransactionForm ({
                   })}
                   >
                     <div className={classes.amount}>
-                      <p className={classes.amountCurrency}>{(showInFiat) ? preferredCurrency : account.token.symbol}</p>
+                      <p className={classes.amountCurrency}>{showInFiat ? preferredCurrency : account.token.symbol}</p>
                       <input
                         ref={amountInput}
                         className={classes.amountInput}
@@ -497,7 +497,7 @@ function TransactionForm ({
                       <div className={classes.amountButtonsItem}>
                         <p>
                           <span>{showInFiat ? (getFixedTokenAmount(amount || 0, account.token.decimals)) : (amountFiat || 0).toFixed(2)} </span>
-                          <span>{(showInFiat) ? account.token.symbol : preferredCurrency}</span>
+                          <span>{showInFiat ? account.token.symbol : preferredCurrency}</span>
                         </p>
                       </div>
                       <button
