@@ -1,6 +1,6 @@
 {
   "name": "wallet-ui",
-  "version": "v1.1.5",
+  "version": "v1.1.6",
   "private": true,
   "scripts": {
     "start:dev": "react-scripts start",
