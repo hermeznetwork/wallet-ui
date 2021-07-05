@@ -141,8 +141,8 @@ function Exit ({
         // Extracts the hours and minutes from the remaining difference
         const hours = remainingDifference / 1000 / 60 / 60
         const hoursFixed = Math.floor(hours)
-        // Minutes are in a value between 0-1, so we need to convert to 0-60
-        const minutes = Math.round((hours - hoursFixed) * 60)
+        // Minutes are in a value between 0-1, so we need to convert to 0-59
+        const minutes = Math.round((hours - hoursFixed) * 59)
 
         return `${hoursFixed}h ${minutes}m`
       }
