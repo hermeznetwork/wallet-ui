@@ -154,7 +154,11 @@ function Exit ({
         // Minutes are in a value between 0-1, so we need to convert to 0-59
         const minutes = Math.round((hours - hoursFixed) * 59)
 
-        return `${hoursFixed}h ${minutes}m`
+        if (hoursFixed < 1) {
+          return `${minutes}m`
+        } else {
+          return `${hoursFixed}h ${minutes}m`
+        }
       }
     }
   }
