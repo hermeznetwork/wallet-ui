@@ -143,18 +143,20 @@ function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposi
         undefined,
         axiosConfig
       )
-      const requests = accountsTask.data.fromItemHistory
-        .reduce((requests, fromItem) => ([
-          ...requests,
-          CoordinatorAPI.getAccounts(
-            hermezEthereumAddress,
-            undefined,
-            fromItem,
-            undefined,
-            undefined,
-            axiosConfig
-          )
-        ]), [initialReq])
+
+      const requests = accountsTask.status === 'reloading' ? [] : accountsTask.data.fromItemHistory
+
+      requests.reduce((requests, fromItem) => ([
+        ...requests,
+        CoordinatorAPI.getAccounts(
+          hermezEthereumAddress,
+          undefined,
+          fromItem,
+          undefined,
+          undefined,
+          axiosConfig
+        )
+      ]), [initialReq])
 
       Promise.all(requests)
         .then((results) => {
@@ -176,7 +178,7 @@ function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposi
                 fiatBalance
               }
             })
-          const pendingItems = results[results.length - 1].pendingItems
+          const pendingItems = results[results.length - 1] ? results[results.length - 1].pendingItems : 0
 
           return { accounts, pendingItems }
         })
