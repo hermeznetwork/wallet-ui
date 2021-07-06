@@ -95,12 +95,12 @@ function fetchFiatExchangeRates () {
     dispatch(globalActions.loadFiatExchangeRates())
 
     return fiatExchangeRatesApi.getFiatExchangeRates(symbols)
-      .then(res => dispatch(globalActions.loadFiatExchangeRatesSuccess(res.rates)))
+      .then(res => dispatch(globalActions.loadFiatExchangeRatesSuccess(res)))
       .catch(() => {
-        const rates = {}
-        for (const rate of symbols) {
-          rates[rate] = undefined
-        }
+        const rates = symbols.reduce((acc, symbol) => ({
+          ...acc,
+          [symbol]: undefined
+        }))
 
         dispatch(globalActions.loadFiatExchangeRatesSuccess(rates))
       })
