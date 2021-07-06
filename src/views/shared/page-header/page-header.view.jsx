@@ -20,33 +20,33 @@ function PageHeader ({
   return (
     <header className={classes.root}>
       <Container disableVerticalGutters>
-        <div className={classes.headerContent}>
-          {goBackAction && (
-            <button
-              className={clsx({
-                [classes.buttonBase]: true,
-                [classes.goBackButton]: true
-              })}
-              onClick={() => onGoBack(goBackAction)}
-            >
-              <ArrowBackIcon />
-            </button>
-          )}
+        <div className={classes.headerWrapper}>
           <div className={classes.titleWrapper}>
+            {goBackAction && (
+              <button
+                className={clsx({
+                  [classes.buttonBase]: true,
+                  [classes.goBackButton]: true
+                })}
+                onClick={() => onGoBack(goBackAction)}
+              >
+                <ArrowBackIcon />
+              </button>
+            )}
             <h1 className={classes.title}>{title || ''}</h1>
-            {subtitle && <h4 className={classes.subtitle}>{subtitle}</h4>}
+            {closeAction && (
+              <button
+                className={clsx({
+                  [classes.buttonBase]: true,
+                  [classes.closeButton]: true
+                })}
+                onClick={() => onClose(closeAction)}
+              >
+                <CloseIcon />
+              </button>
+            )}
           </div>
-          {closeAction && (
-            <button
-              className={clsx({
-                [classes.buttonBase]: true,
-                [classes.closeButton]: true
-              })}
-              onClick={() => onClose(closeAction)}
-            >
-              <CloseIcon />
-            </button>
-          )}
+          {subtitle && <h4 className={classes.subtitle}>{subtitle}</h4>}
         </div>
       </Container>
     </header>

@@ -11,6 +11,7 @@ import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
 import { HttpStatusCode } from '../../utils/http'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
+import { getNextForgerUrls } from '../../utils/coordinator'
 
 async function getSignerData (provider, walletName, accountData) {
   switch (walletName) {
@@ -148,8 +149,9 @@ function postCreateAccountAuthorization (wallet) {
   return (dispatch, getState) => {
     const {
       login: { accountAuthSignatures },
-      global: { redirectRoute, ethereumNetworkTask, nextForgers }
+      global: { redirectRoute, ethereumNetworkTask, coordinatorStateTask }
     } = getState()
+    const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data)
 
     const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.data.chainId] || {}
     const currentSignature = chainIdSignatures[wallet.hermezEthereumAddress]
@@ -165,7 +167,7 @@ function postCreateAccountAuthorization (wallet) {
           wallet.hermezEthereumAddress,
           wallet.publicKeyBase64,
           signature,
-          nextForgers
+          nextForgerUrls
         ).catch((error) => {
           // If the coordinators already have the CreateAccountsAuth signature,
           // we ignore the error

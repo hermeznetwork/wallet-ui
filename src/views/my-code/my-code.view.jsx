@@ -6,7 +6,6 @@ import { push } from 'connected-react-router'
 import { useLocation } from 'react-router-dom'
 
 import useMyCodeStyles from './my-code.styles'
-import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import Container from '../shared/container/container.view'
 import { changeHeader } from '../../store/global/global.actions'
 import { MY_CODE } from '../../constants'
@@ -120,4 +119,4 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(push(`/transfer?receiver=${hermezEthereumAddress}`))
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(MyCode))
+export default connect(mapStateToProps, mapDispatchToProps)(MyCode)
