@@ -8,6 +8,7 @@ import MyAccount from '../views/my-account/my-account.view'
 import AccountDetails from '../views/account-details/account-details.view'
 import TransactionDetails from '../views/transaction-details/transaction-details.view'
 import MyCode from '../views/my-code/my-code.view'
+import TokenSwap from '../views/token-swap/token-swap.view'
 
 const routes = [
   {
@@ -54,6 +55,11 @@ const routes = [
   {
     path: '/accounts/:accountIndex/transactions/:transactionId',
     render: () => <TransactionDetails />
+  },
+  {
+    path: '/token-swap',
+    render: () => <TokenSwap />,
+    isHidden: process.env.REACT_APP_ENABLE_TOKEN_SWAP !== 'true'
   }
 ]
 
