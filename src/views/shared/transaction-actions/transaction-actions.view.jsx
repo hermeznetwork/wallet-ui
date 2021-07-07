@@ -51,7 +51,7 @@ function TransactionActions ({ hideWithdraw, hideSend, hideDeposit, hideSwap, ac
             </div>
             )
       }
-      {hideSwap
+      {hideSwap || process.env.REACT_APP_ENABLE_TOKEN_SWAP !== 'true'
         ? <></>
         : (
           <div className={classes.action}>

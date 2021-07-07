@@ -58,7 +58,8 @@ const routes = [
   },
   {
     path: '/token-swap',
-    render: () => <TokenSwap />
+    render: () => <TokenSwap />,
+    isHidden: process.env.REACT_APP_ENABLE_TOKEN_SWAP !== 'true'
   }
 ]
 
