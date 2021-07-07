@@ -1,15 +1,15 @@
 import { createUseStyles } from 'react-jss'
 
-const usePageHeaderStyles = createUseStyles(theme => ({
-  root: {
+const usePageHeaderStyles = createUseStyles((theme) => ({
+  root: ({ hasSubtitle }) => ({
     width: '100%',
     position: 'absolute',
     height: theme.headerHeight,
     display: 'flex',
-    alignItems: 'flex-end',
+    alignItems: hasSubtitle ? 'flex-end' : 'center',
     zIndex: 998,
     background: 'transparent'
-  },
+  }),
   headerWrapper: {
     width: '100%',
     display: 'flex',

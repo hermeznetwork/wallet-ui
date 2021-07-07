@@ -104,11 +104,21 @@ function Exit ({
   }
 
   /**
-   * Converts the withdraw delay from seconds to days
-   * @returns {Number} - Withdrawal delay in days
+   * Converts the withdraw delay from seconds to hours or minutes
+   * @returns {Number} - Withdrawal delay in hours or minutes
    */
   function getWithdrawalDelayerTime () {
-    return Math.round(coordinatorState?.withdrawalDelayer.withdrawalDelay / 60 / 60)
+    // Extracts the hours and minutes from the withdrawalDelay time stamp
+    const hours = coordinatorState?.withdrawalDelayer.withdrawalDelay / 60 / 60
+    const hoursFixed = Math.floor(hours)
+    // Minutes are in a value between 0-1, so we need to convert to 0-59
+    const minutes = Math.round((hours - hoursFixed) * 59)
+
+    if (hours < 1) {
+      return `${minutes}m`
+    } else {
+      return `${Math.round(hours)}h`
+    }
   }
 
   /**
@@ -141,10 +151,14 @@ function Exit ({
         // Extracts the hours and minutes from the remaining difference
         const hours = remainingDifference / 1000 / 60 / 60
         const hoursFixed = Math.floor(hours)
-        // Minutes are in a value between 0-1, so we need to convert to 0-60
-        const minutes = Math.round((hours - hoursFixed) * 60)
+        // Minutes are in a value between 0-1, so we need to convert to 0-59
+        const minutes = Math.round((hours - hoursFixed) * 59)
 
-        return `${hoursFixed}h ${minutes}m`
+        if (hoursFixed < 1) {
+          return `${minutes}m`
+        } else {
+          return `${hoursFixed}h ${minutes}m`
+        }
       }
     }
   }
@@ -264,7 +278,7 @@ function Exit ({
                 </div>
                 <div className={classes.withdrawDelayedButtons}>
                   <button className={`${classes.withdrawButton} ${classes.withdrawDelayerInstantButton}`} onClick={onCheckAvailabilityClick}>Check availability in 10m</button>
-                  <button className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`} onClick={onWithdrawDelayedClick}>Withdraw in {getWithdrawalDelayerTime()} {getWithdrawalDelayerTime() === 1 ? 'hour' : 'hours'}</button>
+                  <button className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`} onClick={onWithdrawDelayedClick}>Withdraw in {getWithdrawalDelayerTime()}</button>
                 </div>
               </div>
             )

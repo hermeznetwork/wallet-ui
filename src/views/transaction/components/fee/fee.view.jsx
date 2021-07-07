@@ -15,18 +15,19 @@ function Fee ({
   estimatedWithdrawFee,
   token,
   preferredCurrency,
-  fiatExchangeRates
+  fiatExchangeRates,
+  showInFiat
 }) {
   const [isWithdrawFeeExpanded, setIsWithdrawFeeExpanded] = React.useState(false)
   const classes = useFeeStyles({ isWithdrawFeeExpanded })
+  const l2RealFee = getRealFee(amount, token, l2Fee)
+  const l2FeeInFiat = getTokenAmountInPreferredCurrency(l2RealFee, token.USD, preferredCurrency, fiatExchangeRates)
 
   function getTotalEstimatedWithdrawFee () {
     if (!estimatedWithdrawFee) {
       return '--'
     }
 
-    const l2RealFee = getRealFee(amount, token, l2Fee)
-    const l2FeeInFiat = getTokenAmountInPreferredCurrency(l2RealFee, token.USD, preferredCurrency, fiatExchangeRates)
     const estimatedWithdrawFeeInFiat = getAmountInPreferredCurrency(estimatedWithdrawFee.USD, preferredCurrency, fiatExchangeRates)
 
     return (l2FeeInFiat + estimatedWithdrawFeeInFiat).toFixed(2)
@@ -44,7 +45,9 @@ function Fee ({
     return (
       <div className={classes.feeWrapper}>
         <p className={classes.fee}>
-          Fee {`${Number(getRealFee(amount, token, l2Fee).toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`}
+          Fee&nbsp;
+          <span>{showInFiat ? Number(l2FeeInFiat) : Number(l2RealFee.toFixed(MAX_TOKEN_DECIMALS))} </span>
+          <span>{(showInFiat) ? preferredCurrency : token.symbol}</span>
         </p>
       </div>
     )

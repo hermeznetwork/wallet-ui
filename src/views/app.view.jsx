@@ -56,7 +56,7 @@ function App ({
   }, [hermezStatusTask, onSetHermezEnvironment, onLoadFiatExchangeRates])
 
   React.useEffect(() => {
-    if (process.env.REACT_APP_ENABLE_AIRDROP) {
+    if (process.env.REACT_APP_ENABLE_AIRDROP === 'true') {
       onLoadReward()
     }
   }, [])
@@ -118,27 +118,29 @@ function App ({
     <Layout>
       <Switch>
         <>
-          {routes.map((route) => (
-            route.isPublic
-              ? (
-                <Route
-                  exact
-                  key={route.path}
-                  path={route.path}
-                  render={route.render}
-                />
-                )
-              : (
-                <PrivateRoute
-                  key={route.path}
-                  isUserLoggedIn={wallet !== undefined}
-                  route={route}
-                  onChangeRedirectRoute={onChangeRedirectRoute}
-                />
-                )
-          ))}
+          {routes
+            .filter(route => !route.isHidden)
+            .map((route) => (
+              route.isPublic
+                ? (
+                  <Route
+                    exact
+                    key={route.path}
+                    path={route.path}
+                    render={route.render}
+                  />
+                  )
+                : (
+                  <PrivateRoute
+                    key={route.path}
+                    isUserLoggedIn={wallet !== undefined}
+                    route={route}
+                    onChangeRedirectRoute={onChangeRedirectRoute}
+                  />
+                  )
+            ))}
+          <Redirect to='/login' />
         </>
-        <Redirect to='/' />
       </Switch>
     </Layout>
   )
