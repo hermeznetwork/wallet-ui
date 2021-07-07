@@ -15,7 +15,7 @@ function PageHeader ({
   onGoBack,
   onClose
 }) {
-  const classes = usePageHeaderStyles()
+  const classes = usePageHeaderStyles({ hasSubtitle: subtitle !== undefined })
 
   return (
     <header className={classes.root}>
