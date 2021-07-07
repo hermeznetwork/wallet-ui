@@ -5,6 +5,13 @@ import { FIAT_EXCHANGE_RATES_API_URL } from '../constants'
 
 const baseApiUrl = FIAT_EXCHANGE_RATES_API_URL
 
+const mockedFiatExchangeRates = {
+  EUR: 0.837775,
+  CNY: 6.446304,
+  JPY: 110.253954,
+  GBP: 0.716945
+}
+
 /**
  * Fetches the USD exchange rates for the requested currency symbols
  * @param {string[]} symbols - ISO 4217 currency codes
@@ -23,4 +30,4 @@ function getFiatExchangeRates (symbols) {
     })
 }
 
-export { getFiatExchangeRates }
+export { mockedFiatExchangeRates, getFiatExchangeRates }

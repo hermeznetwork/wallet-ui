@@ -97,12 +97,7 @@ function fetchFiatExchangeRates () {
     return fiatExchangeRatesApi.getFiatExchangeRates(symbols)
       .then(res => dispatch(globalActions.loadFiatExchangeRatesSuccess(res)))
       .catch(() => {
-        const rates = symbols.reduce((acc, symbol) => ({
-          ...acc,
-          [symbol]: undefined
-        }))
-
-        dispatch(globalActions.loadFiatExchangeRatesSuccess(rates))
+        dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRatesApi.mockedFiatExchangeRates))
       })
   }
 }
