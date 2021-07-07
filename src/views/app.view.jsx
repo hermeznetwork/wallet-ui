@@ -56,7 +56,7 @@ function App ({
   }, [hermezStatusTask, onSetHermezEnvironment, onLoadFiatExchangeRates])
 
   React.useEffect(() => {
-    if (process.env.REACT_APP_ENABLE_AIRDROP) {
+    if (process.env.REACT_APP_ENABLE_AIRDROP === 'true') {
       onLoadReward()
     }
   }, [])
