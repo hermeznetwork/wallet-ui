@@ -24,6 +24,7 @@ import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
 import { getAccountBalance } from '../../utils/accounts'
+import { mergeExits } from '../../utils/transactions'
 import * as storage from '../../utils/storage'
 
 function AccountDetails ({
@@ -247,7 +248,7 @@ function AccountDetails ({
                   {
                     exitsTask.status === 'successful' || exitsTask.status === 'reloading'
                       ? <ExitList
-                          transactions={exitsTask.data.exits}
+                          transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
                           fiatExchangeRates={fiatExchangeRatesTask.data}
                           preferredCurrency={preferredCurrency}
                           babyJubJub={wallet.publicKeyCompressedHex}

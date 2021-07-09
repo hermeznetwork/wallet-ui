@@ -106,7 +106,7 @@ function Transaction ({
         onLoadEthereumAccount(Number(tokenId))
       } else if (accountIndex && !tokenId) {
         if (batchNum) {
-          onLoadExit(accountIndex, Number(batchNum))
+          onLoadExit(accountIndex, Number(batchNum), completeDelayedWithdrawal, accountPendingDelayedWithdraws)
         } else {
           onLoadHermezAccount(
             accountIndex,
@@ -120,7 +120,7 @@ function Transaction ({
         onGoToChooseAccountStep()
       }
     }
-  }, [pendingDepositsCheckTask, poolTransactionsTask, tokenId, batchNum, accountIndex, onLoadExit, onLoadEthereumAccount, onLoadHermezAccount, onGoToChooseAccountStep])
+  }, [pendingDepositsCheckTask, poolTransactionsTask, tokenId, batchNum, accountIndex, completeDelayedWithdrawal])
 
   React.useEffect(() => {
     const stepData = steps[STEP_NAME.LOAD_INITIAL_DATA]
@@ -341,8 +341,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionThunks.fetchEthereumAccount(tokenId)),
   onLoadHermezAccount: (accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
     dispatch(transactionThunks.fetchHermezAccount(accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
-  onLoadExit: (accountIndex, batchNum) =>
-    dispatch(transactionThunks.fetchExit(accountIndex, batchNum)),
+  onLoadExit: (accountIndex, batchNum, completeDelayedWithdrawal, pendingDelayedWithdraws) =>
+    dispatch(transactionThunks.fetchExit(accountIndex, batchNum, completeDelayedWithdrawal, pendingDelayedWithdraws)),
   onLoadAccountBalance: () =>
     dispatch(transactionThunks.fetchAccountBalance()),
   onLoadFees: () =>

@@ -24,6 +24,7 @@ import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
 import * as storage from '../../utils/storage'
+import { mergeExits } from '../../utils/transactions'
 import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
 import * as globalActions from '../../store/global/global.actions'
@@ -58,7 +59,6 @@ function Home ({
   onCheckPendingWithdrawals,
   onNavigateToAccountDetails,
   onOpenSnackbar,
-  onOpenRewardsSidenav,
   onCleanup
 }) {
   const theme = useTheme()
@@ -210,7 +210,7 @@ function Home ({
           {
             exitsTask.status === 'successful' || exitsTask.status === 'reloading'
               ? <ExitList
-                  transactions={exitsTask.data.exits}
+                  transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
                   fiatExchangeRates={
                   fiatExchangeRatesTask.status === 'successful'
                     ? fiatExchangeRatesTask.data

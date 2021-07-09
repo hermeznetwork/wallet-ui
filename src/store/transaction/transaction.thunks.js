@@ -1,5 +1,8 @@
 import { CoordinatorAPI, Tx, TxFees, HermezCompressedAmount } from '@hermeznetwork/hermezjs'
 import { TxType, TxState } from '@hermeznetwork/hermezjs/src/enums'
+import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
+import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/src/constants'
+import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 import * as ethers from 'ethers'
 
@@ -8,9 +11,7 @@ import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
 import { getAccountBalance } from '../../utils/accounts'
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
-import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
-import { ETHER_TOKEN_ID } from '@hermeznetwork/hermezjs/src/constants'
-import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
+import { mergeDelayedWithdraws } from '../../utils/transactions'
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
@@ -81,9 +82,11 @@ function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, fi
  * Fetches the details of an exit
  * @param {string} accountIndex - account index
  * @param {Number} batchNum - batch number
+ * @param {Boolean} completeDelayedWithdrawal - Whether we are completing a delayed withdrawal
+ * @param {Array} pendingDelayedWithdraws - Pending delayed withdraws stored in LocalStorage
  * @returns {void}
  */
-function fetchExit (accountIndex, batchNum) {
+function fetchExit (accountIndex, batchNum, completeDelayedWithdrawal, pendingDelayedWithdraws) {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
 
@@ -97,6 +100,15 @@ function fetchExit (accountIndex, batchNum) {
       CoordinatorAPI.getAccount(accountIndex),
       CoordinatorAPI.getExit(batchNum, accountIndex)
     ]).then(([account, exit]) => {
+      // If we are completing a delayed withdrawal, we need to merge all delayed withdrawals
+      // of the same token to show the correct amount in Transaction Overview
+      if (completeDelayedWithdrawal) {
+        const pendingDelayedWithdrawsWithToken = pendingDelayedWithdraws
+          .filter((pendingDelayedWithdraw) => pendingDelayedWithdraw.token.id === exit.token.id)
+        const mergedPendingDelayedWithdraws = mergeDelayedWithdraws(pendingDelayedWithdrawsWithToken)
+        exit = mergedPendingDelayedWithdraws[0]
+        console.log(pendingDelayedWithdrawsWithToken, mergedPendingDelayedWithdraws, exit)
+      }
       dispatch(transactionActions.loadExitSuccess(account, exit, wallet.hermezEthereumAddress))
     }).catch(err => dispatch(transactionActions.loadExitFailure(err.message)))
   }
@@ -301,7 +313,11 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
         } else {
           dispatch(globalThunks.addPendingDelayedWithdraw({
             hash: txData.hash,
+            hermezEthereumAddress: wallet.hermezEthereumAddress,
             id: withdrawalId,
+            accountIndex: account.accountIndex,
+            batchNum: exit.batchNum,
+            merkleProof: exit.merkleProof,
             instant: false,
             amount,
             token: account.token,

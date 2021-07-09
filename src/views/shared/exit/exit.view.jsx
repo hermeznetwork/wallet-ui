@@ -242,6 +242,7 @@ function Exit ({
           )
 
           if (pendingDelayedWithdrawal) {
+            const remainingTime = getDateString(pendingDelayedWithdrawal)
             return (
               <div className={classes.withdraw}>
                 <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
@@ -250,7 +251,7 @@ function Exit ({
 
                   <div className={`${classes.withdrawInfo} ${classes.withdrawInfoIcon}`}>
                     <InfoIcon className={classes.infoIcon} />
-                    <span className={classes.infoText}>Remaining time: {getDateString(pendingDelayedWithdrawal)}</span>
+                    <span className={classes.infoText}>Remaining time: {remainingTime}</span>
                   </div>
                 </div>
               </div>
