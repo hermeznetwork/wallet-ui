@@ -44,7 +44,7 @@ function TransactionInfo ({
   }
 
   function handleCopyToAddress () {
-    copyToClipboard(txData.toHezEthereumAddress === INTERNAL_ACCOUNT_ETH_ADDR
+    copyToClipboard(txData.toHezEthereumAddress.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
       ? (txData.toBjj || txData.toBJJ)
       : txData.toHezEthereumAddress)
     onToCopyClick()
@@ -87,7 +87,7 @@ function TransactionInfo ({
               value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress)
             }}
             to={{
-              subtitle: txData.toHezEthereumAddress === INTERNAL_ACCOUNT_ETH_ADDR
+              subtitle: txData.toHezEthereumAddress?.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
                 ? getPartiallyHiddenHermezAddress(txData.toBjj || txData.toBJJ)
                 : getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
             }}

@@ -11,7 +11,6 @@ import * as globalThunks from '../../store/global/global.thunks'
 import useTransactionStyles from './transaction.styles'
 import TransactionForm from './components/transaction-form/transaction-form.view'
 import TransactionOverview from './components/transaction-overview/transaction-overview.view'
-import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view'
 import { STEP_NAME } from '../../store/transaction/transaction.reducer'
 import AccountSelector from './components/account-selector/account-selector.view'
 import TransactionConfirmation from './components/transaction-confirmation/transaction-confirmation.view'
@@ -67,7 +66,6 @@ function Transaction ({
   const receiver = urlSearchParams.get('receiver')
   const instantWithdrawal = urlSearchParams.get('instantWithdrawal') === 'true'
   const completeDelayedWithdrawal = urlSearchParams.get('completeDelayedWithdrawal') === 'true'
-  const redirectTo = urlSearchParams.get('redirectTo')
   const accountIndex = urlSearchParams.get('accountIndex')
   const accountPendingDeposits = storage.getItemsByHermezAddress(
     pendingDeposits,
@@ -86,8 +84,8 @@ function Transaction ({
   )
 
   React.useEffect(() => {
-    onChangeHeader(currentStep, transactionType, accountIndex, redirectTo)
-  }, [currentStep, transactionType, accountIndex, redirectTo, onChangeHeader])
+    onChangeHeader(currentStep, transactionType, accountIndex)
+  }, [currentStep, transactionType, accountIndex, onChangeHeader])
 
   React.useEffect(() => {
     onCheckPendingDeposits()
@@ -214,14 +212,14 @@ function Transaction ({
             return (
               <TransactionConfirmation
                 transactionType={transactionType}
-                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex, redirectTo)}
+                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex)}
               />
             )
           }
           case STEP_NAME.TRANSACTION_ERROR: {
             return (
               <TransactionError
-                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex, redirectTo)}
+                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex)}
               />
             )
           }
@@ -279,7 +277,7 @@ const getHeaderCloseAction = (accountIndex) => {
     : push('/')
 }
 
-const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
+const getHeader = (currentStep, transactionType, accountIndex) => {
   switch (currentStep) {
     case STEP_NAME.CHOOSE_ACCOUNT: {
       return {
@@ -304,16 +302,12 @@ const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
     }
     case STEP_NAME.REVIEW_TRANSACTION: {
       if (transactionType === TxType.Withdraw) {
-        const action = redirectTo === WithdrawRedirectionRoute.Home
-          ? push('/')
-          : push(`/accounts/${accountIndex}`)
-
         return {
           type: 'page',
           data: {
             title: getTransactionOverviewHeaderTitle(transactionType),
-            goBackAction: action,
-            closeAction: action
+            goBackAction: push(`/accounts/${accountIndex}`),
+            closeAction: push(`/accounts/${accountIndex}`)
           }
         }
       } else {
@@ -334,8 +328,8 @@ const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (currentStep, transactionType, accountIndex, redirectTo) =>
-    dispatch(changeHeader(getHeader(currentStep, transactionType, accountIndex, redirectTo))),
+  onChangeHeader: (currentStep, transactionType, accountIndex) =>
+    dispatch(changeHeader(getHeader(currentStep, transactionType, accountIndex))),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadEthereumAccount: (tokenId) =>
     dispatch(transactionThunks.fetchEthereumAccount(tokenId)),
@@ -381,4 +375,4 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionActions.resetState())
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Transaction))
+export default connect(mapStateToProps, mapDispatchToProps)(Transaction)

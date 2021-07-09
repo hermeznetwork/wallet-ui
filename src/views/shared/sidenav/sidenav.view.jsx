@@ -1,5 +1,5 @@
 import React from 'react'
-import Portal from '../portal/portal.view'
+import Portal, { PortalSelector } from '../portal/portal.view'
 
 import useSidenavStyles from './sidenav.styles'
 import { ReactComponent as AngleDownIcon } from '../../../images/icons/angle-down.svg'
@@ -23,7 +23,7 @@ function Sidenav ({ children, onClose }) {
   }
 
   return (
-    <Portal>
+    <Portal selector={PortalSelector.SIDENAV}>
       <div className={classes.root}>
         <div ref={sidenavContentRef} className={classes.content} tabIndex={0} onKeyDown={handleKeyDown}>
           <button className={classes.hideButton} onClick={onClose}>

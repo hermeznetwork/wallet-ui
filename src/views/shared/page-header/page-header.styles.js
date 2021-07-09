@@ -1,22 +1,27 @@
 import { createUseStyles } from 'react-jss'
 
-const usePageHeaderStyles = createUseStyles(theme => ({
-  root: {
+const usePageHeaderStyles = createUseStyles((theme) => ({
+  root: ({ hasSubtitle }) => ({
     width: '100%',
     position: 'absolute',
     height: theme.headerHeight,
     display: 'flex',
-    alignItems: 'center',
+    alignItems: hasSubtitle ? 'flex-end' : 'center',
     zIndex: 998,
     background: 'transparent'
+  }),
+  headerWrapper: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
-  headerContent: {
+  titleWrapper: {
     width: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
-    marginTop: theme.spacing(3)
+    position: 'relative'
   },
   buttonBase: {
     position: 'absolute',
@@ -37,9 +42,6 @@ const usePageHeaderStyles = createUseStyles(theme => ({
     right: 0,
     marginRight: -(theme.spacing(2))
   },
-  titleWrapper: {
-    textAlign: 'center'
-  },
   title: {
     fontSize: theme.spacing(3),
     fontWeight: theme.fontWeights.extraBold
@@ -48,7 +50,7 @@ const usePageHeaderStyles = createUseStyles(theme => ({
     fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.dark,
-    paddingTop: theme.spacing(1.5),
+    paddingTop: theme.spacing(1.25),
     margin: 0
   }
 }))

@@ -10,7 +10,6 @@ import * as homeThunks from '../../store/home/home.thunks'
 import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
 import AccountList from '../shared/account-list/account-list.view'
 import Spinner from '../shared/spinner/spinner.view'
-import withAuthGuard from '../shared/with-auth-guard/with-auth-guard.view.jsx'
 import Container from '../shared/container/container.view'
 import { copyToClipboard } from '../../utils/browser'
 import { changeHeader, openSnackbar } from '../../store/global/global.actions'
@@ -45,7 +44,6 @@ function Home ({
   coordinatorStateTask,
   rewards,
   onChangeHeader,
-  onLoadCoordinatorState,
   onCheckPendingDeposits,
   onLoadTotalBalance,
   onLoadAccounts,
@@ -86,10 +84,6 @@ function Home ({
   React.useEffect(() => {
     onChangeHeader(theme.palette.primary.main)
   }, [theme, onChangeHeader])
-
-  React.useEffect(() => {
-    onLoadCoordinatorState()
-  }, [])
 
   React.useEffect(() => {
     onCheckPendingDeposits()
@@ -330,7 +324,6 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
-  onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onLoadTotalBalance: (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
     dispatch(homeThunks.fetchTotalBalance(hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onLoadAccounts: (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
@@ -358,4 +351,4 @@ const mapDispatchToProps = (dispatch) => ({
   onCleanup: () => dispatch(resetState())
 })
 
-export default withAuthGuard(connect(mapStateToProps, mapDispatchToProps)(Home))
+export default connect(mapStateToProps, mapDispatchToProps)(Home)
