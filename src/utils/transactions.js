@@ -69,7 +69,7 @@ function isTransactionAmountCompressedValid (amount) {
 }
 
 /**
- *
+ * Calculates the max amoumt that can be sent in a transaction
  * @param {TxType} txType - Transaction type
  * @param {BigNumber} maxAmount - Max amount that can be sent in a transaction (usually it's an account balance)
  * @param {Object} token - Token object
