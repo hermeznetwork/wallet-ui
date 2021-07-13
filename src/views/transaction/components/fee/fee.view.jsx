@@ -2,11 +2,11 @@ import React from 'react'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 
 import useFeeStyles from './fee.styles'
-import { MAX_TOKEN_DECIMALS } from '../../../../constants'
-import { CurrencySymbol, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
+import { CurrencySymbol, getAmountInPreferredCurrency, getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
 import { ReactComponent as AngleDownIcon } from '../../../../images/icons/angle-down.svg'
 import FeesTable from '../fees-table/fees-table.view'
 import { getRealFee } from '../../../../utils/fees'
+import { parseUnits } from 'ethers/lib/utils'
 
 function Fee ({
   transactionType,
@@ -46,8 +46,13 @@ function Fee ({
       <div className={classes.feeWrapper}>
         <p className={classes.fee}>
           Fee&nbsp;
-          <span>{showInFiat ? Number(l2FeeInFiat) : Number(l2RealFee.toFixed(MAX_TOKEN_DECIMALS))} </span>
-          <span>{(showInFiat) ? preferredCurrency : token.symbol}</span>
+          <span>
+            {
+              showInFiat
+                ? `${l2FeeInFiat.toFixed(2)} ${preferredCurrency}`
+                : `${getFixedTokenAmount(parseUnits(l2RealFee.toString()), token.decimals)} ${token.symbol}`
+            }
+          </span>
         </p>
       </div>
     )
