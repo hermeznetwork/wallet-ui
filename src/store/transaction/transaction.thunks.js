@@ -154,7 +154,7 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
             .catch(err => dispatch(transactionActions.loadAccountsFailure(err)))
         })
     } else {
-      return CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, undefined, fromItem)
+      return CoordinatorAPI.getAccounts(wallet.publicKeyBase64, undefined, fromItem)
         .then((res) => {
           const accounts = res.accounts.map((account) => {
             const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)

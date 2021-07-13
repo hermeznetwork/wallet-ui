@@ -22,7 +22,7 @@ function fetchAccount (accountIndex) {
 
     return CoordinatorAPI.getAccount(accountIndex)
       .then((res) => {
-        if (res.hezEthereumAddress !== wallet.hermezEthereumAddress) {
+        if (res.bjj !== wallet.publicKeyBase64) {
           dispatch(push('/'))
         } else {
           dispatch(accountDetailsActions.loadAccountSuccess(res))
@@ -74,7 +74,7 @@ function fetchPoolTransactions (accountIndex) {
   }
 }
 
-function filterExitsFromHistoryTransactions (historyTransactions, exits, dispatch) {
+function filterExitsFromHistoryTransactions (historyTransactions, exits) {
   return historyTransactions.filter((transaction) => {
     if (transaction.type === TxType.Exit) {
       const exitTx = exits.find((exit) =>
