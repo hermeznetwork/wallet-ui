@@ -106,11 +106,8 @@ function getMaxTxAmount (txType, maxAmount, token, l2Fee, gasPrice) {
       }
       default: {
         const l2FeeBigInt = parseUnits(l2Fee.toFixed(token.decimals), token.decimals)
-        const newMaxAmount = BigNumber.from(getMaxAmountFromMinimumFee(l2FeeBigInt, maxAmount).toString())
 
-        return newMaxAmount.gt(0)
-          ? newMaxAmount
-          : BigNumber.from(0)
+        return BigNumber.from(getMaxAmountFromMinimumFee(l2FeeBigInt, maxAmount).toString())
       }
     }
   })()

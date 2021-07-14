@@ -63,7 +63,6 @@ function TransactionAmountInput ({
             type='button'
             className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.amountMax}`}
             tabIndex='-1'
-            // disabled={gasPrice === undefined}
             onClick={onSendAll}
           >
             Max

@@ -1,12 +1,12 @@
 import React from 'react'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { parseUnits } from 'ethers/lib/utils'
 
 import useFeeStyles from './fee.styles'
 import { CurrencySymbol, getAmountInPreferredCurrency, getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
 import { ReactComponent as AngleDownIcon } from '../../../../images/icons/angle-down.svg'
 import FeesTable from '../fees-table/fees-table.view'
 import { getRealFee } from '../../../../utils/fees'
-import { parseUnits } from 'ethers/lib/utils'
 
 function Fee ({
   transactionType,
