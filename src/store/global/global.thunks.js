@@ -296,7 +296,7 @@ function checkPendingDelayedWithdrawals () {
             const exitsApiPromises = accountPendingDelayedWithdraws.map((pendingDelayedWithdraw) => {
               return CoordinatorAPI.getExit(pendingDelayedWithdraw.batchNum, pendingDelayedWithdraw.accountIndex)
                 .then((exitTx) => {
-                  // Checks here to have access to pendingDelayedWithdraw.hash
+                  // Checks here to have access to pendingDelayedWithdraw.id
                   if (exitTx.delayedWithdraw) {
                     dispatch(removePendingDelayedWithdraw(pendingDelayedWithdraw.id))
                   }

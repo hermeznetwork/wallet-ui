@@ -108,7 +108,6 @@ function fetchExit (accountIndex, batchNum, completeDelayedWithdrawal, pendingDe
           .filter((pendingDelayedWithdraw) => pendingDelayedWithdraw.token.id === exit.token.id)
         const mergedPendingDelayedWithdraws = mergeDelayedWithdraws(pendingDelayedWithdrawsWithToken)
         exit = mergedPendingDelayedWithdraws[0]
-        console.log(pendingDelayedWithdrawsWithToken, mergedPendingDelayedWithdraws, exit)
       }
       dispatch(transactionActions.loadExitSuccess(account, exit, wallet.hermezEthereumAddress))
     }).catch(err => dispatch(transactionActions.loadExitFailure(err.message)))
