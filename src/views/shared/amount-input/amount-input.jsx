@@ -2,7 +2,7 @@ import React from 'react'
 import { BigNumber } from 'ethers'
 
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
-import { getMaxTxAmount, isTransactionAmountCompressedValid } from '../../../utils/transactions'
+import { fixTransactionAmount, getMaxTxAmount, isTransactionAmountCompressedValid } from '../../../utils/transactions'
 import { parseUnits } from 'ethers/lib/utils'
 import { getTransactionFee } from '../../../utils/fees'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
@@ -77,9 +77,10 @@ function AmountInput (Component) {
         if (showInFiat) {
           const newAmountInFiat = Number(event.target.value)
           const newAmountInTokens = convertAmountToTokens(newAmountInFiat)
+          const fixedAmountInTokens = fixTransactionAmount(newAmountInTokens)
 
-          setAmount({ tokens: newAmountInTokens, fiat: newAmountInFiat.toFixed(2) })
-          checkAmountValidity(newAmountInTokens)
+          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat.toFixed(2) })
+          checkAmountValidity(fixedAmountInTokens)
           setValue(event.target.value)
         } else {
           try {

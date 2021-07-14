@@ -69,6 +69,19 @@ function isTransactionAmountCompressedValid (amount) {
 }
 
 /**
+ * Fixes the transaction amount to be sure that it would be supported by Hermez
+ * @param {BigNumber} amount - Transaction amount to be fixed
+ * @returns fixedTxAmount
+ */
+function fixTransactionAmount (amount) {
+  const fixedTxAmount = HermezCompressedAmount.decompressAmount(
+    HermezCompressedAmount.floorCompressAmount(amount)
+  )
+
+  return BigNumber.from(fixedTxAmount)
+}
+
+/**
  * Calculates the max amoumt that can be sent in a transaction
  * @param {TxType} txType - Transaction type
  * @param {BigNumber} maxAmount - Max amount that can be sent in a transaction (usually it's an account balance)
@@ -101,16 +114,14 @@ function getMaxTxAmount (txType, maxAmount, token, l2Fee, gasPrice) {
       }
     }
   })()
-  const maxTxAmountFixed = HermezCompressedAmount.decompressAmount(
-    HermezCompressedAmount.floorCompressAmount(maxTxAmount)
-  )
 
-  return BigNumber.from(maxTxAmountFixed)
+  return fixTransactionAmount(maxTxAmount)
 }
 
 export {
   getTransactionAmount,
   getTxPendingTime,
   isTransactionAmountCompressedValid,
+  fixTransactionAmount,
   getMaxTxAmount
 }
