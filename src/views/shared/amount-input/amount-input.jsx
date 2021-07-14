@@ -83,7 +83,8 @@ function AmountInput (Component) {
           setValue(event.target.value)
         } else {
           try {
-            const newAmountInTokens = parseUnits(event.target.value.length > 0 ? event.target.value : '0')
+            const tokensValue = event.target.value.length > 0 ? event.target.value : '0'
+            const newAmountInTokens = parseUnits(tokensValue, account.token.decimals)
             const newAmountInFiat = convertAmountToFiat(newAmountInTokens)
 
             setAmount({ tokens: newAmountInTokens, fiat: newAmountInFiat })

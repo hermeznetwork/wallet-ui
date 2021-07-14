@@ -50,7 +50,7 @@ function Fee ({
             {
               showInFiat
                 ? `${l2FeeInFiat.toFixed(2)} ${preferredCurrency}`
-                : `${getFixedTokenAmount(parseUnits(l2RealFee.toString()), token.decimals)} ${token.symbol}`
+                : `${getFixedTokenAmount(parseUnits(l2RealFee.toString(), token.decimals), token.decimals)} ${token.symbol}`
             }
           </span>
         </p>
