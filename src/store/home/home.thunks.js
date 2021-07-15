@@ -68,18 +68,18 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
 }
 
 /**
- * Fetches the accounts for a Hermez Ethereum address
+ * Fetches the accounts for a Hermez address
  * @param {Number} fromItem - id of the first account to be returned from the API
  * @returns {void}
  */
-function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
+function fetchAccounts (hermezAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { home: { accountsTask } } = getState()
 
     if (fromItem === undefined && accountsTask.status === 'successful') {
       return dispatch(
         refreshAccounts(
-          hermezEthereumAddress,
+          hermezAddress,
           poolTransactions,
           pendingDeposits,
           fiatExchangeRates,
@@ -94,7 +94,7 @@ function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendi
       refreshCancelTokenSource.cancel()
     }
 
-    return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, fromItem, undefined)
+    return CoordinatorAPI.getAccounts(hermezAddress, undefined, fromItem, undefined)
       .then((res) => {
         const accounts = res.accounts.map((account) => {
           const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
@@ -125,7 +125,7 @@ function fetchAccounts (hermezEthereumAddress, fromItem, poolTransactions, pendi
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
+function refreshAccounts (hermezAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
     const { home: { accountsTask } } = getState()
 
@@ -136,7 +136,7 @@ function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposi
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token }
       const initialReq = CoordinatorAPI.getAccounts(
-        hermezEthereumAddress,
+        hermezAddress,
         undefined,
         undefined,
         undefined,
@@ -147,7 +147,7 @@ function refreshAccounts (hermezEthereumAddress, poolTransactions, pendingDeposi
         .reduce((requests, fromItem) => ([
           ...requests,
           CoordinatorAPI.getAccounts(
-            hermezEthereumAddress,
+            hermezAddress,
             undefined,
             fromItem,
             undefined,

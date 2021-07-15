@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { INTERNAL_ACCOUNT_ETH_ADDR } from '@hermeznetwork/hermezjs/src/constants'
 
 import useAccountDetailsStyles from './account-details.styles'
 import * as globalThunks from '../../store/global/global.thunks'
@@ -184,7 +185,9 @@ function AccountDetails ({
           <TransactionActions
             accountIndex={accountIndex}
             tokenId={accountTask.data?.token.id}
-            hideDeposit={l1TokenBalanceTask.status !== 'successful'}
+            hideDeposit={l1TokenBalanceTask.status !== 'successful' ||
+              accountTask.data?.hezEthereumAddress.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()}
+            hideWithdraw={accountTask.data?.hezEthereumAddress.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()}
             hideSwap
           />
         </section>
