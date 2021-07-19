@@ -45,8 +45,8 @@ function fetchTransaction (transactionIdOrHash) {
     return transactionPromise
       .then((res) => {
         if (
-          res.fromHezEthereumAddress !== wallet.hermezEthereumAddress &&
-          res.toHezEthereumAddress !== wallet.hermezEthereumAddress
+          res.fromBJJ !== wallet.publicKeyBase64 &&
+          res.toBJJ !== wallet.publicKeyBase64
         ) {
           dispatch(push('/'))
         } else {

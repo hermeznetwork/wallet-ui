@@ -27,7 +27,7 @@ function createRootReducer (history) {
     transactionDetails: transactionDetailsReducer,
     transaction: transactionReducer,
     login: loginReducer,
-    tokenSwapReducer: tokenSwapReducer
+    tokenSwap: tokenSwapReducer
   })
 }
 

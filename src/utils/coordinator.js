@@ -7,7 +7,7 @@ import { DELAY_TO_NEXT_FORGER } from '../constants'
  * @returns Next forgers
  */
 function getNextForgers (coordinatorState) {
-  return coordinatorState.network.nextForgers.reduce((acc, curr) => {
+  return (coordinatorState.network.nextForgers || []).reduce((acc, curr) => {
     const doesItemExist = acc.find(elem => elem.coordinator.forgerAddr === curr.coordinator.forgerAddr)
 
     return doesItemExist

@@ -1,7 +1,16 @@
 import { BigNumber } from 'ethers'
-
+import { HermezCompressedAmount } from '@hermeznetwork/hermezjs'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { parseUnits } from 'ethers/lib/utils'
 
+import { getMaxAmountFromMinimumFee } from '@hermeznetwork/hermezjs/src/tx-utils'
+import { getDepositFee } from './fees'
+
+/**
+ * Returns the correct amount for a transaction from the Hermez API depending on its type
+ * @param {Object} transaction - Transaction from the Hermez API
+ * @returns amount
+ */
 function getTransactionAmount (transaction) {
   if (!transaction) {
     return undefined
@@ -102,9 +111,76 @@ function mergeExits (exits, pendingDelayedWithdraws) {
   return [...mergedDelayedExits, ...nonDelayedExits]
 }
 
+/**
+ * Checks whether an amount is supported by the compression
+ * used in the Hermez network
+ * @param {Number} amount - Selector amount
+ * @returns {Boolean} Whether it is valid
+ */
+function isTransactionAmountCompressedValid (amount) {
+  try {
+    const compressedAmount = HermezCompressedAmount.compressAmount(amount)
+    const decompressedAmount = HermezCompressedAmount.decompressAmount(compressedAmount)
+
+    return amount.toString() === decompressedAmount.toString()
+  } catch (e) {
+    return false
+  }
+}
+
+/**
+ * Fixes the transaction amount to be sure that it would be supported by Hermez
+ * @param {BigNumber} amount - Transaction amount to be fixed
+ * @returns fixedTxAmount
+ */
+function fixTransactionAmount (amount) {
+  const fixedTxAmount = HermezCompressedAmount.decompressAmount(
+    HermezCompressedAmount.floorCompressAmount(amount)
+  )
+
+  return BigNumber.from(fixedTxAmount)
+}
+
+/**
+ * Calculates the max amoumt that can be sent in a transaction
+ * @param {TxType} txType - Transaction type
+ * @param {BigNumber} maxAmount - Max amount that can be sent in a transaction (usually it's an account balance)
+ * @param {Object} token - Token object
+ * @param {Number} l2Fee - Transaction fee
+ * @param {BigNumber} gasPrice - Ethereum gas price
+ * @returns maxTxAmount
+ */
+function getMaxTxAmount (txType, maxAmount, token, l2Fee, gasPrice) {
+  const maxTxAmount = (() => {
+    switch (txType) {
+      case TxType.ForceExit: {
+        return maxAmount
+      }
+      case TxType.Deposit: {
+        const depositFee = getDepositFee(token, gasPrice)
+        const newMaxAmount = maxAmount.sub(depositFee)
+
+        return newMaxAmount.gt(0)
+          ? newMaxAmount
+          : BigNumber.from(0)
+      }
+      default: {
+        const l2FeeBigInt = parseUnits(l2Fee.toFixed(token.decimals), token.decimals)
+
+        return BigNumber.from(getMaxAmountFromMinimumFee(l2FeeBigInt, maxAmount).toString())
+      }
+    }
+  })()
+
+  return fixTransactionAmount(maxTxAmount)
+}
+
 export {
   getTransactionAmount,
   getTxPendingTime,
   mergeDelayedWithdraws,
-  mergeExits
+  mergeExits,
+  isTransactionAmountCompressedValid,
+  fixTransactionAmount,
+  getMaxTxAmount
 }

@@ -27,6 +27,26 @@ function setHermezEnvironment () {
     hermezjs.TxPool.initializeTransactionPool()
 
     if (!window.ethereum) {
+      if (process.env.REACT_APP_ENV === 'production') {
+        const chainId = window.location.host === 'wallet.hermez.io' ? 1 : 4
+
+        hermezjs.Environment.setEnvironment(chainId)
+      }
+
+      if (process.env.REACT_APP_ENV === 'development') {
+        hermezjs.Environment.setEnvironment({
+          baseApiUrl: process.env.REACT_APP_HERMEZ_API_URL,
+          contractAddresses: {
+            [hermezjs.Constants.ContractNames.Hermez]:
+                process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
+            [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
+                process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
+          },
+          batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL,
+          etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL
+        })
+      }
+
       // Dispatch an empty object as we don't know the network name at this point
       return dispatch(globalActions.loadEthereumNetworkSuccess({}))
     }
