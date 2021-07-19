@@ -234,7 +234,7 @@ function transactionReducer (state = initialTransactionState, action) {
             ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
             transaction: {
               exit: action.exit,
-              amount: action.exit.balance,
+              amount: action.exit.balance || action.exit.amount,
               token: action.exit.token,
               to: {
                 hezEthereumAddress: action.hermezEthereumAddress

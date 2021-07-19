@@ -311,8 +311,20 @@ function checkPendingDelayedWithdrawals () {
             revertedTxReceipts.forEach((tx) => {
               dispatch(removePendingDelayedWithdrawByHash(tx.transactionHash))
             })
+
+            // Checks with Coordinator API if exit has been withdrawn
+            const exitsApiPromises = accountPendingDelayedWithdraws.map((pendingDelayedWithdraw) => {
+              return CoordinatorAPI.getExit(pendingDelayedWithdraw.batchNum, pendingDelayedWithdraw.accountIndex)
+                .then((exitTx) => {
+                  // Checks here to have access to pendingDelayedWithdraw.id
+                  if (exitTx.delayedWithdraw) {
+                    dispatch(removePendingDelayedWithdraw(pendingDelayedWithdraw.id))
+                  }
+                })
+            })
+
+            Promise.all(exitsApiPromises).finally(() => dispatch(globalActions.checkPendingDelayedWithdrawalsSuccess()))
           })
-          .finally(() => dispatch(globalActions.checkPendingDelayedWithdrawalsSuccess()))
       })
   }
 }
