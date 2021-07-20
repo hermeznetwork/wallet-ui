@@ -9,27 +9,29 @@ function getAccountBalance (account, poolTransactions, pendingDeposits) {
   let totalBalance = BigInt(account.balance)
 
   if (pendingDeposits && pendingDeposits.length) {
-    const pendingAccountDeposits = pendingDeposits
-      .filter(deposit => deposit.account.accountIndex === account.accountIndex)
+    const pendingAccountDeposits = pendingDeposits.filter(
+      deposit => deposit.account.accountIndex === account.accountIndex
+    )
 
-    pendingAccountDeposits.forEach((pendingDeposit) => {
+    pendingAccountDeposits.forEach(pendingDeposit => {
       totalBalance += BigInt(pendingDeposit.amount)
     })
   }
 
   if (poolTransactions && poolTransactions.length) {
-    const accountPoolTransactions = poolTransactions
-      .filter(transaction => transaction.fromAccountIndex === account.accountIndex)
+    const accountPoolTransactions = poolTransactions.filter(
+      transaction => transaction.fromAccountIndex === account.accountIndex
+    )
 
-    accountPoolTransactions.forEach((pendingTransaction) => {
+    accountPoolTransactions.forEach(pendingTransaction => {
       totalBalance -= BigInt(pendingTransaction.amount)
-      totalBalance -= BigInt(getFeeValue(pendingTransaction.fee, pendingTransaction.amount))
+      totalBalance -= BigInt(
+        getFeeValue(pendingTransaction.fee, pendingTransaction.amount)
+      )
     })
   }
 
   return totalBalance.toString()
 }
 
-export {
-  getAccountBalance
-}
+export { getAccountBalance }

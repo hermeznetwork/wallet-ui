@@ -1,4 +1,5 @@
 import { tokenSwapActionTypes } from './token-swap.actions'
+import { getPaginationData } from '../../utils/api'
 
 export const STEP_NAME = {
   SWAP: 'swap',
@@ -10,6 +11,10 @@ const initialTokenSwapState = {
   steps: {
     [STEP_NAME.SWAP]: {},
     [STEP_NAME.QUOTES]: {}
+  },
+  accountsTask: {
+    status: 'pending',
+    data: { accounts: [], fromItemHistory: [] }
   }
 }
 
@@ -29,6 +34,31 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
     }
     case tokenSwapActionTypes.RESET_STATE: {
       return { ...initialTokenSwapState }
+    }
+    case tokenSwapActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+      const accounts = [
+        ...state.accountsTask.data.accounts,
+        ...action.data.accounts
+      ]
+      const pagination = getPaginationData(action.data.pendingItems, accounts)
+      const fromItemHistory = []
+
+      return {
+        ...state,
+        accountsTask: {
+          status: 'successful',
+          data: { accounts, pagination, fromItemHistory }
+        }
+      }
+    }
+    case tokenSwapActionTypes.LOAD_ACCOUNTS_FAILURE: {
+      return {
+        ...state,
+        accountsTask: {
+          status: 'failed',
+          error: 'An error ocurred loading the accounts'
+        }
+      }
     }
     default: {
       return state
