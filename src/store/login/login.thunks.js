@@ -5,6 +5,7 @@ import { utils } from 'ethers'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 
 import * as globalActions from '../global/global.actions'
+import * as globalThunks from '../global/global.thunks'
 import * as loginActions from './login.actions'
 import { ACCOUNT_AUTH_SIGNATURES_KEY, TREZOR_MANIFEST_MAIL } from '../../constants'
 import { buildEthereumBIP44Path } from '../../utils/hw-wallets'
@@ -12,6 +13,7 @@ import { HttpStatusCode } from '../../utils/http'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
 import { getNextForgerUrls } from '../../utils/coordinator'
+import { isEnvironmentSupported } from '@hermeznetwork/hermezjs/dist/node/environment'
 
 async function getSignerData (provider, walletName, accountData) {
   switch (walletName) {
@@ -106,14 +108,27 @@ function fetchWallet (walletName, accountData) {
 
       const signerData = await getSignerData(provider, walletName, accountData)
       const signer = await hermez.Signers.getSigner(provider, signerData)
+
       if (walletName === WalletName.WALLET_CONNECT) {
-        // #enable shows the QR or uses the stored session
+        // Enable shows the QR or uses the stored session
         await provider.provider.enable()
-        const chainId = (await provider.getNetwork()).chainId
-        if (process.env.REACT_APP_ENV === 'production' && hermez.Environment.isEnvironmentSupported(chainId)) {
-          hermez.Environment.setEnvironment(chainId)
-        }
       }
+
+      const { chainId, name: chainName } = await provider.getNetwork()
+
+      if (process.env.REACT_APP_ENV === 'production' && !isEnvironmentSupported(chainId)) {
+        dispatch(globalActions.openSnackbar('Network not supported'))
+        dispatch(loginActions.goToWalletSelectorStep())
+
+        if (walletName === WalletName.WALLET_CONNECT) {
+          // Close the stored session to avoid storing a network not supported by Hermez
+          await provider.provider.disconnect()
+        }
+
+        return
+      }
+
+      dispatch(globalThunks.setHermezEnvironment(chainId, chainName))
 
       const address = await signer.getAddress()
       const hermezAddress = hermez.Addresses.getHermezAddress(address)

@@ -7,7 +7,6 @@ import { HttpStatusCode } from '@hermeznetwork/hermezjs/src/http'
 import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import * as globalActions from './global.actions'
-import { LOAD_ETHEREUM_NETWORK_ERROR } from './global.reducer'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as hermezWebApi from '../../apis/hermez-web'
 import * as airdropApi from '../../apis/rewards'
@@ -21,71 +20,37 @@ import { getNextForgerUrls } from '../../utils/coordinator'
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
  * a known environment and if not will use the one provided in the .env file
  */
-function setHermezEnvironment () {
+function setHermezEnvironment (chainId, chainName) {
   return async (dispatch) => {
     dispatch(globalActions.loadEthereumNetwork())
+
     hermezjs.TxPool.initializeTransactionPool()
 
-    if (!window.ethereum) {
-      if (process.env.REACT_APP_ENV === 'production') {
-        const chainId = window.location.host === 'wallet.hermez.io' ? 1 : 4
-
-        hermezjs.Environment.setEnvironment(chainId)
-      }
-
-      if (process.env.REACT_APP_ENV === 'development') {
-        hermezjs.Environment.setEnvironment({
-          baseApiUrl: process.env.REACT_APP_HERMEZ_API_URL,
-          contractAddresses: {
-            [hermezjs.Constants.ContractNames.Hermez]:
-                process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
-            [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
-                process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
-          },
-          batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL,
-          etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL
-        })
-      }
-
-      // Dispatch an empty object as we don't know the network name at this point
-      return dispatch(globalActions.loadEthereumNetworkSuccess({}))
+    if (process.env.REACT_APP_ENV === 'production' && hermezjs.Environment.isEnvironmentSupported(chainId)) {
+      hermezjs.Environment.setEnvironment(chainId)
     }
 
-    hermezjs.Providers.getProvider().getNetwork()
-      .then(({ chainId, name }) => {
-        if (process.env.REACT_APP_ENV === 'production' && !hermezjs.Environment.isEnvironmentSupported(chainId)) {
-          return dispatch(
-            globalActions.loadEthereumNetworkFailure(LOAD_ETHEREUM_NETWORK_ERROR.CHAIN_ID_NOT_SUPPORTED)
-          )
-        }
-
-        if (process.env.REACT_APP_ENV === 'production' && hermezjs.Environment.isEnvironmentSupported(chainId)) {
-          hermezjs.Environment.setEnvironment(chainId)
-        }
-
-        if (process.env.REACT_APP_ENV === 'development') {
-          hermezjs.Environment.setEnvironment({
-            baseApiUrl: process.env.REACT_APP_HERMEZ_API_URL,
-            contractAddresses: {
-              [hermezjs.Constants.ContractNames.Hermez]:
+    if (process.env.REACT_APP_ENV === 'development') {
+      hermezjs.Environment.setEnvironment({
+        baseApiUrl: process.env.REACT_APP_HERMEZ_API_URL,
+        contractAddresses: {
+          [hermezjs.Constants.ContractNames.Hermez]:
                   process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
-              [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
+          [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
                   process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS
-            },
-            batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL,
-            etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL
-          })
-        }
-
-        if (chainId === 1) {
-          dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: 'mainnet' }))
-        } else if (chainId === 1337) {
-          dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: 'local' }))
-        } else {
-          dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name }))
-        }
+        },
+        batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL,
+        etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL
       })
-      .catch((error) => globalActions.loadEthereumNetworkFailure(error.message))
+    }
+
+    if (chainId === 1) {
+      dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: 'mainnet' }))
+    } else if (chainId === 1337) {
+      dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: 'local' }))
+    } else {
+      dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: chainName }))
+    }
   }
 }
 

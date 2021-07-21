@@ -1,26 +1,17 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { useTheme } from 'react-jss'
-import hermezjs from '@hermeznetwork/hermezjs'
 
 import useLoginStyles from './login.styles'
 import * as globalActions from '../../store/global/global.actions'
 import * as loginActions from '../../store/login/login.actions'
 import * as loginThunks from '../../store/login/login.thunks'
-import { ReactComponent as HermezLogoAlternative } from '../../images/hermez-logo-alternative.svg'
-import { ReactComponent as CloseIcon } from '../../images/icons/close.svg'
-import Container from '../shared/container/container.view'
 import { STEP_NAME } from '../../store/login/login.reducer'
 import WalletButtonList from './components/wallet-button-list/wallet-button-list.view'
 import AccountSelectorForm from './components/account-selector/account-selector-form.view'
 import WalletLoader from './components/wallet-loader/wallet-loader.view'
 import CreateAccountAuth from './components/create-account-auth/create-account-auth.view'
-import Button from '../shared/button/button.view'
-import { LOAD_ETHEREUM_NETWORK_ERROR } from '../../store/global/global.reducer'
-import ChainIdError from './components/chain-id-error/chain-id-error.view'
-import { METAMASK_UPDATE_HELP_LINK, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../constants'
-import UnderMaintenanceError from './components/under-maintenance-error/under-maintenance-error.view'
 import Alert, { AlertVariant } from '../shared/alert/alert.view'
+import * as constants from '../../constants'
 
 export const WalletName = {
   METAMASK: 'metaMask',
@@ -29,42 +20,35 @@ export const WalletName = {
   TREZOR: 'trezor'
 }
 
-const UNDER_MAINTENANCE_ERROR = 'under-maintenance'
-
 function Login ({
   currentStep,
-  hermezStatusTask,
+  onChangeHeader,
   ethereumNetworkTask,
   steps,
   accountAuthSignatures,
-  onChangeHeader,
   onGoToAccountSelectorStep,
   onGoToWalletLoaderStep,
-  onGoToErrorStep,
   onGoToPreviousStep,
   onLoadWallet,
   onCreateAccountAuthorization,
   onCleanup
 }) {
-  const theme = useTheme()
   const classes = useLoginStyles()
   const stepData = steps[currentStep]
+  const MetaMaskAlert = (
+    <div className={classes.updateMetaMaskAlert}>
+      <Alert
+        message="If you're unable to login with Metamask make sure you have the latest version."
+        variant={AlertVariant.LIGHT}
+        showHelpButton
+        helpButtonLink={constants.METAMASK_UPDATE_HELP_LINK}
+      />
+    </div>
+  )
 
   React.useEffect(() => {
     onChangeHeader()
   }, [onChangeHeader])
-
-  React.useEffect(() => {
-    if (hermezStatusTask.status === 'successful' && hermezStatusTask.data.isUnderMaintenance) {
-      onGoToErrorStep(UNDER_MAINTENANCE_ERROR)
-    }
-  }, [hermezStatusTask])
-
-  React.useEffect(() => {
-    if (ethereumNetworkTask.status === 'failure') {
-      onGoToErrorStep(ethereumNetworkTask.error)
-    }
-  }, [ethereumNetworkTask, onGoToErrorStep])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -93,140 +77,70 @@ function Login ({
     onGoToWalletLoaderStep(walletName, accountData)
   }
 
-  return (
-    <Container backgroundColor={theme.palette.primary.main} fullHeight disableTopGutter>
-      <div className={classes.root}>
-        {currentStep !== STEP_NAME.WALLET_SELECTOR && currentStep !== STEP_NAME.ERROR && (
-          <button className={classes.goBackButton} onClick={onGoToPreviousStep}>
-            <CloseIcon />
-          </button>
-        )}
-        <HermezLogoAlternative className={classes.logo} />
-        {(currentStep !== STEP_NAME.ERROR || (currentStep === STEP_NAME.ERROR && stepData.error === UNDER_MAINTENANCE_ERROR)) && (
-          <p className={classes.description}>Secure wallet for low-cost token transfers</p>
-        )}
-        {
-          ethereumNetworkTask.status === 'successful' &&
-          ethereumNetworkTask.data.name &&
-          (currentStep !== STEP_NAME.ERROR || (currentStep === STEP_NAME.ERROR && stepData.error !== UNDER_MAINTENANCE_ERROR)) && (
-            <Button
-              text={capitalizeLabel(ethereumNetworkTask.data.name)}
-              className={classes.networkName}
-            />
-          )
-        }
-        {
-          (() => {
-            switch (currentStep) {
-              case STEP_NAME.WALLET_SELECTOR: {
-                return (
-                  <>
-                    <h1 className={classes.connectText}>Connect with</h1>
-                    <WalletButtonList onClick={handleWalletClick} />
-                  </>
-                )
-              }
-              case STEP_NAME.ACCOUNT_SELECTOR: {
-                const walletLabel = capitalizeLabel(stepData.walletName)
+  switch (currentStep) {
+    case STEP_NAME.WALLET_SELECTOR: {
+      return (
+        <>
+          <h1 className={classes.connectText}>Connect with</h1>
+          <WalletButtonList onClick={handleWalletClick} />
+          {window.ethereum && MetaMaskAlert}
+        </>
+      )
+    }
+    case STEP_NAME.ACCOUNT_SELECTOR: {
+      const walletLabel = capitalizeLabel(stepData.walletName)
 
-                return (
-                  <>
-                    <h1 className={classes.addAccountText}>
-                      Add account through {walletLabel}
-                    </h1>
-                    <AccountSelectorForm
-                      walletName={stepData.walletName}
-                      walletLabel={walletLabel}
-                      onSelectAccount={handleSelectAccount}
-                    />
-                  </>
-                )
-              }
-              case STEP_NAME.WALLET_LOADER: {
-                const walletLabel = capitalizeLabel(stepData.walletName)
-
-                return (
-                  <>
-                    <h1 className={classes.connectedText}>
-                      Connected to {walletLabel}
-                    </h1>
-                    <WalletLoader
-                      walletName={stepData.walletName}
-                      accountData={stepData.accountData}
-                      walletTask={stepData.walletTask}
-                      onLoadWallet={onLoadWallet}
-                    />
-                  </>
-                )
-              }
-              case STEP_NAME.CREATE_ACCOUNT_AUTH: {
-                const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.data.chainId] || {}
-                const hermezAddressAuthSignature = chainIdSignatures[stepData.wallet.hermezEthereumAddress]
-
-                return (
-                  <CreateAccountAuth
-                    hermezAddressAuthSignature={hermezAddressAuthSignature}
-                    steps={steps}
-                    onCreateAccountAuthorization={onCreateAccountAuthorization}
-                  />
-                )
-              }
-              case STEP_NAME.ERROR: {
-                switch (stepData.error) {
-                  case LOAD_ETHEREUM_NETWORK_ERROR.CHAIN_ID_NOT_SUPPORTED: {
-                    const supportedEnvironments = hermezjs.Environment.getSupportedEnvironments()
-
-                    return <ChainIdError supportedEnvironments={supportedEnvironments} />
-                  }
-                  case UNDER_MAINTENANCE_ERROR: {
-                    return <UnderMaintenanceError />
-                  }
-                  default: {
-                    return <></>
-                  }
-                }
-              }
-              default: {
-                return <></>
-              }
-            }
-          })()
-        }
-        <div className={classes.updateMetaMaskAlert}>
-          <Alert
-            message="If you're unable to login with Metamask make sure you have the latest version."
-            variant={AlertVariant.LIGHT}
-            showHelpButton
-            helpButtonLink={METAMASK_UPDATE_HELP_LINK}
+      return (
+        <>
+          <h1 className={classes.addAccountText}>
+            Add account through {walletLabel}
+          </h1>
+          <AccountSelectorForm
+            walletName={stepData.walletName}
+            walletLabel={walletLabel}
+            onSelectAccount={handleSelectAccount}
           />
-        </div>
-        <div className={classes.legalContainer}>
-          <a
-            href={PRIVACY_POLICY_URL}
-            target='_blank'
-            rel='noopener noreferrer'
-            className={classes.privacyPolicyUrl}
-          >
-            Privacy policy
-          </a>
-          <p className={classes.legalSeparator}>|</p>
-          <a
-            href={TERMS_OF_SERVICE_URL}
-            target='_blank'
-            rel='noopener noreferrer'
-            className={classes.termsOfServiceUrl}
-          >
-            Terms of service
-          </a>
-        </div>
-      </div>
-    </Container>
-  )
+        </>
+      )
+    }
+    case STEP_NAME.WALLET_LOADER: {
+      const walletLabel = capitalizeLabel(stepData.walletName)
+
+      return (
+        <>
+          <h1 className={classes.connectedText}>
+            Connected to {walletLabel}
+          </h1>
+          <WalletLoader
+            walletName={stepData.walletName}
+            accountData={stepData.accountData}
+            walletTask={stepData.walletTask}
+            onLoadWallet={onLoadWallet}
+          />
+          {stepData.walletName === WalletName.METAMASK && MetaMaskAlert}
+        </>
+      )
+    }
+    case STEP_NAME.CREATE_ACCOUNT_AUTH: {
+      const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.data.chainId] || {}
+      const hermezAddressAuthSignature = chainIdSignatures[stepData.wallet.hermezEthereumAddress]
+
+      return (
+        <CreateAccountAuth
+          hermezAddressAuthSignature={hermezAddressAuthSignature}
+          steps={steps}
+          onCreateAccountAuthorization={onCreateAccountAuthorization}
+        />
+      )
+    }
+    default: {
+      return <></>
+    }
+  }
 }
 
 const mapStateToProps = (state) => ({
   currentStep: state.login.currentStep,
-  hermezStatusTask: state.global.hermezStatusTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
   steps: state.login.steps,
   accountAuthSignatures: state.login.accountAuthSignatures
@@ -239,7 +153,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(loginActions.goToAccountSelectorStep(walletName)),
   onGoToWalletLoaderStep: (walletName, accountData) =>
     dispatch(loginActions.goToWalletLoaderStep(walletName, accountData)),
-  onGoToErrorStep: (error) => dispatch(loginActions.goToErrorStep(error)),
   onGoToPreviousStep: () => dispatch(loginActions.goToPreviousStep()),
   onLoadWallet: (walletName, accountData) =>
     dispatch(loginThunks.fetchWallet(walletName, accountData)),

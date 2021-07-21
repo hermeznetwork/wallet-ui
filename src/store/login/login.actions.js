@@ -3,7 +3,6 @@ export const loginActionTypes = {
   GO_TO_ACCOUNT_SELECTOR_STEP: '[LOGIN] GO TO ACCOUNT SELECTOR STEP',
   GO_TO_WALLET_LOADER_STEP: '[LOGIN] GO TO WALLET LOADER STEP',
   GO_TO_CREATE_ACCOUNT_AUTH_STEP: '[LOGIN] GO TO CREATE ACCOUNT AUTH STEP',
-  GO_TO_ERROR_STEP: '[LOGIN] GO TO ERROR STEP',
   GO_TO_PREVIOUS_STEP: '[LOGIN] GO TO PREVIOUS STEP',
   LOAD_WALLET: '[LOGIN] LOAD WALLET',
   LOAD_WALLET_FAILURE: '[LOGIN] LOAD WALLET FAILURE',
@@ -39,13 +38,6 @@ function goToCreateAccountAuthStep (wallet) {
   return {
     type: loginActionTypes.GO_TO_CREATE_ACCOUNT_AUTH_STEP,
     wallet
-  }
-}
-
-function goToErrorStep (error) {
-  return {
-    type: loginActionTypes.GO_TO_ERROR_STEP,
-    error
   }
 }
 
@@ -107,7 +99,6 @@ export {
   goToAccountSelectorStep,
   goToWalletLoaderStep,
   goToCreateAccountAuthStep,
-  goToErrorStep,
   goToPreviousStep,
   loadWallet,
   loadWalletFailure,
