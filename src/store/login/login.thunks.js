@@ -3,6 +3,7 @@ import hermez from '@hermeznetwork/hermezjs'
 import { push } from 'connected-react-router'
 import { utils } from 'ethers'
 import WalletConnectProvider from '@walletconnect/web3-provider'
+import { isEnvironmentSupported } from '@hermeznetwork/hermezjs/src/environment'
 
 import * as globalActions from '../global/global.actions'
 import * as globalThunks from '../global/global.thunks'
@@ -13,7 +14,6 @@ import { HttpStatusCode } from '../../utils/http'
 import { STEP_NAME } from './login.reducer'
 import { WalletName } from '../../views/login/login.view'
 import { getNextForgerUrls } from '../../utils/coordinator'
-import { isEnvironmentSupported } from '@hermeznetwork/hermezjs/dist/node/environment'
 
 async function getSignerData (provider, walletName, accountData) {
   switch (walletName) {
