@@ -47,8 +47,8 @@ function Login ({
   )
 
   React.useEffect(() => {
-    onChangeHeader()
-  }, [onChangeHeader])
+    onChangeHeader(currentStep)
+  }, [currentStep, onChangeHeader])
 
   React.useEffect(() => onCleanup, [onCleanup])
 
@@ -146,9 +146,23 @@ const mapStateToProps = (state) => ({
   accountAuthSignatures: state.login.accountAuthSignatures
 })
 
+const getHeader = (currentStep) => {
+  if (currentStep === STEP_NAME.WALLET_SELECTOR) {
+    return { type: undefined }
+  } else {
+    return {
+      type: 'page',
+      data: {
+        title: '',
+        closeAction: loginActions.goToWalletSelectorStep()
+      }
+    }
+  }
+}
+
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: () =>
-    dispatch(globalActions.changeHeader({ type: undefined })),
+  onChangeHeader: (currentStep) =>
+    dispatch(globalActions.changeHeader(getHeader(currentStep))),
   onGoToAccountSelectorStep: (walletName) =>
     dispatch(loginActions.goToAccountSelectorStep(walletName)),
   onGoToWalletLoaderStep: (walletName, accountData) =>
