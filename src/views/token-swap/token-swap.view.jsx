@@ -35,7 +35,6 @@ function TokenSwap ({
   React.useEffect(() => onCleanup, [onCleanup])
 
   React.useEffect(() => {
-    console.log(accountsTask)
     if (accountsTask.status === 'pending') {
       onLoadAccounts(undefined)
     }
@@ -48,7 +47,7 @@ function TokenSwap ({
   function handleCloseOfferSidenav () {
     setIsOfferSidenavOpen(false)
   }
-  console.log(accountsTask)
+
   return (
     <div className={classes.root}>
       <Container addHeaderPadding disableTopGutter>
@@ -100,40 +99,24 @@ const getHeader = currentStep => {
 }
 
 TokenSwap.propTypes = {
-  totalAccountsBalanceTask: PropTypes.object,
   accountsTask: PropTypes.object,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRatesTask: PropTypes.object,
-  poolTransactionsTask: PropTypes.object.isRequired,
-  exitsTask: PropTypes.object.isRequired,
-  pendingWithdraws: PropTypes.object.isRequired,
-  pendingDelayedWithdraws: PropTypes.object.isRequired,
-  onLoadTotalBalance: PropTypes.func.isRequired,
-  onLoadAccounts: PropTypes.func.isRequired,
-  onLoadPoolTransactions: PropTypes.func.isRequired,
-  onLoadExits: PropTypes.func.isRequired,
-  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
-  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
-  onNavigateToAccountDetails: PropTypes.func.isRequired
+  currentStep: PropTypes.string,
+  steps: PropTypes.object,
+  onChangeHeader: PropTypes.func,
+  onCleanup: PropTypes.func,
+  onGoToQuotes: PropTypes.func,
+  onOpenOfferInfo: PropTypes.func,
+  onLoadAccounts: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
   currentStep: state.tokenSwap.currentStep,
   steps: state.tokenSwap.steps,
-  wallet: state.global.wallet,
-  ethereumNetworkTask: state.global.ethereumNetworkTask,
-  pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
-  totalBalanceTask: state.tokenSwap.totalBalanceTask,
   accountsTask: state.tokenSwap.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  preferredCurrency: state.myAccount.preferredCurrency,
-  poolTransactionsTask: state.home.poolTransactionsTask,
-  exitsTask: state.home.exitsTask,
-  pendingWithdraws: state.global.pendingWithdraws,
-  pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
-  pendingDeposits: state.global.pendingDeposits,
-  coordinatorStateTask: state.global.coordinatorStateTask,
-  rewards: state.global.rewards
+  preferredCurrency: state.myAccount.preferredCurrency
 })
 
 const mapDispatchToProps = dispatch => ({

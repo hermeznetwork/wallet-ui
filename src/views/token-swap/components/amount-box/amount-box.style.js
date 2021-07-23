@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useTokenSwapStyles = createUseStyles(theme => ({
+const useAmountBoxStyles = createUseStyles(theme => ({
   box: {
     width: '100%',
     display: 'flex',
@@ -10,7 +10,8 @@ const useTokenSwapStyles = createUseStyles(theme => ({
     height: theme.spacing(13),
     backgroundColor: theme.palette.grey.light,
     padding: theme.spacing(1.5),
-    marginBottom: theme.spacing(1)
+    position: 'relative',
+    zIndex: '20'
   },
   row: {
     display: 'flex',
@@ -28,8 +29,16 @@ const useTokenSwapStyles = createUseStyles(theme => ({
     padding: theme.spacing(2),
     borderRadius: theme.spacing(2),
     fontSize: theme.spacing(2.5),
-    fontWeight: theme.fontWeights.bold
+    fontWeight: theme.fontWeights.bold,
+    cursor: 'pointer',
+    whiteSpace: 'nowrap'
   },
+  tokenName: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  tokenIcon: { marginRight: theme.spacing(1) },
   angleColor: {
     marginLeft: theme.spacing(1),
     '& path': {
@@ -42,6 +51,7 @@ const useTokenSwapStyles = createUseStyles(theme => ({
     textAlign: 'right',
     background: 'none',
     border: 'none',
+    width: '100%',
     '&:focus-visible': {
       outline: 'none'
     }
@@ -53,7 +63,22 @@ const useTokenSwapStyles = createUseStyles(theme => ({
   },
   maxBtn: {
     color: theme.palette.black
+  },
+  frame: {
+    position: 'relative'
+  },
+  dropDown: {
+    position: 'absolute',
+    backgroundColor: theme.palette.white,
+    display: 'flex',
+    width: '100%',
+    height: theme.spacing(50),
+    zIndex: '10',
+    marginTop: theme.spacing(-2),
+    border: '2px solid ' + theme.palette.grey.veryLight,
+    borderEndEndRadius: theme.spacing(2.5),
+    borderEndStartRadius: theme.spacing(2.5)
   }
 }))
 
-export default useTokenSwapStyles
+export default useAmountBoxStyles

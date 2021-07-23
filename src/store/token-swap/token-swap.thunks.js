@@ -29,9 +29,7 @@ function fetchAccounts (fromItem) {
       undefined
     )
       .then(res => {
-        console.log(res)
         const accounts = res.accounts.map(account => {
-          console.log(account)
           const accountBalance = getAccountBalance(account)
 
           const fixedTokenAmount = getFixedTokenAmount(
@@ -56,7 +54,6 @@ function fetchAccounts (fromItem) {
       })
       .then(res => dispatch(tokenSwapActions.loadAccountsSuccess(res)))
       .catch(err => {
-        console.log(err)
         return dispatch(tokenSwapActions.loadAccountsFailure(err))
       })
   }
