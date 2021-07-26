@@ -16,9 +16,8 @@ const useDropdrownpStyles = createUseStyles(theme => ({
     },
     zIndex: '10',
     marginTop: theme.spacing(1),
-    border: '1px solid ' + theme.palette.grey.veryLight,
     borderRadius: theme.spacing(2.5),
-    boxShadow: '1px 1px'
+    boxShadow: '0 3px 15px 1px rgba(225, 225, 241, 0.8)'
   },
   searchRow: {
     padding: theme.spacing(2)
