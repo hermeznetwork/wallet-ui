@@ -20,11 +20,14 @@ function SwapForm ({
   const urlSearchParams = new URLSearchParams(search)
   const fromQuery = urlSearchParams.get('from')
   const toQuery = urlSearchParams.get('to')
+
   const [amount, setAmount] = React.useState(BigNumber.from(0))
   const [tokensSelected, setTokens] = React.useState({})
+
   const setTokenPosition = tokenPosition => {
     setTokens({ ...tokensSelected, ...tokenPosition })
   }
+
   React.useEffect(() => {
     const from = accounts.find(a => a.accountIndex === fromQuery)
     const to = accounts.find(a => a.accountIndex === toQuery)
@@ -33,12 +36,14 @@ function SwapForm ({
       to
     })
   }, [accounts])
+
   const switchTokens = () => {
     setTokens({
       from: tokensSelected.to,
       to: tokensSelected.from
     })
   }
+
   const renderBox = p => {
     return (
       <BoxAmount
@@ -55,6 +60,7 @@ function SwapForm ({
       />
     )
   }
+
   return (
     <div className={classes.root}>
       {renderBox('from')}
