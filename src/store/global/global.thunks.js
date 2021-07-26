@@ -44,13 +44,7 @@ function setHermezEnvironment (chainId, chainName) {
       })
     }
 
-    if (chainId === 1) {
-      dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: 'mainnet' }))
-    } else if (chainId === 1337) {
-      dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: 'local' }))
-    } else {
-      dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: chainName }))
-    }
+    dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: chainName }))
   }
 }
 
