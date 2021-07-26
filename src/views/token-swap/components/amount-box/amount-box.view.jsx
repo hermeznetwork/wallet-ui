@@ -56,14 +56,14 @@ function AmountBox ({
   const renderBalance = () => {
     if (account) {
       return (
-        <span className={classes.convertedText}>
+        <p className={classes.convertedText}>
           Balance: {balance} {account.token.symbol}{' '}
           {position === 'from' && (
             <span className={classes.maxBtn} onClick={setMax}>
               Max
             </span>
           )}
-        </span>
+        </p>
       )
     }
     return <div />

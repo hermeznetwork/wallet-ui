@@ -14,6 +14,10 @@ function Dropdown ({ accounts, position, setToken, close }) {
   }
   const renderList = accounts.map(account => {
     const Icon = getTokenIcon(account.token.symbol)
+    const balance = `${getFixedTokenAmount(
+      account.balance,
+      account.token.decimals
+    )} ${account.token.symbol}`
     return (
       <div
         key={account.token.symbol}
@@ -27,10 +31,7 @@ function Dropdown ({ accounts, position, setToken, close }) {
           <p>{account.token.name}</p>
           <p className={classes.symbol}> {account.token.symbol}</p>
         </div>
-        <span className={classes.balanceText}>
-          {getFixedTokenAmount(account.balance, account.token.decimals)}{' '}
-          {account.token.symbol}
-        </span>
+        <span className={classes.balanceText}>{balance}</span>
       </div>
     )
   })

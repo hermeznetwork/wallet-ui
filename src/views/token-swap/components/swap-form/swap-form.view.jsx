@@ -45,21 +45,21 @@ function SwapForm ({
     })
   }
 
-  const renderBox = p => {
+  const renderBox = position => {
     return (
       <BoxAmount
-        account={tokensSelected[p]}
+        account={tokensSelected[position]}
         transactionType='Transfer' // TODO we need to check this with the new api
         fiatExchangeRates={fiatExchangeRates}
         preferredCurrency={preferredCurrency}
         l2Fee={0}
         onChange={setAmount}
-        position={p}
+        position={position}
         accounts={accounts}
         setToken={setTokenPosition}
         amount={amount}
         setDropdown={setDropdown}
-        isDropdownActive={whatDropdownIsActive === p}
+        isDropdownActive={whatDropdownIsActive === position}
       />
     )
   }
