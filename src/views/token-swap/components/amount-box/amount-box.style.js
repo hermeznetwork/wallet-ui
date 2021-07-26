@@ -38,7 +38,9 @@ const useAmountBoxStyles = createUseStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'space-between'
   },
-  tokenIcon: { marginRight: theme.spacing(1) },
+  tokenIcon: {
+    marginRight: theme.spacing(1)
+  },
   angleColor: {
     marginLeft: theme.spacing(1),
     '& path': {

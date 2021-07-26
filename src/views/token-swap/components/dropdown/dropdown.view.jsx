@@ -1,8 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+
 import useDropdrownpStyles from './dropdown.style'
 import { ReactComponent as Search } from '../../../../images/icons/search.svg'
 import { getTokenIcon } from '../../../../utils/tokens'
+import { getFixedTokenAmount } from '../../../../utils/currencies'
 
 function Dropdown ({ accounts, position, setToken, close }) {
   const classes = useDropdrownpStyles()
@@ -26,7 +28,7 @@ function Dropdown ({ accounts, position, setToken, close }) {
           <p className={classes.symbol}> {account.token.symbol}</p>
         </div>
         <span className={classes.balanceText}>
-          {account.balance / Math.pow(10, account.token.decimals)}{' '}
+          {getFixedTokenAmount(account.balance, account.token.decimals)}{' '}
           {account.token.symbol}
         </span>
       </div>

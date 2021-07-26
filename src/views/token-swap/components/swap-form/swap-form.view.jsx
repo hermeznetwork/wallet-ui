@@ -1,10 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import useSwapFormStyles from './swap-form.style'
 import { BigNumber } from 'ethers'
+import { useLocation } from 'react-router-dom'
+
+import useSwapFormStyles from './swap-form.style'
 import { ReactComponent as ArrowDown } from '../../../../images/icons/arrow-down-circle.svg'
 import BoxAmount from '../amount-box/amount-box.view'
-import { useLocation } from 'react-router-dom'
+
 function SwapForm ({
   onGoToQuotes,
   onOpenOfferSidenav,
@@ -19,7 +21,6 @@ function SwapForm ({
   const fromQuery = urlSearchParams.get('from')
   const toQuery = urlSearchParams.get('to')
   const [amount, setAmount] = React.useState(BigNumber.from(0))
-  const [isHide, setHide] = React.useState(false)
   const [tokensSelected, setTokens] = React.useState({})
   const setTokenPosition = tokenPosition => {
     setTokens({ ...tokensSelected, ...tokenPosition })
@@ -48,10 +49,8 @@ function SwapForm ({
         l2Fee={0}
         onChange={setAmount}
         position={p}
-        hideSearch={setHide}
         accounts={accounts}
         setToken={setTokenPosition}
-        isHide={isHide}
         amount={amount}
       />
     )

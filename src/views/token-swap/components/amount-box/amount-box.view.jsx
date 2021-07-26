@@ -1,27 +1,31 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+
 import useAmountBoxStyles from './amount-box.style'
 import { ReactComponent as AngleDown } from '../../../../images/icons/angle-down.svg'
 import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import AmountInput from '../../../shared/amount-input/amount-input'
 import Dropdown from '../dropdown/dropdown.view'
 import { getTokenIcon } from '../../../../utils/tokens'
+import {
+  getTokenAmountInPreferredCurrency,
+  getFixedTokenAmount
+} from '../../../../utils/currencies'
 
 function AmountBox ({
   account,
   preferredCurrency,
+  fiatExchangeRates,
   value,
   amount,
   onInputChange,
   position,
   accounts,
-  hideSearch,
   setToken
 }) {
   const classes = useAmountBoxStyles()
   const [isVisible, setVisible] = React.useState(false)
-  const decimals = Math.pow(10, account?.token.decimals)
-  const balance = account?.balance / decimals
+  const balance = getFixedTokenAmount(account?.balance, account?.token.decimals)
   const setMax = () => {
     onInputChange({
       target: { value: balance }
@@ -29,11 +33,13 @@ function AmountBox ({
   }
   const switchDropdown = () => {
     setVisible(!isVisible)
-    // hideSearch(!isVisible)
   }
-  const convertValue =
-    (account?.fiatBalance * value * decimals) / account?.balance
-
+  const convertValue = getTokenAmountInPreferredCurrency(
+    value,
+    account?.token.USD,
+    preferredCurrency,
+    fiatExchangeRates
+  )
   const Icon = getTokenIcon(account?.token.symbol)
   const renderName = () => {
     if (account) {
@@ -110,8 +116,9 @@ AmountBox.propTypes = {
   amount: PropTypes.number,
   onInputChange: PropTypes.func,
   position: PropTypes.string,
-  hideSearch: PropTypes.bool,
-  setToken: PropTypes.func
+  setToken: PropTypes.func,
+  preferredCurrency: PropTypes.string,
+  fiatExchangeRates: PropTypes.object
 }
 
 export default AmountInput(AmountBox)
