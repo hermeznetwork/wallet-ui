@@ -117,7 +117,7 @@ function fetchWallet (walletName, accountData) {
       const { chainId, name: chainName } = await provider.getNetwork()
 
       if (process.env.REACT_APP_ENV === 'production' && !isEnvironmentSupported(chainId)) {
-        dispatch(globalActions.openSnackbar('Network not supported'))
+        dispatch(globalActions.openSnackbar('Please, switch your network to Mainnet or Rinkeby to login'))
         dispatch(loginActions.goToWalletSelectorStep())
 
         if (walletName === WalletName.WALLET_CONNECT) {
