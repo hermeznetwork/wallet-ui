@@ -54,8 +54,10 @@ const tokens = {
 }
 
 export const getTokenIcon = id => {
-  const symbol = id ? id.toLowerCase() : 'generic'
-  if (tokens[symbol]) return tokens[symbol]
+  const symbol = id?.toLowerCase()
+  if (tokens[symbol]) {
+    return tokens[symbol]
+  }
   return generic
 }
 
