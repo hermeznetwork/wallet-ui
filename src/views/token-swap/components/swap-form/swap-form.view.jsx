@@ -23,6 +23,7 @@ function SwapForm ({
 
   const [amount, setAmount] = React.useState(BigNumber.from(0))
   const [tokensSelected, setTokens] = React.useState({})
+  const [whatDropdownIsActive, setDropdown] = React.useState('')
 
   const setTokenPosition = tokenPosition => {
     setTokens({ ...tokensSelected, ...tokenPosition })
@@ -57,6 +58,8 @@ function SwapForm ({
         accounts={accounts}
         setToken={setTokenPosition}
         amount={amount}
+        setDropdown={setDropdown}
+        isDropdownActive={whatDropdownIsActive === p}
       />
     )
   }

@@ -15,12 +15,15 @@ const useSwapFormStyles = createUseStyles(theme => ({
   },
   circle: {
     position: 'absolute',
-    height: theme.spacing(5.25),
-    marginTop: theme.spacing(-3),
-    zIndex: '99',
-    border: `solid ${theme.spacing(1)}px white`,
-    borderRadius: theme.spacing(20),
-    boxSizing: 'content-box'
+    '& svg': {
+      height: theme.spacing(4),
+      marginTop: theme.spacing(-2),
+      [theme.breakpoints.upSm]: {
+        height: theme.spacing(5.25),
+        marginTop: theme.spacing(-2.25)
+      }
+    },
+    zIndex: '1'
   }
 }))
 

@@ -6,17 +6,20 @@ const useAmountBoxStyles = createUseStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     borderRadius: theme.spacing(2.5),
-    border: '2px solid ' + theme.palette.grey.veryLight,
-    height: theme.spacing(13),
+    height: theme.spacing(11),
+    [theme.breakpoints.upSm]: {
+      height: theme.spacing(13)
+    },
     backgroundColor: theme.palette.grey.light,
-    padding: theme.spacing(1.5),
-    position: 'relative',
-    zIndex: '20'
+    padding: theme.spacing(1.5)
   },
   row: {
     display: 'flex',
     justifyContent: 'space-between',
-    paddingRight: theme.spacing(1.5)
+    [theme.breakpoints.upSm]: {
+      paddingRight: theme.spacing(1.5)
+    },
+    position: 'relative'
   },
   rowMarginTop: {
     marginTop: theme.spacing(1)
@@ -24,11 +27,17 @@ const useAmountBoxStyles = createUseStyles(theme => ({
   selectorBox: {
     display: 'flex',
     alignItems: 'center',
-    height: theme.spacing(6),
     backgroundColor: theme.palette.white,
-    padding: theme.spacing(2),
     borderRadius: theme.spacing(2),
-    fontSize: theme.spacing(2.5),
+    paddingLeft: theme.spacing(1.5),
+    fontSize: theme.spacing(2),
+    padding: theme.spacing(1),
+    height: theme.spacing(4.5),
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(2.5),
+      padding: theme.spacing(2),
+      height: theme.spacing(6)
+    },
     fontWeight: theme.fontWeights.bold,
     cursor: 'pointer',
     whiteSpace: 'nowrap'
@@ -39,16 +48,27 @@ const useAmountBoxStyles = createUseStyles(theme => ({
     justifyContent: 'space-between'
   },
   tokenIcon: {
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    width: theme.spacing(2.5),
+    [theme.breakpoints.upSm]: {
+      width: theme.spacing(4)
+    }
   },
   angleColor: {
     marginLeft: theme.spacing(1),
+    width: theme.spacing(1.5),
+    [theme.breakpoints.upSm]: {
+      width: theme.spacing(2)
+    },
     '& path': {
       fill: theme.palette.black
     }
   },
   amountInput: {
-    fontSize: theme.spacing(5),
+    fontSize: theme.spacing(3),
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(5)
+    },
     fontWeight: theme.fontWeights.bold,
     textAlign: 'right',
     background: 'none',
@@ -59,7 +79,10 @@ const useAmountBoxStyles = createUseStyles(theme => ({
     }
   },
   convertedText: {
-    fontSize: theme.spacing(2),
+    fontSize: theme.spacing(1.75),
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(2)
+    },
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main
   },
@@ -68,18 +91,6 @@ const useAmountBoxStyles = createUseStyles(theme => ({
   },
   frame: {
     position: 'relative'
-  },
-  dropDown: {
-    position: 'absolute',
-    backgroundColor: theme.palette.white,
-    display: 'flex',
-    width: '100%',
-    height: theme.spacing(50),
-    zIndex: '10',
-    marginTop: theme.spacing(-2),
-    border: '2px solid ' + theme.palette.grey.veryLight,
-    borderEndEndRadius: theme.spacing(2.5),
-    borderEndStartRadius: theme.spacing(2.5)
   }
 }))
 

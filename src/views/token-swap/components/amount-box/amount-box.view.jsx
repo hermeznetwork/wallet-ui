@@ -21,10 +21,11 @@ function AmountBox ({
   onInputChange,
   position,
   accounts,
-  setToken
+  setToken,
+  setDropdown,
+  isDropdownActive
 }) {
   const classes = useAmountBoxStyles()
-  const [isVisible, setVisible] = React.useState(false)
   const balance = getFixedTokenAmount(account?.balance, account?.token.decimals)
   const setMax = () => {
     onInputChange({
@@ -32,7 +33,8 @@ function AmountBox ({
     })
   }
   const switchDropdown = () => {
-    setVisible(!isVisible)
+    const isActive = isDropdownActive ? '' : position
+    setDropdown(isActive)
   }
   const convertValue = getTokenAmountInPreferredCurrency(
     value,
@@ -67,7 +69,7 @@ function AmountBox ({
     return <div />
   }
   const renderDropdown = () => {
-    if (isVisible) {
+    if (isDropdownActive) {
       return (
         <Dropdown
           close={switchDropdown}
@@ -80,10 +82,7 @@ function AmountBox ({
     return null
   }
   return (
-    <div
-      className={classes.frame}
-      style={position === 'from' ? { zIndex: 30 } : null}
-    >
+    <div className={classes.frame}>
       <div className={classes.box}>
         <div className={classes.row}>
           <div className={classes.selectorBox} onClick={switchDropdown}>
@@ -96,6 +95,7 @@ function AmountBox ({
             placeholder='0'
             onChange={onInputChange}
           />
+          {renderDropdown()}
         </div>
         <div className={`${classes.row} ${classes.rowMarginTop}`}>
           {renderBalance()}
@@ -104,7 +104,6 @@ function AmountBox ({
           </span>
         </div>
       </div>
-      {renderDropdown()}
     </div>
   )
 }
@@ -118,7 +117,9 @@ AmountBox.propTypes = {
   position: PropTypes.string,
   setToken: PropTypes.func,
   preferredCurrency: PropTypes.string,
-  fiatExchangeRates: PropTypes.object
+  fiatExchangeRates: PropTypes.object,
+  setDropdown: PropTypes.func,
+  isDropdownActive: PropTypes.bool
 }
 
 export default AmountInput(AmountBox)

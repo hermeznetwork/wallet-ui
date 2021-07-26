@@ -6,15 +6,22 @@ const useDropdrownpStyles = createUseStyles(theme => ({
     backgroundColor: theme.palette.white,
     display: 'flex',
     flexDirection: 'column',
-    width: '100%',
-    height: theme.spacing(50),
+    width: window.innerWidth - theme.spacing(0.5),
+    marginLeft: theme.spacing(-5),
+    top: theme.spacing(4.5),
+    [theme.breakpoints.upSm]: {
+      width: '75%',
+      marginLeft: 0,
+      top: theme.spacing(6)
+    },
     zIndex: '10',
-    marginTop: theme.spacing(-2),
+    marginTop: theme.spacing(1),
     border: '1px solid ' + theme.palette.grey.veryLight,
-    borderEndEndRadius: theme.spacing(2.5),
-    borderEndStartRadius: theme.spacing(2.5),
-    padding: theme.spacing(4),
-    paddingTop: theme.spacing(7)
+    borderRadius: theme.spacing(2.5),
+    boxShadow: '1px 1px'
+  },
+  searchRow: {
+    padding: theme.spacing(2)
   },
   searchBox: {
     border: '1px solid ' + theme.palette.grey.veryLight,
@@ -45,22 +52,36 @@ const useDropdrownpStyles = createUseStyles(theme => ({
       outline: 'none'
     }
   },
+  listBox: {
+    borderTop: `1px ${theme.palette.grey.veryLight} solid`,
+    padding: theme.spacing(2)
+  },
   tokenBox: {
     display: 'flex',
     alignItems: 'center',
     backgroundColor: theme.palette.grey.light,
     borderRadius: theme.spacing(1.5),
     padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
-    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
     alignContent: 'flex-end'
   },
   tokenIcon: {
     display: 'flex',
     alignItems: 'center',
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    '& svg': {
+      width: theme.spacing(2.5),
+      [theme.breakpoints.upSm]: {
+        width: theme.spacing(4)
+      }
+    }
   },
   tokenText: {
-    flex: '1'
+    flex: '1',
+    fontSize: theme.spacing(1.75),
+    [theme.breakpoints.upSm]: {
+      fontText: theme.spacing(2)
+    }
   },
   balanceText: {
     fontSize: theme.spacing(1.75)

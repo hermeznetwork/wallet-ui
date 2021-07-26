@@ -36,17 +36,19 @@ function Dropdown ({ accounts, position, setToken, close }) {
   })
   return (
     <div className={classes.dropDown}>
-      <div className={classes.searchBox}>
-        <input
-          type='text'
-          className={classes.searchInput}
-          placeholder='Search token'
-        />
-        <div className={classes.searchIcon}>
-          <Search />
+      <div className={classes.searchRow}>
+        <div className={classes.searchBox}>
+          <input
+            type='text'
+            className={classes.searchInput}
+            placeholder='Search token'
+          />
+          <div className={classes.searchIcon}>
+            <Search />
+          </div>
         </div>
       </div>
-      <div>{renderList}</div>
+      <div className={classes.listBox}>{renderList}</div>
     </div>
   )
 }
