@@ -162,6 +162,9 @@ function Home ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
+          {ethereumNetworkTask.data.chainId === 4 && (
+            <p className={classes.networkLabel}>{ethereumNetworkTask.data.name}</p>
+          )}
           <Button
             text={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
             className={classes.walletAddress}
