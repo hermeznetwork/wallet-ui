@@ -54,13 +54,15 @@ function AmountBox ({
       <div className={classes.box}>
         <div className={classes.row}>
           <div className={classes.selectorBox} onClick={switchDropdown}>
-            {account
-              ? (
-                <div className={classes.tokenName}>
-                  <Icon className={classes.tokenIcon} /> {account.token.symbol}
-                </div>
-                )
-              : 'Select token'} <AngleDown className={classes.angleColor} />
+            <p className={classes.tokenName}>
+              {account
+                ? (
+                  <>
+                    <Icon className={classes.tokenIcon} /> {account.token.symbol}
+                  </>
+                  )
+                : 'Select token'} <AngleDown className={classes.angleColor} />
+            </p>
           </div>
           <input
             className={classes.amountInput}
@@ -83,15 +85,15 @@ function AmountBox ({
               </p>
               )
             : <div />}
-          <span className={classes.convertedText}>
+          <p className={classes.convertedText}>
             <FiatAmount amount={convertValue} currency={preferredCurrency} />
-          </span>
+          </p>
         </div>
       </div>
       {
           isDropdownActive &&
             <Dropdown
-              close={switchDropdown}
+              onClose={switchDropdown}
               accounts={accounts}
               onClick={onTokenChange}
               position={position}

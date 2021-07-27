@@ -5,11 +5,11 @@ import useDropdrownpStyles from './dropdown.style'
 import List from '../list/list.view'
 import { ReactComponent as Search } from '../../../../images/icons/search.svg'
 
-function Dropdown ({ accounts, position, onClick, close }) {
+function Dropdown ({ accounts, position, onClick, onClose }) {
   const classes = useDropdrownpStyles()
 
   const onClickToken = account => {
-    close()
+    onClose()
     onClick({ [position]: account })
   }
 

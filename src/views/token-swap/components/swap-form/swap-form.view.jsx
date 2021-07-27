@@ -50,7 +50,7 @@ function SwapForm ({
       [AmountBoxPosition.TO]: selectedTokens.from
     })
   }
-  console.log(accounts)
+
   const renderBox = position => {
     return (
       <AmountBox
