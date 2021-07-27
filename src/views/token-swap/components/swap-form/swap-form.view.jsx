@@ -5,74 +5,80 @@ import { useLocation } from 'react-router-dom'
 
 import useSwapFormStyles from './swap-form.style'
 import { ReactComponent as ArrowDown } from '../../../../images/icons/arrow-down-circle.svg'
-import BoxAmount from '../amount-box/amount-box.view'
+import AmountBox, { AmountBoxPosition } from '../amount-box/amount-box.view'
 
 function SwapForm ({
-  onGoToQuotes,
-  onOpenOfferSidenav,
   accounts,
   preferredCurrency,
-  fiatExchangeRates
+  fiatExchangeRates,
+  onGoToQuotes,
+  onOpenOfferSidenav,
+  onLoadAccounts
 }) {
   const classes = useSwapFormStyles()
-
   const { search } = useLocation()
   const urlSearchParams = new URLSearchParams(search)
-  const fromQuery = urlSearchParams.get('from')
-  const toQuery = urlSearchParams.get('to')
+  const fromQuery = urlSearchParams.get(AmountBoxPosition.FROM)
+  const toQuery = urlSearchParams.get(AmountBoxPosition.TO)
 
   const [amount, setAmount] = React.useState(BigNumber.from(0))
-  const [tokensSelected, setTokens] = React.useState({})
-  const [whatDropdownIsActive, setDropdown] = React.useState('')
+  const [selectedTokens, setSelectedTokens] = React.useState({})
+  const [activeDropdown, setActiveDropdown] = React.useState(undefined)
 
   const setTokenPosition = tokenPosition => {
-    setTokens({ ...tokensSelected, ...tokenPosition })
+    setSelectedTokens({ ...selectedTokens, ...tokenPosition })
   }
 
   React.useEffect(() => {
-    const from = accounts.find(a => a.accountIndex === fromQuery)
-    const to = accounts.find(a => a.accountIndex === toQuery)
-    setTokens({
-      from,
-      to
+    if (accounts.status === 'pending') {
+      onLoadAccounts(undefined)
+    }
+  }, [accounts])
+
+  React.useEffect(() => {
+    const from = accounts?.data.accounts.find(a => a.accountIndex === fromQuery)
+    const to = accounts?.data.accounts.find(a => a.accountIndex === toQuery)
+    setSelectedTokens({
+      [AmountBoxPosition.FROM]: from,
+      [AmountBoxPosition.TO]: to
     })
   }, [accounts])
 
   const switchTokens = () => {
-    setTokens({
-      from: tokensSelected.to,
-      to: tokensSelected.from
+    setSelectedTokens({
+      [AmountBoxPosition.FROM]: selectedTokens.to,
+      [AmountBoxPosition.TO]: selectedTokens.from
     })
   }
-
+  console.log(accounts)
   const renderBox = position => {
     return (
-      <BoxAmount
-        account={tokensSelected[position]}
+      <AmountBox
+        account={selectedTokens[position]}
         transactionType='Transfer' // TODO we need to check this with the new api
         fiatExchangeRates={fiatExchangeRates}
         preferredCurrency={preferredCurrency}
         l2Fee={0}
         onChange={setAmount}
         position={position}
-        accounts={accounts}
-        setToken={setTokenPosition}
+        accounts={accounts.data.accounts}
+        onTokenChange={setTokenPosition}
         amount={amount}
-        setDropdown={setDropdown}
-        isDropdownActive={whatDropdownIsActive === position}
+        onActiveDropdownChange={setActiveDropdown}
+        isDropdownActive={activeDropdown === position}
       />
     )
   }
 
   return (
     <div className={classes.root}>
-      {renderBox('from')}
+      {renderBox(AmountBoxPosition.FROM)}
       <div className={classes.circleBox}>
         <div className={classes.circle} onClick={switchTokens}>
           <ArrowDown />
         </div>
       </div>
-      {renderBox('to')}
+      {renderBox(AmountBoxPosition.TO)}
       <div>
         <button onClick={onGoToQuotes}>Go to quotes</button>
         <button onClick={onOpenOfferSidenav}>Open offer sidenav</button>
@@ -82,11 +88,12 @@ function SwapForm ({
 }
 
 SwapForm.propTypes = {
-  preferredCurrency: PropTypes.string.isRequired,
+  accounts: PropTypes.object,
+  preferredCurrency: PropTypes.string,
   fiatExchangeRatesTask: PropTypes.object,
   onGoToQuotes: PropTypes.func,
   onOpenOfferSidenav: PropTypes.func,
-  accounts: PropTypes.object
+  onLoadAccounts: PropTypes.func
 }
 
 export default SwapForm

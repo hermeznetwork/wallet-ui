@@ -34,12 +34,6 @@ function TokenSwap ({
 
   React.useEffect(() => onCleanup, [onCleanup])
 
-  React.useEffect(() => {
-    if (accountsTask.status === 'pending') {
-      onLoadAccounts(undefined)
-    }
-  }, [accountsTask])
-
   function handleOpenOfferSidenav () {
     setIsOfferSidenavOpen(true)
   }
@@ -58,7 +52,8 @@ function TokenSwap ({
                 <SwapForm
                   onGoToQuotes={onGoToQuotes}
                   onOpenOfferSidenav={handleOpenOfferSidenav}
-                  accounts={accountsTask.data.accounts}
+                  accounts={accountsTask}
+                  onLoadAccounts={onLoadAccounts}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={fiatExchangeRatesTask}
                 />

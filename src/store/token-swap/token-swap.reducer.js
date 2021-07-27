@@ -12,7 +12,7 @@ const initialTokenSwapState = {
     [STEP_NAME.SWAP]: {},
     [STEP_NAME.QUOTES]: {}
   },
-  accountsTask: {
+  accountsTask: { // TODO check the correct place to this values
     status: 'pending',
     data: { accounts: [], fromItemHistory: [] }
   }

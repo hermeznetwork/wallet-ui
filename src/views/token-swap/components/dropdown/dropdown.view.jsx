@@ -2,39 +2,17 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import useDropdrownpStyles from './dropdown.style'
+import List from '../list/list.view'
 import { ReactComponent as Search } from '../../../../images/icons/search.svg'
-import { getTokenIcon } from '../../../../utils/tokens'
-import { getFixedTokenAmount } from '../../../../utils/currencies'
 
-function Dropdown ({ accounts, position, setToken, close }) {
+function Dropdown ({ accounts, position, onClick, close }) {
   const classes = useDropdrownpStyles()
+
   const onClickToken = account => {
     close()
-    setToken({ [position]: account })
+    onClick({ [position]: account })
   }
-  const renderList = accounts.map(account => {
-    const Icon = getTokenIcon(account.token.symbol)
-    const balance = `${getFixedTokenAmount(
-      account.balance,
-      account.token.decimals
-    )} ${account.token.symbol}`
-    return (
-      <div
-        key={account.token.symbol}
-        className={classes.tokenBox}
-        onClick={() => onClickToken(account)}
-      >
-        <div className={classes.tokenIcon}>
-          <Icon />
-        </div>
-        <div className={classes.tokenText}>
-          <p>{account.token.name}</p>
-          <p className={classes.symbol}> {account.token.symbol}</p>
-        </div>
-        <span className={classes.balanceText}>{balance}</span>
-      </div>
-    )
-  })
+
   return (
     <div className={classes.dropDown}>
       <div className={classes.searchRow}>
@@ -49,13 +27,16 @@ function Dropdown ({ accounts, position, setToken, close }) {
           </div>
         </div>
       </div>
-      <div className={classes.listBox}>{renderList}</div>
+      <List
+        accounts={accounts}
+        onClick={onClickToken}
+      />
     </div>
   )
 }
 
 Dropdown.propTypes = {
-  accounts: PropTypes.object,
+  accounts: PropTypes.array,
   position: PropTypes.string,
   setToken: PropTypes.func,
   close: PropTypes.func
