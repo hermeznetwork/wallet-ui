@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 
-import AmountInput from '../../../shared/amount-input/amount-input'
+import AmountInput from '../../../shared/amount-input/amount-input.view'
 import useTransactionAmountInputStyles from './transaction-amount-input.styles'
 import { ReactComponent as SwapIcon } from '../../../../images/icons/swap.svg'
 import { ReactComponent as ErrorIcon } from '../../../../images/icons/error.svg'
