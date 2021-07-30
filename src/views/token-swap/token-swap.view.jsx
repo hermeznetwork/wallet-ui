@@ -9,9 +9,10 @@ import * as tokenSwapActions from '../../store/token-swap/token-swap.actions'
 import * as tokenSwapThunks from '../../store/token-swap/token-swap.thunks'
 import Container from '../shared/container/container.view'
 import { STEP_NAME } from '../../store/token-swap/token-swap.reducer'
-import Quotes from './components/quotes/quotes.view'
+import QuoteSelector from './components/quote-selector/quote-selector.view'
 import SwapForm from './components/swap-form/swap-form.view'
 import OfferSidenav from './components/offer-sidenav/offer-sidenav.view'
+import { AmountBoxPosition } from './components/amount-box/amount-box.view'
 
 function TokenSwap ({
   currentStep,
@@ -23,10 +24,13 @@ function TokenSwap ({
   preferredCurrency,
   onLoadAccounts,
   accountsTask,
+  quotesTask,
   fiatExchangeRatesTask
 }) {
   const classes = useTokenSwapStyles()
   const [isOfferSidenavOpen, setIsOfferSidenavOpen] = React.useState()
+  const [selectedTokens, setSelectedTokens] = React.useState({})
+  const [selectedQuote, setSelectedQuote] = React.useState(quotesTask.data[0])
 
   React.useEffect(() => {
     onChangeHeader(currentStep)
@@ -42,6 +46,14 @@ function TokenSwap ({
     setIsOfferSidenavOpen(false)
   }
 
+  function handleSelectedTokensChange (selectedTokens) {
+    setSelectedTokens(selectedTokens)
+  }
+
+  function handleQuoteSelect (quote) {
+    setSelectedQuote(quote)
+  }
+
   return (
     <div className={classes.root}>
       <Container addHeaderPadding disableTopGutter>
@@ -50,22 +62,37 @@ function TokenSwap ({
             case STEP_NAME.SWAP: {
               return (
                 <SwapForm
-                  onGoToQuotes={onGoToQuotes}
-                  onOpenOfferSidenav={handleOpenOfferSidenav}
                   accounts={accountsTask}
-                  onLoadAccounts={onLoadAccounts}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={fiatExchangeRatesTask}
+                  selectedTokens={selectedTokens}
+                  onGoToQuotes={onGoToQuotes}
+                  onOpenOfferSidenav={handleOpenOfferSidenav}
+                  onLoadAccounts={onLoadAccounts}
+                  onSelectedTokensChange={handleSelectedTokensChange}
                 />
               )
             }
             case STEP_NAME.QUOTES: {
-              return <Quotes onOpenOfferSidenav={handleOpenOfferSidenav} />
+              return (
+                <QuoteSelector
+                  quotes={quotesTask.data}
+                  selectedQuote={selectedQuote}
+                  toToken={selectedTokens[AmountBoxPosition.TO]}
+                  onOpenOfferSidenav={handleOpenOfferSidenav}
+                  onQuoteSelect={handleQuoteSelect}
+                />
+              )
             }
           }
         })()}
       </Container>
-      {isOfferSidenavOpen && <OfferSidenav onClose={handleCloseOfferSidenav} />}
+      {isOfferSidenavOpen && (
+        <OfferSidenav
+          onClose={handleCloseOfferSidenav}
+          quote={selectedQuote}
+        />
+      )}
     </div>
   )
 }
@@ -110,6 +137,7 @@ const mapStateToProps = state => ({
   currentStep: state.tokenSwap.currentStep,
   steps: state.tokenSwap.steps,
   accountsTask: state.tokenSwap.accountsTask,
+  quotesTask: state.tokenSwap.quotesTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency
 })

@@ -11,9 +11,11 @@ function SwapForm ({
   accounts,
   preferredCurrency,
   fiatExchangeRates,
+  selectedTokens,
   onGoToQuotes,
   onOpenOfferSidenav,
-  onLoadAccounts
+  onLoadAccounts,
+  onSelectedTokensChange
 }) {
   const classes = useSwapFormStyles()
   const { search } = useLocation()
@@ -22,11 +24,10 @@ function SwapForm ({
   const toQuery = urlSearchParams.get(AmountBoxPosition.TO)
 
   const [amount, setAmount] = React.useState(BigNumber.from(0))
-  const [selectedTokens, setSelectedTokens] = React.useState({})
   const [activeDropdown, setActiveDropdown] = React.useState(undefined)
 
   const setTokenPosition = tokenPosition => {
-    setSelectedTokens({ ...selectedTokens, ...tokenPosition })
+    onSelectedTokensChange({ ...selectedTokens, ...tokenPosition })
   }
 
   React.useEffect(() => {
@@ -38,14 +39,14 @@ function SwapForm ({
   React.useEffect(() => {
     const from = accounts?.data.accounts.find(a => a.accountIndex === fromQuery)
     const to = accounts?.data.accounts.find(a => a.accountIndex === toQuery)
-    setSelectedTokens({
+    onSelectedTokensChange({
       [AmountBoxPosition.FROM]: from,
       [AmountBoxPosition.TO]: to
     })
   }, [accounts])
 
   const switchTokens = () => {
-    setSelectedTokens({
+    onSelectedTokensChange({
       [AmountBoxPosition.FROM]: selectedTokens.to,
       [AmountBoxPosition.TO]: selectedTokens.from
     })
@@ -80,7 +81,9 @@ function SwapForm ({
       </div>
       {renderBox(AmountBoxPosition.TO)}
       <div>
-        <button onClick={onGoToQuotes}>Go to quotes</button>
+        {selectedTokens[AmountBoxPosition.TO] && (
+          <button onClick={onGoToQuotes}>Go to quotes</button>
+        )}
         <button onClick={onOpenOfferSidenav}>Open offer sidenav</button>
       </div>
     </div>

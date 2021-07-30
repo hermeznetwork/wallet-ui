@@ -1,10 +1,21 @@
 import React from 'react'
-import Sidenav from '../../../shared/sidenav/sidenav.view'
 
-function OfferSidenav ({ onClose }) {
+import useOfferSidenavStyles from './offer-sidenav.styles'
+import Sidenav from '../../../shared/sidenav/sidenav.view'
+import { ReactComponent as SushiLogo } from '../../../../images/exchange-logos/sushi.svg'
+
+function OfferSidenav ({ quote, onClose }) {
+  const classes = useOfferSidenavStyles()
+
   return (
     <Sidenav onClose={onClose}>
-      <p>Offer info</p>
+      <div className={classes.root}>
+        <SushiLogo className={classes.lpLogo} />
+        <a className={classes.lpUrl} href={quote.lpInfo.url} target='_blank' rel='noopener noreferrer'>
+          {quote.lpInfo.url}
+        </a>
+        <p className={classes.lpDescription}>{quote.lpInfo.description}</p>
+      </div>
     </Sidenav>
   )
 }
