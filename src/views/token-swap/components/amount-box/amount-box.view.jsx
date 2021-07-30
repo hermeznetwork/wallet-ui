@@ -22,12 +22,15 @@ function AmountBox ({
   preferredCurrency,
   fiatExchangeRates,
   value,
+  amountToUpdate,
   position,
+  positionUpdated,
   accounts,
   isDropdownActive,
   onInputChange,
   onTokenChange,
-  onActiveDropdownChange
+  onActiveDropdownChange,
+  setPositionUpdated
 }) {
   const classes = useAmountBoxStyles()
   const balance = getFixedTokenAmount(account?.balance, account?.token.decimals)
@@ -38,13 +41,19 @@ function AmountBox ({
     fiatExchangeRates
   )
 
-  const setMax = () => {
-    onInputChange({ target: { value: balance } })
-  }
-
   const switchDropdown = () => {
     const isActive = isDropdownActive ? '' : position
     onActiveDropdownChange(isActive)
+  }
+
+  const setMax = () => {
+    setPositionUpdated(position)
+    onInputChange({ target: { value: balance } })
+  }
+
+  const inputChange = value => {
+    setPositionUpdated(position)
+    onInputChange(value)
   }
 
   const Icon = getTokenIcon(account?.token.symbol)
@@ -69,7 +78,7 @@ function AmountBox ({
             type='text'
             value={value}
             placeholder='0'
-            onChange={onInputChange}
+            onChange={inputChange}
           />
         </div>
         <div className={`${classes.row} ${classes.rowMarginTop}`}>
@@ -85,9 +94,9 @@ function AmountBox ({
               </p>
               )
             : <div />}
-          <p className={classes.convertedText}>
+          <div className={classes.convertedText}>
             <FiatAmount amount={convertValue} currency={preferredCurrency} />
-          </p>
+          </div>
         </div>
       </div>
       {
@@ -107,13 +116,16 @@ AmountBox.propTypes = {
   accounts: PropTypes.array,
   account: PropTypes.object,
   value: PropTypes.string,
+  amountToUpdate: PropTypes.string,
   position: PropTypes.string,
+  positionUpdated: PropTypes.string,
   preferredCurrency: PropTypes.string,
   fiatExchangeRates: PropTypes.object,
   isDropdownActive: PropTypes.bool,
   onInputChange: PropTypes.func,
   onTokenClick: PropTypes.func,
-  onDropdownChange: PropTypes.func
+  onDropdownChange: PropTypes.func,
+  setPositionUpdated: PropTypes.func
 }
 
 export default AmountInput(AmountBox)

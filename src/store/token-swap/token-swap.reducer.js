@@ -15,6 +15,11 @@ const initialTokenSwapState = {
   accountsTask: { // TODO check the correct place to this values
     status: 'pending',
     data: { accounts: [], fromItemHistory: [] }
+  },
+  quotesTask: {
+    status: 'pending',
+    data: { quotes: null },
+    selected: 'best'
   }
 }
 
@@ -27,6 +32,7 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
       }
     }
     case tokenSwapActionTypes.GO_TO_QUOTES: {
+      console.log('ADFA')
       return {
         ...state,
         currentStep: STEP_NAME.QUOTES
@@ -57,6 +63,36 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
         accountsTask: {
           status: 'failed',
           error: 'An error ocurred loading the accounts'
+        }
+      }
+    }
+    case tokenSwapActionTypes.GET_QUOTES: {
+      return {
+        ...state,
+        quotesTask: {
+          ...state.quotesTask,
+          data: initialTokenSwapState.quotesTask.data,
+          status: 'loading'
+        }
+      }
+    }
+    case tokenSwapActionTypes.GET_QUOTES_SUCCESS: {
+      return {
+        ...state,
+        quotesTask: {
+          ...state.quotesTask,
+          status: 'successful',
+          data: action.data
+        }
+      }
+    }
+    case tokenSwapActionTypes.GET_QUOTES_FAILURE: {
+      return {
+        ...state,
+        quotesTask: {
+          ...state.quotesTask,
+          data: initialTokenSwapState.quotesTask.data,
+          status: 'failure'
         }
       }
     }

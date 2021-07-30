@@ -5,7 +5,7 @@ const useAmountBoxStyles = createUseStyles(theme => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    borderRadius: theme.spacing(2.5),
+    borderRadius: theme.spacing(2),
     height: theme.spacing(11),
     [theme.breakpoints.upSm]: {
       height: theme.spacing(13)
