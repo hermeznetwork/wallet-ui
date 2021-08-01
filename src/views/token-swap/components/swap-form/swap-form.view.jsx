@@ -13,7 +13,7 @@ function SwapForm ({
   fiatExchangeRates,
   selectedTokens,
   onGoToQuotes,
-  onOpenOfferSidenav,
+  onOpenQuoteSidenav,
   onLoadAccounts,
   onSelectedTokensChange
 }) {
@@ -84,7 +84,7 @@ function SwapForm ({
         {selectedTokens[AmountBoxPosition.TO] && (
           <button onClick={onGoToQuotes}>Go to quotes</button>
         )}
-        <button onClick={onOpenOfferSidenav}>Open offer sidenav</button>
+        <button onClick={onOpenQuoteSidenav}>Open offer sidenav</button>
       </div>
     </div>
   )
@@ -95,7 +95,7 @@ SwapForm.propTypes = {
   preferredCurrency: PropTypes.string,
   fiatExchangeRatesTask: PropTypes.object,
   onGoToQuotes: PropTypes.func,
-  onOpenOfferSidenav: PropTypes.func,
+  onOpenQuoteSidenav: PropTypes.func,
   onLoadAccounts: PropTypes.func
 }
 

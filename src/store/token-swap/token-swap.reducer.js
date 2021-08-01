@@ -12,6 +12,9 @@ const initialTokenSwapState = {
     [STEP_NAME.SWAP]: {},
     [STEP_NAME.QUOTES]: {}
   },
+  quoteSidenav: {
+    status: 'closed'
+  },
   quotesTask: {
     status: 'successful',
     data:
@@ -31,27 +34,21 @@ const initialTokenSwapState = {
                 token: 'HEZ'
               }
             ],
-            url: 'http://somewhere.com'
+            url: 'http://sushiswap.com'
           },
           toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
           validUntil: '2021-07-28T16:12:19.827987365Z'
         },
         {
           amountFromToken: '156513938130000',
-          amountToToken: '100000000000000000',
+          amountToToken: '1000000000000000000',
           fromToken: '0x0000000000000000000000000000000000000000',
           lpId: 'mockLP2',
           lpInfo: {
             description: 'A very cool and honest liquidity provider',
             name: 'Uniswap',
-            rewards: [
-              {
-                amount: '100000000000000000',
-                comment: 'every time',
-                token: 'HEZ'
-              }
-            ],
-            url: 'http://somewhere.com'
+            rewards: null,
+            url: 'http://uniswap.com'
           },
           toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
           validUntil: '2021-07-28T16:12:19.827987365Z'
@@ -78,8 +75,22 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
         currentStep: STEP_NAME.QUOTES
       }
     }
-    case tokenSwapActionTypes.RESET_STATE: {
-      return { ...initialTokenSwapState }
+    case tokenSwapActionTypes.OPEN_QUOTE_SIDENAV: {
+      return {
+        ...state,
+        quoteSidenav: {
+          status: 'open',
+          data: action.quote
+        }
+      }
+    }
+    case tokenSwapActionTypes.CLOSE_QUOTE_SIDENAV: {
+      return {
+        ...state,
+        quoteSidenav: {
+          status: 'closed'
+        }
+      }
     }
     case tokenSwapActionTypes.LOAD_ACCOUNTS_SUCCESS: {
       const accounts = [
@@ -105,6 +116,9 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
           error: 'An error ocurred loading the accounts'
         }
       }
+    }
+    case tokenSwapActionTypes.RESET_STATE: {
+      return { ...initialTokenSwapState }
     }
     default: {
       return state

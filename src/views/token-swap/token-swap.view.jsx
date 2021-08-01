@@ -11,12 +11,13 @@ import Container from '../shared/container/container.view'
 import { STEP_NAME } from '../../store/token-swap/token-swap.reducer'
 import QuoteSelector from './components/quote-selector/quote-selector.view'
 import SwapForm from './components/swap-form/swap-form.view'
-import OfferSidenav from './components/offer-sidenav/offer-sidenav.view'
+import QuoteSidenav from './components/quote-sidenav/quote-sidenav.view'
 import { AmountBoxPosition } from './components/amount-box/amount-box.view'
 
 function TokenSwap ({
   currentStep,
   steps,
+  quoteSidenav,
   onChangeHeader,
   onCleanup,
   onGoToQuotes,
@@ -25,11 +26,13 @@ function TokenSwap ({
   onLoadAccounts,
   accountsTask,
   quotesTask,
-  fiatExchangeRatesTask
+  fiatExchangeRatesTask,
+  onOpenQuoteSidenav,
+  onCloseQuoteSidenav
 }) {
   const classes = useTokenSwapStyles()
-  const [isOfferSidenavOpen, setIsOfferSidenavOpen] = React.useState()
   const [selectedTokens, setSelectedTokens] = React.useState({})
+  const [bestQuote] = React.useState(quotesTask.data[0])
   const [selectedQuote, setSelectedQuote] = React.useState(quotesTask.data[0])
 
   React.useEffect(() => {
@@ -37,14 +40,6 @@ function TokenSwap ({
   }, [currentStep])
 
   React.useEffect(() => onCleanup, [onCleanup])
-
-  function handleOpenOfferSidenav () {
-    setIsOfferSidenavOpen(true)
-  }
-
-  function handleCloseOfferSidenav () {
-    setIsOfferSidenavOpen(false)
-  }
 
   function handleSelectedTokensChange (selectedTokens) {
     setSelectedTokens(selectedTokens)
@@ -67,7 +62,7 @@ function TokenSwap ({
                   fiatExchangeRates={fiatExchangeRatesTask}
                   selectedTokens={selectedTokens}
                   onGoToQuotes={onGoToQuotes}
-                  onOpenOfferSidenav={handleOpenOfferSidenav}
+                  onOpenQuoteSidenav={() => onOpenQuoteSidenav(selectedQuote)}
                   onLoadAccounts={onLoadAccounts}
                   onSelectedTokensChange={handleSelectedTokensChange}
                 />
@@ -77,20 +72,21 @@ function TokenSwap ({
               return (
                 <QuoteSelector
                   quotes={quotesTask.data}
+                  bestQuote={bestQuote}
                   selectedQuote={selectedQuote}
                   toToken={selectedTokens[AmountBoxPosition.TO]}
-                  onOpenOfferSidenav={handleOpenOfferSidenav}
                   onQuoteSelect={handleQuoteSelect}
+                  onOpenQuoteSidenav={onOpenQuoteSidenav}
                 />
               )
             }
           }
         })()}
       </Container>
-      {isOfferSidenavOpen && (
-        <OfferSidenav
-          onClose={handleCloseOfferSidenav}
-          quote={selectedQuote}
+      {quoteSidenav.status === 'open' && (
+        <QuoteSidenav
+          onClose={onCloseQuoteSidenav}
+          quote={quoteSidenav.data}
         />
       )}
     </div>
@@ -138,6 +134,7 @@ const mapStateToProps = state => ({
   steps: state.tokenSwap.steps,
   accountsTask: state.tokenSwap.accountsTask,
   quotesTask: state.tokenSwap.quotesTask,
+  quoteSidenav: state.tokenSwap.quoteSidenav,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency
 })
@@ -147,7 +144,9 @@ const mapDispatchToProps = dispatch => ({
     dispatch(globalActions.changeHeader(getHeader(currentStep))),
   onGoToQuotes: () => dispatch(tokenSwapActions.goToQuotes()),
   onCleanup: () => dispatch(tokenSwapActions.resetState()),
-  onLoadAccounts: fromItem => dispatch(tokenSwapThunks.fetchAccounts(fromItem))
+  onLoadAccounts: fromItem => dispatch(tokenSwapThunks.fetchAccounts(fromItem)),
+  onOpenQuoteSidenav: (quote) => dispatch(tokenSwapActions.openQuoteSidenav(quote)),
+  onCloseQuoteSidenav: () => dispatch(tokenSwapActions.closeQuoteSidenav())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TokenSwap)

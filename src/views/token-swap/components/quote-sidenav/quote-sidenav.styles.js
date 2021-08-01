@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useOfferSidenavStyles = createUseStyles((theme) => ({
+const useQuoteSidenavStyles = createUseStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -25,4 +25,4 @@ const useOfferSidenavStyles = createUseStyles((theme) => ({
   }
 }))
 
-export default useOfferSidenavStyles
+export default useQuoteSidenavStyles

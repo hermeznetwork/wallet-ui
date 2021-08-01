@@ -3,23 +3,49 @@ import React from 'react'
 import useQuoteStyles from './quote.styles'
 import { ReactComponent as SushiSmLogo } from '../../../../images/exchange-logos/sushi-sm.svg'
 import { getFixedTokenAmount } from '../../../../utils/currencies'
+import { ReactComponent as BestQuoteBadge } from '../../../../images/icons/green-badge-white-tick.svg'
 
-function Quote ({ id, info, toToken, amountToToken, selectedQuote, onSelect }) {
+function Quote ({
+  info,
+  toToken,
+  amountToToken,
+  amountToTokenDiff,
+  isTheBest,
+  isSelected,
+  onSelect,
+  onShowMoreInfo
+}) {
   const classes = useQuoteStyles()
-
+  console.log(amountToTokenDiff)
   return (
-    <label className={classes.root}>
-      <div className={classes.bottomRow}>
+    <div className={classes.root}>
+      {isTheBest && (
+        <div className={classes.bestQuoteContainer}>
+          <BestQuoteBadge className={classes.bestQuoteBadge} />
+          <p className={classes.bestQuoteText}>Best offer at this moment</p>
+        </div>
+      )}
+      <div className={classes.quoteInfo}>
         <div className={classes.nameCell}>
-          <input type='radio' checked={id === selectedQuote.lpId} onChange={onSelect} />
+          <input type='radio' checked={isSelected} onChange={onSelect} />
           <SushiSmLogo className={classes.logo} />
           <p className={classes.name}>{info.name}</p>
+          <button
+            className={classes.moreInfoButton}
+            onClick={onShowMoreInfo}
+          >
+            More info
+          </button>
         </div>
         <div className={classes.toTokenAmountCell}>
           <p className={classes.toTokenAmount}>
             {getFixedTokenAmount(amountToToken, toToken.token.decimals)}
           </p>
-          <p className={classes.toTokenAmountDiff}>+0.002</p>
+          {amountToTokenDiff.gt(0) && (
+            <p className={classes.toTokenAmountDiff}>
+              -{getFixedTokenAmount(amountToTokenDiff, toToken.token.decimals)}
+            </p>
+          )}
         </div>
         <div className={classes.rewardCell}>
           {info.rewards
@@ -34,7 +60,7 @@ function Quote ({ id, info, toToken, amountToToken, selectedQuote, onSelect }) {
             : <p className={classes.rewardHelperText}>No reward</p>}
         </div>
       </div>
-    </label>
+    </div>
   )
 }
 

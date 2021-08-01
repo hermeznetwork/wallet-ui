@@ -1,11 +1,11 @@
 import React from 'react'
 
-import useOfferSidenavStyles from './offer-sidenav.styles'
+import useQuoteSidenavStyles from './quote-sidenav.styles'
 import Sidenav from '../../../shared/sidenav/sidenav.view'
 import { ReactComponent as SushiLogo } from '../../../../images/exchange-logos/sushi.svg'
 
-function OfferSidenav ({ quote, onClose }) {
-  const classes = useOfferSidenavStyles()
+function QuoteSidenav ({ quote, onClose }) {
+  const classes = useQuoteSidenavStyles()
 
   return (
     <Sidenav onClose={onClose}>
@@ -20,4 +20,4 @@ function OfferSidenav ({ quote, onClose }) {
   )
 }
 
-export default OfferSidenav
+export default QuoteSidenav
