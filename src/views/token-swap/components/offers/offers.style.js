@@ -72,7 +72,8 @@ const useOffersStyles = createUseStyles(theme => ({
     color: theme.palette.grey.main,
     [theme.breakpoints.upSm]: {
       fontSize: theme.spacing(1.75)
-    }
+    },
+    cursor: 'pointer'
   },
   buttonBox: { display: 'flex', justifyContent: 'center' },
   button: {
