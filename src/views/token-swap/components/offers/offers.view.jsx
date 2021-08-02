@@ -14,7 +14,8 @@ function Offers ({
   fiatExchangeRates,
   preferredCurrency,
   selectedTokens,
-  onGoToQuotes
+  onGoToQuotes,
+  onOpenOfferSidenav
 }) {
   const classes = useOffersStyles()
   const isBestQuote = quotes.selected === 'best'
@@ -50,7 +51,8 @@ function Offers ({
       setFiatReward(fiatRewardAmount)
       setReward(rewardAmount)
       console.log(quotes.data.quotes[0].validUntil)
-      setTimeUntilValid(30000 - 1000) // TODO should be launched with validUntil in miliseconds from quotes instead 30000
+      setTimeUntilValid(30000 - 1000)
+      // TODO should be launched with validUntil in miliseconds from quotes instead 30000
     }
   }, [quotes])
 
@@ -97,7 +99,7 @@ function Offers ({
           <p className={classes.reward}>
             This swap is rewarded with {reward} {quote.lpInfo?.rewards[0].token}  (
             {CurrencySymbol[preferredCurrency].symbol} {fiatReward.toFixed(2)}
-            ) <span className={classes.moreInfo}>More info</span>
+            ) <span className={classes.moreInfo} onClick={onOpenOfferSidenav}>More info</span>
           </p>
         </div>}
       {['successful', 'failure'].includes(quotes.status) &&
@@ -120,7 +122,8 @@ Offers.propTypes = {
   fiatExchangeRates: PropTypes.object,
   preferredCurrency: PropTypes.string,
   selectedTokens: PropTypes.object,
-  onGoToQuotes: PropTypes.func
+  onGoToQuotes: PropTypes.func,
+  onOpenOfferSidenav: PropTypes.func
 }
 
 export default Offers

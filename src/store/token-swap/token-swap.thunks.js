@@ -79,7 +79,6 @@ function getQuotes (request) {
         dispatch(tokenSwapActions.getQuotesSuccess(res))
       })
       .catch(e => {
-        console.log(e)
         dispatch(tokenSwapActions.getQuoteFailure(e))
       })
   }

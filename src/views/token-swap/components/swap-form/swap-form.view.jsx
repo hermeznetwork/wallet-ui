@@ -54,7 +54,6 @@ function SwapForm ({
   }
 
   React.useEffect(() => {
-    console.log(accounts)
     if (accounts.status === 'pending') {
       onLoadAccounts(undefined)
     }
@@ -72,18 +71,18 @@ function SwapForm ({
   }, [accounts])
 
   React.useEffect(() => {
-    console.log(amountFrom)
-    console.log(selectedTokens)
     let timer = 0
     if (amountFrom.amount &&
       selectedTokens.from &&
       selectedTokens.to &&
       positionUpdated === AmountBoxPosition.FROM) {
-      const amountFromToken = getBigNumberToString(amountTo)
+      const amountFromToken = getBigNumberToString(amountFrom)
       if (amountFromToken === '0') return
+
       onLoadingQuotes()
       timer = setTimeout(() => onLoadQuotes({
         fromToken: '0x0000000000000000000000000000000000000000',
+        // TODO Change to address coming in account, now it's forced to address in goerli
         toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
         amountFromToken: amountFromToken,
         fromHezAddr: 'hez:ETH:3000'
@@ -103,6 +102,7 @@ function SwapForm ({
       onLoadingQuotes()
       timer = setTimeout(() => onLoadQuotes({
         fromToken: '0x0000000000000000000000000000000000000000',
+        // TODO Change to address coming in account, now it's forced to address in goerli
         toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
         amountToToken,
         fromHezAddr: 'hez:ETH:3000'
@@ -172,7 +172,6 @@ function SwapForm ({
   const renderBox = position => {
     const { setAmount } = amountPositions[position]
     const value = valuesToUpdate[position]
-    console.log(selectedTokens[position])
     return (
       <AmountBox
         account={selectedTokens[position]}
@@ -208,10 +207,8 @@ function SwapForm ({
         fiatExchangeRates={fiatExchangeRates}
         selectedTokens={selectedTokens}
         onGoToQuotes={onGoToQuotes}
+        onOpenOfferSidenav={onOpenOfferSidenav}
       />
-      <div>
-        <button onClick={onOpenOfferSidenav}>Open offer sidenav</button>
-      </div>
     </div>
   )
 }
