@@ -66,7 +66,6 @@ function Transaction ({
   const receiver = urlSearchParams.get('receiver')
   const instantWithdrawal = urlSearchParams.get('instantWithdrawal') === 'true'
   const completeDelayedWithdrawal = urlSearchParams.get('completeDelayedWithdrawal') === 'true'
-  const redirectTo = urlSearchParams.get('redirectTo')
   const accountIndex = urlSearchParams.get('accountIndex')
   const accountPendingDeposits = storage.getItemsByHermezAddress(
     pendingDeposits,
@@ -85,8 +84,8 @@ function Transaction ({
   )
 
   React.useEffect(() => {
-    onChangeHeader(currentStep, transactionType, accountIndex, redirectTo)
-  }, [currentStep, transactionType, accountIndex, redirectTo, onChangeHeader])
+    onChangeHeader(currentStep, transactionType, accountIndex)
+  }, [currentStep, transactionType, accountIndex, onChangeHeader])
 
   React.useEffect(() => {
     onCheckPendingDeposits()
@@ -105,7 +104,7 @@ function Transaction ({
         onLoadEthereumAccount(Number(tokenId))
       } else if (accountIndex && !tokenId) {
         if (batchNum) {
-          onLoadExit(accountIndex, Number(batchNum))
+          onLoadExit(accountIndex, Number(batchNum), completeDelayedWithdrawal, accountPendingDelayedWithdraws)
         } else {
           onLoadHermezAccount(
             accountIndex,
@@ -119,7 +118,7 @@ function Transaction ({
         onGoToChooseAccountStep()
       }
     }
-  }, [pendingDepositsCheckTask, poolTransactionsTask, tokenId, batchNum, accountIndex, onLoadExit, onLoadEthereumAccount, onLoadHermezAccount, onGoToChooseAccountStep])
+  }, [pendingDepositsCheckTask, poolTransactionsTask, tokenId, batchNum, accountIndex, completeDelayedWithdrawal])
 
   React.useEffect(() => {
     const stepData = steps[STEP_NAME.LOAD_INITIAL_DATA]
@@ -213,14 +212,14 @@ function Transaction ({
             return (
               <TransactionConfirmation
                 transactionType={transactionType}
-                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex, redirectTo)}
+                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex)}
               />
             )
           }
           case STEP_NAME.TRANSACTION_ERROR: {
             return (
               <TransactionError
-                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex, redirectTo)}
+                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex)}
               />
             )
           }
@@ -278,7 +277,7 @@ const getHeaderCloseAction = (accountIndex) => {
     : push('/')
 }
 
-const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
+const getHeader = (currentStep, transactionType, accountIndex) => {
   switch (currentStep) {
     case STEP_NAME.CHOOSE_ACCOUNT: {
       return {
@@ -303,16 +302,12 @@ const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
     }
     case STEP_NAME.REVIEW_TRANSACTION: {
       if (transactionType === TxType.Withdraw) {
-        const action = redirectTo === WithdrawRedirectionRoute.Home
-          ? push('/')
-          : push(`/accounts/${accountIndex}`)
-
         return {
           type: 'page',
           data: {
             title: getTransactionOverviewHeaderTitle(transactionType),
-            goBackAction: action,
-            closeAction: action
+            goBackAction: push(`/accounts/${accountIndex}`),
+            closeAction: push(`/accounts/${accountIndex}`)
           }
         }
       } else {
@@ -333,15 +328,15 @@ const getHeader = (currentStep, transactionType, accountIndex, redirectTo) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeHeader: (currentStep, transactionType, accountIndex, redirectTo) =>
-    dispatch(changeHeader(getHeader(currentStep, transactionType, accountIndex, redirectTo))),
+  onChangeHeader: (currentStep, transactionType, accountIndex) =>
+    dispatch(changeHeader(getHeader(currentStep, transactionType, accountIndex))),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadEthereumAccount: (tokenId) =>
     dispatch(transactionThunks.fetchEthereumAccount(tokenId)),
   onLoadHermezAccount: (accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
     dispatch(transactionThunks.fetchHermezAccount(accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
-  onLoadExit: (accountIndex, batchNum) =>
-    dispatch(transactionThunks.fetchExit(accountIndex, batchNum)),
+  onLoadExit: (accountIndex, batchNum, completeDelayedWithdrawal, pendingDelayedWithdraws) =>
+    dispatch(transactionThunks.fetchExit(accountIndex, batchNum, completeDelayedWithdrawal, pendingDelayedWithdraws)),
   onLoadAccountBalance: () =>
     dispatch(transactionThunks.fetchAccountBalance()),
   onLoadFees: () =>

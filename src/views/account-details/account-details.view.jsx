@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { useTheme } from 'react-jss'
 import { push } from 'connected-react-router'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { INTERNAL_ACCOUNT_ETH_ADDR } from '@hermeznetwork/hermezjs/src/constants'
 
 import useAccountDetailsStyles from './account-details.styles'
 import * as globalThunks from '../../store/global/global.thunks'
@@ -23,6 +24,7 @@ import { resetState } from '../../store/account-details/account-details.actions'
 import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
 import { getAccountBalance } from '../../utils/accounts'
+import { mergeExits } from '../../utils/transactions'
 import * as storage from '../../utils/storage'
 
 function AccountDetails ({
@@ -184,7 +186,10 @@ function AccountDetails ({
           <TransactionActions
             accountIndex={accountIndex}
             tokenId={accountTask.data?.token.id}
-            hideDeposit={l1TokenBalanceTask.status !== 'successful'}
+            hideDeposit={l1TokenBalanceTask.status !== 'successful' ||
+              accountTask.data?.hezEthereumAddress.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()}
+            hideWithdraw={accountTask.data?.hezEthereumAddress.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()}
+            hideSwap
           />
         </section>
       </Container>
@@ -241,7 +246,7 @@ function AccountDetails ({
                   {
                     exitsTask.status === 'successful' || exitsTask.status === 'reloading'
                       ? <ExitList
-                          transactions={exitsTask.data.exits}
+                          transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
                           fiatExchangeRates={fiatExchangeRatesTask.data}
                           preferredCurrency={preferredCurrency}
                           babyJubJub={wallet.publicKeyCompressedHex}

@@ -6,8 +6,9 @@ import useTransactionActionsStyles from './transaction-actions.styles'
 import { ReactComponent as SendIcon } from '../../../images/icons/send.svg'
 import { ReactComponent as DepositIcon } from '../../../images/icons/deposit.svg'
 import { ReactComponent as WithdrawIcon } from '../../../images/icons/withdraw.svg'
+import { ReactComponent as TokenSwapIcon } from '../../../images/icons/token-swap.svg'
 
-function TransactionActions ({ hideWithdraw, hideSend, hideDeposit, accountIndex, tokenId }) {
+function TransactionActions ({ hideWithdraw, hideSend, hideDeposit, hideSwap, accountIndex, tokenId }) {
   const classes = useTransactionActionsStyles()
   const baseQueryString = accountIndex !== undefined ? `?accountIndex=${accountIndex}` : ''
   const depositQueryString = tokenId !== undefined ? `?accountIndex=${accountIndex}&tokenId=${tokenId}` : ''
@@ -50,6 +51,16 @@ function TransactionActions ({ hideWithdraw, hideSend, hideDeposit, accountIndex
             </div>
             )
       }
+      {hideSwap || process.env.REACT_APP_ENABLE_TOKEN_SWAP !== 'true'
+        ? <></>
+        : (
+          <div className={classes.action}>
+            <Link to='/token-swap' className={classes.button}>
+              <TokenSwapIcon className={classes.buttonIcon} />
+            </Link>
+            <p className={classes.buttonText}>Swap</p>
+          </div>
+          )}
     </div>
   )
 }

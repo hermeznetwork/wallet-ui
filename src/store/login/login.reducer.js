@@ -7,8 +7,7 @@ export const STEP_NAME = {
   WALLET_SELECTOR: 'wallet-selector',
   ACCOUNT_SELECTOR: 'account-selector',
   WALLET_LOADER: 'wallet-loader',
-  CREATE_ACCOUNT_AUTH: 'create-account-auth',
-  ERROR: 'error'
+  CREATE_ACCOUNT_AUTH: 'create-account-auth'
 }
 
 function getInitialLoginState () {
@@ -30,9 +29,6 @@ function getInitialLoginState () {
       },
       [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
         wallet: undefined
-      },
-      [STEP_NAME.ERROR]: {
-        error: undefined
       }
     },
     addAccountAuthTask: {
@@ -88,18 +84,6 @@ function loginReducer (state = getInitialLoginState(), action) {
           ...state.steps,
           [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
             wallet: action.wallet
-          }
-        }
-      }
-    }
-    case loginActionTypes.GO_TO_ERROR_STEP: {
-      return {
-        ...state,
-        currentStep: STEP_NAME.ERROR,
-        steps: {
-          ...state.steps,
-          [STEP_NAME.ERROR]: {
-            error: action.error
           }
         }
       }

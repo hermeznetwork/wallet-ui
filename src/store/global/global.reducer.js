@@ -2,11 +2,6 @@ import { globalActionTypes } from './global.actions'
 import * as constants from '../../constants'
 import * as storage from '../../utils/storage'
 
-export const LOAD_ETHEREUM_NETWORK_ERROR = {
-  METAMASK_NOT_INSTALLED: 'metamask-not-installed',
-  CHAIN_ID_NOT_SUPPORTED: 'chain-id-not-supported'
-}
-
 function getInitialGlobalState () {
   return {
     hermezStatusTask: {

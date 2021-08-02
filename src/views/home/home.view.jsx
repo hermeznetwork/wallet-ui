@@ -23,6 +23,7 @@ import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
 import * as storage from '../../utils/storage'
+import { mergeExits } from '../../utils/transactions'
 import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
 import * as globalActions from '../../store/global/global.actions'
@@ -56,7 +57,6 @@ function Home ({
   onCheckPendingWithdrawals,
   onNavigateToAccountDetails,
   onOpenSnackbar,
-  onOpenRewardsSidenav,
   onCleanup
 }) {
   const theme = useTheme()
@@ -112,14 +112,14 @@ function Home ({
       fiatExchangeRatesTask.status === 'successful'
     ) {
       onLoadTotalBalance(
-        wallet.hermezEthereumAddress,
+        wallet.publicKeyBase64,
         poolTransactionsTask.data,
         accountPendingDeposits,
         fiatExchangeRatesTask.data,
         preferredCurrency
       )
       onLoadAccounts(
-        wallet.hermezEthereumAddress,
+        wallet.publicKeyBase64,
         undefined,
         poolTransactionsTask.data,
         accountPendingDeposits,
@@ -162,6 +162,9 @@ function Home ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
+          {ethereumNetworkTask.data.chainId === 4 && (
+            <p className={classes.networkLabel}>{ethereumNetworkTask.data.name}</p>
+          )}
           <Button
             text={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
             className={classes.walletAddress}
@@ -204,7 +207,7 @@ function Home ({
           {
             exitsTask.status === 'successful' || exitsTask.status === 'reloading'
               ? <ExitList
-                  transactions={exitsTask.data.exits}
+                  transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
                   fiatExchangeRates={
                   fiatExchangeRatesTask.status === 'successful'
                     ? fiatExchangeRatesTask.data
@@ -254,7 +257,7 @@ function Home ({
                       paginationData={accountsTask.data.pagination}
                       onLoadNextPage={(fromItem) => {
                         onLoadAccounts(
-                          wallet.hermezEthereumAddress,
+                          wallet.publicKeyBase64,
                           fromItem,
                           poolTransactionsTask.data,
                           accountPendingDeposits,
@@ -324,10 +327,10 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: () =>
     dispatch(changeHeader({ type: 'main' })),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
-  onLoadTotalBalance: (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
-    dispatch(homeThunks.fetchTotalBalance(hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
-  onLoadAccounts: (hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
-    dispatch(homeThunks.fetchAccounts(hermezEthereumAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
+  onLoadTotalBalance: (hermezAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
+    dispatch(homeThunks.fetchTotalBalance(hermezAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
+  onLoadAccounts: (hermezAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) =>
+    dispatch(homeThunks.fetchAccounts(hermezAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency)),
   onLoadPoolTransactions: () =>
     dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) =>
