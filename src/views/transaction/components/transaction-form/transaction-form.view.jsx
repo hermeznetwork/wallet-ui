@@ -231,7 +231,8 @@ function TransactionForm ({
             if (!receiverAccount && !res[1] && !isHermezBjjAddress(receiver)) {
               setDoesReceiverExist(false)
             } else {
-              const transactionFee = getFee(fees, receiverAccount)
+              // const transactionFee = getFee(fees, receiverAccount)
+              const transactionFee = 100
 
               onSubmit({
                 amount: amount,
