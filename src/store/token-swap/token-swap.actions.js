@@ -31,7 +31,6 @@ function resetState () {
 }
 
 function loadAccounts () {
-  console.log('afafadfad')
   return {
     type: tokenSwapActionTypes.LOAD_ACCOUNTS
   }
@@ -63,10 +62,9 @@ function refreshAccountsSuccess (data) {
   }
 }
 
-function getQuotes (data) {
+function getQuotes () {
   return {
-    type: tokenSwapActionTypes.GET_QUOTES,
-    data
+    type: tokenSwapActionTypes.GET_QUOTES
   }
 }
 

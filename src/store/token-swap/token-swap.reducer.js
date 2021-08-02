@@ -32,7 +32,6 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
       }
     }
     case tokenSwapActionTypes.GO_TO_QUOTES: {
-      console.log('ADFA')
       return {
         ...state,
         currentStep: STEP_NAME.QUOTES

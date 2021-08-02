@@ -72,6 +72,7 @@ function Offers ({
     successful: `Swap ${msToTime(timeUntilValid)}`,
     failure: 'Insufficient liquidity'
   }
+
   return (
     <div className={classes.root}>
       {isLoading &&

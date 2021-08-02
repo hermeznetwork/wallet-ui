@@ -150,11 +150,11 @@ function SwapForm ({
   const switchTokens = () => {
     if (amountFrom && amountTo) {
       const amountFromToUpdate = getFixedTokenAmount(
-        BigNumber.from(amountFrom.amount.tokens._hex).toString(),
+        getBigNumberToString(amountFrom),
         selectedTokens[AmountBoxPosition.FROM].token.decimals
       )
       const amountToToUpdate = getFixedTokenAmount(
-        BigNumber.from(amountTo.amount.tokens._hex).toString(),
+        getBigNumberToString(amountTo),
         selectedTokens[AmountBoxPosition.TO].token.decimals
       )
       setValuesToUpdate({
