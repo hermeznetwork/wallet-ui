@@ -143,7 +143,7 @@ function refreshAccounts (hermezAddress, poolTransactions, pendingDeposits, fiat
         undefined,
         axiosConfig
       )
-      const requests = accountsTask.status === 'reloading' ? [] : accountsTask.data.fromItemHistory
+      const requests = accountsTask.data.fromItemHistory
         .reduce((requests, fromItem) => ([
           ...requests,
           CoordinatorAPI.getAccounts(
