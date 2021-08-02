@@ -29,13 +29,11 @@ function Offers ({
   const [timeUntilValid, setTimeUntilValid] = React.useState(30000)
 
   React.useEffect(() => {
-    console.log(quotes)
     if (quotes.data.quotes && quotes.status === 'successful') {
       const selectedQuote = isBestQuote
         ? quotes.data.quotes[0]
         : quotes.data.quotes.find(q => q.lpId === quotes.selected)
       setQuote(selectedQuote)
-      console.log(selectedTokens)
 
       const rewardAmount = getFixedTokenAmount(
         selectedQuote.lpInfo.rewards[0].amount,
@@ -50,7 +48,6 @@ function Offers ({
 
       setFiatReward(fiatRewardAmount)
       setReward(rewardAmount)
-      console.log(quotes.data.quotes[0].validUntil)
       setTimeUntilValid(30000 - 1000)
       // TODO should be launched with validUntil in miliseconds from quotes instead 30000
     }
