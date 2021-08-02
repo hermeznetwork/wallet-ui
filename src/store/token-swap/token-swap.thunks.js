@@ -61,8 +61,14 @@ function fetchAccounts (fromItem) {
 }
 
 /**
- * Fetches the accounts for a Hermez address
- * @param {Number} fromItem - id of the first account to be returned from the API
+ * Get Quotes for a token swap between pairs
+ * @typedef {Object} request
+ * @property {string} fromToken - contract address from Token that want to Swap
+ * @property {string} toToken - contract addres from Token that want to Get
+ * @property {string} fromHezAddr - address with tokens to swap
+ * @prop {string} [amountFromToken] - amount that want to swap
+ * @prop {string} [amountToToken] - amount that want to receive
+ * @param {request} request - Tokens to request quotes from a HezAddr
  * @returns {void}
  */
 function getQuotes (request) {
