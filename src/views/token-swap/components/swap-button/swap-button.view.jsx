@@ -7,7 +7,7 @@ function SwapButton ({
   quotes
 }) {
   const classes = useSwapButtonStyles()
-  const failure = quotes.status === 'failure'
+  const isFailure = quotes.status === 'failure'
 
   const [timeUntilValid, setTimeUntilValid] = React.useState(30000)
 
@@ -41,8 +41,12 @@ function SwapButton ({
       {['successful', 'failure'].includes(quotes.status) &&
         <div className={classes.buttonBox}>
           <button
-            className={`${classes.button} ${(failure || timeUntilValid <= 0) && classes.btnDisabled}`}
-            disabled={failure || timeUntilValid > 0}
+            className={
+              `${classes.button} ${(isFailure ||
+                timeUntilValid <= 0) &&
+                classes.btnDisabled}`
+            }
+            disabled={isFailure || timeUntilValid > 0}
           >
             {timeUntilValid > 0
               ? renderBtnText[quotes.status]

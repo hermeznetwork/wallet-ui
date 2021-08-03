@@ -22,14 +22,14 @@ function SelectedQuote ({
   const classes = useSelectedQuoteStyles()
   const isBestQuote = selectedLpId === 'best'
   const isLoading = quotes.status === 'loading'
-  const successful = quotes.status === 'successful'
+  const isSuccessful = quotes.status === 'successful'
 
   const [quote, setQuote] = React.useState({ rate: 0 })
   const [fiatReward, setFiatReward] = React.useState(0)
   const [reward, setReward] = React.useState(0)
 
   React.useEffect(() => {
-    if (quotes.status === 'successful' && quotes.data) {
+    if (quotes.data) {
       const selectedQuote = isBestQuote
         ? quotes.data[0]
         : quotes.data.find(q => q.lpId === selectedLpId)
@@ -58,7 +58,7 @@ function SelectedQuote ({
           <p className={classes.loadingText}>Searching for the best offers</p>
           <Spinner />
         </div>}
-      {successful &&
+      {isSuccessful &&
         <div className={classes.offerBox}>
           <div className={classes.row}>
             <div className={classes.quote}>

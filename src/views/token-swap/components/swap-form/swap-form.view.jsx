@@ -61,6 +61,7 @@ function SwapForm ({
   React.useEffect(() => {
     const from = accounts.data?.accounts.find(a => a.accountIndex === fromQuery)
     const to = accounts.data?.accounts.find(a => a.accountIndex === toQuery)
+
     if (from && to) {
       onSelectedTokensChange({
         [AmountBoxPosition.FROM]: from,
@@ -73,8 +74,10 @@ function SwapForm ({
     if (quotes.data) {
       const from = BigNumber.from(quotes.data[0].amountFromToken)
       const to = BigNumber.from(quotes.data[0].amountToToken)
+
       onAmountFromChange(from)
       onAmountToChange(to)
+
       if (positionUpdated === AmountBoxPosition.TO) {
         setDefaultValues({
           ...defaultValues,
@@ -91,29 +94,33 @@ function SwapForm ({
 
   const handleAmountChange = (value, position) => {
     clearTimeout(timer)
+
     if (
       selectedTokens.from &&
       selectedTokens.to &&
       positionUpdated === position
     ) {
       onLoadingQuotes()
+
       let data = {
         fromToken: '0x0000000000000000000000000000000000000000',
         // TODO Change to address coming in account, now it's forced to address in goerli
         toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
         fromHezAddr: 'hez:ETH:3000'
       }
+
       if (position === AmountBoxPosition.TO) {
         data = { ...data, amountToToken: value.amount.tokens.toString() }
       } else {
         data = { ...data, amountFromToken: value.amount.tokens.toString() }
       }
+
       const tempTimer = setTimeout(() => onLoadQuotes(data), delayQuotes)
       setTimer(tempTimer)
     }
   }
 
-  const hadleTokensSwitch = () => {
+  const handleTokensSwitch = () => {
     if (amountFrom && amountTo) {
       handlePositionUpdated(AmountBoxPosition.FROM)
       onAmountFromChange(amountTo)
@@ -158,7 +165,10 @@ function SwapForm ({
     <div className={classes.root}>
       {renderBox(AmountBoxPosition.FROM)}
       <div className={classes.circleBox}>
-        <div className={classes.circle} onClick={hadleTokensSwitch}>
+        <div
+          className={classes.circle}
+          onClick={handleTokensSwitch}
+        >
           <ArrowDown />
         </div>
       </div>

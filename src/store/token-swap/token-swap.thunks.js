@@ -62,19 +62,18 @@ function fetchAccounts (fromItem) {
 
 /**
  * Get Quotes for a token swap between pairs
- * @typedef {Object} request
- * @property {string} fromToken - contract address from Token that want to Swap
- * @property {string} toToken - contract addres from Token that want to Get
- * @property {string} fromHezAddr - address with tokens to swap
- * @prop {string} [amountFromToken] - amount that want to swap
- * @prop {string} [amountToToken] - amount that want to receive
- * @param {request} request - Tokens to request quotes from a HezAddr
+ * @param {Object} data
+ * @param {String} data.fromToken - contract address from Token that user wants to Swap
+ * @param {String} data.toToken - contract addres from Token that user wants to Get
+ * @param {String} data.fromHezAddr - address with tokens to swap
+ * @param {String} [data.amountFromToken] - amount that user wants to swap
+ * @param {String} [data.amountToToken] - amount that user wants to receive
  * @returns {void}
  */
-function getQuotes (request) {
+function getQuotes (data) {
   return (dispatch, getState) => {
     dispatch(tokenSwapActions.getQuotes())
-    tokenSwapApi.getQuotes(request)
+    tokenSwapApi.getQuotes(data)
       .then(res => {
         const quotes = res.map(quote => ({
           ...quote,

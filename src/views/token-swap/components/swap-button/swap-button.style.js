@@ -6,7 +6,10 @@ const useSwapButtonStyles = createUseStyles(theme => ({
     display: 'flex',
     flexDirection: 'column'
   },
-  buttonBox: { display: 'flex', justifyContent: 'center' },
+  buttonBox: {
+    display: 'flex',
+    justifyContent: 'center'
+  },
   button: {
     backgroundColor: theme.palette.secondary.main,
     border: 'none',
