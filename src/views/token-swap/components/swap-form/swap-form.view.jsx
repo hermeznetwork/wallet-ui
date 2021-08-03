@@ -45,7 +45,7 @@ function SwapForm ({
   const [activeDropdown, setActiveDropdown] = React.useState(undefined)
   const [defaultValues, setDefaultValues] = React.useState(amountPositions)
   const [positionUpdated, handlePositionUpdated] = React.useState(undefined)
-  const [isLoadingQuotes, setIsLoadingQuotes] = React.useState(false)
+  const [areLoadingQuotes, setAreLoadingQuotes] = React.useState(false)
   const [timer, setTimer] = React.useState(0)
 
   const setTokenPosition = tokenPosition => {
@@ -73,7 +73,7 @@ function SwapForm ({
   React.useEffect(() => {
     if (quotes.status === 'loading') return
 
-    setIsLoadingQuotes(false)
+    setAreLoadingQuotes(false)
 
     if (quotes.data) {
       const from = BigNumber.from(quotes.data[0].amountFromToken)
@@ -104,7 +104,7 @@ function SwapForm ({
       selectedTokens.to &&
       positionUpdated === position
     ) {
-      setIsLoadingQuotes(true)
+      setAreLoadingQuotes(true)
 
       const initData = {
         fromToken: '0x0000000000000000000000000000000000000000',
@@ -182,9 +182,9 @@ function SwapForm ({
         onGoToQuotes={onGoToQuotes}
         onOpenOfferSidenav={onOpenOfferSidenav}
         selectedLpId={selectedLpId}
-        isLoading={isLoadingQuotes}
+        isLoading={areLoadingQuotes}
       />
-      {isLoadingQuotes ||
+      {areLoadingQuotes ||
         <SwapButton
           quotes={quotes}
         />}
