@@ -29,8 +29,7 @@ function SwapForm ({
   onGoToQuotes,
   onOpenOfferSidenav,
   onLoadAccounts,
-  onLoadQuotes,
-  onLoadingQuotes
+  onLoadQuotes
 }) {
   const classes = useSwapFormStyles()
   const { search } = useLocation()
@@ -46,6 +45,7 @@ function SwapForm ({
   const [activeDropdown, setActiveDropdown] = React.useState(undefined)
   const [defaultValues, setDefaultValues] = React.useState(amountPositions)
   const [positionUpdated, handlePositionUpdated] = React.useState(undefined)
+  const [isLoadingQuotes, setIsLoadingQuotes] = React.useState(false)
   const [timer, setTimer] = React.useState(0)
 
   const setTokenPosition = tokenPosition => {
@@ -71,6 +71,10 @@ function SwapForm ({
   }, [accounts])
 
   React.useEffect(() => {
+    if (quotes.status === 'loading') return
+
+    setIsLoadingQuotes(false)
+
     if (quotes.data) {
       const from = BigNumber.from(quotes.data[0].amountFromToken)
       const to = BigNumber.from(quotes.data[0].amountToToken)
@@ -100,20 +104,17 @@ function SwapForm ({
       selectedTokens.to &&
       positionUpdated === position
     ) {
-      onLoadingQuotes()
+      setIsLoadingQuotes(true)
 
-      let data = {
+      const initData = {
         fromToken: '0x0000000000000000000000000000000000000000',
         // TODO Change to address coming in account, now it's forced to address in goerli
         toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
         fromHezAddr: 'hez:ETH:3000'
       }
-
-      if (position === AmountBoxPosition.TO) {
-        data = { ...data, amountToToken: value.amount.tokens.toString() }
-      } else {
-        data = { ...data, amountFromToken: value.amount.tokens.toString() }
-      }
+      const data = position === AmountBoxPosition.TO
+        ? { ...initData, amountToToken: value.amount.tokens.toString() }
+        : { ...initData, amountFromToken: value.amount.tokens.toString() }
 
       const tempTimer = setTimeout(() => onLoadQuotes(data), delayQuotes)
       setTimer(tempTimer)
@@ -155,7 +156,7 @@ function SwapForm ({
         onTokenChange={setTokenPosition}
         onActiveDropdownChange={setActiveDropdown}
         isDropdownActive={activeDropdown === position}
-        onPositionUpdated={handlePositionUpdated}
+        onPositionUpdate={handlePositionUpdated}
         defaultValue={value}
       />
     )
@@ -181,10 +182,12 @@ function SwapForm ({
         onGoToQuotes={onGoToQuotes}
         onOpenOfferSidenav={onOpenOfferSidenav}
         selectedLpId={selectedLpId}
+        isLoading={isLoadingQuotes}
       />
-      <SwapButton
-        quotes={quotes}
-      />
+      {isLoadingQuotes ||
+        <SwapButton
+          quotes={quotes}
+        />}
     </div>
   )
 }
@@ -204,8 +207,7 @@ SwapForm.propTypes = {
   onGoToQuotes: PropTypes.func,
   onOpenOfferSidenav: PropTypes.func,
   onLoadAccounts: PropTypes.func,
-  onLoadQuotes: PropTypes.func,
-  onLoadingQuotes: PropTypes.func
+  onLoadQuotes: PropTypes.func
 }
 
 export default SwapForm

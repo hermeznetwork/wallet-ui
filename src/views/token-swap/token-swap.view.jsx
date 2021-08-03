@@ -145,7 +145,6 @@ const mapDispatchToProps = dispatch => ({
   onGoToQuotes: () => dispatch(tokenSwapActions.goToQuotes()),
   onCleanup: () => dispatch(tokenSwapActions.resetState()),
   onLoadAccounts: fromItem => dispatch(tokenSwapThunks.fetchAccounts(fromItem)),
-  onLoadingQuotes: () => dispatch(tokenSwapActions.getQuotes()),
   onLoadQuotes: request => dispatch(tokenSwapThunks.getQuotes(request))
 })
 

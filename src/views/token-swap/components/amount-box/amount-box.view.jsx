@@ -29,7 +29,7 @@ function AmountBox ({
   onInputChange,
   onTokenChange,
   onActiveDropdownChange,
-  onPositionUpdated,
+  onPositionUpdate,
   onSendAll
 }) {
   const classes = useAmountBoxStyles()
@@ -41,12 +41,12 @@ function AmountBox ({
   }
 
   const handleMaxButtonClick = () => {
-    onPositionUpdated(position)
+    onPositionUpdate(position)
     onSendAll()
   }
 
   const handleInputChange = value => {
-    onPositionUpdated(position)
+    onPositionUpdate(position)
     onInputChange(value)
   }
 
@@ -127,8 +127,8 @@ AmountBox.propTypes = {
   isDropdownActive: PropTypes.bool,
   onInputChange: PropTypes.func,
   onTokenClick: PropTypes.func,
-  onDropdownChange: PropTypes.func,
-  setPositionUpdated: PropTypes.func,
+  onActiveDropdownChange: PropTypes.func,
+  onPositionUpdate: PropTypes.func,
   onSendAll: PropTypes.func
 }
 

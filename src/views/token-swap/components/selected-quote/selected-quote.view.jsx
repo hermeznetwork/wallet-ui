@@ -16,13 +16,13 @@ function SelectedQuote ({
   preferredCurrency,
   selectedTokens,
   selectedLpId,
+  isLoading,
   onGoToQuotes,
   onOpenOfferSidenav
 }) {
   const classes = useSelectedQuoteStyles()
   const isBestQuote = selectedLpId === 'best'
-  const isLoading = quotes.status === 'loading'
-  const isSuccessful = quotes.status === 'successful'
+  const isSuccessful = quotes.status === 'successful' && !isLoading
 
   const [quote, setQuote] = React.useState({ rate: 0 })
   const [fiatReward, setFiatReward] = React.useState(0)
@@ -88,6 +88,7 @@ SelectedQuote.propTypes = {
   preferredCurrency: PropTypes.string,
   selectedTokens: PropTypes.object,
   selectedLpId: PropTypes.string,
+  isLoading: PropTypes.bool,
   onGoToQuotes: PropTypes.func,
   onOpenOfferSidenav: PropTypes.func
 }
