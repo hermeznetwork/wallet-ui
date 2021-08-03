@@ -42,9 +42,10 @@ function SwapButton ({
         <div className={classes.buttonBox}>
           <button
             className={
-              `${classes.button} ${(isFailure ||
-                timeUntilValid <= 0) &&
-                classes.btnDisabled}`
+              `${classes.button} ${
+                (isFailure || timeUntilValid <= 0) &&
+                classes.btnDisabled
+              }`
             }
             disabled={isFailure || timeUntilValid > 0}
           >
