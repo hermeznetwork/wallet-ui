@@ -176,7 +176,7 @@ function refreshAccounts (hermezAddress, poolTransactions, pendingDeposits, fiat
                 fiatBalance
               }
             })
-          const pendingItems = results[results.length - 1].pendingItems
+          const pendingItems = results[results.length - 1] ? results[results.length - 1].pendingItems : 0
 
           return { accounts, pendingItems }
         })
