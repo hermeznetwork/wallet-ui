@@ -217,9 +217,12 @@ function Transaction ({
             )
           }
           case STEP_NAME.TRANSACTION_ERROR: {
+            const stepData = steps[STEP_NAME.REVIEW_TRANSACTION]
+            const txAccountIndex = accountIndex || stepData.transaction.from.accountIndex
+
             return (
               <TransactionError
-                onFinishTransaction={() => onFinishTransaction(transactionType, accountIndex)}
+                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex)}
               />
             )
           }
