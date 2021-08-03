@@ -1,6 +1,7 @@
 import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 
 import * as tokenSwapActions from './token-swap.actions'
+import * as tokenSwapApi from '../../apis/token-swap'
 import { getAccountBalance } from '../../utils/accounts'
 import {
   getFixedTokenAmount,
@@ -59,4 +60,31 @@ function fetchAccounts (fromItem) {
   }
 }
 
-export { fetchAccounts }
+/**
+ * Get Quotes for a token swap between pairs
+ * @param {Object} data
+ * @param {String} data.fromToken - contract address from Token that user wants to swap
+ * @param {String} data.toToken - contract addres from Token that user wants to receive
+ * @param {String} data.fromHezAddr - address with tokens to swap
+ * @param {String} [data.amountFromToken] - amount that user wants to swap
+ * @param {String} [data.amountToToken] - amount that user wants to receive
+ * @returns {void}
+ */
+function getQuotes (data) {
+  return (dispatch, getState) => {
+    dispatch(tokenSwapActions.getQuotes())
+    tokenSwapApi.getQuotes(data)
+      .then(res => {
+        const quotes = res.map(quote => ({
+          ...quote,
+          rate: quote.amountToToken / quote.amountFromToken
+        }))
+        dispatch(tokenSwapActions.getQuotesSuccess(quotes))
+      })
+      .catch(e => {
+        dispatch(tokenSwapActions.getQuoteFailure(e))
+      })
+  }
+}
+
+export { fetchAccounts, getQuotes }

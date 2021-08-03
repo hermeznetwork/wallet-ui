@@ -6,7 +6,10 @@ export const tokenSwapActionTypes = {
   LOAD_ACCOUNTS_SUCCESS: '[TOKEN SWAP] LOAD ACCOUNTS SUCCESS',
   LOAD_ACCOUNTS_FAILURE: '[TOKEN SWAP] LOAD ACCOUNTS FAILURE',
   REFRESH_ACCOUNTS: '[TOKEN SWAP] REFRESH ACCOUNTS',
-  REFRESH_ACCOUNTS_SUCCESS: '[TOKEN SWAP] REFRESH ACCOUNTS SUCCESS'
+  REFRESH_ACCOUNTS_SUCCESS: '[TOKEN SWAP] REFRESH ACCOUNTS SUCCESS',
+  GET_QUOTES: '[TOKEN SWAP] GET QUOTES',
+  GET_QUOTES_SUCCESS: '[TOKEN SWAP] GET QUOTES SUCCESS',
+  GET_QUOTES_FAILURE: '[TOKEN SWAP] GET QUOTES FAILURE'
 }
 
 function goToSwap () {
@@ -59,6 +62,26 @@ function refreshAccountsSuccess (data) {
   }
 }
 
+function getQuotes () {
+  return {
+    type: tokenSwapActionTypes.GET_QUOTES
+  }
+}
+
+function getQuotesSuccess (data) {
+  return {
+    type: tokenSwapActionTypes.GET_QUOTES_SUCCESS,
+    data
+  }
+}
+
+function getQuoteFailure (error) {
+  return {
+    type: tokenSwapActionTypes.GET_QUOTES_FAILURE,
+    error
+  }
+}
+
 export {
   goToSwap,
   goToQuotes,
@@ -67,5 +90,8 @@ export {
   loadAccountsSuccess,
   loadAccountsFailure,
   refreshAccounts,
-  refreshAccountsSuccess
+  refreshAccountsSuccess,
+  getQuotes,
+  getQuotesSuccess,
+  getQuoteFailure
 }
