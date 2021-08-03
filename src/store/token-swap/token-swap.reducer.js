@@ -72,7 +72,6 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
       return {
         ...state,
         quotesTask: {
-          ...state.quotesTask,
           status: 'successful',
           data: action.data
         }
@@ -83,7 +82,7 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
         ...state,
         quotesTask: {
           status: 'failure',
-          err: action.data
+          error: action.error
         }
       }
     }

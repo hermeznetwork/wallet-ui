@@ -8,7 +8,8 @@ import {
   ReactComponent as ArrowDown
 } from '../../../../images/icons/arrow-down-circle.svg'
 import AmountBox, { AmountBoxPosition } from '../amount-box/amount-box.view'
-import Offers from '../offers/offers.view'
+import SelectedButton from '../selected-quote/selected-quote.view'
+import SwapButton from '../swap-button/swap-button.view'
 import {
   getFixedTokenAmount
 } from '../../../../utils/currencies'
@@ -22,9 +23,9 @@ function SwapForm ({
   amountTo,
   selectedTokens,
   selectedLpId,
-  setAmountFrom,
-  setAmountTo,
-  setSelectedTokens,
+  onAmountFromChange,
+  onAmountToChange,
+  onSelectedTokensChange,
   onGoToQuotes,
   onOpenOfferSidenav,
   onLoadAccounts,
@@ -44,11 +45,11 @@ function SwapForm ({
 
   const [activeDropdown, setActiveDropdown] = React.useState(undefined)
   const [defaultValues, setDefaultValues] = React.useState(amountPositions)
-  const [positionUpdated, setPositionUpdated] = React.useState(undefined)
+  const [positionUpdated, handlePositionUpdated] = React.useState(undefined)
   const [timer, setTimer] = React.useState(0)
 
   const setTokenPosition = tokenPosition => {
-    setSelectedTokens({ ...selectedTokens, ...tokenPosition })
+    onSelectedTokensChange({ ...selectedTokens, ...tokenPosition })
   }
 
   React.useEffect(() => {
@@ -61,7 +62,7 @@ function SwapForm ({
     const from = accounts.data?.accounts.find(a => a.accountIndex === fromQuery)
     const to = accounts.data?.accounts.find(a => a.accountIndex === toQuery)
     if (from && to) {
-      setSelectedTokens({
+      onSelectedTokensChange({
         [AmountBoxPosition.FROM]: from,
         [AmountBoxPosition.TO]: to
       })
@@ -69,11 +70,11 @@ function SwapForm ({
   }, [accounts])
 
   React.useEffect(() => {
-    if (quotes.data?.quotes) {
-      const from = BigNumber.from(quotes.data.quotes[0].amountFromToken)
-      const to = BigNumber.from(quotes.data.quotes[0].amountToToken)
-      setAmountFrom(from)
-      setAmountTo(to)
+    if (quotes.data) {
+      const from = BigNumber.from(quotes.data[0].amountFromToken)
+      const to = BigNumber.from(quotes.data[0].amountToToken)
+      onAmountFromChange(from)
+      onAmountToChange(to)
       if (positionUpdated === AmountBoxPosition.TO) {
         setDefaultValues({
           ...defaultValues,
@@ -88,7 +89,7 @@ function SwapForm ({
     }
   }, [quotes])
 
-  const onHandlerChange = (value, position) => {
+  const handleAmountChange = (value, position) => {
     clearTimeout(timer)
     if (
       selectedTokens.from &&
@@ -112,17 +113,17 @@ function SwapForm ({
     }
   }
 
-  const switchTokens = () => {
+  const hadleTokensSwitch = () => {
     if (amountFrom && amountTo) {
-      setPositionUpdated(AmountBoxPosition.FROM)
-      setAmountFrom(amountTo)
-      setAmountTo(amountFrom)
+      handlePositionUpdated(AmountBoxPosition.FROM)
+      onAmountFromChange(amountTo)
+      onAmountToChange(amountFrom)
       setDefaultValues({
         [AmountBoxPosition.FROM]: { amount: amountTo },
         [AmountBoxPosition.TO]: { amount: amountFrom }
       })
     }
-    setSelectedTokens({
+    onSelectedTokensChange({
       [AmountBoxPosition.FROM]: selectedTokens.to,
       [AmountBoxPosition.TO]: selectedTokens.from
     })
@@ -141,13 +142,13 @@ function SwapForm ({
         fiatExchangeRates={fiatExchangeRates}
         preferredCurrency={preferredCurrency}
         l2Fee={0}
-        onChange={value => onHandlerChange(value, position)}
+        onChange={value => handleAmountChange(value, position)}
         position={position}
         accounts={accounts.data?.accounts}
         onTokenChange={setTokenPosition}
         onActiveDropdownChange={setActiveDropdown}
         isDropdownActive={activeDropdown === position}
-        setPositionUpdated={setPositionUpdated}
+        onPositionUpdated={handlePositionUpdated}
         defaultValue={value}
       />
     )
@@ -157,12 +158,12 @@ function SwapForm ({
     <div className={classes.root}>
       {renderBox(AmountBoxPosition.FROM)}
       <div className={classes.circleBox}>
-        <div className={classes.circle} onClick={switchTokens}>
+        <div className={classes.circle} onClick={hadleTokensSwitch}>
           <ArrowDown />
         </div>
       </div>
       {renderBox(AmountBoxPosition.TO)}
-      <Offers
+      <SelectedButton
         quotes={quotes}
         preferredCurrency={preferredCurrency}
         fiatExchangeRates={fiatExchangeRates}
@@ -170,6 +171,9 @@ function SwapForm ({
         onGoToQuotes={onGoToQuotes}
         onOpenOfferSidenav={onOpenOfferSidenav}
         selectedLpId={selectedLpId}
+      />
+      <SwapButton
+        quotes={quotes}
       />
     </div>
   )
@@ -184,9 +188,9 @@ SwapForm.propTypes = {
   amountTo: PropTypes.object,
   selectedTokens: PropTypes.object,
   selectedLpId: PropTypes.string,
-  setAmountFrom: PropTypes.func,
-  setAmountTo: PropTypes.func,
-  setSelectedTokens: PropTypes.func,
+  onAmountFromChange: PropTypes.func,
+  onAmountToChange: PropTypes.func,
+  onSelectedTokensChange: PropTypes.func,
   onGoToQuotes: PropTypes.func,
   onOpenOfferSidenav: PropTypes.func,
   onLoadAccounts: PropTypes.func,

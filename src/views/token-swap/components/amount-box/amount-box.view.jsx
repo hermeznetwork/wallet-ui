@@ -29,23 +29,24 @@ function AmountBox ({
   onInputChange,
   onTokenChange,
   onActiveDropdownChange,
-  setPositionUpdated
+  onPositionUpdated,
+  onSendAll
 }) {
   const classes = useAmountBoxStyles()
   const balance = getFixedTokenAmount(account?.balance, account?.token.decimals)
 
-  const switchDropdown = () => {
+  const handleDropdownClose = () => {
     const isActive = isDropdownActive ? '' : position
     onActiveDropdownChange(isActive)
   }
 
-  const setMax = () => {
-    setPositionUpdated(position)
-    onInputChange({ target: { value: balance } })
+  const handleMaxButtonClick = () => {
+    onPositionUpdated(position)
+    onSendAll()
   }
 
-  const inputChange = value => {
-    setPositionUpdated(position)
+  const handleInputChange = value => {
+    onPositionUpdated(position)
     onInputChange(value)
   }
 
@@ -55,7 +56,7 @@ function AmountBox ({
     <div className={classes.frame}>
       <div className={classes.box}>
         <div className={classes.row}>
-          <div className={classes.selectorBox} onClick={switchDropdown}>
+          <div className={classes.selectorBox} onClick={handleDropdownClose}>
             <p className={classes.tokenName}>
               {account
                 ? (
@@ -71,7 +72,7 @@ function AmountBox ({
             type='text'
             value={value}
             placeholder='0'
-            onChange={inputChange}
+            onChange={handleInputChange}
           />
         </div>
         <div className={`${classes.row} ${classes.rowMarginTop}`}>
@@ -80,9 +81,12 @@ function AmountBox ({
               <p className={classes.convertedText}>
                 Balance: {`${balance} ${account.token.symbol} `}
                 {position === AmountBoxPosition.FROM && (
-                  <span className={classes.maxBtn} onClick={setMax}>
+                  <button
+                    className={classes.maxBtn}
+                    onClick={handleMaxButtonClick}
+                  >
                     Max
-                  </span>
+                  </button>
                 )}
               </p>
               )
@@ -93,7 +97,8 @@ function AmountBox ({
                 Number(amount.fiat),
                 preferredCurrency,
                 fiatExchangeRates
-              )} currency={preferredCurrency}
+              )}
+              currency={preferredCurrency}
             />
           </div>
         </div>
@@ -101,7 +106,7 @@ function AmountBox ({
       {
           isDropdownActive &&
             <Dropdown
-              onClose={switchDropdown}
+              onClose={handleDropdownClose}
               accounts={accounts}
               onClick={onTokenChange}
               position={position}
@@ -123,7 +128,8 @@ AmountBox.propTypes = {
   onInputChange: PropTypes.func,
   onTokenClick: PropTypes.func,
   onDropdownChange: PropTypes.func,
-  setPositionUpdated: PropTypes.func
+  setPositionUpdated: PropTypes.func,
+  onSendAll: PropTypes.func
 }
 
 export default AmountInput(AmountBox)

@@ -1,15 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import useOffersStyles from './offers.style'
+import useSelectedQuoteStyles from './selected-quote.style'
 import Spinner from '../../../shared/spinner/spinner.view'
 import {
   getTokenAmountInPreferredCurrency,
   getFixedTokenAmount
   , CurrencySymbol
 } from '../../../../utils/currencies'
+import { MAX_TOKEN_DECIMALS } from '../../../../constants'
 
-function Offers ({
+function SelectedQuote ({
   quotes,
   fiatExchangeRates,
   preferredCurrency,
@@ -18,22 +19,20 @@ function Offers ({
   onGoToQuotes,
   onOpenOfferSidenav
 }) {
-  const classes = useOffersStyles()
+  const classes = useSelectedQuoteStyles()
   const isBestQuote = selectedLpId === 'best'
   const isLoading = quotes.status === 'loading'
   const successful = quotes.status === 'successful'
-  const failure = quotes.status === 'failure'
 
   const [quote, setQuote] = React.useState({ rate: 0 })
   const [fiatReward, setFiatReward] = React.useState(0)
   const [reward, setReward] = React.useState(0)
-  const [timeUntilValid, setTimeUntilValid] = React.useState(30000)
 
   React.useEffect(() => {
-    if (quotes.status === 'successful' && quotes.data.quotes) {
+    if (quotes.status === 'successful' && quotes.data) {
       const selectedQuote = isBestQuote
-        ? quotes.data.quotes[0]
-        : quotes.data.quotes.find(q => q.lpId === selectedLpId)
+        ? quotes.data[0]
+        : quotes.data.find(q => q.lpId === selectedLpId)
       setQuote(selectedQuote)
 
       const rewardAmount = getFixedTokenAmount(
@@ -49,36 +48,14 @@ function Offers ({
 
       setFiatReward(fiatRewardAmount)
       setReward(rewardAmount)
-      setTimeUntilValid(30000 - 1000)
-      // TODO should be launched with validUntil in miliseconds from quotes instead 30000
     }
   }, [quotes])
-
-  React.useEffect(() => {
-    if (timeUntilValid <= 0) return
-    const timer = setTimeout(() => setTimeUntilValid(timeUntilValid - 1000), 1000)
-    return () => clearTimeout(timer)
-  }, [timeUntilValid])
-
-  const msToTime = (ms) => {
-    let s = ms / 1000
-    const secs = s % 60
-    s = (s - secs) / 60
-    const mins = s % 60
-
-    return `${mins.toString().padStart(2, '0')}:${secs.toFixed(0).toString().padStart(2, '0')}`
-  }
-
-  const renderBtnText = {
-    successful: `Swap ${msToTime(timeUntilValid)}`,
-    failure: 'Insufficient liquidity'
-  }
 
   return (
     <div className={classes.root}>
       {isLoading &&
         <div className={classes.loading}>
-          <p>Searching for the best offers</p>
+          <p className={classes.loadingText}>Searching for the best offers</p>
           <Spinner />
         </div>}
       {successful &&
@@ -90,7 +67,7 @@ function Offers ({
               </p>
               <p className={classes.quoteRate}>
                 1 {selectedTokens.from?.token.symbol}
-                = {quote.rate.toFixed(6)} {selectedTokens.to?.token.symbol}
+                = {quote.rate.toFixed(MAX_TOKEN_DECIMALS)} {selectedTokens.to?.token.symbol}
               </p>
             </div>
             <button className={classes.quotes} onClick={onGoToQuotes}>All quotes</button>
@@ -98,25 +75,14 @@ function Offers ({
           <p className={classes.reward}>
             This swap is rewarded with {reward} {quote.lpInfo?.rewards[0].token}  (
             {CurrencySymbol[preferredCurrency].symbol} {fiatReward.toFixed(2)}
-            ) <span className={classes.moreInfo} onClick={onOpenOfferSidenav}>More info</span>
+            ) <button className={classes.moreInfo} onClick={onOpenOfferSidenav}>More info</button>
           </p>
-        </div>}
-      {['successful', 'failure'].includes(quotes.status) &&
-        <div className={classes.buttonBox}>
-          <button
-            className={`${classes.button} ${(failure || timeUntilValid <= 0) && classes.btnDisabled}`}
-            disabled={failure || timeUntilValid > 0}
-          >
-            {timeUntilValid > 0
-              ? renderBtnText[quotes.status]
-              : 'Time expired'}
-          </button>
         </div>}
     </div>
   )
 }
 
-Offers.propTypes = {
+SelectedQuote.propTypes = {
   quotes: PropTypes.object,
   fiatExchangeRates: PropTypes.object,
   preferredCurrency: PropTypes.string,
@@ -126,4 +92,4 @@ Offers.propTypes = {
   onOpenOfferSidenav: PropTypes.func
 }
 
-export default Offers
+export default SelectedQuote

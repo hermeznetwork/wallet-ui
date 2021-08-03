@@ -75,10 +75,10 @@ function getQuotesSuccess (data) {
   }
 }
 
-function getQuoteFailure (data) {
+function getQuoteFailure (error) {
   return {
     type: tokenSwapActionTypes.GET_QUOTES_FAILURE,
-    data
+    error
   }
 }
 

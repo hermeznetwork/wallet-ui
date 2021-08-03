@@ -66,9 +66,9 @@ function TokenSwap ({
                   amountFrom={amountFrom}
                   amountTo={amountTo}
                   selectedTokens={selectedTokens}
-                  setAmountFrom={setAmountFrom}
-                  setAmountTo={setAmountTo}
-                  setSelectedTokens={setSelectedTokens}
+                  onAmountFromChange={setAmountFrom}
+                  onAmountToChange={setAmountTo}
+                  onSelectedTokensChange={setSelectedTokens}
                   onLoadQuotes={onLoadQuotes}
                   onLoadingQuotes={onLoadingQuotes}
                   onLoadAccounts={onLoadAccounts}

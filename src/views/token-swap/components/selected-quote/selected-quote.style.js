@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useOffersStyles = createUseStyles(theme => ({
+const useSelectedQuoteStyles = createUseStyles(theme => ({
   root: {
     width: '100%',
     display: 'flex',
@@ -10,11 +10,12 @@ const useOffersStyles = createUseStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    marginTop: theme.spacing(7),
-    '& p': {
-      fontSize: theme.spacing(1.75),
-      color: theme.palette.grey.main
-    }
+    marginTop: theme.spacing(7)
+
+  },
+  loadingText: {
+    fontSize: theme.spacing(1.75),
+    color: theme.palette.grey.main
   },
   offerBox: {
     backgroundColor: theme.palette.grey.light,
@@ -73,6 +74,8 @@ const useOffersStyles = createUseStyles(theme => ({
     [theme.breakpoints.upSm]: {
       fontSize: theme.spacing(1.75)
     },
+    border: 'none',
+    backgroundColor: 'transparent',
     cursor: 'pointer'
   },
   buttonBox: { display: 'flex', justifyContent: 'center' },
@@ -94,4 +97,4 @@ const useOffersStyles = createUseStyles(theme => ({
   }
 }))
 
-export default useOffersStyles
+export default useSelectedQuoteStyles

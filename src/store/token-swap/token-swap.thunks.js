@@ -76,13 +76,11 @@ function getQuotes (request) {
     dispatch(tokenSwapActions.getQuotes())
     tokenSwapApi.getQuotes(request)
       .then(res => {
-        res.quotes.forEach(quote => {
-          quote.rate = quote.amountToToken / quote.amountFromToken
-        })
-        res.quotes = res.quotes.sort((a, b) => {
-          return b.rate - a.rate
-        })
-        dispatch(tokenSwapActions.getQuotesSuccess(res))
+        const quotes = res.map(quote => ({
+          ...quote,
+          rate: quote.amountToToken / quote.amountFromToken
+        }))
+        dispatch(tokenSwapActions.getQuotesSuccess(quotes))
       })
       .catch(e => {
         dispatch(tokenSwapActions.getQuoteFailure(e))

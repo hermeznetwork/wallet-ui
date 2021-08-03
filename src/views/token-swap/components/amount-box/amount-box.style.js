@@ -87,7 +87,9 @@ const useAmountBoxStyles = createUseStyles(theme => ({
     color: theme.palette.grey.main
   },
   maxBtn: {
-    color: theme.palette.black
+    color: theme.palette.black,
+    border: 'none',
+    backgroundColor: 'transparent'
   },
   frame: {
     position: 'relative'
