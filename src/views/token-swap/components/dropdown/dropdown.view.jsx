@@ -28,7 +28,7 @@ function Dropdown ({ accounts, position, onClick, onClose }) {
         </div>
       </div>
       <List
-        accounts={accounts}
+        accounts={accounts || []}
         onClick={onClickToken}
       />
     </div>

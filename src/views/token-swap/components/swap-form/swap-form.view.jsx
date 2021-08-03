@@ -21,6 +21,7 @@ function SwapForm ({
   amountFrom,
   amountTo,
   selectedTokens,
+  selectedLpId,
   setAmountFrom,
   setAmountTo,
   setSelectedTokens,
@@ -37,17 +38,14 @@ function SwapForm ({
   const fromQuery = urlSearchParams.get(AmountBoxPosition.FROM)
   const toQuery = urlSearchParams.get(AmountBoxPosition.TO)
   const amountPositions = {
-    [AmountBoxPosition.FROM]: { amount: amountFrom, setAmount: setAmountFrom },
-    [AmountBoxPosition.TO]: { amount: amountTo, setAmount: setAmountTo }
-  }
-  const defaultValues = {
-    [AmountBoxPosition.FROM]: BigNumber.from(0).toString(),
-    [AmountBoxPosition.TO]: BigNumber.from(0).toString()
+    [AmountBoxPosition.FROM]: { amount: amountFrom },
+    [AmountBoxPosition.TO]: { amount: amountTo }
   }
 
-  const [valuesToUpdate, setValuesToUpdate] = React.useState(defaultValues)
-  const [positionUpdated, setPositionUpdated] = React.useState(undefined)
   const [activeDropdown, setActiveDropdown] = React.useState(undefined)
+  const [defaultValues, setDefaultValues] = React.useState(amountPositions)
+  const [positionUpdated, setPositionUpdated] = React.useState(undefined)
+  const [timer, setTimer] = React.useState(0)
 
   const setTokenPosition = tokenPosition => {
     setSelectedTokens({ ...selectedTokens, ...tokenPosition })
@@ -60,8 +58,8 @@ function SwapForm ({
   }, [accounts])
 
   React.useEffect(() => {
-    const from = accounts?.data.accounts.find(a => a.accountIndex === fromQuery)
-    const to = accounts?.data.accounts.find(a => a.accountIndex === toQuery)
+    const from = accounts.data?.accounts.find(a => a.accountIndex === fromQuery)
+    const to = accounts.data?.accounts.find(a => a.accountIndex === toQuery)
     if (from && to) {
       setSelectedTokens({
         [AmountBoxPosition.FROM]: from,
@@ -71,98 +69,59 @@ function SwapForm ({
   }, [accounts])
 
   React.useEffect(() => {
-    let timer = 0
-    if (amountFrom.amount &&
-      selectedTokens.from &&
-      selectedTokens.to &&
-      positionUpdated === AmountBoxPosition.FROM) {
-      const amountFromToken = getBigNumberToString(amountFrom)
-      if (amountFromToken === '0') return
-
-      onLoadingQuotes()
-      timer = setTimeout(() => onLoadQuotes({
-        fromToken: '0x0000000000000000000000000000000000000000',
-        // TODO Change to address coming in account, now it's forced to address in goerli
-        toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
-        amountFromToken: amountFromToken,
-        fromHezAddr: 'hez:ETH:3000'
-      }), delayQuotes)
-    }
-    return () => clearTimeout(timer)
-  }, [selectedTokens, amountFrom])
-
-  React.useEffect(() => {
-    let timer = 0
-    if (amountTo.amount &&
-      selectedTokens.from &&
-      selectedTokens.to &&
-      positionUpdated === AmountBoxPosition.TO) {
-      const amountToToken = getBigNumberToString(amountTo)
-      if (amountToToken === '0') return
-      onLoadingQuotes()
-      timer = setTimeout(() => onLoadQuotes({
-        fromToken: '0x0000000000000000000000000000000000000000',
-        // TODO Change to address coming in account, now it's forced to address in goerli
-        toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
-        amountToToken,
-        fromHezAddr: 'hez:ETH:3000'
-      }), delayQuotes)
-    }
-    return () => clearTimeout(timer)
-  }, [amountTo])
-
-  React.useEffect(() => {
-    if (quotes.data.quotes) {
-      if (positionUpdated) {
-        const value = positionUpdated === AmountBoxPosition.FROM
-          ? quotes.data.quotes[0].amountToToken
-          : quotes.data.quotes[0].amountFromToken
-        const positionToUpdate = positionUpdated === AmountBoxPosition.FROM
-          ? AmountBoxPosition.TO
-          : AmountBoxPosition.FROM
-        setValuesToUpdate({
-          ...valuesToUpdate,
-          [positionToUpdate]: getFixedTokenAmount(
-            value,
-            selectedTokens[positionToUpdate].token.decimals
-          )
+    if (quotes.data?.quotes) {
+      const from = BigNumber.from(quotes.data.quotes[0].amountFromToken)
+      const to = BigNumber.from(quotes.data.quotes[0].amountToToken)
+      setAmountFrom(from)
+      setAmountTo(to)
+      if (positionUpdated === AmountBoxPosition.TO) {
+        setDefaultValues({
+          ...defaultValues,
+          [AmountBoxPosition.FROM]: { amount: from }
         })
       } else {
-        const amountFromToUpdate = getFixedTokenAmount(
-          quotes.data.quotes[0].amountFromToken,
-          selectedTokens[AmountBoxPosition.FROM].token.decimals
-        )
-        const amountToToUpdate = getFixedTokenAmount(
-          quotes.data.quotes[0].amountToToken,
-          selectedTokens[AmountBoxPosition.TO].token.decimals
-        )
-        setValuesToUpdate({
-          [AmountBoxPosition.FROM]: amountFromToUpdate,
-          [AmountBoxPosition.TO]: amountToToUpdate
+        setDefaultValues({
+          ...defaultValues,
+          [AmountBoxPosition.TO]: { amount: to }
         })
       }
     }
   }, [quotes])
 
-  const getBigNumberToString = amount =>
-    BigNumber.from(amount.amount.tokens._hex).toString()
+  const onHandlerChange = (value, position) => {
+    clearTimeout(timer)
+    if (
+      selectedTokens.from &&
+      selectedTokens.to &&
+      positionUpdated === position
+    ) {
+      onLoadingQuotes()
+      let data = {
+        fromToken: '0x0000000000000000000000000000000000000000',
+        // TODO Change to address coming in account, now it's forced to address in goerli
+        toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
+        fromHezAddr: 'hez:ETH:3000'
+      }
+      if (position === AmountBoxPosition.TO) {
+        data = { ...data, amountToToken: value.amount.tokens.toString() }
+      } else {
+        data = { ...data, amountFromToken: value.amount.tokens.toString() }
+      }
+      const tempTimer = setTimeout(() => onLoadQuotes(data), delayQuotes)
+      setTimer(tempTimer)
+    }
+  }
 
   const switchTokens = () => {
     if (amountFrom && amountTo) {
-      const amountFromToUpdate = getFixedTokenAmount(
-        getBigNumberToString(amountFrom),
-        selectedTokens[AmountBoxPosition.FROM].token.decimals
-      )
-      const amountToToUpdate = getFixedTokenAmount(
-        getBigNumberToString(amountTo),
-        selectedTokens[AmountBoxPosition.TO].token.decimals
-      )
-      setValuesToUpdate({
-        [AmountBoxPosition.FROM]: amountToToUpdate,
-        [AmountBoxPosition.TO]: amountFromToUpdate
+      setPositionUpdated(AmountBoxPosition.FROM)
+      setAmountFrom(amountTo)
+      setAmountTo(amountFrom)
+      setDefaultValues({
+        [AmountBoxPosition.FROM]: { amount: amountTo },
+        [AmountBoxPosition.TO]: { amount: amountFrom }
       })
     }
-
     setSelectedTokens({
       [AmountBoxPosition.FROM]: selectedTokens.to,
       [AmountBoxPosition.TO]: selectedTokens.from
@@ -170,8 +129,11 @@ function SwapForm ({
   }
 
   const renderBox = position => {
-    const { setAmount } = amountPositions[position]
-    const value = valuesToUpdate[position]
+    const { amount } = defaultValues[position]
+    const value = getFixedTokenAmount(
+      amount,
+      selectedTokens[position]?.token.decimals
+    )
     return (
       <AmountBox
         account={selectedTokens[position]}
@@ -179,13 +141,12 @@ function SwapForm ({
         fiatExchangeRates={fiatExchangeRates}
         preferredCurrency={preferredCurrency}
         l2Fee={0}
-        onChange={setAmount}
+        onChange={value => onHandlerChange(value, position)}
         position={position}
-        accounts={accounts.data.accounts}
+        accounts={accounts.data?.accounts}
         onTokenChange={setTokenPosition}
         onActiveDropdownChange={setActiveDropdown}
         isDropdownActive={activeDropdown === position}
-        positionUpdated={positionUpdated}
         setPositionUpdated={setPositionUpdated}
         defaultValue={value}
       />
@@ -208,6 +169,7 @@ function SwapForm ({
         selectedTokens={selectedTokens}
         onGoToQuotes={onGoToQuotes}
         onOpenOfferSidenav={onOpenOfferSidenav}
+        selectedLpId={selectedLpId}
       />
     </div>
   )
@@ -221,6 +183,7 @@ SwapForm.propTypes = {
   amountFrom: PropTypes.object,
   amountTo: PropTypes.object,
   selectedTokens: PropTypes.object,
+  selectedLpId: PropTypes.string,
   setAmountFrom: PropTypes.func,
   setAmountTo: PropTypes.func,
   setSelectedTokens: PropTypes.func,

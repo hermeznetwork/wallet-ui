@@ -8,7 +8,7 @@ import AmountInput from '../../../shared/amount-input/amount-input.view'
 import Dropdown from '../dropdown/dropdown.view'
 import { getTokenIcon } from '../../../../utils/tokens'
 import {
-  getTokenAmountInPreferredCurrency,
+  getAmountInPreferredCurrency,
   getFixedTokenAmount
 } from '../../../../utils/currencies'
 
@@ -22,9 +22,8 @@ function AmountBox ({
   preferredCurrency,
   fiatExchangeRates,
   value,
-  amountToUpdate,
+  amount,
   position,
-  positionUpdated,
   accounts,
   isDropdownActive,
   onInputChange,
@@ -34,12 +33,6 @@ function AmountBox ({
 }) {
   const classes = useAmountBoxStyles()
   const balance = getFixedTokenAmount(account?.balance, account?.token.decimals)
-  const convertValue = getTokenAmountInPreferredCurrency(
-    value,
-    account?.token.USD,
-    preferredCurrency,
-    fiatExchangeRates
-  )
 
   const switchDropdown = () => {
     const isActive = isDropdownActive ? '' : position
@@ -95,7 +88,13 @@ function AmountBox ({
               )
             : <div />}
           <div className={classes.convertedText}>
-            <FiatAmount amount={convertValue} currency={preferredCurrency} />
+            <FiatAmount
+              amount={getAmountInPreferredCurrency(
+                Number(amount.fiat),
+                preferredCurrency,
+                fiatExchangeRates
+              )} currency={preferredCurrency}
+            />
           </div>
         </div>
       </div>
@@ -116,9 +115,8 @@ AmountBox.propTypes = {
   accounts: PropTypes.array,
   account: PropTypes.object,
   value: PropTypes.string,
-  amountToUpdate: PropTypes.string,
+  amount: PropTypes.object,
   position: PropTypes.string,
-  positionUpdated: PropTypes.string,
   preferredCurrency: PropTypes.string,
   fiatExchangeRates: PropTypes.object,
   isDropdownActive: PropTypes.bool,

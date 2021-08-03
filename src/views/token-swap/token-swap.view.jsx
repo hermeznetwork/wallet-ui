@@ -21,6 +21,7 @@ function TokenSwap ({
   accountsTask,
   quotesTask,
   fiatExchangeRatesTask,
+  selectedLpId,
   onLoadAccounts,
   onChangeHeader,
   onCleanup,
@@ -73,6 +74,7 @@ function TokenSwap ({
                   onLoadAccounts={onLoadAccounts}
                   onGoToQuotes={onGoToQuotes}
                   onOpenOfferSidenav={handleOpenOfferSidenav}
+                  selectedLpId={selectedLpId}
                 />
               )
             }
@@ -117,6 +119,7 @@ TokenSwap.propTypes = {
   fiatExchangeRatesTask: PropTypes.object,
   currentStep: PropTypes.string,
   steps: PropTypes.object,
+  selectedLpId: PropTypes.string,
   onChangeHeader: PropTypes.func,
   onCleanup: PropTypes.func,
   onGoToQuotes: PropTypes.func,
@@ -131,6 +134,7 @@ const mapStateToProps = state => ({
   steps: state.tokenSwap.steps,
   accountsTask: state.tokenSwap.accountsTask,
   quotesTask: state.tokenSwap.quotesTask,
+  selectedLpId: state.tokenSwap.selectedLpId,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency
 })

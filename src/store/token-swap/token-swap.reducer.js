@@ -13,14 +13,12 @@ const initialTokenSwapState = {
     [STEP_NAME.QUOTES]: {}
   },
   accountsTask: { // TODO check the correct place to this values
-    status: 'pending',
-    data: { accounts: [], fromItemHistory: [] }
+    status: 'pending'
   },
   quotesTask: {
-    status: 'pending',
-    data: { quotes: null },
-    selected: 'best'
-  }
+    status: 'pending'
+  },
+  selectedLpId: 'best'
 }
 
 function tokenSwapReducer (state = initialTokenSwapState, action) {
@@ -41,10 +39,7 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
       return { ...initialTokenSwapState }
     }
     case tokenSwapActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      const accounts = [
-        ...state.accountsTask.data.accounts,
-        ...action.data.accounts
-      ]
+      const accounts = action.data.accounts
       const pagination = getPaginationData(action.data.pendingItems, accounts)
       const fromItemHistory = []
 
@@ -69,8 +64,6 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
       return {
         ...state,
         quotesTask: {
-          ...state.quotesTask,
-          data: initialTokenSwapState.quotesTask.data,
           status: 'loading'
         }
       }
@@ -89,9 +82,8 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
       return {
         ...state,
         quotesTask: {
-          ...state.quotesTask,
-          data: initialTokenSwapState.quotesTask.data,
-          status: 'failure'
+          status: 'failure',
+          err: action.data
         }
       }
     }

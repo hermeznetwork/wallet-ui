@@ -14,11 +14,12 @@ function Offers ({
   fiatExchangeRates,
   preferredCurrency,
   selectedTokens,
+  selectedLpId,
   onGoToQuotes,
   onOpenOfferSidenav
 }) {
   const classes = useOffersStyles()
-  const isBestQuote = quotes.selected === 'best'
+  const isBestQuote = selectedLpId === 'best'
   const isLoading = quotes.status === 'loading'
   const successful = quotes.status === 'successful'
   const failure = quotes.status === 'failure'
@@ -29,10 +30,10 @@ function Offers ({
   const [timeUntilValid, setTimeUntilValid] = React.useState(30000)
 
   React.useEffect(() => {
-    if (quotes.data.quotes && quotes.status === 'successful') {
+    if (quotes.status === 'successful' && quotes.data.quotes) {
       const selectedQuote = isBestQuote
         ? quotes.data.quotes[0]
-        : quotes.data.quotes.find(q => q.lpId === quotes.selected)
+        : quotes.data.quotes.find(q => q.lpId === selectedLpId)
       setQuote(selectedQuote)
 
       const rewardAmount = getFixedTokenAmount(
@@ -88,8 +89,8 @@ function Offers ({
                 {isBestQuote ? 'Best q' : 'Q'}uote from {quote.lpInfo?.name}
               </p>
               <p className={classes.quoteRate}>
-                1 {selectedTokens.from.token.symbol}
-                = {quote.rate.toFixed(6)} {selectedTokens.to.token.symbol}
+                1 {selectedTokens.from?.token.symbol}
+                = {quote.rate.toFixed(6)} {selectedTokens.to?.token.symbol}
               </p>
             </div>
             <button className={classes.quotes} onClick={onGoToQuotes}>All quotes</button>
@@ -120,6 +121,7 @@ Offers.propTypes = {
   fiatExchangeRates: PropTypes.object,
   preferredCurrency: PropTypes.string,
   selectedTokens: PropTypes.object,
+  selectedLpId: PropTypes.string,
   onGoToQuotes: PropTypes.func,
   onOpenOfferSidenav: PropTypes.func
 }
