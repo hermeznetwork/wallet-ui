@@ -8,10 +8,6 @@ export const STEP_NAME = {
 
 const initialTokenSwapState = {
   currentStep: STEP_NAME.SWAP,
-  steps: {
-    [STEP_NAME.SWAP]: {},
-    [STEP_NAME.QUOTES]: {}
-  },
   quoteSidenav: {
     status: 'closed'
   },

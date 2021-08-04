@@ -43,9 +43,9 @@ function SwapForm ({
     [AmountBoxPosition.TO]: { amount: amountTo }
   }
 
-  const [activeDropdown, setActiveDropdown] = React.useState(undefined)
+  const [activeDropdown, setActiveDropdown] = React.useState()
   const [defaultValues, setDefaultValues] = React.useState(amountPositions)
-  const [positionUpdated, handlePositionUpdated] = React.useState(undefined)
+  const [positionUpdated, handlePositionUpdated] = React.useState()
   const [areLoadingQuotes, setAreLoadingQuotes] = React.useState(false)
   const [timer, setTimer] = React.useState(0)
 
@@ -138,7 +138,7 @@ function SwapForm ({
     })
   }
 
-  const renderBox = position => {
+  const renderBox = (position) => {
     const { amount } = defaultValues[position]
     const value = getFixedTokenAmount(
       amount,

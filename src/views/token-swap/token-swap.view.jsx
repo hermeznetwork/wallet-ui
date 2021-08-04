@@ -17,7 +17,6 @@ import { AmountBoxPosition } from './components/amount-box/amount-box.view'
 
 function TokenSwap ({
   currentStep,
-  steps,
   quoteSidenav,
   preferredCurrency,
   accountsTask,
@@ -146,7 +145,6 @@ TokenSwap.propTypes = {
   preferredCurrency: PropTypes.string,
   fiatExchangeRatesTask: PropTypes.object,
   currentStep: PropTypes.string,
-  steps: PropTypes.object,
   selectedLpId: PropTypes.string,
   onChangeHeader: PropTypes.func,
   onCleanup: PropTypes.func,
@@ -159,7 +157,6 @@ TokenSwap.propTypes = {
 
 const mapStateToProps = state => ({
   currentStep: state.tokenSwap.currentStep,
-  steps: state.tokenSwap.steps,
   accountsTask: state.tokenSwap.accountsTask,
   quotesTask: state.tokenSwap.quotesTask,
   quoteSidenav: state.tokenSwap.quoteSidenav,
