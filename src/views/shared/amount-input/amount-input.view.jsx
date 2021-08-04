@@ -12,7 +12,7 @@ const INPUT_REGEX = /^\d*(?:\.\d*)?$/
 
 function AmountInput (Component) {
   return function (props) {
-    const { transactionType, account, l2Fee, fiatExchangeRates, preferredCurrency } = props
+    const { defaultValue, transactionType, account, l2Fee, fiatExchangeRates, preferredCurrency } = props
     const [gasPrice, setGasPrice] = React.useState(BigNumber.from(0))
     const [value, setValue] = React.useState('')
     const [amount, setAmount] = React.useState({ tokens: BigNumber.from(0), fiat: 0 })
@@ -24,6 +24,10 @@ function AmountInput (Component) {
     React.useEffect(() => {
       getProvider().getGasPrice().then((gasPrice) => setGasPrice(gasPrice))
     }, [])
+
+    React.useEffect(() => {
+      handleInputChange({ target: { value: defaultValue } })
+    }, [defaultValue])
 
     React.useEffect(() => {
       if (props.onChange) {

@@ -103,6 +103,7 @@ function homeReducer (state = initialHomeState, action) {
         action.data.accounts,
         PaginationOrder.DESC
       )
+      const fromItemHistory = []
 
       return {
         ...state,
@@ -111,7 +112,8 @@ function homeReducer (state = initialHomeState, action) {
           data: {
             ...state.accountsTask.data,
             accounts: action.data.accounts,
-            pagination
+            pagination,
+            fromItemHistory
           }
         }
       }

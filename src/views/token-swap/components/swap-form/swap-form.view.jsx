@@ -4,27 +4,50 @@ import { BigNumber } from 'ethers'
 import { useLocation } from 'react-router-dom'
 
 import useSwapFormStyles from './swap-form.style'
-import { ReactComponent as ArrowDown } from '../../../../images/icons/arrow-down-circle.svg'
+import {
+  ReactComponent as ArrowDown
+} from '../../../../images/icons/arrow-down-circle.svg'
 import AmountBox, { AmountBoxPosition } from '../amount-box/amount-box.view'
+import SelectedQuote from '../selected-quote/selected-quote.view'
+import SwapButton from '../swap-button/swap-button.view'
+import {
+  getFixedTokenAmount
+} from '../../../../utils/currencies'
 
 function SwapForm ({
   accounts,
+  quotes,
   preferredCurrency,
   fiatExchangeRates,
+  amountFrom,
+  amountTo,
   selectedTokens,
+  selectedQuote,
+  bestQuote,
+  onAmountFromChange,
+  onAmountToChange,
+  onSelectedTokensChange,
   onGoToQuotes,
   onOpenQuoteSidenav,
   onLoadAccounts,
-  onSelectedTokensChange
+  onLoadQuotes
 }) {
   const classes = useSwapFormStyles()
   const { search } = useLocation()
+  const delayQuotes = 1000
   const urlSearchParams = new URLSearchParams(search)
   const fromQuery = urlSearchParams.get(AmountBoxPosition.FROM)
   const toQuery = urlSearchParams.get(AmountBoxPosition.TO)
+  const amountPositions = {
+    [AmountBoxPosition.FROM]: { amount: amountFrom },
+    [AmountBoxPosition.TO]: { amount: amountTo }
+  }
 
-  const [amount, setAmount] = React.useState(BigNumber.from(0))
   const [activeDropdown, setActiveDropdown] = React.useState(undefined)
+  const [defaultValues, setDefaultValues] = React.useState(amountPositions)
+  const [positionUpdated, handlePositionUpdated] = React.useState(undefined)
+  const [areLoadingQuotes, setAreLoadingQuotes] = React.useState(false)
+  const [timer, setTimer] = React.useState(0)
 
   const setTokenPosition = tokenPosition => {
     onSelectedTokensChange({ ...selectedTokens, ...tokenPosition })
@@ -37,15 +60,78 @@ function SwapForm ({
   }, [accounts])
 
   React.useEffect(() => {
-    const from = accounts?.data.accounts.find(a => a.accountIndex === fromQuery)
-    const to = accounts?.data.accounts.find(a => a.accountIndex === toQuery)
-    onSelectedTokensChange({
-      [AmountBoxPosition.FROM]: from,
-      [AmountBoxPosition.TO]: to
-    })
+    const from = accounts.data?.accounts.find(a => a.accountIndex === fromQuery)
+    const to = accounts.data?.accounts.find(a => a.accountIndex === toQuery)
+
+    if (from && to) {
+      onSelectedTokensChange({
+        [AmountBoxPosition.FROM]: from,
+        [AmountBoxPosition.TO]: to
+      })
+    }
   }, [accounts])
 
-  const switchTokens = () => {
+  React.useEffect(() => {
+    if (quotes.status === 'loading') return
+
+    setAreLoadingQuotes(false)
+
+    if (quotes.data) {
+      const from = BigNumber.from(quotes.data[0].amountFromToken)
+      const to = BigNumber.from(quotes.data[0].amountToToken)
+
+      onAmountFromChange(from)
+      onAmountToChange(to)
+
+      if (positionUpdated === AmountBoxPosition.TO) {
+        setDefaultValues({
+          ...defaultValues,
+          [AmountBoxPosition.FROM]: { amount: from }
+        })
+      } else {
+        setDefaultValues({
+          ...defaultValues,
+          [AmountBoxPosition.TO]: { amount: to }
+        })
+      }
+    }
+  }, [quotes])
+
+  const handleAmountChange = (value, position) => {
+    clearTimeout(timer)
+
+    if (
+      selectedTokens.from &&
+      selectedTokens.to &&
+      positionUpdated === position
+    ) {
+      setAreLoadingQuotes(true)
+
+      const initData = {
+        fromToken: '0x0000000000000000000000000000000000000000',
+        // TODO Change to address coming in account, now it's forced to address in goerli
+        toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
+        fromHezAddr: 'hez:ETH:3000'
+      }
+      const data = position === AmountBoxPosition.TO
+        ? { ...initData, amountToToken: value.amount.tokens.toString() }
+        : { ...initData, amountFromToken: value.amount.tokens.toString() }
+
+      const tempTimer = setTimeout(() => onLoadQuotes(data), delayQuotes)
+      setTimer(tempTimer)
+    }
+  }
+
+  const handleTokensSwitch = () => {
+    if (amountFrom && amountTo) {
+      handlePositionUpdated(AmountBoxPosition.FROM)
+      onAmountFromChange(amountTo)
+      onAmountToChange(amountFrom)
+      setDefaultValues({
+        [AmountBoxPosition.FROM]: { amount: amountTo },
+        [AmountBoxPosition.TO]: { amount: amountFrom }
+      })
+    }
     onSelectedTokensChange({
       [AmountBoxPosition.FROM]: selectedTokens.to,
       [AmountBoxPosition.TO]: selectedTokens.from
@@ -53,6 +139,11 @@ function SwapForm ({
   }
 
   const renderBox = position => {
+    const { amount } = defaultValues[position]
+    const value = getFixedTokenAmount(
+      amount,
+      selectedTokens[position]?.token.decimals
+    )
     return (
       <AmountBox
         account={selectedTokens[position]}
@@ -60,13 +151,14 @@ function SwapForm ({
         fiatExchangeRates={fiatExchangeRates}
         preferredCurrency={preferredCurrency}
         l2Fee={0}
-        onChange={setAmount}
+        onChange={value => handleAmountChange(value, position)}
         position={position}
-        accounts={accounts.data.accounts}
+        accounts={accounts.data?.accounts}
         onTokenChange={setTokenPosition}
-        amount={amount}
         onActiveDropdownChange={setActiveDropdown}
         isDropdownActive={activeDropdown === position}
+        onPositionUpdate={handlePositionUpdated}
+        defaultValue={value}
       />
     )
   }
@@ -75,28 +167,48 @@ function SwapForm ({
     <div className={classes.root}>
       {renderBox(AmountBoxPosition.FROM)}
       <div className={classes.circleBox}>
-        <div className={classes.circle} onClick={switchTokens}>
+        <div
+          className={classes.circle}
+          onClick={handleTokensSwitch}
+        >
           <ArrowDown />
         </div>
       </div>
       {renderBox(AmountBoxPosition.TO)}
-      <div>
-        {selectedTokens[AmountBoxPosition.TO] && (
-          <button onClick={onGoToQuotes}>Go to quotes</button>
-        )}
-        <button onClick={onOpenQuoteSidenav}>Open offer sidenav</button>
-      </div>
+      <SelectedQuote
+        selectedTokens={selectedTokens}
+        selectedQuote={selectedQuote}
+        bestQuote={bestQuote}
+        isLoading={areLoadingQuotes}
+        preferredCurrency={preferredCurrency}
+        fiatExchangeRates={fiatExchangeRates}
+        onGoToQuotes={onGoToQuotes}
+        onOpenQuoteSidenav={onOpenQuoteSidenav}
+      />
+      {areLoadingQuotes ||
+        <SwapButton
+          quotes={quotes}
+        />}
     </div>
   )
 }
 
 SwapForm.propTypes = {
   accounts: PropTypes.object,
+  quotes: PropTypes.object,
   preferredCurrency: PropTypes.string,
   fiatExchangeRatesTask: PropTypes.object,
+  amountFrom: PropTypes.object,
+  amountTo: PropTypes.object,
+  selectedTokens: PropTypes.object,
+  selectedLpId: PropTypes.string,
+  onAmountFromChange: PropTypes.func,
+  onAmountToChange: PropTypes.func,
+  onSelectedTokensChange: PropTypes.func,
   onGoToQuotes: PropTypes.func,
   onOpenQuoteSidenav: PropTypes.func,
-  onLoadAccounts: PropTypes.func
+  onLoadAccounts: PropTypes.func,
+  onLoadQuotes: PropTypes.func
 }
 
 export default SwapForm
