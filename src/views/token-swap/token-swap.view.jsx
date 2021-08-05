@@ -44,7 +44,7 @@ function TokenSwap ({
           return curr
         }
 
-        return BigNumber(curr.amountToToken).gt(BigNumber(acc.amountToToken))
+        return BigNumber.from(curr.amountToToken).gt(BigNumber.from(acc.amountToToken))
           ? curr
           : acc
       })
