@@ -16,7 +16,7 @@ function Quote ({
   onShowMoreInfo
 }) {
   const classes = useQuoteStyles()
-  console.log(amountToTokenDiff)
+
   return (
     <div className={classes.root}>
       {isTheBest && (

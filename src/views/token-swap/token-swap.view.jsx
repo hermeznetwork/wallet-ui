@@ -39,18 +39,18 @@ function TokenSwap ({
 
   React.useEffect(() => {
     if (quotesTask.status === 'successful') {
-      const bestQuote = quotesTask.data.reduce((quote, bestQuote) => {
-        if (!bestQuote) {
-          return quote
+      const newBestQuote = quotesTask.data.reduce((acc, curr) => {
+        if (!acc) {
+          return curr
         }
 
-        return BigNumber(quote.amountToToken).gt(BigNumber(bestQuote).amountToToken)
-          ? quote
-          : bestQuote
+        return BigNumber(curr.amountToToken).gt(BigNumber(acc.amountToToken))
+          ? curr
+          : acc
       })
 
-      setBestQuote(bestQuote)
-      setSelectedQuote(bestQuote)
+      setBestQuote(newBestQuote)
+      setSelectedQuote(newBestQuote)
     }
   }, [quotesTask])
 
