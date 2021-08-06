@@ -1,6 +1,6 @@
 import { createUseStyles } from 'react-jss'
 
-const useAccountDropdrownStyles = createUseStyles(theme => ({
+const useAccountDropdownStyles = createUseStyles(theme => ({
   dropDown: {
     position: 'absolute',
     maxHeight: 432,
@@ -58,4 +58,4 @@ const useAccountDropdrownStyles = createUseStyles(theme => ({
   }
 }))
 
-export default useAccountDropdrownStyles
+export default useAccountDropdownStyles

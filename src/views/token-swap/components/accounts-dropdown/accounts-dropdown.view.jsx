@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import useAccountDropdrownStyles from './accounts-dropdown.styles'
+import useAccountDropdownStyles from './accounts-dropdown.styles'
 import AccountList from '../account-list/account-list.view'
 import { ReactComponent as Search } from '../../../../images/icons/search.svg'
 
 function AccountsDropdown ({ accounts, position, onClick, onClose }) {
-  const classes = useAccountDropdrownStyles()
+  const classes = useAccountDropdownStyles()
 
   const onClickToken = account => {
     onClose()
