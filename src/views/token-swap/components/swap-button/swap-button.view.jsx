@@ -5,15 +5,14 @@ import FormButton from '../../../shared/form-button/form-button.view'
 import useSwapButtonStyles from './swap-button.style'
 
 function SwapButton ({
-  quotes,
   selectedQuote
 }) {
   const classes = useSwapButtonStyles()
-  const [timeUntilValid, setTimeUntilValid] = React.useState(selectedQuote?.validUntil.getTime())
+  const timeUntilValid = selectedQuote?.validUntil.getTime()
+
   const [countdown, setCountdown] = React.useState(timeUntilValid - Date.now())
 
   React.useEffect(() => {
-    setTimeUntilValid(selectedQuote?.validUntil.getTime())
     const timer = setInterval(() => setCountdown(timeUntilValid - Date.now()), 1000)
     return () => clearInterval(timer)
   }, [selectedQuote])
@@ -45,7 +44,6 @@ function SwapButton ({
 }
 
 SwapButton.propTypes = {
-  quotes: PropTypes.object,
   selectedQuote: PropTypes.object
 }
 
