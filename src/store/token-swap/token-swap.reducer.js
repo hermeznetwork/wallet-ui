@@ -8,17 +8,15 @@ export const STEP_NAME = {
 
 const initialTokenSwapState = {
   currentStep: STEP_NAME.SWAP,
-  steps: {
-    [STEP_NAME.SWAP]: {},
-    [STEP_NAME.QUOTES]: {}
+  quoteSidenav: {
+    status: 'closed'
   },
   accountsTask: { // TODO check the correct place to this values
     status: 'pending'
   },
   quotesTask: {
     status: 'pending'
-  },
-  selectedLpId: 'best'
+  }
 }
 
 function tokenSwapReducer (state = initialTokenSwapState, action) {
@@ -35,8 +33,22 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
         currentStep: STEP_NAME.QUOTES
       }
     }
-    case tokenSwapActionTypes.RESET_STATE: {
-      return { ...initialTokenSwapState }
+    case tokenSwapActionTypes.OPEN_QUOTE_SIDENAV: {
+      return {
+        ...state,
+        quoteSidenav: {
+          status: 'open',
+          data: action.quote
+        }
+      }
+    }
+    case tokenSwapActionTypes.CLOSE_QUOTE_SIDENAV: {
+      return {
+        ...state,
+        quoteSidenav: {
+          status: 'closed'
+        }
+      }
     }
     case tokenSwapActionTypes.LOAD_ACCOUNTS_SUCCESS: {
       const accounts = action.data.accounts
@@ -85,6 +97,9 @@ function tokenSwapReducer (state = initialTokenSwapState, action) {
           error: action.error
         }
       }
+    }
+    case tokenSwapActionTypes.RESET_STATE: {
+      return { ...initialTokenSwapState }
     }
     default: {
       return state

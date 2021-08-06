@@ -1,6 +1,8 @@
 export const tokenSwapActionTypes = {
   GO_TO_SWAP: '[TOKEN SWAP] GO TO SWAP',
   GO_TO_QUOTES: '[TOKEN SWAP] GO TO QUOTES',
+  OPEN_QUOTE_SIDENAV: '[TOKEN SWAP] OPEN QUOTE SIDENAV',
+  CLOSE_QUOTE_SIDENAV: '[TOKEN SWAP] CLOSE QUOTE SIDENAV',
   RESET_STATE: '[TOKEN SWAP] RESET STATE',
   LOAD_ACCOUNTS: '[TOKEN SWAP] LOAD ACCOUNTS',
   LOAD_ACCOUNTS_SUCCESS: '[TOKEN SWAP] LOAD ACCOUNTS SUCCESS',
@@ -21,6 +23,19 @@ function goToSwap () {
 function goToQuotes () {
   return {
     type: tokenSwapActionTypes.GO_TO_QUOTES
+  }
+}
+
+function openQuoteSidenav (quote) {
+  return {
+    type: tokenSwapActionTypes.OPEN_QUOTE_SIDENAV,
+    quote
+  }
+}
+
+function closeQuoteSidenav () {
+  return {
+    type: tokenSwapActionTypes.CLOSE_QUOTE_SIDENAV
   }
 }
 
@@ -85,6 +100,8 @@ function getQuoteFailure (error) {
 export {
   goToSwap,
   goToQuotes,
+  openQuoteSidenav,
+  closeQuoteSidenav,
   resetState,
   loadAccounts,
   loadAccountsSuccess,

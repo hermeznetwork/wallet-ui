@@ -8,7 +8,7 @@ import {
   ReactComponent as ArrowDown
 } from '../../../../images/icons/arrow-down-circle.svg'
 import AmountBox, { AmountBoxPosition } from '../amount-box/amount-box.view'
-import SelectedButton from '../selected-quote/selected-quote.view'
+import SelectedQuote from '../selected-quote/selected-quote.view'
 import SwapButton from '../swap-button/swap-button.view'
 import {
   getFixedTokenAmount
@@ -22,12 +22,13 @@ function SwapForm ({
   amountFrom,
   amountTo,
   selectedTokens,
-  selectedLpId,
+  selectedQuote,
+  bestQuote,
   onAmountFromChange,
   onAmountToChange,
   onSelectedTokensChange,
   onGoToQuotes,
-  onOpenOfferSidenav,
+  onOpenQuoteSidenav,
   onLoadAccounts,
   onLoadQuotes
 }) {
@@ -42,9 +43,9 @@ function SwapForm ({
     [AmountBoxPosition.TO]: { amount: amountTo }
   }
 
-  const [activeDropdown, setActiveDropdown] = React.useState(undefined)
+  const [activeDropdown, setActiveDropdown] = React.useState()
   const [defaultValues, setDefaultValues] = React.useState(amountPositions)
-  const [positionUpdated, handlePositionUpdated] = React.useState(undefined)
+  const [positionUpdated, handlePositionUpdated] = React.useState()
   const [areLoadingQuotes, setAreLoadingQuotes] = React.useState(false)
   const [timer, setTimer] = React.useState(0)
 
@@ -137,7 +138,7 @@ function SwapForm ({
     })
   }
 
-  const renderBox = position => {
+  const renderBox = (position) => {
     const { amount } = defaultValues[position]
     const value = getFixedTokenAmount(
       amount,
@@ -174,15 +175,15 @@ function SwapForm ({
         </div>
       </div>
       {renderBox(AmountBoxPosition.TO)}
-      <SelectedButton
-        quotes={quotes}
+      <SelectedQuote
+        selectedTokens={selectedTokens}
+        selectedQuote={selectedQuote}
+        bestQuote={bestQuote}
+        isLoading={areLoadingQuotes}
         preferredCurrency={preferredCurrency}
         fiatExchangeRates={fiatExchangeRates}
-        selectedTokens={selectedTokens}
         onGoToQuotes={onGoToQuotes}
-        onOpenOfferSidenav={onOpenOfferSidenav}
-        selectedLpId={selectedLpId}
-        isLoading={areLoadingQuotes}
+        onOpenQuoteSidenav={onOpenQuoteSidenav}
       />
       {areLoadingQuotes ||
         <SwapButton
@@ -205,7 +206,7 @@ SwapForm.propTypes = {
   onAmountToChange: PropTypes.func,
   onSelectedTokensChange: PropTypes.func,
   onGoToQuotes: PropTypes.func,
-  onOpenOfferSidenav: PropTypes.func,
+  onOpenQuoteSidenav: PropTypes.func,
   onLoadAccounts: PropTypes.func,
   onLoadQuotes: PropTypes.func
 }

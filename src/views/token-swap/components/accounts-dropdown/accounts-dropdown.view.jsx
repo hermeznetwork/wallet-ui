@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import useDropdrownpStyles from './dropdown.style'
-import List from '../list/list.view'
+import useAccountsDropdownStyles from './accounts-dropdown.styles'
+import AccountList from '../account-list/account-list.view'
 import { ReactComponent as Search } from '../../../../images/icons/search.svg'
 
-function Dropdown ({ accounts, position, onClick, onClose }) {
-  const classes = useDropdrownpStyles()
+function AccountsDropdown ({ accounts, position, onClick, onClose }) {
+  const classes = useAccountsDropdownStyles()
 
   const onClickToken = account => {
     onClose()
@@ -27,7 +27,7 @@ function Dropdown ({ accounts, position, onClick, onClose }) {
           </div>
         </div>
       </div>
-      <List
+      <AccountList
         accounts={accounts || []}
         onClick={onClickToken}
       />
@@ -35,11 +35,11 @@ function Dropdown ({ accounts, position, onClick, onClose }) {
   )
 }
 
-Dropdown.propTypes = {
+AccountsDropdown.propTypes = {
   accounts: PropTypes.array,
   position: PropTypes.string,
   setToken: PropTypes.func,
   close: PropTypes.func
 }
 
-export default Dropdown
+export default AccountsDropdown

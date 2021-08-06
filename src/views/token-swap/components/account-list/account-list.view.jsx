@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import useListStyles from './list.style'
+import useAccountListStyles from './account-list.styles'
 import { getTokenIcon } from '../../../../utils/tokens'
 import { getFixedTokenAmount } from '../../../../utils/currencies'
 
-function List ({ accounts, onClick }) {
-  const classes = useListStyles()
+function AccountList ({ accounts, onClick }) {
+  const classes = useAccountListStyles()
 
   return (
     <div className={classes.listBox}>
@@ -38,9 +38,9 @@ function List ({ accounts, onClick }) {
   )
 }
 
-List.propTypes = {
+AccountList.propTypes = {
   accounts: PropTypes.array,
   onClick: PropTypes.func
 }
 
-export default List
+export default AccountList

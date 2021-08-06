@@ -5,7 +5,7 @@ import useAmountBoxStyles from './amount-box.style'
 import { ReactComponent as AngleDown } from '../../../../images/icons/angle-down.svg'
 import FiatAmount from '../../../shared/fiat-amount/fiat-amount.view'
 import AmountInput from '../../../shared/amount-input/amount-input.view'
-import Dropdown from '../dropdown/dropdown.view'
+import AccountsDropdown from '../accounts-dropdown/accounts-dropdown.view'
 import { getTokenIcon } from '../../../../utils/tokens'
 import {
   getAmountInPreferredCurrency,
@@ -105,7 +105,7 @@ function AmountBox ({
       </div>
       {
           isDropdownActive &&
-            <Dropdown
+            <AccountsDropdown
               onClose={handleDropdownClose}
               accounts={accounts}
               onClick={onTokenChange}

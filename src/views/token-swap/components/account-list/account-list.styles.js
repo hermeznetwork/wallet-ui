@@ -1,8 +1,9 @@
 
 import { createUseStyles } from 'react-jss'
 
-const useListStyles = createUseStyles(theme => ({
+const useAccountListStyles = createUseStyles(theme => ({
   listBox: {
+    overflow: 'auto',
     borderTop: `1px ${theme.palette.grey.veryLight} solid`,
     padding: theme.spacing(2)
   },
@@ -12,8 +13,10 @@ const useListStyles = createUseStyles(theme => ({
     backgroundColor: theme.palette.grey.light,
     borderRadius: theme.spacing(1.5),
     padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
-    marginBottom: theme.spacing(2),
-    alignContent: 'flex-end'
+    alignContent: 'flex-end',
+    '&:not(:first-of-type)': {
+      marginTop: theme.spacing(2)
+    }
   },
   tokenIcon: {
     display: 'flex',
@@ -28,19 +31,22 @@ const useListStyles = createUseStyles(theme => ({
   },
   tokenText: {
     flex: '1',
-    fontSize: theme.spacing(1.75),
+    fontWeight: theme.fontWeights.bold,
     [theme.breakpoints.upSm]: {
       fontText: theme.spacing(2)
     }
   },
   balanceText: {
-    fontSize: theme.spacing(1.75)
+    fontSize: theme.spacing(1.75),
+    fontWeight: theme.fontWeights.medium
   },
   symbol: {
     fontSize: theme.spacing(1.75),
-    color: theme.palette.grey.main
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.main,
+    marginTop: theme.spacing(0.5)
   }
 }
 ))
 
-export default useListStyles
+export default useAccountListStyles

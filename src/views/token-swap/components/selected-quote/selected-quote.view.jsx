@@ -11,73 +11,68 @@ import {
 import { MAX_TOKEN_DECIMALS } from '../../../../constants'
 
 function SelectedQuote ({
-  quotes,
+  selectedTokens,
+  selectedQuote,
+  isLoading,
+  bestQuote,
   fiatExchangeRates,
   preferredCurrency,
-  selectedTokens,
-  selectedLpId,
-  isLoading,
   onGoToQuotes,
-  onOpenOfferSidenav
+  onOpenQuoteSidenav
 }) {
   const classes = useSelectedQuoteStyles()
-  const isBestQuote = selectedLpId === 'best'
-  const isSuccessful = quotes.status === 'successful' && !isLoading
 
-  const [quote, setQuote] = React.useState({ rate: 0 })
-  const [fiatReward, setFiatReward] = React.useState(0)
-  const [reward, setReward] = React.useState(0)
+  function getRewardAmountInTokens () {
+    return getFixedTokenAmount(
+      selectedQuote.lpInfo.rewards[0].amount,
+      selectedTokens.to.token.decimals
+    )
+  }
 
-  React.useEffect(() => {
-    if (quotes.data) {
-      const selectedQuote = isBestQuote
-        ? quotes.data[0]
-        : quotes.data.find(q => q.lpId === selectedLpId)
-      setQuote(selectedQuote)
+  function getRewardAmountInFiat () {
+    return getTokenAmountInPreferredCurrency(
+      getRewardAmountInTokens(),
+      selectedTokens.from.token.USD,
+      preferredCurrency,
+      fiatExchangeRates
+    ).toFixed(2)
+  }
 
-      const rewardAmount = getFixedTokenAmount(
-        selectedQuote.lpInfo.rewards[0].amount,
-        selectedTokens.to.token.decimals
-      )
-      const fiatRewardAmount = getTokenAmountInPreferredCurrency(
-        rewardAmount,
-        selectedTokens.from.token.USD,
-        preferredCurrency,
-        fiatExchangeRates
-      )
-
-      setFiatReward(fiatRewardAmount)
-      setReward(rewardAmount)
-    }
-  }, [quotes])
+  function isBestQuote () {
+    return selectedQuote.lpId === bestQuote.lpId
+  }
 
   return (
     <div className={classes.root}>
-      {isLoading &&
-        <div className={classes.loading}>
-          <p className={classes.loadingText}>Searching for the best offers</p>
-          <Spinner />
-        </div>}
-      {isSuccessful &&
-        <div className={classes.offerBox}>
-          <div className={classes.row}>
-            <div className={classes.quote}>
-              <p className={classes.quoteText}>
-                {isBestQuote ? 'Best q' : 'Q'}uote from {quote.lpInfo?.name}
-              </p>
-              <p className={classes.quoteRate}>
-                1 {selectedTokens.from?.token.symbol}
-                = {quote.rate.toFixed(MAX_TOKEN_DECIMALS)} {selectedTokens.to?.token.symbol}
-              </p>
-            </div>
-            <button className={classes.quotes} onClick={onGoToQuotes}>All quotes</button>
+      {isLoading
+        ? (
+          <div className={classes.loading}>
+            <p className={classes.loadingText}>Searching for the best offers</p>
+            <Spinner />
           </div>
-          <p className={classes.reward}>
-            This swap is rewarded with {reward} {quote.lpInfo?.rewards[0].token}  (
-            {CurrencySymbol[preferredCurrency].symbol} {fiatReward.toFixed(2)}
-            ) <button className={classes.moreInfo} onClick={onOpenOfferSidenav}>More info</button>
-          </p>
-        </div>}
+          )
+        : selectedQuote && (
+          <div className={classes.offerBox}>
+            <div className={classes.row}>
+              <div className={classes.quote}>
+                <p className={classes.quoteText}>
+                  {isBestQuote() ? 'Best quote' : 'Quote'} from {selectedQuote.lpInfo.name}
+                </p>
+                <p className={classes.quoteRate}>
+                  1 {selectedTokens.from?.token.symbol}
+                  &nbsp;=&nbsp;
+                  {selectedQuote.rate.toFixed(MAX_TOKEN_DECIMALS)} {selectedTokens.to.token.symbol}
+                </p>
+              </div>
+              <button className={classes.quotes} onClick={onGoToQuotes}>All quotes</button>
+            </div>
+            <p className={classes.reward}>
+              This swap is rewarded with {getRewardAmountInTokens()} {selectedQuote.lpInfo.rewards[0].token}&nbsp;
+              ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInFiat()})
+              <button className={classes.moreInfo} onClick={onOpenQuoteSidenav}>More info</button>
+            </p>
+          </div>
+        )}
     </div>
   )
 }
@@ -90,7 +85,7 @@ SelectedQuote.propTypes = {
   selectedLpId: PropTypes.string,
   isLoading: PropTypes.bool,
   onGoToQuotes: PropTypes.func,
-  onOpenOfferSidenav: PropTypes.func
+  onOpenQuoteSidenav: PropTypes.func
 }
 
 export default SelectedQuote
