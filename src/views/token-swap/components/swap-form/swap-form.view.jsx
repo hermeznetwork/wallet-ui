@@ -74,6 +74,7 @@ function SwapForm ({
   }, [accounts])
 
   React.useEffect(() => {
+    if (quotes.status !== 'successful') return
     setAreLoadingQuotes(false)
 
     if (!selectedQuote) return
@@ -95,7 +96,7 @@ function SwapForm ({
         [AmountBoxPosition.TO]: { amount: to }
       })
     }
-  }, [selectedQuote])
+  }, [quotes])
 
   const handleAmountChange = (value, position) => {
     clearTimeout(timer)
