@@ -15,7 +15,7 @@ const useAccountsDropdownStyles = createUseStyles(theme => ({
       top: theme.spacing(8),
       left: theme.spacing(1.5)
     },
-    zIndex: '10',
+    zIndex: 9999,
     marginTop: theme.spacing(1),
     borderRadius: theme.spacing(2.5),
     boxShadow: '0 3px 15px 1px rgba(225, 225, 241, 0.8)'

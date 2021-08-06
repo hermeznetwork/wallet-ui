@@ -16,7 +16,8 @@ const useAccountListStyles = createUseStyles(theme => ({
     alignContent: 'flex-end',
     '&:not(:first-of-type)': {
       marginTop: theme.spacing(2)
-    }
+    },
+    cursor: 'pointer'
   },
   tokenIcon: {
     display: 'flex',

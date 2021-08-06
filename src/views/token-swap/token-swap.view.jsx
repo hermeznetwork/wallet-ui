@@ -31,15 +31,15 @@ function TokenSwap ({
   onCloseQuoteSidenav
 }) {
   const classes = useTokenSwapStyles()
-  const [amountFrom, setAmountFrom] = React.useState(BigNumber.from(0))
-  const [amountTo, setAmountTo] = React.useState(BigNumber.from(0))
+  const [amountFrom, setAmountFrom] = React.useState(undefined)
+  const [amountTo, setAmountTo] = React.useState(undefined)
   const [selectedTokens, setSelectedTokens] = React.useState({})
-  const [bestQuote, setBestQuote] = React.useState()
+  const [bestQuote, setBestQuote] = React.useState(undefined)
   const [selectedQuote, setSelectedQuote] = React.useState(undefined)
 
   React.useEffect(() => {
     if (quotesTask.status === 'successful') {
-      const newBestQuote = quotesTask.data.reduce((acc, curr) => {
+      const newBestQuote = quotesTask.data.quotes.reduce((acc, curr) => {
         if (!acc) {
           return curr
         }
@@ -47,7 +47,7 @@ function TokenSwap ({
         return BigNumber.from(curr.amountToToken).gt(BigNumber.from(acc.amountToToken))
           ? curr
           : acc
-      })
+      }, undefined)
 
       setBestQuote(newBestQuote)
       setSelectedQuote(newBestQuote)
