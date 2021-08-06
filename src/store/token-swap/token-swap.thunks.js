@@ -75,11 +75,14 @@ function getQuotes (data) {
     dispatch(tokenSwapActions.getQuotes())
     tokenSwapApi.getQuotes(data)
       .then(res => {
-        const quotes = res.map(quote => ({
+        const { referenceId } = res
+        const now = Date.now()
+        const quotes = res.quotes.map(quote => ({
           ...quote,
-          rate: quote.amountToToken / quote.amountFromToken
+          rate: quote.amountToToken / quote.amountFromToken,
+          validUntil: new Date(now + quote.ttlMs)
         }))
-        dispatch(tokenSwapActions.getQuotesSuccess(quotes))
+        dispatch(tokenSwapActions.getQuotesSuccess({ referenceId, quotes }))
       })
       .catch(e => {
         dispatch(tokenSwapActions.getQuoteFailure(e))

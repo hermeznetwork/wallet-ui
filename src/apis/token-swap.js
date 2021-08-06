@@ -16,11 +16,12 @@ const baseApiUrl = `${process.env.REACT_APP_TOKEN_SWAP_API_URL}`
  * @returns {Array} - Quotes
  */
 function getQuotes (data) {
-  return axios.post(
-      `${baseApiUrl}/quotes`,
-      data,
-      { headers: { 'Content-Type': 'text/plain' } }
-  ).then(res => res.data.quotes)
+  const str = Object.keys(data).reduce(
+    (acc, curr) => `${curr}=${encodeURIComponent(data[curr])}&${acc}`, ''
+  )
+  return axios.get(
+      `${baseApiUrl}/quotes?${str}`
+  ).then(res => res.data)
 }
 
 export {

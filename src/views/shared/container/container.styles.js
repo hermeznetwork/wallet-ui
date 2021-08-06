@@ -8,7 +8,6 @@ const useContainerStyles = createUseStyles(theme => ({
     paddingTop: ({ addHeaderPadding }) => addHeaderPadding ? theme.headerHeight : 0
   },
   wrapper: {
-    position: 'relative',
     width: '100%',
     height: '100%',
     display: 'flex',

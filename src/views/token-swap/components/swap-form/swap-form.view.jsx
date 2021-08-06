@@ -49,8 +49,10 @@ function SwapForm ({
   const [areLoadingQuotes, setAreLoadingQuotes] = React.useState(false)
   const [timer, setTimer] = React.useState(0)
 
-  const setTokenPosition = tokenPosition => {
+  const handleTokenChange = tokenPosition => {
     onSelectedTokensChange({ ...selectedTokens, ...tokenPosition })
+    handlePositionUpdated(AmountBoxPosition.FROM)
+    handleAmountChange({ amount: { tokens: amountFrom } }, AmountBoxPosition.FROM)
   }
 
   React.useEffect(() => {
@@ -72,30 +74,28 @@ function SwapForm ({
   }, [accounts])
 
   React.useEffect(() => {
-    if (quotes.status === 'loading') return
-
     setAreLoadingQuotes(false)
 
-    if (quotes.data) {
-      const from = BigNumber.from(quotes.data[0].amountFromToken)
-      const to = BigNumber.from(quotes.data[0].amountToToken)
+    if (!selectedQuote) return
 
-      onAmountFromChange(from)
-      onAmountToChange(to)
+    const from = BigNumber.from(selectedQuote.amountFromToken)
+    const to = BigNumber.from(selectedQuote.amountToToken)
 
-      if (positionUpdated === AmountBoxPosition.TO) {
-        setDefaultValues({
-          ...defaultValues,
-          [AmountBoxPosition.FROM]: { amount: from }
-        })
-      } else {
-        setDefaultValues({
-          ...defaultValues,
-          [AmountBoxPosition.TO]: { amount: to }
-        })
-      }
+    onAmountFromChange(from)
+    onAmountToChange(to)
+
+    if (positionUpdated === AmountBoxPosition.TO) {
+      setDefaultValues({
+        ...defaultValues,
+        [AmountBoxPosition.FROM]: { amount: from }
+      })
+    } else {
+      setDefaultValues({
+        ...defaultValues,
+        [AmountBoxPosition.TO]: { amount: to }
+      })
     }
-  }, [quotes])
+  }, [selectedQuote])
 
   const handleAmountChange = (value, position) => {
     clearTimeout(timer)
@@ -105,13 +105,16 @@ function SwapForm ({
       selectedTokens.to &&
       positionUpdated === position
     ) {
+      if (value.amount.tokens.eq(0)) {
+        return
+      }
+
       setAreLoadingQuotes(true)
 
       const initData = {
-        fromToken: '0x0000000000000000000000000000000000000000',
-        // TODO Change to address coming in account, now it's forced to address in goerli
-        toToken: '0x55a1db90a5753e6ff50fd018d7e648d58a081486',
-        fromHezAddr: 'hez:ETH:3000'
+        fromToken: selectedTokens.from.token.ethereumAddress,
+        toToken: selectedTokens.from.token.ethereumAddress,
+        fromHezAddr: selectedTokens.from.accountIndex
       }
       const data = position === AmountBoxPosition.TO
         ? { ...initData, amountToToken: value.amount.tokens.toString() }
@@ -154,7 +157,7 @@ function SwapForm ({
         onChange={value => handleAmountChange(value, position)}
         position={position}
         accounts={accounts.data?.accounts}
-        onTokenChange={setTokenPosition}
+        onTokenChange={handleTokenChange}
         onActiveDropdownChange={setActiveDropdown}
         isDropdownActive={activeDropdown === position}
         onPositionUpdate={handlePositionUpdated}
@@ -188,6 +191,7 @@ function SwapForm ({
       {areLoadingQuotes ||
         <SwapButton
           quotes={quotes}
+          selectedQuote={selectedQuote}
         />}
     </div>
   )
