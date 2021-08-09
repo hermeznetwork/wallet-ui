@@ -292,14 +292,11 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
 
     // Differentiate between a withdraw on the Hermez SC and the DelayedWithdrawal SC
     if (!completeDelayedWithdrawal) {
-      return Tx.withdraw(
-        amount,
-        account.accountIndex,
-        account.token,
-        wallet.publicKeyCompressedHex,
-        exit.batchNum,
-        exit.merkleProof.siblings,
+      return Tx.withdrawCircuit(
+        exit,
         instantWithdrawal,
+        'https://raw.githubusercontent.com/hermeznetwork/hermezjs/main/withdraw-circuit-files/withdraw.wasm',
+        'https://raw.githubusercontent.com/hermeznetwork/hermezjs/main/withdraw-circuit-files/withdraw_hez4_final.zkey',
         signer
       ).then((txData) => {
         if (instantWithdrawal) {
