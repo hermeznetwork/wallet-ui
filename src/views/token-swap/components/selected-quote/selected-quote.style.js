@@ -11,11 +11,12 @@ const useSelectedQuoteStyles = createUseStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center',
     marginTop: theme.spacing(7)
-
   },
   loadingText: {
     fontSize: theme.spacing(1.75),
-    color: theme.palette.grey.main
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.main,
+    marginBottom: theme.spacing(3)
   },
   offerBox: {
     backgroundColor: theme.palette.grey.light,
@@ -38,7 +39,8 @@ const useSelectedQuoteStyles = createUseStyles(theme => ({
     }
   },
   quoteText: {
-    color: theme.palette.grey.main
+    color: theme.palette.grey.main,
+    fontWeight: theme.fontWeights.medium
   },
   quoteRate: {
     color: theme.palette.black,
@@ -66,11 +68,12 @@ const useSelectedQuoteStyles = createUseStyles(theme => ({
       fontSize: theme.spacing(2)
     },
     fontWeight: theme.fontWeights.medium,
-    paddingTop: theme.spacing(1),
+    paddingTop: theme.spacing(1.75),
     marginTop: theme.spacing(2)
   },
   moreInfo: {
     color: theme.palette.grey.main,
+    fontWeight: theme.fontWeights.medium,
     [theme.breakpoints.upSm]: {
       fontSize: theme.spacing(1.75)
     },

@@ -89,10 +89,21 @@ const useAmountBoxStyles = createUseStyles(theme => ({
   maxBtn: {
     color: theme.palette.black,
     border: 'none',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
+    cursor: 'pointer',
+    fontWeight: theme.fontWeights.bold
   },
   frame: {
     position: 'relative'
+  },
+  mask: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    cursor: 'pointer',
+    zIndex: 999
   }
 }))
 

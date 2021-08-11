@@ -1,8 +1,9 @@
 import { createUseStyles } from 'react-jss'
 
-const useDropdrownpStyles = createUseStyles(theme => ({
+const useAccountsDropdownStyles = createUseStyles(theme => ({
   dropDown: {
     position: 'absolute',
+    maxHeight: 432,
     backgroundColor: theme.palette.white,
     display: 'flex',
     flexDirection: 'column',
@@ -14,7 +15,7 @@ const useDropdrownpStyles = createUseStyles(theme => ({
       top: theme.spacing(8),
       left: theme.spacing(1.5)
     },
-    zIndex: '10',
+    zIndex: 9999,
     marginTop: theme.spacing(1),
     borderRadius: theme.spacing(2.5),
     boxShadow: '0 3px 15px 1px rgba(225, 225, 241, 0.8)'
@@ -46,11 +47,15 @@ const useDropdrownpStyles = createUseStyles(theme => ({
     background: 'none',
     border: 'none',
     flex: '1',
+    fontWeight: theme.fontWeights.medium,
     '&:focus-visible': {
       outline: 'none'
     },
-    boxSizing: 'content-box'
+    boxSizing: 'content-box',
+    '&::placeholder': {
+      color: theme.palette.grey.main
+    }
   }
 }))
 
-export default useDropdrownpStyles
+export default useAccountsDropdownStyles

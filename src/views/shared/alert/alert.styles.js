@@ -40,6 +40,7 @@ const useAlertStyles = createUseStyles((theme) => ({
     padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`,
     whiteSpace: 'nowrap',
     marginLeft: theme.spacing(12.5),
+    transition: theme.hoverTransition,
     '&:hover': {
       background: theme.palette.grey.hover
     }

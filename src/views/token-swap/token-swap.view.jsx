@@ -10,32 +10,49 @@ import * as tokenSwapActions from '../../store/token-swap/token-swap.actions'
 import * as tokenSwapThunks from '../../store/token-swap/token-swap.thunks'
 import Container from '../shared/container/container.view'
 import { STEP_NAME } from '../../store/token-swap/token-swap.reducer'
-import Quotes from './components/quotes/quotes.view'
+import QuoteSelector from './components/quote-selector/quote-selector.view'
 import SwapForm from './components/swap-form/swap-form.view'
-import OfferSidenav from './components/offer-sidenav/offer-sidenav.view'
+import QuoteSidenav from './components/quote-sidenav/quote-sidenav.view'
+import { AmountBoxPosition } from './components/amount-box/amount-box.view'
 
 function TokenSwap ({
   currentStep,
-  steps,
+  quoteSidenav,
   preferredCurrency,
   accountsTask,
   quotesTask,
   fiatExchangeRatesTask,
-  selectedLpId,
   onLoadAccounts,
+  onLoadQuotes,
   onChangeHeader,
   onCleanup,
   onGoToQuotes,
-  onOpenOfferInfo,
-  onLoadQuotes,
-  onLoadingQuotes
+  onOpenQuoteSidenav,
+  onCloseQuoteSidenav
 }) {
   const classes = useTokenSwapStyles()
-
-  const [amountFrom, setAmountFrom] = React.useState(BigNumber.from(0))
-  const [amountTo, setAmountTo] = React.useState(BigNumber.from(0))
+  const [amountFrom, setAmountFrom] = React.useState(undefined)
+  const [amountTo, setAmountTo] = React.useState(undefined)
   const [selectedTokens, setSelectedTokens] = React.useState({})
-  const [isOfferSidenavOpen, setIsOfferSidenavOpen] = React.useState()
+  const [bestQuote, setBestQuote] = React.useState(undefined)
+  const [selectedQuote, setSelectedQuote] = React.useState(undefined)
+
+  React.useEffect(() => {
+    if (quotesTask.status === 'successful') {
+      const newBestQuote = quotesTask.data.quotes.reduce((acc, curr) => {
+        if (!acc) {
+          return curr
+        }
+
+        return BigNumber.from(curr.amountToToken).gt(BigNumber.from(acc.amountToToken))
+          ? curr
+          : acc
+      }, undefined)
+
+      setBestQuote(newBestQuote)
+      setSelectedQuote(newBestQuote)
+    }
+  }, [quotesTask])
 
   React.useEffect(() => {
     onChangeHeader(currentStep)
@@ -43,12 +60,8 @@ function TokenSwap ({
 
   React.useEffect(() => onCleanup, [onCleanup])
 
-  function handleOpenOfferSidenav () {
-    setIsOfferSidenavOpen(true)
-  }
-
-  function handleCloseOfferSidenav () {
-    setIsOfferSidenavOpen(false)
+  function handleQuoteSelect (quote) {
+    setSelectedQuote(quote)
   }
 
   return (
@@ -66,25 +79,39 @@ function TokenSwap ({
                   amountFrom={amountFrom}
                   amountTo={amountTo}
                   selectedTokens={selectedTokens}
+                  selectedQuote={selectedQuote}
+                  bestQuote={bestQuote}
                   onAmountFromChange={setAmountFrom}
                   onAmountToChange={setAmountTo}
                   onSelectedTokensChange={setSelectedTokens}
                   onLoadQuotes={onLoadQuotes}
-                  onLoadingQuotes={onLoadingQuotes}
                   onLoadAccounts={onLoadAccounts}
                   onGoToQuotes={onGoToQuotes}
-                  onOpenOfferSidenav={handleOpenOfferSidenav}
-                  selectedLpId={selectedLpId}
+                  onOpenQuoteSidenav={() => onOpenQuoteSidenav(selectedQuote)}
                 />
               )
             }
             case STEP_NAME.QUOTES: {
-              return <Quotes onOpenOfferSidenav={handleOpenOfferSidenav} />
+              return (
+                <QuoteSelector
+                  quotes={quotesTask.data}
+                  bestQuote={bestQuote}
+                  selectedQuote={selectedQuote}
+                  toToken={selectedTokens[AmountBoxPosition.TO]}
+                  onQuoteSelect={handleQuoteSelect}
+                  onOpenQuoteSidenav={onOpenQuoteSidenav}
+                />
+              )
             }
           }
         })()}
       </Container>
-      {isOfferSidenavOpen && <OfferSidenav onClose={handleCloseOfferSidenav} />}
+      {quoteSidenav.status === 'open' && (
+        <QuoteSidenav
+          onClose={onCloseQuoteSidenav}
+          quote={quoteSidenav.data}
+        />
+      )}
     </div>
   )
 }
@@ -118,7 +145,6 @@ TokenSwap.propTypes = {
   preferredCurrency: PropTypes.string,
   fiatExchangeRatesTask: PropTypes.object,
   currentStep: PropTypes.string,
-  steps: PropTypes.object,
   selectedLpId: PropTypes.string,
   onChangeHeader: PropTypes.func,
   onCleanup: PropTypes.func,
@@ -131,9 +157,9 @@ TokenSwap.propTypes = {
 
 const mapStateToProps = state => ({
   currentStep: state.tokenSwap.currentStep,
-  steps: state.tokenSwap.steps,
   accountsTask: state.tokenSwap.accountsTask,
   quotesTask: state.tokenSwap.quotesTask,
+  quoteSidenav: state.tokenSwap.quoteSidenav,
   selectedLpId: state.tokenSwap.selectedLpId,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency
@@ -145,7 +171,9 @@ const mapDispatchToProps = dispatch => ({
   onGoToQuotes: () => dispatch(tokenSwapActions.goToQuotes()),
   onCleanup: () => dispatch(tokenSwapActions.resetState()),
   onLoadAccounts: fromItem => dispatch(tokenSwapThunks.fetchAccounts(fromItem)),
-  onLoadQuotes: request => dispatch(tokenSwapThunks.getQuotes(request))
+  onLoadQuotes: request => dispatch(tokenSwapThunks.getQuotes(request)),
+  onOpenQuoteSidenav: (quote) => dispatch(tokenSwapActions.openQuoteSidenav(quote)),
+  onCloseQuoteSidenav: () => dispatch(tokenSwapActions.closeQuoteSidenav())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TokenSwap)
