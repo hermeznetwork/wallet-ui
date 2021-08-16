@@ -14,6 +14,8 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../ut
 import { mergeDelayedWithdraws } from '../../utils/transactions'
 import { getNextBestForger, getNextForgerUrls } from '../../utils/coordinator'
 
+import { WITHDRAW_WASM_URL, WITHDRAW_HEZ4_FINAL_ZKEY_URL } from '../../constants'
+
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
  * @param {string} tokenId - id of the token of the account
@@ -295,8 +297,8 @@ function withdraw (amount, account, exit, completeDelayedWithdrawal, instantWith
       return Tx.withdrawCircuit(
         exit,
         instantWithdrawal,
-        'https://raw.githubusercontent.com/hermeznetwork/hermezjs/main/withdraw-circuit-files/withdraw.wasm',
-        'https://raw.githubusercontent.com/hermeznetwork/hermezjs/main/withdraw-circuit-files/withdraw_hez4_final.zkey',
+        WITHDRAW_WASM_URL,
+        WITHDRAW_HEZ4_FINAL_ZKEY_URL,
         signer
       ).then((txData) => {
         if (instantWithdrawal) {
