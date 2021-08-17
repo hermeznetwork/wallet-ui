@@ -122,7 +122,7 @@ function homeReducer (state = initialHomeState, action) {
       return {
         ...state,
         poolTransactionsTask: state.poolTransactionsTask.status === 'pending' ||
-        state.poolTransactionsTask.status === 'failed'
+          state.poolTransactionsTask.status === 'failed'
           ? { status: 'loading' }
           : { ...state.poolTransactionsTask, status: 'reloading' }
       }
@@ -149,7 +149,7 @@ function homeReducer (state = initialHomeState, action) {
       return {
         ...state,
         exitsTask: state.exitsTask.status === 'pending' ||
-        state.exitsTask.status === 'failed'
+          state.exitsTask.status === 'failed'
           ? { status: 'loading' }
           : { ...state.exitsTask, status: 'reloading' }
       }
