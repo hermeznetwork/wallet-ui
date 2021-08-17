@@ -204,6 +204,7 @@ function fetchPoolTransactions () {
 function fetchExits () {
   return (dispatch, getState) => {
     const { global: { wallet } } = getState()
+
     dispatch(homeActions.loadExits())
 
     return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
