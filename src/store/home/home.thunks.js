@@ -207,15 +207,12 @@ function fetchPoolTransactions () {
  */
 function fetchExits () {
   return (dispatch, getState) => {
-    const { home: { exitsTask }, global: { wallet } } = getState()
+    const { global: { wallet } } = getState()
+    dispatch(homeActions.loadExits())
 
-    if (exitsTask.status === 'pending' || exitsTask.status === 'successful') {
-      dispatch(homeActions.loadExits())
-
-      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
-        .then(exits => dispatch(homeActions.loadExitsSuccess(exits)))
-        .catch(err => dispatch(homeActions.loadExitsFailure(err)))
-    }
+    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
+      .then(exits => dispatch(homeActions.loadExitsSuccess(exits)))
+      .catch(err => dispatch(homeActions.loadExitsFailure(err)))
   }
 }
 
