@@ -15,55 +15,51 @@ let refreshCancelTokenSource = axios.CancelToken.source()
  */
 function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { home: { totalBalanceTask } } = getState()
+    dispatch(homeActions.loadTotalBalance())
 
-    if (totalBalanceTask.status === 'pending' || totalBalanceTask.status === 'successful') {
-      dispatch(homeActions.loadTotalBalance())
+    return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
+      .then((res) => {
+        const accounts = res.accounts.map((account) => {
+          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
+          const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
+          const fiatBalance = getTokenAmountInPreferredCurrency(
+            fixedTokenAmount,
+            account.token.USD,
+            preferredCurrency,
+            fiatExchangeRates
+          )
 
-      return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
-        .then((res) => {
-          const accounts = res.accounts.map((account) => {
-            const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
-            const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
-            const fiatBalance = getTokenAmountInPreferredCurrency(
-              fixedTokenAmount,
-              account.token.USD,
-              preferredCurrency,
-              fiatExchangeRates
-            )
-
-            return {
-              ...account,
-              balance: accountBalance,
-              fiatBalance
-            }
-          })
-
-          return { ...res, accounts }
+          return {
+            ...account,
+            balance: accountBalance,
+            fiatBalance
+          }
         })
-        .then((res) => {
-          const pendingCreateAccountDeposits = pendingDeposits
-            .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
-          const totalPendingCreateAccountDepositsBalance = pendingCreateAccountDeposits.reduce((totalBalance, deposit) => {
-            const fixedTokenAmount = getFixedTokenAmount(deposit.amount, deposit.token.decimals)
-            const fiatBalance = getTokenAmountInPreferredCurrency(
-              fixedTokenAmount,
-              deposit.token.USD,
-              preferredCurrency,
-              fiatExchangeRates
-            )
 
-            return totalBalance + Number(fiatBalance)
-          }, 0)
-          const totalAccountsBalance = res.accounts.reduce((totalBalance, account) => {
-            return totalBalance + Number(account.fiatBalance)
-          }, 0)
-          const totalBalance = totalPendingCreateAccountDepositsBalance + totalAccountsBalance
+        return { ...res, accounts }
+      })
+      .then((res) => {
+        const pendingCreateAccountDeposits = pendingDeposits
+          .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
+        const totalPendingCreateAccountDepositsBalance = pendingCreateAccountDeposits.reduce((totalBalance, deposit) => {
+          const fixedTokenAmount = getFixedTokenAmount(deposit.amount, deposit.token.decimals)
+          const fiatBalance = getTokenAmountInPreferredCurrency(
+            fixedTokenAmount,
+            deposit.token.USD,
+            preferredCurrency,
+            fiatExchangeRates
+          )
 
-          dispatch(homeActions.loadTotalBalanceSuccess(totalBalance))
-        })
-        .catch((err) => dispatch(homeActions.loadTotalBalanceFailure(err)))
-    }
+          return totalBalance + Number(fiatBalance)
+        }, 0)
+        const totalAccountsBalance = res.accounts.reduce((totalBalance, account) => {
+          return totalBalance + Number(account.fiatBalance)
+        }, 0)
+        const totalBalance = totalPendingCreateAccountDepositsBalance + totalAccountsBalance
+
+        dispatch(homeActions.loadTotalBalanceSuccess(totalBalance))
+      })
+      .catch((err) => dispatch(homeActions.loadTotalBalanceFailure(err)))
   }
 }
 
