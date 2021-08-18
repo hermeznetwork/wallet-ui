@@ -24,8 +24,12 @@ const useAccountStyles = createUseStyles(theme => ({
     justifyContent: 'space-between'
   },
   topRow: ({ hasPendingDeposit }) => ({
-    color: hasPendingDeposit ? theme.palette.white : theme.palette.black,
-    marginBottom: theme.spacing(1.5)
+    marginBottom: theme.spacing(1.5),
+    '& p': {
+      color: hasPendingDeposit
+        ? theme.palette.white
+        : theme.palette.black
+    }
   }),
   topRowText: {
     fontSize: theme.spacing(2),
@@ -34,7 +38,8 @@ const useAccountStyles = createUseStyles(theme => ({
     }
   },
   tokenName: {
-    fontWeight: theme.fontWeights.medium
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.main
   },
   tokenSymbol: {
     fontWeight: theme.fontWeights.bold
@@ -43,7 +48,8 @@ const useAccountStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.medium
   },
   fiatBalance: {
-    fontWeight: theme.fontWeights.medium
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.main
   },
   bottomRow: ({ hasPendingDeposit }) => ({
     color: hasPendingDeposit ? theme.palette.grey.dark : theme.palette.grey.main
@@ -63,7 +69,9 @@ const useAccountStyles = createUseStyles(theme => ({
     color: theme.palette.secondary.dark
   },
   pendingTimer: {
-    marginLeft: theme.spacing(1)
+    marginLeft: theme.spacing(1),
+    color: theme.palette.grey.dark,
+    fontWeight: theme.fontWeights.medium
   }
 }))
 

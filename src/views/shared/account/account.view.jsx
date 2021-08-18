@@ -33,8 +33,12 @@ function Account ({
       }}
     >
       <div className={`${classes.values} ${classes.topRow} ${classes.topRowText}`}>
-        <p>{token.symbol}</p>
-        <p>{getFixedTokenAmount(balance, token.decimals)} {token.symbol}</p>
+        <p className={classes.tokenSymbol}>
+          {token.symbol}
+        </p>
+        <p className={classes.tokenBalance}>
+          {getFixedTokenAmount(balance, token.decimals)} {token.symbol}
+        </p>
       </div>
       <div className={`${classes.values} ${classes.bottomRow}`}>
         {
@@ -49,7 +53,9 @@ function Account ({
               )
             : <p className={classes.tokenName}>{token.name}</p>
         }
-        <p>{CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}</p>
+        <p className={classes.fiatBalance}>
+          {CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}
+        </p>
       </div>
     </div>
   )
