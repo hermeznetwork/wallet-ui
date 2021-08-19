@@ -205,8 +205,9 @@ function Home ({
               : <></>
           }
           {
-            exitsTask.status === 'successful' || exitsTask.status === 'reloading'
-              ? <ExitList
+            (exitsTask.status === 'successful' ||
+              exitsTask.status === 'reloading') &&
+                <ExitList
                   transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
                   fiatExchangeRates={
                   fiatExchangeRatesTask.status === 'successful'
@@ -222,7 +223,6 @@ function Home ({
                   coordinatorState={coordinatorStateTask?.data}
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
-              : <></>
           }
           {(() => {
             switch (accountsTask.status) {
