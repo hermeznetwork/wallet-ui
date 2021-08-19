@@ -1,9 +1,21 @@
 import { PaginationOrder } from '@hermeznetwork/hermezjs/src/api'
 
-import { accountDetailsActionTypes } from './account-details.actions'
-import { getPaginationData } from '../../utils/api'
+// domain
+import { Account, HistoryTransaction } from '../../domain'
 
-const initialAccountDetailsState = {
+import { AccountDetailsActionTypes, AccountDetailsAction } from './account-details.actions'
+import { getPaginationData } from '../../utils/api'
+import { AsyncTask } from '../../utils/async-task'
+
+export interface AccountDetailsState {
+	accountTask: AsyncTask<Account, string>;
+	exitsTask: AsyncTask<unknown, string>;
+	historyTransactionsTask: AsyncTask<HistoryTransaction, string>;
+	l1TokenBalanceTask: AsyncTask<null, string>;
+	poolTransactionsTask: AsyncTask<Array<unknown>, string>;
+}
+
+const initialAccountDetailsState: AccountDetailsState = {
   accountTask: {
     status: 'pending'
   },
@@ -21,17 +33,17 @@ const initialAccountDetailsState = {
   }
 }
 
-function accountDetailsReducer (state = initialAccountDetailsState, action) {
+function accountDetailsReducer (state = initialAccountDetailsState, action: AccountDetailsAction) {
   switch (action.type) {
-    case accountDetailsActionTypes.LOAD_ACCOUNT: {
+    case AccountDetailsActionTypes.LOAD_ACCOUNT: {
       return {
         ...state,
-        accountTask: state.accountTask.status === 'pending'
-          ? { status: 'loading' }
-          : { status: 'reloading', data: state.accountTask.data }
+        accountTask: state.accountTask.status === 'successful'
+          ? { status: 'reloading', data: state.accountTask.data }
+          : { status: 'loading' }
       }
     }
-    case accountDetailsActionTypes.LOAD_ACCOUNT_SUCCESS: {
+    case AccountDetailsActionTypes.LOAD_ACCOUNT_SUCCESS: {
       return {
         ...state,
         accountTask: {
@@ -40,7 +52,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_ACCOUNT_FAILURE: {
+    case AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE: {
       return {
         ...state,
         accountTask: {
@@ -49,7 +61,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE: {
+    case AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE: {
       return {
         ...state,
         l1TokenBalanceTask: {
@@ -57,7 +69,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS: {
+    case AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS: {
       return {
         ...state,
         l1TokenBalanceTask: {
@@ -65,7 +77,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE: {
+    case AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE: {
       return {
         ...state,
         l1TokenBalanceTask: {
@@ -73,15 +85,15 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_POOL_TRANSACTIONS: {
+    case AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
-        poolTransactionsTask: state.poolTransactionsTask.status === 'pending'
-          ? { status: 'loading' }
-          : { status: 'reloading', data: state.poolTransactionsTask.data }
+        poolTransactionsTask: state.poolTransactionsTask.status === 'successful'
+          ? { status: 'reloading', data: state.poolTransactionsTask.data }
+          : { status: 'loading' }
       }
     }
-    case accountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
+    case AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
         poolTransactionsTask: {
@@ -90,7 +102,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
+    case AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
       return {
         ...state,
         poolTransactionsTask: {
@@ -99,7 +111,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS: {
+    case AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS: {
       if (state.historyTransactionsTask.status === 'reloading') {
         return state
       }
@@ -111,7 +123,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
           : { status: 'loading' }
       }
     }
-    case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
+    case AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
       const transactions = state.historyTransactionsTask.status === 'reloading'
         ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
         : action.data.transactions
@@ -128,7 +140,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE: {
+    case AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE: {
       return {
         ...state,
         historyTransactionsTask: {
@@ -137,7 +149,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS: {
+    case AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS: {
       return {
         ...state,
         historyTransactionsTask: {
@@ -146,13 +158,15 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS: {
+    case AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS: {
+      if (state.historyTransactionsTask.status !== 'successful') {
+        return state;
+      }
       const pagination = getPaginationData(
         action.data.pendingItems,
         action.data.transactions,
         PaginationOrder.DESC
       )
-
       return {
         ...state,
         historyTransactionsTask: {
@@ -165,15 +179,15 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_EXITS: {
+    case AccountDetailsActionTypes.LOAD_EXITS: {
       return {
         ...state,
-        exitsTask: state.exitsTask.status === 'pending'
-          ? { status: 'loading' }
-          : { status: 'reloading', data: state.exitsTask.data }
+        exitsTask: state.exitsTask.status === 'successful'
+          ? { status: 'reloading', data: state.exitsTask.data }
+          : { status: 'loading' }
       }
     }
-    case accountDetailsActionTypes.LOAD_EXITS_SUCCESS: {
+    case AccountDetailsActionTypes.LOAD_EXITS_SUCCESS: {
       return {
         ...state,
         exitsTask: {
@@ -182,7 +196,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.LOAD_EXITS_FAILURE: {
+    case AccountDetailsActionTypes.LOAD_EXITS_FAILURE: {
       return {
         ...state,
         exitsTask: {
@@ -191,7 +205,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action) {
         }
       }
     }
-    case accountDetailsActionTypes.RESET_STATE: {
+    case AccountDetailsActionTypes.RESET_STATE: {
       return initialAccountDetailsState
     }
     default: {
