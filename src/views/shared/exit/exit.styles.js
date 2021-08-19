@@ -99,6 +99,7 @@ const useExitStyles = createUseStyles(theme => ({
     marginBottom: theme.spacing(2),
     fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.dark,
     '&:last-child': {
       marginBottom: 0
     }
