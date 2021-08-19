@@ -35,7 +35,7 @@ export interface LoadAccountSuccessAction {
 
 export interface LoadAccountFailureAction {
 	type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE;
-  error: unknown;
+  error: Error;
 }
 
 export interface LoadL1TokenBalanceAction {
@@ -44,7 +44,6 @@ export interface LoadL1TokenBalanceAction {
 
 export interface LoadL1TokenBalanceSuccessAction {
 	type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS;
-  account: Account;
 }
 
 export interface LoadL1TokenBalanceFailureAction {
@@ -140,9 +139,10 @@ function loadAccountSuccess (account: Account) {
   }
 }
 
-function loadAccountFailure () {
+function loadAccountFailure (error: Error) {
   return {
-    type: AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE
+    type: AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE,
+    error
   }
 }
 
@@ -152,10 +152,9 @@ function loadL1TokenBalance () {
   }
 }
 
-function loadL1TokenBalanceSuccess (account: Account) {
+function loadL1TokenBalanceSuccess () {
   return {
-    type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS,
-    account
+    type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS
   }
 }
 
