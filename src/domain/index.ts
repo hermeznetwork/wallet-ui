@@ -45,15 +45,6 @@ export interface Account {
   token: Token;
 }
 
-export interface HistoryTransaction {
-  transactions: Transaction[];
-  fromItemHistory: unknown[];
-  pagination: {
-    hasMoreItems: boolean;
-    fromItem: number;
-  };
-}
-
 export interface Transaction {
   accountIndex: string;
   amount: string;
@@ -64,7 +55,9 @@ export interface Transaction {
   historicUSD: number;
   id: string;
   itemId: number;
-  merkleProof: MerkleProof;
+  // ToDo: May the merkleProof be returned by the API?
+  //       Otherwise it must be removed from here
+  merkleProof?: MerkleProof;
   timestamp: string;
   token: Token;
   type:
@@ -77,11 +70,12 @@ export interface Transaction {
     | "Exit"
     | "ForceExit";
   state: "fged" | "fing" | "pend" | "invl";
-  toHezEthereumAddress: string;
+  toHezEthereumAddress: string | null;
   toAccountIndex: string;
   fee: number;
-  L1Info: L1Info;
-  L2Info?: L2Info;
+  L1orL2: "L1" | "L2";
+  L1Info: L1Info | null;
+  L2Info?: L2Info | null;
 }
 
 interface L1Info {

@@ -1,5 +1,9 @@
 // domain
-import { Account, Transaction, HistoryTransaction, Exit } from '../../domain'
+import { Account, Transaction, Exit } from '../../domain'
+
+// persistence
+import { HistoryTransactions, HistoryExits } from '../../persistence'
+
 
 export enum AccountDetailsActionTypes {
   LOAD_ACCOUNT = '[ACCOUNT DETAILS] LOAD ACCOUNT',
@@ -22,7 +26,6 @@ export enum AccountDetailsActionTypes {
   RESET_STATE = '[ACCOUNT DETAILS] RESET STATE'
 }
 
-interface HistoryTransactions { transactions: HistoryTransaction[], pendingItems: number };
 
 export interface LoadAccountAction {
 	type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT;
@@ -62,7 +65,7 @@ export interface LoadPoolTransactionsSuccessAction {
 
 export interface LoadPoolTransactionsFailureAction {
 	type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: unknown;
+  error: Error;
 }
 
 export interface LoadHistoryTransactionsAction {
@@ -76,7 +79,7 @@ export interface LoadHistoryTransactionsSuccessAction {
 
 export interface LoadHistoryTransactionsFailureAction {
 	type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE;
-  error: unknown;
+  error: Error;
 }
 
 export interface LoadExitsAction {
@@ -85,12 +88,12 @@ export interface LoadExitsAction {
 
 export interface LoadExitsSuccessAction {
 	type: typeof AccountDetailsActionTypes.LOAD_EXITS_SUCCESS;
-  exits: Exit[];
+  historyExits: HistoryExits;
 }
 
 export interface LoadExitsFailureAction {
 	type: typeof AccountDetailsActionTypes.LOAD_EXITS_FAILURE;
-  error: unknown;
+  error: Error;
 }
 
 export interface RefreshHistoryTransactionsAction {
@@ -177,9 +180,10 @@ function loadPoolTransactionsSuccess (transactions: Transaction[]) {
   }
 }
 
-function loadPoolTransactionsFailure () {
+function loadPoolTransactionsFailure (error: Error) {
   return {
-    type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE
+    type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
+    error
   }
 }
 
@@ -189,16 +193,17 @@ function loadHistoryTransactions () {
   }
 }
 
-function loadHistoryTransactionsSuccess (data: HistoryTransaction) {
+function loadHistoryTransactionsSuccess (data: HistoryTransactions) {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
     data
   }
 }
 
-function loadHistoryTransactionsFailure () {
+function loadHistoryTransactionsFailure (error: Error) {
   return {
-    type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE
+    type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE,
+    error
   }
 }
 
@@ -208,10 +213,10 @@ function loadExits () {
   }
 }
 
-function loadExitsSuccess (exits: Exit[]) {
+function loadExitsSuccess (historyExits: HistoryExits) {
   return {
     type: AccountDetailsActionTypes.LOAD_EXITS_SUCCESS,
-    exits
+    historyExits
   }
 }
 
@@ -228,10 +233,10 @@ function refreshHistoryTransactions () {
   }
 }
 
-function refreshHistoryTransactionsSuccess (data: { transactions: HistoryTransaction[], pendingItems: number }) {
+function refreshHistoryTransactionsSuccess (historyTransactions: HistoryTransactions) {
   return {
     type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS,
-    data
+    historyTransactions
   }
 }
 

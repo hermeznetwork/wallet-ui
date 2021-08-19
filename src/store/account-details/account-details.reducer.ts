@@ -1,16 +1,25 @@
 import { PaginationOrder } from '@hermeznetwork/hermezjs/src/api'
 
 // domain
-import { Account, HistoryTransaction } from '../../domain'
+import { Account, Transaction } from '../../domain'
 
 import { AccountDetailsActionTypes, AccountDetailsAction } from './account-details.actions'
 import { getPaginationData } from '../../utils/api'
 import { AsyncTask } from '../../utils/async-task'
 
+export interface ViewHistoryTransactions {
+  transactions: Transaction[];
+  fromItemHistory: number[];
+  pagination: {
+    fromItem: number;
+    hasMoreItems: boolean;
+  };
+}
+
 export interface AccountDetailsState {
 	accountTask: AsyncTask<Account, string>;
 	exitsTask: AsyncTask<unknown, string>;
-	historyTransactionsTask: AsyncTask<HistoryTransaction, string>;
+	historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
 	l1TokenBalanceTask: AsyncTask<null, string>;
 	poolTransactionsTask: AsyncTask<Array<unknown>, string>;
 }
@@ -192,7 +201,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action: Acco
         ...state,
         exitsTask: {
           status: 'successful',
-          data: action.exits
+          data: action.historyExits
         }
       }
     }
