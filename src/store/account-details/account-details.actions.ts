@@ -4,7 +4,6 @@ import { Account, Transaction, Exit } from '../../domain'
 // persistence
 import { HistoryTransactions, HistoryExits } from '../../persistence'
 
-
 export enum AccountDetailsActionTypes {
   LOAD_ACCOUNT = '[ACCOUNT DETAILS] LOAD ACCOUNT',
   LOAD_ACCOUNT_SUCCESS = '[ACCOUNT DETAILS] LOAD ACCOUNT SUCCESS',
@@ -25,7 +24,6 @@ export enum AccountDetailsActionTypes {
   REFRESH_HISTORY_TRANSACTIONS_SUCCESS = '[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS SUCCESS',
   RESET_STATE = '[ACCOUNT DETAILS] RESET STATE'
 }
-
 
 export interface LoadAccountAction {
 	type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT;
@@ -51,7 +49,6 @@ export interface LoadL1TokenBalanceSuccessAction {
 
 export interface LoadL1TokenBalanceFailureAction {
 	type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE;
-  error: unknown;
 }
 
 export interface LoadPoolTransactionsAction {
@@ -102,7 +99,7 @@ export interface RefreshHistoryTransactionsAction {
 
 export interface RefreshHistoryTransactionsSuccessAction {
 	type: typeof AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS;
-  data: HistoryTransactions;
+  historyTransactions: HistoryTransactions;
 }
 
 export interface ResetStateAction {
@@ -129,118 +126,118 @@ export type AccountDetailsAction =
   | RefreshHistoryTransactionsSuccessAction
   | ResetStateAction;
 
-function loadAccount () {
+function loadAccount (): LoadAccountAction {
   return {
     type: AccountDetailsActionTypes.LOAD_ACCOUNT
   }
 }
 
-function loadAccountSuccess (account: Account) {
+function loadAccountSuccess (account: Account): LoadAccountSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_ACCOUNT_SUCCESS,
     account
   }
 }
 
-function loadAccountFailure (error: Error) {
+function loadAccountFailure (error: Error): LoadAccountFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE,
     error
   }
 }
 
-function loadL1TokenBalance () {
+function loadL1TokenBalance (): LoadL1TokenBalanceAction {
   return {
     type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE
   }
 }
 
-function loadL1TokenBalanceSuccess () {
+function loadL1TokenBalanceSuccess (): LoadL1TokenBalanceSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS
   }
 }
 
-function loadL1TokenBalanceFailure () {
+function loadL1TokenBalanceFailure (): LoadL1TokenBalanceFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE
   }
 }
 
-function loadPoolTransactions () {
+function loadPoolTransactions (): LoadPoolTransactionsAction {
   return {
     type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS
   }
 }
 
-function loadPoolTransactionsSuccess (transactions: Transaction[]) {
+function loadPoolTransactionsSuccess (transactions: Transaction[]): LoadPoolTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
     transactions
   }
 }
 
-function loadPoolTransactionsFailure (error: Error) {
+function loadPoolTransactionsFailure (error: Error): LoadPoolTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error
   }
 }
 
-function loadHistoryTransactions () {
+function loadHistoryTransactions (): LoadHistoryTransactionsAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS
   }
 }
 
-function loadHistoryTransactionsSuccess (data: HistoryTransactions) {
+function loadHistoryTransactionsSuccess (data: HistoryTransactions): LoadHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
     data
   }
 }
 
-function loadHistoryTransactionsFailure (error: Error) {
+function loadHistoryTransactionsFailure (error: Error): LoadHistoryTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE,
     error
   }
 }
 
-function loadExits () {
+function loadExits (): LoadExitsAction {
   return {
     type: AccountDetailsActionTypes.LOAD_EXITS
   }
 }
 
-function loadExitsSuccess (historyExits: HistoryExits) {
+function loadExitsSuccess (historyExits: HistoryExits): LoadExitsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_EXITS_SUCCESS,
     historyExits
   }
 }
 
-function loadExitsFailure (error: unknown) {
+function loadExitsFailure (error: Error): LoadExitsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_EXITS_FAILURE,
     error
   }
 }
 
-function refreshHistoryTransactions () {
+function refreshHistoryTransactions (): RefreshHistoryTransactionsAction {
   return {
     type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS
   }
 }
 
-function refreshHistoryTransactionsSuccess (historyTransactions: HistoryTransactions) {
+function refreshHistoryTransactionsSuccess (historyTransactions: HistoryTransactions): RefreshHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS,
     historyTransactions
   }
 }
 
-function resetState () {
+function resetState (): ResetStateAction {
   return {
     type: AccountDetailsActionTypes.RESET_STATE
   }
