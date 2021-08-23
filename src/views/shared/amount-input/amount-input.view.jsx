@@ -8,11 +8,11 @@ import { getTransactionFee } from '../../../utils/fees'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
 
-const INPUT_REGEX = /^\d*(?:\.\d*)?$/
-
 function AmountInput (Component) {
   return function (props) {
     const { defaultValue, transactionType, account, l2Fee, fiatExchangeRates, preferredCurrency } = props
+    const INPUT_REGEX = new RegExp(`^\\d*(?:\\.\\d{0,${account.token.decimals}})?$`)
+
     const [gasPrice, setGasPrice] = React.useState(BigNumber.from(0))
     const [value, setValue] = React.useState('')
     const [amount, setAmount] = React.useState({ tokens: BigNumber.from(0), fiat: 0 })
