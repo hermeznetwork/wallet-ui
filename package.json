@@ -65,7 +65,8 @@
       "not ie <=11",
       "not android <10",
       "not safari <14",
-      "not ios_saf <14"
+      "not ios_saf <14",
+      "not chrome 49"
     ],
     "development": [
       ">0.2%",
@@ -74,7 +75,8 @@
       "not ie <=11",
       "not android <10",
       "not safari <14",
-      "not ios_saf <14"
+      "not ios_saf <14",
+      "not chrome 49"
     ]
   },
   "husky": {
