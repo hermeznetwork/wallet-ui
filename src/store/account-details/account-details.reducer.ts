@@ -172,8 +172,8 @@ function accountDetailsReducer (state = initialAccountDetailsState, action: Acco
         return state;
       }
       const pagination = getPaginationData(
-        action.data.pendingItems,
-        action.data.transactions,
+        action.historyTransactions.pendingItems,
+        action.historyTransactions.transactions,
         PaginationOrder.DESC
       )
       return {
@@ -182,7 +182,7 @@ function accountDetailsReducer (state = initialAccountDetailsState, action: Acco
           status: 'successful',
           data: {
             ...state.historyTransactionsTask.data,
-            transactions: action.data.transactions,
+            transactions: action.historyTransactions.transactions,
             pagination
           }
         }
