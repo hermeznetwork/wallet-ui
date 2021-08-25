@@ -6,7 +6,7 @@ import { FIAT_EXCHANGE_RATES_API_URL } from '../constants'
 // domain
 import { FiatExchangeRates } from '../domain/hermez'
 
-export interface ApiExchangeRate {
+interface ApiExchangeRate {
   currency: string;
   price: number;
 }
