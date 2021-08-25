@@ -1,112 +1,112 @@
 // domain
-import { Account, HermezTransaction } from '../../domain/hermez'
+import { Account, HermezTransaction } from "../../domain/hermez";
 
 // persistence
-import { HistoryTransactions, HistoryExits } from '../../persistence'
+import { HistoryTransactions, HistoryExits } from "../../persistence";
 
 export enum AccountDetailsActionTypes {
-  LOAD_ACCOUNT = '[ACCOUNT DETAILS] LOAD ACCOUNT',
-  LOAD_ACCOUNT_SUCCESS = '[ACCOUNT DETAILS] LOAD ACCOUNT SUCCESS',
-  LOAD_ACCOUNT_FAILURE = '[ACCOUNT DETAILS] LOAD ACCOUNT FAILURE',
-  LOAD_L1_TOKEN_BALANCE = '[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE',
-  LOAD_L1_TOKEN_BALANCE_SUCCESS = '[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE SUCCESS',
-  LOAD_L1_TOKEN_BALANCE_FAILURE = '[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE FAILURE',
-  LOAD_POOL_TRANSACTIONS = '[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS',
-  LOAD_POOL_TRANSACTIONS_SUCCESS = '[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS SUCCESS',
-  LOAD_POOL_TRANSACTIONS_FAILURE = '[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS FAILURE',
-  LOAD_HISTORY_TRANSACTIONS = '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS',
-  LOAD_HISTORY_TRANSACTIONS_SUCCESS = '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS SUCCESS',
-  LOAD_HISTORY_TRANSACTIONS_FAILURE = '[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS FAILURE',
-  LOAD_EXITS = '[ACCOUNT DETAILS] LOAD EXITS',
-  LOAD_EXITS_SUCCESS = '[ACCOUNT DETAILS] LOAD EXITS SUCCESS',
-  LOAD_EXITS_FAILURE = '[ACCOUNT DETAILS] LOAD EXITS FAILURE',
-  REFRESH_HISTORY_TRANSACTIONS = '[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS',
-  REFRESH_HISTORY_TRANSACTIONS_SUCCESS = '[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS SUCCESS',
-  RESET_STATE = '[ACCOUNT DETAILS] RESET STATE'
+  LOAD_ACCOUNT = "[ACCOUNT DETAILS] LOAD ACCOUNT",
+  LOAD_ACCOUNT_SUCCESS = "[ACCOUNT DETAILS] LOAD ACCOUNT SUCCESS",
+  LOAD_ACCOUNT_FAILURE = "[ACCOUNT DETAILS] LOAD ACCOUNT FAILURE",
+  LOAD_L1_TOKEN_BALANCE = "[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE",
+  LOAD_L1_TOKEN_BALANCE_SUCCESS = "[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE SUCCESS",
+  LOAD_L1_TOKEN_BALANCE_FAILURE = "[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE FAILURE",
+  LOAD_POOL_TRANSACTIONS = "[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS",
+  LOAD_POOL_TRANSACTIONS_SUCCESS = "[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS SUCCESS",
+  LOAD_POOL_TRANSACTIONS_FAILURE = "[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS FAILURE",
+  LOAD_HISTORY_TRANSACTIONS = "[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS",
+  LOAD_HISTORY_TRANSACTIONS_SUCCESS = "[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS SUCCESS",
+  LOAD_HISTORY_TRANSACTIONS_FAILURE = "[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS FAILURE",
+  LOAD_EXITS = "[ACCOUNT DETAILS] LOAD EXITS",
+  LOAD_EXITS_SUCCESS = "[ACCOUNT DETAILS] LOAD EXITS SUCCESS",
+  LOAD_EXITS_FAILURE = "[ACCOUNT DETAILS] LOAD EXITS FAILURE",
+  REFRESH_HISTORY_TRANSACTIONS = "[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS",
+  REFRESH_HISTORY_TRANSACTIONS_SUCCESS = "[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS SUCCESS",
+  RESET_STATE = "[ACCOUNT DETAILS] RESET STATE",
 }
 
 export interface LoadAccountAction {
-	type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT;
+  type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT;
 }
 
 export interface LoadAccountSuccessAction {
-	type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT_SUCCESS;
+  type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT_SUCCESS;
   account: Account;
 }
 
 export interface LoadAccountFailureAction {
-	type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE;
+  type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE;
   error: Error;
 }
 
 export interface LoadL1TokenBalanceAction {
-	type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE;
+  type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE;
 }
 
 export interface LoadL1TokenBalanceSuccessAction {
-	type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS;
+  type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS;
 }
 
 export interface LoadL1TokenBalanceFailureAction {
-	type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE;
+  type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE;
 }
 
 export interface LoadPoolTransactionsAction {
-	type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS;
+  type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS;
 }
 
 export interface LoadPoolTransactionsSuccessAction {
-	type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
+  type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
   transactions: HermezTransaction[];
 }
 
 export interface LoadPoolTransactionsFailureAction {
-	type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
+  type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
   error: Error;
 }
 
 export interface LoadHistoryTransactionsAction {
-	type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS;
+  type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS;
 }
 
 export interface LoadHistoryTransactionsSuccessAction {
-	type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS;
+  type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS;
   data: HistoryTransactions;
 }
 
 export interface LoadHistoryTransactionsFailureAction {
-	type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE;
+  type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE;
   error: Error;
 }
 
 export interface LoadExitsAction {
-	type: typeof AccountDetailsActionTypes.LOAD_EXITS;
+  type: typeof AccountDetailsActionTypes.LOAD_EXITS;
 }
 
 export interface LoadExitsSuccessAction {
-	type: typeof AccountDetailsActionTypes.LOAD_EXITS_SUCCESS;
+  type: typeof AccountDetailsActionTypes.LOAD_EXITS_SUCCESS;
   historyExits: HistoryExits;
 }
 
 export interface LoadExitsFailureAction {
-	type: typeof AccountDetailsActionTypes.LOAD_EXITS_FAILURE;
+  type: typeof AccountDetailsActionTypes.LOAD_EXITS_FAILURE;
   error: Error;
 }
 
 export interface RefreshHistoryTransactionsAction {
-	type: typeof AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS;
+  type: typeof AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS;
 }
 
 export interface RefreshHistoryTransactionsSuccessAction {
-	type: typeof AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS;
+  type: typeof AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS;
   historyTransactions: HistoryTransactions;
 }
 
 export interface ResetStateAction {
-	type: typeof AccountDetailsActionTypes.RESET_STATE;
+  type: typeof AccountDetailsActionTypes.RESET_STATE;
 }
 
-export type AccountDetailsAction = 
+export type AccountDetailsAction =
   | LoadAccountAction
   | LoadAccountSuccessAction
   | LoadAccountFailureAction
@@ -126,121 +126,131 @@ export type AccountDetailsAction =
   | RefreshHistoryTransactionsSuccessAction
   | ResetStateAction;
 
-function loadAccount (): LoadAccountAction {
+function loadAccount(): LoadAccountAction {
   return {
-    type: AccountDetailsActionTypes.LOAD_ACCOUNT
-  }
+    type: AccountDetailsActionTypes.LOAD_ACCOUNT,
+  };
 }
 
-function loadAccountSuccess (account: Account): LoadAccountSuccessAction {
+function loadAccountSuccess(account: Account): LoadAccountSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_ACCOUNT_SUCCESS,
-    account
-  }
+    account,
+  };
 }
 
-function loadAccountFailure (error: Error): LoadAccountFailureAction {
+function loadAccountFailure(error: Error): LoadAccountFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadL1TokenBalance (): LoadL1TokenBalanceAction {
+function loadL1TokenBalance(): LoadL1TokenBalanceAction {
   return {
-    type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE
-  }
+    type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE,
+  };
 }
 
-function loadL1TokenBalanceSuccess (): LoadL1TokenBalanceSuccessAction {
+function loadL1TokenBalanceSuccess(): LoadL1TokenBalanceSuccessAction {
   return {
-    type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS
-  }
+    type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS,
+  };
 }
 
-function loadL1TokenBalanceFailure (): LoadL1TokenBalanceFailureAction {
+function loadL1TokenBalanceFailure(): LoadL1TokenBalanceFailureAction {
   return {
-    type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE
-  }
+    type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE,
+  };
 }
 
-function loadPoolTransactions (): LoadPoolTransactionsAction {
+function loadPoolTransactions(): LoadPoolTransactionsAction {
   return {
-    type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS
-  }
+    type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS,
+  };
 }
 
-function loadPoolTransactionsSuccess (transactions: HermezTransaction[]): LoadPoolTransactionsSuccessAction {
+function loadPoolTransactionsSuccess(
+  transactions: HermezTransaction[]
+): LoadPoolTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions
-  }
+    transactions,
+  };
 }
 
-function loadPoolTransactionsFailure (error: Error): LoadPoolTransactionsFailureAction {
+function loadPoolTransactionsFailure(
+  error: Error
+): LoadPoolTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadHistoryTransactions (): LoadHistoryTransactionsAction {
+function loadHistoryTransactions(): LoadHistoryTransactionsAction {
   return {
-    type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS
-  }
+    type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS,
+  };
 }
 
-function loadHistoryTransactionsSuccess (data: HistoryTransactions): LoadHistoryTransactionsSuccessAction {
+function loadHistoryTransactionsSuccess(
+  data: HistoryTransactions
+): LoadHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
-    data
-  }
+    data,
+  };
 }
 
-function loadHistoryTransactionsFailure (error: Error): LoadHistoryTransactionsFailureAction {
+function loadHistoryTransactionsFailure(
+  error: Error
+): LoadHistoryTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadExits (): LoadExitsAction {
+function loadExits(): LoadExitsAction {
   return {
-    type: AccountDetailsActionTypes.LOAD_EXITS
-  }
+    type: AccountDetailsActionTypes.LOAD_EXITS,
+  };
 }
 
-function loadExitsSuccess (historyExits: HistoryExits): LoadExitsSuccessAction {
+function loadExitsSuccess(historyExits: HistoryExits): LoadExitsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_EXITS_SUCCESS,
-    historyExits
-  }
+    historyExits,
+  };
 }
 
-function loadExitsFailure (error: Error): LoadExitsFailureAction {
+function loadExitsFailure(error: Error): LoadExitsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_EXITS_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function refreshHistoryTransactions (): RefreshHistoryTransactionsAction {
+function refreshHistoryTransactions(): RefreshHistoryTransactionsAction {
   return {
-    type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS
-  }
+    type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS,
+  };
 }
 
-function refreshHistoryTransactionsSuccess (historyTransactions: HistoryTransactions): RefreshHistoryTransactionsSuccessAction {
+function refreshHistoryTransactionsSuccess(
+  historyTransactions: HistoryTransactions
+): RefreshHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS,
-    historyTransactions
-  }
+    historyTransactions,
+  };
 }
 
-function resetState (): ResetStateAction {
+function resetState(): ResetStateAction {
   return {
-    type: AccountDetailsActionTypes.RESET_STATE
-  }
+    type: AccountDetailsActionTypes.RESET_STATE,
+  };
 }
 
 export {
@@ -261,5 +271,5 @@ export {
   loadExitsFailure,
   refreshHistoryTransactions,
   refreshHistoryTransactionsSuccess,
-  resetState
-}
+  resetState,
+};
