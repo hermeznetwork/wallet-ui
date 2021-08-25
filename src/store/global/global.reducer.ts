@@ -1,8 +1,56 @@
-import { globalActionTypes } from './global.actions'
+import { GlobalActionTypes, GlobalAction } from './global.actions'
 import * as constants from '../../constants'
 import * as storage from '../../utils/storage'
+import { AsyncTask } from '../../utils/async-task'
 
-function getInitialGlobalState () {
+// domain
+import { HermezStatus, Deposit, EthereumNetwork, HermezNetworkStatus, Withdraw, DelayedWithdraw, HermezWallet, Signer, Header, FiatExchangeRates, CoordinatorState, Reward, Token } from '../../domain'
+
+type SnackbarState = {
+  status: "closed";
+} | {
+  status: "open";
+  message: string;
+  backgroundColor?: string;
+}
+
+type ChainId = number;
+type HermezEthereumAddress = string;
+type PendingWithdraws = Record<ChainId, Record<HermezEthereumAddress, Withdraw[]>>;
+type PendingDelayedWithdraws = Record<ChainId, Record<HermezEthereumAddress, DelayedWithdraw[]>>;
+type PendingDeposits = Record<ChainId, Record<HermezEthereumAddress, Deposit[]>>;
+
+interface RewardsState {
+  sidenav: {
+    status: 'open' | 'closed'
+  };
+  rewardTask: AsyncTask<Reward, string>;
+  earnedRewardTask: AsyncTask<Reward, string>;
+  rewardPercentageTask: AsyncTask<unknown, string>;
+  accountEligibilityTask: AsyncTask<unknown, string>;
+  tokenTask: AsyncTask<Token, string>;
+}
+export interface GlobalState {
+	hermezStatusTask: AsyncTask<HermezStatus, string>;
+	ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
+  wallet: HermezWallet | undefined;
+  signer: Signer | undefined;
+  header: Header;
+  redirectRoute: string;
+	fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
+  snackbar: SnackbarState;
+  networkStatus: HermezNetworkStatus;
+  pendingWithdraws: PendingWithdraws;
+  pendingDelayedWithdraws: PendingDelayedWithdraws;
+  pendingDelayedWithdrawCheckTask: AsyncTask<null, string>;
+  pendingWithdrawalsCheckTask: AsyncTask<null, string>;
+  pendingDeposits: PendingDeposits;
+  pendingDepositsCheckTask: AsyncTask<null, string>;
+  coordinatorStateTask: AsyncTask<CoordinatorState, string>;
+  rewards: RewardsState;
+}
+
+function getInitialGlobalState (): GlobalState {
   return {
     hermezStatusTask: {
       status: 'pending'
@@ -61,9 +109,9 @@ function getInitialGlobalState () {
   }
 }
 
-function globalReducer (state = getInitialGlobalState(), action) {
+function globalReducer (state = getInitialGlobalState(), action: GlobalAction) {
   switch (action.type) {
-    case globalActionTypes.LOAD_HERMEZ_STATUS: {
+    case GlobalActionTypes.LOAD_HERMEZ_STATUS: {
       return {
         ...state,
         hermezStatusTask: {
@@ -71,7 +119,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS: {
+    case GlobalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS: {
       return {
         ...state,
         hermezStatusTask: {
@@ -80,7 +128,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_HERMEZ_STATUS_FAILURE: {
+    case GlobalActionTypes.LOAD_HERMEZ_STATUS_FAILURE: {
       return {
         ...state,
         hermezStatusTask: {
@@ -89,7 +137,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_ETHEREUM_NETWORK: {
+    case GlobalActionTypes.LOAD_ETHEREUM_NETWORK: {
       return {
         ...state,
         ethereumNetworkTask: {
@@ -97,7 +145,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS: {
+    case GlobalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS: {
       return {
         ...state,
         ethereumNetworkTask: {
@@ -106,45 +154,36 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_ETHEREUM_NETWORK_FAILURE: {
-      return {
-        ...state,
-        ethereumNetworkTask: {
-          status: 'failure',
-          error: action.error
-        }
-      }
-    }
-    case globalActionTypes.LOAD_WALLET:
+    case GlobalActionTypes.LOAD_WALLET:
       return {
         ...state,
         wallet: action.wallet
       }
-    case globalActionTypes.UNLOAD_WALLET: {
+    case GlobalActionTypes.UNLOAD_WALLET: {
       return {
         ...state,
         wallet: undefined
       }
     }
-    case globalActionTypes.SET_SIGNER: {
+    case GlobalActionTypes.SET_SIGNER: {
       return {
         ...state,
         signer: action.signer
       }
     }
-    case globalActionTypes.CHANGE_HEADER: {
+    case GlobalActionTypes.CHANGE_HEADER: {
       return {
         ...state,
         header: action.header
       }
     }
-    case globalActionTypes.CHANGE_REDIRECT_ROUTE: {
+    case GlobalActionTypes.CHANGE_REDIRECT_ROUTE: {
       return {
         ...state,
         redirectRoute: action.redirectRoute
       }
     }
-    case globalActionTypes.LOAD_FIAT_EXCHANGE_RATES: {
+    case GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES: {
       return {
         ...state,
         fiatExchangeRatesTask: {
@@ -152,7 +191,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_FIAT_EXCHANGE_RATES_SUCCESS: {
+    case GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_SUCCESS: {
       return {
         ...state,
         fiatExchangeRatesTask: {
@@ -161,7 +200,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.OPEN_SNACKBAR: {
+    case GlobalActionTypes.OPEN_SNACKBAR: {
       return {
         ...state,
         snackbar: {
@@ -171,7 +210,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CLOSE_SNACKBAR: {
+    case GlobalActionTypes.CLOSE_SNACKBAR: {
       return {
         ...state,
         snackbar: {
@@ -179,13 +218,13 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CHANGE_NETWORK_STATUS: {
+    case GlobalActionTypes.CHANGE_NETWORK_STATUS: {
       return {
         ...state,
         networkStatus: action.networkStatus
       }
     }
-    case globalActionTypes.ADD_PENDING_WITHDRAW: {
+    case GlobalActionTypes.ADD_PENDING_WITHDRAW: {
       const chainIdPendingWithdraws = state.pendingWithdraws[action.chainId] || {}
       const accountPendingWithdraws = chainIdPendingWithdraws[action.hermezEthereumAddress] || []
 
@@ -200,7 +239,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.REMOVE_PENDING_WITHDRAW: {
+    case GlobalActionTypes.REMOVE_PENDING_WITHDRAW: {
       const chainIdPendingWithdraws = state.pendingWithdraws[action.chainId] || {}
       const accountPendingWithdraws = chainIdPendingWithdraws[action.hermezEthereumAddress] || []
 
@@ -211,12 +250,12 @@ function globalReducer (state = getInitialGlobalState(), action) {
           [action.chainId]: {
             ...chainIdPendingWithdraws,
             [action.hermezEthereumAddress]: accountPendingWithdraws
-              .filter(withdraw => withdraw.hash !== action.hash)
+              .filter((withdraw: Withdraw) => withdraw.hash !== action.hash)
           }
         }
       }
     }
-    case globalActionTypes.ADD_PENDING_DELAYED_WITHDRAW: {
+    case GlobalActionTypes.ADD_PENDING_DELAYED_WITHDRAW: {
       const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {}
       const accountPendingDelayedWithdraws = chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || []
 
@@ -231,7 +270,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW: {
+    case GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW: {
       const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {}
       const accountPendingDelayedWithdraws = chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || []
 
@@ -242,12 +281,12 @@ function globalReducer (state = getInitialGlobalState(), action) {
           [action.chainId]: {
             ...chainIdPendingDelayedWithdraws,
             [action.hermezEthereumAddress]: accountPendingDelayedWithdraws
-              .filter(withdraw => withdraw.id !== action.pendingDelayedWithdrawId)
+              .filter((withdraw: Withdraw) => withdraw.id !== action.pendingDelayedWithdrawId)
           }
         }
       }
     }
-    case globalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH: {
+    case GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH: {
       const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {}
       const accountPendingDelayedWithdraws = chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || []
 
@@ -258,12 +297,12 @@ function globalReducer (state = getInitialGlobalState(), action) {
           [action.chainId]: {
             ...chainIdPendingDelayedWithdraws,
             [action.hermezEthereumAddress]: accountPendingDelayedWithdraws
-              .filter(withdraw => withdraw.hash !== action.pendingDelayedWithdrawHash)
+              .filter((withdraw: Withdraw) => withdraw.hash !== action.pendingDelayedWithdrawHash)
           }
         }
       }
     }
-    case globalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE: {
+    case GlobalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE: {
       const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {}
       const accountPendingDelayedWithdraws = chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || []
 
@@ -283,7 +322,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS: {
+    case GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS: {
       return {
         ...state,
         pendingDelayedWithdrawCheckTask: {
@@ -291,7 +330,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS: {
+    case GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS: {
       return {
         ...state,
         pendingDelayedWithdrawCheckTask: {
@@ -299,7 +338,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CHECK_PENDING_WITHDRAWALS: {
+    case GlobalActionTypes.CHECK_PENDING_WITHDRAWALS: {
       return {
         ...state,
         pendingWithdrawalsCheckTask: {
@@ -307,7 +346,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CHECK_PENDING_WITHDRAWALS_SUCCESS: {
+    case GlobalActionTypes.CHECK_PENDING_WITHDRAWALS_SUCCESS: {
       return {
         ...state,
         pendingWithdrawalsCheckTask: {
@@ -315,7 +354,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.ADD_PENDING_DEPOSIT: {
+    case GlobalActionTypes.ADD_PENDING_DEPOSIT: {
       const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {}
       const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || []
 
@@ -330,7 +369,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.REMOVE_PENDING_DEPOSIT_BY_HASH: {
+    case GlobalActionTypes.REMOVE_PENDING_DEPOSIT_BY_HASH: {
       const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {}
       const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || []
 
@@ -346,7 +385,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.REMOVE_PENDING_DEPOSIT_BY_ID: {
+    case GlobalActionTypes.REMOVE_PENDING_DEPOSIT_BY_TRANSACTION_ID: {
       const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {}
       const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || []
 
@@ -357,12 +396,12 @@ function globalReducer (state = getInitialGlobalState(), action) {
           [action.chainId]: {
             ...chainIdPendingDeposits,
             [action.hermezEthereumAddress]: accountPendingDeposits
-              .filter(deposit => deposit.id !== action.id)
+              .filter(deposit => deposit.transactionId && deposit.transactionId !== action.transactionId)
           }
         }
       }
     }
-    case globalActionTypes.UPDATE_PENDING_DEPOSIT_ID: {
+    case GlobalActionTypes.UPDATE_PENDING_DEPOSIT_ID: {
       const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {}
       const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || []
 
@@ -382,7 +421,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CHECK_PENDING_DEPOSITS: {
+    case GlobalActionTypes.CHECK_PENDING_DEPOSITS: {
       return {
         ...state,
         pendingDepositsCheckTask: {
@@ -390,7 +429,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CHECK_PENDING_DEPOSITS_SUCCESS: {
+    case GlobalActionTypes.CHECK_PENDING_DEPOSITS_SUCCESS: {
       return {
         ...state,
         pendingDepositsCheckTask: {
@@ -398,7 +437,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_COORDINATOR_STATE: {
+    case GlobalActionTypes.LOAD_COORDINATOR_STATE: {
       if (state.coordinatorStateTask.status === 'reloading') {
         return state
       }
@@ -410,7 +449,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
           : { status: 'loading' }
       }
     }
-    case globalActionTypes.LOAD_COORDINATOR_STATE_SUCCESS: {
+    case GlobalActionTypes.LOAD_COORDINATOR_STATE_SUCCESS: {
       return {
         ...state,
         coordinatorStateTask: {
@@ -419,7 +458,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_COORDINATOR_STATE_FAILURE: {
+    case GlobalActionTypes.LOAD_COORDINATOR_STATE_FAILURE: {
       return {
         ...state,
         coordinatorStateTask: {
@@ -428,7 +467,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.OPEN_REWARDS_SIDENAV: {
+    case GlobalActionTypes.OPEN_REWARDS_SIDENAV: {
       return {
         ...state,
         rewards: {
@@ -439,7 +478,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.CLOSE_REWARDS_SIDENAV: {
+    case GlobalActionTypes.CLOSE_REWARDS_SIDENAV: {
       return {
         ...state,
         rewards: {
@@ -450,7 +489,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD: {
+    case GlobalActionTypes.LOAD_REWARD: {
       return {
         ...state,
         rewards: {
@@ -461,19 +500,19 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_SUCCESS: {
+    case GlobalActionTypes.LOAD_REWARD_SUCCESS: {
       return {
         ...state,
         rewards: {
           ...state.rewards,
           rewardTask: {
             status: 'successful',
-            data: action.data
+            data: action.reward
           }
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_FAILURE: {
+    case GlobalActionTypes.LOAD_REWARD_FAILURE: {
       return {
         ...state,
         rewards: {
@@ -485,7 +524,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_EARNED_REWARD: {
+    case GlobalActionTypes.LOAD_EARNED_REWARD: {
       return {
         ...state,
         rewards: {
@@ -496,19 +535,19 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_EARNED_REWARD_SUCCESS: {
+    case GlobalActionTypes.LOAD_EARNED_REWARD_SUCCESS: {
       return {
         ...state,
         rewards: {
           ...state.rewards,
           earnedRewardTask: {
             status: 'successful',
-            data: action.data
+            data: action.earnedReward
           }
         }
       }
     }
-    case globalActionTypes.LOAD_EARNED_REWARD_FAILURE: {
+    case GlobalActionTypes.LOAD_EARNED_REWARD_FAILURE: {
       return {
         ...state,
         rewards: {
@@ -520,7 +559,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_PERCENTAGE: {
+    case GlobalActionTypes.LOAD_REWARD_PERCENTAGE: {
       return {
         ...state,
         rewards: {
@@ -531,19 +570,19 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS: {
+    case GlobalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS: {
       return {
         ...state,
         rewards: {
           ...state.rewards,
           rewardPercentageTask: {
             status: 'successful',
-            data: action.data
+            data: action.rewardPercentage
           }
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE: {
+    case GlobalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE: {
       return {
         ...state,
         rewards: {
@@ -555,7 +594,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY: {
+    case GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY: {
       return {
         ...state,
         rewards: {
@@ -566,19 +605,19 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS: {
+    case GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS: {
       return {
         ...state,
         rewards: {
           ...state.rewards,
           accountEligibilityTask: {
             status: 'successful',
-            data: action.data
+            data: action.rewardAccountEligibility
           }
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE: {
+    case GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE: {
       return {
         ...state,
         rewards: {
@@ -590,7 +629,7 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_TOKEN: {
+    case GlobalActionTypes.LOAD_REWARD_TOKEN: {
       return {
         ...state,
         rewards: {
@@ -601,19 +640,19 @@ function globalReducer (state = getInitialGlobalState(), action) {
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_TOKEN_SUCCESS: {
+    case GlobalActionTypes.LOAD_REWARD_TOKEN_SUCCESS: {
       return {
         ...state,
         rewards: {
           ...state.rewards,
           tokenTask: {
             status: 'successful',
-            data: action.data
+            data: action.rewardToken
           }
         }
       }
     }
-    case globalActionTypes.LOAD_REWARD_TOKEN_FAILURE: {
+    case GlobalActionTypes.LOAD_REWARD_TOKEN_FAILURE: {
       return {
         ...state,
         rewards: {
