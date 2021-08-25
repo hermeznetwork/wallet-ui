@@ -10,7 +10,7 @@ import {
 import { getPaginationData } from "../../utils/api";
 import { AsyncTask } from "../../utils/async-task";
 
-export interface ViewHistoryTransactions {
+interface ViewHistoryTransactions {
   transactions: HermezTransaction[];
   fromItemHistory: number[];
   pagination: {
