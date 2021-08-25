@@ -12,12 +12,12 @@
     "lint:fix": "standard --fix"
   },
   "dependencies": {
-    "@hermeznetwork/hermezjs": "1.1.9",
     "@types/jest": "^27.0.1",
     "@types/react": "^17.0.18",
     "@types/react-dom": "^17.0.9",
     "@types/react-redux": "^7.1.18",
     "@types/react-router": "^5.1.16",
+    "@hermeznetwork/hermezjs": "1.2.1",
     "@walletconnect/web3-provider": "^1.4.1",
     "axios": "^0.21.1",
     "big-integer": "^1.6.48",
@@ -74,7 +74,8 @@
       "not ie <=11",
       "not android <10",
       "not safari <14",
-      "not ios_saf <14"
+      "not ios_saf <14",
+      "not chrome 49"
     ],
     "development": [
       ">0.2%",
@@ -83,7 +84,8 @@
       "not ie <=11",
       "not android <10",
       "not safari <14",
-      "not ios_saf <14"
+      "not ios_saf <14",
+      "not chrome 49"
     ]
   },
   "husky": {
