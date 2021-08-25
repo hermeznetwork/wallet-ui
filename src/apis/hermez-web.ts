@@ -6,9 +6,9 @@ const baseApiUrl = HERMEZ_WEB_URL
 
 /**
  * Fetches the status of the Hermez network
- * @returns {Number} - Network status of the Hermez Network
+ * @returns {Promise<Number>} - Network status of the Hermez Network
  */
-function getNetworkStatus (symbols) {
+function getNetworkStatus (): Promise<number> {
   return axios.get(`${baseApiUrl}/network-status.json`)
     .then(res => res.data.isWalletUnderMaintenance)
 }
