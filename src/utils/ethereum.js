@@ -85,7 +85,7 @@ function isTxMined (tx) {
  * if it exceeds a timeout (24h by default) or if the user doesn't have enough ETH in his
  * account to pay the maximum fee estimated for the tx.
  * @param {Object} tx - Ethereum transaction
- * @param {Date} date - Date the transaction was sent
+ * @param {ISOStringDate} date - ISO string date the transaction was sent
  * @param {BigInt} accountEthBalance - ETH balance of the account which the transaction has been sent from
  * @returns {Boolean}
  */
