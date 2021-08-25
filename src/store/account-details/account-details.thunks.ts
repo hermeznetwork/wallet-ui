@@ -3,13 +3,13 @@ import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { push } from 'connected-react-router'
-import { RootState } from '../'
-import { AppDispatch } from '../../' 
 import * as accountDetailsActions from './account-details.actions'
 import * as ethereum from '../../utils/ethereum'
+import { RootState } from '../'
+import { AppDispatch } from '../../' 
 
 // domain
-import { Account, Token, Transaction, Exit } from '../../domain'
+import { Account, Token, HermezTransaction, Exit } from '../../domain'
 import { HistoryTransactions, HistoryExits } from '../../persistence'
 
 let refreshCancelTokenSource = axios.CancelToken.source()
@@ -27,7 +27,7 @@ function fetchAccount (accountIndex: Account["accountIndex"]) {
 
     return CoordinatorAPI.getAccount(accountIndex)
       .then((account: Account) => {
-        if (account.bjj !== wallet.publicKeyBase64) {
+        if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push('/'))
         } else {
           dispatch(accountDetailsActions.loadAccountSuccess(account))
@@ -73,16 +73,17 @@ function fetchPoolTransactions (accountIndex: Account["accountIndex"]) {
     dispatch(accountDetailsActions.loadPoolTransactions())
 
     const { global: { wallet } } = getState()
-
-    getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
-    // We need to reverse the txs to match the order of the txs from the history (DESC)
-      .then((transactions: Transaction[]) => transactions.reverse())
-      .then((transactions: Transaction[]) => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
-      .catch((err: Error) => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)))
+    if (wallet !== undefined) {
+      getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
+      // We need to reverse the txs to match the order of the txs from the history (DESC)
+        .then((transactions: HermezTransaction[]) => transactions.reverse())
+        .then((transactions: HermezTransaction[]) => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
+        .catch((err: Error) => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)))
+    }
   }
 }
 
-function filterExitsFromHistoryTransactions (historyTransactions: Transaction[], exits: Exit[]) {
+function filterExitsFromHistoryTransactions (historyTransactions: HermezTransaction[], exits: Exit[]) {
   return historyTransactions.filter((transaction) => {
     if (transaction.type === TxType.Exit) {
       const exitTx = exits.find((exit) =>
@@ -209,10 +210,11 @@ function fetchExits (tokenId: Token["id"]) {
     dispatch(accountDetailsActions.loadExits())
 
     const { global: { wallet } } = getState()
-
-    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
+    if (wallet !== undefined) {
+      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
       .then((historyExits: HistoryExits) => dispatch(accountDetailsActions.loadExitsSuccess(historyExits)))
       .catch((err: Error) => dispatch(accountDetailsActions.loadExitsFailure(err)))
+    }
   }
 }
 
