@@ -1,11 +1,14 @@
-import { PaginationOrder } from '@hermeznetwork/hermezjs/src/api'
+import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 
 // domain
-import { Account, HermezTransaction } from '../../domain/hermez'
+import { Account, HermezTransaction } from "../../domain/hermez";
 
-import { AccountDetailsActionTypes, AccountDetailsAction } from './account-details.actions'
-import { getPaginationData } from '../../utils/api'
-import { AsyncTask } from '../../utils/async-task'
+import {
+  AccountDetailsActionTypes,
+  AccountDetailsAction,
+} from "./account-details.actions";
+import { getPaginationData } from "../../utils/api";
+import { AsyncTask } from "../../utils/async-task";
 
 export interface ViewHistoryTransactions {
   transactions: HermezTransaction[];
@@ -17,210 +20,229 @@ export interface ViewHistoryTransactions {
 }
 
 export interface AccountDetailsState {
-	accountTask: AsyncTask<Account, string>;
-	exitsTask: AsyncTask<unknown, string>;
-	historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
-	l1TokenBalanceTask: AsyncTask<null, string>;
-	poolTransactionsTask: AsyncTask<Array<unknown>, string>;
+  accountTask: AsyncTask<Account, string>;
+  exitsTask: AsyncTask<unknown, string>;
+  historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
+  l1TokenBalanceTask: AsyncTask<null, string>;
+  poolTransactionsTask: AsyncTask<Array<unknown>, string>;
 }
 
 const initialAccountDetailsState: AccountDetailsState = {
   accountTask: {
-    status: 'pending'
+    status: "pending",
   },
   l1TokenBalanceTask: {
-    status: 'pending'
+    status: "pending",
   },
   poolTransactionsTask: {
-    status: 'pending'
+    status: "pending",
   },
   historyTransactionsTask: {
-    status: 'pending'
+    status: "pending",
   },
   exitsTask: {
-    status: 'pending'
-  }
-}
+    status: "pending",
+  },
+};
 
-function accountDetailsReducer (state = initialAccountDetailsState, action: AccountDetailsAction) {
+function accountDetailsReducer(
+  state = initialAccountDetailsState,
+  action: AccountDetailsAction
+) {
   switch (action.type) {
     case AccountDetailsActionTypes.LOAD_ACCOUNT: {
       return {
         ...state,
-        accountTask: state.accountTask.status === 'successful'
-          ? { status: 'reloading', data: state.accountTask.data }
-          : { status: 'loading' }
-      }
+        accountTask:
+          state.accountTask.status === "successful"
+            ? { status: "reloading", data: state.accountTask.data }
+            : { status: "loading" },
+      };
     }
     case AccountDetailsActionTypes.LOAD_ACCOUNT_SUCCESS: {
       return {
         ...state,
         accountTask: {
-          status: 'successful',
-          data: action.account
-        }
-      }
+          status: "successful",
+          data: action.account,
+        },
+      };
     }
     case AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE: {
       return {
         ...state,
         accountTask: {
-          status: 'failed',
-          error: 'An error ocurred loading the account'
-        }
-      }
+          status: "failed",
+          error: "An error ocurred loading the account",
+        },
+      };
     }
     case AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE: {
       return {
         ...state,
         l1TokenBalanceTask: {
-          status: 'loading'
-        }
-      }
+          status: "loading",
+        },
+      };
     }
     case AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS: {
       return {
         ...state,
         l1TokenBalanceTask: {
-          status: 'successful'
-        }
-      }
+          status: "successful",
+        },
+      };
     }
     case AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE: {
       return {
         ...state,
         l1TokenBalanceTask: {
-          status: 'failed'
-        }
-      }
+          status: "failed",
+        },
+      };
     }
     case AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
-        poolTransactionsTask: state.poolTransactionsTask.status === 'successful'
-          ? { status: 'reloading', data: state.poolTransactionsTask.data }
-          : { status: 'loading' }
-      }
+        poolTransactionsTask:
+          state.poolTransactionsTask.status === "successful"
+            ? { status: "reloading", data: state.poolTransactionsTask.data }
+            : { status: "loading" },
+      };
     }
     case AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
         poolTransactionsTask: {
-          status: 'successful',
-          data: action.transactions
-        }
-      }
+          status: "successful",
+          data: action.transactions,
+        },
+      };
     }
     case AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
       return {
         ...state,
         poolTransactionsTask: {
-          status: 'failed',
-          error: 'An error ocurred loading the transactions from the pool'
-        }
-      }
+          status: "failed",
+          error: "An error ocurred loading the transactions from the pool",
+        },
+      };
     }
     case AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS: {
-      if (state.historyTransactionsTask.status === 'reloading') {
-        return state
+      if (state.historyTransactionsTask.status === "reloading") {
+        return state;
       }
 
       return {
         ...state,
-        historyTransactionsTask: state.historyTransactionsTask.status === 'successful'
-          ? { status: 'reloading', data: state.historyTransactionsTask.data }
-          : { status: 'loading' }
-      }
+        historyTransactionsTask:
+          state.historyTransactionsTask.status === "successful"
+            ? { status: "reloading", data: state.historyTransactionsTask.data }
+            : { status: "loading" },
+      };
     }
     case AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
-      const transactions = state.historyTransactionsTask.status === 'reloading'
-        ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
-        : action.data.transactions
-      const pagination = getPaginationData(action.data.pendingItems, transactions, PaginationOrder.DESC)
-      const fromItemHistory = state.historyTransactionsTask.status === 'reloading'
-        ? [...state.historyTransactionsTask.data.fromItemHistory, state.historyTransactionsTask.data.pagination.fromItem]
-        : []
+      const transactions =
+        state.historyTransactionsTask.status === "reloading"
+          ? [
+              ...state.historyTransactionsTask.data.transactions,
+              ...action.data.transactions,
+            ]
+          : action.data.transactions;
+      const pagination = getPaginationData(
+        action.data.pendingItems,
+        transactions,
+        PaginationOrder.DESC
+      );
+      const fromItemHistory =
+        state.historyTransactionsTask.status === "reloading"
+          ? [
+              ...state.historyTransactionsTask.data.fromItemHistory,
+              state.historyTransactionsTask.data.pagination.fromItem,
+            ]
+          : [];
 
       return {
         ...state,
         historyTransactionsTask: {
-          status: 'successful',
-          data: { transactions, pagination, fromItemHistory }
-        }
-      }
+          status: "successful",
+          data: { transactions, pagination, fromItemHistory },
+        },
+      };
     }
     case AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE: {
       return {
         ...state,
         historyTransactionsTask: {
-          status: 'failed',
-          error: 'An error ocurred loading the transactions from the history'
-        }
-      }
+          status: "failed",
+          error: "An error ocurred loading the transactions from the history",
+        },
+      };
     }
     case AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS: {
       return {
         ...state,
         historyTransactionsTask: {
           ...state.historyTransactionsTask,
-          status: 'reloading'
-        }
-      }
+          status: "reloading",
+        },
+      };
     }
     case AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS: {
-      if (state.historyTransactionsTask.status !== 'successful') {
+      if (state.historyTransactionsTask.status !== "successful") {
         return state;
       }
       const pagination = getPaginationData(
         action.historyTransactions.pendingItems,
         action.historyTransactions.transactions,
         PaginationOrder.DESC
-      )
+      );
       return {
         ...state,
         historyTransactionsTask: {
-          status: 'successful',
+          status: "successful",
           data: {
             ...state.historyTransactionsTask.data,
             transactions: action.historyTransactions.transactions,
-            pagination
-          }
-        }
-      }
+            pagination,
+          },
+        },
+      };
     }
     case AccountDetailsActionTypes.LOAD_EXITS: {
       return {
         ...state,
-        exitsTask: state.exitsTask.status === 'successful'
-          ? { status: 'reloading', data: state.exitsTask.data }
-          : { status: 'loading' }
-      }
+        exitsTask:
+          state.exitsTask.status === "successful"
+            ? { status: "reloading", data: state.exitsTask.data }
+            : { status: "loading" },
+      };
     }
     case AccountDetailsActionTypes.LOAD_EXITS_SUCCESS: {
       return {
         ...state,
         exitsTask: {
-          status: 'successful',
-          data: action.historyExits
-        }
-      }
+          status: "successful",
+          data: action.historyExits,
+        },
+      };
     }
     case AccountDetailsActionTypes.LOAD_EXITS_FAILURE: {
       return {
         ...state,
         exitsTask: {
-          status: 'failed',
-          error: action.error
-        }
-      }
+          status: "failed",
+          error: action.error,
+        },
+      };
     }
     case AccountDetailsActionTypes.RESET_STATE: {
-      return initialAccountDetailsState
+      return initialAccountDetailsState;
     }
     default: {
-      return state
+      return state;
     }
   }
 }
 
-export default accountDetailsReducer
+export default accountDetailsReducer;
