@@ -4,7 +4,9 @@ import * as storage from '../../utils/storage'
 import { AsyncTask } from '../../utils/async-task'
 
 // domain
-import { HermezStatus, Deposit, EthereumNetwork, HermezNetworkStatus, Withdraw, DelayedWithdraw, HermezWallet, Signer, Header, FiatExchangeRates, CoordinatorState, Reward, Token } from '../../domain'
+import { Header } from '../../domain/'
+import { EthereumNetwork } from '../../domain/ethereum'
+import { HermezStatus, Deposit, HermezNetworkStatus, Withdraw, DelayedWithdraw, HermezWallet, Signer, FiatExchangeRates, CoordinatorState, Reward, Token } from '../../domain/hermez'
 
 type SnackbarState = {
   status: "closed";

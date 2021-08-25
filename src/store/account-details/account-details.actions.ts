@@ -1,5 +1,5 @@
 // domain
-import { Account, HermezTransaction, Exit } from '../../domain'
+import { Account, HermezTransaction } from '../../domain/hermez'
 
 // persistence
 import { HistoryTransactions, HistoryExits } from '../../persistence'

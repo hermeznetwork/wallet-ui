@@ -1,7 +1,7 @@
 import { PaginationOrder } from '@hermeznetwork/hermezjs/src/api'
 
 // domain
-import { Account, HermezTransaction } from '../../domain'
+import { Account, HermezTransaction } from '../../domain/hermez'
 
 import { AccountDetailsActionTypes, AccountDetailsAction } from './account-details.actions'
 import { getPaginationData } from '../../utils/api'

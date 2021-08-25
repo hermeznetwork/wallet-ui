@@ -19,10 +19,10 @@ import { getNextForgerUrls } from '../../utils/coordinator'
 import { RootState } from '../'
 import { AppDispatch } from '../../'
 
-
 // domain
-import { CoordinatorState, ISOStringDate, Withdraw, DelayedWithdraw, FiatExchangeRates, HermezNetworkStatus, EthereumTransaction, EthereumBlock, EthereumTransactionReceipt, Exit, Deposit, HermezTransaction } from '../../domain'
-
+import { ISOStringDate } from '../../domain/'
+import { EthereumTransaction, EthereumBlock, EthereumTransactionReceipt } from '../../domain/ethereum'
+import { CoordinatorState, Withdraw, DelayedWithdraw, FiatExchangeRates, HermezNetworkStatus, Exit, Deposit, HermezTransaction } from '../../domain/hermez'
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up

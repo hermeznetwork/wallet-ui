@@ -1,5 +1,7 @@
 // domain
-import { HermezWallet, EthereumNetwork, Signer, Header, FiatExchangeRates, HermezNetworkStatus, Withdraw, DelayedWithdraw, Deposit, CoordinatorState, Reward, ISOStringDate } from '../../domain'
+import { EthereumNetwork } from '../../domain/ethereum'
+import { HermezWallet, Signer, FiatExchangeRates, HermezNetworkStatus, Withdraw, DelayedWithdraw, Deposit, CoordinatorState, Reward } from '../../domain/hermez'
+import { ISOStringDate, Header } from '../../domain/'
 
 export enum GlobalActionTypes {
   LOAD_HERMEZ_STATUS = '[GLOBAL] LOAD HERMEZ STATUS',

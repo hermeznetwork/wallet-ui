@@ -9,7 +9,7 @@ import { RootState } from '../'
 import { AppDispatch } from '../../' 
 
 // domain
-import { Account, Token, HermezTransaction, Exit } from '../../domain'
+import { Account, Token, HermezTransaction, Exit } from '../../domain/hermez'
 import { HistoryTransactions, HistoryExits } from '../../persistence'
 
 let refreshCancelTokenSource = axios.CancelToken.source()

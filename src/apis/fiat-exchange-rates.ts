@@ -4,13 +4,11 @@ import { CurrencySymbol } from '../utils/currencies'
 import { FIAT_EXCHANGE_RATES_API_URL } from '../constants'
 
 // domain
-import { FiatExchangeRates, ISOStringDate } from '../domain'
+import { FiatExchangeRates } from '../domain/hermez'
 
 export interface ApiExchangeRate {
   currency: string;
-  baseCurrency: string;
   price: number;
-  lastUpdate: ISOStringDate;
 }
 
 const baseApiUrl = FIAT_EXCHANGE_RATES_API_URL
