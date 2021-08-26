@@ -5,8 +5,6 @@ export const MY_ACCOUNT = {
   DEFAULT_PREFERRED_CURRENCY: CurrencySymbol.USD.code
 }
 
-export const FIAT_EXCHANGE_RATES_API_URL = 'https://api.hermez.io/v1'
-
 export const MY_CODE = {
   QR_CODE_SIZE: 216
 }

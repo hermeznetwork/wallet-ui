@@ -7,7 +7,6 @@ import { HttpStatusCode } from '@hermeznetwork/hermezjs/src/http'
 import { getEthereumAddress } from '@hermeznetwork/hermezjs/src/addresses'
 
 import * as globalActions from './global.actions'
-import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as hermezWebApi from '../../apis/hermez-web'
 import * as airdropApi from '../../apis/rewards'
 import * as priceApi from '../../apis/price-updater'
@@ -74,10 +73,10 @@ function fetchFiatExchangeRates () {
 
     dispatch(globalActions.loadFiatExchangeRates())
 
-    return fiatExchangeRatesApi.getFiatExchangeRates(symbols)
+    return priceApi.getFiatExchangeRates(symbols)
       .then(res => dispatch(globalActions.loadFiatExchangeRatesSuccess(res)))
       .catch(() => {
-        dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRatesApi.mockedFiatExchangeRates))
+        dispatch(globalActions.loadFiatExchangeRatesSuccess(priceApi.mockedFiatExchangeRates))
       })
   }
 }
