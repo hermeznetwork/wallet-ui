@@ -1,60 +1,70 @@
 // domain
-import { EthereumNetwork } from '../../domain/ethereum'
-import { HermezWallet, Signer, FiatExchangeRates, HermezNetworkStatus, Withdraw, DelayedWithdraw, Deposit, CoordinatorState, Reward } from '../../domain/hermez'
-import { ISOStringDate, Header } from '../../domain/'
+import { EthereumNetwork } from "../../domain/ethereum";
+import {
+  HermezWallet,
+  Signer,
+  FiatExchangeRates,
+  HermezNetworkStatus,
+  Withdraw,
+  DelayedWithdraw,
+  Deposit,
+  CoordinatorState,
+  Reward,
+} from "../../domain/hermez";
+import { ISOStringDate, Header } from "../../domain/";
 
 export enum GlobalActionTypes {
-  LOAD_HERMEZ_STATUS = '[GLOBAL] LOAD HERMEZ STATUS',
-  LOAD_HERMEZ_STATUS_SUCCESS = '[GLOBAL] LOAD HERMEZ STATUS SUCCESS',
-  LOAD_HERMEZ_STATUS_FAILURE = '[GLOBAL] LOAD HERMEZ STATUS FAILURE',
-  LOAD_ETHEREUM_NETWORK = '[GLOBAL] LOAD ETHEREUM NETWORK',
-  LOAD_ETHEREUM_NETWORK_SUCCESS = '[GLOBAL] LOAD ETHEREUM NETWORK SUCCESS',
-  LOAD_WALLET = '[GLOBAL] LOAD WALLET',
-  UNLOAD_WALLET = '[GLOBAL] UNLOAD WALLET',
-  SET_SIGNER = '[GLOBAL] SET SIGNER',
-  CHANGE_HEADER = '[GLOBAL] CHANGE HEADER',
-  CHANGE_REDIRECT_ROUTE = '[GLOBAL] CHANGE REDIRECT ROUTE',
-  LOAD_FIAT_EXCHANGE_RATES = '[GLOBAL] LOAD FIAT EXCHANGE RATES',
-  LOAD_FIAT_EXCHANGE_RATES_SUCCESS = '[GLOBAL] LOAD FIAT EXCHANGE RATES SUCCESS',
-  OPEN_SNACKBAR = '[GLOBAL] OPEN SNACKBAR',
-  CLOSE_SNACKBAR = '[GLOBAL] CLOSE SNACKBAR',
-  CHANGE_NETWORK_STATUS = '[GLOBAL] CHANGE NETWORK STATUS',
-  ADD_PENDING_WITHDRAW = '[GLOBAL] ADD PENDING WITHRAW',
-  REMOVE_PENDING_WITHDRAW = '[GLOBAL] REMOVE PENDING WITHRAW',
-  ADD_PENDING_DELAYED_WITHDRAW = '[GLOBAL] ADD PENDING DELAYED WITHRAW',
-  REMOVE_PENDING_DELAYED_WITHDRAW = '[GLOBAL] REMOVE PENDING DELAYED WITHRAW',
-  REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH = '[GLOBAL] REMOVE PENDING DELAYED WITHRAW BY HASH',
-  UPDATE_PENDING_DELAYED_WITHDRAW_DATE = '[GLOBAL] UPDATE PENDING DELAYED WITHDRAW DATE',
-  CHECK_PENDING_DELAYED_WITHDRAWALS = '[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS',
-  CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS = '[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS SUCCESS',
-  CHECK_PENDING_WITHDRAWALS = '[GLOBAL] CHECK PENDING WITHDRAWALS',
-  CHECK_PENDING_WITHDRAWALS_SUCCESS = '[GLOBAL] CHECK PENDING WITHDRAWALS SUCCESS',
-  ADD_PENDING_DEPOSIT = '[GLOBAL] ADD PENDING DEPOSIT',
-  REMOVE_PENDING_DEPOSIT_BY_HASH = '[GLOBAL] REMOVE PENDING DEPOSIT BY HASH',
-  REMOVE_PENDING_DEPOSIT_BY_TRANSACTION_ID = '[GLOBAL] REMOVE PENDING DEPOSIT BY TRANSACTION ID',
-  UPDATE_PENDING_DEPOSIT_ID = '[GLOBAL] UPDATE PENDING DEPOSIT ID',
-  CHECK_PENDING_DEPOSITS = '[GLOBAL] CHECK PENDING DEPOSITS',
-  CHECK_PENDING_DEPOSITS_SUCCESS = '[GLOBAL] CHECK PENDING DEPOSITS SUCCESS',
-  LOAD_COORDINATOR_STATE = '[GLOBAL] LOAD COORDINATOR STATE',
-  LOAD_COORDINATOR_STATE_SUCCESS = '[GLOBAL] LOAD COORDINATOR STATE SUCCESS',
-  LOAD_COORDINATOR_STATE_FAILURE = '[GLOBAL] LOAD COORDINATOR STATE FAILURE',
-  OPEN_REWARDS_SIDENAV = '[GLOBAL] OPEN REWARDS SIDENAV',
-  CLOSE_REWARDS_SIDENAV = '[GLOBAL] CLOSE REWARDS SIDENAV',
-  LOAD_REWARD = '[GLOBAL] LOAD REWARD',
-  LOAD_REWARD_SUCCESS = '[GLOBAL] LOAD REWARD SUCCESS',
-  LOAD_REWARD_FAILURE = '[GLOBAL] LOAD REWARD FAILURE',
-  LOAD_EARNED_REWARD = '[GLOBAL] LOAD EARNED REWARD',
-  LOAD_EARNED_REWARD_SUCCESS = '[GLOBAL] LOAD EARNED REWARD SUCCESS',
-  LOAD_EARNED_REWARD_FAILURE = '[GLOBAL] LOAD EARNED REWARD FAILURE',
-  LOAD_REWARD_PERCENTAGE = '[GLOBAL] LOAD REWARD PERCENTAGE',
-  LOAD_REWARD_PERCENTAGE_SUCCESS = '[GLOBAL] LOAD REWARD PERCENTAGE SUCCESS',
-  LOAD_REWARD_PERCENTAGE_FAILURE = '[GLOBAL] LOAD REWARD PERCENTAGE FAILURE',
-  LOAD_REWARD_ACCOUNT_ELIGIBILITY = '[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY',
-  LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS = '[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY SUCCESS',
-  LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE = '[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY FAILURE',
-  LOAD_REWARD_TOKEN = '[GLOBAL] LOAD REWARD TOKEN',
-  LOAD_REWARD_TOKEN_SUCCESS = '[GLOBAL] LOAD REWARD TOKEN SUCCESS',
-  LOAD_REWARD_TOKEN_FAILURE = '[GLOBAL] LOAD REWARD TOKEN FAILURE'
+  LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",
+  LOAD_HERMEZ_STATUS_SUCCESS = "[GLOBAL] LOAD HERMEZ STATUS SUCCESS",
+  LOAD_HERMEZ_STATUS_FAILURE = "[GLOBAL] LOAD HERMEZ STATUS FAILURE",
+  LOAD_ETHEREUM_NETWORK = "[GLOBAL] LOAD ETHEREUM NETWORK",
+  LOAD_ETHEREUM_NETWORK_SUCCESS = "[GLOBAL] LOAD ETHEREUM NETWORK SUCCESS",
+  LOAD_WALLET = "[GLOBAL] LOAD WALLET",
+  UNLOAD_WALLET = "[GLOBAL] UNLOAD WALLET",
+  SET_SIGNER = "[GLOBAL] SET SIGNER",
+  CHANGE_HEADER = "[GLOBAL] CHANGE HEADER",
+  CHANGE_REDIRECT_ROUTE = "[GLOBAL] CHANGE REDIRECT ROUTE",
+  LOAD_FIAT_EXCHANGE_RATES = "[GLOBAL] LOAD FIAT EXCHANGE RATES",
+  LOAD_FIAT_EXCHANGE_RATES_SUCCESS = "[GLOBAL] LOAD FIAT EXCHANGE RATES SUCCESS",
+  OPEN_SNACKBAR = "[GLOBAL] OPEN SNACKBAR",
+  CLOSE_SNACKBAR = "[GLOBAL] CLOSE SNACKBAR",
+  CHANGE_NETWORK_STATUS = "[GLOBAL] CHANGE NETWORK STATUS",
+  ADD_PENDING_WITHDRAW = "[GLOBAL] ADD PENDING WITHRAW",
+  REMOVE_PENDING_WITHDRAW = "[GLOBAL] REMOVE PENDING WITHRAW",
+  ADD_PENDING_DELAYED_WITHDRAW = "[GLOBAL] ADD PENDING DELAYED WITHRAW",
+  REMOVE_PENDING_DELAYED_WITHDRAW = "[GLOBAL] REMOVE PENDING DELAYED WITHRAW",
+  REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH = "[GLOBAL] REMOVE PENDING DELAYED WITHRAW BY HASH",
+  UPDATE_PENDING_DELAYED_WITHDRAW_DATE = "[GLOBAL] UPDATE PENDING DELAYED WITHDRAW DATE",
+  CHECK_PENDING_DELAYED_WITHDRAWALS = "[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS",
+  CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS = "[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS SUCCESS",
+  CHECK_PENDING_WITHDRAWALS = "[GLOBAL] CHECK PENDING WITHDRAWALS",
+  CHECK_PENDING_WITHDRAWALS_SUCCESS = "[GLOBAL] CHECK PENDING WITHDRAWALS SUCCESS",
+  ADD_PENDING_DEPOSIT = "[GLOBAL] ADD PENDING DEPOSIT",
+  REMOVE_PENDING_DEPOSIT_BY_HASH = "[GLOBAL] REMOVE PENDING DEPOSIT BY HASH",
+  REMOVE_PENDING_DEPOSIT_BY_TRANSACTION_ID = "[GLOBAL] REMOVE PENDING DEPOSIT BY TRANSACTION ID",
+  UPDATE_PENDING_DEPOSIT_ID = "[GLOBAL] UPDATE PENDING DEPOSIT ID",
+  CHECK_PENDING_DEPOSITS = "[GLOBAL] CHECK PENDING DEPOSITS",
+  CHECK_PENDING_DEPOSITS_SUCCESS = "[GLOBAL] CHECK PENDING DEPOSITS SUCCESS",
+  LOAD_COORDINATOR_STATE = "[GLOBAL] LOAD COORDINATOR STATE",
+  LOAD_COORDINATOR_STATE_SUCCESS = "[GLOBAL] LOAD COORDINATOR STATE SUCCESS",
+  LOAD_COORDINATOR_STATE_FAILURE = "[GLOBAL] LOAD COORDINATOR STATE FAILURE",
+  OPEN_REWARDS_SIDENAV = "[GLOBAL] OPEN REWARDS SIDENAV",
+  CLOSE_REWARDS_SIDENAV = "[GLOBAL] CLOSE REWARDS SIDENAV",
+  LOAD_REWARD = "[GLOBAL] LOAD REWARD",
+  LOAD_REWARD_SUCCESS = "[GLOBAL] LOAD REWARD SUCCESS",
+  LOAD_REWARD_FAILURE = "[GLOBAL] LOAD REWARD FAILURE",
+  LOAD_EARNED_REWARD = "[GLOBAL] LOAD EARNED REWARD",
+  LOAD_EARNED_REWARD_SUCCESS = "[GLOBAL] LOAD EARNED REWARD SUCCESS",
+  LOAD_EARNED_REWARD_FAILURE = "[GLOBAL] LOAD EARNED REWARD FAILURE",
+  LOAD_REWARD_PERCENTAGE = "[GLOBAL] LOAD REWARD PERCENTAGE",
+  LOAD_REWARD_PERCENTAGE_SUCCESS = "[GLOBAL] LOAD REWARD PERCENTAGE SUCCESS",
+  LOAD_REWARD_PERCENTAGE_FAILURE = "[GLOBAL] LOAD REWARD PERCENTAGE FAILURE",
+  LOAD_REWARD_ACCOUNT_ELIGIBILITY = "[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY",
+  LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS = "[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY SUCCESS",
+  LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE = "[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY FAILURE",
+  LOAD_REWARD_TOKEN = "[GLOBAL] LOAD REWARD TOKEN",
+  LOAD_REWARD_TOKEN_SUCCESS = "[GLOBAL] LOAD REWARD TOKEN SUCCESS",
+  LOAD_REWARD_TOKEN_FAILURE = "[GLOBAL] LOAD REWARD TOKEN FAILURE",
 }
 
 export interface LoadHermezStatus {
@@ -158,7 +168,7 @@ export interface RemovePendingDelayedWithdraw {
 
 export interface RemovePendingDelayedWithdrawByHash {
   type: typeof GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH;
-  chainId: number; 
+  chainId: number;
   hermezEthereumAddress: string;
   pendingDelayedWithdrawHash: string;
 }
@@ -369,369 +379,431 @@ export type GlobalAction =
   | LoadRewardTokenSuccess
   | LoadRewardTokenFailure;
 
-function loadHermezStatus (): LoadHermezStatus {
+function loadHermezStatus(): LoadHermezStatus {
   return {
-    type: GlobalActionTypes.LOAD_HERMEZ_STATUS
-  }
+    type: GlobalActionTypes.LOAD_HERMEZ_STATUS,
+  };
 }
 
-function loadHermezStatusSuccess (status: number): LoadHermezStatusSuccess {
+function loadHermezStatusSuccess(status: number): LoadHermezStatusSuccess {
   return {
     type: GlobalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS,
-    status
-  }
+    status,
+  };
 }
 
-function loadHermezStatusFailure (error: string): LoadHermezStatusFailure {
+function loadHermezStatusFailure(error: string): LoadHermezStatusFailure {
   return {
     type: GlobalActionTypes.LOAD_HERMEZ_STATUS_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadEthereumNetwork (): LoadEthereumNetwork {
+function loadEthereumNetwork(): LoadEthereumNetwork {
   return {
-    type: GlobalActionTypes.LOAD_ETHEREUM_NETWORK
-  }
+    type: GlobalActionTypes.LOAD_ETHEREUM_NETWORK,
+  };
 }
 
-function loadEthereumNetworkSuccess (ethereumNetwork: EthereumNetwork): LoadEthereumNetworkSuccess {
+function loadEthereumNetworkSuccess(
+  ethereumNetwork: EthereumNetwork
+): LoadEthereumNetworkSuccess {
   return {
     type: GlobalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS,
-    ethereumNetwork
-  }
+    ethereumNetwork,
+  };
 }
 
-function loadWallet (wallet: HermezWallet): LoadWallet {
+function loadWallet(wallet: HermezWallet): LoadWallet {
   return {
     type: GlobalActionTypes.LOAD_WALLET,
-    wallet
-  }
+    wallet,
+  };
 }
 
-function unloadWallet (): UnloadWallet {
+function unloadWallet(): UnloadWallet {
   return {
-    type: GlobalActionTypes.UNLOAD_WALLET
-  }
+    type: GlobalActionTypes.UNLOAD_WALLET,
+  };
 }
 
-function setSigner (signer: Signer): SetSigner {
+function setSigner(signer: Signer): SetSigner {
   return {
     type: GlobalActionTypes.SET_SIGNER,
-    signer
-  }
+    signer,
+  };
 }
 
-function changeHeader (header: Header): ChangeHeader {
+function changeHeader(header: Header): ChangeHeader {
   return {
     type: GlobalActionTypes.CHANGE_HEADER,
-    header
-  }
+    header,
+  };
 }
 
-function changeRedirectRoute (redirectRoute: string): ChangeRedirectRoute {
+function changeRedirectRoute(redirectRoute: string): ChangeRedirectRoute {
   return {
     type: GlobalActionTypes.CHANGE_REDIRECT_ROUTE,
-    redirectRoute
-  }
+    redirectRoute,
+  };
 }
 
-function loadFiatExchangeRates (): LoadFiatExchangeRates {
+function loadFiatExchangeRates(): LoadFiatExchangeRates {
   return {
-    type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES
-  }
+    type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES,
+  };
 }
 
-function loadFiatExchangeRatesSuccess (fiatExchangeRates: FiatExchangeRates): LoadFiatExchangeRatesSuccess {
+function loadFiatExchangeRatesSuccess(
+  fiatExchangeRates: FiatExchangeRates
+): LoadFiatExchangeRatesSuccess {
   return {
     type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_SUCCESS,
-    fiatExchangeRates
-  }
+    fiatExchangeRates,
+  };
 }
 
-function openSnackbar (message: string, backgroundColor?: string): OpenSnackbar {
+function openSnackbar(message: string, backgroundColor?: string): OpenSnackbar {
   return {
     type: GlobalActionTypes.OPEN_SNACKBAR,
     message,
-    backgroundColor
-  }
+    backgroundColor,
+  };
 }
 
-function closeSnackbar (): CloseSnackbar {
+function closeSnackbar(): CloseSnackbar {
   return {
-    type: GlobalActionTypes.CLOSE_SNACKBAR
-  }
+    type: GlobalActionTypes.CLOSE_SNACKBAR,
+  };
 }
 
-function changeNetworkStatus (networkStatus: HermezNetworkStatus): ChangeNetworkStatus {
+function changeNetworkStatus(
+  networkStatus: HermezNetworkStatus
+): ChangeNetworkStatus {
   return {
     type: GlobalActionTypes.CHANGE_NETWORK_STATUS,
-    networkStatus
-  }
+    networkStatus,
+  };
 }
 
-function addPendingWithdraw (chainId: number, hermezEthereumAddress: string, pendingWithdraw: Withdraw): AddPendingWithdraw {
+function addPendingWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  pendingWithdraw: Withdraw
+): AddPendingWithdraw {
   return {
     type: GlobalActionTypes.ADD_PENDING_WITHDRAW,
     chainId,
     hermezEthereumAddress,
-    pendingWithdraw
-  }
+    pendingWithdraw,
+  };
 }
 
-function removePendingWithdraw (chainId: number, hermezEthereumAddress: string, hash: string): RemovePendingWithdraw {
+function removePendingWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  hash: string
+): RemovePendingWithdraw {
   return {
     type: GlobalActionTypes.REMOVE_PENDING_WITHDRAW,
     chainId,
     hermezEthereumAddress,
-    hash
-  }
+    hash,
+  };
 }
 
-function addPendingDelayedWithdraw (chainId: number, hermezEthereumAddress: string, pendingDelayedWithdraw: DelayedWithdraw): AddPendingDelayedWithdraw {
+function addPendingDelayedWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  pendingDelayedWithdraw: DelayedWithdraw
+): AddPendingDelayedWithdraw {
   return {
     type: GlobalActionTypes.ADD_PENDING_DELAYED_WITHDRAW,
     chainId,
     hermezEthereumAddress,
-    pendingDelayedWithdraw
-  }
+    pendingDelayedWithdraw,
+  };
 }
 
-function removePendingDelayedWithdraw (chainId: number, hermezEthereumAddress: string, pendingDelayedWithdrawId: string): RemovePendingDelayedWithdraw {
+function removePendingDelayedWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  pendingDelayedWithdrawId: string
+): RemovePendingDelayedWithdraw {
   return {
     type: GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW,
     chainId,
     hermezEthereumAddress,
-    pendingDelayedWithdrawId
-  }
+    pendingDelayedWithdrawId,
+  };
 }
 
-function removePendingDelayedWithdrawByHash (chainId: number, hermezEthereumAddress: string, pendingDelayedWithdrawHash: string): RemovePendingDelayedWithdrawByHash {
+function removePendingDelayedWithdrawByHash(
+  chainId: number,
+  hermezEthereumAddress: string,
+  pendingDelayedWithdrawHash: string
+): RemovePendingDelayedWithdrawByHash {
   return {
     type: GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH,
     chainId,
     hermezEthereumAddress,
-    pendingDelayedWithdrawHash
-  }
+    pendingDelayedWithdrawHash,
+  };
 }
 
-function updatePendingDelayedWithdrawDate (chainId: number, hermezEthereumAddress: string, transactionHash: string, transactionDate: ISOStringDate): UpdatePendingDelayedWithdrawDate {
+function updatePendingDelayedWithdrawDate(
+  chainId: number,
+  hermezEthereumAddress: string,
+  transactionHash: string,
+  transactionDate: ISOStringDate
+): UpdatePendingDelayedWithdrawDate {
   return {
     type: GlobalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE,
     chainId,
     hermezEthereumAddress,
     transactionHash,
-    transactionDate
-  }
+    transactionDate,
+  };
 }
 
-function checkPendingDelayedWithdrawals (): CheckPendingDelayedWithdrawals {
+function checkPendingDelayedWithdrawals(): CheckPendingDelayedWithdrawals {
   return {
-    type: GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS
-  }
+    type: GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS,
+  };
 }
 
-function checkPendingDelayedWithdrawalsSuccess (): CheckPendingDelayedWithdrawalsSuccess {
+function checkPendingDelayedWithdrawalsSuccess(): CheckPendingDelayedWithdrawalsSuccess {
   return {
-    type: GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS
-  }
+    type: GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS,
+  };
 }
 
-function checkPendingWithdrawals (): CheckPendingWithdrawals {
+function checkPendingWithdrawals(): CheckPendingWithdrawals {
   return {
-    type: GlobalActionTypes.CHECK_PENDING_WITHDRAWALS
-  }
+    type: GlobalActionTypes.CHECK_PENDING_WITHDRAWALS,
+  };
 }
 
-function checkPendingWithdrawalsSuccess (): CheckPendingWithdrawalsSuccess {
+function checkPendingWithdrawalsSuccess(): CheckPendingWithdrawalsSuccess {
   return {
-    type: GlobalActionTypes.CHECK_PENDING_WITHDRAWALS_SUCCESS
-  }
+    type: GlobalActionTypes.CHECK_PENDING_WITHDRAWALS_SUCCESS,
+  };
 }
 
-function addPendingDeposit (chainId: number, hermezEthereumAddress: string, pendingDeposit: Deposit): AddPendingDeposit {
+function addPendingDeposit(
+  chainId: number,
+  hermezEthereumAddress: string,
+  pendingDeposit: Deposit
+): AddPendingDeposit {
   return {
     type: GlobalActionTypes.ADD_PENDING_DEPOSIT,
     chainId,
     hermezEthereumAddress,
-    pendingDeposit
-  }
+    pendingDeposit,
+  };
 }
 
-function removePendingDepositByHash (chainId: number, hermezEthereumAddress: string, hash: string): RemovePendingDepositByHash {
+function removePendingDepositByHash(
+  chainId: number,
+  hermezEthereumAddress: string,
+  hash: string
+): RemovePendingDepositByHash {
   return {
     type: GlobalActionTypes.REMOVE_PENDING_DEPOSIT_BY_HASH,
     chainId,
     hermezEthereumAddress,
-    hash
-  }
+    hash,
+  };
 }
 
-function removePendingDepositByTransactionId (chainId: number, hermezEthereumAddress: string, transactionId: string): RemovePendingDepositByTransactionId {
+function removePendingDepositByTransactionId(
+  chainId: number,
+  hermezEthereumAddress: string,
+  transactionId: string
+): RemovePendingDepositByTransactionId {
   return {
     type: GlobalActionTypes.REMOVE_PENDING_DEPOSIT_BY_TRANSACTION_ID,
     chainId,
     hermezEthereumAddress,
-    transactionId
-  }
+    transactionId,
+  };
 }
 
-function updatePendingDepositId (chainId: number, hermezEthereumAddress: string, transactionHash: string, transactionId: string): UpdatePendingDepositId {
+function updatePendingDepositId(
+  chainId: number,
+  hermezEthereumAddress: string,
+  transactionHash: string,
+  transactionId: string
+): UpdatePendingDepositId {
   return {
     type: GlobalActionTypes.UPDATE_PENDING_DEPOSIT_ID,
     chainId,
     hermezEthereumAddress,
     transactionHash,
-    transactionId
-  }
+    transactionId,
+  };
 }
 
-function checkPendingDeposits (): CheckPendingDeposits {
+function checkPendingDeposits(): CheckPendingDeposits {
   return {
-    type: GlobalActionTypes.CHECK_PENDING_DEPOSITS
-  }
+    type: GlobalActionTypes.CHECK_PENDING_DEPOSITS,
+  };
 }
 
-function checkPendingDepositsSuccess (): CheckPendingDepositsSuccess {
+function checkPendingDepositsSuccess(): CheckPendingDepositsSuccess {
   return {
-    type: GlobalActionTypes.CHECK_PENDING_DEPOSITS_SUCCESS
-  }
+    type: GlobalActionTypes.CHECK_PENDING_DEPOSITS_SUCCESS,
+  };
 }
 
-function loadCoordinatorState (): LoadCoordinatorState {
+function loadCoordinatorState(): LoadCoordinatorState {
   return {
-    type: GlobalActionTypes.LOAD_COORDINATOR_STATE
-  }
+    type: GlobalActionTypes.LOAD_COORDINATOR_STATE,
+  };
 }
 
-function loadCoordinatorStateSuccess (coordinatorState: CoordinatorState): LoadCoordinatorStateSuccess {
+function loadCoordinatorStateSuccess(
+  coordinatorState: CoordinatorState
+): LoadCoordinatorStateSuccess {
   return {
     type: GlobalActionTypes.LOAD_COORDINATOR_STATE_SUCCESS,
-    coordinatorState
-  }
+    coordinatorState,
+  };
 }
 
-function loadCoordinatorStateFailure (error: Error): LoadCoordinatorStateFailure {
+function loadCoordinatorStateFailure(
+  error: Error
+): LoadCoordinatorStateFailure {
   return {
     type: GlobalActionTypes.LOAD_COORDINATOR_STATE_FAILURE,
-    error: error.message
-  }
+    error: error.message,
+  };
 }
 
-function openRewardsSidenav (): OpenRewardsSidenav {
+function openRewardsSidenav(): OpenRewardsSidenav {
   return {
-    type: GlobalActionTypes.OPEN_REWARDS_SIDENAV
-  }
+    type: GlobalActionTypes.OPEN_REWARDS_SIDENAV,
+  };
 }
 
-function closeRewardsSidenav (): CloseRewardsSidenav {
+function closeRewardsSidenav(): CloseRewardsSidenav {
   return {
-    type: GlobalActionTypes.CLOSE_REWARDS_SIDENAV
-  }
+    type: GlobalActionTypes.CLOSE_REWARDS_SIDENAV,
+  };
 }
 
-function loadReward (): LoadReward {
+function loadReward(): LoadReward {
   return {
-    type: GlobalActionTypes.LOAD_REWARD
-  }
+    type: GlobalActionTypes.LOAD_REWARD,
+  };
 }
 
-function loadRewardSuccess (reward: Reward): LoadRewardSuccess {
+function loadRewardSuccess(reward: Reward): LoadRewardSuccess {
   return {
     type: GlobalActionTypes.LOAD_REWARD_SUCCESS,
-    reward
-  }
+    reward,
+  };
 }
 
-function loadRewardFailure (error: string): LoadRewardFailure {
+function loadRewardFailure(error: string): LoadRewardFailure {
   return {
     type: GlobalActionTypes.LOAD_REWARD_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadEarnedReward (): LoadEarnedReward {
+function loadEarnedReward(): LoadEarnedReward {
   return {
-    type: GlobalActionTypes.LOAD_EARNED_REWARD
-  }
+    type: GlobalActionTypes.LOAD_EARNED_REWARD,
+  };
 }
 
-function loadEarnedRewardSuccess (earnedReward: Reward): LoadEarnedRewardSuccess {
+function loadEarnedRewardSuccess(
+  earnedReward: Reward
+): LoadEarnedRewardSuccess {
   return {
     type: GlobalActionTypes.LOAD_EARNED_REWARD_SUCCESS,
-    earnedReward
-  }
+    earnedReward,
+  };
 }
 
-function loadEarnedRewardFailure (error: string): LoadEarnedRewardFailure {
+function loadEarnedRewardFailure(error: string): LoadEarnedRewardFailure {
   return {
     type: GlobalActionTypes.LOAD_EARNED_REWARD_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadRewardPercentage (): LoadRewardPercentage {
+function loadRewardPercentage(): LoadRewardPercentage {
   return {
-    type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE
-  }
+    type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE,
+  };
 }
 
-// ToDo: What is the shape of a rewardPercentage? 
-function loadRewardPercentageSuccess (rewardPercentage: unknown): LoadRewardPercentageSuccess {
+// ToDo: What is the shape of a rewardPercentage?
+function loadRewardPercentageSuccess(
+  rewardPercentage: unknown
+): LoadRewardPercentageSuccess {
   return {
     type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS,
-    rewardPercentage
-  }
+    rewardPercentage,
+  };
 }
 
-function loadRewardPercentageFailure (error: string): LoadRewardPercentageFailure {
+function loadRewardPercentageFailure(
+  error: string
+): LoadRewardPercentageFailure {
   return {
     type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadRewardAccountEligibility (): LoadRewardAccountEligibility {
+function loadRewardAccountEligibility(): LoadRewardAccountEligibility {
   return {
-    type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY
-  }
+    type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY,
+  };
 }
 
-// ToDo: What is the shape of a rewardAccountEligibility? 
-function loadRewardAccountEligibilitySuccess (rewardAccountEligibility: unknown): LoadRewardAccountEligibilitySuccess {
+// ToDo: What is the shape of a rewardAccountEligibility?
+function loadRewardAccountEligibilitySuccess(
+  rewardAccountEligibility: unknown
+): LoadRewardAccountEligibilitySuccess {
   return {
     type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS,
-    rewardAccountEligibility
-  }
+    rewardAccountEligibility,
+  };
 }
 
 // ToDo: This action is never called. Dead code?
-function loadRewardAccountEligibilityFailure (error: string): LoadRewardAccountEligibilityFailure {
+function loadRewardAccountEligibilityFailure(
+  error: string
+): LoadRewardAccountEligibilityFailure {
   return {
     type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadRewardToken (): LoadRewardToken {
+function loadRewardToken(): LoadRewardToken {
   return {
-    type: GlobalActionTypes.LOAD_REWARD_TOKEN
-  }
+    type: GlobalActionTypes.LOAD_REWARD_TOKEN,
+  };
 }
 
-// ToDo: What is the shape of a rewardToken? 
-function loadRewardTokenSuccess (rewardToken: unknown): LoadRewardTokenSuccess {
+// ToDo: What is the shape of a rewardToken?
+function loadRewardTokenSuccess(rewardToken: unknown): LoadRewardTokenSuccess {
   return {
     type: GlobalActionTypes.LOAD_REWARD_TOKEN_SUCCESS,
-    rewardToken
-  }
+    rewardToken,
+  };
 }
 
-function loadRewardTokenFailure (error: string): LoadRewardTokenFailure {
+function loadRewardTokenFailure(error: string): LoadRewardTokenFailure {
   return {
     type: GlobalActionTypes.LOAD_REWARD_TOKEN_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
 export {
@@ -785,5 +857,5 @@ export {
   loadRewardAccountEligibilityFailure,
   loadRewardToken,
   loadRewardTokenSuccess,
-  loadRewardTokenFailure
-}
+  loadRewardTokenFailure,
+};
