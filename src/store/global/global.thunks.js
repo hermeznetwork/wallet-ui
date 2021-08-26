@@ -10,6 +10,7 @@ import * as globalActions from './global.actions'
 import * as fiatExchangeRatesApi from '../../apis/fiat-exchange-rates'
 import * as hermezWebApi from '../../apis/hermez-web'
 import * as airdropApi from '../../apis/rewards'
+import * as priceApi from '../../apis/price-updater'
 import * as storage from '../../utils/storage'
 import * as constants from '../../constants'
 import { isTxMined, hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from '../../utils/ethereum'
@@ -665,6 +666,21 @@ function fetchRewardToken () {
   }
 }
 
+/**
+ * Fetches details for the token used for the rewards
+ * @param {Number} tokenId - A token ID
+ * @returns {Object} Response data with a specific token
+ */
+function fetchTokensPrice () {
+  return (dispatch) => {
+    dispatch(globalActions.loadTokensPrice())
+
+    return priceApi.getTokensPrice()
+      .then((res) => dispatch(globalActions.loadTokensPriceSuccess(res)))
+      .catch(() => (globalActions.loadTokensPriceFailure('An error occured loading token.')))
+  }
+}
+
 export {
   setHermezEnvironment,
   changeRedirectRoute,
@@ -691,5 +707,6 @@ export {
   fetchEarnedReward,
   fetchRewardPercentage,
   fetchRewardAccountEligibility,
-  fetchRewardToken
+  fetchRewardToken,
+  fetchTokensPrice
 }

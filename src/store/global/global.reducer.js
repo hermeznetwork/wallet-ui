@@ -38,6 +38,9 @@ function getInitialGlobalState () {
     coordinatorStateTask: {
       status: 'pending'
     },
+    pricesTask: {
+      status: 'pending'
+    },
     rewards: {
       sidenav: {
         status: 'closed'
@@ -619,6 +622,37 @@ function globalReducer (state = getInitialGlobalState(), action) {
         rewards: {
           ...state.rewards,
           tokenTask: {
+            status: 'failed',
+            error: action.error
+          }
+        }
+      }
+    }
+    case globalActionTypes.LOAD_TOKENS_PRICE: {
+      return {
+        ...state,
+        pricesTask: state.pricesTask.status === 'successful'
+          ? { ...state.pricesTask, status: 'reloading', data: state.pricesTask.data }
+          : { status: 'loading' }
+
+      }
+    }
+    case globalActionTypes.LOAD_TOKENS_PRICE_SUCCESS: {
+      console.log(action)
+      return {
+        ...state,
+        pricesTask: {
+          status: 'successful',
+          data: action.data
+        }
+      }
+    }
+    case globalActionTypes.LOAD_TOKENS_PRICE_FAILURE: {
+      return {
+        ...state,
+        pricesTask: {
+          ...state.pricesTask,
+          pricesTask: {
             status: 'failed',
             error: action.error
           }

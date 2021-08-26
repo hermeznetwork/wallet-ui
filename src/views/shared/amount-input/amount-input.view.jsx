@@ -11,8 +11,6 @@ import { getProvider } from '@hermeznetwork/hermezjs/src/providers'
 function AmountInput (Component) {
   return function (props) {
     const { defaultValue, transactionType, account, l2Fee, fiatExchangeRates, preferredCurrency } = props
-    const INPUT_REGEX = new RegExp(`^\\d*(?:\\.\\d{0,${account.token.decimals}})?$`)
-
     const [gasPrice, setGasPrice] = React.useState(BigNumber.from(0))
     const [value, setValue] = React.useState('')
     const [amount, setAmount] = React.useState({ tokens: BigNumber.from(0), fiat: 0 })
@@ -101,6 +99,7 @@ function AmountInput (Component) {
      * @param {InputEvent} event - Input event
      */
     function handleInputChange (event) {
+      const INPUT_REGEX = new RegExp(`^\\d*(?:\\.\\d{0,${account?.token.decimals}})?$`)
       if (INPUT_REGEX.test(event.target.value)) {
         if (showInFiat) {
           const newAmountInFiat = Number(event.target.value)

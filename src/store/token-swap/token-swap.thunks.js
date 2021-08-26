@@ -18,7 +18,8 @@ function fetchAccounts (fromItem) {
     const {
       global: {
         wallet: { publicKeyBase64: hermezAddress },
-        fiatExchangeRatesTask: { data: fiatExchangeRates }
+        fiatExchangeRatesTask: { data: fiatExchangeRates },
+        pricesTask
       },
       myAccount: { preferredCurrency }
     } = getState()
@@ -31,22 +32,28 @@ function fetchAccounts (fromItem) {
     )
       .then(res => {
         const accounts = res.accounts.map(account => {
-          const accountBalance = getAccountBalance(account)
+          console.log(account)
+          console.log(pricesTask.data)
+          const accountPriceUpdated = {
+            ...account,
+            token: pricesTask.data.tokens[account.token.id]
+          }
+          const accountBalance = getAccountBalance(accountPriceUpdated)
 
           const fixedTokenAmount = getFixedTokenAmount(
             accountBalance,
-            account.token.decimals
+            accountPriceUpdated.token.decimals
           )
 
           const fiatBalance = getTokenAmountInPreferredCurrency(
             fixedTokenAmount,
-            account.token.USD,
+            accountPriceUpdated.token.USD,
             preferredCurrency,
             fiatExchangeRates
           )
 
           return {
-            ...account,
+            ...accountPriceUpdated,
             balance: accountBalance,
             fiatBalance
           }
