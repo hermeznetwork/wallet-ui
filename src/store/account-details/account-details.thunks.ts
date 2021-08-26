@@ -3,9 +3,14 @@ import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { push } from 'connected-react-router'
-
 import * as accountDetailsActions from './account-details.actions'
 import * as ethereum from '../../utils/ethereum'
+import { RootState } from '../'
+import { AppDispatch } from '../../' 
+
+// domain
+import { Account, Token, HermezTransaction, Exit } from '../../domain/hermez'
+import { HistoryTransactions, HistoryExits } from '../../persistence'
 
 let refreshCancelTokenSource = axios.CancelToken.source()
 
@@ -14,21 +19,21 @@ let refreshCancelTokenSource = axios.CancelToken.source()
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchAccount (accountIndex) {
-  return (dispatch, getState) => {
+function fetchAccount (accountIndex: Account["accountIndex"]) {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     const { global: { wallet } } = getState()
 
     dispatch(accountDetailsActions.loadAccount())
 
     return CoordinatorAPI.getAccount(accountIndex)
-      .then((res) => {
-        if (res.bjj !== wallet.publicKeyBase64) {
+      .then((account: Account) => {
+        if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push('/'))
         } else {
-          dispatch(accountDetailsActions.loadAccountSuccess(res))
+          dispatch(accountDetailsActions.loadAccountSuccess(account))
         }
       })
-      .catch(err => dispatch(accountDetailsActions.loadAccountFailure(err)))
+      .catch((err: Error) => dispatch(accountDetailsActions.loadAccountFailure(err)))
   }
 }
 
@@ -37,8 +42,8 @@ function fetchAccount (accountIndex) {
  * @param {Object} token - Hermez token object for the loaded account
  * @returns {void}
  */
-function fetchL1TokenBalance (token) {
-  return (dispatch, getState) => {
+function fetchL1TokenBalance (token: Token) {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     const { global: { wallet } } = getState()
 
     dispatch(accountDetailsActions.loadL1TokenBalance())
@@ -46,6 +51,9 @@ function fetchL1TokenBalance (token) {
     return ethereum.getTokens(wallet, [token])
       .then(metamaskTokens => {
         if (metamaskTokens[0]) {
+          // ToDo: Why are we fetching the L1 Token Balance if don't use it?
+          // The action loadL1TokenBalanceSuccess expected a param that is not being passed.
+          // I've removed the param of the action in the migration to TS until this is clarified.
           dispatch(accountDetailsActions.loadL1TokenBalanceSuccess())
         } else {
           dispatch(accountDetailsActions.loadL1TokenBalanceFailure())
@@ -60,21 +68,22 @@ function fetchL1TokenBalance (token) {
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchPoolTransactions (accountIndex) {
-  return (dispatch, getState) => {
+function fetchPoolTransactions (accountIndex: Account["accountIndex"]) {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(accountDetailsActions.loadPoolTransactions())
 
     const { global: { wallet } } = getState()
-
-    getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
-    // We need to reverse the txs to match the order of the txs from the history (DESC)
-      .then(transactions => transactions.reverse())
-      .then(transactions => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
-      .catch(err => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)))
+    if (wallet !== undefined) {
+      getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
+      // We need to reverse the txs to match the order of the txs from the history (DESC)
+        .then((transactions: HermezTransaction[]) => transactions.reverse())
+        .then((transactions: HermezTransaction[]) => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
+        .catch((err: Error) => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)))
+    }
   }
 }
 
-function filterExitsFromHistoryTransactions (historyTransactions, exits) {
+function filterExitsFromHistoryTransactions (historyTransactions: HermezTransaction[], exits: Exit[]) {
   return historyTransactions.filter((transaction) => {
     if (transaction.type === TxType.Exit) {
       const exitTx = exits.find((exit) =>
@@ -95,14 +104,15 @@ function filterExitsFromHistoryTransactions (historyTransactions, exits) {
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchHistoryTransactions (accountIndex, fromItem, exits) {
-  return (dispatch, getState) => {
+// ToDo: Define fromItem type
+function fetchHistoryTransactions (accountIndex: Account["accountIndex"], fromItem: unknown, historyExits: HistoryExits) {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       accountDetails: { historyTransactionsTask }
     } = getState()
 
     if (fromItem === undefined && historyTransactionsTask.status === 'successful') {
-      return dispatch(refreshHistoryTransactions(accountIndex, exits))
+      return dispatch(refreshHistoryTransactions(accountIndex, historyExits))
     }
 
     dispatch(accountDetailsActions.loadHistoryTransactions())
@@ -119,17 +129,16 @@ function fetchHistoryTransactions (accountIndex, fromItem, exits) {
       fromItem,
       CoordinatorAPI.PaginationOrder.DESC
     )
-      .then((res) => {
+      .then((historyTransactions: HistoryTransactions) => {
         const filteredTransactions = filterExitsFromHistoryTransactions(
-          res.transactions,
-          exits.exits,
-          dispatch
+          historyTransactions.transactions,
+          historyExits.exits,
         )
 
-        return { ...res, transactions: filteredTransactions }
+        return { ...historyTransactions, transactions: filteredTransactions }
       })
-      .then(res => dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(res)))
-      .catch(err => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)))
+      .then((historyTransactions: HistoryTransactions) => dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions)))
+      .catch((err: Error) => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)))
   }
 }
 
@@ -138,8 +147,8 @@ function fetchHistoryTransactions (accountIndex, fromItem, exits) {
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshHistoryTransactions (accountIndex, exits) {
-  return (dispatch, getState) => {
+function refreshHistoryTransactions (accountIndex: Account["accountIndex"], historyExits: HistoryExits) {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       accountDetails: { historyTransactionsTask }
     } = getState()
@@ -180,14 +189,13 @@ function refreshHistoryTransactions (accountIndex, exits) {
           const transactions = results.reduce((acc, result) => [...acc, ...result.transactions], [])
           const filteredTransactions = filterExitsFromHistoryTransactions(
             transactions,
-            exits.exits,
-            dispatch
+            historyExits.exits,
           )
-          const pendingItems = results[results.length - 1].pendingItems
+          const pendingItems: number = results[results.length - 1].pendingItems
 
           return { transactions: filteredTransactions, pendingItems }
         })
-        .then(res => dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(res)))
+        .then((historyTransactions: HistoryTransactions) => dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions)))
     }
   }
 }
@@ -197,15 +205,16 @@ function refreshHistoryTransactions (accountIndex, exits) {
  * @param {Number} tokenId - The token ID for the current account
  * @returns {void}
  */
-function fetchExits (tokenId) {
-  return (dispatch, getState) => {
+function fetchExits (tokenId: Token["id"]) {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(accountDetailsActions.loadExits())
 
     const { global: { wallet } } = getState()
-
-    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
-      .then(exits => dispatch(accountDetailsActions.loadExitsSuccess(exits)))
-      .catch(err => dispatch(accountDetailsActions.loadExitsFailure(err)))
+    if (wallet !== undefined) {
+      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
+      .then((historyExits: HistoryExits) => dispatch(accountDetailsActions.loadExitsSuccess(historyExits)))
+      .catch((err: Error) => dispatch(accountDetailsActions.loadExitsFailure(err)))
+    }
   }
 }
 
