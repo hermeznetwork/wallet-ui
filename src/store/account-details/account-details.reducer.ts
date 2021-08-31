@@ -3,6 +3,9 @@ import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 // domain
 import { Account, HermezTransaction } from "src/domain/hermez";
 
+// persistence
+import { Exits } from 'src/persistence'
+
 import {
   AccountDetailsActionTypes,
   AccountDetailsAction,
@@ -21,10 +24,10 @@ interface ViewHistoryTransactions {
 
 export interface AccountDetailsState {
   accountTask: AsyncTask<Account, string>;
-  exitsTask: AsyncTask<unknown, string>;
+  exitsTask: AsyncTask<Exits, string>;
   historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
   l1TokenBalanceTask: AsyncTask<null, string>;
-  poolTransactionsTask: AsyncTask<Array<unknown>, string>;
+  poolTransactionsTask: AsyncTask<HermezTransaction[], string>;
 }
 
 const initialAccountDetailsState: AccountDetailsState = {
