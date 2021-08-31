@@ -30,13 +30,16 @@ export interface Signer {
 // ToDo: Consider explicitly setting the supported FIAT
 export type FiatExchangeRates = Record<string, number>;
 
-export interface Token {
+export interface HermezApiResourceItem {
+  itemId: number;
+}
+
+export type Token = HermezApiResourceItem & {
   decimals: number;
   ethereumAddress: string;
   ethereumBlockNum: number;
   fiatUpdate: ISOStringDate;
   id: number;
-  itemId: number;
   name: string;
   symbol: string;
   USD: number;
@@ -53,8 +56,7 @@ export interface MerkleProof {
   // fnc: number;
 }
 
-export interface Exit {
-  // itemId: number;
+export type Exit = HermezApiResourceItem & {
   batchNum: number;
   accountIndex: string;
   // bjj: string;
@@ -101,18 +103,18 @@ export interface Deposit {
 
 // ToDo: What is the shape of a reward? 
 export type Reward = unknown;
-export interface Account {
+
+export type Account = HermezApiResourceItem & {
   accountIndex: string;
   // balance: string;
   bjj: string;
   // fiatBalance: number;
   // hezEthereumAddress: string;
-  // itemId: number;
   // nonce: number;
   // token: Token;
 }
 
-export interface HermezTransaction {
+export type HermezTransaction = HermezApiResourceItem & {
   // accountIndex: string;
   amount: string;
   // balance: string;
@@ -121,7 +123,6 @@ export interface HermezTransaction {
   // hash: string;
   // historicUSD: number;
   // id: string;
-  // itemId: number;
   timestamp: ISOStringDate;
   token: Token;
   // ToDo: According to the docs: https://apidoc.hermez.network/#model-TransactionType supported types are:
@@ -171,8 +172,7 @@ export interface CoordinatorState {
 
 // interface CollectedFees {}
 
-// interface LastBatch {
-//   itemId: number;
+// type LastBatch = HermezApiResourceItem & {
 //   batchNum: number;
 //   ethereumTxHash: string;
 //   ethereumBlockNum: number;
@@ -189,8 +189,7 @@ export interface CoordinatorState {
 //   forgedTransactions: number;
 // }
 
-// interface Coordinator {
-//   itemId: number;
+// type Coordinator = HermezApiResourceItem & {
 //   bidderAddr: string;
 //   forgerAddr: string;
 //   ethereumBlock: number;

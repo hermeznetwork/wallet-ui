@@ -1,4 +1,5 @@
 import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
+import { Pagination } from "src/utils/api"
 
 // domain
 import { Account, HermezTransaction } from "src/domain/hermez";
@@ -16,10 +17,7 @@ import { AsyncTask } from "src/utils/async-task";
 interface ViewHistoryTransactions {
   transactions: HermezTransaction[];
   fromItemHistory: number[];
-  pagination: {
-    fromItem: number;
-    hasMoreItems: boolean;
-  };
+  pagination: Pagination;
 }
 
 export interface AccountDetailsState {

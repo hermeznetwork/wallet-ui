@@ -1,1 +1,6 @@
-declare module "@hermeznetwork*";
+declare module "@hermeznetwork*" {
+  enum PaginationOrder {
+    ASC = "ASC",
+    DESC = "DESC",
+  }
+}
