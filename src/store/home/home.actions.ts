@@ -1,22 +1,22 @@
-import { HermezTransaction } from 'src/domain/hermez'
-import { Accounts, Exits } from 'src/persistence'
+import { HermezTransaction } from "src/domain/hermez";
+import { Accounts, Exits } from "src/persistence";
 
 export enum HomeActionTypes {
-  LOAD_TOTAL_BALANCE = '[HOME] LOAD TOTAL BALANCE',
-  LOAD_TOTAL_BALANCE_SUCCESS = '[HOME] LOAD TOTAL BALANCE SUCCESS',
-  LOAD_TOTAL_BALANCE_FAILURE = '[HOME] LOAD TOTAL BALANCE FAILURE',
-  LOAD_ACCOUNTS = '[HOME] LOAD ACCOUNTS',
-  LOAD_ACCOUNTS_SUCCESS = '[HOME] LOAD ACCOUNTS SUCCESS',
-  LOAD_ACCOUNTS_FAILURE = '[HOME] LOAD ACCOUNTS FAILURE',
-  LOAD_POOL_TRANSACTIONS = '[HOME] LOAD POOL TRANSACTIONS',
-  LOAD_POOL_TRANSACTIONS_SUCCESS = '[HOME] LOAD POOL TRANSACTIONS SUCCESS',
-  LOAD_POOL_TRANSACTIONS_FAILURE = '[HOME] LOAD POOL TRANSACTIONS FAILURE',
-  LOAD_EXITS = '[HOME] LOAD EXITS',
-  LOAD_EXITS_SUCCESS = '[HOME] LOAD EXITS SUCCESS',
-  LOAD_EXITS_FAILURE = '[HOME] LOAD EXITS FAILURE',
-  REFRESH_ACCOUNTS = '[HOME] REFRESH ACCOUNTS',
-  REFRESH_ACCOUNTS_SUCCESS = '[HOME] REFRESH ACCOUNTS SUCCESS',
-  RESET_STATE = '[HOME] RESET STATE'
+  LOAD_TOTAL_BALANCE = "[HOME] LOAD TOTAL BALANCE",
+  LOAD_TOTAL_BALANCE_SUCCESS = "[HOME] LOAD TOTAL BALANCE SUCCESS",
+  LOAD_TOTAL_BALANCE_FAILURE = "[HOME] LOAD TOTAL BALANCE FAILURE",
+  LOAD_ACCOUNTS = "[HOME] LOAD ACCOUNTS",
+  LOAD_ACCOUNTS_SUCCESS = "[HOME] LOAD ACCOUNTS SUCCESS",
+  LOAD_ACCOUNTS_FAILURE = "[HOME] LOAD ACCOUNTS FAILURE",
+  LOAD_POOL_TRANSACTIONS = "[HOME] LOAD POOL TRANSACTIONS",
+  LOAD_POOL_TRANSACTIONS_SUCCESS = "[HOME] LOAD POOL TRANSACTIONS SUCCESS",
+  LOAD_POOL_TRANSACTIONS_FAILURE = "[HOME] LOAD POOL TRANSACTIONS FAILURE",
+  LOAD_EXITS = "[HOME] LOAD EXITS",
+  LOAD_EXITS_SUCCESS = "[HOME] LOAD EXITS SUCCESS",
+  LOAD_EXITS_FAILURE = "[HOME] LOAD EXITS FAILURE",
+  REFRESH_ACCOUNTS = "[HOME] REFRESH ACCOUNTS",
+  REFRESH_ACCOUNTS_SUCCESS = "[HOME] REFRESH ACCOUNTS SUCCESS",
+  RESET_STATE = "[HOME] RESET STATE",
 }
 
 export interface LoadTotalBalance {
@@ -72,7 +72,7 @@ export interface LoadExitsSuccess {
 
 export interface LoadExitsFailure {
   type: typeof HomeActionTypes.LOAD_EXITS_FAILURE;
-  error: Error
+  error: Error;
 }
 
 export interface RefreshAccounts {
@@ -88,104 +88,124 @@ export interface ResetState {
   type: typeof HomeActionTypes.RESET_STATE;
 }
 
+export type HomeAction =
+  | LoadTotalBalance
+  | LoadTotalBalanceSuccess
+  | LoadTotalBalanceFailure
+  | LoadAccounts
+  | LoadAccountsSuccess
+  | LoadAccountsFailure
+  | LoadPoolTransactions
+  | LoadPoolTransactionsSuccess
+  | LoadPoolTransactionsFailure
+  | LoadExits
+  | LoadExitsSuccess
+  | LoadExitsFailure
+  | RefreshAccounts
+  | RefreshAccountsSuccess
+  | ResetState;
 
-function loadTotalBalance (): LoadTotalBalance {
+function loadTotalBalance(): LoadTotalBalance {
   return {
-    type: HomeActionTypes.LOAD_TOTAL_BALANCE
-  }
+    type: HomeActionTypes.LOAD_TOTAL_BALANCE,
+  };
 }
 
-function loadTotalBalanceSuccess (balance: number): LoadTotalBalanceSuccess {
+function loadTotalBalanceSuccess(balance: number): LoadTotalBalanceSuccess {
   return {
     type: HomeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS,
-    balance
-  }
+    balance,
+  };
 }
 
-function loadTotalBalanceFailure (error: Error): LoadTotalBalanceFailure {
+function loadTotalBalanceFailure(error: Error): LoadTotalBalanceFailure {
   return {
     type: HomeActionTypes.LOAD_TOTAL_BALANCE_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadAccounts (): LoadAccounts {
+function loadAccounts(): LoadAccounts {
   return {
-    type: HomeActionTypes.LOAD_ACCOUNTS
-  }
+    type: HomeActionTypes.LOAD_ACCOUNTS,
+  };
 }
 
-function loadAccountsSuccess (accounts: Accounts): LoadAccountsSuccess {
+function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
   return {
     type: HomeActionTypes.LOAD_ACCOUNTS_SUCCESS,
-    accounts
-  }
+    accounts,
+  };
 }
 
-function loadAccountsFailure (error: Error): LoadAccountsFailure {
+function loadAccountsFailure(error: Error): LoadAccountsFailure {
   return {
     type: HomeActionTypes.LOAD_ACCOUNTS_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadPoolTransactions (): LoadPoolTransactions {
+function loadPoolTransactions(): LoadPoolTransactions {
   return {
-    type: HomeActionTypes.LOAD_POOL_TRANSACTIONS
-  }
+    type: HomeActionTypes.LOAD_POOL_TRANSACTIONS,
+  };
 }
 
-function loadPoolTransactionsSuccess (transactions: HermezTransaction[]): LoadPoolTransactionsSuccess {
+function loadPoolTransactionsSuccess(
+  transactions: HermezTransaction[]
+): LoadPoolTransactionsSuccess {
   return {
     type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions
-  }
+    transactions,
+  };
 }
 
-function loadPoolTransactionsFailure (error: Error): LoadPoolTransactionsFailure {
+function loadPoolTransactionsFailure(
+  error: Error
+): LoadPoolTransactionsFailure {
   return {
     type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function loadExits (): LoadExits {
+function loadExits(): LoadExits {
   return {
-    type: HomeActionTypes.LOAD_EXITS
-  }
+    type: HomeActionTypes.LOAD_EXITS,
+  };
 }
 
-function loadExitsSuccess (exits: Exits): LoadExitsSuccess {
+function loadExitsSuccess(exits: Exits): LoadExitsSuccess {
   return {
     type: HomeActionTypes.LOAD_EXITS_SUCCESS,
-    exits
-  }
+    exits,
+  };
 }
 
-function loadExitsFailure (error: Error): LoadExitsFailure {
+function loadExitsFailure(error: Error): LoadExitsFailure {
   return {
     type: HomeActionTypes.LOAD_EXITS_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function refreshAccounts (): RefreshAccounts {
+function refreshAccounts(): RefreshAccounts {
   return {
-    type: HomeActionTypes.REFRESH_ACCOUNTS
-  }
+    type: HomeActionTypes.REFRESH_ACCOUNTS,
+  };
 }
 
-function refreshAccountsSuccess (accounts: Accounts): RefreshAccountsSuccess {
+function refreshAccountsSuccess(accounts: Accounts): RefreshAccountsSuccess {
   return {
     type: HomeActionTypes.REFRESH_ACCOUNTS_SUCCESS,
-    accounts
-  }
+    accounts,
+  };
 }
 
-function resetState (): ResetState {
+function resetState(): ResetState {
   return {
-    type: HomeActionTypes.RESET_STATE
-  }
+    type: HomeActionTypes.RESET_STATE,
+  };
 }
 
 export {
@@ -203,5 +223,5 @@ export {
   loadExitsFailure,
   refreshAccounts,
   refreshAccountsSuccess,
-  resetState
-}
+  resetState,
+};
