@@ -1,4 +1,5 @@
-import { HermezTransaction, Exit } from '../domain/hermez'
+import { HermezTransaction, Exit, Account } from '../domain/hermez'
 
-export interface HistoryTransactions { transactions: HermezTransaction[], pendingItems: number };
-export interface HistoryExits { exits: Exit[], pendingItems: number };
+export interface Transactions { transactions: HermezTransaction[], pendingItems: number };
+export interface Exits { exits: Exit[], pendingItems: number };
+export interface Accounts { accounts: Account[], pendingItems: number };
