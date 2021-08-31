@@ -1,8 +1,8 @@
 // domain
-import { Account, HermezTransaction } from "../../domain/hermez";
+import { Account, HermezTransaction } from "src/domain/hermez";
 
 // persistence
-import { Transactions, Exits } from "../../persistence";
+import { Transactions, Exits } from "src/persistence";
 
 export enum AccountDetailsActionTypes {
   LOAD_ACCOUNT = "[ACCOUNT DETAILS] LOAD ACCOUNT",

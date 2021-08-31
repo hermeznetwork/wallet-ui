@@ -1,14 +1,14 @@
 import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 
 // domain
-import { Account, HermezTransaction } from "../../domain/hermez";
+import { Account, HermezTransaction } from "src/domain/hermez";
 
 import {
   AccountDetailsActionTypes,
   AccountDetailsAction,
 } from "./account-details.actions";
-import { getPaginationData } from "../../utils/api";
-import { AsyncTask } from "../../utils/async-task";
+import { getPaginationData } from "src/utils/api";
+import { AsyncTask } from "src/utils/async-task";
 
 interface ViewHistoryTransactions {
   transactions: HermezTransaction[];

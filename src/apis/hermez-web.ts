@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { HERMEZ_WEB_URL } from '../constants'
+import { HERMEZ_WEB_URL } from 'src/constants'
 
 const baseApiUrl = HERMEZ_WEB_URL
 

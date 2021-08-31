@@ -1,10 +1,10 @@
 import axios from 'axios'
 
-import { CurrencySymbol } from '../utils/currencies'
-import { FIAT_EXCHANGE_RATES_API_URL } from '../constants'
+import { CurrencySymbol } from 'src/utils/currencies'
+import { FIAT_EXCHANGE_RATES_API_URL } from 'src/constants'
 
 // domain
-import { FiatExchangeRates } from '../domain/hermez'
+import { FiatExchangeRates } from 'src/domain/hermez'
 
 interface ApiExchangeRate {
   currency: string;

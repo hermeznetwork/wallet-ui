@@ -1,5 +1,5 @@
 // domain
-import { EthereumNetwork } from "../../domain/ethereum";
+import { EthereumNetwork } from "src/domain/ethereum";
 import {
   HermezWallet,
   Signer,
@@ -10,8 +10,8 @@ import {
   Deposit,
   CoordinatorState,
   Reward,
-} from "../../domain/hermez";
-import { ISOStringDate, Header } from "../../domain/";
+} from "src/domain/hermez";
+import { ISOStringDate, Header } from "src/domain/";
 
 export enum GlobalActionTypes {
   LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",

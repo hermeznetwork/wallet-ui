@@ -7,37 +7,37 @@ import hermezjs, {
   Addresses,
 } from "@hermeznetwork/hermezjs";
 import { push } from "connected-react-router";
-import { ethers, BigNumber } from "ethers";
+import { ethers } from "ethers";
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { HttpStatusCode } from "@hermeznetwork/hermezjs/src/http";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
-import * as globalActions from "./global.actions";
-import * as fiatExchangeRatesApi from "../../apis/fiat-exchange-rates";
-import * as hermezWebApi from "../../apis/hermez-web";
-import * as airdropApi from "../../apis/rewards";
-import * as storage from "../../utils/storage";
-import * as constants from "../../constants";
+import * as globalActions from "src/store/global/global.actions";
+import * as fiatExchangeRatesApi from "src/apis/fiat-exchange-rates";
+import * as hermezWebApi from "src/apis/hermez-web";
+import * as airdropApi from "src/apis/rewards";
+import * as storage from "src/utils/storage";
+import * as constants from "src/constants";
 import {
   isTxMined,
   hasTxBeenReverted,
   isTxCanceled,
   isTxExpectedToFail,
-} from "../../utils/ethereum";
-import { CurrencySymbol } from "../../utils/currencies";
-import { getNextForgerUrls } from "../../utils/coordinator";
+} from "src/utils/ethereum";
+import { CurrencySymbol } from "src/utils/currencies";
+import { getNextForgerUrls } from "src/utils/coordinator";
 
-import { RootState } from "../";
-import { AppDispatch } from "../../";
+import { RootState } from "src/store";
+import { AppDispatch } from "src";
 
 // domain
-import { ISOStringDate } from "../../domain/";
+import { ISOStringDate } from "src/domain/";
 import {
   EthereumTransaction,
   EthereumBlock,
   EthereumTransactionReceipt,
-} from "../../domain/ethereum";
+} from "src/domain/ethereum";
 import {
   CoordinatorState,
   Withdraw,
@@ -47,7 +47,7 @@ import {
   Exit,
   Deposit,
   HermezTransaction,
-} from "../../domain/hermez";
+} from "src/domain/hermez";
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up

@@ -1,11 +1,11 @@
 import { GlobalActionTypes, GlobalAction } from "./global.actions";
-import * as constants from "../../constants";
-import * as storage from "../../utils/storage";
-import { AsyncTask } from "../../utils/async-task";
+import * as constants from "src/constants";
+import * as storage from "src/utils/storage";
+import { AsyncTask } from "src/utils/async-task";
 
 // domain
-import { Header } from "../../domain/";
-import { EthereumNetwork } from "../../domain/ethereum";
+import { Header } from "src/domain/";
+import { EthereumNetwork } from "src/domain/ethereum";
 import {
   HermezStatus,
   Deposit,
@@ -18,7 +18,7 @@ import {
   CoordinatorState,
   Reward,
   Token,
-} from "../../domain/hermez";
+} from "src/domain/hermez";
 
 type SnackbarState =
   | {

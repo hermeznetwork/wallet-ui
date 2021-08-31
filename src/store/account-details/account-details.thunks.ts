@@ -4,13 +4,13 @@ import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { push } from 'connected-react-router'
 import * as accountDetailsActions from './account-details.actions'
-import * as ethereum from '../../utils/ethereum'
-import { RootState } from '../'
-import { AppDispatch } from '../../' 
+import * as ethereum from 'src/utils/ethereum'
+import { RootState } from 'src/store'
+import { AppDispatch } from 'src'
 
 // domain
-import { Account, Token, HermezTransaction, Exit } from '../../domain/hermez'
-import { Transactions, Exits } from '../../persistence'
+import { Account, Token, HermezTransaction, Exit } from 'src/domain/hermez'
+import { Transactions, Exits } from 'src/persistence'
 
 let refreshCancelTokenSource = axios.CancelToken.source()
 

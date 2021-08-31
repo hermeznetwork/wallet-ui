@@ -1,4 +1,4 @@
-import { HermezTransaction, Exit, Account } from '../domain/hermez'
+import { HermezTransaction, Exit, Account } from 'src/domain/hermez'
 
 export interface Transactions { transactions: HermezTransaction[], pendingItems: number };
 export interface Exits { exits: Exit[], pendingItems: number };

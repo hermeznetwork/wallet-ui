@@ -8,7 +8,7 @@
  */
 
 import { BigNumber } from 'ethers'
-import { ISOStringDate } from '../'
+import { ISOStringDate } from 'src/domain'
 
 export interface HermezStatus {
   isUnderMaintenance: boolean;
