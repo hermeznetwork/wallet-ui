@@ -105,6 +105,7 @@ export interface Account {
   accountIndex: string;
   // balance: string;
   bjj: string;
+  // fiatBalance: number;
   // hezEthereumAddress: string;
   // itemId: number;
   // nonce: number;
