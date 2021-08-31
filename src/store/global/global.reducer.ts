@@ -18,6 +18,7 @@ import {
   CoordinatorState,
   Reward,
   Token,
+  Tokens,
 } from "../../domain/hermez";
 
 type SnackbarState =
@@ -72,7 +73,7 @@ export interface GlobalState {
   pendingDeposits: PendingDeposits;
   pendingDepositsCheckTask: AsyncTask<null, string>;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
-  pricesTask: AsyncTask<Token[], string>;
+  pricesTask: AsyncTask<Tokens, string>;
   rewards: RewardsState;
 }
 
@@ -761,7 +762,6 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
         pricesTask:
           state.pricesTask.status === "successful"
             ? {
-                ...state.pricesTask,
                 status: "reloading",
                 data: state.pricesTask.data,
               }
@@ -781,13 +781,16 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
     case GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE: {
       return {
         ...state,
-        pricesTask: {
-          ...state.pricesTask,
-          pricesTask: {
-            status: "failed",
-            error: action.error,
-          },
-        },
+        pricesTask:
+          state.pricesTask.status === "reloading"
+            ? {
+                ...state.pricesTask,
+                status: "successful",
+              }
+            : {
+                status: "failed",
+                error: action.error,
+              },
       };
     }
     default: {

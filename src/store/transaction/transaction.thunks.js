@@ -9,8 +9,8 @@ import * as ethers from 'ethers'
 import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
-import { getAccountBalance } from '../../utils/accounts'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { formatAccount } from '../../utils/accounts'
+import { getFiatBalance } from '../../utils/currencies'
 import { mergeDelayedWithdraws } from '../../utils/transactions'
 import { getNextBestForger, getNextForgerUrls } from '../../utils/coordinator'
 
@@ -55,7 +55,7 @@ function fetchEthereumAccount (tokenId) {
  */
 function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, pricesTask } } = getState()
 
     dispatch(transactionActions.loadAccount())
 
@@ -64,18 +64,15 @@ function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, fi
     }
 
     return CoordinatorAPI.getAccount(accountIndex)
-      .then((account) => {
-        const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
-        const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
-        const fiatBalance = getTokenAmountInPreferredCurrency(
-          fixedTokenAmount,
-          account.token.USD,
-          preferredCurrency,
-          fiatExchangeRates
+      .then((account) =>
+        formatAccount(account,
+          poolTransactions,
+          pendingDeposits,
+          pricesTask,
+          fiatExchangeRates,
+          preferredCurrency
         )
-
-        return { ...account, balance: accountBalance, fiatBalance }
-      })
+      )
       .then((res) => dispatch(transactionActions.loadAccountSuccess(res)))
       .catch(error => dispatch(transactionActions.loadAccountFailure(error.message)))
   }
@@ -141,7 +138,7 @@ function fetchPoolTransactions () {
  */
 function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, pricesTask } } = getState()
 
     dispatch(transactionActions.loadAccounts())
 
@@ -152,15 +149,19 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
             .then((tokens) => {
               return tokens.map((token) => {
                 const tokenBalance = token.balance.toString()
-                const fixedTokenAmount = getFixedTokenAmount(tokenBalance, token.token.decimals)
-                const fiatTokenBalance = getTokenAmountInPreferredCurrency(
-                  fixedTokenAmount,
-                  token.token.USD,
+                const tokenPrice = pricesTask.status === 'successful' ||
+                  pricesTask.status === 'reloading'
+                  ? { ...pricesTask.data.tokens[token.token.id] }
+                  : { ...token.token }
+
+                const fiatBalance = getFiatBalance(
+                  tokenBalance,
+                  tokenPrice,
                   preferredCurrency,
                   fiatExchangeRates
                 )
 
-                return { ...token, balance: tokenBalance, fiatBalance: fiatTokenBalance }
+                return { ...token, balance: tokenBalance, fiatBalance }
               })
             })
             .then(metaMaskTokens => dispatch(transactionActions.loadAccountsSuccess(transactionType, metaMaskTokens)))
@@ -169,18 +170,14 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
     } else {
       return CoordinatorAPI.getAccounts(wallet.publicKeyBase64, undefined, fromItem)
         .then((res) => {
-          const accounts = res.accounts.map((account) => {
-            const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
-            const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
-            const fiatBalance = getTokenAmountInPreferredCurrency(
-              fixedTokenAmount,
-              account.token.USD,
-              preferredCurrency,
-              fiatExchangeRates
-            )
-
-            return { ...account, balance: accountBalance, fiatBalance }
-          })
+          const accounts = res.accounts.map((account) =>
+            formatAccount(account,
+              poolTransactions,
+              pendingDeposits,
+              pricesTask,
+              fiatExchangeRates,
+              preferredCurrency)
+          )
 
           return { ...res, accounts }
         })
@@ -227,15 +224,15 @@ function fetchEstimatedWithdrawFee (token, amount) {
     dispatch(transactionActions.loadEstimatedWithdrawFee())
 
     try {
-      const { global: { signer } } = getState()
+      const { global: { signer, pricesTask } } = getState()
       const provider = getProvider()
       const gasPrice = await provider.getGasPrice()
       const estimatedMerkleSiblingsLength = 4
       const overrides = { gasPrice }
       const gasLimit = await TxFees.estimateWithdrawGasLimit(token, estimatedMerkleSiblingsLength, amount, overrides, signer)
       const feeBigInt = BigInt(gasLimit) * BigInt(gasPrice)
-      const ethToken = await CoordinatorAPI.getToken(ETHER_TOKEN_ID)
-      const feeUSD = Number(ethers.utils.formatEther(feeBigInt)) * ethToken.USD
+      const tokenUSD = pricesTask.data?.tokens[ETHER_TOKEN_ID].USD
+      const feeUSD = Number(ethers.utils.formatEther(feeBigInt)) * tokenUSD
 
       dispatch(transactionActions.loadEstimatedWithdrawFeeSuccess({ amount: feeBigInt.toString(), USD: feeUSD }))
     } catch (err) {

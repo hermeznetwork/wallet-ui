@@ -42,6 +42,10 @@ export interface Token {
   USD: number;
 }
 
+export interface Tokens {
+  tokens: { [index: number]: Token };
+}
+
 export interface MerkleProof {
   root: string;
   siblings: BigNumber[];
@@ -108,7 +112,7 @@ export interface Account {
   // hezEthereumAddress: string;
   // itemId: number;
   // nonce: number;
-  // token: Token;
+  token: Token;
 }
 
 export interface HermezTransaction {

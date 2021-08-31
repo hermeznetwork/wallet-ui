@@ -10,6 +10,7 @@ import {
   Deposit,
   CoordinatorState,
   Reward,
+  Tokens
 } from "../../domain/hermez";
 import { ISOStringDate, Header } from "../../domain/";
 
@@ -832,10 +833,10 @@ function loadTokensPrice() {
   };
 }
 
-function loadTokensPriceSuccess(data: unknown) {
+function loadTokensPriceSuccess(tokensPrice: Tokens) {
   return {
     type: GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS,
-    data,
+    tokensPrice,
   };
 }
 

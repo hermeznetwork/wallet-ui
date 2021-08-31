@@ -47,6 +47,7 @@ import {
   Exit,
   Deposit,
   HermezTransaction,
+  Tokens
 } from "../../domain/hermez";
 
 /**
@@ -1095,7 +1096,7 @@ function fetchTokensPrice() {
 
     return priceApi
       .getTokensPrice()
-      .then((res: unknown) =>
+      .then((res: Tokens) =>
         dispatch(globalActions.loadTokensPriceSuccess(res))
       )
       .catch(() =>

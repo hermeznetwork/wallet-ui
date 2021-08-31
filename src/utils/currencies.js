@@ -105,10 +105,29 @@ function getFeeInUsd (feeIndex, amount, token) {
   return feeInFiat
 }
 
+/**
+ * Converts accountBalance to preferred Currency
+ * @param {String} accountBalance - Account balance
+ * @param {Object} accountToken - Token data
+ * @param {string} preferredCurrency - User preferred currency
+ * @param {Object} fiatExchangeRates - Exchange rates for all the supported currencies in the app
+ * @returns {Number} Amount in preferred currency
+ */
+function getFiatBalance (accountBalance, accountToken, preferredCurrency, fiatExchangeRates) {
+  const fixedTokenAmount = getFixedTokenAmount(accountBalance, accountToken.decimals)
+  return getTokenAmountInPreferredCurrency(
+    fixedTokenAmount,
+    accountToken.USD,
+    preferredCurrency,
+    fiatExchangeRates
+  )
+}
+
 export {
   CurrencySymbol,
   getFixedTokenAmount,
   getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency,
-  getFeeInUsd
+  getFeeInUsd,
+  getFiatBalance
 }
