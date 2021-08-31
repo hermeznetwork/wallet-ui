@@ -2,7 +2,7 @@
 import { Account, HermezTransaction } from "../../domain/hermez";
 
 // persistence
-import { HistoryTransactions, HistoryExits } from "../../persistence";
+import { Transactions, Exits } from "../../persistence";
 
 export enum AccountDetailsActionTypes {
   LOAD_ACCOUNT = "[ACCOUNT DETAILS] LOAD ACCOUNT",
@@ -71,7 +71,7 @@ export interface LoadHistoryTransactionsAction {
 
 export interface LoadHistoryTransactionsSuccessAction {
   type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS;
-  data: HistoryTransactions;
+  data: Transactions;
 }
 
 export interface LoadHistoryTransactionsFailureAction {
@@ -85,7 +85,7 @@ export interface LoadExitsAction {
 
 export interface LoadExitsSuccessAction {
   type: typeof AccountDetailsActionTypes.LOAD_EXITS_SUCCESS;
-  historyExits: HistoryExits;
+  exits: Exits;
 }
 
 export interface LoadExitsFailureAction {
@@ -99,7 +99,7 @@ export interface RefreshHistoryTransactionsAction {
 
 export interface RefreshHistoryTransactionsSuccessAction {
   type: typeof AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS;
-  historyTransactions: HistoryTransactions;
+  historyTransactions: Transactions;
 }
 
 export interface ResetStateAction {
@@ -195,7 +195,7 @@ function loadHistoryTransactions(): LoadHistoryTransactionsAction {
 }
 
 function loadHistoryTransactionsSuccess(
-  data: HistoryTransactions
+  data: Transactions
 ): LoadHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
@@ -218,10 +218,10 @@ function loadExits(): LoadExitsAction {
   };
 }
 
-function loadExitsSuccess(historyExits: HistoryExits): LoadExitsSuccessAction {
+function loadExitsSuccess(exits: Exits): LoadExitsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_EXITS_SUCCESS,
-    historyExits,
+    exits,
   };
 }
 
@@ -239,7 +239,7 @@ function refreshHistoryTransactions(): RefreshHistoryTransactionsAction {
 }
 
 function refreshHistoryTransactionsSuccess(
-  historyTransactions: HistoryTransactions
+  historyTransactions: Transactions
 ): RefreshHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS,

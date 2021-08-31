@@ -223,7 +223,7 @@ function accountDetailsReducer(
         ...state,
         exitsTask: {
           status: "successful",
-          data: action.historyExits,
+          data: action.exits,
         },
       };
     }
