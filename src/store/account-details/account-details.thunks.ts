@@ -21,7 +21,7 @@ let refreshCancelTokenSource = axios.CancelToken.source()
  */
 function fetchAccount (accountIndex: Account["accountIndex"]) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
-    const { global: { wallet } } = getState()
+    const { global: { wallet, pricesTask } } = getState()
 
     dispatch(accountDetailsActions.loadAccount())
 
@@ -30,7 +30,17 @@ function fetchAccount (accountIndex: Account["accountIndex"]) {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push('/'))
         } else {
-          dispatch(accountDetailsActions.loadAccountSuccess(account))
+          const accountTokenUpdated =
+            pricesTask.status === "successful" ||
+            pricesTask.status === "reloading"
+              ? {
+                  ...account,
+                  token: { ...pricesTask.data.tokens[account.token.id] }
+                }
+              : { ...account }
+          dispatch(
+            accountDetailsActions.loadAccountSuccess(accountTokenUpdated)
+          )
         }
       })
       .catch((err: Error) => dispatch(accountDetailsActions.loadAccountFailure(err)))
