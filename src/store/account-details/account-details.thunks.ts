@@ -33,8 +33,7 @@ function fetchAccount(accountIndex: Account["accountIndex"]) {
           dispatch(push("/"));
         } else {
           const accountTokenUpdated =
-            pricesTask.status === "successful" ||
-            pricesTask.status === "reloading"
+            pricesTask.status === "successful"
               ? {
                   ...account,
                   token: { ...pricesTask.data.tokens[account.token.id] },

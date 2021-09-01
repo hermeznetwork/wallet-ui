@@ -757,19 +757,14 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
     }
 
     case GlobalActionTypes.LOAD_TOKENS_PRICE: {
-      return {
-        ...state,
-        pricesTask:
-          state.pricesTask.status === "successful"
-            ? {
-                status: "reloading",
-                data: state.pricesTask.data,
-              }
-            : { status: "loading" },
-      };
+      return state.pricesTask.status === "successful"
+        ? state
+        : {
+            ...state,
+            pricesTask: { status: "loading" },
+          };
     }
     case GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS: {
-      console.log(action);
       return {
         ...state,
         pricesTask: {
@@ -779,19 +774,15 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
       };
     }
     case GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE: {
-      return {
-        ...state,
-        pricesTask:
-          state.pricesTask.status === "reloading"
-            ? {
-                ...state.pricesTask,
-                status: "successful",
-              }
-            : {
-                status: "failed",
-                error: action.error,
-              },
-      };
+      return state.pricesTask.status === "successful"
+        ? state
+        : {
+            ...state,
+            pricesTask: {
+              status: "failed",
+              error: action.error,
+            },
+          };
     }
     default: {
       return state;

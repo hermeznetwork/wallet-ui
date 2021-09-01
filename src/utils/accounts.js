@@ -33,8 +33,7 @@ function getAccountBalance (account, poolTransactions, pendingDeposits) {
 }
 
 function formatAccount (account, poolTransactions, pendingDeposits, pricesTask, fiatExchangeRates, preferredCurrency) {
-  const accountToken = pricesTask.status === 'successful' ||
-    pricesTask.status === 'reloading'
+  const accountToken = pricesTask.status === 'successful'
     ? { ...account, token: { ...pricesTask.data.tokens[account.token.id] } }
     : { ...account }
   const accountBalance = getAccountBalance(accountToken, poolTransactions, pendingDeposits)

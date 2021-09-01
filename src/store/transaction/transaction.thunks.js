@@ -149,8 +149,7 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
             .then((tokens) => {
               return tokens.map((token) => {
                 const tokenBalance = token.balance.toString()
-                const tokenPrice = pricesTask.status === 'successful' ||
-                  pricesTask.status === 'reloading'
+                const tokenPrice = pricesTask.status === 'successful'
                   ? { ...pricesTask.data.tokens[token.token.id] }
                   : { ...token.token }
 

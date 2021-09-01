@@ -35,8 +35,7 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
         const pendingCreateAccountDeposits = pendingDeposits
           .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
         const totalPendingCreateAccountDepositsBalance = pendingCreateAccountDeposits.reduce((totalBalance, deposit) => {
-          const tokenPrice = pricesTask.status === 'successful' ||
-           pricesTask.status === 'reloading'
+          const tokenPrice = pricesTask.status === 'successful'
             ? { ...pricesTask.data.tokens[deposit.token.id] }
             : { ...deposit.token }
 
