@@ -26,84 +26,84 @@ export enum AccountDetailsActionTypes {
 }
 
 export interface LoadAccountAction {
-  type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT;
+  type: AccountDetailsActionTypes.LOAD_ACCOUNT;
 }
 
 export interface LoadAccountSuccessAction {
-  type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT_SUCCESS;
+  type: AccountDetailsActionTypes.LOAD_ACCOUNT_SUCCESS;
   account: Account;
 }
 
 export interface LoadAccountFailureAction {
-  type: typeof AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE;
+  type: AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE;
   error: Error;
 }
 
 export interface LoadL1TokenBalanceAction {
-  type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE;
+  type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE;
 }
 
 export interface LoadL1TokenBalanceSuccessAction {
-  type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS;
+  type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS;
 }
 
 export interface LoadL1TokenBalanceFailureAction {
-  type: typeof AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE;
+  type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE;
 }
 
 export interface LoadPoolTransactionsAction {
-  type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS;
+  type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS;
 }
 
 export interface LoadPoolTransactionsSuccessAction {
-  type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
+  type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
   transactions: HermezTransaction[];
 }
 
 export interface LoadPoolTransactionsFailureAction {
-  type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
+  type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
   error: Error;
 }
 
 export interface LoadHistoryTransactionsAction {
-  type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS;
+  type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS;
 }
 
 export interface LoadHistoryTransactionsSuccessAction {
-  type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS;
+  type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS;
   data: HistoryTransactions;
 }
 
 export interface LoadHistoryTransactionsFailureAction {
-  type: typeof AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE;
+  type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE;
   error: Error;
 }
 
 export interface LoadExitsAction {
-  type: typeof AccountDetailsActionTypes.LOAD_EXITS;
+  type: AccountDetailsActionTypes.LOAD_EXITS;
 }
 
 export interface LoadExitsSuccessAction {
-  type: typeof AccountDetailsActionTypes.LOAD_EXITS_SUCCESS;
+  type: AccountDetailsActionTypes.LOAD_EXITS_SUCCESS;
   historyExits: HistoryExits;
 }
 
 export interface LoadExitsFailureAction {
-  type: typeof AccountDetailsActionTypes.LOAD_EXITS_FAILURE;
+  type: AccountDetailsActionTypes.LOAD_EXITS_FAILURE;
   error: Error;
 }
 
 export interface RefreshHistoryTransactionsAction {
-  type: typeof AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS;
+  type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS;
 }
 
 export interface RefreshHistoryTransactionsSuccessAction {
-  type: typeof AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS;
+  type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS;
   historyTransactions: HistoryTransactions;
 }
 
 export interface ResetStateAction {
-  type: typeof AccountDetailsActionTypes.RESET_STATE;
+  type: AccountDetailsActionTypes.RESET_STATE;
 }
 
 export type AccountDetailsAction =
