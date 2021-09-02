@@ -15,9 +15,9 @@ export interface Pagination {
  * @param {PaginationOrder} order - hermezJS PaginationOrder options
  * @returns {Pagination} - Pagination information for the next request
  */
-function getPaginationData<T extends HermezApiResourceItem>(
+function getPaginationData(
   pendingItems: number,
-  items: T[],
+  items: HermezApiResourceItem[],
   order = PaginationOrder.ASC
 ): Pagination {
   if (pendingItems === 0) {

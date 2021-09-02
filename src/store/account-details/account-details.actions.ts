@@ -1,5 +1,5 @@
 // domain
-import { Account, HermezTransaction } from "src/domain/hermez";
+import { Account, L2Transaction } from "src/domain/hermez";
 
 // persistence
 import { Transactions, Exits } from "src/persistence";
@@ -57,7 +57,7 @@ export interface LoadPoolTransactionsAction {
 
 export interface LoadPoolTransactionsSuccessAction {
   type: typeof AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: HermezTransaction[];
+  transactions: L2Transaction[];
 }
 
 export interface LoadPoolTransactionsFailureAction {
@@ -171,7 +171,7 @@ function loadPoolTransactions(): LoadPoolTransactionsAction {
 }
 
 function loadPoolTransactionsSuccess(
-  transactions: HermezTransaction[]
+  transactions: L2Transaction[]
 ): LoadPoolTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,

@@ -12,7 +12,7 @@ import {
   HermezNetworkStatus,
   Withdraw,
   DelayedWithdraw,
-  HermezWallet,
+  Wallet,
   Signer,
   FiatExchangeRates,
   CoordinatorState,
@@ -58,7 +58,7 @@ interface RewardsState {
 export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
-  wallet: HermezWallet | undefined;
+  wallet: Wallet | undefined;
   signer: Signer | undefined;
   header: Header;
   redirectRoute: string;

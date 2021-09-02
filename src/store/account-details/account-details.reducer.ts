@@ -2,7 +2,7 @@ import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 import { Pagination } from "src/utils/api"
 
 // domain
-import { Account, HermezTransaction } from "src/domain/hermez";
+import { Account, L2Transaction } from "src/domain/hermez";
 
 // persistence
 import { Exits } from 'src/persistence'
@@ -15,7 +15,7 @@ import { getPaginationData } from "src/utils/api";
 import { AsyncTask } from "src/utils/async-task";
 
 interface ViewHistoryTransactions {
-  transactions: HermezTransaction[];
+  transactions: L2Transaction[];
   fromItemHistory: number[];
   pagination: Pagination;
 }
@@ -25,7 +25,7 @@ export interface AccountDetailsState {
   exitsTask: AsyncTask<Exits, string>;
   historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
   l1TokenBalanceTask: AsyncTask<null, string>;
-  poolTransactionsTask: AsyncTask<HermezTransaction[], string>;
+  poolTransactionsTask: AsyncTask<L2Transaction[], string>;
 }
 
 const initialAccountDetailsState: AccountDetailsState = {

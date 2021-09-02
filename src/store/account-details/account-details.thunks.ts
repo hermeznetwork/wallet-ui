@@ -9,7 +9,9 @@ import { RootState } from 'src/store'
 import { AppDispatch } from 'src'
 
 // domain
-import { Account, Token, HermezTransaction, Exit } from 'src/domain/hermez'
+import { Account, Token, L2Transaction, Exit } from 'src/domain/hermez'
+
+// persistence
 import { Transactions, Exits } from 'src/persistence'
 
 let refreshCancelTokenSource = axios.CancelToken.source()
@@ -76,14 +78,14 @@ function fetchPoolTransactions (accountIndex: Account["accountIndex"]) {
     if (wallet !== undefined) {
       getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
       // We need to reverse the txs to match the order of the txs from the history (DESC)
-        .then((transactions: HermezTransaction[]) => transactions.reverse())
-        .then((transactions: HermezTransaction[]) => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
+        .then((transactions: L2Transaction[]) => transactions.reverse())
+        .then((transactions: L2Transaction[]) => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err: Error) => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)))
     }
   }
 }
 
-function filterExitsFromHistoryTransactions (historyTransactions: HermezTransaction[], exits: Exit[]) {
+function filterExitsFromHistoryTransactions (historyTransactions: L2Transaction[], exits: Exit[]) {
   return historyTransactions.filter((transaction) => {
     if (transaction.type === TxType.Exit) {
       const exitTx = exits.find((exit) =>
@@ -105,7 +107,7 @@ function filterExitsFromHistoryTransactions (historyTransactions: HermezTransact
  * @returns {void}
  */
 // ToDo: Define fromItem type
-function fetchHistoryTransactions (accountIndex: Account["accountIndex"], fromItem: unknown, historyExits: Exits) {
+function fetchHistoryTransactions (accountIndex: Account["accountIndex"], fromItem: number, historyExits: Exits) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       accountDetails: { historyTransactionsTask }
@@ -186,7 +188,7 @@ function refreshHistoryTransactions (accountIndex: Account["accountIndex"], hist
 
       Promise.all(requests)
         .then((results) => {
-          const transactions = results.reduce((acc, result) => [...acc, ...result.transactions], [])
+          const transactions = results.reduce((acc: L2Transaction[], result: Transactions) => [...acc, ...result.transactions], [])
           const filteredTransactions = filterExitsFromHistoryTransactions(
             transactions,
             historyExits.exits,

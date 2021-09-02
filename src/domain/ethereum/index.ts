@@ -1,3 +1,4 @@
+
 /**
  * Ethereum network types
  *
@@ -6,7 +7,6 @@
  * more properties and types will likely be required. We can uncomment
  * them as required and finally remove all those not required.
  */
-
 export interface EthereumNetwork {
   // ToDo: It's ugly having "chainId" and "name" as optional, but currently setHermezEnvironment is called with no params
   //       from the mapDispatchToProps of the app.view, so we can't always build the EthereumNetwork object with values.
@@ -15,24 +15,24 @@ export interface EthereumNetwork {
   name?: string;
 }
 
-export interface EthereumTransaction {
-  hash: string;
-  // type: number;
-  blockNumber: number | null;
-  // confirmations: number;
-  // from: string;
-  // gasPrice: BigNumber;
-  // gasLimit: BigNumber;
-  // to: string;
-  // value: BigNumber;
-  // nonce: number;
-  // data: string;
-  // r: string;
-  // s: string;
-  // v: number;
-  // creates?: any;
-  // chainId: number;
-}
+// export interface EthereumTransaction {
+//   hash: string;
+//   // type: number;
+//   blockNumber: number | null;
+//   // confirmations: number;
+//   // from: string;
+//   // gasPrice: BigNumber;
+//   // gasLimit: BigNumber;
+//   // to: string;
+//   // value: BigNumber;
+//   // nonce: number;
+//   // data: string;
+//   // r: string;
+//   // s: string;
+//   // v: number;
+//   // creates?: any;
+//   // chainId: number;
+// }
 
 export interface EthereumBlock {
   // hash: string;
