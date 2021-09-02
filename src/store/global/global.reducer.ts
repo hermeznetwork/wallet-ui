@@ -1,7 +1,7 @@
 import { GlobalActionTypes, GlobalAction } from "./global.actions";
 import * as constants from "../../constants";
 import * as storage from "../../utils/storage";
-import { AsyncTask } from "../../utils/async-task";
+import { AsyncTask } from "../../utils/types";
 
 // domain
 import { Header } from "../../domain/";
