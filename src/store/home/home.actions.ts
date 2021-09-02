@@ -1,4 +1,7 @@
-import { HermezTransaction } from "src/domain/hermez";
+// domain
+import { L2Transaction } from "src/domain/hermez";
+
+// persistence
 import { Accounts, Exits } from "src/persistence";
 
 export enum HomeActionTypes {
@@ -53,7 +56,7 @@ export interface LoadPoolTransactions {
 
 export interface LoadPoolTransactionsSuccess {
   type: typeof HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: HermezTransaction[];
+  transactions: L2Transaction[];
 }
 
 export interface LoadPoolTransactionsFailure {
@@ -152,7 +155,7 @@ function loadPoolTransactions(): LoadPoolTransactions {
 }
 
 function loadPoolTransactionsSuccess(
-  transactions: HermezTransaction[]
+  transactions: L2Transaction[]
 ): LoadPoolTransactionsSuccess {
   return {
     type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
