@@ -70,10 +70,9 @@ function fetchL1TokenBalance(token: Token) {
       .getTokens(wallet, [token])
       .then((metamaskTokens) => {
         if (metamaskTokens[0]) {
-          // ToDo: Why are we fetching the L1 Token Balance if don't use it?
-          // The action loadL1TokenBalanceSuccess expected a param that is not being passed.
-          // I've removed the param of the action in the migration to TS until this is clarified.
-          dispatch(accountDetailsActions.loadL1TokenBalanceSuccess());
+          // We need this to check if the user has balance of a specific token in his ethereum address.
+          // If getTokens returns one element when asking for the token it means that the user has balance.
+          dispatch(accountDetailsActions.loadL1TokenBalanceSuccess())
         } else {
           dispatch(accountDetailsActions.loadL1TokenBalanceFailure());
         }

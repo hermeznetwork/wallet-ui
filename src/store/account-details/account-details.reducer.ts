@@ -8,7 +8,7 @@ import {
   AccountDetailsAction,
 } from "./account-details.actions";
 import { getPaginationData } from "../../utils/api";
-import { AsyncTask } from "../../utils/async-task";
+import { AsyncTask } from "../../utils/types";
 
 interface ViewHistoryTransactions {
   transactions: HermezTransaction[];
