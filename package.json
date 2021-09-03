@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@hermeznetwork/hermezjs": "1.2.1",
+    "@types/history": "^4.7.9",
     "@types/react": "^17.0.18",
     "@types/react-dom": "^17.0.9",
     "@types/react-redux": "^7.1.18",
@@ -45,7 +46,6 @@
     "workbox-strategies": "^6.2.4"
   },
   "devDependencies": {
-    "@types/history": "^4.7.9",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "standard": "^16.0.3"
