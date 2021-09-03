@@ -23,7 +23,7 @@ export interface RootState {
  * @param {History} history - Browser history
  * @returns {Object} - Root reducer
  */
-export function createRootReducer (history: History<RootState>) {
+export function createRootReducer (history: History) {
   return combineReducers({
     router: connectRouter(history),
     global: globalReducer,
@@ -43,7 +43,7 @@ export function createRootReducer (history: History<RootState>) {
  * @param {History} history - Browser history
  * @returns {Object} - Redux store
  */
-export function configureStore (history: History<RootState>) {
+export function configureStore (history: History) {
   const middlewares = [thunk, routerMiddleware(history)]
   const middlewareEnhancer = applyMiddleware(...middlewares)
   const enhancers = [middlewareEnhancer]
