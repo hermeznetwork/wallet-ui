@@ -9,8 +9,8 @@ import * as ethers from 'ethers'
 import * as transactionActions from './transaction.actions'
 import * as globalThunks from '../global/global.thunks'
 import * as ethereum from '../../utils/ethereum'
-import { formatAccount } from '../../utils/accounts'
-import { getFiatBalance } from '../../utils/currencies'
+import { createAccount } from '../../utils/accounts'
+import { convertTokenAmountToFiat } from '../../utils/currencies'
 import { mergeDelayedWithdraws } from '../../utils/transactions'
 import { getNextBestForger, getNextForgerUrls } from '../../utils/coordinator'
 
@@ -55,7 +55,7 @@ function fetchEthereumAccount (tokenId) {
  */
 function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { global: { wallet, pricesTask } } = getState()
+    const { global: { wallet, tokensPriceTask } } = getState()
 
     dispatch(transactionActions.loadAccount())
 
@@ -65,10 +65,10 @@ function fetchHermezAccount (accountIndex, poolTransactions, pendingDeposits, fi
 
     return CoordinatorAPI.getAccount(accountIndex)
       .then((account) =>
-        formatAccount(account,
+        createAccount(account,
           poolTransactions,
           pendingDeposits,
-          pricesTask,
+          tokensPriceTask,
           fiatExchangeRates,
           preferredCurrency
         )
@@ -138,7 +138,7 @@ function fetchPoolTransactions () {
  */
 function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { global: { wallet, pricesTask } } = getState()
+    const { global: { wallet, tokensPriceTask } } = getState()
 
     dispatch(transactionActions.loadAccounts())
 
@@ -149,11 +149,11 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
             .then((tokens) => {
               return tokens.map((token) => {
                 const tokenBalance = token.balance.toString()
-                const tokenPrice = pricesTask.status === 'successful'
-                  ? { ...pricesTask.data.tokens[token.token.id] }
+                const tokenPrice = tokensPriceTask.status === 'successful'
+                  ? { ...tokensPriceTask.data.tokens[token.token.id] }
                   : { ...token.token }
 
-                const fiatBalance = getFiatBalance(
+                const fiatBalance = convertTokenAmountToFiat(
                   tokenBalance,
                   tokenPrice,
                   preferredCurrency,
@@ -170,10 +170,10 @@ function fetchAccounts (transactionType, fromItem, poolTransactions, pendingDepo
       return CoordinatorAPI.getAccounts(wallet.publicKeyBase64, undefined, fromItem)
         .then((res) => {
           const accounts = res.accounts.map((account) =>
-            formatAccount(account,
+            createAccount(account,
               poolTransactions,
               pendingDeposits,
-              pricesTask,
+              tokensPriceTask,
               fiatExchangeRates,
               preferredCurrency)
           )
@@ -223,14 +223,14 @@ function fetchEstimatedWithdrawFee (token, amount) {
     dispatch(transactionActions.loadEstimatedWithdrawFee())
 
     try {
-      const { global: { signer, pricesTask } } = getState()
+      const { global: { signer, tokensPriceTask } } = getState()
       const provider = getProvider()
       const gasPrice = await provider.getGasPrice()
       const estimatedMerkleSiblingsLength = 4
       const overrides = { gasPrice }
       const gasLimit = await TxFees.estimateWithdrawGasLimit(token, estimatedMerkleSiblingsLength, amount, overrides, signer)
       const feeBigInt = BigInt(gasLimit) * BigInt(gasPrice)
-      const tokenUSD = pricesTask.data?.tokens[ETHER_TOKEN_ID].USD
+      const tokenUSD = tokensPriceTask.data?.tokens[ETHER_TOKEN_ID].USD
       const feeUSD = Number(ethers.utils.formatEther(feeBigInt)) * tokenUSD
 
       dispatch(transactionActions.loadEstimatedWithdrawFeeSuccess({ amount: feeBigInt.toString(), USD: feeUSD }))

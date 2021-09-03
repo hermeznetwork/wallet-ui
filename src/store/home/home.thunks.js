@@ -4,8 +4,8 @@ import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
 import * as homeActions from './home.actions'
-import { formatAccount } from '../../utils/accounts'
-import { getFiatBalance } from '../../utils/currencies'
+import { createAccount } from '../../utils/accounts'
+import { convertTokenAmountToFiat } from '../../utils/currencies'
 
 let refreshCancelTokenSource = axios.CancelToken.source()
 
@@ -15,16 +15,16 @@ let refreshCancelTokenSource = axios.CancelToken.source()
  */
 function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { global: { pricesTask } } = getState()
+    const { global: { tokensPriceTask } } = getState()
     dispatch(homeActions.loadTotalBalance())
 
     return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
       .then((res) => {
         const accounts = res.accounts.map((account) =>
-          formatAccount(account,
+          createAccount(account,
             poolTransactions,
             pendingDeposits,
-            pricesTask,
+            tokensPriceTask,
             fiatExchangeRates,
             preferredCurrency)
         )
@@ -35,11 +35,11 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
         const pendingCreateAccountDeposits = pendingDeposits
           .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
         const totalPendingCreateAccountDepositsBalance = pendingCreateAccountDeposits.reduce((totalBalance, deposit) => {
-          const tokenPrice = pricesTask.status === 'successful'
-            ? { ...pricesTask.data.tokens[deposit.token.id] }
+          const tokenPrice = tokensPriceTask.status === 'successful'
+            ? { ...tokensPriceTask.data.tokens[deposit.token.id] }
             : { ...deposit.token }
 
-          const fiatBalance = getFiatBalance(
+          const fiatBalance = convertTokenAmountToFiat(
             deposit,
             tokenPrice,
             preferredCurrency,
@@ -66,7 +66,7 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
  */
 function fetchAccounts (hermezAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { home: { accountsTask }, global: { pricesTask } } = getState()
+    const { home: { accountsTask }, global: { tokensPriceTask } } = getState()
 
     if (fromItem === undefined && accountsTask.status === 'successful') {
       return dispatch(
@@ -89,10 +89,10 @@ function fetchAccounts (hermezAddress, fromItem, poolTransactions, pendingDeposi
     return CoordinatorAPI.getAccounts(hermezAddress, undefined, fromItem, undefined)
       .then((res) => {
         const accounts = res.accounts.map((account) =>
-          formatAccount(account,
+          createAccount(account,
             poolTransactions,
             pendingDeposits,
-            pricesTask,
+            tokensPriceTask,
             fiatExchangeRates,
             preferredCurrency)
         )
@@ -111,7 +111,7 @@ function fetchAccounts (hermezAddress, fromItem, poolTransactions, pendingDeposi
  */
 function refreshAccounts (hermezAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { home: { accountsTask }, global: { pricesTask } } = getState()
+    const { home: { accountsTask }, global: { tokensPriceTask } } = getState()
 
     if (accountsTask.status === 'successful') {
       dispatch(homeActions.refreshAccounts())
@@ -145,10 +145,10 @@ function refreshAccounts (hermezAddress, poolTransactions, pendingDeposits, fiat
           const accounts = results
             .reduce((acc, result) => [...acc, ...result.accounts], [])
             .map((account) =>
-              formatAccount(account,
+              createAccount(account,
                 poolTransactions,
                 pendingDeposits,
-                pricesTask,
+                tokensPriceTask,
                 fiatExchangeRates,
                 preferredCurrency)
             )

@@ -5,6 +5,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { push } from "connected-react-router";
 import * as accountDetailsActions from "./account-details.actions";
 import * as ethereum from "../../utils/ethereum";
+import { createAccount } from "../../utils/accounts";
 import { RootState } from "../";
 import { AppDispatch } from "../../";
 
@@ -22,9 +23,11 @@ let refreshCancelTokenSource = axios.CancelToken.source();
 function fetchAccount(accountIndex: Account["accountIndex"]) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
-      global: { wallet, pricesTask },
+      global: {        
+        wallet, 
+        tokensPriceTask,
+      },
     } = getState();
-
     dispatch(accountDetailsActions.loadAccount());
 
     return CoordinatorAPI.getAccount(accountIndex)
@@ -32,13 +35,13 @@ function fetchAccount(accountIndex: Account["accountIndex"]) {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push("/"));
         } else {
-          const accountTokenUpdated =
-            pricesTask.status === "successful"
-              ? {
-                  ...account,
-                  token: { ...pricesTask.data.tokens[account.token.id] },
-                }
-              : { ...account };
+          const accountTokenUpdated = createAccount(
+            account,
+            undefined,
+            undefined,
+            tokensPriceTask,
+          );
+          
           dispatch(
             accountDetailsActions.loadAccountSuccess(accountTokenUpdated)
           );

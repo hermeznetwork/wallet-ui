@@ -2,7 +2,7 @@ import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 
 import * as tokenSwapActions from './token-swap.actions'
 import * as tokenSwapApi from '../../apis/token-swap'
-import { formatAccount } from '../../utils/accounts'
+import { createAccount } from '../../utils/accounts'
 
 /**
  * Fetches the accounts for a Hermez address
@@ -15,7 +15,7 @@ function fetchAccounts (fromItem) {
       global: {
         wallet: { publicKeyBase64: hermezAddress },
         fiatExchangeRatesTask: { data: fiatExchangeRates },
-        pricesTask
+        tokensPriceTask
       },
       myAccount: { preferredCurrency }
     } = getState()
@@ -28,10 +28,10 @@ function fetchAccounts (fromItem) {
     )
       .then(res => {
         const accounts = res.accounts.map(account =>
-          formatAccount(account,
+          createAccount(account,
             undefined,
             undefined,
-            pricesTask,
+            tokensPriceTask,
             fiatExchangeRates,
             preferredCurrency)
         )

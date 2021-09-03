@@ -73,7 +73,7 @@ export interface GlobalState {
   pendingDeposits: PendingDeposits;
   pendingDepositsCheckTask: AsyncTask<null, string>;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
-  pricesTask: AsyncTask<Tokens, string>;
+  tokensPriceTask: AsyncTask<Token[], string>;
   rewards: RewardsState;
 }
 
@@ -115,7 +115,7 @@ function getInitialGlobalState(): GlobalState {
     coordinatorStateTask: {
       status: "pending",
     },
-    pricesTask: {
+    tokensPriceTask: {
       status: "pending",
     },
     rewards: {
@@ -757,28 +757,28 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
     }
 
     case GlobalActionTypes.LOAD_TOKENS_PRICE: {
-      return state.pricesTask.status === "successful"
+      return state.tokensPriceTask.status === "successful"
         ? state
         : {
             ...state,
-            pricesTask: { status: "loading" },
+            tokensPriceTask: { status: "loading" },
           };
     }
     case GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS: {
       return {
         ...state,
-        pricesTask: {
+        tokensPriceTask: {
           status: "successful",
           data: action.tokensPrice,
         },
       };
     }
     case GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE: {
-      return state.pricesTask.status === "successful"
+      return state.tokensPriceTask.status === "successful"
         ? state
         : {
             ...state,
-            pricesTask: {
+            tokensPriceTask: {
               status: "failed",
               error: action.error,
             },

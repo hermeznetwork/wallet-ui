@@ -3,7 +3,7 @@ import axios from "axios";
 import { CurrencySymbol } from "../utils/currencies";
 
 // domain
-import { FiatExchangeRates, Tokens } from "../domain/hermez";
+import { FiatExchangeRates, Token } from "../domain/hermez";
 
 interface ApiExchangeRate {
   currency: string;
@@ -26,11 +26,11 @@ const mockedFiatExchangeRates = {
 
 /**
  * Returns a list of tokens with usd price.>
- * @returns {Promise<Tokens>} - List of tokens
+ * @returns {Promise<Token[]>} - List of tokens
  */
-function getTokensPrice(): Promise<Tokens> {
+function getTokensPrice(): Promise<Token[]> {
   return client.get(`${baseApiUrl}/v1/tokens`).then(({ data }) => {
-    return data;
+    return data.tokens;
   });
 }
 
