@@ -12,7 +12,7 @@ import {
   AccountDetailsAction,
 } from "./account-details.actions";
 import { getPaginationData } from "src/utils/api";
-import { AsyncTask } from "src/utils/async-task";
+import { AsyncTask } from "src/utils/types";
 
 interface ViewHistoryTransactions {
   transactions: L2Transaction[];

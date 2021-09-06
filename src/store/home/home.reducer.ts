@@ -9,7 +9,7 @@ import { Account, L2Transaction } from "src/domain/hermez";
 // persistence
 import { Exits } from "src/persistence";
 
-import { AsyncTask } from "src/utils/async-task";
+import { AsyncTask } from "src/utils/types";
 
 interface ViewAccounts {
   accounts: Account[];

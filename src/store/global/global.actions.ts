@@ -68,113 +68,113 @@ export enum GlobalActionTypes {
 }
 
 export interface LoadHermezStatus {
-  type: typeof GlobalActionTypes.LOAD_HERMEZ_STATUS;
+  type: GlobalActionTypes.LOAD_HERMEZ_STATUS;
 }
 
 export interface LoadHermezStatusSuccess {
-  type: typeof GlobalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS;
+  type: GlobalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS;
   status: number;
 }
 
 export interface LoadHermezStatusFailure {
-  type: typeof GlobalActionTypes.LOAD_HERMEZ_STATUS_FAILURE;
+  type: GlobalActionTypes.LOAD_HERMEZ_STATUS_FAILURE;
   error: string;
 }
 
 export interface LoadEthereumNetwork {
-  type: typeof GlobalActionTypes.LOAD_ETHEREUM_NETWORK;
+  type: GlobalActionTypes.LOAD_ETHEREUM_NETWORK;
 }
 
 export interface LoadEthereumNetworkSuccess {
-  type: typeof GlobalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS;
+  type: GlobalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS;
   ethereumNetwork: EthereumNetwork;
 }
 
 export interface LoadWallet {
-  type: typeof GlobalActionTypes.LOAD_WALLET;
+  type: GlobalActionTypes.LOAD_WALLET;
   wallet: Wallet;
 }
 
 export interface UnloadWallet {
-  type: typeof GlobalActionTypes.UNLOAD_WALLET;
+  type: GlobalActionTypes.UNLOAD_WALLET;
 }
 
 export interface SetSigner {
-  type: typeof GlobalActionTypes.SET_SIGNER;
+  type: GlobalActionTypes.SET_SIGNER;
   signer: Signer;
 }
 
 export interface ChangeHeader {
-  type: typeof GlobalActionTypes.CHANGE_HEADER;
+  type: GlobalActionTypes.CHANGE_HEADER;
   header: Header;
 }
 
 export interface ChangeRedirectRoute {
-  type: typeof GlobalActionTypes.CHANGE_REDIRECT_ROUTE;
+  type: GlobalActionTypes.CHANGE_REDIRECT_ROUTE;
   redirectRoute: string;
 }
 
 export interface LoadFiatExchangeRates {
-  type: typeof GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES;
+  type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES;
 }
 
 export interface LoadFiatExchangeRatesSuccess {
-  type: typeof GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_SUCCESS;
+  type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_SUCCESS;
   fiatExchangeRates: FiatExchangeRates;
 }
 
 export interface OpenSnackbar {
-  type: typeof GlobalActionTypes.OPEN_SNACKBAR;
+  type: GlobalActionTypes.OPEN_SNACKBAR;
   message: string;
   backgroundColor?: string;
 }
 
 export interface CloseSnackbar {
-  type: typeof GlobalActionTypes.CLOSE_SNACKBAR;
+  type: GlobalActionTypes.CLOSE_SNACKBAR;
 }
 
 export interface ChangeNetworkStatus {
-  type: typeof GlobalActionTypes.CHANGE_NETWORK_STATUS;
+  type: GlobalActionTypes.CHANGE_NETWORK_STATUS;
   networkStatus: HermezNetworkStatus;
 }
 
 export interface AddPendingWithdraw {
-  type: typeof GlobalActionTypes.ADD_PENDING_WITHDRAW;
+  type: GlobalActionTypes.ADD_PENDING_WITHDRAW;
   chainId: number;
   hermezEthereumAddress: string;
   pendingWithdraw: Withdraw;
 }
 
 export interface RemovePendingWithdraw {
-  type: typeof GlobalActionTypes.REMOVE_PENDING_WITHDRAW;
+  type: GlobalActionTypes.REMOVE_PENDING_WITHDRAW;
   chainId: number;
   hermezEthereumAddress: string;
   hash: string;
 }
 
 export interface AddPendingDelayedWithdraw {
-  type: typeof GlobalActionTypes.ADD_PENDING_DELAYED_WITHDRAW;
+  type: GlobalActionTypes.ADD_PENDING_DELAYED_WITHDRAW;
   chainId: number;
   hermezEthereumAddress: string;
   pendingDelayedWithdraw: DelayedWithdraw;
 }
 
 export interface RemovePendingDelayedWithdraw {
-  type: typeof GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW;
+  type: GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW;
   chainId: number;
   hermezEthereumAddress: string;
   pendingDelayedWithdrawId: string;
 }
 
 export interface RemovePendingDelayedWithdrawByHash {
-  type: typeof GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH;
+  type: GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH;
   chainId: number;
   hermezEthereumAddress: string;
   pendingDelayedWithdrawHash: string;
 }
 
 export interface UpdatePendingDelayedWithdrawDate {
-  type: typeof GlobalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE;
+  type: GlobalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE;
   chainId: number;
   hermezEthereumAddress: string;
   transactionHash: string;
@@ -182,44 +182,44 @@ export interface UpdatePendingDelayedWithdrawDate {
 }
 
 export interface CheckPendingDelayedWithdrawals {
-  type: typeof GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS;
+  type: GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS;
 }
 
 export interface CheckPendingDelayedWithdrawalsSuccess {
-  type: typeof GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS;
+  type: GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS;
 }
 
 export interface CheckPendingWithdrawals {
-  type: typeof GlobalActionTypes.CHECK_PENDING_WITHDRAWALS;
+  type: GlobalActionTypes.CHECK_PENDING_WITHDRAWALS;
 }
 
 export interface CheckPendingWithdrawalsSuccess {
-  type: typeof GlobalActionTypes.CHECK_PENDING_WITHDRAWALS_SUCCESS;
+  type: GlobalActionTypes.CHECK_PENDING_WITHDRAWALS_SUCCESS;
 }
 
 export interface AddPendingDeposit {
-  type: typeof GlobalActionTypes.ADD_PENDING_DEPOSIT;
+  type: GlobalActionTypes.ADD_PENDING_DEPOSIT;
   chainId: number;
   hermezEthereumAddress: string;
   pendingDeposit: Deposit;
 }
 
 export interface RemovePendingDepositByHash {
-  type: typeof GlobalActionTypes.REMOVE_PENDING_DEPOSIT_BY_HASH;
+  type: GlobalActionTypes.REMOVE_PENDING_DEPOSIT_BY_HASH;
   chainId: number;
   hermezEthereumAddress: string;
   hash: string;
 }
 
 export interface RemovePendingDepositByTransactionId {
-  type: typeof GlobalActionTypes.REMOVE_PENDING_DEPOSIT_BY_TRANSACTION_ID;
+  type: GlobalActionTypes.REMOVE_PENDING_DEPOSIT_BY_TRANSACTION_ID;
   chainId: number;
   hermezEthereumAddress: string;
   transactionId: string;
 }
 
 export interface UpdatePendingDepositId {
-  type: typeof GlobalActionTypes.UPDATE_PENDING_DEPOSIT_ID;
+  type: GlobalActionTypes.UPDATE_PENDING_DEPOSIT_ID;
   chainId: number;
   hermezEthereumAddress: string;
   transactionHash: string;
@@ -227,102 +227,102 @@ export interface UpdatePendingDepositId {
 }
 
 export interface CheckPendingDeposits {
-  type: typeof GlobalActionTypes.CHECK_PENDING_DEPOSITS;
+  type: GlobalActionTypes.CHECK_PENDING_DEPOSITS;
 }
 
 export interface CheckPendingDepositsSuccess {
-  type: typeof GlobalActionTypes.CHECK_PENDING_DEPOSITS_SUCCESS;
+  type: GlobalActionTypes.CHECK_PENDING_DEPOSITS_SUCCESS;
 }
 
 export interface LoadCoordinatorState {
-  type: typeof GlobalActionTypes.LOAD_COORDINATOR_STATE;
+  type: GlobalActionTypes.LOAD_COORDINATOR_STATE;
 }
 
 export interface LoadCoordinatorStateSuccess {
-  type: typeof GlobalActionTypes.LOAD_COORDINATOR_STATE_SUCCESS;
+  type: GlobalActionTypes.LOAD_COORDINATOR_STATE_SUCCESS;
   coordinatorState: CoordinatorState;
 }
 
 export interface LoadCoordinatorStateFailure {
-  type: typeof GlobalActionTypes.LOAD_COORDINATOR_STATE_FAILURE;
+  type: GlobalActionTypes.LOAD_COORDINATOR_STATE_FAILURE;
   error: string;
 }
 
 export interface OpenRewardsSidenav {
-  type: typeof GlobalActionTypes.OPEN_REWARDS_SIDENAV;
+  type: GlobalActionTypes.OPEN_REWARDS_SIDENAV;
 }
 
 export interface CloseRewardsSidenav {
-  type: typeof GlobalActionTypes.CLOSE_REWARDS_SIDENAV;
+  type: GlobalActionTypes.CLOSE_REWARDS_SIDENAV;
 }
 
 export interface LoadReward {
-  type: typeof GlobalActionTypes.LOAD_REWARD;
+  type: GlobalActionTypes.LOAD_REWARD;
 }
 
 export interface LoadRewardSuccess {
-  type: typeof GlobalActionTypes.LOAD_REWARD_SUCCESS;
+  type: GlobalActionTypes.LOAD_REWARD_SUCCESS;
   reward: Reward;
 }
 
 export interface LoadRewardFailure {
-  type: typeof GlobalActionTypes.LOAD_REWARD_FAILURE;
+  type: GlobalActionTypes.LOAD_REWARD_FAILURE;
   error: string;
 }
 
 export interface LoadEarnedReward {
-  type: typeof GlobalActionTypes.LOAD_EARNED_REWARD;
+  type: GlobalActionTypes.LOAD_EARNED_REWARD;
 }
 
 export interface LoadEarnedRewardSuccess {
-  type: typeof GlobalActionTypes.LOAD_EARNED_REWARD_SUCCESS;
+  type: GlobalActionTypes.LOAD_EARNED_REWARD_SUCCESS;
   earnedReward: Reward;
 }
 
 export interface LoadEarnedRewardFailure {
-  type: typeof GlobalActionTypes.LOAD_EARNED_REWARD_FAILURE;
+  type: GlobalActionTypes.LOAD_EARNED_REWARD_FAILURE;
   error: string;
 }
 
 export interface LoadRewardPercentage {
-  type: typeof GlobalActionTypes.LOAD_REWARD_PERCENTAGE;
+  type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE;
 }
 
 export interface LoadRewardPercentageSuccess {
-  type: typeof GlobalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS;
+  type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS;
   rewardPercentage: unknown;
 }
 
 export interface LoadRewardPercentageFailure {
-  type: typeof GlobalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE;
+  type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE;
   error: string;
 }
 
 export interface LoadRewardAccountEligibility {
-  type: typeof GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY;
+  type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY;
 }
 
 export interface LoadRewardAccountEligibilitySuccess {
-  type: typeof GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS;
+  type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS;
   rewardAccountEligibility: unknown;
 }
 
 export interface LoadRewardAccountEligibilityFailure {
-  type: typeof GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE;
+  type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE;
   error: string;
 }
 
 export interface LoadRewardToken {
-  type: typeof GlobalActionTypes.LOAD_REWARD_TOKEN;
+  type: GlobalActionTypes.LOAD_REWARD_TOKEN;
 }
 
 export interface LoadRewardTokenSuccess {
-  type: typeof GlobalActionTypes.LOAD_REWARD_TOKEN_SUCCESS;
+  type: GlobalActionTypes.LOAD_REWARD_TOKEN_SUCCESS;
   rewardToken: unknown;
 }
 
 export interface LoadRewardTokenFailure {
-  type: typeof GlobalActionTypes.LOAD_REWARD_TOKEN_FAILURE;
+  type: GlobalActionTypes.LOAD_REWARD_TOKEN_FAILURE;
   error: string;
 }
 
