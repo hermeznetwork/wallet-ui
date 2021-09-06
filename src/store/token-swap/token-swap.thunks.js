@@ -2,11 +2,7 @@ import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
 
 import * as tokenSwapActions from './token-swap.actions'
 import * as tokenSwapApi from '../../apis/token-swap'
-import { getAccountBalance } from '../../utils/accounts'
-import {
-  getFixedTokenAmount,
-  getTokenAmountInPreferredCurrency
-} from '../../utils/currencies'
+import { createAccount } from '../../utils/accounts'
 
 /**
  * Fetches the accounts for a Hermez address
@@ -18,7 +14,8 @@ function fetchAccounts (fromItem) {
     const {
       global: {
         wallet: { publicKeyBase64: hermezAddress },
-        fiatExchangeRatesTask: { data: fiatExchangeRates }
+        fiatExchangeRatesTask: { data: fiatExchangeRates },
+        tokensPriceTask
       },
       myAccount: { preferredCurrency }
     } = getState()
@@ -30,27 +27,14 @@ function fetchAccounts (fromItem) {
       undefined
     )
       .then(res => {
-        const accounts = res.accounts.map(account => {
-          const accountBalance = getAccountBalance(account)
-
-          const fixedTokenAmount = getFixedTokenAmount(
-            accountBalance,
-            account.token.decimals
-          )
-
-          const fiatBalance = getTokenAmountInPreferredCurrency(
-            fixedTokenAmount,
-            account.token.USD,
-            preferredCurrency,
-            fiatExchangeRates
-          )
-
-          return {
-            ...account,
-            balance: accountBalance,
-            fiatBalance
-          }
-        })
+        const accounts = res.accounts.map(account =>
+          createAccount(account,
+            undefined,
+            undefined,
+            tokensPriceTask,
+            fiatExchangeRates,
+            preferredCurrency)
+        )
         return { ...res, accounts }
       })
       .then(res => dispatch(tokenSwapActions.loadAccountsSuccess(res)))

@@ -4,8 +4,8 @@ import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
 import * as homeActions from './home.actions'
-import { getAccountBalance } from '../../utils/accounts'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
+import { createAccount } from '../../utils/accounts'
+import { convertTokenAmountToFiat } from '../../utils/currencies'
 
 let refreshCancelTokenSource = axios.CancelToken.source()
 
@@ -15,26 +15,19 @@ let refreshCancelTokenSource = axios.CancelToken.source()
  */
 function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
+    const { global: { tokensPriceTask } } = getState()
     dispatch(homeActions.loadTotalBalance())
 
     return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
       .then((res) => {
-        const accounts = res.accounts.map((account) => {
-          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
-          const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
-          const fiatBalance = getTokenAmountInPreferredCurrency(
-            fixedTokenAmount,
-            account.token.USD,
-            preferredCurrency,
-            fiatExchangeRates
-          )
-
-          return {
-            ...account,
-            balance: accountBalance,
-            fiatBalance
-          }
-        })
+        const accounts = res.accounts.map((account) =>
+          createAccount(account,
+            poolTransactions,
+            pendingDeposits,
+            tokensPriceTask,
+            fiatExchangeRates,
+            preferredCurrency)
+        )
 
         return { ...res, accounts }
       })
@@ -42,10 +35,13 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
         const pendingCreateAccountDeposits = pendingDeposits
           .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
         const totalPendingCreateAccountDepositsBalance = pendingCreateAccountDeposits.reduce((totalBalance, deposit) => {
-          const fixedTokenAmount = getFixedTokenAmount(deposit.amount, deposit.token.decimals)
-          const fiatBalance = getTokenAmountInPreferredCurrency(
-            fixedTokenAmount,
-            deposit.token.USD,
+          const tokenPrice = tokensPriceTask.status === 'successful'
+            ? { ...tokensPriceTask.data.tokens[deposit.token.id] }
+            : { ...deposit.token }
+
+          const fiatBalance = convertTokenAmountToFiat(
+            deposit,
+            tokenPrice,
             preferredCurrency,
             fiatExchangeRates
           )
@@ -70,7 +66,7 @@ function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDepo
  */
 function fetchAccounts (hermezAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { home: { accountsTask } } = getState()
+    const { home: { accountsTask }, global: { tokensPriceTask } } = getState()
 
     if (fromItem === undefined && accountsTask.status === 'successful') {
       return dispatch(
@@ -92,22 +88,14 @@ function fetchAccounts (hermezAddress, fromItem, poolTransactions, pendingDeposi
 
     return CoordinatorAPI.getAccounts(hermezAddress, undefined, fromItem, undefined)
       .then((res) => {
-        const accounts = res.accounts.map((account) => {
-          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
-          const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
-          const fiatBalance = getTokenAmountInPreferredCurrency(
-            fixedTokenAmount,
-            account.token.USD,
-            preferredCurrency,
-            fiatExchangeRates
-          )
-
-          return {
-            ...account,
-            balance: accountBalance,
-            fiatBalance
-          }
-        })
+        const accounts = res.accounts.map((account) =>
+          createAccount(account,
+            poolTransactions,
+            pendingDeposits,
+            tokensPriceTask,
+            fiatExchangeRates,
+            preferredCurrency)
+        )
 
         return { ...res, accounts }
       })
@@ -123,7 +111,7 @@ function fetchAccounts (hermezAddress, fromItem, poolTransactions, pendingDeposi
  */
 function refreshAccounts (hermezAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { home: { accountsTask } } = getState()
+    const { home: { accountsTask }, global: { tokensPriceTask } } = getState()
 
     if (accountsTask.status === 'successful') {
       dispatch(homeActions.refreshAccounts())
@@ -156,22 +144,14 @@ function refreshAccounts (hermezAddress, poolTransactions, pendingDeposits, fiat
         .then((results) => {
           const accounts = results
             .reduce((acc, result) => [...acc, ...result.accounts], [])
-            .map((account) => {
-              const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
-              const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
-              const fiatBalance = getTokenAmountInPreferredCurrency(
-                fixedTokenAmount,
-                account.token.USD,
-                preferredCurrency,
-                fiatExchangeRates
-              )
-
-              return {
-                ...account,
-                balance: accountBalance,
-                fiatBalance
-              }
-            })
+            .map((account) =>
+              createAccount(account,
+                poolTransactions,
+                pendingDeposits,
+                tokensPriceTask,
+                fiatExchangeRates,
+                preferredCurrency)
+            )
           const pendingItems = results[results.length - 1] ? results[results.length - 1].pendingItems : 0
 
           return { accounts, pendingItems }

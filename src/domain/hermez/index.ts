@@ -7,8 +7,8 @@
  * them as required and finally remove all those not required.
  */
 
-import { BigNumber } from 'ethers'
-import { ISOStringDate } from '../'
+import { BigNumber } from "ethers";
+import { ISOStringDate } from "../";
 
 export interface HermezStatus {
   isUnderMaintenance: boolean;
@@ -40,6 +40,10 @@ export interface Token {
   name: string;
   symbol: string;
   USD: number;
+}
+
+export interface Tokens {
+  tokens: { [index: number]: Token };
 }
 
 export interface MerkleProof {
@@ -81,7 +85,7 @@ export interface Withdraw {
 export type DelayedWithdraw = Withdraw & {
   // merkleProof: MerkleProof;
   instant: boolean;
-}
+};
 
 export interface Deposit {
   // account: Account;
@@ -99,7 +103,7 @@ export interface Deposit {
   transactionId?: string;
 }
 
-// ToDo: What is the shape of a reward? 
+// ToDo: What is the shape of a reward?
 export type Reward = unknown;
 export interface Account {
   accountIndex: string;
@@ -108,7 +112,7 @@ export interface Account {
   // hezEthereumAddress: string;
   // itemId: number;
   // nonce: number;
-  // token: Token;
+  token: Token;
 }
 
 export interface HermezTransaction {

@@ -344,8 +344,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLoadAccount: (accountIndex) =>
     dispatch(accountDetailsThunks.fetchAccount(accountIndex)),
-  onLoadL1TokenBalance: (account) =>
-    dispatch(accountDetailsThunks.fetchL1TokenBalance(account)),
+  onLoadL1TokenBalance: (token) =>
+    dispatch(accountDetailsThunks.fetchL1TokenBalance(token)),
   onChangeHeader: (tokenName) =>
     dispatch(changeHeader({
       type: 'page',

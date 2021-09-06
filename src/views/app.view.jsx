@@ -42,7 +42,8 @@ function App ({
   onDisconnectAccount,
   onSetHermezEnvironment,
   onCheckPendingTransactions,
-  onReloadApp
+  onReloadApp,
+  onLoadTokensPrice
 }) {
   const theme = useTheme()
   const classes = useAppStyles()
@@ -93,6 +94,10 @@ function App ({
     if (process.env.REACT_APP_ENABLE_AIRDROP === 'true') {
       onLoadReward()
     }
+  }, [])
+
+  React.useEffect(() => {
+    onLoadTokensPrice()
   }, [])
 
   if (hermezStatusTask.status === 'successful' && hermezStatusTask.data.isUnderMaintenance) {
@@ -180,7 +185,8 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeNetworkStatus: (networkStatus, backgroundColor) =>
     dispatch(globalThunks.changeNetworkStatus(networkStatus, backgroundColor)),
   onDisconnectAccount: () => dispatch(globalThunks.disconnectWallet()),
-  onReloadApp: () => dispatch(globalThunks.reloadApp())
+  onReloadApp: () => dispatch(globalThunks.reloadApp()),
+  onLoadTokensPrice: () => dispatch(globalThunks.fetchTokensPrice())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
