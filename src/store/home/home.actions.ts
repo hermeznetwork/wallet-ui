@@ -23,72 +23,72 @@ export enum HomeActionTypes {
 }
 
 export interface LoadTotalBalance {
-  type: typeof HomeActionTypes.LOAD_TOTAL_BALANCE;
+  type: HomeActionTypes.LOAD_TOTAL_BALANCE;
 }
 
 export interface LoadTotalBalanceSuccess {
-  type: typeof HomeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS;
+  type: HomeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS;
   balance: number;
 }
 
 export interface LoadTotalBalanceFailure {
-  type: typeof HomeActionTypes.LOAD_TOTAL_BALANCE_FAILURE;
+  type: HomeActionTypes.LOAD_TOTAL_BALANCE_FAILURE;
   error: Error;
 }
 
 export interface LoadAccounts {
-  type: typeof HomeActionTypes.LOAD_ACCOUNTS;
+  type: HomeActionTypes.LOAD_ACCOUNTS;
 }
 
 export interface LoadAccountsSuccess {
-  type: typeof HomeActionTypes.LOAD_ACCOUNTS_SUCCESS;
+  type: HomeActionTypes.LOAD_ACCOUNTS_SUCCESS;
   accounts: Accounts;
 }
 
 export interface LoadAccountsFailure {
-  type: typeof HomeActionTypes.LOAD_ACCOUNTS_FAILURE;
+  type: HomeActionTypes.LOAD_ACCOUNTS_FAILURE;
   error: Error;
 }
 
 export interface LoadPoolTransactions {
-  type: typeof HomeActionTypes.LOAD_POOL_TRANSACTIONS;
+  type: HomeActionTypes.LOAD_POOL_TRANSACTIONS;
 }
 
 export interface LoadPoolTransactionsSuccess {
-  type: typeof HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
+  type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
   transactions: L2Transaction[];
 }
 
 export interface LoadPoolTransactionsFailure {
-  type: typeof HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
+  type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
   error: Error;
 }
 
 export interface LoadExits {
-  type: typeof HomeActionTypes.LOAD_EXITS;
+  type: HomeActionTypes.LOAD_EXITS;
 }
 
 export interface LoadExitsSuccess {
-  type: typeof HomeActionTypes.LOAD_EXITS_SUCCESS;
+  type: HomeActionTypes.LOAD_EXITS_SUCCESS;
   exits: Exits;
 }
 
 export interface LoadExitsFailure {
-  type: typeof HomeActionTypes.LOAD_EXITS_FAILURE;
+  type: HomeActionTypes.LOAD_EXITS_FAILURE;
   error: Error;
 }
 
 export interface RefreshAccounts {
-  type: typeof HomeActionTypes.REFRESH_ACCOUNTS;
+  type: HomeActionTypes.REFRESH_ACCOUNTS;
 }
 
 export interface RefreshAccountsSuccess {
-  type: typeof HomeActionTypes.REFRESH_ACCOUNTS_SUCCESS;
+  type: HomeActionTypes.REFRESH_ACCOUNTS_SUCCESS;
   accounts: Accounts;
 }
 
 export interface ResetState {
-  type: typeof HomeActionTypes.RESET_STATE;
+  type: HomeActionTypes.RESET_STATE;
 }
 
 export type HomeAction =
