@@ -1,5 +1,6 @@
 /**
- * HermezJS types have been moved to the dedicated definition file hermezjs-typings.d.ts
+ * HermezJS type definitions have been moved to the dedicated definitions file hermezjs-typings.d.ts
+ * We may decide not to export them from the domain and let other layers import them from the lib.
  */
 
 export type {
@@ -9,14 +10,13 @@ export type {
   DelayedWithdraw,
   Deposit,
   L1Transaction,
-  L1TransactionResponse,
   Exit,
   FiatExchangeRates,
   HermezApiResourceItem,
   HermezNetworkStatus,
   HermezStatus,
   L2Transaction,
-  Wallet as Wallet,
+  Wallet,
   ISOStringDate,
   MerkleProof,
   Reward,

@@ -38,7 +38,7 @@ import {
   EthereumTransactionReceipt,
 } from "src/domain/ethereum";
 import {
-  L1TransactionResponse,
+  L1Transaction,
   CoordinatorState,
   Withdraw,
   DelayedWithdraw,
@@ -424,7 +424,7 @@ function checkPendingDelayedWithdrawals() {
           );
 
         // Gets the actual transaction and checks if it doesn't exist or is expected to fail
-        const pendingDelayedWithdrawsTxs: Promise<L1TransactionResponse>[] =
+        const pendingDelayedWithdrawsTxs: Promise<L1Transaction>[] =
           accountPendingDelayedWithdraws.map((pendingDelayedWithdraw) => {
             return provider
               .getTransaction(pendingDelayedWithdraw.hash)
@@ -545,11 +545,11 @@ function checkPendingWithdrawals() {
           );
 
         // Gets the actual transaction and checks if it doesn't exist or is expected to fail
-        const pendingWithdrawsTxs: Promise<L1TransactionResponse>[] =
+        const pendingWithdrawsTxs: Promise<L1Transaction>[] =
           accountPendingWithdraws.map((pendingWithdraw) => {
             return provider
               .getTransaction(pendingWithdraw.hash)
-              .then((tx: L1TransactionResponse) => {
+              .then((tx: L1Transaction) => {
                 // Checks here to have access to pendingWithdraw.timestamp
                 if (
                   isTxCanceled(tx) ||
@@ -769,11 +769,11 @@ function checkPendingDeposits() {
             chainId,
             hermezEthereumAddress
           );
-        const pendingDepositsTxs: Promise<L1TransactionResponse>[] =
+        const pendingDepositsTxs: Promise<L1Transaction>[] =
           accountPendingDeposits.map((pendingDeposit) => {
             return provider
               .getTransaction(pendingDeposit.hash)
-              .then((tx: L1TransactionResponse) => {
+              .then((tx: L1Transaction) => {
                 if (
                   isTxCanceled(tx) ||
                   isTxExpectedToFail(
