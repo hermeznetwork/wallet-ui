@@ -20,7 +20,6 @@
     "@types/react-router": "^5.1.16",
     "@walletconnect/web3-provider": "^1.4.1",
     "axios": "^0.21.1",
-    "big-integer": "^1.6.48",
     "clsx": "^1.1.1",
     "connected-react-router": "^6.8.0",
     "cryptocurrency-icons": "^0.18.0",

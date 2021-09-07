@@ -28,7 +28,7 @@ const CurrencySymbol = {
 
 /**
  * Gets the string representation of a token amount with fixed decimals
- * @param {string} amount - Amount to be be converted in a bigint format
+ * @param {string} amount - Amount to be be converted in a bignumber format
  * @param {Number} decimals - Decimals that the amount should have in its string representation
  * @returns {string}
  */
@@ -92,7 +92,7 @@ function getTokenAmountInPreferredCurrency (
 /**
  * Converts a fee index to USD
  * @param {Number} feeIndex - The fee index from the Hermez protocol
- * @param {BigInt} amount - Amount in BigInt string value
+ * @param {BigNumber} amount - Amount in BigNumber string value
  * @param {Object} token - Token object
  * @returns {String} Amount in USD
  */

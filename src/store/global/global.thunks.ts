@@ -407,10 +407,8 @@ function checkPendingDelayedWithdrawals() {
         dispatch(globalActions.checkPendingDelayedWithdrawals());
         const { hermezEthereumAddress } = wallet;
         const provider = Providers.getProvider();
-        const accountEthBalance = BigInt(
-          await provider.getBalance(
-            Addresses.getEthereumAddress(hermezEthereumAddress)
-          )
+        const accountEthBalance = await provider.getBalance(
+          Addresses.getEthereumAddress(hermezEthereumAddress)
         );
         const accountPendingDelayedWithdraws: Withdraw[] =
           storage.getItemsByHermezAddress(
@@ -523,10 +521,8 @@ function checkPendingWithdrawals() {
         dispatch(globalActions.checkPendingWithdrawals());
 
         const provider = Providers.getProvider();
-        const accountEthBalance = BigInt(
-          await provider.getBalance(
-            Addresses.getEthereumAddress(hermezEthereumAddress)
-          )
+        const accountEthBalance = await provider.getBalance(
+          Addresses.getEthereumAddress(hermezEthereumAddress)
         );
         const accountPendingWithdraws: Withdraw[] =
           storage.getItemsByHermezAddress(
@@ -745,10 +741,8 @@ function checkPendingDeposits() {
         dispatch(globalActions.checkPendingDeposits());
 
         const provider = Providers.getProvider();
-        const accountEthBalance = BigInt(
-          await provider.getBalance(
-            Addresses.getEthereumAddress(hermezEthereumAddress)
-          )
+        const accountEthBalance = await provider.getBalance(
+          Addresses.getEthereumAddress(hermezEthereumAddress)
         );
         const accountPendingDeposits: Deposit[] =
           storage.getItemsByHermezAddress(

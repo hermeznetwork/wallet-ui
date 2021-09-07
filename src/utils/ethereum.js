@@ -86,14 +86,13 @@ function isTxMined (tx) {
  * account to pay the maximum fee estimated for the tx.
  * @param {Object} tx - Ethereum transaction
  * @param {ISOStringDate} date - ISO string date the transaction was sent
- * @param {BigInt} accountEthBalance - ETH balance of the account which the transaction has been sent from
+ * @param {BigNumber} accountEthBalance - ETH balance of the account which the transaction has been sent from
  * @returns {Boolean}
  */
 function isTxExpectedToFail (tx, date, accountEthBalance) {
-  if (tx !== null && tx.blockNumber === null) {
-    const maxTxFee = BigInt(tx.gasLimit) * BigInt(tx.gasPrice)
-
-    if (Date.now() > new Date(date).getTime() + DEPOSIT_TX_TIMEOUT || maxTxFee > accountEthBalance) {
+  if (tx?.blockNumber === null) {
+    const maxTxFee = tx.gasLimit.mul(tx.gasPrice)
+    if (Date.now() > new Date(date).getTime() + DEPOSIT_TX_TIMEOUT || maxTxFee.gt(accountEthBalance)) {
       return true
     }
   }
