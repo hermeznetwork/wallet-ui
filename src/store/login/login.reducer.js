@@ -1,54 +1,54 @@
-import { loginActionTypes } from './login.actions'
-import { ACCOUNT_AUTH_SIGNATURES_KEY } from '../../constants'
-import { getStorage } from '../../utils/storage'
-import { WalletName } from '../../views/login/login.view'
+import { loginActionTypes } from "./login.actions";
+import { ACCOUNT_AUTH_SIGNATURES_KEY } from "../../constants";
+import { getStorage } from "../../utils/storage";
+import { WalletName } from "../../views/login/login.view";
 
 export const STEP_NAME = {
-  WALLET_SELECTOR: 'wallet-selector',
-  ACCOUNT_SELECTOR: 'account-selector',
-  WALLET_LOADER: 'wallet-loader',
-  CREATE_ACCOUNT_AUTH: 'create-account-auth'
-}
+  WALLET_SELECTOR: "wallet-selector",
+  ACCOUNT_SELECTOR: "account-selector",
+  WALLET_LOADER: "wallet-loader",
+  CREATE_ACCOUNT_AUTH: "create-account-auth",
+};
 
-function getInitialLoginState () {
+function getInitialLoginState() {
   return {
     currentStep: STEP_NAME.WALLET_SELECTOR,
     networkNameTask: {
-      status: 'pending'
+      status: "pending",
     },
     steps: {
       [STEP_NAME.ACCOUNT_SELECTOR]: {
-        walletName: undefined
+        walletName: undefined,
       },
       [STEP_NAME.WALLET_LOADER]: {
         walletName: undefined,
         accountData: undefined,
         walletTask: {
-          status: 'pending'
-        }
+          status: "pending",
+        },
       },
       [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
-        wallet: undefined
-      }
+        wallet: undefined,
+      },
     },
     addAccountAuthTask: {
-      status: 'pending'
+      status: "pending",
     },
-    accountAuthSignatures: getStorage(ACCOUNT_AUTH_SIGNATURES_KEY)
-  }
+    accountAuthSignatures: getStorage(ACCOUNT_AUTH_SIGNATURES_KEY),
+  };
 }
 
-function loginReducer (state = getInitialLoginState(), action) {
+function loginReducer(state = getInitialLoginState(), action) {
   switch (action.type) {
     case loginActionTypes.GO_TO_WALLET_SELECTOR_STEP: {
-      const initialLoginState = getInitialLoginState()
+      const initialLoginState = getInitialLoginState();
 
       return {
         ...state,
         currentStep: initialLoginState.currentStep,
         steps: { ...initialLoginState.steps },
-        addAccountAuthTask: { ...initialLoginState.addAccountAuthTask }
-      }
+        addAccountAuthTask: { ...initialLoginState.addAccountAuthTask },
+      };
     }
     case loginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP: {
       return {
@@ -57,10 +57,10 @@ function loginReducer (state = getInitialLoginState(), action) {
         steps: {
           ...state.steps,
           [STEP_NAME.ACCOUNT_SELECTOR]: {
-            walletName: action.walletName
-          }
-        }
-      }
+            walletName: action.walletName,
+          },
+        },
+      };
     }
     case loginActionTypes.GO_TO_WALLET_LOADER_STEP: {
       return {
@@ -71,10 +71,10 @@ function loginReducer (state = getInitialLoginState(), action) {
           [STEP_NAME.WALLET_LOADER]: {
             ...state.steps[STEP_NAME.WALLET_LOADER],
             walletName: action.walletName,
-            accountData: action.accountData
-          }
-        }
-      }
+            accountData: action.accountData,
+          },
+        },
+      };
     }
     case loginActionTypes.GO_TO_CREATE_ACCOUNT_AUTH_STEP: {
       return {
@@ -83,13 +83,13 @@ function loginReducer (state = getInitialLoginState(), action) {
         steps: {
           ...state.steps,
           [STEP_NAME.CREATE_ACCOUNT_AUTH]: {
-            wallet: action.wallet
-          }
-        }
-      }
+            wallet: action.wallet,
+          },
+        },
+      };
     }
     case loginActionTypes.GO_TO_PREVIOUS_STEP: {
-      const initialLoginState = getInitialLoginState()
+      const initialLoginState = getInitialLoginState();
 
       switch (state.currentStep) {
         case STEP_NAME.ACCOUNT_SELECTOR: {
@@ -98,25 +98,26 @@ function loginReducer (state = getInitialLoginState(), action) {
             currentStep: STEP_NAME.WALLET_SELECTOR,
             steps: {
               ...state.steps,
-              [STEP_NAME.ACCOUNT_SELECTOR]: initialLoginState.steps[STEP_NAME.ACCOUNT_SELECTOR]
-            }
-          }
+              [STEP_NAME.ACCOUNT_SELECTOR]: initialLoginState.steps[STEP_NAME.ACCOUNT_SELECTOR],
+            },
+          };
         }
         case STEP_NAME.WALLET_LOADER: {
           return {
             ...state,
-            currentStep: state.steps[STEP_NAME.WALLET_LOADER].walletName === WalletName.METAMASK ||
+            currentStep:
+              state.steps[STEP_NAME.WALLET_LOADER].walletName === WalletName.METAMASK ||
               state.steps[STEP_NAME.WALLET_LOADER].walletName === WalletName.WALLET_CONNECT
-              ? STEP_NAME.WALLET_SELECTOR
-              : STEP_NAME.ACCOUNT_SELECTOR,
+                ? STEP_NAME.WALLET_SELECTOR
+                : STEP_NAME.ACCOUNT_SELECTOR,
             steps: {
               ...state.steps,
-              [STEP_NAME.WALLET_LOADER]: initialLoginState.steps[STEP_NAME.WALLET_LOADER]
-            }
-          }
+              [STEP_NAME.WALLET_LOADER]: initialLoginState.steps[STEP_NAME.WALLET_LOADER],
+            },
+          };
         }
         default: {
-          return state
+          return state;
         }
       }
     }
@@ -128,11 +129,11 @@ function loginReducer (state = getInitialLoginState(), action) {
           [STEP_NAME.WALLET_LOADER]: {
             ...state.steps[STEP_NAME.WALLET_LOADER],
             walletTask: {
-              status: 'loading'
-            }
-          }
-        }
-      }
+              status: "loading",
+            },
+          },
+        },
+      };
     }
     case loginActionTypes.LOAD_WALLET_FAILURE: {
       return {
@@ -142,40 +143,40 @@ function loginReducer (state = getInitialLoginState(), action) {
           [STEP_NAME.WALLET_LOADER]: {
             ...state.steps[STEP_NAME.WALLET_LOADER],
             walletTask: {
-              status: 'failure',
-              error: action.error
-            }
-          }
-        }
-      }
+              status: "failure",
+              error: action.error,
+            },
+          },
+        },
+      };
     }
     case loginActionTypes.ADD_ACCOUNT_AUTH: {
       return {
         ...state,
         addAccountAuthTask: {
-          status: 'loading'
-        }
-      }
+          status: "loading",
+        },
+      };
     }
     case loginActionTypes.ADD_ACCOUNT_AUTH_SUCCESS: {
       return {
         ...state,
         addAccountAuthTask: {
-          status: 'successful'
-        }
-      }
+          status: "successful",
+        },
+      };
     }
     case loginActionTypes.ADD_ACCOUNT_AUTH_FAILURE: {
       return {
         ...state,
         addAccountAuthTask: {
-          status: 'failure',
-          error: action.error
-        }
-      }
+          status: "failure",
+          error: action.error,
+        },
+      };
     }
     case loginActionTypes.SET_ACCOUNT_AUTH_SIGNATURE: {
-      const chainIdAuthSignatures = state.accountAuthSignatures[action.chainId] || {}
+      const chainIdAuthSignatures = state.accountAuthSignatures[action.chainId] || {};
 
       return {
         ...state,
@@ -183,51 +184,51 @@ function loginReducer (state = getInitialLoginState(), action) {
           ...state.accountAuthSignatures,
           [action.chainId]: {
             ...chainIdAuthSignatures,
-            [action.hermezEthereumAddress]: action.signature
-          }
-        }
-      }
+            [action.hermezEthereumAddress]: action.signature,
+          },
+        },
+      };
     }
     case loginActionTypes.LOAD_NETWORK_NAME: {
       return {
         ...state,
         networkNameTask: {
-          status: 'loading'
-        }
-      }
+          status: "loading",
+        },
+      };
     }
     case loginActionTypes.LOAD_NETWORK_NAME_SUCCESS: {
       return {
         ...state,
         networkNameTask: {
-          status: 'successful',
-          data: action.networkName
-        }
-      }
+          status: "successful",
+          data: action.networkName,
+        },
+      };
     }
     case loginActionTypes.LOAD_NETWORK_NAME_FAILURE: {
       return {
         ...state,
         networkNameTask: {
-          status: 'failure',
-          error: action.error
-        }
-      }
+          status: "failure",
+          error: action.error,
+        },
+      };
     }
     case loginActionTypes.RESET_STATE: {
-      const initialLoginState = getInitialLoginState()
+      const initialLoginState = getInitialLoginState();
 
       return {
         ...state,
         currentStep: initialLoginState.currentStep,
         steps: { ...initialLoginState.steps },
-        addAccountAuthTask: { ...initialLoginState.addAccountAuthTask }
-      }
+        addAccountAuthTask: { ...initialLoginState.addAccountAuthTask },
+      };
     }
     default: {
-      return state
+      return state;
     }
   }
 }
 
-export default loginReducer
+export default loginReducer;

@@ -23,10 +23,7 @@ let refreshCancelTokenSource = axios.CancelToken.source();
 function fetchAccount(accountIndex: Account["accountIndex"]) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
-      global: {        
-        wallet, 
-        tokensPriceTask,
-      },
+      global: { wallet, tokensPriceTask },
     } = getState();
     dispatch(accountDetailsActions.loadAccount());
 
@@ -35,21 +32,12 @@ function fetchAccount(accountIndex: Account["accountIndex"]) {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push("/"));
         } else {
-          const accountTokenUpdated = createAccount(
-            account,
-            undefined,
-            undefined,
-            tokensPriceTask,
-          );
-          
-          dispatch(
-            accountDetailsActions.loadAccountSuccess(accountTokenUpdated)
-          );
+          const accountTokenUpdated = createAccount(account, undefined, undefined, tokensPriceTask);
+
+          dispatch(accountDetailsActions.loadAccountSuccess(accountTokenUpdated));
         }
       })
-      .catch((err: Error) =>
-        dispatch(accountDetailsActions.loadAccountFailure(err))
-      );
+      .catch((err: Error) => dispatch(accountDetailsActions.loadAccountFailure(err)));
   };
 }
 
@@ -72,14 +60,12 @@ function fetchL1TokenBalance(token: Token) {
         if (metamaskTokens[0]) {
           // We need this to check if the user has balance of a specific token in his ethereum address.
           // If getTokens returns one element when asking for the token it means that the user has balance.
-          dispatch(accountDetailsActions.loadL1TokenBalanceSuccess())
+          dispatch(accountDetailsActions.loadL1TokenBalanceSuccess());
         } else {
           dispatch(accountDetailsActions.loadL1TokenBalanceFailure());
         }
       })
-      .catch((_) =>
-        dispatch(accountDetailsActions.loadL1TokenBalanceFailure())
-      );
+      .catch((_) => dispatch(accountDetailsActions.loadL1TokenBalanceFailure()));
   };
 }
 
@@ -100,13 +86,9 @@ function fetchPoolTransactions(accountIndex: Account["accountIndex"]) {
         // We need to reverse the txs to match the order of the txs from the history (DESC)
         .then((transactions: HermezTransaction[]) => transactions.reverse())
         .then((transactions: HermezTransaction[]) =>
-          dispatch(
-            accountDetailsActions.loadPoolTransactionsSuccess(transactions)
-          )
+          dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions))
         )
-        .catch((err: Error) =>
-          dispatch(accountDetailsActions.loadPoolTransactionsFailure(err))
-        );
+        .catch((err: Error) => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)));
     }
   };
 }
@@ -147,10 +129,7 @@ function fetchHistoryTransactions(
       accountDetails: { historyTransactionsTask },
     } = getState();
 
-    if (
-      fromItem === undefined &&
-      historyTransactionsTask.status === "successful"
-    ) {
+    if (fromItem === undefined && historyTransactionsTask.status === "successful") {
       return dispatch(refreshHistoryTransactions(accountIndex, historyExits));
     }
 
@@ -177,15 +156,9 @@ function fetchHistoryTransactions(
         return { ...historyTransactions, transactions: filteredTransactions };
       })
       .then((historyTransactions: HistoryTransactions) =>
-        dispatch(
-          accountDetailsActions.loadHistoryTransactionsSuccess(
-            historyTransactions
-          )
-        )
+        dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
       )
-      .catch((err: Error) =>
-        dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err))
-      );
+      .catch((err: Error) => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)));
   };
 }
 
@@ -251,11 +224,7 @@ function refreshHistoryTransactions(
           return { transactions: filteredTransactions, pendingItems };
         })
         .then((historyTransactions: HistoryTransactions) =>
-          dispatch(
-            accountDetailsActions.refreshHistoryTransactionsSuccess(
-              historyTransactions
-            )
-          )
+          dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
         );
     }
   };
@@ -274,17 +243,11 @@ function fetchExits(tokenId: Token["id"]) {
       global: { wallet },
     } = getState();
     if (wallet !== undefined) {
-      return CoordinatorAPI.getExits(
-        wallet.hermezEthereumAddress,
-        true,
-        tokenId
-      )
+      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
         .then((historyExits: HistoryExits) =>
           dispatch(accountDetailsActions.loadExitsSuccess(historyExits))
         )
-        .catch((err: Error) =>
-          dispatch(accountDetailsActions.loadExitsFailure(err))
-        );
+        .catch((err: Error) => dispatch(accountDetailsActions.loadExitsFailure(err)));
     }
   };
 }

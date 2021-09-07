@@ -1,29 +1,29 @@
 interface PendingAsyncTask {
-	status: "pending";
+  status: "pending";
 }
 
 interface LoadingAsyncTask {
-	status: "loading";
+  status: "loading";
 }
 
 interface FailedAsyncTask<E> {
-	status: "failed";
-	error: E;
+  status: "failed";
+  error: E;
 }
 
 interface SuccessfulAsyncTask<D> {
-	status: "successful";
-	data: D;
+  status: "successful";
+  data: D;
 }
 
 interface ReloadingAsyncTask<D> {
-	status: "reloading";
-	data: D;
+  status: "reloading";
+  data: D;
 }
 
 export type AsyncTask<D, E> =
-	| PendingAsyncTask
-	| LoadingAsyncTask
-	| SuccessfulAsyncTask<D>
-	| ReloadingAsyncTask<D>
-	| FailedAsyncTask<E>;
+  | PendingAsyncTask
+  | LoadingAsyncTask
+  | SuccessfulAsyncTask<D>
+  | ReloadingAsyncTask<D>
+  | FailedAsyncTask<E>;

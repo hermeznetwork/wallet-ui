@@ -1,45 +1,45 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { useTheme } from 'react-jss'
-import QRCode from 'qrcode.react'
-import { push } from 'connected-react-router'
-import { useLocation } from 'react-router-dom'
+import React from "react";
+import { connect } from "react-redux";
+import { useTheme } from "react-jss";
+import QRCode from "qrcode.react";
+import { push } from "connected-react-router";
+import { useLocation } from "react-router-dom";
 
-import useMyCodeStyles from './my-code.styles'
-import Container from '../shared/container/container.view'
-import { changeHeader } from '../../store/global/global.actions'
-import { MY_CODE } from '../../constants'
-import { ReactComponent as QRScannerIcon } from '../../images/icons/qr-scanner.svg'
-import QRScanner from '../shared/qr-scanner/qr-scanner.view'
-import { isAnyVideoDeviceAvailable } from '../../utils/browser'
-import Button from '../shared/button/button.view'
+import useMyCodeStyles from "./my-code.styles";
+import Container from "../shared/container/container.view";
+import { changeHeader } from "../../store/global/global.actions";
+import { MY_CODE } from "../../constants";
+import { ReactComponent as QRScannerIcon } from "../../images/icons/qr-scanner.svg";
+import QRScanner from "../shared/qr-scanner/qr-scanner.view";
+import { isAnyVideoDeviceAvailable } from "../../utils/browser";
+import Button from "../shared/button/button.view";
 
-function MyCode ({ wallet, onChangeHeader, onNavigateToTransfer }) {
-  const theme = useTheme()
-  const classes = useMyCodeStyles()
-  const { search } = useLocation()
-  const urlSearchParams = new URLSearchParams(search)
-  const from = urlSearchParams.get('from')
-  const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false)
-  const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false)
+function MyCode({ wallet, onChangeHeader, onNavigateToTransfer }) {
+  const theme = useTheme();
+  const classes = useMyCodeStyles();
+  const { search } = useLocation();
+  const urlSearchParams = new URLSearchParams(search);
+  const from = urlSearchParams.get("from");
+  const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false);
+  const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false);
 
   React.useEffect(() => {
-    onChangeHeader(from)
-  }, [from, onChangeHeader])
+    onChangeHeader(from);
+  }, [from, onChangeHeader]);
 
   React.useEffect(() => {
     isAnyVideoDeviceAvailable()
       .then(setisVideoDeviceAvailable)
-      .catch(() => setisVideoDeviceAvailable(false))
-  }, [])
+      .catch(() => setisVideoDeviceAvailable(false));
+  }, []);
 
   /**
    * Sets the local state variable isQRScannerOpen to true when the user requests to open
    * the QR Scanner
    * @returns {void}
    */
-  function handleOpenQRScanner () {
-    setIsQRScannerOpen(true)
+  function handleOpenQRScanner() {
+    setIsQRScannerOpen(true);
   }
 
   /**
@@ -47,8 +47,8 @@ function MyCode ({ wallet, onChangeHeader, onNavigateToTransfer }) {
    * close the QR Scanner
    * @returns {void}
    */
-  function handleCloseQRScanner () {
-    setIsQRScannerOpen(false)
+  function handleCloseQRScanner() {
+    setIsQRScannerOpen(false);
   }
 
   /**
@@ -57,9 +57,9 @@ function MyCode ({ wallet, onChangeHeader, onNavigateToTransfer }) {
    * @param {string} hermezEthereumAddress - Hermez Ethereum address scanned
    * @returns {void}
    */
-  function handleQRScanningSuccess (hermezEthereumAddress) {
-    setIsQRScannerOpen(false)
-    onNavigateToTransfer(hermezEthereumAddress)
+  function handleQRScanningSuccess(hermezEthereumAddress) {
+    setIsQRScannerOpen(false);
+    onNavigateToTransfer(hermezEthereumAddress);
   }
 
   return (
@@ -70,13 +70,11 @@ function MyCode ({ wallet, onChangeHeader, onNavigateToTransfer }) {
             <QRCode
               value={wallet.hermezEthereumAddress}
               size={MY_CODE.QR_CODE_SIZE}
-              bgColor='transparent'
+              bgColor="transparent"
               fgColor={theme.palette.black}
               className={classes.qrCode}
             />
-            <p className={classes.address}>
-              {wallet.hermezEthereumAddress}
-            </p>
+            <p className={classes.address}>{wallet.hermezEthereumAddress}</p>
           </>
         )}
         <div className={classes.qrScannerWrapper}>
@@ -89,34 +87,30 @@ function MyCode ({ wallet, onChangeHeader, onNavigateToTransfer }) {
         </div>
       </div>
       {isVideoDeviceAvailable && isQRScannerOpen && (
-        <QRScanner
-          onSuccess={handleQRScanningSuccess}
-          onClose={handleCloseQRScanner}
-        />
+        <QRScanner onSuccess={handleQRScanningSuccess} onClose={handleCloseQRScanner} />
       )}
     </Container>
-  )
+  );
 }
 
 const mapStateToProps = (state) => ({
-  wallet: state.global.wallet
-})
+  wallet: state.global.wallet,
+});
 
 const mapDispatchToProps = (dispatch) => ({
   onChangeHeader: (from) =>
-    dispatch(changeHeader({
-      type: 'page',
-      data: {
-        title: 'Hermez Internal Address',
-        subtitle: 'Read this code from another Hermez account',
-        goBackAction:
-          from === 'my-account'
-            ? push('/my-account')
-            : push('/')
-      }
-    })),
+    dispatch(
+      changeHeader({
+        type: "page",
+        data: {
+          title: "Hermez Internal Address",
+          subtitle: "Read this code from another Hermez account",
+          goBackAction: from === "my-account" ? push("/my-account") : push("/"),
+        },
+      })
+    ),
   onNavigateToTransfer: (hermezEthereumAddress) =>
-    dispatch(push(`/transfer?receiver=${hermezEthereumAddress}`))
-})
+    dispatch(push(`/transfer?receiver=${hermezEthereumAddress}`)),
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(MyCode)
+export default connect(mapStateToProps, mapDispatchToProps)(MyCode);

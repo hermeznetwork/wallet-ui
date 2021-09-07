@@ -1,30 +1,30 @@
-import { getFeeValue } from '@hermeznetwork/hermezjs/src/tx-utils'
-import { getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
+import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
+import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
 
-import { MAX_TOKEN_DECIMALS } from '../constants'
+import { MAX_TOKEN_DECIMALS } from "../constants";
 
 const CurrencySymbol = {
   USD: {
-    symbol: '$',
-    code: 'USD'
+    symbol: "$",
+    code: "USD",
   },
   EUR: {
-    symbol: '€',
-    code: 'EUR'
+    symbol: "€",
+    code: "EUR",
   },
   CNY: {
-    symbol: '¥',
-    code: 'CNY'
+    symbol: "¥",
+    code: "CNY",
   },
   JPY: {
-    symbol: '¥',
-    code: 'JPY'
+    symbol: "¥",
+    code: "JPY",
   },
   GBP: {
-    symbol: '£',
-    code: 'GBP'
-  }
-}
+    symbol: "£",
+    code: "GBP",
+  },
+};
 
 /**
  * Gets the string representation of a token amount with fixed decimals
@@ -32,15 +32,15 @@ const CurrencySymbol = {
  * @param {Number} decimals - Decimals that the amount should have in its string representation
  * @returns {string}
  */
-function getFixedTokenAmount (amount, decimals) {
+function getFixedTokenAmount(amount, decimals) {
   if (amount === undefined || decimals === undefined) {
-    return undefined
+    return undefined;
   }
 
   // We can lose precision as there will never be more than MAX_DECIMALS_UNTIL_ZERO_AMOUNT significant digits
-  const balanceWithDecimals = Number(amount) / Math.pow(10, decimals)
+  const balanceWithDecimals = Number(amount) / Math.pow(10, decimals);
 
-  return (Number(balanceWithDecimals.toFixed(MAX_TOKEN_DECIMALS))).toString()
+  return Number(balanceWithDecimals.toFixed(MAX_TOKEN_DECIMALS)).toString();
 }
 
 /**
@@ -52,16 +52,12 @@ function getFixedTokenAmount (amount, decimals) {
  *
  * @returns {Number}
  */
-function getAmountInPreferredCurrency (
-  usdAmount,
-  preferredCurrency,
-  fiatExchangeRates
-) {
+function getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchangeRates) {
   if (preferredCurrency === CurrencySymbol.USD.code) {
-    return usdAmount
+    return usdAmount;
   }
 
-  return usdAmount * fiatExchangeRates[preferredCurrency]
+  return usdAmount * fiatExchangeRates[preferredCurrency];
 }
 
 /**
@@ -74,19 +70,19 @@ function getAmountInPreferredCurrency (
  *
  * @returns {Number}
  */
-function getTokenAmountInPreferredCurrency (
+function getTokenAmountInPreferredCurrency(
   amount,
   usdTokenExchangeRate,
   preferredCurrency,
   fiatExchangeRates
 ) {
-  const usdAmount = Number(amount) * usdTokenExchangeRate
+  const usdAmount = Number(amount) * usdTokenExchangeRate;
 
   if (!fiatExchangeRates) {
-    return undefined
+    return undefined;
   }
 
-  return getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchangeRates)
+  return getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchangeRates);
 }
 
 /**
@@ -96,13 +92,13 @@ function getTokenAmountInPreferredCurrency (
  * @param {Object} token - Token object
  * @returns {String} Amount in USD
  */
-function getFeeInUsd (feeIndex, amount, token) {
+function getFeeInUsd(feeIndex, amount, token) {
   if (!feeIndex) {
-    return '-'
+    return "-";
   }
-  const feeInToken = Number(getTokenAmountString(getFeeValue(feeIndex, amount), token.decimals))
-  const feeInFiat = feeInToken * token.USD
-  return feeInFiat
+  const feeInToken = Number(getTokenAmountString(getFeeValue(feeIndex, amount), token.decimals));
+  const feeInFiat = feeInToken * token.USD;
+  return feeInFiat;
 }
 
 /**
@@ -113,14 +109,14 @@ function getFeeInUsd (feeIndex, amount, token) {
  * @param {Object} fiatExchangeRates - Exchange rates for all the supported currencies in the app
  * @returns {Number} Amount in preferred currency
  */
-function convertTokenAmountToFiat (tokenAmount, token, preferredCurrency, fiatExchangeRates) {
-  const fixedTokenAmount = getFixedTokenAmount(tokenAmount, token.decimals)
+function convertTokenAmountToFiat(tokenAmount, token, preferredCurrency, fiatExchangeRates) {
+  const fixedTokenAmount = getFixedTokenAmount(tokenAmount, token.decimals);
   return getTokenAmountInPreferredCurrency(
     fixedTokenAmount,
     token.USD,
     preferredCurrency,
     fiatExchangeRates
-  )
+  );
 }
 
 export {
@@ -129,5 +125,5 @@ export {
   getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency,
   getFeeInUsd,
-  convertTokenAmountToFiat
-}
+  convertTokenAmountToFiat,
+};

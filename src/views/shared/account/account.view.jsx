@@ -1,11 +1,11 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from "react";
+import PropTypes from "prop-types";
 
-import useAccountStyles from './account.styles'
-import { CurrencySymbol, getFixedTokenAmount } from '../../../utils/currencies'
-import { getTxPendingTime } from '../../../utils/transactions'
+import useAccountStyles from "./account.styles";
+import { CurrencySymbol, getFixedTokenAmount } from "../../../utils/currencies";
+import { getTxPendingTime } from "../../../utils/transactions";
 
-function Account ({
+function Account({
   balance,
   fiatBalance,
   token,
@@ -14,51 +14,47 @@ function Account ({
   isDisabled,
   coordinatorState,
   timestamp,
-  onClick
+  onClick,
 }) {
   const classes = useAccountStyles({
     hasPendingDeposit,
-    isDisabled
-  })
+    isDisabled,
+  });
 
-  const pendingTime = getTxPendingTime(coordinatorState, true, timestamp)
+  const pendingTime = getTxPendingTime(coordinatorState, true, timestamp);
 
   return (
     <div
       className={`${classes.root} ${classes.account}`}
       onClick={() => {
         if (onClick) {
-          onClick()
+          onClick();
         }
       }}
     >
       <div className={`${classes.values} ${classes.topRow} ${classes.topRowText}`}>
-        <p className={classes.tokenSymbol}>
-          {token.symbol}
-        </p>
+        <p className={classes.tokenSymbol}>{token.symbol}</p>
         <p className={classes.tokenBalance}>
           {getFixedTokenAmount(balance, token.decimals)} {token.symbol}
         </p>
       </div>
       <div className={`${classes.values} ${classes.bottomRow}`}>
-        {
-          hasPendingDeposit
-            ? (
-              <div className={classes.pendingContainer}>
-                <div className={classes.pendingLabelContainer}>
-                  <p className={classes.pendingLabelText}>Pending</p>
-                </div>
-                {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
-              </div>
-              )
-            : <p className={classes.tokenName}>{token.name}</p>
-        }
+        {hasPendingDeposit ? (
+          <div className={classes.pendingContainer}>
+            <div className={classes.pendingLabelContainer}>
+              <p className={classes.pendingLabelText}>Pending</p>
+            </div>
+            {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
+          </div>
+        ) : (
+          <p className={classes.tokenName}>{token.name}</p>
+        )}
         <p className={classes.fiatBalance}>
           {CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 Account.propTypes = {
@@ -67,7 +63,7 @@ Account.propTypes = {
   token: PropTypes.object.isRequired,
   preferredCurrency: PropTypes.string.isRequired,
   coordinatorState: PropTypes.object,
-  onClick: PropTypes.func
-}
+  onClick: PropTypes.func,
+};
 
-export default Account
+export default Account;

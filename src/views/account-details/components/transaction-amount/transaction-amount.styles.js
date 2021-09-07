@@ -1,9 +1,9 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-const useTransactionAmountStyles = createUseStyles(theme => ({
+const useTransactionAmountStyles = createUseStyles((theme) => ({
   depositAmount: {
-    color: theme.palette.green
-  }
-}))
+    color: theme.palette.green,
+  },
+}));
 
-export default useTransactionAmountStyles
+export default useTransactionAmountStyles;
