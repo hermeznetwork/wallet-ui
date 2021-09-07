@@ -1,115 +1,115 @@
 export const homeActionTypes = {
-  LOAD_TOTAL_BALANCE: '[HOME] LOAD TOTAL BALANCE',
-  LOAD_TOTAL_BALANCE_SUCCESS: '[HOME] LOAD TOTAL BALANCE SUCCESS',
-  LOAD_TOTAL_BALANCE_FAILURE: '[HOME] LOAD TOTAL BALANCE FAILURE',
-  LOAD_ACCOUNTS: '[HOME] LOAD ACCOUNTS',
-  LOAD_ACCOUNTS_SUCCESS: '[HOME] LOAD ACCOUNTS SUCCESS',
-  LOAD_ACCOUNTS_FAILURE: '[HOME] LOAD ACCOUNTS FAILURE',
-  LOAD_POOL_TRANSACTIONS: '[HOME] LOAD POOL TRANSACTIONS',
-  LOAD_POOL_TRANSACTIONS_SUCCESS: '[HOME] LOAD POOL TRANSACTIONS SUCCESS',
-  LOAD_POOL_TRANSACTIONS_FAILURE: '[HOME] LOAD POOL TRANSACTIONS FAILURE',
-  LOAD_EXITS: '[HOME] LOAD EXITS',
-  LOAD_EXITS_SUCCESS: '[HOME] LOAD EXITS SUCCESS',
-  LOAD_EXITS_FAILURE: '[HOME] LOAD EXITS FAILURE',
-  REFRESH_ACCOUNTS: '[HOME] REFRESH ACCOUNTS',
-  REFRESH_ACCOUNTS_SUCCESS: '[HOME] REFRESH ACCOUNTS SUCCESS',
-  RESET_STATE: '[HOME] RESET STATE'
-}
+  LOAD_TOTAL_BALANCE: "[HOME] LOAD TOTAL BALANCE",
+  LOAD_TOTAL_BALANCE_SUCCESS: "[HOME] LOAD TOTAL BALANCE SUCCESS",
+  LOAD_TOTAL_BALANCE_FAILURE: "[HOME] LOAD TOTAL BALANCE FAILURE",
+  LOAD_ACCOUNTS: "[HOME] LOAD ACCOUNTS",
+  LOAD_ACCOUNTS_SUCCESS: "[HOME] LOAD ACCOUNTS SUCCESS",
+  LOAD_ACCOUNTS_FAILURE: "[HOME] LOAD ACCOUNTS FAILURE",
+  LOAD_POOL_TRANSACTIONS: "[HOME] LOAD POOL TRANSACTIONS",
+  LOAD_POOL_TRANSACTIONS_SUCCESS: "[HOME] LOAD POOL TRANSACTIONS SUCCESS",
+  LOAD_POOL_TRANSACTIONS_FAILURE: "[HOME] LOAD POOL TRANSACTIONS FAILURE",
+  LOAD_EXITS: "[HOME] LOAD EXITS",
+  LOAD_EXITS_SUCCESS: "[HOME] LOAD EXITS SUCCESS",
+  LOAD_EXITS_FAILURE: "[HOME] LOAD EXITS FAILURE",
+  REFRESH_ACCOUNTS: "[HOME] REFRESH ACCOUNTS",
+  REFRESH_ACCOUNTS_SUCCESS: "[HOME] REFRESH ACCOUNTS SUCCESS",
+  RESET_STATE: "[HOME] RESET STATE",
+};
 
-function loadTotalBalance () {
+function loadTotalBalance() {
   return {
-    type: homeActionTypes.LOAD_TOTAL_BALANCE
-  }
+    type: homeActionTypes.LOAD_TOTAL_BALANCE,
+  };
 }
 
-function loadTotalBalanceSuccess (balance) {
+function loadTotalBalanceSuccess(balance) {
   return {
     type: homeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS,
-    balance
-  }
+    balance,
+  };
 }
 
-function loadTotalBalanceFailure () {
+function loadTotalBalanceFailure() {
   return {
-    type: homeActionTypes.LOAD_TOTAL_BALANCE_FAILURE
-  }
+    type: homeActionTypes.LOAD_TOTAL_BALANCE_FAILURE,
+  };
 }
 
-function loadAccounts () {
+function loadAccounts() {
   return {
-    type: homeActionTypes.LOAD_ACCOUNTS
-  }
+    type: homeActionTypes.LOAD_ACCOUNTS,
+  };
 }
 
-function loadAccountsSuccess (data) {
+function loadAccountsSuccess(data) {
   return {
     type: homeActionTypes.LOAD_ACCOUNTS_SUCCESS,
-    data
-  }
+    data,
+  };
 }
 
-function loadAccountsFailure () {
+function loadAccountsFailure() {
   return {
-    type: homeActionTypes.LOAD_ACCOUNTS_FAILURE
-  }
+    type: homeActionTypes.LOAD_ACCOUNTS_FAILURE,
+  };
 }
 
-function loadPoolTransactions () {
+function loadPoolTransactions() {
   return {
-    type: homeActionTypes.LOAD_POOL_TRANSACTIONS
-  }
+    type: homeActionTypes.LOAD_POOL_TRANSACTIONS,
+  };
 }
 
-function loadPoolTransactionsSuccess (transactions) {
+function loadPoolTransactionsSuccess(transactions) {
   return {
     type: homeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions
-  }
+    transactions,
+  };
 }
 
-function loadPoolTransactionsFailure () {
+function loadPoolTransactionsFailure() {
   return {
-    type: homeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE
-  }
+    type: homeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
+  };
 }
 
-function loadExits () {
+function loadExits() {
   return {
-    type: homeActionTypes.LOAD_EXITS
-  }
+    type: homeActionTypes.LOAD_EXITS,
+  };
 }
 
-function loadExitsSuccess (exits) {
+function loadExitsSuccess(exits) {
   return {
     type: homeActionTypes.LOAD_EXITS_SUCCESS,
-    exits
-  }
+    exits,
+  };
 }
 
-function loadExitsFailure (error) {
+function loadExitsFailure(error) {
   return {
     type: homeActionTypes.LOAD_EXITS_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function refreshAccounts () {
+function refreshAccounts() {
   return {
-    type: homeActionTypes.REFRESH_ACCOUNTS
-  }
+    type: homeActionTypes.REFRESH_ACCOUNTS,
+  };
 }
 
-function refreshAccountsSuccess (data) {
+function refreshAccountsSuccess(data) {
   return {
     type: homeActionTypes.REFRESH_ACCOUNTS_SUCCESS,
-    data
-  }
+    data,
+  };
 }
 
-function resetState () {
+function resetState() {
   return {
-    type: homeActionTypes.RESET_STATE
-  }
+    type: homeActionTypes.RESET_STATE,
+  };
 }
 
 export {
@@ -127,5 +127,5 @@ export {
   loadExitsFailure,
   refreshAccounts,
   refreshAccountsSuccess,
-  resetState
-}
+  resetState,
+};

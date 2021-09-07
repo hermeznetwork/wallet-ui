@@ -1,13 +1,13 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import clsx from 'clsx'
+import React from "react";
+import PropTypes from "prop-types";
+import clsx from "clsx";
 
-import useButtonStyles from './button.styles'
+import useButtonStyles from "./button.styles";
 
-function Button ({ Icon, text, className, disabled, onClick }) {
-  const classes = useButtonStyles({ rounded: !text })
-  const isClickable = onClick !== undefined
-  const Component = isClickable ? 'button' : 'div'
+function Button({ Icon, text, className, disabled, onClick }) {
+  const classes = useButtonStyles({ rounded: !text });
+  const isClickable = onClick !== undefined;
+  const Component = isClickable ? "button" : "div";
 
   return (
     <Component
@@ -16,23 +16,19 @@ function Button ({ Icon, text, className, disabled, onClick }) {
       className={clsx({
         [classes.root]: true,
         [classes.button]: isClickable,
-        [className]: className
+        [className]: className,
       })}
     >
       {Icon || <></>}
-      {text && (
-        <p className={clsx({ [classes.textSpacer]: Icon !== undefined })}>
-          {text}
-        </p>
-      )}
+      {text && <p className={clsx({ [classes.textSpacer]: Icon !== undefined })}>{text}</p>}
     </Component>
-  )
+  );
 }
 
 Button.propTypes = {
   Icon: PropTypes.element,
   text: PropTypes.string,
-  onClick: PropTypes.func
-}
+  onClick: PropTypes.func,
+};
 
-export default Button
+export default Button;

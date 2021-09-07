@@ -1,9 +1,9 @@
-import { GAS_LIMIT_LOW } from '@hermeznetwork/hermezjs/src/constants'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
-import { getFeeIndex, getFeeValue } from '@hermeznetwork/hermezjs/src/tx-utils'
-import { getTokenAmountBigInt, getTokenAmountString } from '@hermeznetwork/hermezjs/src/utils'
-import { BigNumber } from 'ethers'
-import { parseUnits } from 'ethers/lib/utils'
+import { GAS_LIMIT_LOW } from "@hermeznetwork/hermezjs/src/constants";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { getFeeIndex, getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
+import { getTokenAmountBigInt, getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
+import { BigNumber } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
 
 /**
  * Calculates the fee for a L1 deposit into Hermez Network
@@ -11,10 +11,8 @@ import { parseUnits } from 'ethers/lib/utils'
  * @param {BigNumber} gasPrice - Ethereum gas price
  * @returns depositFee
  */
-function getDepositFee (token, gasPrice) {
-  return token.id === 0
-    ? BigNumber.from(GAS_LIMIT_LOW).mul(gasPrice)
-    : BigNumber.from(0)
+function getDepositFee(token, gasPrice) {
+  return token.id === 0 ? BigNumber.from(GAS_LIMIT_LOW).mul(gasPrice) : BigNumber.from(0);
 }
 
 /**
@@ -25,13 +23,13 @@ function getDepositFee (token, gasPrice) {
  * @param {Number} minimumFee - The minimum fee that needs to be payed to the coordinator in token value
  * @returns {Number} The real fee that will be paid for this transaction
  */
-function getRealFee (amount, token, minimumFee) {
-  const decimals = token.decimals
-  const minimumFeeBigInt = getTokenAmountBigInt(minimumFee.toFixed(decimals), decimals).toString()
-  const feeIndex = getFeeIndex(minimumFeeBigInt, amount)
-  const fee = getFeeValue(feeIndex, amount)
+function getRealFee(amount, token, minimumFee) {
+  const decimals = token.decimals;
+  const minimumFeeBigInt = getTokenAmountBigInt(minimumFee.toFixed(decimals), decimals).toString();
+  const feeIndex = getFeeIndex(minimumFeeBigInt, amount);
+  const fee = getFeeValue(feeIndex, amount);
 
-  return Number(getTokenAmountString(fee, decimals))
+  return Number(getTokenAmountString(fee, decimals));
 }
 
 /**
@@ -43,18 +41,18 @@ function getRealFee (amount, token, minimumFee) {
  * @param {BigNumber} gasPrice - Ethereum gas price
  * @returns txFee
  */
-function getTransactionFee (txType, amount, token, l2Fee, gasPrice) {
+function getTransactionFee(txType, amount, token, l2Fee, gasPrice) {
   switch (txType) {
     case TxType.Deposit: {
-      return getDepositFee(token, gasPrice)
+      return getDepositFee(token, gasPrice);
     }
     case TxType.ForceExit: {
-      return BigNumber.from(0)
+      return BigNumber.from(0);
     }
     default: {
-      return parseUnits(getRealFee(amount, token, l2Fee).toString())
+      return parseUnits(getRealFee(amount, token, l2Fee).toString());
     }
   }
 }
 
-export { getDepositFee, getRealFee, getTransactionFee }
+export { getDepositFee, getRealFee, getTransactionFee };

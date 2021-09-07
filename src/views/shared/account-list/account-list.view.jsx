@@ -1,47 +1,49 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import clsx from 'clsx'
+import React from "react";
+import PropTypes from "prop-types";
+import clsx from "clsx";
 
-import useAccountListStyles from './account-list.styles'
-import Account from '../account/account.view'
-import '../../../utils/accounts'
+import useAccountListStyles from "./account-list.styles";
+import Account from "../account/account.view";
+import "../../../utils/accounts";
 
-function AccountList ({
+function AccountList({
   accounts,
   preferredCurrency,
   pendingDeposits,
   coordinatorState,
   disabledTokenIds,
-  onAccountClick
+  onAccountClick,
 }) {
-  const classes = useAccountListStyles()
+  const classes = useAccountListStyles();
 
-  function getAccountPendingDeposit (account) {
-    return pendingDeposits?.find((deposit) => deposit.account?.accountIndex === account.accountIndex)
+  function getAccountPendingDeposit(account) {
+    return pendingDeposits?.find(
+      (deposit) => deposit.account?.accountIndex === account.accountIndex
+    );
   }
 
-  function hasAccountPendingDeposit (account) {
+  function hasAccountPendingDeposit(account) {
     if (!pendingDeposits) {
-      return false
+      return false;
     }
 
-    return getAccountPendingDeposit(account) !== undefined
+    return getAccountPendingDeposit(account) !== undefined;
   }
 
-  function isAccountDisabled (account) {
+  function isAccountDisabled(account) {
     if (!disabledTokenIds) {
-      return false
+      return false;
     }
 
-    return disabledTokenIds.find((id) => account.token.id === id) !== undefined
+    return disabledTokenIds.find((id) => account.token.id === id) !== undefined;
   }
 
   /**
    * Bubbles up the onAccountClick event when an account is clicked
    * @returns {void}
    */
-  function handleAccountListItemClick (account) {
-    onAccountClick(account)
+  function handleAccountListItemClick(account) {
+    onAccountClick(account);
   }
 
   return (
@@ -64,17 +66,17 @@ function AccountList ({
               onClick={() => handleAccountListItemClick(account)}
             />
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
 
 AccountList.propTypes = {
   accounts: PropTypes.array,
   preferredCurrency: PropTypes.string.isRequired,
   fiatExchangeRates: PropTypes.object,
-  onAccountClick: PropTypes.func
-}
+  onAccountClick: PropTypes.func,
+};
 
-export default AccountList
+export default AccountList;

@@ -179,9 +179,7 @@ function loadPoolTransactionsSuccess(
   };
 }
 
-function loadPoolTransactionsFailure(
-  error: Error
-): LoadPoolTransactionsFailureAction {
+function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
@@ -203,9 +201,7 @@ function loadHistoryTransactionsSuccess(
   };
 }
 
-function loadHistoryTransactionsFailure(
-  error: Error
-): LoadHistoryTransactionsFailureAction {
+function loadHistoryTransactionsFailure(error: Error): LoadHistoryTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE,
     error,

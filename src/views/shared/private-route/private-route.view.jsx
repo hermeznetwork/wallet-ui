@@ -1,10 +1,10 @@
-import React from 'react'
-import { Route, useLocation, Redirect } from 'react-router-dom'
+import React from "react";
+import { Route, useLocation, Redirect } from "react-router-dom";
 
-import PrivateLayout from '../private-layout/private-layout.view'
+import PrivateLayout from "../private-layout/private-layout.view";
 
-function PrivateRoute ({ isUserLoggedIn, route, onChangeRedirectRoute }) {
-  const { pathname, search } = useLocation()
+function PrivateRoute({ isUserLoggedIn, route, onChangeRedirectRoute }) {
+  const { pathname, search } = useLocation();
 
   return (
     <Route
@@ -13,21 +13,17 @@ function PrivateRoute ({ isUserLoggedIn, route, onChangeRedirectRoute }) {
       path={route.path}
       render={() => {
         if (isUserLoggedIn) {
-          return (
-            <PrivateLayout>
-              {route.render()}
-            </PrivateLayout>
-          )
+          return <PrivateLayout>{route.render()}</PrivateLayout>;
         } else {
-          const currentRoute = `${pathname}${search}`
+          const currentRoute = `${pathname}${search}`;
 
-          onChangeRedirectRoute(currentRoute)
+          onChangeRedirectRoute(currentRoute);
 
-          return <Redirect to='/login' />
+          return <Redirect to="/login" />;
         }
       }}
     />
-  )
+  );
 }
 
-export default PrivateRoute
+export default PrivateRoute;

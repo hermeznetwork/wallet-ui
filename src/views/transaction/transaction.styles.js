@@ -1,18 +1,18 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-const useTransactionLayoutStyles = createUseStyles(theme => ({
+const useTransactionLayoutStyles = createUseStyles((theme) => ({
   root: {
-    width: '100%'
+    width: "100%",
   },
   spinnerWrapper: {
-    display: 'flex',
-    justifyContent: 'center',
+    display: "flex",
+    justifyContent: "center",
     marginTop: theme.headerHeight,
     paddingTop: theme.spacing(4),
     [theme.breakpoints.upSm]: {
-      paddingTop: theme.spacing(6)
-    }
-  }
-}))
+      paddingTop: theme.spacing(6),
+    },
+  },
+}));
 
-export default useTransactionLayoutStyles
+export default useTransactionLayoutStyles;

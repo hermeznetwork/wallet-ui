@@ -1,14 +1,14 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-const useWalletButtonListStyles = createUseStyles(theme => ({
+const useWalletButtonListStyles = createUseStyles((theme) => ({
   root: {
-    display: 'flex'
+    display: "flex",
   },
   walletButtonContainer: {
-    '&:not(:first-of-type)': {
-      marginLeft: theme.spacing(9)
-    }
-  }
-}))
+    "&:not(:first-of-type)": {
+      marginLeft: theme.spacing(9),
+    },
+  },
+}));
 
-export default useWalletButtonListStyles
+export default useWalletButtonListStyles;
