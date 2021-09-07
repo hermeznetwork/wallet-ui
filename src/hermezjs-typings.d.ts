@@ -21,7 +21,7 @@ declare module "@hermeznetwork/*" {
 
   export interface L1Transaction extends Transaction {
     // ToDo: There are certain properties that do not match between our L1Transaction and the interface Transaction
-    //       exported from Ethers (for example, hash, from and to are optional in an ethers Transaction).
+    //       exported from Ethers (for example, hash is optional in an ethers Transaction).
     //       Does hermezjs fill these props or should be relay on the official type and change our wallet accordingly?
     hash: string;
     // type: number;
@@ -172,11 +172,8 @@ declare module "@hermeznetwork/*" {
     timestamp: ISOStringDate;
     // ToDo: This states are yet to be validated
     // state: "fged" | "fing" | "pend" | "invl";
-    // ToDo: There are more deposit types??
+    // ToDo: Are there more deposit types??
     type: "Deposit" | "CreateAccountDeposit";
-    // transactionId is added by the frontend to track
-    // the pending deposits stored in local storage
-    transactionId?: string;
   }
 
   // ToDo: What is the shape of a reward?

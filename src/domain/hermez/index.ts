@@ -3,12 +3,13 @@
  * We may decide not to export them from the domain and let other layers import them from the lib.
  */
 
+import { Deposit as HermezJSDeposit } from "@hermeznetwork/hermezjs";
+
 export type {
   Account,
   BigNumber,
   CoordinatorState,
   DelayedWithdraw,
-  Deposit,
   L1Transaction,
   Exit,
   FiatExchangeRates,
@@ -24,3 +25,7 @@ export type {
   Token,
   Withdraw,
 } from "@hermeznetwork/hermezjs";
+
+export type Deposit = HermezJSDeposit & {
+    transactionId?: string;
+}
