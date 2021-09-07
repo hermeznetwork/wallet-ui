@@ -1,5 +1,7 @@
 import { getFeeValue } from '@hermeznetwork/hermezjs/src/tx-utils'
 
+import { convertTokenAmountToFiat } from './currencies'
+
 /** */
 function getAccountBalance (account, poolTransactions, pendingDeposits) {
   if (!account) {
@@ -30,6 +32,27 @@ function getAccountBalance (account, poolTransactions, pendingDeposits) {
   return totalBalance.toString()
 }
 
+// TODO Study if this belongs to the domain model, as it's the function who creates a domain entity Account and move it there
+function createAccount (account, poolTransactions, pendingDeposits, tokensPriceTask, fiatExchangeRates, preferredCurrency) {
+  const accountToken = tokensPriceTask.status === 'successful'
+    ? { ...account, token: { ...tokensPriceTask.data[account.token.id] } }
+    : { ...account }
+  const accountBalance = getAccountBalance(accountToken, poolTransactions, pendingDeposits)
+  const fiatBalance = convertTokenAmountToFiat(
+    accountBalance,
+    accountToken.token,
+    preferredCurrency,
+    fiatExchangeRates
+  )
+
+  return {
+    ...accountToken,
+    balance: accountBalance,
+    fiatBalance
+  }
+}
+
 export {
-  getAccountBalance
+  getAccountBalance,
+  createAccount
 }

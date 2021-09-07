@@ -14,7 +14,7 @@ import { HttpStatusCode } from "@hermeznetwork/hermezjs/src/http";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
 import * as globalActions from "src/store/global/global.actions";
-import * as fiatExchangeRatesApi from "src/apis/fiat-exchange-rates";
+import * as priceUpdaterApi from "src/apis/price-updater";
 import * as hermezWebApi from "src/apis/hermez-web";
 import * as airdropApi from "src/apis/rewards";
 import * as storage from "src/utils/storage";
@@ -47,7 +47,7 @@ import {
   Exit,
   Deposit,
   L2Transaction,
-  
+  Token,
 } from "src/domain/hermez";
 
 /**
@@ -112,7 +112,7 @@ function fetchFiatExchangeRates() {
 
     dispatch(globalActions.loadFiatExchangeRates());
 
-    return fiatExchangeRatesApi
+    return priceUpdaterApi
       .getFiatExchangeRates(symbols)
       .then((fiatExchangeRates: FiatExchangeRates) =>
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
@@ -121,7 +121,7 @@ function fetchFiatExchangeRates() {
         // ToDo: How are we returning simulated Fiat exchange rates when this request fails???
         dispatch(
           globalActions.loadFiatExchangeRatesSuccess(
-            fiatExchangeRatesApi.mockedFiatExchangeRates
+            priceUpdaterApi.mockedFiatExchangeRates
           )
         );
       });
@@ -1104,6 +1104,25 @@ function fetchRewardToken() {
   };
 }
 
+/**
+ * Fetch tokens price
+ * @returns {Array} Response data with an array of tokens
+ */
+function fetchTokensPrice() {
+  return (dispatch: AppDispatch) => {
+    dispatch(globalActions.loadTokensPrice());
+
+    return priceUpdaterApi
+      .getTokensPrice()
+      .then((res: Token[]) =>
+        dispatch(globalActions.loadTokensPriceSuccess(res))
+      )
+      .catch(() =>
+        globalActions.loadTokensPriceFailure("An error occured loading token.")
+      );
+  };
+}
+
 export {
   setHermezEnvironment,
   changeRedirectRoute,
@@ -1131,4 +1150,5 @@ export {
   fetchRewardPercentage,
   fetchRewardAccountEligibility,
   fetchRewardToken,
+  fetchTokensPrice,
 };

@@ -10,6 +10,7 @@ import {
   Deposit,
   CoordinatorState,
   Reward,
+  Token,
 } from "src/domain/hermez";
 import { ISOStringDate, Header } from "src/domain/";
 
@@ -65,6 +66,9 @@ export enum GlobalActionTypes {
   LOAD_REWARD_TOKEN = "[GLOBAL] LOAD REWARD TOKEN",
   LOAD_REWARD_TOKEN_SUCCESS = "[GLOBAL] LOAD REWARD TOKEN SUCCESS",
   LOAD_REWARD_TOKEN_FAILURE = "[GLOBAL] LOAD REWARD TOKEN FAILURE",
+  LOAD_TOKENS_PRICE = "[GLOBAL] LOAD TOKENS PRICE",
+  LOAD_TOKENS_PRICE_SUCCESS = "[GLOBAL] LOAD TOKENS PRICE SUCCESS",
+  LOAD_TOKENS_PRICE_FAILURE = "[GLOBAL] LOAD TOKENS PRICE FAILURE",
 }
 
 export interface LoadHermezStatus {
@@ -326,6 +330,20 @@ export interface LoadRewardTokenFailure {
   error: string;
 }
 
+export interface LoadTokensPrice {
+  type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE;
+}
+
+export interface LoadTokensPriceSuccess {
+  type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS;
+  tokensPrice: unknown;
+}
+
+export interface LoadTokensPriceFailure {
+  type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE;
+  error: string;
+}
+
 export type GlobalAction =
   | LoadHermezStatus
   | LoadHermezStatusSuccess
@@ -377,7 +395,10 @@ export type GlobalAction =
   | LoadRewardAccountEligibilityFailure
   | LoadRewardToken
   | LoadRewardTokenSuccess
-  | LoadRewardTokenFailure;
+  | LoadRewardTokenFailure
+  | LoadTokensPrice
+  | LoadTokensPriceSuccess
+  | LoadTokensPriceFailure;
 
 function loadHermezStatus(): LoadHermezStatus {
   return {
@@ -806,6 +827,26 @@ function loadRewardTokenFailure(error: string): LoadRewardTokenFailure {
   };
 }
 
+function loadTokensPrice() {
+  return {
+    type: GlobalActionTypes.LOAD_TOKENS_PRICE,
+  };
+}
+
+function loadTokensPriceSuccess(tokensPrice: Token[]) {
+  return {
+    type: GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS,
+    tokensPrice,
+  };
+}
+
+function loadTokensPriceFailure(error: string) {
+  return {
+    type: GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE,
+    error,
+  };
+}
+
 export {
   loadHermezStatus,
   loadHermezStatusSuccess,
@@ -858,4 +899,7 @@ export {
   loadRewardToken,
   loadRewardTokenSuccess,
   loadRewardTokenFailure,
+  loadTokensPrice,
+  loadTokensPriceSuccess,
+  loadTokensPriceFailure,
 };

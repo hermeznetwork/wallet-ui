@@ -1,38 +1,20 @@
-import axios from "axios";
-import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
+import axios from 'axios'
+import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
+import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
 
-import * as homeActions from "./home.actions";
-import { createAccount } from 'src/utils/accounts'
-import { convertTokenAmountToFiat } from 'src/utils/currencies'
+import * as homeActions from './home.actions'
+import { createAccount } from '../../utils/accounts'
+import { convertTokenAmountToFiat } from '../../utils/currencies'
 
-import { RootState } from "src/store";
-import { AppDispatch } from "src";
-
-// domain
-import {
-  L2Transaction,
-  Deposit,
-  FiatExchangeRates,
-  Account,
-} from "src/domain/hermez";
-import { Accounts } from "src/persistence";
-
-let refreshCancelTokenSource = axios.CancelToken.source();
+let refreshCancelTokenSource = axios.CancelToken.source()
 
 /**
  * Fetches the accounts for a Hermez Ethereum address and calculates the total balance.
  * @returns {void}
  */
- function fetchTotalBalance (
-  hermezEthereumAddress: string,
-  poolTransactions: L2Transaction[],
-  pendingDeposits: Deposit[],
-  fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
- ) {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
+  return (dispatch, getState) => {
     const { global: { tokensPriceTask } } = getState()
     dispatch(homeActions.loadTotalBalance())
 
@@ -54,11 +36,11 @@ let refreshCancelTokenSource = axios.CancelToken.source();
           .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
         const totalPendingCreateAccountDepositsBalance = pendingCreateAccountDeposits.reduce((totalBalance, deposit) => {
           const tokenPrice = tokensPriceTask.status === 'successful'
-            ? { ...tokensPriceTask.data[deposit.token.id] }
+            ? { ...tokensPriceTask.data.tokens[deposit.token.id] }
             : { ...deposit.token }
 
           const fiatBalance = convertTokenAmountToFiat(
-            deposit.amount,
+            deposit,
             tokenPrice,
             preferredCurrency,
             fiatExchangeRates
@@ -82,15 +64,8 @@ let refreshCancelTokenSource = axios.CancelToken.source();
  * @param {Number} fromItem - id of the first account to be returned from the API
  * @returns {void}
  */
-function fetchAccounts(
-  hermezAddress: string,
-  fromItem: number,
-  poolTransactions: L2Transaction[],
-  pendingDeposits: Deposit[],
-  fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
-) {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+function fetchAccounts (hermezAddress, fromItem, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
+  return (dispatch, getState) => {
     const { home: { accountsTask }, global: { tokensPriceTask } } = getState()
 
     if (fromItem === undefined && accountsTask.status === 'successful') {
@@ -126,7 +101,7 @@ function fetchAccounts(
       })
       .then(res => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch(err => dispatch(homeActions.loadAccountsFailure(err)))
-  };
+  }
 }
 
 /**
@@ -134,14 +109,8 @@ function fetchAccounts(
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshAccounts(
-  hermezAddress: string,
-  poolTransactions: L2Transaction[],
-  pendingDeposits: Deposit[],
-  fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
-) {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+function refreshAccounts (hermezAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
+  return (dispatch, getState) => {
     const { home: { accountsTask }, global: { tokensPriceTask } } = getState()
 
     if (accountsTask.status === 'successful') {
@@ -174,7 +143,7 @@ function refreshAccounts(
       Promise.all(requests)
         .then((results) => {
           const accounts = results
-            .reduce((acc: Account[], result: Accounts) => [...acc, ...result.accounts], [])
+            .reduce((acc, result) => [...acc, ...result.accounts], [])
             .map((account) =>
               createAccount(account,
                 poolTransactions,
@@ -188,49 +157,40 @@ function refreshAccounts(
           return { accounts, pendingItems }
         })
         .then(res => dispatch(homeActions.refreshAccountsSuccess(res)))
-  };
-}}
+    }
+  }
+}
 
 /**
  * Fetches the transactions which are in the transactions pool
  * @returns {void}
  */
-function fetchPoolTransactions() {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(homeActions.loadPoolTransactions());
+function fetchPoolTransactions () {
+  return (dispatch, getState) => {
+    dispatch(homeActions.loadPoolTransactions())
 
-    const {
-      global: { wallet },
-    } = getState();
+    const { global: { wallet } } = getState()
 
-    if (wallet !== undefined) {
-      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) =>
-          dispatch(homeActions.loadPoolTransactionsSuccess(transactions))
-        )
-        .catch((err) => dispatch(homeActions.loadPoolTransactionsFailure(err)));
-    }
-  };
+    getPoolTransactions(null, wallet.publicKeyCompressedHex)
+      .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
+      .catch(err => dispatch(homeActions.loadPoolTransactionsFailure(err)))
+  }
 }
 
 /**
  * Fetches the exit data for transactions of type Exit
  * @returns {void}
  */
-function fetchExits() {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
-    const {
-      global: { wallet },
-    } = getState();
+function fetchExits () {
+  return (dispatch, getState) => {
+    const { global: { wallet } } = getState()
 
-    if (wallet !== undefined) {
-      dispatch(homeActions.loadExits());
+    dispatch(homeActions.loadExits())
 
-      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
-        .then((exits) => dispatch(homeActions.loadExitsSuccess(exits)))
-        .catch((err) => dispatch(homeActions.loadExitsFailure(err)));
-    }
-  };
+    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
+      .then(exits => dispatch(homeActions.loadExitsSuccess(exits)))
+      .catch(err => dispatch(homeActions.loadExitsFailure(err)))
+  }
 }
 
 export {
@@ -238,5 +198,5 @@ export {
   fetchAccounts,
   refreshAccounts,
   fetchPoolTransactions,
-  fetchExits,
-};
+  fetchExits
+}
