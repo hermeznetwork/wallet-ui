@@ -1,91 +1,91 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-const useAppStyles = createUseStyles(theme => ({
-  '@font-face': [
+const useAppStyles = createUseStyles((theme) => ({
+  "@font-face": [
     {
-      fontFamily: 'Modern Era',
+      fontFamily: "Modern Era",
       src: "url('/fonts/modern-era/ModernEra-Regular.woff2') format('woff2')",
       fallbacks: [
         { src: "url('/fonts/modern-era/ModernEra-Regular.woff') format('woff')" },
-        { src: "url('/fonts/modern-era/ModernEra-Regular.ttf') format('truetype')" }
+        { src: "url('/fonts/modern-era/ModernEra-Regular.ttf') format('truetype')" },
       ],
       fontWeight: 400,
-      fontStyle: 'normal'
+      fontStyle: "normal",
     },
     {
-      fontFamily: 'Modern Era',
+      fontFamily: "Modern Era",
       src: "url('/fonts/modern-era/ModernEra-Medium.woff2') format('woff2')",
       fallbacks: [
         { src: "url('/fonts/modern-era/ModernEra-Medium.woff') format('woff')" },
-        { src: "url('/fonts/modern-era/ModernEra-Medium.ttf') format('truetype')" }
+        { src: "url('/fonts/modern-era/ModernEra-Medium.ttf') format('truetype')" },
       ],
       fontWeight: 500,
-      fontStyle: 'normal'
+      fontStyle: "normal",
     },
     {
-      fontFamily: 'Modern Era',
+      fontFamily: "Modern Era",
       src: "url('/fonts/modern-era/ModernEra-Bold.woff2') format('woff2')",
       fallbacks: [
         { src: "url('/fonts/modern-era/ModernEra-Bold.woff') format('woff')" },
-        { src: "url('/fonts/modern-era/ModernEra-Bold.ttf') format('truetype')" }
+        { src: "url('/fonts/modern-era/ModernEra-Bold.ttf') format('truetype')" },
       ],
       fontWeight: 700,
-      fontStyle: 'normal'
+      fontStyle: "normal",
     },
     {
-      fontFamily: 'Modern Era',
+      fontFamily: "Modern Era",
       src: "url('/fonts/modern-era/ModernEra-ExtraBold.woff2') format('woff2')",
       fallbacks: [
         { src: "url('/fonts/modern-era/ModernEra-ExtraBold.woff') format('woff')" },
-        { src: "url('/fonts/modern-era/ModernEra-ExtraBold.ttf') format('truetype')" }
+        { src: "url('/fonts/modern-era/ModernEra-ExtraBold.ttf') format('truetype')" },
       ],
       fontWeight: 800,
-      fontStyle: 'normal'
-    }
+      fontStyle: "normal",
+    },
   ],
-  '@global': {
-    '*': {
-      boxSizing: 'border-box',
-      color: theme.palette.black
+  "@global": {
+    "*": {
+      boxSizing: "border-box",
+      color: theme.palette.black,
     },
     body: {
-      fontFamily: 'Modern Era',
+      fontFamily: "Modern Era",
       fontSize: 16,
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column'
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
     },
-    '#app-root': {
+    "#app-root": {
       zIndex: 0,
-      position: 'relative',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      flex: 1
+      position: "relative",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      flex: 1,
     },
-    '#portal-root': {
-      zIndex: 1
+    "#portal-root": {
+      zIndex: 1,
     },
     a: {
-      textDecoration: 'none',
-      color: 'inherit'
+      textDecoration: "none",
+      color: "inherit",
     },
     p: {
-      margin: 0
+      margin: 0,
     },
     h1: {
-      margin: 0
-    }
+      margin: 0,
+    },
   },
   root: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
     flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: theme.palette.primary.main
-  }
-}))
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: theme.palette.primary.main,
+  },
+}));
 
-export default useAppStyles
+export default useAppStyles;

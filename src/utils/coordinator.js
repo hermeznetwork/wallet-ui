@@ -1,4 +1,4 @@
-import { DELAY_TO_NEXT_FORGER } from '../constants'
+import { DELAY_TO_NEXT_FORGER } from "../constants";
 
 /**
  * Extracts the next forgers without duplicates from the coordinator state returned by
@@ -6,14 +6,14 @@ import { DELAY_TO_NEXT_FORGER } from '../constants'
  * @param {Object} coordinatorState - Coordinator state returned by the Hermez API
  * @returns Next forgers
  */
-function getNextForgers (coordinatorState) {
+function getNextForgers(coordinatorState) {
   return (coordinatorState.network.nextForgers || []).reduce((acc, curr) => {
-    const doesItemExist = acc.find(elem => elem.coordinator.forgerAddr === curr.coordinator.forgerAddr)
+    const doesItemExist = acc.find(
+      (elem) => elem.coordinator.forgerAddr === curr.coordinator.forgerAddr
+    );
 
-    return doesItemExist
-      ? acc
-      : [...acc, curr]
-  }, [])
+    return doesItemExist ? acc : [...acc, curr];
+  }, []);
 }
 
 /**
@@ -22,11 +22,12 @@ function getNextForgers (coordinatorState) {
  * @param {Object} coordinatorState - Coordinator state returned by the Hermez API
  * @returns URL's of the next forgers
  */
-function getNextForgerUrls (coordinatorState) {
-  const nextForgerUrls = getNextForgers(coordinatorState)
-    .map((nextForger) => nextForger.coordinator.URL)
+function getNextForgerUrls(coordinatorState) {
+  const nextForgerUrls = getNextForgers(coordinatorState).map(
+    (nextForger) => nextForger.coordinator.URL
+  );
 
-  return nextForgerUrls
+  return nextForgerUrls;
 }
 
 /**
@@ -37,31 +38,25 @@ function getNextForgerUrls (coordinatorState) {
  * @param {Object} coordinatorState - Coordinator state returned by the Hermez API
  * @returns Next best forger
  */
-function getNextBestForger (coordinatorState) {
-  const nextForgers = getNextForgers(coordinatorState)
+function getNextBestForger(coordinatorState) {
+  const nextForgers = getNextForgers(coordinatorState);
 
   if (nextForgers.length === 0) {
-    return undefined
+    return undefined;
   }
 
   if (nextForgers.length === 1) {
-    return nextForgers[0]
+    return nextForgers[0];
   }
 
   const bestNextForgers = nextForgers.filter((forger) => {
-    const toTimestamp = new Date(forger.period.toTimestamp).getTime()
-    const expectedMinTime = Date.now() + DELAY_TO_NEXT_FORGER
+    const toTimestamp = new Date(forger.period.toTimestamp).getTime();
+    const expectedMinTime = Date.now() + DELAY_TO_NEXT_FORGER;
 
-    return expectedMinTime <= toTimestamp
-  })
+    return expectedMinTime <= toTimestamp;
+  });
 
-  return bestNextForgers.length === 0
-    ? nextForgers[1]
-    : bestNextForgers[0]
+  return bestNextForgers.length === 0 ? nextForgers[1] : bestNextForgers[0];
 }
 
-export {
-  getNextForgers,
-  getNextForgerUrls,
-  getNextBestForger
-}
+export { getNextForgers, getNextForgerUrls, getNextBestForger };

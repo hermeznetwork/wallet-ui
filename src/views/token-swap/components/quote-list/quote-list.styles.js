@@ -1,14 +1,14 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
 const useQuoteListStyles = createUseStyles((theme) => ({
   root: {
-    width: '100%'
+    width: "100%",
   },
   quote: {
-    '&:not(:first-of-type)': {
-      marginTop: theme.spacing(2)
-    }
-  }
-}))
+    "&:not(:first-of-type)": {
+      marginTop: theme.spacing(2),
+    },
+  },
+}));
 
-export default useQuoteListStyles
+export default useQuoteListStyles;

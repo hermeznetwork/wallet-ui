@@ -1,11 +1,11 @@
-import React from 'react'
+import React from "react";
 
-import useQuoteStyles from './quote.styles'
-import { ReactComponent as SushiSmLogo } from '../../../../images/exchange-logos/sushi-sm.svg'
-import { getFixedTokenAmount } from '../../../../utils/currencies'
-import { ReactComponent as BestQuoteBadge } from '../../../../images/icons/green-badge-white-tick.svg'
+import useQuoteStyles from "./quote.styles";
+import { ReactComponent as SushiSmLogo } from "../../../../images/exchange-logos/sushi-sm.svg";
+import { getFixedTokenAmount } from "../../../../utils/currencies";
+import { ReactComponent as BestQuoteBadge } from "../../../../images/icons/green-badge-white-tick.svg";
 
-function Quote ({
+function Quote({
   info,
   toToken,
   amountToToken,
@@ -13,9 +13,9 @@ function Quote ({
   isTheBest,
   isSelected,
   onSelect,
-  onShowMoreInfo
+  onShowMoreInfo,
 }) {
-  const classes = useQuoteStyles()
+  const classes = useQuoteStyles();
 
   return (
     <div className={classes.root}>
@@ -27,13 +27,10 @@ function Quote ({
       )}
       <div className={classes.quoteInfo}>
         <div className={classes.nameCell}>
-          <input type='radio' checked={isSelected} onChange={onSelect} />
+          <input type="radio" checked={isSelected} onChange={onSelect} />
           <SushiSmLogo className={classes.logo} />
           <p className={classes.name}>{info.name}</p>
-          <button
-            className={classes.moreInfoButton}
-            onClick={onShowMoreInfo}
-          >
+          <button className={classes.moreInfoButton} onClick={onShowMoreInfo}>
             More info
           </button>
         </div>
@@ -48,20 +45,21 @@ function Quote ({
           )}
         </div>
         <div className={classes.rewardCell}>
-          {info.rewards
-            ? (
-              <>
-                <p className={classes.reward}>
-                  {getFixedTokenAmount(info.rewards[0].amount, toToken.token.decimals)} {info.rewards[0].token}
-                </p>
-                <p className={classes.rewardHelperText}>per swap</p>
-              </>
-              )
-            : <p className={classes.rewardHelperText}>No reward</p>}
+          {info.rewards ? (
+            <>
+              <p className={classes.reward}>
+                {getFixedTokenAmount(info.rewards[0].amount, toToken.token.decimals)}{" "}
+                {info.rewards[0].token}
+              </p>
+              <p className={classes.rewardHelperText}>per swap</p>
+            </>
+          ) : (
+            <p className={classes.rewardHelperText}>No reward</p>
+          )}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Quote
+export default Quote;

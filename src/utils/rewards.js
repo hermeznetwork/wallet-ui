@@ -3,13 +3,13 @@
  * @param {String} earnedReward - Earned reward for an account
  * @returns - Formatted earned reward
  */
-function getFormattedEarnedReward (earnedReward) {
-  const earnedRewardNumber = Number(earnedReward)
+function getFormattedEarnedReward(earnedReward) {
+  const earnedRewardNumber = Number(earnedReward);
 
   if (earnedRewardNumber > 0 && earnedRewardNumber < 0.01) {
-    return '< 0.01'
+    return "< 0.01";
   } else {
-    return earnedRewardNumber.toFixed(2)
+    return earnedRewardNumber.toFixed(2);
   }
 }
 
@@ -18,8 +18,8 @@ function getFormattedEarnedReward (earnedReward) {
  * @param {String} earnedReward - Percentage of the reward
  * @returns - Formatted reward percentage
  */
-function getFormattedPercentage (percentage) {
-  return Number(percentage).toFixed(2)
+function getFormattedPercentage(percentage) {
+  return Number(percentage).toFixed(2);
 }
 
 /**
@@ -27,15 +27,11 @@ function getFormattedPercentage (percentage) {
  * @param {Object} reward - Reward information
  * @returns - Flag indicating if the reward has started or not
  */
-function hasRewardStarted (reward) {
-  const initRewardTime = reward.initTimestamp * 1000
-  const currentTime = Date.now()
+function hasRewardStarted(reward) {
+  const initRewardTime = reward.initTimestamp * 1000;
+  const currentTime = Date.now();
 
-  return initRewardTime <= currentTime
+  return initRewardTime <= currentTime;
 }
 
-export {
-  getFormattedEarnedReward,
-  getFormattedPercentage,
-  hasRewardStarted
-}
+export { getFormattedEarnedReward, getFormattedPercentage, hasRewardStarted };

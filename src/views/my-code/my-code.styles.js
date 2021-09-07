@@ -1,17 +1,17 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-import { MY_CODE } from '../../constants'
+import { MY_CODE } from "../../constants";
 
-const useMyCodeStyles = createUseStyles(theme => ({
+const useMyCodeStyles = createUseStyles((theme) => ({
   root: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   qrCode: {
-    marginTop: theme.spacing(7)
+    marginTop: theme.spacing(7),
   },
   address: {
     maxWidth: MY_CODE.QR_CODE_SIZE,
@@ -19,18 +19,18 @@ const useMyCodeStyles = createUseStyles(theme => ({
     fontWeight: theme.fontWeights.medium,
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(5.5),
-    wordBreak: 'break-word',
-    textAlign: 'center'
+    wordBreak: "break-word",
+    textAlign: "center",
   },
   qrScannerWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   qrScannerLabel: {
     fontWeight: theme.fontWeights.bold,
-    marginTop: theme.spacing(1)
-  }
-}))
+    marginTop: theme.spacing(1),
+  },
+}));
 
-export default useMyCodeStyles
+export default useMyCodeStyles;

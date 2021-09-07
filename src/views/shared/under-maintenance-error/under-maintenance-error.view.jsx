@@ -1,11 +1,11 @@
-import React from 'react'
+import React from "react";
 
-import useUnderMaintenanceErrorStyles from './under-maintenance-error.styles'
-import { ReactComponent as UnderMaintenanceIcon } from '../../../images/icons/under-maintenance.svg'
-import PublicLayout from '../public-layout/public-layout.view'
+import useUnderMaintenanceErrorStyles from "./under-maintenance-error.styles";
+import { ReactComponent as UnderMaintenanceIcon } from "../../../images/icons/under-maintenance.svg";
+import PublicLayout from "../public-layout/public-layout.view";
 
-function UnderMaintenanceError () {
-  const classes = useUnderMaintenanceErrorStyles()
+function UnderMaintenanceError() {
+  const classes = useUnderMaintenanceErrorStyles();
 
   return (
     <PublicLayout>
@@ -16,7 +16,7 @@ function UnderMaintenanceError () {
         </h1>
       </div>
     </PublicLayout>
-  )
+  );
 }
 
-export default UnderMaintenanceError
+export default UnderMaintenanceError;

@@ -1,16 +1,16 @@
-import React from 'react'
-import QuoteList from '../quote-list/quote-list.view'
-import useQuoteSelectorStyles from './quote-selector.styles'
+import React from "react";
+import QuoteList from "../quote-list/quote-list.view";
+import useQuoteSelectorStyles from "./quote-selector.styles";
 
-function QuoteSelector ({
+function QuoteSelector({
   quotes,
   toToken,
   bestQuote,
   selectedQuote,
   onQuoteSelect,
-  onOpenQuoteSidenav
+  onOpenQuoteSidenav,
 }) {
-  const classes = useQuoteSelectorStyles()
+  const classes = useQuoteSelectorStyles();
 
   return (
     <div className={classes.root}>
@@ -28,7 +28,7 @@ function QuoteSelector ({
         onShowMoreQuoteInfo={onOpenQuoteSidenav}
       />
     </div>
-  )
+  );
 }
 
-export default QuoteSelector
+export default QuoteSelector;

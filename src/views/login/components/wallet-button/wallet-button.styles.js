@@ -1,4 +1,4 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
 const metaMaskLogoWrapperStyles = (theme) => ({
   border: 0,
@@ -9,36 +9,36 @@ const metaMaskLogoWrapperStyles = (theme) => ({
   width: theme.spacing(12),
   height: theme.spacing(12),
   padding: theme.spacing(1.5),
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
-})
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+});
 
-const WalletButtonStyles = createUseStyles(theme => ({
+const WalletButtonStyles = createUseStyles((theme) => ({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   walletDivContainer: {
-    ...metaMaskLogoWrapperStyles(theme)
+    ...metaMaskLogoWrapperStyles(theme),
   },
   walletButtonContainer: {
     ...metaMaskLogoWrapperStyles(theme),
-    cursor: 'pointer',
-    '&:hover': {
-      boxShadow: 'none',
-      transform: 'scale(0.97)'
+    cursor: "pointer",
+    "&:hover": {
+      boxShadow: "none",
+      transform: "scale(0.97)",
     },
-    '&:focus': {
-      outline: 'none'
-    }
+    "&:focus": {
+      outline: "none",
+    },
   },
   walletName: {
     fontSize: theme.spacing(2.5),
     fontWeight: theme.fontWeights.bold,
-    marginTop: theme.spacing(2)
-  }
-}))
+    marginTop: theme.spacing(2),
+  },
+}));
 
-export default WalletButtonStyles
+export default WalletButtonStyles;

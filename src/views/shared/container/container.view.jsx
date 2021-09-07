@@ -1,16 +1,16 @@
-import React from 'react'
+import React from "react";
 
-import useContainerStyles from './container.styles'
-import PropTypes from 'prop-types'
+import useContainerStyles from "./container.styles";
+import PropTypes from "prop-types";
 
-function Container ({
+function Container({
   backgroundColor,
   addHeaderPadding,
   disableGutters,
   disableVerticalGutters,
   disableTopGutter,
   children,
-  fullHeight
+  fullHeight,
 }) {
   const classes = useContainerStyles({
     addHeaderPadding,
@@ -18,23 +18,21 @@ function Container ({
     disableVerticalGutters,
     disableTopGutter,
     backgroundColor,
-    fullHeight
-  })
+    fullHeight,
+  });
 
   return (
     <div className={classes.root}>
-      <div className={classes.wrapper}>
-        {children}
-      </div>
+      <div className={classes.wrapper}>{children}</div>
     </div>
-  )
+  );
 }
 
 Container.propTypes = {
   backgroundColor: PropTypes.string,
   disableVerticalGutters: PropTypes.bool,
   disableTopGutter: PropTypes.bool,
-  fullHeight: PropTypes.bool
-}
+  fullHeight: PropTypes.bool,
+};
 
-export default Container
+export default Container;

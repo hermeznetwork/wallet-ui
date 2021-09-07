@@ -1,21 +1,21 @@
-import { push } from 'connected-react-router'
-import React from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { BigNumber } from 'ethers'
+import { push } from "connected-react-router";
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { BigNumber } from "ethers";
 
-import useTokenSwapStyles from './token-swap.styles'
-import * as globalActions from '../../store/global/global.actions'
-import * as tokenSwapActions from '../../store/token-swap/token-swap.actions'
-import * as tokenSwapThunks from '../../store/token-swap/token-swap.thunks'
-import Container from '../shared/container/container.view'
-import { STEP_NAME } from '../../store/token-swap/token-swap.reducer'
-import QuoteSelector from './components/quote-selector/quote-selector.view'
-import SwapForm from './components/swap-form/swap-form.view'
-import QuoteSidenav from './components/quote-sidenav/quote-sidenav.view'
-import { AmountBoxPosition } from './components/amount-box/amount-box.view'
+import useTokenSwapStyles from "./token-swap.styles";
+import * as globalActions from "../../store/global/global.actions";
+import * as tokenSwapActions from "../../store/token-swap/token-swap.actions";
+import * as tokenSwapThunks from "../../store/token-swap/token-swap.thunks";
+import Container from "../shared/container/container.view";
+import { STEP_NAME } from "../../store/token-swap/token-swap.reducer";
+import QuoteSelector from "./components/quote-selector/quote-selector.view";
+import SwapForm from "./components/swap-form/swap-form.view";
+import QuoteSidenav from "./components/quote-sidenav/quote-sidenav.view";
+import { AmountBoxPosition } from "./components/amount-box/amount-box.view";
 
-function TokenSwap ({
+function TokenSwap({
   currentStep,
   quoteSidenav,
   preferredCurrency,
@@ -28,40 +28,40 @@ function TokenSwap ({
   onCleanup,
   onGoToQuotes,
   onOpenQuoteSidenav,
-  onCloseQuoteSidenav
+  onCloseQuoteSidenav,
 }) {
-  const classes = useTokenSwapStyles()
-  const [amountFrom, setAmountFrom] = React.useState(undefined)
-  const [amountTo, setAmountTo] = React.useState(undefined)
-  const [selectedTokens, setSelectedTokens] = React.useState({})
-  const [bestQuote, setBestQuote] = React.useState(undefined)
-  const [selectedQuote, setSelectedQuote] = React.useState(undefined)
+  const classes = useTokenSwapStyles();
+  const [amountFrom, setAmountFrom] = React.useState(undefined);
+  const [amountTo, setAmountTo] = React.useState(undefined);
+  const [selectedTokens, setSelectedTokens] = React.useState({});
+  const [bestQuote, setBestQuote] = React.useState(undefined);
+  const [selectedQuote, setSelectedQuote] = React.useState(undefined);
 
   React.useEffect(() => {
-    if (quotesTask.status === 'successful') {
+    if (quotesTask.status === "successful") {
       const newBestQuote = quotesTask.data.quotes.reduce((acc, curr) => {
         if (!acc) {
-          return curr
+          return curr;
         }
 
         return BigNumber.from(curr.amountToToken).gt(BigNumber.from(acc.amountToToken))
           ? curr
-          : acc
-      }, undefined)
+          : acc;
+      }, undefined);
 
-      setBestQuote(newBestQuote)
-      setSelectedQuote(newBestQuote)
+      setBestQuote(newBestQuote);
+      setSelectedQuote(newBestQuote);
     }
-  }, [quotesTask])
+  }, [quotesTask]);
 
   React.useEffect(() => {
-    onChangeHeader(currentStep)
-  }, [currentStep])
+    onChangeHeader(currentStep);
+  }, [currentStep]);
 
-  React.useEffect(() => onCleanup, [onCleanup])
+  React.useEffect(() => onCleanup, [onCleanup]);
 
-  function handleQuoteSelect (quote) {
-    setSelectedQuote(quote)
+  function handleQuoteSelect(quote) {
+    setSelectedQuote(quote);
   }
 
   return (
@@ -89,7 +89,7 @@ function TokenSwap ({
                   onGoToQuotes={onGoToQuotes}
                   onOpenQuoteSidenav={() => onOpenQuoteSidenav(selectedQuote)}
                 />
-              )
+              );
             }
             case STEP_NAME.QUOTES: {
               return (
@@ -101,43 +101,40 @@ function TokenSwap ({
                   onQuoteSelect={handleQuoteSelect}
                   onOpenQuoteSidenav={onOpenQuoteSidenav}
                 />
-              )
+              );
             }
           }
         })()}
       </Container>
-      {quoteSidenav.status === 'open' && (
-        <QuoteSidenav
-          onClose={onCloseQuoteSidenav}
-          quote={quoteSidenav.data}
-        />
+      {quoteSidenav.status === "open" && (
+        <QuoteSidenav onClose={onCloseQuoteSidenav} quote={quoteSidenav.data} />
       )}
     </div>
-  )
+  );
 }
 
-const getHeader = currentStep => {
+const getHeader = (currentStep) => {
   switch (currentStep) {
     case STEP_NAME.SWAP: {
       return {
-        type: 'page',
+        type: "page",
         data: {
-          title: 'Swap',
-          closeAction: push('/')
-        }
-      }
+          title: "Swap",
+          closeAction: push("/"),
+        },
+      };
     }
     case STEP_NAME.QUOTES: {
       return {
-        type: 'page',
+        type: "page",
         data: {
-          title: 'Quotes',
-          goBackAction: tokenSwapActions.goToSwap()
-        }
-      }
+          title: "Quotes",
+          goBackAction: tokenSwapActions.goToSwap(),
+        },
+      };
     }
   }
-}
+};
 
 TokenSwap.propTypes = {
   accountsTask: PropTypes.object,
@@ -152,28 +149,27 @@ TokenSwap.propTypes = {
   onOpenOfferInfo: PropTypes.func,
   onLoadAccounts: PropTypes.func,
   onLoadQuotes: PropTypes.func,
-  onLoadingQuotes: PropTypes.func
-}
+  onLoadingQuotes: PropTypes.func,
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   currentStep: state.tokenSwap.currentStep,
   accountsTask: state.tokenSwap.accountsTask,
   quotesTask: state.tokenSwap.quotesTask,
   quoteSidenav: state.tokenSwap.quoteSidenav,
   selectedLpId: state.tokenSwap.selectedLpId,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  preferredCurrency: state.myAccount.preferredCurrency
-})
+  preferredCurrency: state.myAccount.preferredCurrency,
+});
 
-const mapDispatchToProps = dispatch => ({
-  onChangeHeader: currentStep =>
-    dispatch(globalActions.changeHeader(getHeader(currentStep))),
+const mapDispatchToProps = (dispatch) => ({
+  onChangeHeader: (currentStep) => dispatch(globalActions.changeHeader(getHeader(currentStep))),
   onGoToQuotes: () => dispatch(tokenSwapActions.goToQuotes()),
   onCleanup: () => dispatch(tokenSwapActions.resetState()),
-  onLoadAccounts: fromItem => dispatch(tokenSwapThunks.fetchAccounts(fromItem)),
-  onLoadQuotes: request => dispatch(tokenSwapThunks.getQuotes(request)),
+  onLoadAccounts: (fromItem) => dispatch(tokenSwapThunks.fetchAccounts(fromItem)),
+  onLoadQuotes: (request) => dispatch(tokenSwapThunks.getQuotes(request)),
   onOpenQuoteSidenav: (quote) => dispatch(tokenSwapActions.openQuoteSidenav(quote)),
-  onCloseQuoteSidenav: () => dispatch(tokenSwapActions.closeQuoteSidenav())
-})
+  onCloseQuoteSidenav: () => dispatch(tokenSwapActions.closeQuoteSidenav()),
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(TokenSwap)
+export default connect(mapStateToProps, mapDispatchToProps)(TokenSwap);

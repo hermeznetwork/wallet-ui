@@ -1,9 +1,9 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
 const useFeesTableStyles = createUseStyles({
   feesTable: {
-    width: '100%'
-  }
-})
+    width: "100%",
+  },
+});
 
-export default useFeesTableStyles
+export default useFeesTableStyles;

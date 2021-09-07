@@ -1,63 +1,44 @@
-import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
+import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 
-import * as tokenSwapActions from './token-swap.actions'
-import * as tokenSwapApi from '../../apis/token-swap'
-import { getAccountBalance } from '../../utils/accounts'
-import {
-  getFixedTokenAmount,
-  getTokenAmountInPreferredCurrency
-} from '../../utils/currencies'
+import * as tokenSwapActions from "./token-swap.actions";
+import * as tokenSwapApi from "../../apis/token-swap";
+import { createAccount } from "../../utils/accounts";
 
 /**
  * Fetches the accounts for a Hermez address
  * @param {Number} fromItem - id of the first account to be returned from the API
  * @returns {void}
  */
-function fetchAccounts (fromItem) {
+function fetchAccounts(fromItem) {
   return (dispatch, getState) => {
     const {
       global: {
         wallet: { publicKeyBase64: hermezAddress },
-        fiatExchangeRatesTask: { data: fiatExchangeRates }
+        fiatExchangeRatesTask: { data: fiatExchangeRates },
+        tokensPriceTask,
       },
-      myAccount: { preferredCurrency }
-    } = getState()
+      myAccount: { preferredCurrency },
+    } = getState();
 
-    return CoordinatorAPI.getAccounts(
-      hermezAddress,
-      undefined,
-      fromItem,
-      undefined
-    )
-      .then(res => {
-        const accounts = res.accounts.map(account => {
-          const accountBalance = getAccountBalance(account)
-
-          const fixedTokenAmount = getFixedTokenAmount(
-            accountBalance,
-            account.token.decimals
+    return CoordinatorAPI.getAccounts(hermezAddress, undefined, fromItem, undefined)
+      .then((res) => {
+        const accounts = res.accounts.map((account) =>
+          createAccount(
+            account,
+            undefined,
+            undefined,
+            tokensPriceTask,
+            fiatExchangeRates,
+            preferredCurrency
           )
-
-          const fiatBalance = getTokenAmountInPreferredCurrency(
-            fixedTokenAmount,
-            account.token.USD,
-            preferredCurrency,
-            fiatExchangeRates
-          )
-
-          return {
-            ...account,
-            balance: accountBalance,
-            fiatBalance
-          }
-        })
-        return { ...res, accounts }
+        );
+        return { ...res, accounts };
       })
-      .then(res => dispatch(tokenSwapActions.loadAccountsSuccess(res)))
-      .catch(err => {
-        return dispatch(tokenSwapActions.loadAccountsFailure(err))
-      })
-  }
+      .then((res) => dispatch(tokenSwapActions.loadAccountsSuccess(res)))
+      .catch((err) => {
+        return dispatch(tokenSwapActions.loadAccountsFailure(err));
+      });
+  };
 }
 
 /**
@@ -70,24 +51,25 @@ function fetchAccounts (fromItem) {
  * @param {String} [data.amountToToken] - amount that user wants to receive
  * @returns {void}
  */
-function getQuotes (data) {
+function getQuotes(data) {
   return (dispatch, getState) => {
-    dispatch(tokenSwapActions.getQuotes())
-    tokenSwapApi.getQuotes(data)
-      .then(res => {
-        const { referenceId } = res
-        const now = Date.now()
-        const quotes = res.quotes.map(quote => ({
+    dispatch(tokenSwapActions.getQuotes());
+    tokenSwapApi
+      .getQuotes(data)
+      .then((res) => {
+        const { referenceId } = res;
+        const now = Date.now();
+        const quotes = res.quotes.map((quote) => ({
           ...quote,
           rate: quote.amountToToken / quote.amountFromToken,
-          validUntil: new Date(now + quote.ttlMs)
-        }))
-        dispatch(tokenSwapActions.getQuotesSuccess({ referenceId, quotes }))
+          validUntil: new Date(now + quote.ttlMs),
+        }));
+        dispatch(tokenSwapActions.getQuotesSuccess({ referenceId, quotes }));
       })
-      .catch(e => {
-        dispatch(tokenSwapActions.getQuoteFailure(e))
-      })
-  }
+      .catch((e) => {
+        dispatch(tokenSwapActions.getQuoteFailure(e));
+      });
+  };
 }
 
-export { fetchAccounts, getQuotes }
+export { fetchAccounts, getQuotes };

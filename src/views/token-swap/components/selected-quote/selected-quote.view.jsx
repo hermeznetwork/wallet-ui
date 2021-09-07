@@ -1,16 +1,16 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from "react";
+import PropTypes from "prop-types";
 
-import useSelectedQuoteStyles from './selected-quote.style'
-import Spinner from '../../../shared/spinner/spinner.view'
+import useSelectedQuoteStyles from "./selected-quote.style";
+import Spinner from "../../../shared/spinner/spinner.view";
 import {
   getTokenAmountInPreferredCurrency,
-  getFixedTokenAmount
-  , CurrencySymbol
-} from '../../../../utils/currencies'
-import { MAX_TOKEN_DECIMALS } from '../../../../constants'
+  getFixedTokenAmount,
+  CurrencySymbol,
+} from "../../../../utils/currencies";
+import { MAX_TOKEN_DECIMALS } from "../../../../constants";
 
-function SelectedQuote ({
+function SelectedQuote({
   selectedTokens,
   selectedQuote,
   isLoading,
@@ -18,45 +18,44 @@ function SelectedQuote ({
   fiatExchangeRates,
   preferredCurrency,
   onGoToQuotes,
-  onOpenQuoteSidenav
+  onOpenQuoteSidenav,
 }) {
-  const classes = useSelectedQuoteStyles()
+  const classes = useSelectedQuoteStyles();
 
-  function getRewardAmountInTokens () {
+  function getRewardAmountInTokens() {
     return getFixedTokenAmount(
       selectedQuote.lpInfo.rewards[0].amount,
       selectedTokens.to.token.decimals
-    )
+    );
   }
 
-  function getRewardAmountInFiat () {
+  function getRewardAmountInFiat() {
     return getTokenAmountInPreferredCurrency(
       getRewardAmountInTokens(),
       selectedTokens.from.token.USD,
       preferredCurrency,
       fiatExchangeRates
-    ).toFixed(2)
+    ).toFixed(2);
   }
 
-  function isBestQuote () {
-    return selectedQuote.lpId === bestQuote.lpId
+  function isBestQuote() {
+    return selectedQuote.lpId === bestQuote.lpId;
   }
 
   return (
     <div className={classes.root}>
-      {isLoading
-        ? (
-          <div className={classes.loading}>
-            <p className={classes.loadingText}>Searching for the best offers</p>
-            <Spinner />
-          </div>
-          )
-        : selectedQuote && (
+      {isLoading ? (
+        <div className={classes.loading}>
+          <p className={classes.loadingText}>Searching for the best offers</p>
+          <Spinner />
+        </div>
+      ) : (
+        selectedQuote && (
           <div className={classes.offerBox}>
             <div className={classes.row}>
               <div className={classes.quote}>
                 <p className={classes.quoteText}>
-                  {isBestQuote() ? 'Best quote' : 'Quote'} from {selectedQuote.lpInfo.name}
+                  {isBestQuote() ? "Best quote" : "Quote"} from {selectedQuote.lpInfo.name}
                 </p>
                 <p className={classes.quoteRate}>
                   1 {selectedTokens.from?.token.symbol}
@@ -64,17 +63,24 @@ function SelectedQuote ({
                   {selectedQuote.rate.toFixed(MAX_TOKEN_DECIMALS)} {selectedTokens.to.token.symbol}
                 </p>
               </div>
-              <button className={classes.quotes} onClick={onGoToQuotes}>All quotes</button>
+              <button className={classes.quotes} onClick={onGoToQuotes}>
+                All quotes
+              </button>
             </div>
             <p className={classes.reward}>
-              This swap is rewarded with {getRewardAmountInTokens()} {selectedQuote.lpInfo.rewards[0].token}&nbsp;
-              ({CurrencySymbol[preferredCurrency].symbol}{getRewardAmountInFiat()})
-              <button className={classes.moreInfo} onClick={onOpenQuoteSidenav}>More info</button>
+              This swap is rewarded with {getRewardAmountInTokens()}{" "}
+              {selectedQuote.lpInfo.rewards[0].token}&nbsp; (
+              {CurrencySymbol[preferredCurrency].symbol}
+              {getRewardAmountInFiat()})
+              <button className={classes.moreInfo} onClick={onOpenQuoteSidenav}>
+                More info
+              </button>
             </p>
           </div>
-        )}
+        )
+      )}
     </div>
-  )
+  );
 }
 
 SelectedQuote.propTypes = {
@@ -85,7 +91,7 @@ SelectedQuote.propTypes = {
   selectedLpId: PropTypes.string,
   isLoading: PropTypes.bool,
   onGoToQuotes: PropTypes.func,
-  onOpenQuoteSidenav: PropTypes.func
-}
+  onOpenQuoteSidenav: PropTypes.func,
+};
 
-export default SelectedQuote
+export default SelectedQuote;

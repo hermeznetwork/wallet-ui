@@ -1,11 +1,11 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-const useTransactionInfoTableRowStyles = createUseStyles(theme => ({
+const useTransactionInfoTableRowStyles = createUseStyles((theme) => ({
   root: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column'
-  }
-}))
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+  },
+}));
 
-export default useTransactionInfoTableRowStyles
+export default useTransactionInfoTableRowStyles;

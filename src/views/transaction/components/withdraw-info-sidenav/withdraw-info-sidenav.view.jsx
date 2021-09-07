@@ -1,24 +1,23 @@
-import React from 'react'
+import React from "react";
 
-import useWithdrawInfoSidenavStyles from './withdraw-info-sidenav.styles'
-import Sidenav from '../../../shared/sidenav/sidenav.view'
+import useWithdrawInfoSidenavStyles from "./withdraw-info-sidenav.styles";
+import Sidenav from "../../../shared/sidenav/sidenav.view";
 
-function WithdrawInfoSidenav ({ onClose }) {
-  const classes = useWithdrawInfoSidenavStyles()
+function WithdrawInfoSidenav({ onClose }) {
+  const classes = useWithdrawInfoSidenavStyles();
 
   return (
     <Sidenav onClose={onClose}>
       <div className={classes.root}>
         <p className={classes.title}>
-          Withdrawal of funds requires completing 2 steps. Once you have initiated withdrawal it can’t be canceled.
+          Withdrawal of funds requires completing 2 steps. Once you have initiated withdrawal it
+          can’t be canceled.
         </p>
         <div className={classes.stepCard}>
           <div className={classes.step}>
             <p className={classes.stepName}>Step 1</p>
           </div>
-          <p className={classes.stepDescription}>
-            You will pay for a fixed amount of Hermez fees.
-          </p>
+          <p className={classes.stepDescription}>You will pay for a fixed amount of Hermez fees.</p>
         </div>
         <div className={classes.stepCard}>
           <div className={classes.step}>
@@ -30,7 +29,7 @@ function WithdrawInfoSidenav ({ onClose }) {
         </div>
       </div>
     </Sidenav>
-  )
+  );
 }
 
-export default WithdrawInfoSidenav
+export default WithdrawInfoSidenav;

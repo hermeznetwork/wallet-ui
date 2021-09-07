@@ -1,11 +1,11 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from "react";
+import PropTypes from "prop-types";
 
-import useTransactionInfoTableRowStyles from './transaction-info-table.styles'
-import TransactionInfoRow from '../transaction-info-table-row/transaction-info-row.view'
-import FeesTable from '../../transaction/components/fees-table/fees-table.view'
+import useTransactionInfoTableRowStyles from "./transaction-info-table.styles";
+import TransactionInfoRow from "../transaction-info-table-row/transaction-info-row.view";
+import FeesTable from "../../transaction/components/fees-table/fees-table.view";
 
-function TransactionInfoTableRow ({
+function TransactionInfoTableRow({
   status,
   from,
   to,
@@ -17,16 +17,34 @@ function TransactionInfoTableRow ({
   showToCopyButton,
   showFromCopyButton,
   onCopyToAddress,
-  onCopyFromAddress
+  onCopyFromAddress,
 }) {
-  const classes = useTransactionInfoTableRowStyles()
+  const classes = useTransactionInfoTableRowStyles();
 
   return (
     <div className={classes.root}>
-      {status && <TransactionInfoRow title='Status' subtitle={status.subtitle} value={status.value} />}
-      {from && <TransactionInfoRow title='From' subtitle={from.subtitle} value={from.value} showCopyButton={showFromCopyButton} onCopySubtitle={onCopyFromAddress} />}
-      {to && <TransactionInfoRow title='To' subtitle={to.subtitle} value={to.value} showCopyButton={showToCopyButton} onCopySubtitle={onCopyToAddress} />}
-      {date && <TransactionInfoRow title='Date' subtitle={date.subtitle} value={date.value} />}
+      {status && (
+        <TransactionInfoRow title="Status" subtitle={status.subtitle} value={status.value} />
+      )}
+      {from && (
+        <TransactionInfoRow
+          title="From"
+          subtitle={from.subtitle}
+          value={from.value}
+          showCopyButton={showFromCopyButton}
+          onCopySubtitle={onCopyFromAddress}
+        />
+      )}
+      {to && (
+        <TransactionInfoRow
+          title="To"
+          subtitle={to.subtitle}
+          value={to.value}
+          showCopyButton={showToCopyButton}
+          onCopySubtitle={onCopyToAddress}
+        />
+      )}
+      {date && <TransactionInfoRow title="Date" subtitle={date.subtitle} value={date.value} />}
       {fee && (
         <FeesTable
           l2Fee={fee.value}
@@ -37,7 +55,7 @@ function TransactionInfoTableRow ({
         />
       )}
     </div>
-  )
+  );
 }
 
 TransactionInfoTableRow.propTypes = {
@@ -45,7 +63,7 @@ TransactionInfoTableRow.propTypes = {
   from: PropTypes.object,
   to: PropTypes.object,
   date: PropTypes.object,
-  fee: PropTypes.object
-}
+  fee: PropTypes.object,
+};
 
-export default TransactionInfoTableRow
+export default TransactionInfoTableRow;

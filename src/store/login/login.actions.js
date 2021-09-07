@@ -1,97 +1,97 @@
 export const loginActionTypes = {
-  GO_TO_WALLET_SELECTOR_STEP: '[LOGIN] GO TO WALLET SELECTOR STEP',
-  GO_TO_ACCOUNT_SELECTOR_STEP: '[LOGIN] GO TO ACCOUNT SELECTOR STEP',
-  GO_TO_WALLET_LOADER_STEP: '[LOGIN] GO TO WALLET LOADER STEP',
-  GO_TO_CREATE_ACCOUNT_AUTH_STEP: '[LOGIN] GO TO CREATE ACCOUNT AUTH STEP',
-  GO_TO_PREVIOUS_STEP: '[LOGIN] GO TO PREVIOUS STEP',
-  LOAD_WALLET: '[LOGIN] LOAD WALLET',
-  LOAD_WALLET_FAILURE: '[LOGIN] LOAD WALLET FAILURE',
-  ADD_ACCOUNT_AUTH: '[LOGIN] ADD ACCOUNT AUTH',
-  ADD_ACCOUNT_AUTH_SUCCESS: '[LOGIN] ADD ACCOUNT AUTH SUCCESS',
-  ADD_ACCOUNT_AUTH_FAILURE: '[LOGIN] ADD ACCOUNT AUTH FAILURE',
-  SET_ACCOUNT_AUTH_SIGNATURE: '[LOGIN] SET ACCOUNT AUTH SIGNATURE',
-  RESET_STATE: '[LOGIN] RESET STATE'
-}
+  GO_TO_WALLET_SELECTOR_STEP: "[LOGIN] GO TO WALLET SELECTOR STEP",
+  GO_TO_ACCOUNT_SELECTOR_STEP: "[LOGIN] GO TO ACCOUNT SELECTOR STEP",
+  GO_TO_WALLET_LOADER_STEP: "[LOGIN] GO TO WALLET LOADER STEP",
+  GO_TO_CREATE_ACCOUNT_AUTH_STEP: "[LOGIN] GO TO CREATE ACCOUNT AUTH STEP",
+  GO_TO_PREVIOUS_STEP: "[LOGIN] GO TO PREVIOUS STEP",
+  LOAD_WALLET: "[LOGIN] LOAD WALLET",
+  LOAD_WALLET_FAILURE: "[LOGIN] LOAD WALLET FAILURE",
+  ADD_ACCOUNT_AUTH: "[LOGIN] ADD ACCOUNT AUTH",
+  ADD_ACCOUNT_AUTH_SUCCESS: "[LOGIN] ADD ACCOUNT AUTH SUCCESS",
+  ADD_ACCOUNT_AUTH_FAILURE: "[LOGIN] ADD ACCOUNT AUTH FAILURE",
+  SET_ACCOUNT_AUTH_SIGNATURE: "[LOGIN] SET ACCOUNT AUTH SIGNATURE",
+  RESET_STATE: "[LOGIN] RESET STATE",
+};
 
-function goToWalletSelectorStep () {
+function goToWalletSelectorStep() {
   return {
-    type: loginActionTypes.GO_TO_WALLET_SELECTOR_STEP
-  }
+    type: loginActionTypes.GO_TO_WALLET_SELECTOR_STEP,
+  };
 }
 
-function goToAccountSelectorStep (walletName) {
+function goToAccountSelectorStep(walletName) {
   return {
     type: loginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP,
-    walletName
-  }
+    walletName,
+  };
 }
 
-function goToWalletLoaderStep (walletName, accountData) {
+function goToWalletLoaderStep(walletName, accountData) {
   return {
     type: loginActionTypes.GO_TO_WALLET_LOADER_STEP,
     walletName,
-    accountData
-  }
+    accountData,
+  };
 }
 
-function goToCreateAccountAuthStep (wallet) {
+function goToCreateAccountAuthStep(wallet) {
   return {
     type: loginActionTypes.GO_TO_CREATE_ACCOUNT_AUTH_STEP,
-    wallet
-  }
+    wallet,
+  };
 }
 
-function goToPreviousStep () {
+function goToPreviousStep() {
   return {
-    type: loginActionTypes.GO_TO_PREVIOUS_STEP
-  }
+    type: loginActionTypes.GO_TO_PREVIOUS_STEP,
+  };
 }
 
-function loadWallet () {
+function loadWallet() {
   return {
-    type: loginActionTypes.LOAD_WALLET
-  }
+    type: loginActionTypes.LOAD_WALLET,
+  };
 }
 
-function loadWalletFailure (error) {
+function loadWalletFailure(error) {
   return {
     type: loginActionTypes.LOAD_WALLET_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function addAccountAuth () {
+function addAccountAuth() {
   return {
-    type: loginActionTypes.ADD_ACCOUNT_AUTH
-  }
+    type: loginActionTypes.ADD_ACCOUNT_AUTH,
+  };
 }
 
-function addAccountAuthSuccess () {
+function addAccountAuthSuccess() {
   return {
-    type: loginActionTypes.ADD_ACCOUNT_AUTH_SUCCESS
-  }
+    type: loginActionTypes.ADD_ACCOUNT_AUTH_SUCCESS,
+  };
 }
 
-function addAccountAuthFailure (error) {
+function addAccountAuthFailure(error) {
   return {
     type: loginActionTypes.ADD_ACCOUNT_AUTH_FAILURE,
-    error
-  }
+    error,
+  };
 }
 
-function setAccountAuthSignature (chainId, hermezEthereumAddress, signature) {
+function setAccountAuthSignature(chainId, hermezEthereumAddress, signature) {
   return {
     type: loginActionTypes.SET_ACCOUNT_AUTH_SIGNATURE,
     chainId,
     hermezEthereumAddress,
-    signature
-  }
+    signature,
+  };
 }
 
-function resetState () {
+function resetState() {
   return {
-    type: loginActionTypes.RESET_STATE
-  }
+    type: loginActionTypes.RESET_STATE,
+  };
 }
 
 export {
@@ -106,5 +106,5 @@ export {
   addAccountAuthSuccess,
   addAccountAuthFailure,
   setAccountAuthSignature,
-  resetState
-}
+  resetState,
+};

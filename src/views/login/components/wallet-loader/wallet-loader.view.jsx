@@ -1,48 +1,42 @@
-import React from 'react'
-import WalletButton from '../wallet-button/wallet-button.view'
+import React from "react";
+import WalletButton from "../wallet-button/wallet-button.view";
 
-import useWalletLoaderStyles from './wallet-loader.styles'
+import useWalletLoaderStyles from "./wallet-loader.styles";
 
-function WalletLoader ({
+function WalletLoader({
   walletName,
   accountData,
   walletTask,
   onLoadWallet,
   onLoadWalletSuccess,
-  onLoadWalletFailure
+  onLoadWalletFailure,
 }) {
-  const classes = useWalletLoaderStyles()
+  const classes = useWalletLoaderStyles();
 
   React.useEffect(() => {
-    if (walletTask.status === 'pending') {
-      onLoadWallet(walletName, accountData)
+    if (walletTask.status === "pending") {
+      onLoadWallet(walletName, accountData);
     }
-  }, [walletName, accountData, walletTask, onLoadWallet])
+  }, [walletName, accountData, walletTask, onLoadWallet]);
 
   React.useEffect(() => {
-    if (walletTask.status === 'successful') {
-      onLoadWalletSuccess()
+    if (walletTask.status === "successful") {
+      onLoadWalletSuccess();
     }
-  }, [walletTask, onLoadWalletSuccess])
+  }, [walletTask, onLoadWalletSuccess]);
 
   React.useEffect(() => {
-    if (walletTask.status === 'failed') {
-      onLoadWalletFailure(walletTask.error)
+    if (walletTask.status === "failed") {
+      onLoadWalletFailure(walletTask.error);
     }
-  }, [walletTask, onLoadWalletFailure])
+  }, [walletTask, onLoadWalletFailure]);
 
   return (
     <div>
-      <WalletButton
-        walletName={walletName}
-        hideName
-        isClickable={false}
-      />
-      <p className={classes.followInstructionsText}>
-        Sign to confirm in your connected wallet.
-      </p>
+      <WalletButton walletName={walletName} hideName isClickable={false} />
+      <p className={classes.followInstructionsText}>Sign to confirm in your connected wallet.</p>
     </div>
-  )
+  );
 }
 
-export default WalletLoader
+export default WalletLoader;

@@ -1,22 +1,22 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-const useAccountDetailsStyles = createUseStyles(theme => ({
+const useAccountDetailsStyles = createUseStyles((theme) => ({
   root: {
-    width: '100%'
+    width: "100%",
   },
   section: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   fiatBalance: {
-    marginBottom: theme.spacing(3)
+    marginBottom: theme.spacing(3),
   },
   tokenBalance: {
     marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1)
-  }
-}))
+    marginBottom: theme.spacing(1),
+  },
+}));
 
-export default useAccountDetailsStyles
+export default useAccountDetailsStyles;

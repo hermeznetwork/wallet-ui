@@ -1,9 +1,9 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-const useTransactionLabelStyles = createUseStyles(theme => ({
+const useTransactionLabelStyles = createUseStyles((theme) => ({
   root: {
-    fontWeight: theme.fontWeights.bold
-  }
-}))
+    fontWeight: theme.fontWeights.bold,
+  },
+}));
 
-export default useTransactionLabelStyles
+export default useTransactionLabelStyles;
