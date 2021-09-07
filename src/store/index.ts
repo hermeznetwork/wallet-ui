@@ -4,7 +4,7 @@ import { connectRouter, routerMiddleware } from 'connected-react-router'
 import thunk from 'redux-thunk'
 
 import globalReducer, { GlobalState } from './global/global.reducer'
-import homeReducer from './home/home.reducer'
+import homeReducer, { HomeState } from './home/home.reducer'
 import myAccountReducer from './my-account/my-account.reducer'
 import accountDetailsReducer, { AccountDetailsState } from './account-details/account-details.reducer'
 import transactionDetailsReducer from './transaction-details/transaction-details.reducer'
@@ -16,6 +16,7 @@ import { History } from 'history'
 export interface RootState {
   accountDetails: AccountDetailsState;
   global: GlobalState;
+  home: HomeState;
 }
 
 /**

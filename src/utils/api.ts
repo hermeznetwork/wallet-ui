@@ -18,14 +18,14 @@ export interface Pagination {
 function getPaginationData(
   pendingItems: number,
   items: HermezApiResourceItem[],
-  order = PaginationOrder.ASC
+  order: PaginationOrder = "ASC"
 ): Pagination {
   if (pendingItems === 0) {
     return { hasMoreItems: false };
   }
 
   const fromItem: number =
-    order === PaginationOrder.ASC
+    order === "ASC"
       ? items[items.length - 1].itemId + 1
       : items[items.length - 1].itemId - 1;
 

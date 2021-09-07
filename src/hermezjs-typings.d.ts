@@ -167,12 +167,13 @@ declare module "@hermeznetwork/*" {
     hash: string;
     // fromHezEthereumAddress: string;
     // toHezEthereumAddress: string;
-    // token: Token;
-    // amount: string;
+    token: Token;
+    amount: string;
     timestamp: ISOStringDate;
     // ToDo: This states are yet to be validated
     // state: "fged" | "fing" | "pend" | "invl";
-    // type: "Deposit";
+    // ToDo: There are more deposit types??
+    type: "Deposit" | "CreateAccountDeposit";
     // transactionId is added by the frontend to track
     // the pending deposits stored in local storage
     transactionId?: string;
@@ -183,12 +184,12 @@ declare module "@hermeznetwork/*" {
 
   export type Account = HermezApiResourceItem & {
     accountIndex: string;
-    // balance: string;
+    balance: string;
     bjj: string;
-    // fiatBalance: number;
+    fiatBalance: number;
     // hezEthereumAddress: string;
     // nonce: number;
-    // token: Token;
+    token: Token;
   };
 
   export type L2Transaction = HermezApiResourceItem & {
@@ -485,7 +486,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-pool" {
     tokenId?: number,
     accountIndex?: string,
     fromItem?: number,
-    order?: PaginationOrder.ASC | PaginationOrder.DESC,
+    order?: PaginationOrder,
     limit?: number,
     axiosConfig?: Record<string, unknown>
   ): Promise<L2Transaction[]> {};
@@ -498,6 +499,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-pool" {
 declare module "@hermeznetwork/hermezjs/src/api" {
   import {
     Account,
+    Accounts,
     L2Transaction,
     Exits,
     Transactions,
@@ -505,15 +507,20 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     Token,
   } from "@hermeznetwork/hermezjs";
 
-  enum PaginationOrder {
-    ASC = "ASC",
-    DESC = "DESC",
-  }
+  export type PaginationOrder = "ASC" | "DESC";
 
   // declare function _getPageData() {};
   // declare function setBaseApiUrl() {};
   // declare function getBaseApiUrl() {};
-  // declare function getAccounts() {};
+
+  declare function getAccounts(
+    address: string,
+    tokenIds?: number[],
+    fromItem?: number,
+    order?: PaginationOrder,
+    limit?: number,
+    axiosConfig?: Record<string, unknown>
+  ): Promise<Accounts> {};
 
   declare function getAccount(accountIndex: string): Promise<Account> {};
 
@@ -523,7 +530,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     batchNum?: number,
     accountIndex: string,
     fromItem?: number,
-    order?: PaginationOrder.ASC | PaginationOrder.DESC,
+    order?: PaginationOrder,
     limit?: number,
     axiosConfig?: Record<string, unknown>
   ): Promise<Transactions> {};
@@ -546,7 +553,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   declare function getExits(
     address: string,
     onlyPendingWithdraws: boolean,
-    tokenId: number,
+    tokenId?: number,
     fromItem?: number
   ): Promise<Exits> {};
 

@@ -128,7 +128,7 @@ function fetchHistoryTransactions (accountIndex: Account["accountIndex"], fromIt
       undefined,
       accountIndex,
       fromItem,
-      CoordinatorAPI.PaginationOrder.DESC
+      "DESC"
     )
       .then((historyTransactions: Transactions) => {
         const filteredTransactions = filterExitsFromHistoryTransactions(
@@ -166,7 +166,7 @@ function refreshHistoryTransactions (accountIndex: Account["accountIndex"], hist
         undefined,
         accountIndex,
         undefined,
-        CoordinatorAPI.PaginationOrder.DESC,
+        "DESC",
         undefined,
         axiosConfig
       )
@@ -179,7 +179,7 @@ function refreshHistoryTransactions (accountIndex: Account["accountIndex"], hist
             undefined,
             accountIndex,
             fromItem,
-            CoordinatorAPI.PaginationOrder.DESC,
+            "DESC",
             undefined,
             axiosConfig
           )

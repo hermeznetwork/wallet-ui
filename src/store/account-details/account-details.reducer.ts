@@ -153,7 +153,7 @@ function accountDetailsReducer(
       const pagination = getPaginationData(
         action.data.pendingItems,
         transactions,
-        PaginationOrder.DESC
+        "DESC"
       );
       const fromItemHistory =
         state.historyTransactionsTask.status === "reloading"
@@ -196,7 +196,7 @@ function accountDetailsReducer(
       const pagination = getPaginationData(
         action.historyTransactions.pendingItems,
         action.historyTransactions.transactions,
-        PaginationOrder.DESC
+        "DESC"
       );
       return {
         ...state,

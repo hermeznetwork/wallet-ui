@@ -127,7 +127,7 @@ function homeReducer(state = initialHomeState, action: HomeAction) {
       const pagination = getPaginationData(
         action.accounts.pendingItems,
         action.accounts.accounts,
-        PaginationOrder.DESC
+        "DESC"
       );
 
       return {
