@@ -136,7 +136,7 @@ function fetchWallet (walletName, accountData) {
       const signature = await signMessageHelper(walletName, providerOrSigner, hermez.Constants.METAMASK_MESSAGE, address)
       const hashedSignature = keccak256(signature)
       const signatureBuffer = hermez.Utils.hexToBuffer(hashedSignature)
-      const wallet = new hermez.Wallet.Wallet(signatureBuffer, hermezAddress)
+      const wallet = new hermez.HermezWallet.HermezWallet(signatureBuffer, hermezAddress)
       const { login: { currentStep } } = getState()
 
       if (currentStep === STEP_NAME.WALLET_LOADER) {
