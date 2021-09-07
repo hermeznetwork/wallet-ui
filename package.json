@@ -6,10 +6,7 @@
     "start:dev": "react-scripts start",
     "start:prod": "serve -s -C -p 80 build",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "standard",
-    "lint:fix": "standard --fix"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@hermeznetwork/hermezjs": "1.2.1",
@@ -46,23 +43,10 @@
     "workbox-strategies": "^6.2.4"
   },
   "devDependencies": {
-    "husky": "^4.2.5",
-    "lint-staged": "^10.2.11",
-    "standard": "^16.0.3"
+    "prettier": "^2.3.2"
   },
   "engines": {
     "node": ">=14"
-  },
-  "standard": {
-    "parser": "babel-eslint",
-    "env": [
-      "browser",
-      "jest"
-    ],
-    "ignore": [
-      "/build/",
-      "/public/"
-    ]
   },
   "browserslist": {
     "production": [
@@ -85,13 +69,5 @@
       "not ios_saf <14",
       "not chrome 49"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{jsx,js}": "standard --fix"
   }
 }
