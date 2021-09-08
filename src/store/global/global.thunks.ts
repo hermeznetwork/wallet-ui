@@ -9,6 +9,7 @@ import hermezjs, {
 import { push } from "connected-react-router";
 import { ethers } from "ethers";
 import { Block, TransactionReceipt } from "@ethersproject/providers";
+import Connector from "@walletconnect/web3-provider";
 
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
@@ -829,15 +830,12 @@ function fetchCoordinatorState() {
  */
 function disconnectWallet() {
   return (dispatch: AppDispatch) => {
-    // const provider = Providers.getProvider();
+    const provider = Providers.getProvider();
 
-    // ToDo: This does not seem to exist in the ethers.providers.Web3Provider
-    //       Is the type wrong or the implementation outdated?
-
-    // if (provider.provider?.connector) {
-    //   // Kills the stored Web Connect session to show QR with next login
-    //   provider.provider.connector.killSession();
-    // }
+    if (provider.provider instanceof Connector) {
+      // Kills the stored Web Connect session to show QR with next login
+      provider.provider.connector.killSession();
+    }
 
     dispatch(globalActions.unloadWallet());
     dispatch(push("/login"));
