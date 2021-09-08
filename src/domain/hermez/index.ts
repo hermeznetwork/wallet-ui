@@ -3,7 +3,7 @@
  * We may decide not to export them from the domain and let other layers import them from the lib.
  */
 
-import { Deposit as HermezJSDeposit } from "@hermeznetwork/hermezjs";
+import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
   Account,
@@ -26,6 +26,4 @@ export type {
   Withdraw,
 } from "@hermeznetwork/hermezjs";
 
-export type Deposit = HermezJSDeposit & {
-  transactionId?: string;
-};
+export type Deposit = hermezjs.Deposit & { transactionId?: string };
