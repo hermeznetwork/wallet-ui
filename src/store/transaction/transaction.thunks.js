@@ -4,7 +4,7 @@ import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { ETHER_TOKEN_ID } from "@hermeznetwork/hermezjs/src/constants";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
-import * as ethers from "ethers";
+import { ethers, BigNumber } from "ethers";
 
 import * as transactionActions from "./transaction.actions";
 import * as globalThunks from "../global/global.thunks";
@@ -185,7 +185,7 @@ function fetchAccounts(
                 const tokenBalance = token.balance.toString();
                 const tokenPrice =
                   tokensPriceTask.status === "successful"
-                    ? { ...tokensPriceTask.data.tokens[token.token.id] }
+                    ? { ...tokensPriceTask.data[token.token.id] }
                     : { ...token.token };
 
                 const fiatBalance = convertTokenAmountToFiat(
@@ -284,13 +284,13 @@ function fetchEstimatedWithdrawFee(token, amount) {
         overrides,
         signer
       );
-      const feeBigInt = BigInt(gasLimit) * BigInt(gasPrice);
-      const tokenUSD = tokensPriceTask.data?.tokens[ETHER_TOKEN_ID].USD;
-      const feeUSD = Number(ethers.utils.formatEther(feeBigInt)) * tokenUSD;
+      const feeBigNumber = BigNumber.from(gasLimit).mul(gasPrice);
+      const tokenUSD = tokensPriceTask.data?.[ETHER_TOKEN_ID].USD;
+      const feeUSD = Number(ethers.utils.formatEther(feeBigNumber)) * tokenUSD;
 
       dispatch(
         transactionActions.loadEstimatedWithdrawFeeSuccess({
-          amount: feeBigInt.toString(),
+          amount: feeBigNumber.toString(),
           USD: feeUSD,
         })
       );

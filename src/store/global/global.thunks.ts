@@ -377,8 +377,8 @@ function checkPendingDelayedWithdrawals() {
         dispatch(globalActions.checkPendingDelayedWithdrawals());
         const { hermezEthereumAddress } = wallet;
         const provider = Providers.getProvider();
-        const accountEthBalance = BigInt(
-          await provider.getBalance(Addresses.getEthereumAddress(hermezEthereumAddress))
+        const accountEthBalance = await provider.getBalance(
+          Addresses.getEthereumAddress(hermezEthereumAddress)
         );
         const accountPendingDelayedWithdraws: Withdraw[] = storage.getItemsByHermezAddress(
           pendingDelayedWithdraws,
@@ -475,15 +475,15 @@ function checkPendingWithdrawals() {
         dispatch(globalActions.checkPendingWithdrawals());
 
         const provider = Providers.getProvider();
-        const accountEthBalance = BigInt(
-          await provider.getBalance(Addresses.getEthereumAddress(hermezEthereumAddress))
+        const accountEthBalance = await provider.getBalance(
+          Addresses.getEthereumAddress(hermezEthereumAddress)
         );
+
         const accountPendingWithdraws: Withdraw[] = storage.getItemsByHermezAddress(
           pendingWithdraws,
           chainId,
           hermezEthereumAddress
         );
-
         // Gets the actual transaction and checks if it doesn't exist or is expected to fail
         const pendingWithdrawsTxs: Promise<EthereumTransaction>[] = accountPendingWithdraws.map(
           (pendingWithdraw) => {
@@ -673,8 +673,8 @@ function checkPendingDeposits() {
         dispatch(globalActions.checkPendingDeposits());
 
         const provider = Providers.getProvider();
-        const accountEthBalance = BigInt(
-          await provider.getBalance(Addresses.getEthereumAddress(hermezEthereumAddress))
+        const accountEthBalance = await provider.getBalance(
+          Addresses.getEthereumAddress(hermezEthereumAddress)
         );
         const accountPendingDeposits: Deposit[] = storage.getItemsByHermezAddress(
           pendingDeposits,

@@ -1,4 +1,5 @@
 import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
+import { BigNumber } from "ethers";
 
 import { convertTokenAmountToFiat } from "./currencies";
 
@@ -8,15 +9,14 @@ function getAccountBalance(account, poolTransactions, pendingDeposits) {
     return undefined;
   }
 
-  let totalBalance = BigInt(account.balance);
+  let totalBalance = BigNumber.from(account.balance);
 
   if (pendingDeposits && pendingDeposits.length) {
     const pendingAccountDeposits = pendingDeposits.filter(
       (deposit) => deposit.account.accountIndex === account.accountIndex
     );
-
     pendingAccountDeposits.forEach((pendingDeposit) => {
-      totalBalance += BigInt(pendingDeposit.amount);
+      totalBalance = totalBalance.add(BigNumber.from(pendingDeposit.amount));
     });
   }
 
@@ -26,8 +26,10 @@ function getAccountBalance(account, poolTransactions, pendingDeposits) {
     );
 
     accountPoolTransactions.forEach((pendingTransaction) => {
-      totalBalance -= BigInt(pendingTransaction.amount);
-      totalBalance -= BigInt(getFeeValue(pendingTransaction.fee, pendingTransaction.amount));
+      totalBalance = totalBalance.sub(BigNumber.from(pendingTransaction.amount));
+      totalBalance = totalBalance.sub(
+        BigNumber.from(getFeeValue(pendingTransaction.fee, pendingTransaction.amount))
+      );
     });
   }
 
