@@ -8,7 +8,7 @@ import hermezjs, {
 } from "@hermeznetwork/hermezjs";
 import { push } from "connected-react-router";
 import { ethers } from "ethers";
-import { Block } from "@ethersproject/providers";
+import { Block, TransactionReceipt } from "@ethersproject/providers";
 
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
@@ -30,7 +30,6 @@ import { AppDispatch } from "src";
 
 // domain
 import { ISOStringDate } from "src/domain/";
-import { EthereumTransactionReceipt } from "src/domain/ethereum";
 import {
   L1Transaction,
   CoordinatorState,
@@ -495,7 +494,7 @@ function checkPendingWithdrawals() {
 
         Promise.all(pendingWithdrawsTxs).then((txs) => {
           const minedTxs = txs.filter(isTxMined);
-          const pendingWithdrawsTxReceipts: Promise<EthereumTransactionReceipt>[] = minedTxs.map(
+          const pendingWithdrawsTxReceipts: Promise<TransactionReceipt>[] = minedTxs.map(
             (tx) => provider.getTransactionReceipt(tx.hash)
           );
 

@@ -31,23 +31,6 @@ declare module "@hermeznetwork/*" {
   //   blockHash: string;
   // }
 
-  export interface EthereumTransactionReceipt {
-    // to: string;
-    // from: string;
-    // contractAddress: string | null;
-    // transactionIndex: number;
-    // gasUsed: BigNumber;
-    // logsBloom: string;
-    // blockHash: string;
-    transactionHash: string;
-    // logs: EthereumTransactionReceiptLog[];
-    // blockNumber: number;
-    // confirmations: number;
-    // cumulativeGasUsed: BigNumber;
-    // status: number;
-    // byzantium: boolean;
-  }
-
   /**
    * Hermez network types.
    *
