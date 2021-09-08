@@ -3,7 +3,7 @@
  * We may decide not to export them from the domain and let other layers import them from the lib.
  */
 
-export type { EthereumBlock, EthereumTransactionReceipt } from "@hermeznetwork/hermezjs";
+export type { EthereumTransactionReceipt } from "@hermeznetwork/hermezjs";
 
 export interface EthereumNetwork {
   chainId: number;

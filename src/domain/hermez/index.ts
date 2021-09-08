@@ -7,7 +7,6 @@ import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
   Account,
-  BigNumber,
   CoordinatorState,
   DelayedWithdraw,
   L1Transaction,

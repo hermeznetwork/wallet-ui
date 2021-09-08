@@ -8,6 +8,8 @@ import hermezjs, {
 } from "@hermeznetwork/hermezjs";
 import { push } from "connected-react-router";
 import { ethers } from "ethers";
+import { Block } from "@ethersproject/providers";
+
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { HttpStatusCode } from "@hermeznetwork/hermezjs/src/http";
@@ -28,7 +30,7 @@ import { AppDispatch } from "src";
 
 // domain
 import { ISOStringDate } from "src/domain/";
-import { EthereumBlock, EthereumTransactionReceipt } from "src/domain/ethereum";
+import { EthereumTransactionReceipt } from "src/domain/ethereum";
 import {
   L1Transaction,
   CoordinatorState,
@@ -384,7 +386,7 @@ function checkPendingDelayedWithdrawals() {
             return provider.getTransaction(pendingDelayedWithdraw.hash).then((tx) => {
               if (tx.blockNumber !== undefined) {
                 // Checks whether the date of pendingDelayedWithdraw needs to be updated
-                provider.getBlock(tx.blockNumber).then((block: EthereumBlock) => {
+                provider.getBlock(tx.blockNumber).then((block: Block) => {
                   // Converts timestamp from s to ms
                   const newTimestamp = block.timestamp * 1000;
                   if (new Date(pendingDelayedWithdraw.timestamp).getTime() !== newTimestamp) {

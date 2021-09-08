@@ -9,7 +9,6 @@ declare module "@hermeznetwork/*" {
    */
 
   import { BigNumber, Transaction } from "ethers";
-  export type BigNumber = BigNumber;
   export interface L1Transaction extends Transaction {
     // ToDo: There are certain properties that do not match between our L1Transaction and the interface Transaction
     //       exported from Ethers (for example, hash is optional in an ethers Transaction).
@@ -19,20 +18,6 @@ declare module "@hermeznetwork/*" {
     blockNumber?: number;
     // confirmations: number;
     // creates?: unknown;
-  }
-
-  export interface EthereumBlock {
-    // hash: string;
-    // parentHash: string;
-    // number: number;
-    timestamp: number;
-    // nonce: string;
-    // difficulty: number;
-    // gasLimit: BigNumber;
-    // gasUsed: BigNumber;
-    // miner: string;
-    // extraData: string;
-    // transactions: string[];
   }
 
   // export interface EthereumTransactionReceiptLog {
