@@ -495,8 +495,8 @@ function checkPendingWithdrawals() {
 
         Promise.all(pendingWithdrawsTxs).then((txs) => {
           const minedTxs = txs.filter(isTxMined);
-          const pendingWithdrawsTxReceipts: Promise<TransactionReceipt>[] = minedTxs.map(
-            (tx) => provider.getTransactionReceipt(tx.hash)
+          const pendingWithdrawsTxReceipts: Promise<TransactionReceipt>[] = minedTxs.map((tx) =>
+            provider.getTransactionReceipt(tx.hash)
           );
 
           // Checks receipts to see if transactions have been reverted

@@ -20,17 +20,6 @@ declare module "@hermeznetwork/*" {
     // creates?: unknown;
   }
 
-  // export interface EthereumTransactionReceiptLog {
-  //   transactionIndex: number;
-  //   blockNumber: number;
-  //   transactionHash: string;
-  //   address: string;
-  //   topics: string[];
-  //   data: string;
-  //   logIndex: number;
-  //   blockHash: string;
-  // }
-
   /**
    * Hermez network types.
    *
