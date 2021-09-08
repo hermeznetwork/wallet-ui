@@ -1,16 +1,16 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-const useFiatAmountStyles = createUseStyles(theme => ({
+const useFiatAmountStyles = createUseStyles((theme) => ({
   root: {
-    display: 'flex',
-    alignItems: 'baseline',
-    justifyContent: 'center',
-    color: theme.palette.grey.dark
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "center",
+    color: theme.palette.grey.dark,
   },
   currency: {
     margin: 0,
-    marginLeft: 8
-  }
-}))
+    marginLeft: 8,
+  },
+}));
 
-export default useFiatAmountStyles
+export default useFiatAmountStyles;

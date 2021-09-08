@@ -1,7 +1,7 @@
 import { HomeActionTypes, HomeAction } from "src/store/home/home.actions";
 import { getPaginationData } from "src/utils/api";
 import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
-import { Pagination } from "src/utils/api"
+import { Pagination } from "src/utils/api";
 
 // domain
 import { Account, L2Transaction } from "src/domain/hermez";
@@ -174,8 +174,7 @@ function homeReducer(state = initialHomeState, action: HomeAction) {
       return {
         ...state,
         exitsTask:
-          state.exitsTask.status === "pending" ||
-          state.exitsTask.status === "failed"
+          state.exitsTask.status === "pending" || state.exitsTask.status === "failed"
             ? { status: "loading" }
             : { ...state.exitsTask, status: "reloading" },
       };

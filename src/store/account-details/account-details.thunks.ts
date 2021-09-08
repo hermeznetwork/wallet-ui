@@ -1,19 +1,19 @@
-import axios from 'axios'
-import { CoordinatorAPI } from '@hermeznetwork/hermezjs'
-import { getPoolTransactions } from '@hermeznetwork/hermezjs/src/tx-pool'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
-import { push } from 'connected-react-router'
-import * as accountDetailsActions from './account-details.actions'
-import * as ethereum from 'src/utils/ethereum'
-import { createAccount }  from 'src/utils/accounts'
-import { RootState } from 'src/store'
-import { AppDispatch } from 'src'
+import axios from "axios";
+import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
+import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { push } from "connected-react-router";
+import * as accountDetailsActions from "./account-details.actions";
+import * as ethereum from "src/utils/ethereum";
+import { createAccount } from "src/utils/accounts";
+import { RootState } from "src/store";
+import { AppDispatch } from "src";
 
 // domain
-import { Account, Token, L2Transaction, Exit } from 'src/domain/hermez'
+import { Account, Token, L2Transaction, Exit } from "src/domain/hermez";
 
 // persistence
-import { Transactions, Exits } from 'src/persistence'
+import { Transactions, Exits } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 
@@ -25,10 +25,7 @@ let refreshCancelTokenSource = axios.CancelToken.source();
 function fetchAccount(accountIndex: Account["accountIndex"]) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
-      global: {        
-        wallet, 
-        tokensPriceTask,
-      },
+      global: { wallet, tokensPriceTask },
     } = getState();
     dispatch(accountDetailsActions.loadAccount());
 
@@ -37,21 +34,12 @@ function fetchAccount(accountIndex: Account["accountIndex"]) {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push("/"));
         } else {
-          const accountTokenUpdated = createAccount(
-            account,
-            undefined,
-            undefined,
-            tokensPriceTask,
-          );
-          
-          dispatch(
-            accountDetailsActions.loadAccountSuccess(accountTokenUpdated)
-          );
+          const accountTokenUpdated = createAccount(account, undefined, undefined, tokensPriceTask);
+
+          dispatch(accountDetailsActions.loadAccountSuccess(accountTokenUpdated));
         }
       })
-      .catch((err: Error) =>
-        dispatch(accountDetailsActions.loadAccountFailure(err))
-      );
+      .catch((err: Error) => dispatch(accountDetailsActions.loadAccountFailure(err)));
   };
 }
 
@@ -74,14 +62,12 @@ function fetchL1TokenBalance(token: Token) {
         if (metamaskTokens[0]) {
           // We need this to check if the user has balance of a specific token in his ethereum address.
           // If getTokens returns one element when asking for the token it means that the user has balance.
-          dispatch(accountDetailsActions.loadL1TokenBalanceSuccess())
+          dispatch(accountDetailsActions.loadL1TokenBalanceSuccess());
         } else {
           dispatch(accountDetailsActions.loadL1TokenBalanceFailure());
         }
       })
-      .catch((_) =>
-        dispatch(accountDetailsActions.loadL1TokenBalanceFailure())
-      );
+      .catch((_) => dispatch(accountDetailsActions.loadL1TokenBalanceFailure()));
   };
 }
 
@@ -99,15 +85,17 @@ function fetchPoolTransactions(accountIndex: Account["accountIndex"]) {
     } = getState();
     if (wallet !== undefined) {
       getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
-      // We need to reverse the txs to match the order of the txs from the history (DESC)
+        // We need to reverse the txs to match the order of the txs from the history (DESC)
         .then((transactions: L2Transaction[]) => transactions.reverse())
-        .then((transactions: L2Transaction[]) => dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions)))
-        .catch((err: Error) => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)))
+        .then((transactions: L2Transaction[]) =>
+          dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions))
+        )
+        .catch((err: Error) => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)));
     }
   };
 }
 
-function filterExitsFromHistoryTransactions (historyTransactions: L2Transaction[], exits: Exit[]) {
+function filterExitsFromHistoryTransactions(historyTransactions: L2Transaction[], exits: Exit[]) {
   return historyTransactions.filter((transaction) => {
     if (transaction.type === TxType.Exit) {
       const exitTx = exits.find(
@@ -130,16 +118,17 @@ function filterExitsFromHistoryTransactions (historyTransactions: L2Transaction[
  * @returns {void}
  */
 // ToDo: Define fromItem type
-function fetchHistoryTransactions (accountIndex: Account["accountIndex"], fromItem: number, historyExits: Exits) {
+function fetchHistoryTransactions(
+  accountIndex: Account["accountIndex"],
+  fromItem: number,
+  historyExits: Exits
+) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       accountDetails: { historyTransactionsTask },
     } = getState();
 
-    if (
-      fromItem === undefined &&
-      historyTransactionsTask.status === "successful"
-    ) {
+    if (fromItem === undefined && historyTransactionsTask.status === "successful") {
       return dispatch(refreshHistoryTransactions(accountIndex, historyExits));
     }
 
@@ -165,9 +154,11 @@ function fetchHistoryTransactions (accountIndex: Account["accountIndex"], fromIt
 
         return { ...historyTransactions, transactions: filteredTransactions };
       })
-      .then((historyTransactions: Transactions) => dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions)))
-      .catch((err: Error) => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)))
-  }
+      .then((historyTransactions: Transactions) =>
+        dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
+      )
+      .catch((err: Error) => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)));
+  };
 }
 
 /**
@@ -175,7 +166,7 @@ function fetchHistoryTransactions (accountIndex: Account["accountIndex"], fromIt
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshHistoryTransactions (accountIndex: Account["accountIndex"], historyExits: Exits) {
+function refreshHistoryTransactions(accountIndex: Account["accountIndex"], historyExits: Exits) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       accountDetails: { historyTransactionsTask },
@@ -216,7 +207,10 @@ function refreshHistoryTransactions (accountIndex: Account["accountIndex"], hist
 
       Promise.all(requests)
         .then((results) => {
-          const transactions = results.reduce((acc: L2Transaction[], result: Transactions) => [...acc, ...result.transactions], [])
+          const transactions = results.reduce(
+            (acc: L2Transaction[], result: Transactions) => [...acc, ...result.transactions],
+            []
+          );
           const filteredTransactions = filterExitsFromHistoryTransactions(
             transactions,
             historyExits.exits
@@ -225,7 +219,9 @@ function refreshHistoryTransactions (accountIndex: Account["accountIndex"], hist
 
           return { transactions: filteredTransactions, pendingItems };
         })
-        .then((historyTransactions: Transactions) => dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions)))
+        .then((historyTransactions: Transactions) =>
+          dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
+        );
     }
   };
 }
@@ -244,8 +240,10 @@ function fetchExits(tokenId: Token["id"]) {
     } = getState();
     if (wallet !== undefined) {
       return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
-      .then((historyExits: Exits) => dispatch(accountDetailsActions.loadExitsSuccess(historyExits)))
-      .catch((err: Error) => dispatch(accountDetailsActions.loadExitsFailure(err)))
+        .then((historyExits: Exits) =>
+          dispatch(accountDetailsActions.loadExitsSuccess(historyExits))
+        )
+        .catch((err: Error) => dispatch(accountDetailsActions.loadExitsFailure(err)));
     }
   };
 }

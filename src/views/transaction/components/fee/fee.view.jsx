@@ -1,14 +1,19 @@
-import React from 'react'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
-import { parseUnits } from 'ethers/lib/utils'
+import React from "react";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { parseUnits } from "ethers/lib/utils";
 
-import useFeeStyles from './fee.styles'
-import { CurrencySymbol, getAmountInPreferredCurrency, getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../../../utils/currencies'
-import { ReactComponent as AngleDownIcon } from '../../../../images/icons/angle-down.svg'
-import FeesTable from '../fees-table/fees-table.view'
-import { getRealFee } from '../../../../utils/fees'
+import useFeeStyles from "./fee.styles";
+import {
+  CurrencySymbol,
+  getAmountInPreferredCurrency,
+  getFixedTokenAmount,
+  getTokenAmountInPreferredCurrency,
+} from "../../../../utils/currencies";
+import { ReactComponent as AngleDownIcon } from "../../../../images/icons/angle-down.svg";
+import FeesTable from "../fees-table/fees-table.view";
+import { getRealFee } from "../../../../utils/fees";
 
-function Fee ({
+function Fee({
   transactionType,
   amount,
   l2Fee,
@@ -16,25 +21,34 @@ function Fee ({
   token,
   preferredCurrency,
   fiatExchangeRates,
-  showInFiat
+  showInFiat,
 }) {
-  const [isWithdrawFeeExpanded, setIsWithdrawFeeExpanded] = React.useState(false)
-  const classes = useFeeStyles({ isWithdrawFeeExpanded })
-  const l2RealFee = getRealFee(amount, token, l2Fee)
-  const l2FeeInFiat = getTokenAmountInPreferredCurrency(l2RealFee, token.USD, preferredCurrency, fiatExchangeRates)
+  const [isWithdrawFeeExpanded, setIsWithdrawFeeExpanded] = React.useState(false);
+  const classes = useFeeStyles({ isWithdrawFeeExpanded });
+  const l2RealFee = getRealFee(amount, token, l2Fee);
+  const l2FeeInFiat = getTokenAmountInPreferredCurrency(
+    l2RealFee,
+    token.USD,
+    preferredCurrency,
+    fiatExchangeRates
+  );
 
-  function getTotalEstimatedWithdrawFee () {
+  function getTotalEstimatedWithdrawFee() {
     if (!estimatedWithdrawFee) {
-      return '--'
+      return "--";
     }
 
-    const estimatedWithdrawFeeInFiat = getAmountInPreferredCurrency(estimatedWithdrawFee.USD, preferredCurrency, fiatExchangeRates)
+    const estimatedWithdrawFeeInFiat = getAmountInPreferredCurrency(
+      estimatedWithdrawFee.USD,
+      preferredCurrency,
+      fiatExchangeRates
+    );
 
-    return (l2FeeInFiat + estimatedWithdrawFeeInFiat).toFixed(2)
+    return (l2FeeInFiat + estimatedWithdrawFeeInFiat).toFixed(2);
   }
 
-  function handleWithdrawFeeExpansion () {
-    setIsWithdrawFeeExpanded(!isWithdrawFeeExpanded)
+  function handleWithdrawFeeExpansion() {
+    setIsWithdrawFeeExpanded(!isWithdrawFeeExpanded);
   }
 
   if (
@@ -47,15 +61,16 @@ function Fee ({
         <p className={classes.fee}>
           Fee&nbsp;
           <span>
-            {
-              showInFiat
-                ? `${l2FeeInFiat.toFixed(2)} ${preferredCurrency}`
-                : `${getFixedTokenAmount(parseUnits(l2RealFee.toString(), token.decimals), token.decimals)} ${token.symbol}`
-            }
+            {showInFiat
+              ? `${l2FeeInFiat.toFixed(2)} ${preferredCurrency}`
+              : `${getFixedTokenAmount(
+                  parseUnits(l2RealFee.toString(), token.decimals),
+                  token.decimals
+                )} ${token.symbol}`}
           </span>
         </p>
       </div>
-    )
+    );
   }
 
   if (transactionType === TxType.Exit) {
@@ -63,9 +78,12 @@ function Fee ({
       <div className={classes.withdrawFeeWrapper}>
         <button className={classes.withdrawFeeButton} onClick={handleWithdrawFeeExpansion}>
           <p className={classes.withdrawFeeButtonText}>
-            Total estimated fee {CurrencySymbol[preferredCurrency].symbol}{getTotalEstimatedWithdrawFee()}
+            Total estimated fee {CurrencySymbol[preferredCurrency].symbol}
+            {getTotalEstimatedWithdrawFee()}
           </p>
-          <AngleDownIcon className={`${classes.withdrawFeeButtonIcon} ${classes.withdrawFeeButtonIconPath}`} />
+          <AngleDownIcon
+            className={`${classes.withdrawFeeButtonIcon} ${classes.withdrawFeeButtonIconPath}`}
+          />
         </button>
         {isWithdrawFeeExpanded && (
           <FeesTable
@@ -77,10 +95,10 @@ function Fee ({
           />
         )}
       </div>
-    )
+    );
   }
 
-  return <></>
+  return <></>;
 }
 
-export default Fee
+export default Fee;

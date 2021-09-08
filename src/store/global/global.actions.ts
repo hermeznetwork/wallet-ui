@@ -426,9 +426,7 @@ function loadEthereumNetwork(): LoadEthereumNetwork {
   };
 }
 
-function loadEthereumNetworkSuccess(
-  ethereumNetwork: EthereumNetwork
-): LoadEthereumNetworkSuccess {
+function loadEthereumNetworkSuccess(ethereumNetwork: EthereumNetwork): LoadEthereumNetworkSuccess {
   return {
     type: GlobalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS,
     ethereumNetwork,
@@ -498,9 +496,7 @@ function closeSnackbar(): CloseSnackbar {
   };
 }
 
-function changeNetworkStatus(
-  networkStatus: HermezNetworkStatus
-): ChangeNetworkStatus {
+function changeNetworkStatus(networkStatus: HermezNetworkStatus): ChangeNetworkStatus {
   return {
     type: GlobalActionTypes.CHANGE_NETWORK_STATUS,
     networkStatus,
@@ -692,9 +688,7 @@ function loadCoordinatorStateSuccess(
   };
 }
 
-function loadCoordinatorStateFailure(
-  error: Error
-): LoadCoordinatorStateFailure {
+function loadCoordinatorStateFailure(error: Error): LoadCoordinatorStateFailure {
   return {
     type: GlobalActionTypes.LOAD_COORDINATOR_STATE_FAILURE,
     error: error.message,
@@ -739,9 +733,7 @@ function loadEarnedReward(): LoadEarnedReward {
   };
 }
 
-function loadEarnedRewardSuccess(
-  earnedReward: Reward
-): LoadEarnedRewardSuccess {
+function loadEarnedRewardSuccess(earnedReward: Reward): LoadEarnedRewardSuccess {
   return {
     type: GlobalActionTypes.LOAD_EARNED_REWARD_SUCCESS,
     earnedReward,
@@ -762,18 +754,14 @@ function loadRewardPercentage(): LoadRewardPercentage {
 }
 
 // ToDo: What is the shape of a rewardPercentage?
-function loadRewardPercentageSuccess(
-  rewardPercentage: unknown
-): LoadRewardPercentageSuccess {
+function loadRewardPercentageSuccess(rewardPercentage: unknown): LoadRewardPercentageSuccess {
   return {
     type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS,
     rewardPercentage,
   };
 }
 
-function loadRewardPercentageFailure(
-  error: string
-): LoadRewardPercentageFailure {
+function loadRewardPercentageFailure(error: string): LoadRewardPercentageFailure {
   return {
     type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE,
     error,
@@ -797,9 +785,7 @@ function loadRewardAccountEligibilitySuccess(
 }
 
 // ToDo: This action is never called. Dead code?
-function loadRewardAccountEligibilityFailure(
-  error: string
-): LoadRewardAccountEligibilityFailure {
+function loadRewardAccountEligibilityFailure(error: string): LoadRewardAccountEligibilityFailure {
   return {
     type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE,
     error,

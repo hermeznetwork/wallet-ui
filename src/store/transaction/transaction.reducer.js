@@ -1,57 +1,57 @@
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-import { getPaginationData } from '../../utils/api'
-import { transactionActionTypes } from './transaction.actions'
+import { getPaginationData } from "../../utils/api";
+import { transactionActionTypes } from "./transaction.actions";
 
 export const STEP_NAME = {
-  LOAD_INITIAL_DATA: 'load-initial-data',
-  CHOOSE_ACCOUNT: 'choose-account',
-  BUILD_TRANSACTION: 'build-transaction',
-  REVIEW_TRANSACTION: 'review-transaction',
-  FINISH_TRANSACTION: 'finish-transaction',
-  TRANSACTION_ERROR: 'transaction-error'
-}
+  LOAD_INITIAL_DATA: "load-initial-data",
+  CHOOSE_ACCOUNT: "choose-account",
+  BUILD_TRANSACTION: "build-transaction",
+  REVIEW_TRANSACTION: "review-transaction",
+  FINISH_TRANSACTION: "finish-transaction",
+  TRANSACTION_ERROR: "transaction-error",
+};
 
 const initialTransactionState = {
   poolTransactionsTask: {
-    status: 'pending'
+    status: "pending",
   },
   currentStep: STEP_NAME.LOAD_INITIAL_DATA,
   steps: {
     [STEP_NAME.LOAD_INITIAL_DATA]: {
-      status: 'pending'
+      status: "pending",
     },
     [STEP_NAME.CHOOSE_ACCOUNT]: {
       accountsTask: {
-        status: 'pending'
-      }
+        status: "pending",
+      },
     },
     [STEP_NAME.BUILD_TRANSACTION]: {
       accountBalanceTask: {
-        status: 'pending'
+        status: "pending",
       },
       feesTask: {
-        status: 'pending'
+        status: "pending",
       },
       estimatedWithdrawFeeTask: {
-        status: 'pending'
+        status: "pending",
       },
-      account: undefined
+      account: undefined,
     },
     [STEP_NAME.REVIEW_TRANSACTION]: {
       transaction: undefined,
-      isTransactionBeingSigned: false
-    }
-  }
-}
+      isTransactionBeingSigned: false,
+    },
+  },
+};
 
-function transactionReducer (state = initialTransactionState, action) {
+function transactionReducer(state = initialTransactionState, action) {
   switch (action.type) {
     case transactionActionTypes.GO_TO_CHOOSE_ACCOUNT_STEP: {
       return {
         ...state,
-        currentStep: STEP_NAME.CHOOSE_ACCOUNT
-      }
+        currentStep: STEP_NAME.CHOOSE_ACCOUNT,
+      };
     }
     case transactionActionTypes.GO_TO_BUILD_TRANSACTION_STEP: {
       return {
@@ -62,10 +62,10 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             account: action.account,
-            receiver: action.receiver
-          }
-        }
-      }
+            receiver: action.receiver,
+          },
+        },
+      };
     }
     case transactionActionTypes.GO_TO_REVIEW_TRANSACTION_STEP: {
       return {
@@ -75,54 +75,54 @@ function transactionReducer (state = initialTransactionState, action) {
           ...state.steps,
           [STEP_NAME.REVIEW_TRANSACTION]: {
             ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
-            transaction: action.transaction
-          }
-        }
-      }
+            transaction: action.transaction,
+          },
+        },
+      };
     }
     case transactionActionTypes.GO_TO_FINISH_TRANSACTION_STEP: {
       return {
         ...state,
-        currentStep: STEP_NAME.FINISH_TRANSACTION
-      }
+        currentStep: STEP_NAME.FINISH_TRANSACTION,
+      };
     }
     case transactionActionTypes.GO_TO_TRANSACTION_ERROR_STEP: {
       return {
         ...state,
-        currentStep: STEP_NAME.TRANSACTION_ERROR
-      }
+        currentStep: STEP_NAME.TRANSACTION_ERROR,
+      };
     }
     case transactionActionTypes.CHANGE_CURRENT_STEP: {
       return {
         ...state,
-        currentStep: action.nextStep
-      }
+        currentStep: action.nextStep,
+      };
     }
     case transactionActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
         poolTransactionsTask: {
-          status: 'loading'
-        }
-      }
+          status: "loading",
+        },
+      };
     }
     case transactionActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
         poolTransactionsTask: {
-          status: 'successful',
-          data: action.transactions
-        }
-      }
+          status: "successful",
+          data: action.transactions,
+        },
+      };
     }
     case transactionActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
       return {
         ...state,
         poolTransactionsTask: {
-          status: 'failed',
-          error: action.error
-        }
-      }
+          status: "failed",
+          error: action.error,
+        },
+      };
     }
     case transactionActionTypes.LOAD_ACCOUNTS: {
       return {
@@ -131,12 +131,16 @@ function transactionReducer (state = initialTransactionState, action) {
           ...state.steps,
           [STEP_NAME.CHOOSE_ACCOUNT]: {
             ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
-            accountsTask: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'successful'
-              ? { status: 'reloading', data: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data }
-              : { status: 'loading' }
-          }
-        }
-      }
+            accountsTask:
+              state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === "successful"
+                ? {
+                    status: "reloading",
+                    data: state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data,
+                  }
+                : { status: "loading" },
+          },
+        },
+      };
     }
     case transactionActionTypes.LOAD_ACCOUNTS_SUCCESS: {
       if (action.transactionType === TxType.Deposit) {
@@ -147,17 +151,21 @@ function transactionReducer (state = initialTransactionState, action) {
             [STEP_NAME.CHOOSE_ACCOUNT]: {
               ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
               accountsTask: {
-                status: 'successful',
-                data: action.data
-              }
-            }
-          }
-        }
+                status: "successful",
+                data: action.data,
+              },
+            },
+          },
+        };
       } else {
-        const accounts = state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === 'reloading'
-          ? [...state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data.accounts, ...action.data.accounts]
-          : action.data.accounts
-        const pagination = getPaginationData(action.data.pendingItems, accounts)
+        const accounts =
+          state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.status === "reloading"
+            ? [
+                ...state.steps[STEP_NAME.CHOOSE_ACCOUNT].accountsTask.data.accounts,
+                ...action.data.accounts,
+              ]
+            : action.data.accounts;
+        const pagination = getPaginationData(action.data.pendingItems, accounts);
 
         return {
           ...state,
@@ -166,12 +174,12 @@ function transactionReducer (state = initialTransactionState, action) {
             [STEP_NAME.CHOOSE_ACCOUNT]: {
               ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
               accountsTask: {
-                status: 'successful',
-                data: { accounts, pagination }
-              }
-            }
-          }
-        }
+                status: "successful",
+                data: { accounts, pagination },
+              },
+            },
+          },
+        };
       }
     }
     case transactionActionTypes.LOAD_ACCOUNTS_FAILURE: {
@@ -182,12 +190,12 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.CHOOSE_ACCOUNT]: {
             ...state.steps[STEP_NAME.CHOOSE_ACCOUNT],
             accountsTask: {
-              status: 'failed',
-              error: action.error
-            }
-          }
-        }
-      }
+              status: "failed",
+              error: action.error,
+            },
+          },
+        },
+      };
     }
     case transactionActionTypes.LOAD_ACCOUNT:
     case transactionActionTypes.LOAD_EXIT: {
@@ -196,10 +204,10 @@ function transactionReducer (state = initialTransactionState, action) {
         steps: {
           ...state.steps,
           [STEP_NAME.LOAD_INITIAL_DATA]: {
-            status: 'loading'
-          }
-        }
-      }
+            status: "loading",
+          },
+        },
+      };
     }
     case transactionActionTypes.LOAD_ACCOUNT_SUCCESS: {
       return {
@@ -208,14 +216,14 @@ function transactionReducer (state = initialTransactionState, action) {
         steps: {
           ...state.steps,
           [STEP_NAME.LOAD_INITIAL_DATA]: {
-            status: 'successful'
+            status: "successful",
           },
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
-            account: action.account
-          }
-        }
-      }
+            account: action.account,
+          },
+        },
+      };
     }
     case transactionActionTypes.LOAD_EXIT_SUCCESS:
       return {
@@ -224,11 +232,11 @@ function transactionReducer (state = initialTransactionState, action) {
         steps: {
           ...state.steps,
           [STEP_NAME.LOAD_INITIAL_DATA]: {
-            status: 'successful'
+            status: "successful",
           },
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
-            account: action.account
+            account: action.account,
           },
           [STEP_NAME.REVIEW_TRANSACTION]: {
             ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
@@ -237,12 +245,12 @@ function transactionReducer (state = initialTransactionState, action) {
               amount: action.exit.balance || action.exit.amount,
               token: action.exit.token,
               to: {
-                hezEthereumAddress: action.hermezEthereumAddress
-              }
-            }
-          }
-        }
-      }
+                hezEthereumAddress: action.hermezEthereumAddress,
+              },
+            },
+          },
+        },
+      };
     case transactionActionTypes.LOAD_ACCOUNT_FAILURE:
     case transactionActionTypes.LOAD_EXIT_FAILURE: {
       return {
@@ -250,11 +258,11 @@ function transactionReducer (state = initialTransactionState, action) {
         steps: {
           ...state.steps,
           [STEP_NAME.LOAD_INITIAL_DATA]: {
-            status: 'failed',
-            error: action.error
-          }
-        }
-      }
+            status: "failed",
+            error: action.error,
+          },
+        },
+      };
     }
     case transactionActionTypes.LOAD_ACCOUNT_BALANCE: {
       return {
@@ -264,11 +272,11 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             accountBalanceTask: {
-              status: 'loading'
-            }
-          }
-        }
-      }
+              status: "loading",
+            },
+          },
+        },
+      };
     }
     case transactionActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS: {
       return {
@@ -278,12 +286,12 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             accountBalanceTask: {
-              status: 'successful',
-              data: action.accountBalance
-            }
-          }
-        }
-      }
+              status: "successful",
+              data: action.accountBalance,
+            },
+          },
+        },
+      };
     }
     case transactionActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE: {
       return {
@@ -293,12 +301,12 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             accountBalanceTask: {
-              status: 'failed',
-              error: action.error
-            }
-          }
-        }
-      }
+              status: "failed",
+              error: action.error,
+            },
+          },
+        },
+      };
     }
     case transactionActionTypes.LOAD_FEES:
       return {
@@ -308,11 +316,11 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             feesTask: {
-              status: 'loading'
-            }
-          }
-        }
-      }
+              status: "loading",
+            },
+          },
+        },
+      };
     case transactionActionTypes.LOAD_FEES_SUCCESS:
       return {
         ...state,
@@ -321,12 +329,12 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             feesTask: {
-              status: 'successful',
-              data: action.fees
-            }
-          }
-        }
-      }
+              status: "successful",
+              data: action.fees,
+            },
+          },
+        },
+      };
     case transactionActionTypes.LOAD_FEES_FAILURE:
       return {
         ...state,
@@ -335,12 +343,12 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             feesTask: {
-              status: 'failed',
-              error: action.error
-            }
-          }
-        }
-      }
+              status: "failed",
+              error: action.error,
+            },
+          },
+        },
+      };
     case transactionActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE: {
       return {
         ...state,
@@ -349,11 +357,11 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             estimatedWithdrawFeeTask: {
-              status: 'loading'
-            }
-          }
-        }
-      }
+              status: "loading",
+            },
+          },
+        },
+      };
     }
     case transactionActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS: {
       return {
@@ -363,12 +371,12 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             estimatedWithdrawFeeTask: {
-              status: 'successful',
-              data: action.estimatedFee
-            }
-          }
-        }
-      }
+              status: "successful",
+              data: action.estimatedFee,
+            },
+          },
+        },
+      };
     }
     case transactionActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE: {
       return {
@@ -378,12 +386,12 @@ function transactionReducer (state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             estimatedWithdrawFeeTask: {
-              status: 'failed',
-              error: action.error
-            }
-          }
-        }
-      }
+              status: "failed",
+              error: action.error,
+            },
+          },
+        },
+      };
     }
     case transactionActionTypes.START_TRANSACTION_SIGNING: {
       return {
@@ -392,10 +400,10 @@ function transactionReducer (state = initialTransactionState, action) {
           ...state.steps,
           [STEP_NAME.REVIEW_TRANSACTION]: {
             ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
-            isTransactionBeingSigned: true
-          }
-        }
-      }
+            isTransactionBeingSigned: true,
+          },
+        },
+      };
     }
     case transactionActionTypes.STOP_TRANSACTION_SIGNING: {
       return {
@@ -404,18 +412,18 @@ function transactionReducer (state = initialTransactionState, action) {
           ...state.steps,
           [STEP_NAME.REVIEW_TRANSACTION]: {
             ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
-            isTransactionBeingSigned: false
-          }
-        }
-      }
+            isTransactionBeingSigned: false,
+          },
+        },
+      };
     }
     case transactionActionTypes.RESET_STATE: {
-      return initialTransactionState
+      return initialTransactionState;
     }
     default: {
-      return state
+      return state;
     }
   }
 }
 
-export default transactionReducer
+export default transactionReducer;

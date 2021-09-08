@@ -179,9 +179,7 @@ function loadPoolTransactionsSuccess(
   };
 }
 
-function loadPoolTransactionsFailure(
-  error: Error
-): LoadPoolTransactionsFailureAction {
+function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
@@ -194,18 +192,14 @@ function loadHistoryTransactions(): LoadHistoryTransactionsAction {
   };
 }
 
-function loadHistoryTransactionsSuccess(
-  data: Transactions
-): LoadHistoryTransactionsSuccessAction {
+function loadHistoryTransactionsSuccess(data: Transactions): LoadHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
     data,
   };
 }
 
-function loadHistoryTransactionsFailure(
-  error: Error
-): LoadHistoryTransactionsFailureAction {
+function loadHistoryTransactionsFailure(error: Error): LoadHistoryTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE,
     error,

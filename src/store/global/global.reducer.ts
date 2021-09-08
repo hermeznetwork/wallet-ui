@@ -32,18 +32,9 @@ type SnackbarState =
 
 type ChainId = number;
 type HermezEthereumAddress = string;
-type PendingWithdraws = Record<
-  ChainId,
-  Record<HermezEthereumAddress, Withdraw[]>
->;
-type PendingDelayedWithdraws = Record<
-  ChainId,
-  Record<HermezEthereumAddress, DelayedWithdraw[]>
->;
-type PendingDeposits = Record<
-  ChainId,
-  Record<HermezEthereumAddress, Deposit[]>
->;
+type PendingWithdraws = Record<ChainId, Record<HermezEthereumAddress, Withdraw[]>>;
+type PendingDelayedWithdraws = Record<ChainId, Record<HermezEthereumAddress, DelayedWithdraw[]>>;
+type PendingDeposits = Record<ChainId, Record<HermezEthereumAddress, Deposit[]>>;
 
 interface RewardsState {
   sidenav: {
@@ -98,9 +89,7 @@ function getInitialGlobalState(): GlobalState {
     },
     networkStatus: "online",
     pendingWithdraws: storage.getStorage(constants.PENDING_WITHDRAWS_KEY),
-    pendingDelayedWithdraws: storage.getStorage(
-      constants.PENDING_DELAYED_WITHDRAWS_KEY
-    ),
+    pendingDelayedWithdraws: storage.getStorage(constants.PENDING_DELAYED_WITHDRAWS_KEY),
     pendingDelayedWithdrawCheckTask: {
       status: "pending",
     },
@@ -256,10 +245,8 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
       };
     }
     case GlobalActionTypes.ADD_PENDING_WITHDRAW: {
-      const chainIdPendingWithdraws =
-        state.pendingWithdraws[action.chainId] || {};
-      const accountPendingWithdraws =
-        chainIdPendingWithdraws[action.hermezEthereumAddress] || [];
+      const chainIdPendingWithdraws = state.pendingWithdraws[action.chainId] || {};
+      const accountPendingWithdraws = chainIdPendingWithdraws[action.hermezEthereumAddress] || [];
 
       return {
         ...state,
@@ -267,19 +254,14 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
           ...state.pendingWithdraws,
           [action.chainId]: {
             ...chainIdPendingWithdraws,
-            [action.hermezEthereumAddress]: [
-              ...accountPendingWithdraws,
-              action.pendingWithdraw,
-            ],
+            [action.hermezEthereumAddress]: [...accountPendingWithdraws, action.pendingWithdraw],
           },
         },
       };
     }
     case GlobalActionTypes.REMOVE_PENDING_WITHDRAW: {
-      const chainIdPendingWithdraws =
-        state.pendingWithdraws[action.chainId] || {};
-      const accountPendingWithdraws =
-        chainIdPendingWithdraws[action.hermezEthereumAddress] || [];
+      const chainIdPendingWithdraws = state.pendingWithdraws[action.chainId] || {};
+      const accountPendingWithdraws = chainIdPendingWithdraws[action.hermezEthereumAddress] || [];
 
       return {
         ...state,
@@ -295,8 +277,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
       };
     }
     case GlobalActionTypes.ADD_PENDING_DELAYED_WITHDRAW: {
-      const chainIdPendingDelayedWithdraws =
-        state.pendingDelayedWithdraws[action.chainId] || {};
+      const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {};
       const accountPendingDelayedWithdraws =
         chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || [];
 
@@ -315,8 +296,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
       };
     }
     case GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW: {
-      const chainIdPendingDelayedWithdraws =
-        state.pendingDelayedWithdraws[action.chainId] || {};
+      const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {};
       const accountPendingDelayedWithdraws =
         chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || [];
 
@@ -326,18 +306,15 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
           ...state.pendingDelayedWithdraws,
           [action.chainId]: {
             ...chainIdPendingDelayedWithdraws,
-            [action.hermezEthereumAddress]:
-              accountPendingDelayedWithdraws.filter(
-                (withdraw: Withdraw) =>
-                  withdraw.id !== action.pendingDelayedWithdrawId
-              ),
+            [action.hermezEthereumAddress]: accountPendingDelayedWithdraws.filter(
+              (withdraw: Withdraw) => withdraw.id !== action.pendingDelayedWithdrawId
+            ),
           },
         },
       };
     }
     case GlobalActionTypes.REMOVE_PENDING_DELAYED_WITHDRAW_BY_HASH: {
-      const chainIdPendingDelayedWithdraws =
-        state.pendingDelayedWithdraws[action.chainId] || {};
+      const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {};
       const accountPendingDelayedWithdraws =
         chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || [];
 
@@ -347,18 +324,15 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
           ...state.pendingDelayedWithdraws,
           [action.chainId]: {
             ...chainIdPendingDelayedWithdraws,
-            [action.hermezEthereumAddress]:
-              accountPendingDelayedWithdraws.filter(
-                (withdraw: Withdraw) =>
-                  withdraw.hash !== action.pendingDelayedWithdrawHash
-              ),
+            [action.hermezEthereumAddress]: accountPendingDelayedWithdraws.filter(
+              (withdraw: Withdraw) => withdraw.hash !== action.pendingDelayedWithdrawHash
+            ),
           },
         },
       };
     }
     case GlobalActionTypes.UPDATE_PENDING_DELAYED_WITHDRAW_DATE: {
-      const chainIdPendingDelayedWithdraws =
-        state.pendingDelayedWithdraws[action.chainId] || {};
+      const chainIdPendingDelayedWithdraws = state.pendingDelayedWithdraws[action.chainId] || {};
       const accountPendingDelayedWithdraws =
         chainIdPendingDelayedWithdraws[action.hermezEthereumAddress] || [];
 
@@ -413,10 +387,8 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
       };
     }
     case GlobalActionTypes.ADD_PENDING_DEPOSIT: {
-      const chainIdPendingDeposits =
-        state.pendingDeposits[action.chainId] || {};
-      const accountPendingDeposits =
-        chainIdPendingDeposits[action.hermezEthereumAddress] || [];
+      const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {};
+      const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || [];
 
       return {
         ...state,
@@ -424,19 +396,14 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
           ...state.pendingDeposits,
           [action.chainId]: {
             ...chainIdPendingDeposits,
-            [action.hermezEthereumAddress]: [
-              ...accountPendingDeposits,
-              action.pendingDeposit,
-            ],
+            [action.hermezEthereumAddress]: [...accountPendingDeposits, action.pendingDeposit],
           },
         },
       };
     }
     case GlobalActionTypes.REMOVE_PENDING_DEPOSIT_BY_HASH: {
-      const chainIdPendingDeposits =
-        state.pendingDeposits[action.chainId] || {};
-      const accountPendingDeposits =
-        chainIdPendingDeposits[action.hermezEthereumAddress] || [];
+      const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {};
+      const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || [];
 
       return {
         ...state,
@@ -452,10 +419,8 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
       };
     }
     case GlobalActionTypes.REMOVE_PENDING_DEPOSIT_BY_TRANSACTION_ID: {
-      const chainIdPendingDeposits =
-        state.pendingDeposits[action.chainId] || {};
-      const accountPendingDeposits =
-        chainIdPendingDeposits[action.hermezEthereumAddress] || [];
+      const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {};
+      const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || [];
 
       return {
         ...state,
@@ -464,19 +429,15 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
           [action.chainId]: {
             ...chainIdPendingDeposits,
             [action.hermezEthereumAddress]: accountPendingDeposits.filter(
-              (deposit) =>
-                deposit.transactionId &&
-                deposit.transactionId !== action.transactionId
+              (deposit) => deposit.transactionId && deposit.transactionId !== action.transactionId
             ),
           },
         },
       };
     }
     case GlobalActionTypes.UPDATE_PENDING_DEPOSIT_ID: {
-      const chainIdPendingDeposits =
-        state.pendingDeposits[action.chainId] || {};
-      const accountPendingDeposits =
-        chainIdPendingDeposits[action.hermezEthereumAddress] || [];
+      const chainIdPendingDeposits = state.pendingDeposits[action.chainId] || {};
+      const accountPendingDeposits = chainIdPendingDeposits[action.hermezEthereumAddress] || [];
 
       return {
         ...state,
@@ -484,14 +445,12 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
           ...state.pendingDeposits,
           [action.chainId]: {
             ...chainIdPendingDeposits,
-            [action.hermezEthereumAddress]: accountPendingDeposits.map(
-              (deposit) => {
-                if (deposit.hash === action.transactionHash) {
-                  return { ...deposit, id: action.transactionId };
-                }
-                return deposit;
+            [action.hermezEthereumAddress]: accountPendingDeposits.map((deposit) => {
+              if (deposit.hash === action.transactionHash) {
+                return { ...deposit, id: action.transactionId };
               }
-            ),
+              return deposit;
+            }),
           },
         },
       };

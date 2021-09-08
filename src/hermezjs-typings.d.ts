@@ -443,10 +443,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
 declare module "@hermeznetwork/hermezjs/src/tx-utils" {
   // declare function _encodeTransaction() {};
 
-  declare function getL1UserTxId(
-    toForgeL1TxsNum: number,
-    currentPosition: number
-  ): string {};
+  declare function getL1UserTxId(toForgeL1TxsNum: number, currentPosition: number): string {};
 
   // declare function getL2TxId() {};
   // declare function getFeeIndex() {};
@@ -729,8 +726,6 @@ declare module "@hermeznetwork/hermezjs/src/http" {
 
 // HermezABI
 declare module "@hermeznetwork/hermezjs/src/abis/HermezABI" {
-  declare const HermezABI:
-    | string
-    | ReadonlyArray<Fragment | JsonFragment | string>;
+  declare const HermezABI: string | ReadonlyArray<Fragment | JsonFragment | string>;
   export default HermezABI;
 }

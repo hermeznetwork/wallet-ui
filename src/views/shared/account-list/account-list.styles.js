@@ -1,12 +1,12 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-const useAccountListStyles = createUseStyles(theme => ({
+const useAccountListStyles = createUseStyles((theme) => ({
   root: {
-    width: '100%'
+    width: "100%",
   },
   accountSpacer: {
-    marginTop: theme.spacing(2.5)
-  }
-}))
+    marginTop: theme.spacing(2.5),
+  },
+}));
 
-export default useAccountListStyles
+export default useAccountListStyles;

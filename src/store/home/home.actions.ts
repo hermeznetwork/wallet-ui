@@ -154,18 +154,14 @@ function loadPoolTransactions(): LoadPoolTransactions {
   };
 }
 
-function loadPoolTransactionsSuccess(
-  transactions: L2Transaction[]
-): LoadPoolTransactionsSuccess {
+function loadPoolTransactionsSuccess(transactions: L2Transaction[]): LoadPoolTransactionsSuccess {
   return {
     type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
     transactions,
   };
 }
 
-function loadPoolTransactionsFailure(
-  error: Error
-): LoadPoolTransactionsFailure {
+function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
   return {
     type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,

@@ -25,9 +25,7 @@ function getPaginationData(
   }
 
   const fromItem: number =
-    order === "ASC"
-      ? items[items.length - 1].itemId + 1
-      : items[items.length - 1].itemId - 1;
+    order === "ASC" ? items[items.length - 1].itemId + 1 : items[items.length - 1].itemId - 1;
 
   return { hasMoreItems: true, fromItem };
 }

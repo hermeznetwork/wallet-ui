@@ -27,5 +27,5 @@ export type {
 } from "@hermeznetwork/hermezjs";
 
 export type Deposit = HermezJSDeposit & {
-    transactionId?: string;
-}
+  transactionId?: string;
+};

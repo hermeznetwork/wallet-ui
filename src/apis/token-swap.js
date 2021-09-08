@@ -1,6 +1,6 @@
-import axios from 'axios'
+import axios from "axios";
 
-const baseApiUrl = `${process.env.REACT_APP_TOKEN_SWAP_API_URL}`
+const baseApiUrl = `${process.env.REACT_APP_TOKEN_SWAP_API_URL}`;
 
 /**
  * Get quotes from liquidity providers
@@ -15,13 +15,8 @@ const baseApiUrl = `${process.env.REACT_APP_TOKEN_SWAP_API_URL}`
  * @param {String} [params.amountToToken] - amount that user wants to receive
  * @returns {Array} - Quotes
  */
-function getQuotes (params) {
-  return axios.get(
-      `${baseApiUrl}/quotes`,
-      { params }
-  ).then(res => res.data)
+function getQuotes(params) {
+  return axios.get(`${baseApiUrl}/quotes`, { params }).then((res) => res.data);
 }
 
-export {
-  getQuotes
-}
+export { getQuotes };
