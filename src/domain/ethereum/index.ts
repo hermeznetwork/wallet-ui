@@ -48,7 +48,6 @@ export interface EthereumBlock {
   // transactions: string[];
 }
 
-
 // export interface EthereumTransactionReceiptLog {
 //   transactionIndex: number;
 //   blockNumber: number;

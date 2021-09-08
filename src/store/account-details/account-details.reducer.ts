@@ -3,10 +3,7 @@ import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 // domain
 import { Account, HermezTransaction } from "../../domain/hermez";
 
-import {
-  AccountDetailsActionTypes,
-  AccountDetailsAction,
-} from "./account-details.actions";
+import { AccountDetailsActionTypes, AccountDetailsAction } from "./account-details.actions";
 import { getPaginationData } from "../../utils/api";
 import { AsyncTask } from "../../utils/types";
 
@@ -45,10 +42,7 @@ const initialAccountDetailsState: AccountDetailsState = {
   },
 };
 
-function accountDetailsReducer(
-  state = initialAccountDetailsState,
-  action: AccountDetailsAction
-) {
+function accountDetailsReducer(state = initialAccountDetailsState, action: AccountDetailsAction) {
   switch (action.type) {
     case AccountDetailsActionTypes.LOAD_ACCOUNT: {
       return {
@@ -144,10 +138,7 @@ function accountDetailsReducer(
     case AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS: {
       const transactions =
         state.historyTransactionsTask.status === "reloading"
-          ? [
-              ...state.historyTransactionsTask.data.transactions,
-              ...action.data.transactions,
-            ]
+          ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
           : action.data.transactions;
       const pagination = getPaginationData(
         action.data.pendingItems,

@@ -1,7 +1,7 @@
-import { ethers } from 'ethers'
-import hermezjs from '@hermeznetwork/hermezjs'
+import { ethers } from "ethers";
+import hermezjs from "@hermeznetwork/hermezjs";
 
-import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from '../constants'
+import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "../constants";
 
 /**
  * Fetches token balances in the user's Ethereum account. Only for those tokens registered in Hermez and Ether.
@@ -10,55 +10,60 @@ import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from '../constants'
  * @param {Object[]} hermezTokens - List of registered tokens in Hermez
  * @returns {Promise} - Array of { balance, token } where balance is a Number and token is the Token schema returned from the API.
  */
-async function getTokens (wallet, hermezTokens) {
+async function getTokens(wallet, hermezTokens) {
   if (wallet) {
-    const provider = hermezjs.Providers.getProvider()
-    const ethereumAddress = hermezjs.Addresses.getEthereumAddress(wallet.hermezEthereumAddress)
-    const partialERC20ABI = [{
-      constant: true,
-      inputs: [
-        {
-          name: '_owner',
-          type: 'address'
-        }
-      ],
-      name: 'balanceOf',
-      outputs: [
-        {
-          name: 'balance',
-          type: 'uint256'
-        }
-      ],
-      payable: false,
-      type: 'function'
-    }]
-    const balancePromises = hermezTokens.map(token => {
+    const provider = hermezjs.Providers.getProvider();
+    const ethereumAddress = hermezjs.Addresses.getEthereumAddress(wallet.hermezEthereumAddress);
+    const partialERC20ABI = [
+      {
+        constant: true,
+        inputs: [
+          {
+            name: "_owner",
+            type: "address",
+          },
+        ],
+        name: "balanceOf",
+        outputs: [
+          {
+            name: "balance",
+            type: "uint256",
+          },
+        ],
+        payable: false,
+        type: "function",
+      },
+    ];
+    const balancePromises = hermezTokens.map((token) => {
       if (token.id === ETHER_TOKEN_ID) {
         // tokenID 0 is for Ether
-        return provider.getBalance(ethereumAddress)
+        return provider.getBalance(ethereumAddress);
       } else {
         // For ERC 20 tokens, check the balance from the smart contract
-        const contract = new ethers.Contract(token.ethereumAddress, partialERC20ABI, provider)
+        const contract = new ethers.Contract(token.ethereumAddress, partialERC20ABI, provider);
 
-        return contract.balanceOf(ethereumAddress)
-          // We can ignore if a call to the contract of a specific token fails.
-          .catch(() => {})
+        return (
+          contract
+            .balanceOf(ethereumAddress)
+            // We can ignore if a call to the contract of a specific token fails.
+            .catch(() => {})
+        );
       }
-    })
+    });
     const balances = (await Promise.all(balancePromises))
       .map((tokenBalance, index) => {
-        const tokenData = hermezTokens[index]
+        const tokenData = hermezTokens[index];
 
         return {
           balance: tokenBalance,
-          token: tokenData
-        }
+          token: tokenData,
+        };
       })
-      .filter((account) => account.balance > 0)
+      .filter((account) => account.balance > 0);
 
-    return balances
+    return balances;
   } else {
-    throw Error('Ethereum wallet has not loaded')
+    throw Error("Ethereum wallet has not loaded");
   }
 }
 
@@ -67,8 +72,8 @@ async function getTokens (wallet, hermezTokens) {
  * @param {Object} tx - Ethereum transaction
  * @returns {Boolean}
  */
-function isTxCanceled (tx) {
-  return tx === null
+function isTxCanceled(tx) {
+  return tx === null;
 }
 
 /**
@@ -76,8 +81,8 @@ function isTxCanceled (tx) {
  * @param {Object} tx - Ethereum transaction
  * @returns {Boolean}
  */
-function isTxMined (tx) {
-  return tx !== null && tx.blockNumber !== null
+function isTxMined(tx) {
+  return tx !== null && tx.blockNumber !== null;
 }
 
 /**
@@ -89,15 +94,18 @@ function isTxMined (tx) {
  * @param {BigNumber} accountEthBalance - ETH balance of the account which the transaction has been sent from
  * @returns {Boolean}
  */
-function isTxExpectedToFail (tx, date, accountEthBalance) {
+function isTxExpectedToFail(tx, date, accountEthBalance) {
   if (tx?.blockNumber === null) {
-    const maxTxFee = tx.gasLimit.mul(tx.gasPrice)
-    if (Date.now() > new Date(date).getTime() + DEPOSIT_TX_TIMEOUT || maxTxFee.gt(accountEthBalance)) {
-      return true
+    const maxTxFee = tx.gasLimit.mul(tx.gasPrice);
+    if (
+      Date.now() > new Date(date).getTime() + DEPOSIT_TX_TIMEOUT ||
+      maxTxFee.gt(accountEthBalance)
+    ) {
+      return true;
     }
   }
 
-  return false
+  return false;
 }
 
 /**
@@ -105,14 +113,8 @@ function isTxExpectedToFail (tx, date, accountEthBalance) {
  * @param {Object} txReceipt - Ethereum transaction receipt
  * @returns {Boolean}
  */
-function hasTxBeenReverted (txReceipt) {
-  return txReceipt.status === 0
+function hasTxBeenReverted(txReceipt) {
+  return txReceipt.status === 0;
 }
 
-export {
-  getTokens,
-  isTxCanceled,
-  isTxMined,
-  isTxExpectedToFail,
-  hasTxBeenReverted
-}
+export { getTokens, isTxCanceled, isTxMined, isTxExpectedToFail, hasTxBeenReverted };

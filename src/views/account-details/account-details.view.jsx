@@ -1,33 +1,33 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { useTheme } from 'react-jss'
-import { push } from 'connected-react-router'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
-import { INTERNAL_ACCOUNT_ETH_ADDR } from '@hermeznetwork/hermezjs/src/constants'
+import React from "react";
+import PropTypes from "prop-types";
+import { useParams } from "react-router-dom";
+import { connect } from "react-redux";
+import { useTheme } from "react-jss";
+import { push } from "connected-react-router";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { INTERNAL_ACCOUNT_ETH_ADDR } from "@hermeznetwork/hermezjs/src/constants";
 
-import useAccountDetailsStyles from './account-details.styles'
-import * as globalThunks from '../../store/global/global.thunks'
-import * as accountDetailsThunks from '../../store/account-details/account-details.thunks'
-import Spinner from '../shared/spinner/spinner.view'
-import TransactionList from './components/transaction-list/transaction-list.view'
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from '../../utils/currencies'
-import Container from '../shared/container/container.view'
-import { changeHeader } from '../../store/global/global.actions'
-import TransactionActions from '../shared/transaction-actions/transaction-actions.view'
-import ExitList from '../shared/exit-list/exit-list.view'
-import FiatAmount from '../shared/fiat-amount/fiat-amount.view'
-import TokenBalance from '../shared/token-balance/token-balance.view'
-import InfiniteScroll from '../shared/infinite-scroll/infinite-scroll.view'
-import { resetState } from '../../store/account-details/account-details.actions'
-import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
-import { AUTO_REFRESH_RATE } from '../../constants'
-import { getAccountBalance } from '../../utils/accounts'
-import { mergeExits } from '../../utils/transactions'
-import * as storage from '../../utils/storage'
+import useAccountDetailsStyles from "./account-details.styles";
+import * as globalThunks from "../../store/global/global.thunks";
+import * as accountDetailsThunks from "../../store/account-details/account-details.thunks";
+import Spinner from "../shared/spinner/spinner.view";
+import TransactionList from "./components/transaction-list/transaction-list.view";
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "../../utils/currencies";
+import Container from "../shared/container/container.view";
+import { changeHeader } from "../../store/global/global.actions";
+import TransactionActions from "../shared/transaction-actions/transaction-actions.view";
+import ExitList from "../shared/exit-list/exit-list.view";
+import FiatAmount from "../shared/fiat-amount/fiat-amount.view";
+import TokenBalance from "../shared/token-balance/token-balance.view";
+import InfiniteScroll from "../shared/infinite-scroll/infinite-scroll.view";
+import { resetState } from "../../store/account-details/account-details.actions";
+import { WithdrawRedirectionRoute } from "../transaction/transaction.view";
+import { AUTO_REFRESH_RATE } from "../../constants";
+import { getAccountBalance } from "../../utils/accounts";
+import { mergeExits } from "../../utils/transactions";
+import * as storage from "../../utils/storage";
 
-function AccountDetails ({
+function AccountDetails({
   preferredCurrency,
   accountTask,
   l1TokenBalanceTask,
@@ -53,83 +53,85 @@ function AccountDetails ({
   onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
   onNavigateToTransactionDetails,
-  onCleanup
+  onCleanup,
 }) {
-  const theme = useTheme()
-  const classes = useAccountDetailsStyles()
-  const { accountIndex } = useParams()
+  const theme = useTheme();
+  const classes = useAccountDetailsStyles();
+  const { accountIndex } = useParams();
   const accountPendingDeposits = storage.getItemsByHermezAddress(
     pendingDeposits,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
-  )
+  );
   const accountPendingWithdraws = storage.getItemsByHermezAddress(
     pendingWithdraws,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
-  )
+  );
   const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
     pendingDelayedWithdraws,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
-  )
+  );
 
   React.useEffect(() => {
-    onChangeHeader(accountTask.data?.token.name)
-  }, [accountTask, onChangeHeader])
+    onChangeHeader(accountTask.data?.token.name);
+  }, [accountTask, onChangeHeader]);
 
   React.useEffect(() => {
     const loadInitialData = () => {
-      onCheckPendingDeposits()
-      onLoadAccount(accountIndex)
-      onLoadPoolTransactions(accountIndex)
-      onCheckPendingWithdrawals()
-      onCheckPendingDelayedWithdrawals()
-    }
-    const intervalId = setInterval(loadInitialData, AUTO_REFRESH_RATE)
+      onCheckPendingDeposits();
+      onLoadAccount(accountIndex);
+      onLoadPoolTransactions(accountIndex);
+      onCheckPendingWithdrawals();
+      onCheckPendingDelayedWithdrawals();
+    };
+    const intervalId = setInterval(loadInitialData, AUTO_REFRESH_RATE);
 
-    loadInitialData()
+    loadInitialData();
 
-    return () => { clearInterval(intervalId) }
-  }, [accountIndex, onCheckPendingDeposits, onLoadAccount, onLoadPoolTransactions])
-
-  React.useEffect(() => {
-    if (accountTask.status === 'successful') {
-      onLoadL1TokenBalance(accountTask.data.token)
-    }
-  }, [accountTask, onLoadL1TokenBalance])
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [accountIndex, onCheckPendingDeposits, onLoadAccount, onLoadPoolTransactions]);
 
   React.useEffect(() => {
-    if (accountTask.status === 'successful') {
-      onLoadExits(accountTask.data.token.id)
+    if (accountTask.status === "successful") {
+      onLoadL1TokenBalance(accountTask.data.token);
     }
-  }, [accountTask, onLoadExits])
+  }, [accountTask, onLoadL1TokenBalance]);
 
   React.useEffect(() => {
-    if (exitsTask.status === 'successful') {
-      onLoadHistoryTransactions(accountIndex, undefined, exitsTask.data)
+    if (accountTask.status === "successful") {
+      onLoadExits(accountTask.data.token.id);
     }
-  }, [exitsTask, accountIndex, onLoadHistoryTransactions])
+  }, [accountTask, onLoadExits]);
 
-  React.useEffect(() => onCleanup, [onCleanup])
+  React.useEffect(() => {
+    if (exitsTask.status === "successful") {
+      onLoadHistoryTransactions(accountIndex, undefined, exitsTask.data);
+    }
+  }, [exitsTask, accountIndex, onLoadHistoryTransactions]);
 
-  function getAccountTokenBalance (account) {
+  React.useEffect(() => onCleanup, [onCleanup]);
+
+  function getAccountTokenBalance(account) {
     if (!account) {
-      return undefined
+      return undefined;
     }
 
     const accountBalance = getAccountBalance(
       account,
       poolTransactionsTask.data,
       accountPendingDeposits
-    )
+    );
 
-    return getFixedTokenAmount(accountBalance, account.token.decimals)
+    return getFixedTokenAmount(accountBalance, account.token.decimals);
   }
 
-  function getAccountFiatBalance (account) {
-    if (!account || fiatExchangeRatesTask.status !== 'successful') {
-      return undefined
+  function getAccountFiatBalance(account) {
+    if (!account || fiatExchangeRatesTask.status !== "successful") {
+      return undefined;
     }
 
     return getTokenAmountInPreferredCurrency(
@@ -137,7 +139,7 @@ function AccountDetails ({
       account.token.USD,
       preferredCurrency,
       fiatExchangeRatesTask.data
-    )
+    );
   }
 
   /**
@@ -145,8 +147,8 @@ function AccountDetails ({
    * @param {Object[]} poolTransactions - Transactions from the pool
    * @returns {Object[]} Transactions from the pool which are of type Exit
    */
-  function getPendingExits (poolTransactions) {
-    return poolTransactions.filter((transaction) => transaction.type === TxType.Exit)
+  function getPendingExits(poolTransactions) {
+    return poolTransactions.filter((transaction) => transaction.type === TxType.Exit);
   }
 
   /**
@@ -154,8 +156,8 @@ function AccountDetails ({
    * @param {Object[]} poolTransactions - Transactions from the pool
    * @returns {Object[]} Transactions from the pool which are not of type Exit
    */
-  function getPendingTransactions (poolTransactions) {
-    return poolTransactions.filter((transaction) => transaction.type !== TxType.Exit)
+  function getPendingTransactions(poolTransactions) {
+    return poolTransactions.filter((transaction) => transaction.type !== TxType.Exit);
   }
 
   /**
@@ -163,8 +165,8 @@ function AccountDetails ({
    * @param {Object} transaction - Transaction
    * @returns {void}
    */
-  function handleTransactionClick (transaction) {
-    onNavigateToTransactionDetails(accountIndex, transaction.id || transaction.hash)
+  function handleTransactionClick(transaction) {
+    onNavigateToTransactionDetails(accountIndex, transaction.id || transaction.hash);
   }
 
   return (
@@ -186,9 +188,15 @@ function AccountDetails ({
           <TransactionActions
             accountIndex={accountIndex}
             tokenId={accountTask.data?.token.id}
-            hideDeposit={l1TokenBalanceTask.status !== 'successful' ||
-              accountTask.data?.hezEthereumAddress.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()}
-            hideWithdraw={accountTask.data?.hezEthereumAddress.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()}
+            hideDeposit={
+              l1TokenBalanceTask.status !== "successful" ||
+              accountTask.data?.hezEthereumAddress.toLowerCase() ===
+                INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
+            }
+            hideWithdraw={
+              accountTask.data?.hezEthereumAddress.toLowerCase() ===
+              INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
+            }
             hideSwap
           />
         </section>
@@ -197,68 +205,75 @@ function AccountDetails ({
         <section className={classes.section}>
           {(() => {
             if (
-              accountTask.status === 'loading' ||
-              accountTask.status === 'failed' ||
-              poolTransactionsTask.status === 'loading' ||
-              poolTransactionsTask.status === 'failed' ||
-              historyTransactionsTask.status === 'loading' ||
-              historyTransactionsTask.status === 'failed' ||
-              exitsTask.status === 'loading' ||
-              exitsTask.status === 'failed'
+              accountTask.status === "loading" ||
+              accountTask.status === "failed" ||
+              poolTransactionsTask.status === "loading" ||
+              poolTransactionsTask.status === "failed" ||
+              historyTransactionsTask.status === "loading" ||
+              historyTransactionsTask.status === "failed" ||
+              exitsTask.status === "loading" ||
+              exitsTask.status === "failed"
             ) {
-              return <Spinner />
+              return <Spinner />;
             }
 
             if (
-              (poolTransactionsTask.status === 'successful' ||
-              poolTransactionsTask.status === 'reloading') &&
-              (historyTransactionsTask.status === 'successful' ||
-              historyTransactionsTask.status === 'reloading') &&
-              (exitsTask.status === 'successful' ||
-              exitsTask.status === 'reloading')
+              (poolTransactionsTask.status === "successful" ||
+                poolTransactionsTask.status === "reloading") &&
+              (historyTransactionsTask.status === "successful" ||
+                historyTransactionsTask.status === "reloading") &&
+              (exitsTask.status === "successful" || exitsTask.status === "reloading")
             ) {
               const tokenPendingDeposits = accountPendingDeposits
-                .filter(deposit => deposit.account?.accountIndex === accountTask.data.accountIndex)
-                .reverse()
-              const tokenPendingWithdraws = accountPendingWithdraws
-                .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
-              const tokenPendingDelayedWithdraws = accountPendingDelayedWithdraws
-                .filter(withdraw => withdraw.token.id === accountTask.data.token.id)
+                .filter(
+                  (deposit) => deposit.account?.accountIndex === accountTask.data.accountIndex
+                )
+                .reverse();
+              const tokenPendingWithdraws = accountPendingWithdraws.filter(
+                (withdraw) => withdraw.token.id === accountTask.data.token.id
+              );
+              const tokenPendingDelayedWithdraws = accountPendingDelayedWithdraws.filter(
+                (withdraw) => withdraw.token.id === accountTask.data.token.id
+              );
 
               return (
                 <>
-                  {
-                    poolTransactionsTask.status === 'successful' || poolTransactionsTask.status === 'reloading'
-                      ? <ExitList
-                          transactions={getPendingExits(poolTransactionsTask.data)}
-                          fiatExchangeRates={fiatExchangeRatesTask.data}
-                          preferredCurrency={preferredCurrency}
-                          babyJubJub={wallet.publicKeyCompressedHex}
-                          pendingWithdraws={tokenPendingWithdraws}
-                          pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                          onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                          onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                          coordinatorState={coordinatorStateTask?.data}
-                          redirectTo={WithdrawRedirectionRoute.AccountDetails}
-                        />
-                      : <></>
-                }
-                  {
-                    exitsTask.status === 'successful' || exitsTask.status === 'reloading'
-                      ? <ExitList
-                          transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
-                          fiatExchangeRates={fiatExchangeRatesTask.data}
-                          preferredCurrency={preferredCurrency}
-                          babyJubJub={wallet.publicKeyCompressedHex}
-                          pendingWithdraws={tokenPendingWithdraws}
-                          pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                          onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                          onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                          coordinatorState={coordinatorStateTask?.data}
-                          redirectTo={WithdrawRedirectionRoute.AccountDetails}
-                        />
-                      : <></>
-                  }
+                  {poolTransactionsTask.status === "successful" ||
+                  poolTransactionsTask.status === "reloading" ? (
+                    <ExitList
+                      transactions={getPendingExits(poolTransactionsTask.data)}
+                      fiatExchangeRates={fiatExchangeRatesTask.data}
+                      preferredCurrency={preferredCurrency}
+                      babyJubJub={wallet.publicKeyCompressedHex}
+                      pendingWithdraws={tokenPendingWithdraws}
+                      pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
+                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                      coordinatorState={coordinatorStateTask?.data}
+                      redirectTo={WithdrawRedirectionRoute.AccountDetails}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                  {exitsTask.status === "successful" || exitsTask.status === "reloading" ? (
+                    <ExitList
+                      transactions={mergeExits(
+                        exitsTask.data.exits,
+                        accountPendingDelayedWithdraws
+                      )}
+                      fiatExchangeRates={fiatExchangeRatesTask.data}
+                      preferredCurrency={preferredCurrency}
+                      babyJubJub={wallet.publicKeyCompressedHex}
+                      pendingWithdraws={tokenPendingWithdraws}
+                      pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
+                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                      coordinatorState={coordinatorStateTask?.data}
+                      redirectTo={WithdrawRedirectionRoute.AccountDetails}
+                    />
+                  ) : (
+                    <></>
+                  )}
                   {tokenPendingDeposits && (
                     <TransactionList
                       arePending
@@ -282,7 +297,9 @@ function AccountDetails ({
                   <InfiniteScroll
                     asyncTaskStatus={historyTransactionsTask.status}
                     paginationData={historyTransactionsTask.data.pagination}
-                    onLoadNextPage={(fromItem) => onLoadHistoryTransactions(accountIndex, fromItem, exitsTask.data)}
+                    onLoadNextPage={(fromItem) =>
+                      onLoadHistoryTransactions(accountIndex, fromItem, exitsTask.data)
+                    }
                   >
                     <TransactionList
                       accountIndex={accountIndex}
@@ -293,15 +310,15 @@ function AccountDetails ({
                     />
                   </InfiniteScroll>
                 </>
-              )
+              );
             }
 
-            return <></>
+            return <></>;
           })()}
         </section>
       </Container>
     </div>
-  )
+  );
 }
 
 AccountDetails.propTypes = {
@@ -322,8 +339,8 @@ AccountDetails.propTypes = {
   onLoadExits: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
-  onNavigateToTransactionDetails: PropTypes.func.isRequired
-}
+  onNavigateToTransactionDetails: PropTypes.func.isRequired,
+};
 
 const mapStateToProps = (state) => ({
   preferredCurrency: state.myAccount.preferredCurrency,
@@ -338,41 +355,37 @@ const mapStateToProps = (state) => ({
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
-  coordinatorStateTask: state.global.coordinatorStateTask
-})
+  coordinatorStateTask: state.global.coordinatorStateTask,
+});
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccount: (accountIndex) =>
-    dispatch(accountDetailsThunks.fetchAccount(accountIndex)),
-  onLoadL1TokenBalance: (token) =>
-    dispatch(accountDetailsThunks.fetchL1TokenBalance(token)),
+  onLoadAccount: (accountIndex) => dispatch(accountDetailsThunks.fetchAccount(accountIndex)),
+  onLoadL1TokenBalance: (token) => dispatch(accountDetailsThunks.fetchL1TokenBalance(token)),
   onChangeHeader: (tokenName) =>
-    dispatch(changeHeader({
-      type: 'page',
-      data: {
-        title: tokenName,
-        goBackAction: push('/')
-      }
-    })),
+    dispatch(
+      changeHeader({
+        type: "page",
+        data: {
+          title: tokenName,
+          goBackAction: push("/"),
+        },
+      })
+    ),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadPoolTransactions: (accountIndex) =>
     dispatch(accountDetailsThunks.fetchPoolTransactions(accountIndex)),
   onLoadHistoryTransactions: (accountIndex, fromItem, exits) =>
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem, exits)),
-  onLoadExits: (tokenId) =>
-    dispatch(accountDetailsThunks.fetchExits(tokenId)),
+  onLoadExits: (tokenId) => dispatch(accountDetailsThunks.fetchExits(tokenId)),
   onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
-  onCheckPendingWithdrawals: () =>
-    dispatch(globalThunks.checkPendingWithdrawals()),
-  onCheckPendingDelayedWithdrawals: () =>
-    dispatch(globalThunks.checkPendingDelayedWithdrawals()),
+  onCheckPendingWithdrawals: () => dispatch(globalThunks.checkPendingWithdrawals()),
+  onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
     dispatch(push(`/accounts/${accountIndex}/transactions/${transactionId}`)),
-  onCleanup: () =>
-    dispatch(resetState())
-})
+  onCleanup: () => dispatch(resetState()),
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(AccountDetails)
+export default connect(mapStateToProps, mapDispatchToProps)(AccountDetails);
