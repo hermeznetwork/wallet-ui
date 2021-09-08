@@ -49,7 +49,7 @@ function fetchTotalBalance(
           (totalBalance, deposit) => {
             const tokenPrice =
               tokensPriceTask.status === "successful"
-                ? { ...tokensPriceTask.data.tokens[deposit.token.id] }
+                ? { ...tokensPriceTask.data[deposit.token.id] }
                 : { ...deposit.token };
 
             const fiatBalance = convertTokenAmountToFiat(

@@ -185,7 +185,7 @@ function fetchAccounts(
                 const tokenBalance = token.balance.toString();
                 const tokenPrice =
                   tokensPriceTask.status === "successful"
-                    ? { ...tokensPriceTask.data.tokens[token.token.id] }
+                    ? { ...tokensPriceTask.data[token.token.id] }
                     : { ...token.token };
 
                 const fiatBalance = convertTokenAmountToFiat(
