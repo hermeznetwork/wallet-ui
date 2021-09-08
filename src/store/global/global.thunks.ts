@@ -46,7 +46,7 @@ import {
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
  * a known environment and if not will use the one provided in the .env file
  */
-function setHermezEnvironment(chainId: number, chainName?: string) {
+function setHermezEnvironment(chainId: number, chainName: string) {
   return async (dispatch: AppDispatch) => {
     dispatch(globalActions.loadEthereumNetwork());
 

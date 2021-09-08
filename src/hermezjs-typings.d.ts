@@ -10,15 +10,6 @@ declare module "@hermeznetwork/*" {
 
   import { BigNumber, Transaction } from "ethers";
   export type BigNumber = BigNumber;
-
-  export interface EthereumNetwork {
-    // ToDo: It's ugly having "chainId" and "name" as optional, but currently setHermezEnvironment is called with no params
-    //       from the mapDispatchToProps of the app.view, so we can't always build the EthereumNetwork object with values.
-    //       For now, this interface reflects current reality, which should be reviewed so these value are mandatory.
-    chainId?: number;
-    name?: string;
-  }
-
   export interface L1Transaction extends Transaction {
     // ToDo: There are certain properties that do not match between our L1Transaction and the interface Transaction
     //       exported from Ethers (for example, hash is optional in an ethers Transaction).
