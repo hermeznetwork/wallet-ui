@@ -1,6 +1,8 @@
 import React from 'react'
 import { Route, useLocation, Redirect } from 'react-router-dom'
 
+import PrivateLayout from '../private-layout/private-layout.view'
+
 function PrivateRoute ({ isUserLoggedIn, route, onChangeRedirectRoute }) {
   const { pathname, search } = useLocation()
 
@@ -11,7 +13,11 @@ function PrivateRoute ({ isUserLoggedIn, route, onChangeRedirectRoute }) {
       path={route.path}
       render={() => {
         if (isUserLoggedIn) {
-          return route.render()
+          return (
+            <PrivateLayout>
+              {route.render()}
+            </PrivateLayout>
+          )
         } else {
           const currentRoute = `${pathname}${search}`
 

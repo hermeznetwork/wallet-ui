@@ -15,55 +15,51 @@ let refreshCancelTokenSource = axios.CancelToken.source()
  */
 function fetchTotalBalance (hermezEthereumAddress, poolTransactions, pendingDeposits, fiatExchangeRates, preferredCurrency) {
   return (dispatch, getState) => {
-    const { home: { totalBalanceTask } } = getState()
+    dispatch(homeActions.loadTotalBalance())
 
-    if (totalBalanceTask.status === 'pending' || totalBalanceTask.status === 'successful') {
-      dispatch(homeActions.loadTotalBalance())
+    return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
+      .then((res) => {
+        const accounts = res.accounts.map((account) => {
+          const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
+          const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
+          const fiatBalance = getTokenAmountInPreferredCurrency(
+            fixedTokenAmount,
+            account.token.USD,
+            preferredCurrency,
+            fiatExchangeRates
+          )
 
-      return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
-        .then((res) => {
-          const accounts = res.accounts.map((account) => {
-            const accountBalance = getAccountBalance(account, poolTransactions, pendingDeposits)
-            const fixedTokenAmount = getFixedTokenAmount(accountBalance, account.token.decimals)
-            const fiatBalance = getTokenAmountInPreferredCurrency(
-              fixedTokenAmount,
-              account.token.USD,
-              preferredCurrency,
-              fiatExchangeRates
-            )
-
-            return {
-              ...account,
-              balance: accountBalance,
-              fiatBalance
-            }
-          })
-
-          return { ...res, accounts }
+          return {
+            ...account,
+            balance: accountBalance,
+            fiatBalance
+          }
         })
-        .then((res) => {
-          const pendingCreateAccountDeposits = pendingDeposits
-            .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
-          const totalPendingCreateAccountDepositsBalance = pendingCreateAccountDeposits.reduce((totalBalance, deposit) => {
-            const fixedTokenAmount = getFixedTokenAmount(deposit.amount, deposit.token.decimals)
-            const fiatBalance = getTokenAmountInPreferredCurrency(
-              fixedTokenAmount,
-              deposit.token.USD,
-              preferredCurrency,
-              fiatExchangeRates
-            )
 
-            return totalBalance + Number(fiatBalance)
-          }, 0)
-          const totalAccountsBalance = res.accounts.reduce((totalBalance, account) => {
-            return totalBalance + Number(account.fiatBalance)
-          }, 0)
-          const totalBalance = totalPendingCreateAccountDepositsBalance + totalAccountsBalance
+        return { ...res, accounts }
+      })
+      .then((res) => {
+        const pendingCreateAccountDeposits = pendingDeposits
+          .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
+        const totalPendingCreateAccountDepositsBalance = pendingCreateAccountDeposits.reduce((totalBalance, deposit) => {
+          const fixedTokenAmount = getFixedTokenAmount(deposit.amount, deposit.token.decimals)
+          const fiatBalance = getTokenAmountInPreferredCurrency(
+            fixedTokenAmount,
+            deposit.token.USD,
+            preferredCurrency,
+            fiatExchangeRates
+          )
 
-          dispatch(homeActions.loadTotalBalanceSuccess(totalBalance))
-        })
-        .catch((err) => dispatch(homeActions.loadTotalBalanceFailure(err)))
-    }
+          return totalBalance + Number(fiatBalance)
+        }, 0)
+        const totalAccountsBalance = res.accounts.reduce((totalBalance, account) => {
+          return totalBalance + Number(account.fiatBalance)
+        }, 0)
+        const totalBalance = totalPendingCreateAccountDepositsBalance + totalAccountsBalance
+
+        dispatch(homeActions.loadTotalBalanceSuccess(totalBalance))
+      })
+      .catch((err) => dispatch(homeActions.loadTotalBalanceFailure(err)))
   }
 }
 
@@ -176,7 +172,7 @@ function refreshAccounts (hermezAddress, poolTransactions, pendingDeposits, fiat
                 fiatBalance
               }
             })
-          const pendingItems = results[results.length - 1].pendingItems
+          const pendingItems = results[results.length - 1] ? results[results.length - 1].pendingItems : 0
 
           return { accounts, pendingItems }
         })
@@ -207,15 +203,13 @@ function fetchPoolTransactions () {
  */
 function fetchExits () {
   return (dispatch, getState) => {
-    const { home: { exitsTask }, global: { wallet } } = getState()
+    const { global: { wallet } } = getState()
 
-    if (exitsTask.status === 'pending' || exitsTask.status === 'successful') {
-      dispatch(homeActions.loadExits())
+    dispatch(homeActions.loadExits())
 
-      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
-        .then(exits => dispatch(homeActions.loadExitsSuccess(exits)))
-        .catch(err => dispatch(homeActions.loadExitsFailure(err)))
-    }
+    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
+      .then(exits => dispatch(homeActions.loadExitsSuccess(exits)))
+      .catch(err => dispatch(homeActions.loadExitsFailure(err)))
   }
 }
 

@@ -103,6 +103,7 @@ function homeReducer (state = initialHomeState, action) {
         action.data.accounts,
         PaginationOrder.DESC
       )
+      const fromItemHistory = []
 
       return {
         ...state,
@@ -111,7 +112,8 @@ function homeReducer (state = initialHomeState, action) {
           data: {
             ...state.accountsTask.data,
             accounts: action.data.accounts,
-            pagination
+            pagination,
+            fromItemHistory
           }
         }
       }
@@ -119,7 +121,8 @@ function homeReducer (state = initialHomeState, action) {
     case homeActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
-        poolTransactionsTask: state.poolTransactionsTask.status === 'pending'
+        poolTransactionsTask: state.poolTransactionsTask.status === 'pending' ||
+          state.poolTransactionsTask.status === 'failed'
           ? { status: 'loading' }
           : { ...state.poolTransactionsTask, status: 'reloading' }
       }
@@ -145,7 +148,8 @@ function homeReducer (state = initialHomeState, action) {
     case homeActionTypes.LOAD_EXITS: {
       return {
         ...state,
-        exitsTask: state.exitsTask.status === 'pending'
+        exitsTask: state.exitsTask.status === 'pending' ||
+          state.exitsTask.status === 'failed'
           ? { status: 'loading' }
           : { ...state.exitsTask, status: 'reloading' }
       }

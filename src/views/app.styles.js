@@ -45,7 +45,8 @@ const useAppStyles = createUseStyles(theme => ({
   ],
   '@global': {
     '*': {
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      color: theme.palette.black
     },
     body: {
       fontFamily: 'Modern Era',

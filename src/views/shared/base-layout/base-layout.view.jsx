@@ -1,39 +1,29 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
 
-import useLayoutStyles from './layout.styles'
-import MainHeader from '../main-header/main-header.view'
-import Main from '../main/main.view'
-import PageHeader from '../page-header/page-header.view'
-import Snackbar from '../snackbar/snackbar.view'
-import { closeSnackbar } from '../../../store/global/global.actions'
-import RewardsSidenav from '../../shared/rewards-sidenav/rewards-sidenav.view'
-import * as globalThunks from '../../../store/global/global.thunks'
-import * as globalActions from '../../../store/global/global.actions'
 import { hasRewardStarted } from '../../../utils/rewards'
+import MainHeader from '../main-header/main-header.view'
+import PageHeader from '../page-header/page-header.view'
+import RewardsSidenav from '../rewards-sidenav/rewards-sidenav.view'
+import Snackbar from '../snackbar/snackbar.view'
 
-function Layout ({
+function BaseLayout ({
   header,
   snackbar,
   rewards,
+  preferredCurrency,
+  fiatExchangeRatesTask,
   children,
   onGoBack,
   onClose,
   onCloseSnackbar,
-  onLoadReward,
   onLoadEarnedReward,
   onLoadRewardPercentage,
   onLoadRewardAccountEligibility,
   onLoadToken,
-  onCloseRewardsSidenav,
-  preferredCurrency,
-  fiatExchangeRatesTask
+  onCloseRewardsSidenav
 }) {
-  const classes = useLayoutStyles()
-
   return (
-    <div className={classes.root}>
+    <>
       {header.type === 'main' && (
         <MainHeader
           showNotificationsIndicator={
@@ -52,9 +42,7 @@ function Layout ({
           onClose={onClose}
         />
       )}
-      <Main>
-        {children}
-      </Main>
+      {children}
       {snackbar.status === 'open' && (
         <Snackbar
           message={snackbar.message}
@@ -83,36 +71,8 @@ function Layout ({
           />
         )
       }
-    </div>
+    </>
   )
 }
 
-Layout.propTypes = {
-  header: PropTypes.object.isRequired
-}
-
-const mapStateToProps = (state) => ({
-  header: state.global.header,
-  snackbar: state.global.snackbar,
-  rewards: state.global.rewards,
-  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  preferredCurrency: state.myAccount.preferredCurrency
-})
-
-const mapDispatchToProps = (dispatch) => ({
-  onCloseSnackbar: () => dispatch(closeSnackbar()),
-  onLoadEarnedReward: () =>
-    dispatch(globalThunks.fetchEarnedReward()),
-  onLoadRewardPercentage: () =>
-    dispatch(globalThunks.fetchRewardPercentage()),
-  onLoadRewardAccountEligibility: () =>
-    dispatch(globalThunks.fetchRewardAccountEligibility()),
-  onLoadToken: () =>
-    dispatch(globalThunks.fetchRewardToken()),
-  onCloseRewardsSidenav: () =>
-    dispatch(globalActions.closeRewardsSidenav()),
-  onGoBack: (action) => dispatch(action),
-  onClose: (action) => dispatch(action)
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(Layout)
+export default BaseLayout

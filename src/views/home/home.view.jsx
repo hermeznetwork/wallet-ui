@@ -23,6 +23,7 @@ import { WithdrawRedirectionRoute } from '../transaction/transaction.view'
 import { TxType } from '@hermeznetwork/hermezjs/src/enums'
 import PendingDepositList from './components/pending-deposit-list/pending-deposit-list.view'
 import * as storage from '../../utils/storage'
+import { mergeExits } from '../../utils/transactions'
 import ReportIssueButton from './components/report-issue-button/report-issue-button.view'
 import { AUTO_REFRESH_RATE } from '../../constants'
 import * as globalActions from '../../store/global/global.actions'
@@ -56,7 +57,6 @@ function Home ({
   onCheckPendingWithdrawals,
   onNavigateToAccountDetails,
   onOpenSnackbar,
-  onOpenRewardsSidenav,
   onCleanup
 }) {
   const theme = useTheme()
@@ -162,6 +162,9 @@ function Home ({
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
         <section className={classes.section}>
+          {ethereumNetworkTask.data.chainId === 4 && (
+            <p className={classes.networkLabel}>{ethereumNetworkTask.data.name}</p>
+          )}
           <Button
             text={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
             className={classes.walletAddress}
@@ -202,9 +205,10 @@ function Home ({
               : <></>
           }
           {
-            exitsTask.status === 'successful' || exitsTask.status === 'reloading'
-              ? <ExitList
-                  transactions={exitsTask.data.exits}
+            (exitsTask.status === 'successful' ||
+              exitsTask.status === 'reloading') &&
+                <ExitList
+                  transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
                   fiatExchangeRates={
                   fiatExchangeRatesTask.status === 'successful'
                     ? fiatExchangeRatesTask.data
@@ -219,7 +223,6 @@ function Home ({
                   coordinatorState={coordinatorStateTask?.data}
                   redirectTo={WithdrawRedirectionRoute.Home}
                 />
-              : <></>
           }
           {(() => {
             switch (accountsTask.status) {

@@ -192,7 +192,10 @@ TransactionOverview.propTypes = {
   wallet: PropTypes.object,
   transactionType: PropTypes.string.isRequired,
   to: PropTypes.object.isRequired,
-  amount: PropTypes.string.isRequired,
+  amount: PropTypes.oneOfType([
+    PropTypes.string.isRequired,
+    PropTypes.object.isRequired
+  ]),
   fee: PropTypes.number,
   exit: PropTypes.object,
   instantWithdrawal: PropTypes.bool,
