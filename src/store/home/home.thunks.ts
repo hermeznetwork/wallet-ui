@@ -3,7 +3,7 @@ import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
-import * as homeActions from "./home.actions";
+import * as homeActions from "src/store/home/home.actions";
 import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 
