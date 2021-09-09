@@ -72,6 +72,22 @@ const useQuoteStyles = createUseStyles((theme) => ({
     color: theme.palette.red.main,
     marginTop: theme.spacing(1),
   },
+  rewardCell: {
+    flex: "1 1 20%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+  },
+  reward: {
+    fontWeight: theme.fontWeights.medium,
+    marginBottom: theme.spacing(1),
+    color: theme.palette.black,
+  },
+  rewardHelperText: {
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.main,
+  },
 }));
 
 export default useQuoteStyles;
