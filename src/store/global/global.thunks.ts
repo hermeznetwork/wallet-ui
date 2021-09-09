@@ -8,7 +8,7 @@ import hermezjs, {
 } from "@hermeznetwork/hermezjs";
 import { push } from "connected-react-router";
 import { ethers } from "ethers";
-import { Block, TransactionReceipt } from "@ethersproject/providers";
+import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import Connector from "@walletconnect/web3-provider";
 
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
@@ -32,7 +32,6 @@ import { AppDispatch } from "src";
 // domain
 import { ISOStringDate } from "src/domain/";
 import {
-  L1Transaction,
   CoordinatorState,
   Withdraw,
   DelayedWithdraw,
@@ -40,7 +39,7 @@ import {
   HermezNetworkStatus,
   Exit,
   Deposit,
-  L2Transaction,
+  Transaction,
   Token,
 } from "src/domain/hermez";
 
@@ -381,7 +380,7 @@ function checkPendingDelayedWithdrawals() {
         );
 
         // Gets the actual transaction and checks if it doesn't exist or is expected to fail
-        const pendingDelayedWithdrawsTxs: Promise<L1Transaction>[] =
+        const pendingDelayedWithdrawsTxs: Promise<TransactionResponse>[] =
           accountPendingDelayedWithdraws.map((pendingDelayedWithdraw) => {
             return provider.getTransaction(pendingDelayedWithdraw.hash).then((tx) => {
               if (tx.blockNumber !== undefined) {
@@ -478,9 +477,9 @@ function checkPendingWithdrawals() {
           hermezEthereumAddress
         );
         // Gets the actual transaction and checks if it doesn't exist or is expected to fail
-        const pendingWithdrawsTxs: Promise<L1Transaction>[] = accountPendingWithdraws.map(
+        const pendingWithdrawsTxs: Promise<TransactionResponse>[] = accountPendingWithdraws.map(
           (pendingWithdraw) => {
-            return provider.getTransaction(pendingWithdraw.hash).then((tx: L1Transaction) => {
+            return provider.getTransaction(pendingWithdraw.hash).then((tx: TransactionResponse) => {
               // Checks here to have access to pendingWithdraw.timestamp
               if (
                 isTxCanceled(tx) ||
@@ -674,9 +673,9 @@ function checkPendingDeposits() {
           chainId,
           hermezEthereumAddress
         );
-        const pendingDepositsTxs: Promise<L1Transaction>[] = accountPendingDeposits.map(
+        const pendingDepositsTxs: Promise<TransactionResponse>[] = accountPendingDeposits.map(
           (pendingDeposit) => {
-            return provider.getTransaction(pendingDeposit.hash).then((tx: L1Transaction) => {
+            return provider.getTransaction(pendingDeposit.hash).then((tx: TransactionResponse) => {
               if (
                 isTxCanceled(tx) ||
                 isTxExpectedToFail(tx, pendingDeposit.timestamp, accountEthBalance)
@@ -702,7 +701,7 @@ function checkPendingDeposits() {
               (txReceipt) => txReceipt.status === 1 && txReceipt.logs && txReceipt.logs.length > 0
             );
             const transactionHistoryPromises = successfulTxReceipts.reduce(
-              (accL2Transactions: Promise<L2Transaction>[], txReceipt) => {
+              (accL2Transactions: Promise<Transaction>[], txReceipt) => {
                 // Need to parse logs, but only events from the Hermez SC. Ignore errors when trying to parse others
                 const parsedLogs = [];
                 for (const txReceiptLog of txReceipt.logs) {
@@ -737,12 +736,11 @@ function checkPendingDeposits() {
 
             Promise.all(transactionHistoryPromises)
               .then((results) => {
-                results
-                  .forEach((transaction) => {
-                    if (transaction.batchNum !== null) {
-                      dispatch(removePendingDepositByTransactionId(transaction.id));
-                    }
-                  });
+                results.forEach((transaction) => {
+                  if (transaction.batchNum !== null) {
+                    dispatch(removePendingDepositByTransactionId(transaction.id));
+                  }
+                });
                 dispatch(globalActions.checkPendingDepositsSuccess());
               })
               .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()));
@@ -763,7 +761,7 @@ function checkPendingTransactions() {
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
 
       hermezjs.TxPool.getPoolTransactions(undefined, wallet.publicKeyCompressedHex).then(
-        (poolTransactions: L2Transaction[]) => {
+        (poolTransactions: Transaction[]) => {
           const tenMinutesInMs = 10 * 60 * 1000;
           const oneDayInMs = 24 * 60 * 60 * 1000;
           const resendTransactionsRequests = poolTransactions

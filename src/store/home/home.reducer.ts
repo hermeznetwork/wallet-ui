@@ -4,7 +4,7 @@ import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 import { Pagination } from "src/utils/api";
 
 // domain
-import { Account, L2Transaction } from "src/domain/hermez";
+import { Account, Transaction } from "src/domain/hermez";
 
 // persistence
 import { Exits } from "src/persistence";
@@ -20,7 +20,7 @@ interface ViewAccounts {
 export interface HomeState {
   totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
-  poolTransactionsTask: AsyncTask<L2Transaction[], string>;
+  poolTransactionsTask: AsyncTask<Transaction[], string>;
   exitsTask: AsyncTask<Exits, string>;
 }
 
