@@ -738,7 +738,6 @@ function checkPendingDeposits() {
             Promise.all(transactionHistoryPromises)
               .then((results) => {
                 results
-                  .filter((result) => result !== undefined)
                   .forEach((transaction) => {
                     if (transaction.batchNum !== null) {
                       dispatch(removePendingDepositByTransactionId(transaction.id));
