@@ -22,6 +22,9 @@ const useQuoteSelectorStyles = createUseStyles((theme) => ({
   toTokensHeader: {
     flex: "1 1 40%",
   },
+  rewardHeader: {
+    flex: "1 1 20%",
+  },
 }));
 
 export default useQuoteSelectorStyles;
