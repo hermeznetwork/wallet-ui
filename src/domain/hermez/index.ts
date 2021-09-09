@@ -18,7 +18,6 @@ export type {
   Wallet,
   ISOStringDate,
   MerkleProof,
-  Reward,
   Signer,
   Token,
   Withdraw,

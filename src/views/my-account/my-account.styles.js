@@ -36,10 +36,6 @@ const useMyAccountStyles = createUseStyles((theme) => ({
     flexDirection: "column",
     alignItems: "flex-start",
   },
-  rewardsCard: {
-    width: "100%",
-    marginBottom: theme.spacing(4),
-  },
   settingContainer: {
     display: "flex",
     flexDirection: "column",

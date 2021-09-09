@@ -19,7 +19,6 @@ import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import * as globalActions from "src/store/global/global.actions";
 import * as priceUpdaterApi from "src/apis/price-updater";
 import * as hermezWebApi from "src/apis/hermez-web";
-import * as airdropApi from "src/apis/rewards";
 import * as storage from "src/utils/storage";
 import * as constants from "src/constants";
 import { isTxMined, hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from "src/utils/ethereum";
@@ -836,9 +835,6 @@ function disconnectWallet() {
 
     dispatch(globalActions.unloadWallet());
     dispatch(push("/login"));
-    if (process.env.REACT_APP_ENABLE_AIRDROP === "true") {
-      dispatch(globalActions.closeRewardsSidenav());
-    }
   };
 }
 
@@ -849,117 +845,6 @@ function disconnectWallet() {
 function reloadApp() {
   return () => {
     window.location.reload();
-  };
-}
-
-/**
- * Fetches Airdrop estimated reward for a given ethAddr
- * @returns {void}
- */
-function fetchReward() {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(globalActions.loadReward());
-
-    return airdropApi
-      .getReward()
-      .then((res: unknown) => dispatch(globalActions.loadRewardSuccess(res)))
-      .catch(() =>
-        dispatch(globalActions.loadRewardFailure("An error occurred loading estimated reward."))
-      );
-  };
-}
-
-/**
- * Fetches Airdrop earned reward for a given ethAddr
- * @returns {void}
- */
-function fetchEarnedReward() {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
-    const {
-      global: { wallet },
-    } = getState();
-    if (wallet !== undefined) {
-      const { hermezEthereumAddress } = wallet;
-      dispatch(globalActions.loadEarnedReward());
-
-      return airdropApi
-        .getAccumulatedEarnedReward(getEthereumAddress(hermezEthereumAddress))
-        .then((res) => dispatch(globalActions.loadEarnedRewardSuccess(res)))
-        .catch((err) => {
-          if (err.response?.status === HttpStatusCode.NOT_FOUND) {
-            dispatch(globalActions.loadEarnedRewardSuccess(0));
-          } else {
-            dispatch(
-              globalActions.loadEarnedRewardFailure("An error occurred loading estimated reward.")
-            );
-          }
-        });
-    }
-  };
-}
-
-/**
- * Fetches Airdrop reward percentage
- * @returns {void}
- */
-function fetchRewardPercentage() {
-  return (dispatch: AppDispatch) => {
-    dispatch(globalActions.loadRewardPercentage());
-
-    return airdropApi
-      .getRewardPercentage()
-      .then((res) => dispatch(globalActions.loadRewardPercentageSuccess(res)))
-      .catch(() =>
-        dispatch(
-          globalActions.loadRewardPercentageFailure("An error occurred loading reward percentage.")
-        )
-      );
-  };
-}
-
-/**
- * Checks if an account is eligible for the Airdrop
- * @returns {void}
- */
-function fetchRewardAccountEligibility() {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
-    const {
-      global: { wallet },
-    } = getState();
-    if (wallet !== undefined) {
-      const { hermezEthereumAddress } = wallet;
-      dispatch(globalActions.loadRewardAccountEligibility());
-
-      return airdropApi
-        .getAccountEligibility(getEthereumAddress(hermezEthereumAddress))
-        .then((res) => dispatch(globalActions.loadRewardAccountEligibilitySuccess(res)))
-        .catch((err) => {
-          if (err.response?.status === HttpStatusCode.NOT_FOUND) {
-            dispatch(globalActions.loadRewardAccountEligibilitySuccess(false));
-          } else {
-            dispatch(
-              globalActions.loadRewardAccountEligibilityFailure(
-                "An error occurred loading account eligibility."
-              )
-            );
-          }
-        });
-    }
-  };
-}
-
-/**
- * Fetches details for the token used for the rewards
- * @param {Number} tokenId - A token ID
- * @returns {Object} Response data with a specific token
- */
-function fetchRewardToken() {
-  return (dispatch: AppDispatch) => {
-    dispatch(globalActions.loadRewardToken());
-
-    return CoordinatorAPI.getToken(constants.HEZ_TOKEN_ID)
-      .then((res: unknown) => dispatch(globalActions.loadRewardTokenSuccess(res)))
-      .catch(() => globalActions.loadRewardTokenFailure("An error occured loading token."));
   };
 }
 
@@ -1000,10 +885,5 @@ export {
   fetchCoordinatorState,
   disconnectWallet,
   reloadApp,
-  fetchReward,
-  fetchEarnedReward,
-  fetchRewardPercentage,
-  fetchRewardAccountEligibility,
-  fetchRewardToken,
   fetchTokensPrice,
 };

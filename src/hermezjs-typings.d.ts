@@ -105,9 +105,6 @@ declare module "@hermeznetwork/*" {
     type: "Deposit" | "CreateAccountDeposit";
   }
 
-  // ToDo: What is the shape of a reward?
-  export type Reward = unknown;
-
   export type Account = HermezApiResourceItem & {
     accountIndex: string;
     balance: string;

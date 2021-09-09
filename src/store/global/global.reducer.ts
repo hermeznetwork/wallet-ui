@@ -16,7 +16,6 @@ import {
   Signer,
   FiatExchangeRates,
   CoordinatorState,
-  Reward,
   Token,
 } from "src/domain/hermez";
 
@@ -36,16 +35,6 @@ type PendingWithdraws = Record<ChainId, Record<HermezEthereumAddress, Withdraw[]
 type PendingDelayedWithdraws = Record<ChainId, Record<HermezEthereumAddress, DelayedWithdraw[]>>;
 type PendingDeposits = Record<ChainId, Record<HermezEthereumAddress, Deposit[]>>;
 
-interface RewardsState {
-  sidenav: {
-    status: "open" | "closed";
-  };
-  rewardTask: AsyncTask<Reward, string>;
-  earnedRewardTask: AsyncTask<Reward, string>;
-  rewardPercentageTask: AsyncTask<unknown, string>;
-  accountEligibilityTask: AsyncTask<unknown, string>;
-  tokenTask: AsyncTask<Token, string>;
-}
 export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
@@ -64,7 +53,6 @@ export interface GlobalState {
   pendingDepositsCheckTask: AsyncTask<null, string>;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
   tokensPriceTask: AsyncTask<Token[], string>;
-  rewards: RewardsState;
 }
 
 function getInitialGlobalState(): GlobalState {
@@ -105,26 +93,6 @@ function getInitialGlobalState(): GlobalState {
     },
     tokensPriceTask: {
       status: "pending",
-    },
-    rewards: {
-      sidenav: {
-        status: "closed",
-      },
-      rewardTask: {
-        status: "pending",
-      },
-      earnedRewardTask: {
-        status: "pending",
-      },
-      rewardPercentageTask: {
-        status: "pending",
-      },
-      accountEligibilityTask: {
-        status: "pending",
-      },
-      tokenTask: {
-        status: "pending",
-      },
     },
   };
 }
@@ -502,218 +470,6 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
         },
       };
     }
-    case GlobalActionTypes.OPEN_REWARDS_SIDENAV: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          sidenav: {
-            status: "open",
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.CLOSE_REWARDS_SIDENAV: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          sidenav: {
-            status: "closed",
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          rewardTask:
-            state.rewards.rewardTask.status === "successful"
-              ? { status: "reloading", data: state.rewards.rewardTask.data }
-              : { status: "loading" },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_SUCCESS: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          rewardTask: {
-            status: "successful",
-            data: action.reward,
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_FAILURE: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          rewardTask: {
-            status: "failed",
-            error: action.error,
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_EARNED_REWARD: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          earnedRewardTask:
-            state.rewards.earnedRewardTask.status === "successful"
-              ? {
-                  status: "reloading",
-                  data: state.rewards.earnedRewardTask.data,
-                }
-              : { status: "loading" },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_EARNED_REWARD_SUCCESS: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          earnedRewardTask: {
-            status: "successful",
-            data: action.earnedReward,
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_EARNED_REWARD_FAILURE: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          earnedRewardTask: {
-            status: "failed",
-            error: action.error,
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_PERCENTAGE: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          rewardPercentageTask:
-            state.rewards.rewardPercentageTask.status === "successful"
-              ? {
-                  status: "reloading",
-                  data: state.rewards.rewardPercentageTask.data,
-                }
-              : { status: "loading" },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          rewardPercentageTask: {
-            status: "successful",
-            data: action.rewardPercentage,
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          rewardPercentageTask: {
-            status: "failed",
-            error: action.error,
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          accountEligibilityTask:
-            state.rewards.accountEligibilityTask.status === "successful"
-              ? {
-                  status: "reloading",
-                  data: state.rewards.accountEligibilityTask.data,
-                }
-              : { status: "loading" },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          accountEligibilityTask: {
-            status: "successful",
-            data: action.rewardAccountEligibility,
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          accountEligibilityTask: {
-            status: "failed",
-            error: action.error,
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_TOKEN: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          tokenTask:
-            state.rewards.tokenTask.status === "successful"
-              ? { status: "reloading", data: state.rewards.tokenTask.data }
-              : { status: "loading" },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_TOKEN_SUCCESS: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          tokenTask: {
-            status: "successful",
-            data: action.rewardToken,
-          },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_REWARD_TOKEN_FAILURE: {
-      return {
-        ...state,
-        rewards: {
-          ...state.rewards,
-          tokenTask: {
-            status: "failed",
-            error: action.error,
-          },
-        },
-      };
-    }
-
     case GlobalActionTypes.LOAD_TOKENS_PRICE: {
       return state.tokensPriceTask.status === "successful"
         ? state
