@@ -10,7 +10,7 @@ import { RootState } from "src/store";
 import { AppDispatch } from "src";
 
 // domain
-import { Account, Token, L2Transaction, Exit } from "src/domain/hermez";
+import { Account, Token, Transaction, Exit } from "src/domain/hermez";
 
 // persistence
 import { Transactions, Exits } from "src/persistence";
@@ -86,8 +86,8 @@ function fetchPoolTransactions(accountIndex: Account["accountIndex"]) {
     if (wallet !== undefined) {
       getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
         // We need to reverse the txs to match the order of the txs from the history (DESC)
-        .then((transactions: L2Transaction[]) => transactions.reverse())
-        .then((transactions: L2Transaction[]) =>
+        .then((transactions: Transaction[]) => transactions.reverse())
+        .then((transactions: Transaction[]) =>
           dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions))
         )
         .catch((err: Error) => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)));
@@ -95,7 +95,7 @@ function fetchPoolTransactions(accountIndex: Account["accountIndex"]) {
   };
 }
 
-function filterExitsFromHistoryTransactions(historyTransactions: L2Transaction[], exits: Exit[]) {
+function filterExitsFromHistoryTransactions(historyTransactions: Transaction[], exits: Exit[]) {
   return historyTransactions.filter((transaction) => {
     if (transaction.type === TxType.Exit) {
       const exitTx = exits.find(
@@ -208,7 +208,7 @@ function refreshHistoryTransactions(accountIndex: Account["accountIndex"], histo
       Promise.all(requests)
         .then((results) => {
           const transactions = results.reduce(
-            (acc: L2Transaction[], result: Transactions) => [...acc, ...result.transactions],
+            (acc: Transaction[], result: Transactions) => [...acc, ...result.transactions],
             []
           );
           const filteredTransactions = filterExitsFromHistoryTransactions(

@@ -11,7 +11,7 @@ import { RootState } from "src/store";
 import { AppDispatch } from "src";
 
 // domain
-import { L2Transaction, Deposit, FiatExchangeRates, Account } from "src/domain/hermez";
+import { Transaction, Deposit, FiatExchangeRates, Account } from "src/domain/hermez";
 import { Accounts } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
@@ -22,7 +22,7 @@ let refreshCancelTokenSource = axios.CancelToken.source();
  */
 function fetchTotalBalance(
   hermezEthereumAddress: string,
-  poolTransactions: L2Transaction[],
+  poolTransactions: Transaction[],
   pendingDeposits: Deposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
@@ -89,7 +89,7 @@ function fetchTotalBalance(
 function fetchAccounts(
   hermezAddress: string,
   fromItem: number,
-  poolTransactions: L2Transaction[],
+  poolTransactions: Transaction[],
   pendingDeposits: Deposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
@@ -145,7 +145,7 @@ function fetchAccounts(
  */
 function refreshAccounts(
   hermezAddress: string,
-  poolTransactions: L2Transaction[],
+  poolTransactions: Transaction[],
   pendingDeposits: Deposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string

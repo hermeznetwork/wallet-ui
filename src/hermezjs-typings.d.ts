@@ -1,33 +1,14 @@
+/**
+ * Hermez network types.
+ *
+ * Some types and props are currently commented because are not used by this app.
+ * As we proceed with the migration of the application to typescript, more
+ * properties and types will likely be required. We can uncomment them as
+ * required and finally remove all those not required.
+ */
+
 declare module "@hermeznetwork/*" {
-  /**
-   * Ethereum network types
-   *
-   * Some types and props are currently commented because are not used.
-   * As we proceed with the migration of the application to typescript,
-   * more properties and types will likely be required. We can uncomment
-   * them as required and finally remove all those not required.
-   */
-
-  import { BigNumber, Transaction } from "ethers";
-  export interface L1Transaction extends Transaction {
-    // ToDo: There are certain properties that do not match between our L1Transaction and the interface Transaction
-    //       exported from Ethers (for example, hash is optional in an ethers Transaction).
-    //       Does hermezjs fill these props or should be relay on the official type and change our wallet accordingly?
-    hash: string;
-    // type: number;
-    blockNumber?: number;
-    // confirmations: number;
-    // creates?: unknown;
-  }
-
-  /**
-   * Hermez network types.
-   *
-   * Some types and props are currently commented because are not used.
-   * As we proceed with the migration of the application to typescript,
-   * more properties and types will likely be required. We can uncomment
-   * them as required and finally remove all those not required.
-   */
+  import { BigNumber } from "ethers";
 
   export type ISOStringDate = string;
 
@@ -134,7 +115,7 @@ declare module "@hermeznetwork/*" {
     token: Token;
   };
 
-  export type L2Transaction = HermezApiResourceItem & {
+  export type Transaction = HermezApiResourceItem & {
     // accountIndex: string;
     amount: string;
     // balance: string;
@@ -298,7 +279,7 @@ declare module "@hermeznetwork/*" {
 
   // persistence
   export interface Transactions {
-    transactions: L2Transaction[];
+    transactions: Transaction[];
     pendingItems: number;
   }
   export interface Exits {
@@ -348,7 +329,7 @@ declare module "@hermeznetwork/hermezjs/src/utils" {
 
 // Tx
 declare module "@hermeznetwork/hermezjs/src/tx" {
-  import { L2Transaction, Token, Wallet } from "@hermeznetwork/hermezjs";
+  import { Transaction, Token, Wallet } from "@hermeznetwork/hermezjs";
   import { HermezCompressedAmount } from "@hermeznetwork/hermezjs/src/hermez-compressed-amount";
 
   // declare function deposit() {};
@@ -359,7 +340,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   // declare function sendL2Transaction() {};
 
   type Tx = {
-    type: L2Transaction["type"];
+    type: Transaction["type"];
     from: string;
     amount: HermezCompressedAmount;
     fee: number;
@@ -413,7 +394,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-fees" {
 
 // TxPool
 declare module "@hermeznetwork/hermezjs/src/tx-pool" {
-  import { L2Transaction } from "@hermeznetwork/hermezjs";
+  import { Transaction } from "@hermeznetwork/hermezjs";
   import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 
   declare function initializeTransactionPool() {};
@@ -428,7 +409,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-pool" {
     order?: PaginationOrder,
     limit?: number,
     axiosConfig?: Record<string, unknown>
-  ): Promise<L2Transaction[]> {};
+  ): Promise<Transaction[]> {};
 
   // declare function addPoolTransaction() {};
   // declare function removePoolTransaction() {};
@@ -439,7 +420,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   import {
     Account,
     Accounts,
-    L2Transaction,
+    Transaction,
     Exits,
     Transactions,
     CoordinatorState,
@@ -477,7 +458,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   declare function getHistoryTransaction(
     transactionId: string,
     axiosConfig?: Record<string, unknown>
-  ): Promise<L2Transaction> {};
+  ): Promise<Transaction> {};
 
   // declare function getPoolTransaction() {};
   // declare function postPoolTransaction() {};
@@ -514,7 +495,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   declare function getPoolTransactions(
     accountIndex: string,
     publicKeyCompressedHex: string
-  ): Promise<L2Transaction[]> {};
+  ): Promise<Transaction[]> {};
 
   // declare function getHealth() {};
 }

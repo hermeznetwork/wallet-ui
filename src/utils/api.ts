@@ -3,10 +3,14 @@ import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 // domain
 import { HermezApiResourceItem } from "src/domain/hermez";
 
-export interface Pagination {
-  fromItem?: number;
-  hasMoreItems: boolean;
-}
+export type Pagination =
+  | {
+      hasMoreItems: true;
+      fromItem: number;
+    }
+  | {
+      hasMoreItems: false;
+    };
 
 /**
  * Checks if a request to a paginated API endpoint has more items pending to retrieve
