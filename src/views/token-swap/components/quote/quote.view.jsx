@@ -44,6 +44,19 @@ function Quote({
             </p>
           )}
         </div>
+        <div className={classes.rewardCell}>
+          {info.rewards ? (
+            <>
+              <p className={classes.reward}>
+                {getFixedTokenAmount(info.rewards[0].amount, toToken.token.decimals)}{" "}
+                {info.rewards[0].token}
+              </p>
+              <p className={classes.rewardHelperText}>per swap</p>
+            </>
+          ) : (
+            <p className={classes.rewardHelperText}>No reward</p>
+          )}
+        </div>
       </div>
     </div>
   );
