@@ -14,10 +14,11 @@ import TransactionOverview from "./components/transaction-overview/transaction-o
 import { STEP_NAME } from "../../store/transaction/transaction.reducer";
 import AccountSelector from "./components/account-selector/account-selector.view";
 import TransactionConfirmation from "./components/transaction-confirmation/transaction-confirmation.view";
-import { changeHeader } from "../../store/global/global.actions";
+import { changeHeader, openSnackbar } from "../../store/global/global.actions";
 import Spinner from "../shared/spinner/spinner.view";
 import * as storage from "../../utils/storage";
 import TransactionError from "./components/transaction-error/transaction-error.view";
+import theme from "../../styles/theme";
 
 export const WithdrawRedirectionRoute = {
   Home: "home",
@@ -57,6 +58,7 @@ function Transaction({
   onExit,
   onTransfer,
   onCleanup,
+  onOpenSnackbar,
 }) {
   const classes = useTransactionStyles();
   const { search } = useLocation();
@@ -141,6 +143,18 @@ function Transaction({
 
   React.useEffect(() => onCleanup, [onCleanup]);
 
+  function finishTransaction() {
+    const stepData = steps[STEP_NAME.REVIEW_TRANSACTION];
+    const txAccountIndex = accountIndex || stepData.transaction.from.accountIndex;
+    const route = transactionType === TxType.Transfer ? `/accounts/${txAccountIndex}` : "/";
+    const values =
+      STEP_NAME.FINISH_TRANSACTION === currentStep
+        ? { background: undefined, message: "Transaction submitted" }
+        : { background: theme.palette.red.main, message: "Transaction failed" };
+    onOpenSnackbar(values.message, values.background);
+    onFinishTransaction(route);
+  }
+
   return (
     <div className={classes.root}>
       {(() => {
@@ -218,25 +232,15 @@ function Transaction({
             );
           }
           case STEP_NAME.FINISH_TRANSACTION: {
-            const stepData = steps[STEP_NAME.REVIEW_TRANSACTION];
-            const txAccountIndex = accountIndex || stepData.transaction.from.accountIndex;
-
             return (
               <TransactionConfirmation
                 transactionType={transactionType}
-                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex)}
+                onFinishTransaction={finishTransaction}
               />
             );
           }
           case STEP_NAME.TRANSACTION_ERROR: {
-            const stepData = steps[STEP_NAME.REVIEW_TRANSACTION];
-            const txAccountIndex = accountIndex || stepData.transaction.from.accountIndex;
-
-            return (
-              <TransactionError
-                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex)}
-              />
-            );
+            return <TransactionError onFinishTransaction={finishTransaction} />;
           }
           default: {
             return <></>;
@@ -396,13 +400,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionActions.goToBuildTransactionStep(account, receiver)),
   onGoToTransactionOverviewStep: (transaction) =>
     dispatch(transactionActions.goToReviewTransactionStep(transaction)),
-  onFinishTransaction: (transactionType, accountIndex) => {
-    if (transactionType === TxType.Transfer) {
-      dispatch(push(`/accounts/${accountIndex}`));
-    } else {
-      dispatch(push("/"));
-    }
-  },
+  onFinishTransaction: (route) => dispatch(push(route)),
   onLoadEstimatedWithdrawFee: (token, amount) => {
     dispatch(transactionThunks.fetchEstimatedWithdrawFee(token, amount));
   },
@@ -422,6 +420,7 @@ const mapDispatchToProps = (dispatch) => ({
   onTransfer: (amount, from, to, fee) =>
     dispatch(transactionThunks.transfer(amount, from, to, fee)),
   onCleanup: () => dispatch(transactionActions.resetState()),
+  onOpenSnackbar: (message, backgroundColor) => dispatch(openSnackbar(message, backgroundColor)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Transaction);

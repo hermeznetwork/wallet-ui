@@ -92,7 +92,7 @@ function SwapForm({
         [AmountBoxPosition.TO]: { amount: to },
       });
     }
-  }, [quotes]);
+  }, [selectedQuote]);
 
   const handleAmountChange = (value, position) => {
     clearTimeout(timer);
