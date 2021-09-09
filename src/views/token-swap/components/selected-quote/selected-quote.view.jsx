@@ -22,6 +22,22 @@ function SelectedQuote({
 }) {
   const classes = useSelectedQuoteStyles();
 
+  function getRewardAmountInTokens() {
+    return getFixedTokenAmount(
+      selectedQuote.lpInfo.rewards[0].amount,
+      selectedTokens.to.token.decimals
+    );
+  }
+
+  function getRewardAmountInFiat() {
+    return getTokenAmountInPreferredCurrency(
+      getRewardAmountInTokens(),
+      selectedTokens.from.token.USD,
+      preferredCurrency,
+      fiatExchangeRates
+    ).toFixed(2);
+  }
+
   function isBestQuote() {
     return selectedQuote.lpId === bestQuote.lpId;
   }
@@ -51,6 +67,15 @@ function SelectedQuote({
                 All quotes
               </button>
             </div>
+            <p className={classes.reward}>
+              This swap is rewarded with {getRewardAmountInTokens()}{" "}
+              {selectedQuote.lpInfo.rewards[0].token}&nbsp; (
+              {CurrencySymbol[preferredCurrency].symbol}
+              {getRewardAmountInFiat()})
+              <button className={classes.moreInfo} onClick={onOpenQuoteSidenav}>
+                More info
+              </button>
+            </p>
           </div>
         )
       )}
