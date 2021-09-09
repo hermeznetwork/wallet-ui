@@ -90,7 +90,7 @@ function homeReducer(state = initialHomeState, action: HomeAction) {
           : action.accounts.accounts;
       const pagination = getPaginationData(action.accounts.pendingItems, accounts);
       const fromItemHistory =
-        state.accountsTask.status === "reloading"
+        state.accountsTask.status === "reloading" && state.accountsTask.data.pagination.hasMoreItems
           ? [
               ...state.accountsTask.data.fromItemHistory,
               state.accountsTask.data.pagination.fromItem,

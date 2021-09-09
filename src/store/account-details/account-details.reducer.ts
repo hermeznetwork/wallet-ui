@@ -143,7 +143,7 @@ function accountDetailsReducer(state = initialAccountDetailsState, action: Accou
           : action.data.transactions;
       const pagination = getPaginationData(action.data.pendingItems, transactions, "DESC");
       const fromItemHistory =
-        state.historyTransactionsTask.status === "reloading"
+        state.historyTransactionsTask.status === "reloading" && state.historyTransactionsTask.data.pagination.hasMoreItems
           ? [
               ...state.historyTransactionsTask.data.fromItemHistory,
               state.historyTransactionsTask.data.pagination.fromItem,
