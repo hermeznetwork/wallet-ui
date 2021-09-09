@@ -1,8 +1,8 @@
 // domain
-import { Account, HermezTransaction } from "../../domain/hermez";
+import { Account, Transaction } from "src/domain/hermez";
 
 // persistence
-import { HistoryTransactions, HistoryExits } from "../../persistence";
+import { Transactions, Exits } from "src/persistence";
 
 export enum AccountDetailsActionTypes {
   LOAD_ACCOUNT = "[ACCOUNT DETAILS] LOAD ACCOUNT",
@@ -57,7 +57,7 @@ export interface LoadPoolTransactionsAction {
 
 export interface LoadPoolTransactionsSuccessAction {
   type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: HermezTransaction[];
+  transactions: Transaction[];
 }
 
 export interface LoadPoolTransactionsFailureAction {
@@ -71,7 +71,7 @@ export interface LoadHistoryTransactionsAction {
 
 export interface LoadHistoryTransactionsSuccessAction {
   type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS;
-  data: HistoryTransactions;
+  data: Transactions;
 }
 
 export interface LoadHistoryTransactionsFailureAction {
@@ -85,7 +85,7 @@ export interface LoadExitsAction {
 
 export interface LoadExitsSuccessAction {
   type: AccountDetailsActionTypes.LOAD_EXITS_SUCCESS;
-  historyExits: HistoryExits;
+  exits: Exits;
 }
 
 export interface LoadExitsFailureAction {
@@ -99,7 +99,7 @@ export interface RefreshHistoryTransactionsAction {
 
 export interface RefreshHistoryTransactionsSuccessAction {
   type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS;
-  historyTransactions: HistoryTransactions;
+  historyTransactions: Transactions;
 }
 
 export interface ResetStateAction {
@@ -171,7 +171,7 @@ function loadPoolTransactions(): LoadPoolTransactionsAction {
 }
 
 function loadPoolTransactionsSuccess(
-  transactions: HermezTransaction[]
+  transactions: Transaction[]
 ): LoadPoolTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
@@ -192,9 +192,7 @@ function loadHistoryTransactions(): LoadHistoryTransactionsAction {
   };
 }
 
-function loadHistoryTransactionsSuccess(
-  data: HistoryTransactions
-): LoadHistoryTransactionsSuccessAction {
+function loadHistoryTransactionsSuccess(data: Transactions): LoadHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
     data,
@@ -214,10 +212,10 @@ function loadExits(): LoadExitsAction {
   };
 }
 
-function loadExitsSuccess(historyExits: HistoryExits): LoadExitsSuccessAction {
+function loadExitsSuccess(exits: Exits): LoadExitsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_EXITS_SUCCESS,
-    historyExits,
+    exits,
   };
 }
 
@@ -235,7 +233,7 @@ function refreshHistoryTransactions(): RefreshHistoryTransactionsAction {
 }
 
 function refreshHistoryTransactionsSuccess(
-  historyTransactions: HistoryTransactions
+  historyTransactions: Transactions
 ): RefreshHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS,

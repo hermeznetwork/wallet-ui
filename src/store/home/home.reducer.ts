@@ -1,8 +1,30 @@
-import { homeActionTypes } from "./home.actions";
-import { getPaginationData } from "../../utils/api";
+import { HomeActionTypes, HomeAction } from "src/store/home/home.actions";
+import { getPaginationData } from "src/utils/api";
 import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
+import { Pagination } from "src/utils/api";
 
-const initialHomeState = {
+// domain
+import { Account, Transaction } from "src/domain/hermez";
+
+// persistence
+import { Exits } from "src/persistence";
+
+import { AsyncTask } from "src/utils/types";
+
+interface ViewAccounts {
+  accounts: Account[];
+  fromItemHistory: number[];
+  pagination: Pagination;
+}
+
+export interface HomeState {
+  totalBalanceTask: AsyncTask<number, string>;
+  accountsTask: AsyncTask<ViewAccounts, string>;
+  poolTransactionsTask: AsyncTask<Transaction[], string>;
+  exitsTask: AsyncTask<Exits, string>;
+}
+
+const initialHomeState: HomeState = {
   totalBalanceTask: {
     status: "pending",
   },
@@ -12,28 +34,25 @@ const initialHomeState = {
   poolTransactionsTask: {
     status: "pending",
   },
-  historyTransactionsTask: {
-    status: "pending",
-  },
   exitsTask: {
     status: "pending",
   },
 };
 
-function homeReducer(state = initialHomeState, action) {
+function homeReducer(state = initialHomeState, action: HomeAction) {
   switch (action.type) {
-    case homeActionTypes.LOAD_TOTAL_BALANCE: {
+    case HomeActionTypes.LOAD_TOTAL_BALANCE: {
       const totalBalanceTask =
-        state.totalBalanceTask.status === "pending"
-          ? { status: "loading" }
-          : { status: "reloading", data: state.totalBalanceTask.data };
+        state.totalBalanceTask.status === "successful"
+          ? { status: "reloading", data: state.totalBalanceTask.data }
+          : { status: "loading" };
 
       return {
         ...state,
         totalBalanceTask,
       };
     }
-    case homeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS: {
+    case HomeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS: {
       return {
         ...state,
         totalBalanceTask: {
@@ -42,7 +61,7 @@ function homeReducer(state = initialHomeState, action) {
         },
       };
     }
-    case homeActionTypes.LOAD_TOTAL_BALANCE_FAILURE: {
+    case HomeActionTypes.LOAD_TOTAL_BALANCE_FAILURE: {
       return {
         ...state,
         totalBalanceTask: {
@@ -51,7 +70,7 @@ function homeReducer(state = initialHomeState, action) {
         },
       };
     }
-    case homeActionTypes.LOAD_ACCOUNTS: {
+    case HomeActionTypes.LOAD_ACCOUNTS: {
       if (state.accountsTask.status === "reloading") {
         return state;
       }
@@ -64,14 +83,14 @@ function homeReducer(state = initialHomeState, action) {
             : { status: "loading" },
       };
     }
-    case homeActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+    case HomeActionTypes.LOAD_ACCOUNTS_SUCCESS: {
       const accounts =
         state.accountsTask.status === "reloading"
-          ? [...state.accountsTask.data.accounts, ...action.data.accounts]
-          : action.data.accounts;
-      const pagination = getPaginationData(action.data.pendingItems, accounts);
+          ? [...state.accountsTask.data.accounts, ...action.accounts.accounts]
+          : action.accounts.accounts;
+      const pagination = getPaginationData(action.accounts.pendingItems, accounts);
       const fromItemHistory =
-        state.accountsTask.status === "reloading"
+        state.accountsTask.status === "reloading" && state.accountsTask.data.pagination.hasMoreItems
           ? [
               ...state.accountsTask.data.fromItemHistory,
               state.accountsTask.data.pagination.fromItem,
@@ -86,7 +105,7 @@ function homeReducer(state = initialHomeState, action) {
         },
       };
     }
-    case homeActionTypes.LOAD_ACCOUNTS_FAILURE: {
+    case HomeActionTypes.LOAD_ACCOUNTS_FAILURE: {
       return {
         ...state,
         accountsTask: {
@@ -95,7 +114,7 @@ function homeReducer(state = initialHomeState, action) {
         },
       };
     }
-    case homeActionTypes.REFRESH_ACCOUNTS: {
+    case HomeActionTypes.REFRESH_ACCOUNTS: {
       return {
         ...state,
         accountsTask: {
@@ -104,28 +123,26 @@ function homeReducer(state = initialHomeState, action) {
         },
       };
     }
-    case homeActionTypes.REFRESH_ACCOUNTS_SUCCESS: {
+    case HomeActionTypes.REFRESH_ACCOUNTS_SUCCESS: {
       const pagination = getPaginationData(
-        action.data.pendingItems,
-        action.data.accounts,
-        PaginationOrder.DESC
+        action.accounts.pendingItems,
+        action.accounts.accounts,
+        "DESC"
       );
-      const fromItemHistory = [];
 
       return {
         ...state,
         accountsTask: {
           status: "successful",
           data: {
-            ...state.accountsTask.data,
-            accounts: action.data.accounts,
+            accounts: action.accounts.accounts,
             pagination,
-            fromItemHistory,
+            fromItemHistory: [],
           },
         },
       };
     }
-    case homeActionTypes.LOAD_POOL_TRANSACTIONS: {
+    case HomeActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
         poolTransactionsTask:
@@ -135,7 +152,7 @@ function homeReducer(state = initialHomeState, action) {
             : { ...state.poolTransactionsTask, status: "reloading" },
       };
     }
-    case homeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
+    case HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
         poolTransactionsTask: {
@@ -144,7 +161,7 @@ function homeReducer(state = initialHomeState, action) {
         },
       };
     }
-    case homeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
+    case HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
       return {
         ...state,
         poolTransactionsTask: {
@@ -153,7 +170,7 @@ function homeReducer(state = initialHomeState, action) {
         },
       };
     }
-    case homeActionTypes.LOAD_EXITS: {
+    case HomeActionTypes.LOAD_EXITS: {
       return {
         ...state,
         exitsTask:
@@ -162,7 +179,7 @@ function homeReducer(state = initialHomeState, action) {
             : { ...state.exitsTask, status: "reloading" },
       };
     }
-    case homeActionTypes.LOAD_EXITS_SUCCESS: {
+    case HomeActionTypes.LOAD_EXITS_SUCCESS: {
       return {
         ...state,
         exitsTask: {
@@ -171,7 +188,7 @@ function homeReducer(state = initialHomeState, action) {
         },
       };
     }
-    case homeActionTypes.LOAD_EXITS_FAILURE: {
+    case HomeActionTypes.LOAD_EXITS_FAILURE: {
       return {
         ...state,
         exitsTask: {
@@ -180,7 +197,7 @@ function homeReducer(state = initialHomeState, action) {
         },
       };
     }
-    case homeActionTypes.RESET_STATE: {
+    case HomeActionTypes.RESET_STATE: {
       return { ...initialHomeState };
     }
     default: {

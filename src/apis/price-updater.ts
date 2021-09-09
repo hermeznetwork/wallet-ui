@@ -1,9 +1,9 @@
 import axios from "axios";
 
-import { CurrencySymbol } from "../utils/currencies";
+import { CurrencySymbol } from "src/utils/currencies";
 
 // domain
-import { FiatExchangeRates, Token } from "../domain/hermez";
+import { FiatExchangeRates, Token } from "src/domain/hermez";
 
 interface ApiExchangeRate {
   currency: string;

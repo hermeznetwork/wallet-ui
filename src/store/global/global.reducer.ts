@@ -1,25 +1,24 @@
 import { GlobalActionTypes, GlobalAction } from "./global.actions";
-import * as constants from "../../constants";
-import * as storage from "../../utils/storage";
-import { AsyncTask } from "../../utils/types";
+import * as constants from "src/constants";
+import * as storage from "src/utils/storage";
+import { AsyncTask } from "src/utils/types";
 
 // domain
-import { Header } from "../../domain/";
-import { EthereumNetwork } from "../../domain/ethereum";
+import { Header } from "src/domain/";
+import { EthereumNetwork } from "src/domain/ethereum";
 import {
   HermezStatus,
   Deposit,
   HermezNetworkStatus,
   Withdraw,
   DelayedWithdraw,
-  HermezWallet,
+  Wallet,
   Signer,
   FiatExchangeRates,
   CoordinatorState,
   Reward,
   Token,
-  Tokens,
-} from "../../domain/hermez";
+} from "src/domain/hermez";
 
 type SnackbarState =
   | {
@@ -50,7 +49,7 @@ interface RewardsState {
 export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
-  wallet: HermezWallet | undefined;
+  wallet: Wallet | undefined;
   signer: Signer | undefined;
   header: Header;
   redirectRoute: string;

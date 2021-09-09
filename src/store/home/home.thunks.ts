@@ -3,9 +3,16 @@ import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
-import * as homeActions from "./home.actions";
-import { createAccount } from "../../utils/accounts";
-import { convertTokenAmountToFiat } from "../../utils/currencies";
+import * as homeActions from "src/store/home/home.actions";
+import { createAccount } from "src/utils/accounts";
+import { convertTokenAmountToFiat } from "src/utils/currencies";
+
+import { RootState } from "src/store";
+import { AppDispatch } from "src";
+
+// domain
+import { Transaction, Deposit, FiatExchangeRates, Account } from "src/domain/hermez";
+import { Accounts } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 
@@ -14,13 +21,13 @@ let refreshCancelTokenSource = axios.CancelToken.source();
  * @returns {void}
  */
 function fetchTotalBalance(
-  hermezEthereumAddress,
-  poolTransactions,
-  pendingDeposits,
-  fiatExchangeRates,
-  preferredCurrency
+  hermezEthereumAddress: string,
+  poolTransactions: Transaction[],
+  pendingDeposits: Deposit[],
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
 ) {
-  return (dispatch, getState) => {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       global: { tokensPriceTask },
     } = getState();
@@ -53,7 +60,7 @@ function fetchTotalBalance(
                 : { ...deposit.token };
 
             const fiatBalance = convertTokenAmountToFiat(
-              deposit,
+              deposit.amount,
               tokenPrice,
               preferredCurrency,
               fiatExchangeRates
@@ -80,14 +87,14 @@ function fetchTotalBalance(
  * @returns {void}
  */
 function fetchAccounts(
-  hermezAddress,
-  fromItem,
-  poolTransactions,
-  pendingDeposits,
-  fiatExchangeRates,
-  preferredCurrency
+  hermezAddress: string,
+  fromItem: number,
+  poolTransactions: Transaction[],
+  pendingDeposits: Deposit[],
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
 ) {
-  return (dispatch, getState) => {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       home: { accountsTask },
       global: { tokensPriceTask },
@@ -137,13 +144,13 @@ function fetchAccounts(
  * @param {string} accountIndex - Account index
  */
 function refreshAccounts(
-  hermezAddress,
-  poolTransactions,
-  pendingDeposits,
-  fiatExchangeRates,
-  preferredCurrency
+  hermezAddress: string,
+  poolTransactions: Transaction[],
+  pendingDeposits: Deposit[],
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
 ) {
-  return (dispatch, getState) => {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       home: { accountsTask },
       global: { tokensPriceTask },
@@ -181,7 +188,7 @@ function refreshAccounts(
       Promise.all(requests)
         .then((results) => {
           const accounts = results
-            .reduce((acc, result) => [...acc, ...result.accounts], [])
+            .reduce((acc: Account[], result: Accounts) => [...acc, ...result.accounts], [])
             .map((account) =>
               createAccount(
                 account,
@@ -208,16 +215,18 @@ function refreshAccounts(
  * @returns {void}
  */
 function fetchPoolTransactions() {
-  return (dispatch, getState) => {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(homeActions.loadPoolTransactions());
 
     const {
       global: { wallet },
     } = getState();
 
-    getPoolTransactions(null, wallet.publicKeyCompressedHex)
-      .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
-      .catch((err) => dispatch(homeActions.loadPoolTransactionsFailure(err)));
+    if (wallet !== undefined) {
+      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+        .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
+        .catch((err) => dispatch(homeActions.loadPoolTransactionsFailure(err)));
+    }
   };
 }
 
@@ -226,16 +235,18 @@ function fetchPoolTransactions() {
  * @returns {void}
  */
 function fetchExits() {
-  return (dispatch, getState) => {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       global: { wallet },
     } = getState();
 
-    dispatch(homeActions.loadExits());
+    if (wallet !== undefined) {
+      dispatch(homeActions.loadExits());
 
-    return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
-      .then((exits) => dispatch(homeActions.loadExitsSuccess(exits)))
-      .catch((err) => dispatch(homeActions.loadExitsFailure(err)));
+      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
+        .then((exits) => dispatch(homeActions.loadExitsSuccess(exits)))
+        .catch((err) => dispatch(homeActions.loadExitsFailure(err)));
+    }
   };
 }
 

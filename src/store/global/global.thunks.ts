@@ -7,37 +7,30 @@ import hermezjs, {
   Addresses,
 } from "@hermeznetwork/hermezjs";
 import { push } from "connected-react-router";
-import { ethers, BigNumber } from "ethers";
+import { ethers } from "ethers";
+import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
+import Connector from "@walletconnect/web3-provider";
+
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { HttpStatusCode } from "@hermeznetwork/hermezjs/src/http";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
-import * as globalActions from "./global.actions";
-import * as hermezWebApi from "../../apis/hermez-web";
-import * as airdropApi from "../../apis/rewards";
-import * as priceUpdaterApi from "../../apis/price-updater";
-import * as storage from "../../utils/storage";
-import * as constants from "../../constants";
-import {
-  isTxMined,
-  hasTxBeenReverted,
-  isTxCanceled,
-  isTxExpectedToFail,
-} from "../../utils/ethereum";
-import { CurrencySymbol } from "../../utils/currencies";
-import { getNextForgerUrls } from "../../utils/coordinator";
+import * as globalActions from "src/store/global/global.actions";
+import * as priceUpdaterApi from "src/apis/price-updater";
+import * as hermezWebApi from "src/apis/hermez-web";
+import * as airdropApi from "src/apis/rewards";
+import * as storage from "src/utils/storage";
+import * as constants from "src/constants";
+import { isTxMined, hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from "src/utils/ethereum";
+import { CurrencySymbol } from "src/utils/currencies";
+import { getNextForgerUrls } from "src/utils/coordinator";
 
-import { RootState } from "../";
-import { AppDispatch } from "../../";
+import { RootState } from "src/store";
+import { AppDispatch } from "src";
 
 // domain
-import { ISOStringDate } from "../../domain/";
-import {
-  EthereumTransaction,
-  EthereumBlock,
-  EthereumTransactionReceipt,
-} from "../../domain/ethereum";
+import { ISOStringDate } from "src/domain/";
 import {
   CoordinatorState,
   Withdraw,
@@ -46,15 +39,15 @@ import {
   HermezNetworkStatus,
   Exit,
   Deposit,
-  HermezTransaction,
+  Transaction,
   Token,
-} from "../../domain/hermez";
+} from "src/domain/hermez";
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
  * a known environment and if not will use the one provided in the .env file
  */
-function setHermezEnvironment(chainId?: number, chainName?: string) {
+function setHermezEnvironment(chainId: number, chainName: string) {
   return async (dispatch: AppDispatch) => {
     dispatch(globalActions.loadEthereumNetwork());
 
@@ -387,13 +380,12 @@ function checkPendingDelayedWithdrawals() {
         );
 
         // Gets the actual transaction and checks if it doesn't exist or is expected to fail
-        const pendingDelayedWithdrawsTxs: Promise<EthereumTransaction>[] =
+        const pendingDelayedWithdrawsTxs: Promise<TransactionResponse>[] =
           accountPendingDelayedWithdraws.map((pendingDelayedWithdraw) => {
-            return provider
-              .getTransaction(pendingDelayedWithdraw.hash)
-              .then((tx: EthereumTransaction) => {
+            return provider.getTransaction(pendingDelayedWithdraw.hash).then((tx) => {
+              if (tx.blockNumber !== undefined) {
                 // Checks whether the date of pendingDelayedWithdraw needs to be updated
-                provider.getBlock(tx.blockNumber).then((block: EthereumBlock) => {
+                provider.getBlock(tx.blockNumber).then((block: Block) => {
                   // Converts timestamp from s to ms
                   const newTimestamp = block.timestamp * 1000;
                   if (new Date(pendingDelayedWithdraw.timestamp).getTime() !== newTimestamp) {
@@ -405,16 +397,16 @@ function checkPendingDelayedWithdrawals() {
                     );
                   }
                 });
-
-                // Checks here to have access to pendingDelayedWithdraw.timestamp
-                if (
-                  isTxCanceled(tx) ||
-                  isTxExpectedToFail(tx, pendingDelayedWithdraw.timestamp, accountEthBalance)
-                ) {
-                  dispatch(removePendingDelayedWithdrawByHash(pendingDelayedWithdraw.hash));
-                }
-                return tx;
-              });
+              }
+              // Checks here to have access to pendingDelayedWithdraw.timestamp
+              if (
+                isTxCanceled(tx) ||
+                isTxExpectedToFail(tx, pendingDelayedWithdraw.timestamp, accountEthBalance)
+              ) {
+                dispatch(removePendingDelayedWithdrawByHash(pendingDelayedWithdraw.hash));
+              }
+              return tx;
+            });
           });
 
         Promise.all(pendingDelayedWithdrawsTxs).then((txs) => {
@@ -485,9 +477,9 @@ function checkPendingWithdrawals() {
           hermezEthereumAddress
         );
         // Gets the actual transaction and checks if it doesn't exist or is expected to fail
-        const pendingWithdrawsTxs: Promise<EthereumTransaction>[] = accountPendingWithdraws.map(
+        const pendingWithdrawsTxs: Promise<TransactionResponse>[] = accountPendingWithdraws.map(
           (pendingWithdraw) => {
-            return provider.getTransaction(pendingWithdraw.hash).then((tx: EthereumTransaction) => {
+            return provider.getTransaction(pendingWithdraw.hash).then((tx: TransactionResponse) => {
               // Checks here to have access to pendingWithdraw.timestamp
               if (
                 isTxCanceled(tx) ||
@@ -502,8 +494,8 @@ function checkPendingWithdrawals() {
 
         Promise.all(pendingWithdrawsTxs).then((txs) => {
           const minedTxs = txs.filter(isTxMined);
-          const pendingWithdrawsTxReceipts: Promise<EthereumTransactionReceipt>[] = minedTxs.map(
-            (tx) => provider.getTransactionReceipt(tx.hash)
+          const pendingWithdrawsTxReceipts: Promise<TransactionReceipt>[] = minedTxs.map((tx) =>
+            provider.getTransactionReceipt(tx.hash)
           );
 
           // Checks receipts to see if transactions have been reverted
@@ -681,9 +673,9 @@ function checkPendingDeposits() {
           chainId,
           hermezEthereumAddress
         );
-        const pendingDepositsTxs: Promise<EthereumTransaction>[] = accountPendingDeposits.map(
+        const pendingDepositsTxs: Promise<TransactionResponse>[] = accountPendingDeposits.map(
           (pendingDeposit) => {
-            return provider.getTransaction(pendingDeposit.hash).then((tx: EthereumTransaction) => {
+            return provider.getTransaction(pendingDeposit.hash).then((tx: TransactionResponse) => {
               if (
                 isTxCanceled(tx) ||
                 isTxExpectedToFail(tx, pendingDeposit.timestamp, accountEthBalance)
@@ -708,32 +700,35 @@ function checkPendingDeposits() {
             const successfulTxReceipts = txReceipts.filter(
               (txReceipt) => txReceipt.status === 1 && txReceipt.logs && txReceipt.logs.length > 0
             );
-            const transactionHistoryPromises = successfulTxReceipts.map((txReceipt) => {
-              // Need to parse logs, but only events from the Hermez SC. Ignore errors when trying to parse others
-              const parsedLogs = [];
-              for (const txReceiptLog of txReceipt.logs) {
-                try {
-                  const parsedLog = hermezContractInterface.parseLog(txReceiptLog);
-                  parsedLogs.push(parsedLog);
-                } catch (e) {}
-              }
-              const l1UserTxEvent = parsedLogs.find((event) => event.name === "L1UserTxEvent");
+            const transactionHistoryPromises = successfulTxReceipts.reduce(
+              (accL2Transactions: Promise<Transaction>[], txReceipt) => {
+                // Need to parse logs, but only events from the Hermez SC. Ignore errors when trying to parse others
+                const parsedLogs = [];
+                for (const txReceiptLog of txReceipt.logs) {
+                  try {
+                    const parsedLog = hermezContractInterface.parseLog(txReceiptLog);
+                    parsedLogs.push(parsedLog);
+                  } catch (e) {}
+                }
+                const l1UserTxEvent = parsedLogs.find((event) => event.name === "L1UserTxEvent");
 
-              if (!l1UserTxEvent) {
-                return Promise.resolve();
-              }
+                if (!l1UserTxEvent) {
+                  return accL2Transactions;
+                }
 
-              const txId = TxUtils.getL1UserTxId(l1UserTxEvent.args[0], l1UserTxEvent.args[1]);
-              const pendingDeposit = accountPendingDeposits.find(
-                (deposit) => deposit.hash === txReceipt.transactionHash
-              );
+                const txId = TxUtils.getL1UserTxId(l1UserTxEvent.args[0], l1UserTxEvent.args[1]);
+                const pendingDeposit = accountPendingDeposits.find(
+                  (deposit) => deposit.hash === txReceipt.transactionHash
+                );
 
-              if (pendingDeposit && !pendingDeposit.transactionId) {
-                dispatch(updatePendingDepositId(txReceipt.transactionHash, txId));
-              }
+                if (pendingDeposit && !pendingDeposit.transactionId) {
+                  dispatch(updatePendingDepositId(txReceipt.transactionHash, txId));
+                }
 
-              return CoordinatorAPI.getHistoryTransaction(txId);
-            });
+                return [...accL2Transactions, CoordinatorAPI.getHistoryTransaction(txId)];
+              },
+              []
+            );
 
             revertedTxReceipts.forEach((tx) => {
               dispatch(removePendingDepositByHash(tx.transactionHash));
@@ -741,13 +736,11 @@ function checkPendingDeposits() {
 
             Promise.all(transactionHistoryPromises)
               .then((results) => {
-                results
-                  .filter((result) => result !== undefined)
-                  .forEach((transaction) => {
-                    if (transaction.batchNum !== null) {
-                      dispatch(removePendingDepositByTransactionId(transaction.id));
-                    }
-                  });
+                results.forEach((transaction) => {
+                  if (transaction.batchNum !== null) {
+                    dispatch(removePendingDepositByTransactionId(transaction.id));
+                  }
+                });
                 dispatch(globalActions.checkPendingDepositsSuccess());
               })
               .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()));
@@ -768,7 +761,7 @@ function checkPendingTransactions() {
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
 
       hermezjs.TxPool.getPoolTransactions(undefined, wallet.publicKeyCompressedHex).then(
-        (poolTransactions: HermezTransaction[]) => {
+        (poolTransactions: Transaction[]) => {
           const tenMinutesInMs = 10 * 60 * 1000;
           const oneDayInMs = 24 * 60 * 60 * 1000;
           const resendTransactionsRequests = poolTransactions
@@ -835,10 +828,12 @@ function fetchCoordinatorState() {
 function disconnectWallet() {
   return (dispatch: AppDispatch) => {
     const provider = Providers.getProvider();
-    if (provider.provider?.connector) {
+
+    if (provider.provider instanceof Connector) {
       // Kills the stored Web Connect session to show QR with next login
       provider.provider.connector.killSession();
     }
+
     dispatch(globalActions.unloadWallet());
     dispatch(push("/login"));
     if (process.env.REACT_APP_ENABLE_AIRDROP === "true") {

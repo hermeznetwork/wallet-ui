@@ -1,27 +1,28 @@
 import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
+import { Pagination } from "src/utils/api";
 
 // domain
-import { Account, HermezTransaction } from "../../domain/hermez";
+import { Account, Transaction } from "src/domain/hermez";
+
+// persistence
+import { Exits } from "src/persistence";
 
 import { AccountDetailsActionTypes, AccountDetailsAction } from "./account-details.actions";
-import { getPaginationData } from "../../utils/api";
-import { AsyncTask } from "../../utils/types";
+import { getPaginationData } from "src/utils/api";
+import { AsyncTask } from "src/utils/types";
 
 interface ViewHistoryTransactions {
-  transactions: HermezTransaction[];
+  transactions: Transaction[];
   fromItemHistory: number[];
-  pagination: {
-    fromItem: number;
-    hasMoreItems: boolean;
-  };
+  pagination: Pagination;
 }
 
 export interface AccountDetailsState {
   accountTask: AsyncTask<Account, string>;
-  exitsTask: AsyncTask<unknown, string>;
+  exitsTask: AsyncTask<Exits, string>;
   historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
   l1TokenBalanceTask: AsyncTask<null, string>;
-  poolTransactionsTask: AsyncTask<Array<unknown>, string>;
+  poolTransactionsTask: AsyncTask<Transaction[], string>;
 }
 
 const initialAccountDetailsState: AccountDetailsState = {
@@ -140,13 +141,9 @@ function accountDetailsReducer(state = initialAccountDetailsState, action: Accou
         state.historyTransactionsTask.status === "reloading"
           ? [...state.historyTransactionsTask.data.transactions, ...action.data.transactions]
           : action.data.transactions;
-      const pagination = getPaginationData(
-        action.data.pendingItems,
-        transactions,
-        PaginationOrder.DESC
-      );
+      const pagination = getPaginationData(action.data.pendingItems, transactions, "DESC");
       const fromItemHistory =
-        state.historyTransactionsTask.status === "reloading"
+        state.historyTransactionsTask.status === "reloading" && state.historyTransactionsTask.data.pagination.hasMoreItems
           ? [
               ...state.historyTransactionsTask.data.fromItemHistory,
               state.historyTransactionsTask.data.pagination.fromItem,
@@ -186,7 +183,7 @@ function accountDetailsReducer(state = initialAccountDetailsState, action: Accou
       const pagination = getPaginationData(
         action.historyTransactions.pendingItems,
         action.historyTransactions.transactions,
-        PaginationOrder.DESC
+        "DESC"
       );
       return {
         ...state,
@@ -214,7 +211,7 @@ function accountDetailsReducer(state = initialAccountDetailsState, action: Accou
         ...state,
         exitsTask: {
           status: "successful",
-          data: action.historyExits,
+          data: action.exits,
         },
       };
     }

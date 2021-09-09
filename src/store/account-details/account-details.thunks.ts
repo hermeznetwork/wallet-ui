@@ -4,14 +4,16 @@ import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { push } from "connected-react-router";
 import * as accountDetailsActions from "./account-details.actions";
-import * as ethereum from "../../utils/ethereum";
-import { createAccount } from "../../utils/accounts";
-import { RootState } from "../";
-import { AppDispatch } from "../../";
+import * as ethereum from "src/utils/ethereum";
+import { createAccount } from "src/utils/accounts";
+import { RootState } from "src/store";
+import { AppDispatch } from "src";
 
 // domain
-import { Account, Token, HermezTransaction, Exit } from "../../domain/hermez";
-import { HistoryTransactions, HistoryExits } from "../../persistence";
+import { Account, Token, Transaction, Exit } from "src/domain/hermez";
+
+// persistence
+import { Transactions, Exits } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 
@@ -84,8 +86,8 @@ function fetchPoolTransactions(accountIndex: Account["accountIndex"]) {
     if (wallet !== undefined) {
       getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
         // We need to reverse the txs to match the order of the txs from the history (DESC)
-        .then((transactions: HermezTransaction[]) => transactions.reverse())
-        .then((transactions: HermezTransaction[]) =>
+        .then((transactions: Transaction[]) => transactions.reverse())
+        .then((transactions: Transaction[]) =>
           dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions))
         )
         .catch((err: Error) => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)));
@@ -93,10 +95,7 @@ function fetchPoolTransactions(accountIndex: Account["accountIndex"]) {
   };
 }
 
-function filterExitsFromHistoryTransactions(
-  historyTransactions: HermezTransaction[],
-  exits: Exit[]
-) {
+function filterExitsFromHistoryTransactions(historyTransactions: Transaction[], exits: Exit[]) {
   return historyTransactions.filter((transaction) => {
     if (transaction.type === TxType.Exit) {
       const exitTx = exits.find(
@@ -121,8 +120,8 @@ function filterExitsFromHistoryTransactions(
 // ToDo: Define fromItem type
 function fetchHistoryTransactions(
   accountIndex: Account["accountIndex"],
-  fromItem: unknown,
-  historyExits: HistoryExits
+  fromItem: number,
+  historyExits: Exits
 ) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
@@ -145,9 +144,9 @@ function fetchHistoryTransactions(
       undefined,
       accountIndex,
       fromItem,
-      CoordinatorAPI.PaginationOrder.DESC
+      "DESC"
     )
-      .then((historyTransactions: HistoryTransactions) => {
+      .then((historyTransactions: Transactions) => {
         const filteredTransactions = filterExitsFromHistoryTransactions(
           historyTransactions.transactions,
           historyExits.exits
@@ -155,7 +154,7 @@ function fetchHistoryTransactions(
 
         return { ...historyTransactions, transactions: filteredTransactions };
       })
-      .then((historyTransactions: HistoryTransactions) =>
+      .then((historyTransactions: Transactions) =>
         dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
       )
       .catch((err: Error) => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)));
@@ -167,10 +166,7 @@ function fetchHistoryTransactions(
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshHistoryTransactions(
-  accountIndex: Account["accountIndex"],
-  historyExits: HistoryExits
-) {
+function refreshHistoryTransactions(accountIndex: Account["accountIndex"], historyExits: Exits) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       accountDetails: { historyTransactionsTask },
@@ -188,7 +184,7 @@ function refreshHistoryTransactions(
         undefined,
         accountIndex,
         undefined,
-        CoordinatorAPI.PaginationOrder.DESC,
+        "DESC",
         undefined,
         axiosConfig
       );
@@ -201,7 +197,7 @@ function refreshHistoryTransactions(
             undefined,
             accountIndex,
             fromItem,
-            CoordinatorAPI.PaginationOrder.DESC,
+            "DESC",
             undefined,
             axiosConfig
           ),
@@ -212,7 +208,7 @@ function refreshHistoryTransactions(
       Promise.all(requests)
         .then((results) => {
           const transactions = results.reduce(
-            (acc, result) => [...acc, ...result.transactions],
+            (acc: Transaction[], result: Transactions) => [...acc, ...result.transactions],
             []
           );
           const filteredTransactions = filterExitsFromHistoryTransactions(
@@ -223,7 +219,7 @@ function refreshHistoryTransactions(
 
           return { transactions: filteredTransactions, pendingItems };
         })
-        .then((historyTransactions: HistoryTransactions) =>
+        .then((historyTransactions: Transactions) =>
           dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
         );
     }
@@ -244,7 +240,7 @@ function fetchExits(tokenId: Token["id"]) {
     } = getState();
     if (wallet !== undefined) {
       return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
-        .then((historyExits: HistoryExits) =>
+        .then((historyExits: Exits) =>
           dispatch(accountDetailsActions.loadExitsSuccess(historyExits))
         )
         .catch((err: Error) => dispatch(accountDetailsActions.loadExitsFailure(err)));

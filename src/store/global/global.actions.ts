@@ -1,7 +1,7 @@
 // domain
-import { EthereumNetwork } from "../../domain/ethereum";
+import { EthereumNetwork } from "src/domain/ethereum";
 import {
-  HermezWallet,
+  Wallet,
   Signer,
   FiatExchangeRates,
   HermezNetworkStatus,
@@ -11,8 +11,8 @@ import {
   CoordinatorState,
   Reward,
   Token,
-} from "../../domain/hermez";
-import { ISOStringDate, Header } from "../../domain/";
+} from "src/domain/hermez";
+import { ISOStringDate, Header } from "src/domain/";
 
 export enum GlobalActionTypes {
   LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",
@@ -96,7 +96,7 @@ export interface LoadEthereumNetworkSuccess {
 
 export interface LoadWallet {
   type: GlobalActionTypes.LOAD_WALLET;
-  wallet: HermezWallet;
+  wallet: Wallet;
 }
 
 export interface UnloadWallet {
@@ -433,7 +433,7 @@ function loadEthereumNetworkSuccess(ethereumNetwork: EthereumNetwork): LoadEther
   };
 }
 
-function loadWallet(wallet: HermezWallet): LoadWallet {
+function loadWallet(wallet: Wallet): LoadWallet {
   return {
     type: GlobalActionTypes.LOAD_WALLET,
     wallet,
