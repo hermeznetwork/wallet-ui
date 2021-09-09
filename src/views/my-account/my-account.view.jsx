@@ -23,21 +23,17 @@ import { copyToClipboard } from "../../utils/browser";
 import { ReactComponent as QRCodeIcon } from "../../images/icons/qr-code.svg";
 import { version as packagejsonVersion } from "../../../package.json";
 import * as globalActions from "../../store/global/global.actions";
-import RewardsCard from "./components/rewards-card/rewards-card.view";
-import { hasRewardStarted } from "../../utils/rewards";
 
 function MyAccount({
   wallet,
   preferredCurrency,
   fiatExchangeRatesTask,
-  rewards,
   onChangeHeader,
   onChangePreferredCurrency,
   onDisconnectWallet,
   onOpenSnackbar,
   onNavigateToForceExit,
   onNavigateToMyCode,
-  onOpenRewardsSidenav,
 }) {
   const theme = useTheme();
   const classes = useMyAccountStyles();
@@ -93,24 +89,6 @@ function MyAccount({
       </Container>
       <Container>
         <section className={classes.bottomSection}>
-          {process.env.REACT_APP_ENABLE_AIRDROP === "true" &&
-            (rewards.rewardTask.status === "successful" ||
-              rewards.rewardTask.status === "reloading") &&
-            hasRewardStarted(rewards.rewardTask.data) && (
-              <div className={classes.rewardsCard}>
-                <RewardsCard
-                  rewardSidenav={rewards.sidenav}
-                  rewardTask={rewards.rewardTask}
-                  earnedRewardTask={rewards.earnedRewardTask}
-                  rewardPercentageTask={rewards.rewardPercentageTask}
-                  accountEligibilityTask={rewards.accountEligibilityTask}
-                  tokenTask={rewards.tokenTask}
-                  preferredCurrency={preferredCurrency}
-                  fiatExchangeRatesTask={fiatExchangeRatesTask}
-                  onOpenRewardsSidenav={onOpenRewardsSidenav}
-                />
-              </div>
-            )}
           <div>
             <div className={classes.settingContainer}>
               <div className={classes.settingHeader}>
@@ -164,14 +142,11 @@ function MyAccount({
 
 MyAccount.propTypes = {
   onChangePreferredCurrency: PropTypes.func,
-  rewards: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
   preferredCurrency: state.myAccount.preferredCurrency,
-  rewards: state.global.rewards,
-  earnedRewardTask: state.global.rewards.earnedRewardTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
 });
 
@@ -192,7 +167,6 @@ const mapDispatchToProps = (dispatch) => ({
   onDisconnectWallet: () => dispatch(disconnectWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onNavigateToForceExit: () => dispatch(push("/force-withdrawal")),
-  onOpenRewardsSidenav: () => dispatch(globalActions.openRewardsSidenav()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyAccount);

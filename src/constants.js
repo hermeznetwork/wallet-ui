@@ -52,8 +52,6 @@ export const HERMEZ_WEB_URL = "https://hermez.io";
 
 export const DEPOSIT_TX_TIMEOUT = 8_640_0000; // 24h
 
-export const AIRDROP_MORE_INFO_URL = "https://blog.hermez.io/hermez-community-rewards";
-
 export const HEZ_TOKEN_ID = 1;
 
 export const METAMASK_UPDATE_HELP_LINK =

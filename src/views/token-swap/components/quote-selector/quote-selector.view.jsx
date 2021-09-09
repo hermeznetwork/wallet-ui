@@ -17,7 +17,6 @@ function QuoteSelector({
       <div className={classes.header}>
         <p className={classes.nameHeader}>Liquidity provider</p>
         <p className={classes.toTokensHeader}>You get (ETH)</p>
-        <p className={classes.rewardHeader}>Reward</p>
       </div>
       <QuoteList
         quotes={quotes}

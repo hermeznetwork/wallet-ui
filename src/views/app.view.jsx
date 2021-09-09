@@ -19,7 +19,6 @@ function App({
   wallet,
   header,
   snackbar,
-  rewards,
   preferredCurrency,
   fiatExchangeRatesTask,
   hermezStatusTask,
@@ -29,15 +28,9 @@ function App({
   onGoBack,
   onClose,
   onCloseSnackbar,
-  onLoadEarnedReward,
-  onLoadRewardPercentage,
-  onLoadRewardAccountEligibility,
-  onLoadToken,
-  onCloseRewardsSidenav,
   onLoadCoordinatorState,
   onLoadFiatExchangeRates,
   onCheckHermezStatus,
-  onLoadReward,
   onChangeNetworkStatus,
   onDisconnectAccount,
   onCheckPendingTransactions,
@@ -98,12 +91,6 @@ function App({
   }, [onDisconnectAccount, onReloadApp]);
 
   React.useEffect(() => {
-    if (process.env.REACT_APP_ENABLE_AIRDROP === "true") {
-      onLoadReward();
-    }
-  }, []);
-
-  React.useEffect(() => {
     onLoadTokensPrice();
   }, []);
 
@@ -124,16 +111,10 @@ function App({
       <BaseLayout
         header={header}
         snackbar={snackbar}
-        rewards={rewards}
         preferredCurrency={preferredCurrency}
         onGoBack={onGoBack}
         onClose={onClose}
         onCloseSnackbar={onCloseSnackbar}
-        onLoadEarnedReward={onLoadEarnedReward}
-        onLoadRewardPercentage={onLoadRewardPercentage}
-        onLoadRewardAccountEligibility={onLoadRewardAccountEligibility}
-        onLoadToken={onLoadToken}
-        onCloseRewardsSidenav={onCloseRewardsSidenav}
       >
         {Object.values(routes)
           .filter((route) => !route.isHidden)
@@ -159,7 +140,6 @@ const mapStateToProps = (state) => ({
   wallet: state.global.wallet,
   header: state.global.header,
   snackbar: state.global.snackbar,
-  rewards: state.global.rewards,
   preferredCurrency: state.global.preferredCurrency,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   hermezStatusTask: state.global.hermezStatusTask,
@@ -176,12 +156,6 @@ const mapDispatchToProps = (dispatch) => ({
   onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),
   onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onLoadFiatExchangeRates: () => dispatch(globalThunks.fetchFiatExchangeRates()),
-  onLoadReward: () => dispatch(globalThunks.fetchReward()),
-  onLoadEarnedReward: () => dispatch(globalThunks.fetchEarnedReward()),
-  onLoadRewardPercentage: () => dispatch(globalThunks.fetchRewardPercentage()),
-  onLoadRewardAccountEligibility: () => dispatch(globalThunks.fetchRewardAccountEligibility()),
-  onLoadToken: () => dispatch(globalThunks.fetchRewardToken()),
-  onCloseRewardsSidenav: () => dispatch(globalActions.closeRewardsSidenav()),
   onCheckPendingTransactions: () => dispatch(globalThunks.checkPendingTransactions()),
   onChangeNetworkStatus: (networkStatus, backgroundColor) =>
     dispatch(globalThunks.changeNetworkStatus(networkStatus, backgroundColor)),

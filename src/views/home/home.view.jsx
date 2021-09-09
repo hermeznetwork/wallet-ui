@@ -42,15 +42,12 @@ function Home({
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorStateTask,
-  rewards,
   onChangeHeader,
   onCheckPendingDeposits,
   onLoadTotalBalance,
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
-  onLoadEstimatedReward,
-  onLoadEarnedReward,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdrawals,
@@ -334,7 +331,6 @@ const mapStateToProps = (state) => ({
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
   coordinatorStateTask: state.global.coordinatorStateTask,
-  rewards: state.global.rewards,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -385,7 +381,6 @@ const mapDispatchToProps = (dispatch) => ({
   onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),
   onNavigateToAccountDetails: (accountIndex) => dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
-  onOpenRewardsSidenav: () => dispatch(globalActions.openRewardsSidenav()),
   onCleanup: () => dispatch(resetState()),
 });
 

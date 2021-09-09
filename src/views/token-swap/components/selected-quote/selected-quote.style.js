@@ -61,16 +61,6 @@ const useSelectedQuoteStyles = createUseStyles((theme) => ({
     color: theme.palette.grey.main,
     fontWeight: theme.fontWeights.bold,
   },
-  reward: {
-    borderTop: `1px solid ${theme.palette.grey.veryLight}`,
-    fontSize: theme.spacing(1.75),
-    [theme.breakpoints.upSm]: {
-      fontSize: theme.spacing(2),
-    },
-    fontWeight: theme.fontWeights.medium,
-    paddingTop: theme.spacing(1.75),
-    marginTop: theme.spacing(2),
-  },
   moreInfo: {
     color: theme.palette.grey.main,
     fontWeight: theme.fontWeights.medium,

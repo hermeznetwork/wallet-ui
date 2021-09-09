@@ -9,7 +9,6 @@ import {
   DelayedWithdraw,
   Deposit,
   CoordinatorState,
-  Reward,
   Token,
 } from "src/domain/hermez";
 import { ISOStringDate, Header } from "src/domain/";
@@ -49,23 +48,6 @@ export enum GlobalActionTypes {
   LOAD_COORDINATOR_STATE = "[GLOBAL] LOAD COORDINATOR STATE",
   LOAD_COORDINATOR_STATE_SUCCESS = "[GLOBAL] LOAD COORDINATOR STATE SUCCESS",
   LOAD_COORDINATOR_STATE_FAILURE = "[GLOBAL] LOAD COORDINATOR STATE FAILURE",
-  OPEN_REWARDS_SIDENAV = "[GLOBAL] OPEN REWARDS SIDENAV",
-  CLOSE_REWARDS_SIDENAV = "[GLOBAL] CLOSE REWARDS SIDENAV",
-  LOAD_REWARD = "[GLOBAL] LOAD REWARD",
-  LOAD_REWARD_SUCCESS = "[GLOBAL] LOAD REWARD SUCCESS",
-  LOAD_REWARD_FAILURE = "[GLOBAL] LOAD REWARD FAILURE",
-  LOAD_EARNED_REWARD = "[GLOBAL] LOAD EARNED REWARD",
-  LOAD_EARNED_REWARD_SUCCESS = "[GLOBAL] LOAD EARNED REWARD SUCCESS",
-  LOAD_EARNED_REWARD_FAILURE = "[GLOBAL] LOAD EARNED REWARD FAILURE",
-  LOAD_REWARD_PERCENTAGE = "[GLOBAL] LOAD REWARD PERCENTAGE",
-  LOAD_REWARD_PERCENTAGE_SUCCESS = "[GLOBAL] LOAD REWARD PERCENTAGE SUCCESS",
-  LOAD_REWARD_PERCENTAGE_FAILURE = "[GLOBAL] LOAD REWARD PERCENTAGE FAILURE",
-  LOAD_REWARD_ACCOUNT_ELIGIBILITY = "[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY",
-  LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS = "[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY SUCCESS",
-  LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE = "[GLOBAL] LOAD REWARD ACCOUNT ELIGIBILITY FAILURE",
-  LOAD_REWARD_TOKEN = "[GLOBAL] LOAD REWARD TOKEN",
-  LOAD_REWARD_TOKEN_SUCCESS = "[GLOBAL] LOAD REWARD TOKEN SUCCESS",
-  LOAD_REWARD_TOKEN_FAILURE = "[GLOBAL] LOAD REWARD TOKEN FAILURE",
   LOAD_TOKENS_PRICE = "[GLOBAL] LOAD TOKENS PRICE",
   LOAD_TOKENS_PRICE_SUCCESS = "[GLOBAL] LOAD TOKENS PRICE SUCCESS",
   LOAD_TOKENS_PRICE_FAILURE = "[GLOBAL] LOAD TOKENS PRICE FAILURE",
@@ -251,85 +233,6 @@ export interface LoadCoordinatorStateFailure {
   type: GlobalActionTypes.LOAD_COORDINATOR_STATE_FAILURE;
   error: string;
 }
-
-export interface OpenRewardsSidenav {
-  type: GlobalActionTypes.OPEN_REWARDS_SIDENAV;
-}
-
-export interface CloseRewardsSidenav {
-  type: GlobalActionTypes.CLOSE_REWARDS_SIDENAV;
-}
-
-export interface LoadReward {
-  type: GlobalActionTypes.LOAD_REWARD;
-}
-
-export interface LoadRewardSuccess {
-  type: GlobalActionTypes.LOAD_REWARD_SUCCESS;
-  reward: Reward;
-}
-
-export interface LoadRewardFailure {
-  type: GlobalActionTypes.LOAD_REWARD_FAILURE;
-  error: string;
-}
-
-export interface LoadEarnedReward {
-  type: GlobalActionTypes.LOAD_EARNED_REWARD;
-}
-
-export interface LoadEarnedRewardSuccess {
-  type: GlobalActionTypes.LOAD_EARNED_REWARD_SUCCESS;
-  earnedReward: Reward;
-}
-
-export interface LoadEarnedRewardFailure {
-  type: GlobalActionTypes.LOAD_EARNED_REWARD_FAILURE;
-  error: string;
-}
-
-export interface LoadRewardPercentage {
-  type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE;
-}
-
-export interface LoadRewardPercentageSuccess {
-  type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS;
-  rewardPercentage: unknown;
-}
-
-export interface LoadRewardPercentageFailure {
-  type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE;
-  error: string;
-}
-
-export interface LoadRewardAccountEligibility {
-  type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY;
-}
-
-export interface LoadRewardAccountEligibilitySuccess {
-  type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS;
-  rewardAccountEligibility: unknown;
-}
-
-export interface LoadRewardAccountEligibilityFailure {
-  type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE;
-  error: string;
-}
-
-export interface LoadRewardToken {
-  type: GlobalActionTypes.LOAD_REWARD_TOKEN;
-}
-
-export interface LoadRewardTokenSuccess {
-  type: GlobalActionTypes.LOAD_REWARD_TOKEN_SUCCESS;
-  rewardToken: unknown;
-}
-
-export interface LoadRewardTokenFailure {
-  type: GlobalActionTypes.LOAD_REWARD_TOKEN_FAILURE;
-  error: string;
-}
-
 export interface LoadTokensPrice {
   type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE;
 }
@@ -379,23 +282,6 @@ export type GlobalAction =
   | LoadCoordinatorState
   | LoadCoordinatorStateSuccess
   | LoadCoordinatorStateFailure
-  | OpenRewardsSidenav
-  | CloseRewardsSidenav
-  | LoadReward
-  | LoadRewardSuccess
-  | LoadRewardFailure
-  | LoadEarnedReward
-  | LoadEarnedRewardSuccess
-  | LoadEarnedRewardFailure
-  | LoadRewardPercentage
-  | LoadRewardPercentageSuccess
-  | LoadRewardPercentageFailure
-  | LoadRewardAccountEligibility
-  | LoadRewardAccountEligibilitySuccess
-  | LoadRewardAccountEligibilityFailure
-  | LoadRewardToken
-  | LoadRewardTokenSuccess
-  | LoadRewardTokenFailure
   | LoadTokensPrice
   | LoadTokensPriceSuccess
   | LoadTokensPriceFailure;
@@ -695,124 +581,6 @@ function loadCoordinatorStateFailure(error: Error): LoadCoordinatorStateFailure 
   };
 }
 
-function openRewardsSidenav(): OpenRewardsSidenav {
-  return {
-    type: GlobalActionTypes.OPEN_REWARDS_SIDENAV,
-  };
-}
-
-function closeRewardsSidenav(): CloseRewardsSidenav {
-  return {
-    type: GlobalActionTypes.CLOSE_REWARDS_SIDENAV,
-  };
-}
-
-function loadReward(): LoadReward {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD,
-  };
-}
-
-function loadRewardSuccess(reward: Reward): LoadRewardSuccess {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_SUCCESS,
-    reward,
-  };
-}
-
-function loadRewardFailure(error: string): LoadRewardFailure {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_FAILURE,
-    error,
-  };
-}
-
-function loadEarnedReward(): LoadEarnedReward {
-  return {
-    type: GlobalActionTypes.LOAD_EARNED_REWARD,
-  };
-}
-
-function loadEarnedRewardSuccess(earnedReward: Reward): LoadEarnedRewardSuccess {
-  return {
-    type: GlobalActionTypes.LOAD_EARNED_REWARD_SUCCESS,
-    earnedReward,
-  };
-}
-
-function loadEarnedRewardFailure(error: string): LoadEarnedRewardFailure {
-  return {
-    type: GlobalActionTypes.LOAD_EARNED_REWARD_FAILURE,
-    error,
-  };
-}
-
-function loadRewardPercentage(): LoadRewardPercentage {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE,
-  };
-}
-
-// ToDo: What is the shape of a rewardPercentage?
-function loadRewardPercentageSuccess(rewardPercentage: unknown): LoadRewardPercentageSuccess {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE_SUCCESS,
-    rewardPercentage,
-  };
-}
-
-function loadRewardPercentageFailure(error: string): LoadRewardPercentageFailure {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_PERCENTAGE_FAILURE,
-    error,
-  };
-}
-
-function loadRewardAccountEligibility(): LoadRewardAccountEligibility {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY,
-  };
-}
-
-// ToDo: What is the shape of a rewardAccountEligibility?
-function loadRewardAccountEligibilitySuccess(
-  rewardAccountEligibility: unknown
-): LoadRewardAccountEligibilitySuccess {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_SUCCESS,
-    rewardAccountEligibility,
-  };
-}
-
-// ToDo: This action is never called. Dead code?
-function loadRewardAccountEligibilityFailure(error: string): LoadRewardAccountEligibilityFailure {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_ACCOUNT_ELIGIBILITY_FAILURE,
-    error,
-  };
-}
-
-function loadRewardToken(): LoadRewardToken {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_TOKEN,
-  };
-}
-
-// ToDo: What is the shape of a rewardToken?
-function loadRewardTokenSuccess(rewardToken: unknown): LoadRewardTokenSuccess {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_TOKEN_SUCCESS,
-    rewardToken,
-  };
-}
-
-function loadRewardTokenFailure(error: string): LoadRewardTokenFailure {
-  return {
-    type: GlobalActionTypes.LOAD_REWARD_TOKEN_FAILURE,
-    error,
-  };
-}
-
 function loadTokensPrice() {
   return {
     type: GlobalActionTypes.LOAD_TOKENS_PRICE,
@@ -868,23 +636,6 @@ export {
   loadCoordinatorState,
   loadCoordinatorStateSuccess,
   loadCoordinatorStateFailure,
-  openRewardsSidenav,
-  closeRewardsSidenav,
-  loadReward,
-  loadRewardSuccess,
-  loadRewardFailure,
-  loadEarnedReward,
-  loadEarnedRewardSuccess,
-  loadEarnedRewardFailure,
-  loadRewardPercentage,
-  loadRewardPercentageSuccess,
-  loadRewardPercentageFailure,
-  loadRewardAccountEligibility,
-  loadRewardAccountEligibilitySuccess,
-  loadRewardAccountEligibilityFailure,
-  loadRewardToken,
-  loadRewardTokenSuccess,
-  loadRewardTokenFailure,
   loadTokensPrice,
   loadTokensPriceSuccess,
   loadTokensPriceFailure,

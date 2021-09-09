@@ -205,9 +205,6 @@ function postCreateAccountAuthorization(wallet) {
       .then(() => {
         dispatch(loginActions.addAccountAuthSuccess());
         dispatch(push(redirectRoute));
-        if (process.env.REACT_APP_ENABLE_AIRDROP === "true") {
-          dispatch(globalActions.openRewardsSidenav());
-        }
       })
       .catch((error) => {
         const errorMessage =
