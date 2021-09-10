@@ -18,13 +18,14 @@ const tokenSchema: JTDSchemaType<Token> = {
     decimals: { type: "int32" },
     ethereumAddress: { type: "string" },
     ethereumBlockNum: { type: "int32" },
-    fiatUpdate: { type: "string" },
+    usdUpdate: { type: "string" },
     id: { type: "int32" },
     itemId: { type: "int32" },
     name: { type: "string" },
     symbol: { type: "string" },
-    USD: { type: "int32" },
+    USD: { type: "float32" },
   },
+  additionalProperties: true,
 };
 const tokenListSchema: JTDSchemaType<Token[]> = {
   elements: tokenSchema,
@@ -38,6 +39,7 @@ const getTokensPriceResponseSchema: JTDSchemaType<GetTokensPriceResponse> = {
   properties: {
     tokens: tokenListSchema,
   },
+  additionalProperties: true,
 };
 
 const getTokensPriceResponseValidator = ajv.compile(getTokensPriceResponseSchema);
@@ -51,8 +53,9 @@ interface ApiExchangeRate {
 const apiExchangeRateSchema: JTDSchemaType<ApiExchangeRate> = {
   properties: {
     currency: { type: "string" },
-    price: { type: "int32" },
+    price: { type: "float32" },
   },
+  additionalProperties: true,
 };
 const apiExchangeRateListSchema: JTDSchemaType<ApiExchangeRate[]> = {
   elements: apiExchangeRateSchema,
@@ -66,6 +69,7 @@ const getFiatExchangeRatesResponseSchema: JTDSchemaType<ApiExchangeRateResponse>
   properties: {
     currencies: apiExchangeRateListSchema,
   },
+  additionalProperties: true,
 };
 
 const getFiatExchangeRatesResponseValidator = ajv.compile(getFiatExchangeRatesResponseSchema);

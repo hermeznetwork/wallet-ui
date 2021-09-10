@@ -7,28 +7,29 @@ const baseApiUrl = HERMEZ_WEB_URL;
 
 const ajv = new Ajv();
 
-interface WalletUnderMaintenance {
+interface WalletUnderMaintenanceResponse {
   isWalletUnderMaintenance: number;
 }
 
-const walletUnderMaintenanceSchema: JTDSchemaType<WalletUnderMaintenance> = {
+const walletUnderMaintenanceResponseSchema: JTDSchemaType<WalletUnderMaintenanceResponse> = {
   properties: {
     isWalletUnderMaintenance: { type: "int32" },
   },
+  additionalProperties: true,
 };
 
-const isWalletUnderMaintenanceValidator = ajv.compile(walletUnderMaintenanceSchema);
+const isWalletUnderMaintenanceResponseValidator = ajv.compile(walletUnderMaintenanceResponseSchema);
 
 /**
  * Fetches the status of the Hermez network
  * @returns {Promise<Number>} - Network status of the Hermez Network
  */
 function getNetworkStatus(): Promise<number> {
-  return axios.get(`${baseApiUrl}/network-status.json`).then((res: unknown) => {
-    if (isWalletUnderMaintenanceValidator(res)) {
-      return res.isWalletUnderMaintenance;
+  return axios.get(`${baseApiUrl}/network-status.json`).then((res) => {
+    if (isWalletUnderMaintenanceResponseValidator(res.data)) {
+      return res.data.isWalletUnderMaintenance;
     } else {
-      return Promise.reject(isWalletUnderMaintenanceValidator.errors);
+      return Promise.reject(isWalletUnderMaintenanceResponseValidator.errors);
     }
   });
 }

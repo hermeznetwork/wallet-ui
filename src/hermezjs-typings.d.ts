@@ -45,7 +45,7 @@ declare module "@hermeznetwork/*" {
     decimals: number;
     ethereumAddress: string;
     ethereumBlockNum: number;
-    fiatUpdate: ISOStringDate;
+    usdUpdate: ISOStringDate;
     id: number;
     name: string;
     symbol: string;
