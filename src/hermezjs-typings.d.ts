@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /**
  * HermezJS Type Definitions
  *
@@ -157,6 +158,7 @@ declare module "@hermeznetwork/*" {
   // }
 
   // Coordinator State
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface CoordinatorState {
     // node: Node;
     // network: Network;
@@ -551,7 +553,7 @@ declare module "@hermeznetwork/hermezjs/src/hermez-compressed-amount" {
 
 // Addresses
 declare module "@hermeznetwork/hermezjs/src/addresses" {
-  import { Account } from "@hermeznetwork/hermezjs";
+  // import { Account } from "@hermeznetwork/hermezjs";
 
   // declare function getHermezAddress() {};
 
@@ -595,7 +597,7 @@ declare module "@hermeznetwork/hermezjs/src/signers" {
 
 // Environment
 declare module "@hermeznetwork/hermezjs/src/environment" {
-  declare function setEnvironment(env: Number | Record<string, unknown>) {};
+  declare function setEnvironment(env: number | Record<string, unknown>) {};
 
   // declare function getCurrentEnvironment() {};
   // declare function getSupportedEnvironments() {};
