@@ -1,5 +1,5 @@
 /**
- * Hermez network types.
+ * HermezJS Type Definitions
  *
  * Some types and props are currently commented because are not used by this app.
  * As we proceed with the migration of the application to typescript, more
