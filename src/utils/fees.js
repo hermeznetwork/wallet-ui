@@ -50,7 +50,7 @@ function getTransactionFee(txType, amount, token, l2Fee, gasPrice) {
       return BigNumber.from(0);
     }
     default: {
-      return parseUnits(getRealFee(amount, token, l2Fee).toString());
+      return parseUnits(getRealFee(amount, token, l2Fee).toString(), token.decimals);
     }
   }
 }
