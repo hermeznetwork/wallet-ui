@@ -1,4 +1,3 @@
-import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 import { Pagination } from "src/utils/api";
 
 // domain
@@ -19,7 +18,7 @@ interface ViewHistoryTransactions {
 
 export interface AccountDetailsState {
   accountTask: AsyncTask<Account, string>;
-  exitsTask: AsyncTask<Exits, string>;
+  exitsTask: AsyncTask<Exits, Error>;
   historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
   l1TokenBalanceTask: AsyncTask<null, string>;
   poolTransactionsTask: AsyncTask<Transaction[], string>;
@@ -43,7 +42,10 @@ const initialAccountDetailsState: AccountDetailsState = {
   },
 };
 
-function accountDetailsReducer(state = initialAccountDetailsState, action: AccountDetailsAction) {
+function accountDetailsReducer(
+  state = initialAccountDetailsState,
+  action: AccountDetailsAction
+): AccountDetailsState {
   switch (action.type) {
     case AccountDetailsActionTypes.LOAD_ACCOUNT: {
       return {
@@ -85,6 +87,7 @@ function accountDetailsReducer(state = initialAccountDetailsState, action: Accou
         ...state,
         l1TokenBalanceTask: {
           status: "successful",
+          data: null,
         },
       };
     }
@@ -93,6 +96,7 @@ function accountDetailsReducer(state = initialAccountDetailsState, action: Accou
         ...state,
         l1TokenBalanceTask: {
           status: "failed",
+          error: "An error occurred loading the L1 Token Balance",
         },
       };
     }
@@ -171,10 +175,16 @@ function accountDetailsReducer(state = initialAccountDetailsState, action: Accou
     case AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS: {
       return {
         ...state,
-        historyTransactionsTask: {
-          ...state.historyTransactionsTask,
-          status: "reloading",
-        },
+        historyTransactionsTask:
+          state.historyTransactionsTask.status === "successful"
+            ? {
+                ...state.historyTransactionsTask,
+                status: "reloading",
+              }
+            : {
+                ...state.historyTransactionsTask,
+                status: "loading",
+              },
       };
     }
     case AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS: {
