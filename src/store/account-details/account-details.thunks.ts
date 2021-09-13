@@ -7,10 +7,10 @@ import * as accountDetailsActions from "./account-details.actions";
 import * as ethereum from "src/utils/ethereum";
 import { createAccount } from "src/utils/accounts";
 import { RootState } from "src/store";
-import { AppDispatch } from "src";
+import { AppDispatch, AppThunk } from "src";
 
 // domain
-import { Account, Token, Transaction, Exit } from "src/domain/hermez";
+import { Account, Token, Transaction, Exit, FiatExchangeRates } from "src/domain/hermez";
 
 // persistence
 import { Transactions, Exits } from "src/persistence";
@@ -22,7 +22,11 @@ let refreshCancelTokenSource = axios.CancelToken.source();
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchAccount(accountIndex: Account["accountIndex"]) {
+function fetchAccount(
+  accountIndex: Account["accountIndex"],
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       global: { wallet, tokensPriceTask },
@@ -34,7 +38,14 @@ function fetchAccount(accountIndex: Account["accountIndex"]) {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push("/"));
         } else {
-          const accountTokenUpdated = createAccount(account, undefined, undefined, tokensPriceTask);
+          const accountTokenUpdated = createAccount(
+            account,
+            undefined,
+            undefined,
+            tokensPriceTask,
+            fiatExchangeRates,
+            preferredCurrency
+          );
 
           dispatch(accountDetailsActions.loadAccountSuccess(accountTokenUpdated));
         }
@@ -48,26 +59,28 @@ function fetchAccount(accountIndex: Account["accountIndex"]) {
  * @param {Object} token - Hermez token object for the loaded account
  * @returns {void}
  */
-function fetchL1TokenBalance(token: Token) {
+function fetchL1TokenBalance(token: Token): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       global: { wallet },
     } = getState();
 
-    dispatch(accountDetailsActions.loadL1TokenBalance());
+    if (wallet !== undefined) {
+      dispatch(accountDetailsActions.loadL1TokenBalance());
 
-    return ethereum
-      .getTokens(wallet, [token])
-      .then((metamaskTokens) => {
-        if (metamaskTokens[0]) {
-          // We need this to check if the user has balance of a specific token in his ethereum address.
-          // If getTokens returns one element when asking for the token it means that the user has balance.
-          dispatch(accountDetailsActions.loadL1TokenBalanceSuccess());
-        } else {
-          dispatch(accountDetailsActions.loadL1TokenBalanceFailure());
-        }
-      })
-      .catch((_) => dispatch(accountDetailsActions.loadL1TokenBalanceFailure()));
+      return ethereum
+        .getTokens(wallet, [token])
+        .then((metamaskTokens) => {
+          if (metamaskTokens[0]) {
+            // We need this to check if the user has balance of a specific token in his ethereum address.
+            // If getTokens returns one element when asking for the token it means that the user has balance.
+            dispatch(accountDetailsActions.loadL1TokenBalanceSuccess());
+          } else {
+            dispatch(accountDetailsActions.loadL1TokenBalanceFailure());
+          }
+        })
+        .catch(() => dispatch(accountDetailsActions.loadL1TokenBalanceFailure()));
+    }
   };
 }
 
@@ -76,7 +89,7 @@ function fetchL1TokenBalance(token: Token) {
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchPoolTransactions(accountIndex: Account["accountIndex"]) {
+function fetchPoolTransactions(accountIndex: Account["accountIndex"]): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(accountDetailsActions.loadPoolTransactions());
 
@@ -122,7 +135,7 @@ function fetchHistoryTransactions(
   accountIndex: Account["accountIndex"],
   fromItem: number,
   historyExits: Exits
-) {
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       accountDetails: { historyTransactionsTask },
@@ -166,7 +179,10 @@ function fetchHistoryTransactions(
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshHistoryTransactions(accountIndex: Account["accountIndex"], historyExits: Exits) {
+function refreshHistoryTransactions(
+  accountIndex: Account["accountIndex"],
+  historyExits: Exits
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       accountDetails: { historyTransactionsTask },
@@ -221,7 +237,10 @@ function refreshHistoryTransactions(accountIndex: Account["accountIndex"], histo
         })
         .then((historyTransactions: Transactions) =>
           dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
-        );
+        )
+        // ToDo: Shouldn't we dispatch refreshHistoryTransactionsFailure here?
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        .catch(() => {});
     }
   };
 }
@@ -231,7 +250,7 @@ function refreshHistoryTransactions(accountIndex: Account["accountIndex"], histo
  * @param {Number} tokenId - The token ID for the current account
  * @returns {void}
  */
-function fetchExits(tokenId: Token["id"]) {
+function fetchExits(tokenId: Token["id"]): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(accountDetailsActions.loadExits());
 

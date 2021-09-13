@@ -79,20 +79,22 @@ function AccountDetails({
   }, [accountTask, onChangeHeader]);
 
   React.useEffect(() => {
-    const loadInitialData = () => {
-      onCheckPendingDeposits();
-      onLoadAccount(accountIndex);
-      onLoadPoolTransactions(accountIndex);
-      onCheckPendingWithdrawals();
-      onCheckPendingDelayedWithdrawals();
-    };
-    const intervalId = setInterval(loadInitialData, AUTO_REFRESH_RATE);
-
-    loadInitialData();
-
-    return () => {
-      clearInterval(intervalId);
-    };
+    if (fiatExchangeRatesTask.status === "successful") {
+      const loadInitialData = () => {
+        onCheckPendingDeposits();
+        onLoadAccount(accountIndex, fiatExchangeRatesTask.data, preferredCurrency);
+        onLoadPoolTransactions(accountIndex);
+        onCheckPendingWithdrawals();
+        onCheckPendingDelayedWithdrawals();
+      };
+      const intervalId = setInterval(loadInitialData, AUTO_REFRESH_RATE);
+  
+      loadInitialData();
+  
+      return () => {
+        clearInterval(intervalId);
+      };  
+    }
   }, [accountIndex, onCheckPendingDeposits, onLoadAccount, onLoadPoolTransactions]);
 
   React.useEffect(() => {
@@ -359,7 +361,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccount: (accountIndex) => dispatch(accountDetailsThunks.fetchAccount(accountIndex)),
+  onLoadAccount: (accountIndex, fiatExchangeRates, preferredCurrency) => dispatch(accountDetailsThunks.fetchAccount(accountIndex, fiatExchangeRates, preferredCurrency)),
   onLoadL1TokenBalance: (token) => dispatch(accountDetailsThunks.fetchL1TokenBalance(token)),
   onChangeHeader: (tokenName) =>
     dispatch(
