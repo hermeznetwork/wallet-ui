@@ -43,6 +43,12 @@ function TransactionOverview({
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [isWithdrawInfoSidenavOpen, setIsWithdrawInfoSidenavOpen] = React.useState(false);
 
+  React.useEffect(() => {
+    if (!isTransactionBeingSigned) {
+      setIsButtonDisabled(false);
+    }
+  }, [isTransactionBeingSigned]);
+
   /**
    * Converts the transaction amount to fiat in the preferred currency
    *

@@ -2,8 +2,6 @@ export const transactionActionTypes = {
   GO_TO_CHOOSE_ACCOUNT_STEP: "[TRANSACTION] GO TO CHOOSE ACCOUNT STEP",
   GO_TO_BUILD_TRANSACTION_STEP: "[TRANSACTION GO TO BUILD TRANSACTION STEP",
   GO_TO_REVIEW_TRANSACTION_STEP: "[TRANSACTION] GO TO REVIEW TRANSACTION STEP",
-  GO_TO_FINISH_TRANSACTION_STEP: "[TRANSACTION] GO TO FINISH TRANSACTION STEP",
-  GO_TO_TRANSACTION_ERROR_STEP: "[TRANSACTION] GO TO TRANSACTION ERROR STEP",
   CHANGE_CURRENT_STEP: "[TRANSACTION] CHANGE CURRENT STEP",
   LOAD_ACCOUNT: "[TRANSACTION] LOAD ACCOUNT",
   LOAD_ACCOUNT_SUCCESS: "[TRANSACTION] LOAD ACCOUNT SUCCESS",
@@ -49,18 +47,6 @@ function goToReviewTransactionStep(transaction) {
   return {
     type: transactionActionTypes.GO_TO_REVIEW_TRANSACTION_STEP,
     transaction,
-  };
-}
-
-function goToFinishTransactionStep() {
-  return {
-    type: transactionActionTypes.GO_TO_FINISH_TRANSACTION_STEP,
-  };
-}
-
-function goToTransactionErrorStep() {
-  return {
-    type: transactionActionTypes.GO_TO_TRANSACTION_ERROR_STEP,
   };
 }
 
@@ -233,8 +219,6 @@ export {
   goToChooseAccountStep,
   goToBuildTransactionStep,
   goToReviewTransactionStep,
-  goToFinishTransactionStep,
-  goToTransactionErrorStep,
   changeCurrentStep,
   loadAccounts,
   loadAccountsSuccess,

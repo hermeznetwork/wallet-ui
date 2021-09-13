@@ -8,8 +8,6 @@ export const STEP_NAME = {
   CHOOSE_ACCOUNT: "choose-account",
   BUILD_TRANSACTION: "build-transaction",
   REVIEW_TRANSACTION: "review-transaction",
-  FINISH_TRANSACTION: "finish-transaction",
-  TRANSACTION_ERROR: "transaction-error",
 };
 
 const initialTransactionState = {
@@ -78,18 +76,6 @@ function transactionReducer(state = initialTransactionState, action) {
             transaction: action.transaction,
           },
         },
-      };
-    }
-    case transactionActionTypes.GO_TO_FINISH_TRANSACTION_STEP: {
-      return {
-        ...state,
-        currentStep: STEP_NAME.FINISH_TRANSACTION,
-      };
-    }
-    case transactionActionTypes.GO_TO_TRANSACTION_ERROR_STEP: {
-      return {
-        ...state,
-        currentStep: STEP_NAME.TRANSACTION_ERROR,
       };
     }
     case transactionActionTypes.CHANGE_CURRENT_STEP: {

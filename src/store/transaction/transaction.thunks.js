@@ -5,14 +5,17 @@ import { ETHER_TOKEN_ID } from "@hermeznetwork/hermezjs/src/constants";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { ethers, BigNumber } from "ethers";
+import { push } from "connected-react-router";
 
 import * as transactionActions from "./transaction.actions";
 import * as globalThunks from "../global/global.thunks";
+import { openSnackbar } from "../global/global.actions";
 import * as ethereum from "../../utils/ethereum";
 import { createAccount } from "../../utils/accounts";
 import { convertTokenAmountToFiat } from "../../utils/currencies";
 import { mergeDelayedWithdraws } from "../../utils/transactions";
 import { getNextBestForger, getNextForgerUrls } from "../../utils/coordinator";
+import theme from "../../styles/theme";
 
 import { WITHDRAW_WASM_URL, WITHDRAW_HEZ4_FINAL_ZKEY_URL } from "../../constants";
 
@@ -330,16 +333,13 @@ function deposit(amount, account) {
               type: res.accounts.length ? TxType.Deposit : TxType.CreateAccountDeposit,
             })
           );
-          dispatch(transactionActions.goToFinishTransactionStep());
+          handleTransactionSuccess(dispatch);
         });
       })
       .catch((error) => {
         console.error(error);
         dispatch(transactionActions.stopTransactionSigning());
-        // 4001 error code means that user denied tx signature
-        if (error.code !== 4001) {
-          dispatch(transactionActions.goToTransactionErrorStep());
-        }
+        handleTransactionFailed(dispatch, error);
       });
   };
 }
@@ -392,16 +392,12 @@ function withdraw(amount, account, exit, completeDelayedWithdrawal, instantWithd
               })
             );
           }
-
-          dispatch(transactionActions.goToFinishTransactionStep());
+          handleTransactionSuccess(dispatch);
         })
         .catch((error) => {
           console.error(error);
           dispatch(transactionActions.stopTransactionSigning());
-          // 4001 error code means that user denied tx signature
-          if (error.code !== 4001) {
-            dispatch(transactionActions.goToTransactionErrorStep());
-          }
+          handleTransactionFailed(dispatch, error);
         });
     } else {
       return Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
@@ -417,15 +413,12 @@ function withdraw(amount, account, exit, completeDelayedWithdrawal, instantWithd
               token: account.token,
             })
           );
-          dispatch(transactionActions.goToFinishTransactionStep());
+          handleTransactionSuccess(dispatch);
         })
         .catch((error) => {
           console.error(error);
           dispatch(transactionActions.stopTransactionSigning());
-          // 4001 error code means that user denied tx signature
-          if (error.code !== 4001) {
-            dispatch(transactionActions.goToTransactionErrorStep());
-          }
+          handleTransactionFailed(dispatch, error);
         });
     }
   };
@@ -445,14 +438,11 @@ function forceExit(amount, account) {
       account.token,
       signer
     )
-      .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
+      .then(() => handleTransactionSuccess(dispatch))
       .catch((error) => {
         console.error(error);
         dispatch(transactionActions.stopTransactionSigning());
-        // 4001 error code means that user denied tx signature
-        if (error.code !== 4001) {
-          dispatch(transactionActions.goToTransactionErrorStep());
-        }
+        handleTransactionFailed(dispatch, error);
       });
   };
 }
@@ -462,6 +452,9 @@ function exit(amount, account, fee) {
     const {
       global: { wallet, coordinatorStateTask },
     } = getState();
+
+    dispatch(transactionActions.startTransactionSigning());
+
     const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
     const txData = {
       type: TxType.Exit,
@@ -471,11 +464,11 @@ function exit(amount, account, fee) {
     };
 
     return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
-      .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
+      .then(() => handleTransactionSuccess(dispatch))
       .catch((error) => {
         console.error(error);
         dispatch(transactionActions.stopTransactionSigning());
-        dispatch(transactionActions.goToTransactionErrorStep());
+        handleTransactionFailed(dispatch, error);
       });
   };
 }
@@ -485,6 +478,9 @@ function transfer(amount, from, to, fee) {
     const {
       global: { wallet, coordinatorStateTask },
     } = getState();
+
+    dispatch(transactionActions.startTransactionSigning());
+
     const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
     const txData = {
       from: from.accountIndex,
@@ -494,13 +490,23 @@ function transfer(amount, from, to, fee) {
     };
 
     return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
-      .then(() => dispatch(transactionActions.goToFinishTransactionStep()))
+      .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
       .catch((error) => {
         console.error(error);
         dispatch(transactionActions.stopTransactionSigning());
-        dispatch(transactionActions.goToTransactionErrorStep());
+        handleTransactionFailed(dispatch, error);
       });
   };
+}
+
+function handleTransactionSuccess(dispatch, accountIndex) {
+  const route = accountIndex ? `/accounts/${accountIndex}` : "/";
+  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(push(route));
+}
+
+function handleTransactionFailed(dispatch, error) {
+  dispatch(openSnackbar(`Transaction failed - ${error.message || error}`, theme.palette.red.main));
 }
 
 export {
