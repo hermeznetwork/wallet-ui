@@ -93,7 +93,7 @@ declare module "@hermeznetwork/*" {
   };
 
   export interface Deposit {
-    // account: Account;
+    account: Account;
     hash: string;
     // fromHezEthereumAddress: string;
     // toHezEthereumAddress: string;
@@ -375,7 +375,10 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
 
   // declare function getL2TxId() {};
   // declare function getFeeIndex() {};
-  // declare function getFeeValue() {};
+
+  // ToDo: amount is expected to be a ffjavascript Scalar, but since the functions in a Scalar convert
+  //       their inputs to BigInt's, amount can be a string | number | bigint | boolean
+  declare function getFeeValue(feeIndex: number, amount: string | number | bigint | boolean): bigint {};
   // declare function getMaxAmountFromMinimumFee() {};
   // declare function getTransactionType() {};
   // declare function getNonce() {};
