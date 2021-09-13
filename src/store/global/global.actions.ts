@@ -581,20 +581,20 @@ function loadCoordinatorStateFailure(error: Error): LoadCoordinatorStateFailure 
   };
 }
 
-function loadTokensPrice() {
+function loadTokensPrice(): LoadTokensPrice {
   return {
     type: GlobalActionTypes.LOAD_TOKENS_PRICE,
   };
 }
 
-function loadTokensPriceSuccess(tokensPrice: Token[]) {
+function loadTokensPriceSuccess(tokensPrice: Token[]): LoadTokensPriceSuccess {
   return {
     type: GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS,
     tokensPrice,
   };
 }
 
-function loadTokensPriceFailure(error: string) {
+function loadTokensPriceFailure(error: string): LoadTokensPriceFailure {
   return {
     type: GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE,
     error,
