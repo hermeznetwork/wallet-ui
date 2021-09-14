@@ -87,3 +87,11 @@ export function getPendingDeposits(): PendingDeposits {
   const parsedPendingDeposits = pendingDepositsParser.safeParse(pendingDeposits);
   return parsedPendingDeposits.success ? parsedPendingDeposits.data : {};
 }
+
+const stringToNumber = z.string().transform((val) => parseFloat(val));
+
+export function getCurrentStorageVersion(): number | undefined {
+  const currentStorageVersion: unknown = storage.getStorage(constants.STORAGE_VERSION_KEY);
+  const parsedCurrentStorageVersion = stringToNumber.safeParse(currentStorageVersion);
+  return parsedCurrentStorageVersion.success ? parsedCurrentStorageVersion.data : undefined;
+}
