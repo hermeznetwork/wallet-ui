@@ -11,7 +11,7 @@ import {
   PendingDeposits,
 } from "src/domain/local-storage";
 
-const withdrawZod: z.ZodType<Withdraw> = z.object({
+const withdrawParser: z.ZodType<Withdraw> = z.object({
   accountIndex: z.string(),
   batchNum: z.number(),
   hash: z.string(),
@@ -19,11 +19,11 @@ const withdrawZod: z.ZodType<Withdraw> = z.object({
   timestamp: z.string(),
 });
 
-const pendingWithdrawsZod: z.ZodType<PendingWithdraws> = z.record(z.record(z.array(withdrawZod)));
+const pendingWithdrawsParser: z.ZodType<PendingWithdraws> = z.record(z.record(z.array(withdrawParser)));
 
 export function getPendingWithdraws(): PendingWithdraws {
   const pendingWithdraws: unknown = storage.getStorage(constants.PENDING_WITHDRAWS_KEY);
-  const parsedPendingWithdraws = pendingWithdrawsZod.safeParse(pendingWithdraws);
+  const parsedPendingWithdraws = pendingWithdrawsParser.safeParse(pendingWithdraws);
   if (parsedPendingWithdraws.success) {
     return parsedPendingWithdraws.data;
   } else {
@@ -31,14 +31,14 @@ export function getPendingWithdraws(): PendingWithdraws {
   }
 }
 
-const delayedWithdrawZod: z.ZodType<DelayedWithdraw> = withdrawZod.and(
+const delayedWithdrawParser: z.ZodType<DelayedWithdraw> = withdrawParser.and(
   z.object({
     instant: z.boolean(),
   })
 );
 
-const pendingDelayedWithdrawsZod: z.ZodType<PendingDelayedWithdraws> = z.record(
-  z.record(z.array(delayedWithdrawZod))
+const pendingDelayedWithdrawsParser: z.ZodType<PendingDelayedWithdraws> = z.record(
+  z.record(z.array(delayedWithdrawParser))
 );
 
 export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
@@ -46,7 +46,7 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
     constants.PENDING_DELAYED_WITHDRAWS_KEY
   );
   const parsedPendingDelayedWithdraws =
-    pendingDelayedWithdrawsZod.safeParse(pendingDelayedWithdraws);
+    pendingDelayedWithdrawsParser.safeParse(pendingDelayedWithdraws);
   if (parsedPendingDelayedWithdraws.success) {
     return parsedPendingDelayedWithdraws.data;
   } else {
@@ -54,7 +54,7 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
   }
 }
 
-const tokenZod: z.ZodType<Token> = z.object({
+const tokenParser: z.ZodType<Token> = z.object({
   itemId: z.number(),
   decimals: z.number(),
   ethereumAddress: z.string(),
@@ -66,29 +66,29 @@ const tokenZod: z.ZodType<Token> = z.object({
   USD: z.number(),
 });
 
-const accountZod: z.ZodType<Account> = z.object({
+const accountParser: z.ZodType<Account> = z.object({
   itemId: z.number(),
   accountIndex: z.string(),
   balance: z.string(),
   bjj: z.string(),
   fiatBalance: z.number(),
-  token: tokenZod,
+  token: tokenParser,
 });
 
-const depositZod: z.ZodType<Deposit> = z.object({
-  account: accountZod,
+const depositParser: z.ZodType<Deposit> = z.object({
+  account: accountParser,
   hash: z.string(),
-  token: tokenZod,
+  token: tokenParser,
   amount: z.string(),
   timestamp: z.string(),
   type: z.union([z.literal("Deposit"), z.literal("CreateAccountDeposit")]),
 });
 
-const pendingDepositsZod: z.ZodType<PendingDeposits> = z.record(z.record(z.array(depositZod)));
+const pendingDepositsParser: z.ZodType<PendingDeposits> = z.record(z.record(z.array(depositParser)));
 
 export function getPendingDeposits(): PendingDeposits {
   const pendingDeposits: unknown = storage.getStorage(constants.PENDING_DEPOSITS_KEY);
-  const parsedPendingDeposits = pendingDepositsZod.safeParse(pendingDeposits);
+  const parsedPendingDeposits = pendingDepositsParser.safeParse(pendingDeposits);
   if (parsedPendingDeposits.success) {
     return parsedPendingDeposits.data;
   } else {
