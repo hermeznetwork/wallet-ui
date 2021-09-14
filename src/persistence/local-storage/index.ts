@@ -11,7 +11,7 @@ import {
   PendingDeposits,
 } from "src/domain/local-storage";
 
-const withdrawParser: z.ZodType<Withdraw> = z.object({
+const withdrawParser: z.ZodSchema<Withdraw> = z.object({
   accountIndex: z.string(),
   batchNum: z.number(),
   hash: z.string(),
@@ -19,7 +19,7 @@ const withdrawParser: z.ZodType<Withdraw> = z.object({
   timestamp: z.string(),
 });
 
-const pendingWithdrawsParser: z.ZodType<PendingWithdraws> = z.record(
+const pendingWithdrawsParser: z.ZodSchema<PendingWithdraws> = z.record(
   z.record(z.array(withdrawParser))
 );
 
@@ -29,13 +29,13 @@ export function getPendingWithdraws(): PendingWithdraws {
   return parsedPendingWithdraws.success ? parsedPendingWithdraws.data : {};
 }
 
-const delayedWithdrawParser: z.ZodType<DelayedWithdraw> = withdrawParser.and(
+const delayedWithdrawParser: z.ZodSchema<DelayedWithdraw> = withdrawParser.and(
   z.object({
     instant: z.boolean(),
   })
 );
 
-const pendingDelayedWithdrawsParser: z.ZodType<PendingDelayedWithdraws> = z.record(
+const pendingDelayedWithdrawsParser: z.ZodSchema<PendingDelayedWithdraws> = z.record(
   z.record(z.array(delayedWithdrawParser))
 );
 
@@ -48,7 +48,7 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
   return parsedPendingDelayedWithdraws.success ? parsedPendingDelayedWithdraws.data : {};
 }
 
-const tokenParser: z.ZodType<Token> = z.object({
+const tokenParser: z.ZodSchema<Token> = z.object({
   itemId: z.number(),
   decimals: z.number(),
   ethereumAddress: z.string(),
@@ -60,7 +60,7 @@ const tokenParser: z.ZodType<Token> = z.object({
   USD: z.number(),
 });
 
-const accountParser: z.ZodType<Account> = z.object({
+const accountParser: z.ZodSchema<Account> = z.object({
   itemId: z.number(),
   accountIndex: z.string(),
   balance: z.string(),
@@ -69,7 +69,7 @@ const accountParser: z.ZodType<Account> = z.object({
   token: tokenParser,
 });
 
-const depositParser: z.ZodType<Deposit> = z.object({
+const depositParser: z.ZodSchema<Deposit> = z.object({
   account: accountParser,
   hash: z.string(),
   token: tokenParser,
@@ -78,7 +78,7 @@ const depositParser: z.ZodType<Deposit> = z.object({
   type: z.union([z.literal("Deposit"), z.literal("CreateAccountDeposit")]),
 });
 
-const pendingDepositsParser: z.ZodType<PendingDeposits> = z.record(
+const pendingDepositsParser: z.ZodSchema<PendingDeposits> = z.record(
   z.record(z.array(depositParser))
 );
 
