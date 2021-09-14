@@ -19,16 +19,14 @@ const withdrawParser: z.ZodType<Withdraw> = z.object({
   timestamp: z.string(),
 });
 
-const pendingWithdrawsParser: z.ZodType<PendingWithdraws> = z.record(z.record(z.array(withdrawParser)));
+const pendingWithdrawsParser: z.ZodType<PendingWithdraws> = z.record(
+  z.record(z.array(withdrawParser))
+);
 
 export function getPendingWithdraws(): PendingWithdraws {
   const pendingWithdraws: unknown = storage.getStorage(constants.PENDING_WITHDRAWS_KEY);
   const parsedPendingWithdraws = pendingWithdrawsParser.safeParse(pendingWithdraws);
-  if (parsedPendingWithdraws.success) {
-    return parsedPendingWithdraws.data;
-  } else {
-    return {};
-  }
+  return parsedPendingWithdraws.success ? parsedPendingWithdraws.data : {};
 }
 
 const delayedWithdrawParser: z.ZodType<DelayedWithdraw> = withdrawParser.and(
@@ -47,11 +45,7 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
   );
   const parsedPendingDelayedWithdraws =
     pendingDelayedWithdrawsParser.safeParse(pendingDelayedWithdraws);
-  if (parsedPendingDelayedWithdraws.success) {
-    return parsedPendingDelayedWithdraws.data;
-  } else {
-    return {};
-  }
+  return parsedPendingDelayedWithdraws.success ? parsedPendingDelayedWithdraws.data : {};
 }
 
 const tokenParser: z.ZodType<Token> = z.object({
@@ -84,14 +78,12 @@ const depositParser: z.ZodType<Deposit> = z.object({
   type: z.union([z.literal("Deposit"), z.literal("CreateAccountDeposit")]),
 });
 
-const pendingDepositsParser: z.ZodType<PendingDeposits> = z.record(z.record(z.array(depositParser)));
+const pendingDepositsParser: z.ZodType<PendingDeposits> = z.record(
+  z.record(z.array(depositParser))
+);
 
 export function getPendingDeposits(): PendingDeposits {
   const pendingDeposits: unknown = storage.getStorage(constants.PENDING_DEPOSITS_KEY);
   const parsedPendingDeposits = pendingDepositsParser.safeParse(pendingDeposits);
-  if (parsedPendingDeposits.success) {
-    return parsedPendingDeposits.data;
-  } else {
-    return {};
-  }
+  return parsedPendingDeposits.success ? parsedPendingDeposits.data : {};
 }
