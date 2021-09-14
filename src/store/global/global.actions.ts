@@ -239,7 +239,7 @@ export interface LoadTokensPrice {
 
 export interface LoadTokensPriceSuccess {
   type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS;
-  tokensPrice: unknown;
+  tokens: Token[];
 }
 
 export interface LoadTokensPriceFailure {
@@ -587,10 +587,10 @@ function loadTokensPrice(): LoadTokensPrice {
   };
 }
 
-function loadTokensPriceSuccess(tokensPrice: Token[]): LoadTokensPriceSuccess {
+function loadTokensPriceSuccess(tokens: Token[]): LoadTokensPriceSuccess {
   return {
     type: GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS,
-    tokensPrice,
+    tokens,
   };
 }
 
