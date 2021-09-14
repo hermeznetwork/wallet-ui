@@ -198,7 +198,7 @@ function Transaction({
             return (
               <TransactionOverview
                 wallet={wallet}
-                isTransactionBeingSigned={stepData.isTransactionBeingSigned}
+                isTransactionBeingApproval={stepData.isTransactionBeingApproval}
                 transactionType={transactionType}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}

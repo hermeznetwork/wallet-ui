@@ -24,8 +24,8 @@ export const transactionActionTypes = {
   LOAD_ESTIMATED_WITHDRAW_FEE: "[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE",
   LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS: "[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE SUCCESS",
   LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE: "[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE FAILURE",
-  START_TRANSACTION_SIGNING: "[TRANSACTION] START TRANSACTION SIGNING",
-  STOP_TRANSACTION_SIGNING: "[TRANSACTION] STOP TRANSACTION SIGNING",
+  START_TRANSACTION_APPROVAL: "[TRANSACTION] START TRANSACTION APPROVAL",
+  STOP_TRANSACTION_APPROVAL: "[TRANSACTION] STOP TRANSACTION APPROVAL",
   RESET_STATE: "[TRANSACTION] RESET STATE",
 };
 
@@ -197,15 +197,15 @@ function loadEstimatedWithdrawFeeFailure(error) {
   };
 }
 
-function startTransactionSigning() {
+function startTransactionApproval() {
   return {
-    type: transactionActionTypes.START_TRANSACTION_SIGNING,
+    type: transactionActionTypes.START_TRANSACTION_APPROVAL,
   };
 }
 
-function stopTransactionSigning() {
+function stopTransactionApproval() {
   return {
-    type: transactionActionTypes.STOP_TRANSACTION_SIGNING,
+    type: transactionActionTypes.STOP_TRANSACTION_APPROVAL,
   };
 }
 
@@ -241,7 +241,7 @@ export {
   loadEstimatedWithdrawFee,
   loadEstimatedWithdrawFeeSuccess,
   loadEstimatedWithdrawFeeFailure,
-  startTransactionSigning,
-  stopTransactionSigning,
+  startTransactionApproval,
+  stopTransactionApproval,
   resetState,
 };

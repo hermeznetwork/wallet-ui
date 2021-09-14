@@ -38,7 +38,7 @@ const initialTransactionState = {
     },
     [STEP_NAME.REVIEW_TRANSACTION]: {
       transaction: undefined,
-      isTransactionBeingSigned: false,
+      isTransactionBeingApproval: false,
     },
   },
 };
@@ -379,26 +379,26 @@ function transactionReducer(state = initialTransactionState, action) {
         },
       };
     }
-    case transactionActionTypes.START_TRANSACTION_SIGNING: {
+    case transactionActionTypes.START_TRANSACTION_APPROVAL: {
       return {
         ...state,
         steps: {
           ...state.steps,
           [STEP_NAME.REVIEW_TRANSACTION]: {
             ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
-            isTransactionBeingSigned: true,
+            isTransactionBeingApproval: true,
           },
         },
       };
     }
-    case transactionActionTypes.STOP_TRANSACTION_SIGNING: {
+    case transactionActionTypes.STOP_TRANSACTION_APPROVAL: {
       return {
         ...state,
         steps: {
           ...state.steps,
           [STEP_NAME.REVIEW_TRANSACTION]: {
             ...state.steps[STEP_NAME.REVIEW_TRANSACTION],
-            isTransactionBeingSigned: false,
+            isTransactionBeingApproval: false,
           },
         },
       };

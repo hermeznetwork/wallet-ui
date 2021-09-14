@@ -309,7 +309,7 @@ function deposit(amount, account) {
       global: { wallet, signer },
     } = getState();
 
-    dispatch(transactionActions.startTransactionSigning());
+    dispatch(transactionActions.startTransactionApproval());
 
     return Tx.deposit(
       HermezCompressedAmount.compressAmount(amount),
@@ -338,8 +338,8 @@ function deposit(amount, account) {
       })
       .catch((error) => {
         console.error(error);
-        dispatch(transactionActions.stopTransactionSigning());
-        handleTransactionFailed(dispatch, error);
+        dispatch(transactionActions.stopTransactionApproval());
+        handleTransactionFailure(dispatch, error);
       });
   };
 }
@@ -351,7 +351,7 @@ function withdraw(amount, account, exit, completeDelayedWithdrawal, instantWithd
     } = getState();
     const withdrawalId = account.accountIndex + exit.batchNum;
 
-    dispatch(transactionActions.startTransactionSigning());
+    dispatch(transactionActions.startTransactionApproval());
 
     // Differentiate between a withdraw on the Hermez SC and the DelayedWithdrawal SC
     if (!completeDelayedWithdrawal) {
@@ -396,8 +396,8 @@ function withdraw(amount, account, exit, completeDelayedWithdrawal, instantWithd
         })
         .catch((error) => {
           console.error(error);
-          dispatch(transactionActions.stopTransactionSigning());
-          handleTransactionFailed(dispatch, error);
+          dispatch(transactionActions.stopTransactionApproval());
+          handleTransactionFailure(dispatch, error);
         });
     } else {
       return Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
@@ -417,8 +417,8 @@ function withdraw(amount, account, exit, completeDelayedWithdrawal, instantWithd
         })
         .catch((error) => {
           console.error(error);
-          dispatch(transactionActions.stopTransactionSigning());
-          handleTransactionFailed(dispatch, error);
+          dispatch(transactionActions.stopTransactionApproval());
+          handleTransactionFailure(dispatch, error);
         });
     }
   };
@@ -430,7 +430,7 @@ function forceExit(amount, account) {
       global: { signer },
     } = getState();
 
-    dispatch(transactionActions.startTransactionSigning());
+    dispatch(transactionActions.startTransactionApproval());
 
     return Tx.forceExit(
       HermezCompressedAmount.compressAmount(amount),
@@ -441,8 +441,8 @@ function forceExit(amount, account) {
       .then(() => handleTransactionSuccess(dispatch))
       .catch((error) => {
         console.error(error);
-        dispatch(transactionActions.stopTransactionSigning());
-        handleTransactionFailed(dispatch, error);
+        dispatch(transactionActions.stopTransactionApproval());
+        handleTransactionFailure(dispatch, error);
       });
   };
 }
@@ -453,7 +453,7 @@ function exit(amount, account, fee) {
       global: { wallet, coordinatorStateTask },
     } = getState();
 
-    dispatch(transactionActions.startTransactionSigning());
+    dispatch(transactionActions.startTransactionApproval());
 
     const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
     const txData = {
@@ -467,8 +467,8 @@ function exit(amount, account, fee) {
       .then(() => handleTransactionSuccess(dispatch))
       .catch((error) => {
         console.error(error);
-        dispatch(transactionActions.stopTransactionSigning());
-        handleTransactionFailed(dispatch, error);
+        dispatch(transactionActions.stopTransactionApproval());
+        handleTransactionFailure(dispatch, error);
       });
   };
 }
@@ -479,7 +479,7 @@ function transfer(amount, from, to, fee) {
       global: { wallet, coordinatorStateTask },
     } = getState();
 
-    dispatch(transactionActions.startTransactionSigning());
+    dispatch(transactionActions.startTransactionApproval());
 
     const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
     const txData = {
@@ -493,8 +493,8 @@ function transfer(amount, from, to, fee) {
       .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
       .catch((error) => {
         console.error(error);
-        dispatch(transactionActions.stopTransactionSigning());
-        handleTransactionFailed(dispatch, error);
+        dispatch(transactionActions.stopTransactionApproval());
+        handleTransactionFailure(dispatch, error);
       });
   };
 }
@@ -505,7 +505,7 @@ function handleTransactionSuccess(dispatch, accountIndex) {
   dispatch(push(route));
 }
 
-function handleTransactionFailed(dispatch, error) {
+function handleTransactionFailure(dispatch, error) {
   dispatch(openSnackbar(`Transaction failed - ${error.message || error}`, theme.palette.red.main));
 }
 
