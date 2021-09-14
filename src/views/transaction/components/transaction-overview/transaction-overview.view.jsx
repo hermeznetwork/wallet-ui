@@ -20,7 +20,7 @@ import WithdrawInfoSidenav from "../withdraw-info-sidenav/withdraw-info-sidenav.
 
 function TransactionOverview({
   wallet,
-  isTransactionBeingSigned,
+  isTransactionBeingApproval,
   transactionType,
   to,
   amount,
@@ -42,6 +42,12 @@ function TransactionOverview({
   const classes = useTransactionOverviewStyles();
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [isWithdrawInfoSidenavOpen, setIsWithdrawInfoSidenavOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!isTransactionBeingApproval) {
+      setIsButtonDisabled(false);
+    }
+  }, [isTransactionBeingApproval]);
 
   /**
    * Converts the transaction amount to fiat in the preferred currency
@@ -156,7 +162,7 @@ function TransactionOverview({
             preferredCurrency={preferredCurrency}
             fiatExchangeRates={fiatExchangeRates}
           />
-          {isTransactionBeingSigned ? (
+          {isTransactionBeingApproval ? (
             <div className={classes.signingSpinnerWrapper}>
               <Spinner />
               <p className={classes.signingText}>
