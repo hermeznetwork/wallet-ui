@@ -130,7 +130,8 @@ function fetchHistoryTransactions(
 
     if (
       fromItem === undefined &&
-      ["reloading", "successful"].includes(historyTransactionsTask.status)
+      (historyTransactionsTask.status === "reloading" ||
+        historyTransactionsTask.status === "successful")
     ) {
       return dispatch(refreshHistoryTransactions(accountIndex, historyExits));
     }
