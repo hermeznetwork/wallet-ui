@@ -91,13 +91,15 @@ function TransactionInfo({
               subtitle: "My Hermez address",
               value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress),
             }}
-            to={{
-              subtitle:
-                txData.toHezEthereumAddress?.toLowerCase() ===
-                INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
-                  ? getPartiallyHiddenHermezAddress(txData.toBjj || txData.toBJJ)
-                  : getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress),
-            }}
+            to={
+              txData.toHezEthereumAddress && {
+                subtitle:
+                  txData.toHezEthereumAddress.toLowerCase() ===
+                  INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
+                    ? getPartiallyHiddenHermezAddress(txData.toBjj || txData.toBJJ)
+                    : getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress),
+              }
+            }
             date={date}
             fee={txData.fee}
             preferredCurrency={preferredCurrency}
