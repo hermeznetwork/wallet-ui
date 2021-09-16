@@ -71,7 +71,9 @@ function fetchTotalBalance(
           0
         );
         const totalAccountsBalance = res.accounts.reduce((totalBalance, account) => {
-          return totalBalance + Number(account.fiatBalance);
+          return account.fiatBalance !== undefined
+            ? totalBalance + Number(account.fiatBalance)
+            : totalBalance;
         }, 0);
         const totalBalance = totalPendingCreateAccountDepositsBalance + totalAccountsBalance;
 

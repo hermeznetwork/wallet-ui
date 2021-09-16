@@ -3,7 +3,7 @@ import { TransactionResponse, TransactionReceipt } from "@ethersproject/abstract
 import hermezjs from "@hermeznetwork/hermezjs";
 import { BigNumber } from "ethers";
 
-import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "../constants";
+import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "src/constants";
 
 // domain
 import { Wallet, Token, ISOStringDate } from "src/domain/hermez";
@@ -15,12 +15,12 @@ import { Wallet, Token, ISOStringDate } from "src/domain/hermez";
  * @param {Token[]} hermezTokens - List of registered tokens in Hermez
  * @returns {Promise} - Array of { balance, token } where balance is a Number and token is the Token schema returned from the API.
  */
-async function getTokens(
+function getTokens(
   wallet: Wallet,
   hermezTokens: Token[]
 ): Promise<
   {
-    balance: number;
+    balance: BigNumber;
     token: Token;
   }[]
 > {
@@ -68,16 +68,17 @@ async function getTokens(
         return balance;
       }
     });
-    const balances = (await Promise.all(balancePromises))
-      .map((tokenBalance, index) => {
-        const tokenData = hermezTokens[index];
-
-        return {
-          balance: tokenBalance.toNumber(),
-          token: tokenData,
-        };
-      })
-      .filter((account) => account.balance > 0);
+    const balances = Promise.all(balancePromises).then((balanceList) => {
+      return balanceList
+        .filter((tokenBalance) => tokenBalance.gt(BigNumber.from(0)))
+        .map((balance, index) => {
+          const token = hermezTokens[index];
+          return {
+            balance,
+            token,
+          };
+        });
+    });
 
     return balances;
   } else {

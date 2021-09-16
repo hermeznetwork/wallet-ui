@@ -58,17 +58,17 @@ function AccountDetails({
   const theme = useTheme();
   const classes = useAccountDetailsStyles();
   const { accountIndex } = useParams();
-  const accountPendingDeposits = storage.getItemsByHermezAddress(
+  const accountPendingDeposits = storage.getPendingDepositsByHermezAddress(
     pendingDeposits,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   );
-  const accountPendingWithdraws = storage.getItemsByHermezAddress(
+  const accountPendingWithdraws = storage.getPendingWithdrawsByHermezAddress(
     pendingWithdraws,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   );
-  const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
+  const accountPendingDelayedWithdraws = storage.getPendingDelayedWithdrawsByHermezAddress(
     pendingDelayedWithdraws,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress

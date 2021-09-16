@@ -67,17 +67,17 @@ function Transaction({
   const instantWithdrawal = urlSearchParams.get("instantWithdrawal") === "true";
   const completeDelayedWithdrawal = urlSearchParams.get("completeDelayedWithdrawal") === "true";
   const accountIndex = urlSearchParams.get("accountIndex");
-  const accountPendingDeposits = storage.getItemsByHermezAddress(
+  const accountPendingDeposits = storage.getPendingDepositsByHermezAddress(
     pendingDeposits,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   );
-  const accountPendingWithdraws = storage.getItemsByHermezAddress(
+  const accountPendingWithdraws = storage.getPendingWithdrawsByHermezAddress(
     pendingWithdraws,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   );
-  const accountPendingDelayedWithdraws = storage.getItemsByHermezAddress(
+  const accountPendingDelayedWithdraws = storage.getPendingDelayedWithdrawsByHermezAddress(
     pendingDelayedWithdraws,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress

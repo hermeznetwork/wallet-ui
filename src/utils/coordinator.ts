@@ -1,13 +1,15 @@
-import { DELAY_TO_NEXT_FORGER } from "../constants";
+import { DELAY_TO_NEXT_FORGER } from "src/constants";
+
+import { CoordinatorState, NextForger } from "src/domain/hermez";
 
 /**
  * Extracts the next forgers without duplicates from the coordinator state returned by
  * the Hermez API
- * @param {Object} coordinatorState - Coordinator state returned by the Hermez API
+ * @param {CoordinatorState} coordinatorState - Coordinator state returned by the Hermez API
  * @returns Next forgers
  */
-function getNextForgers(coordinatorState) {
-  return (coordinatorState.network.nextForgers || []).reduce((acc, curr) => {
+function getNextForgers(coordinatorState: CoordinatorState): NextForger[] {
+  return coordinatorState.network.nextForgers.reduce((acc: NextForger[], curr: NextForger) => {
     const doesItemExist = acc.find(
       (elem) => elem.coordinator.forgerAddr === curr.coordinator.forgerAddr
     );
@@ -22,7 +24,7 @@ function getNextForgers(coordinatorState) {
  * @param {Object} coordinatorState - Coordinator state returned by the Hermez API
  * @returns URL's of the next forgers
  */
-function getNextForgerUrls(coordinatorState) {
+function getNextForgerUrls(coordinatorState: CoordinatorState): string[] {
   const nextForgerUrls = getNextForgers(coordinatorState).map(
     (nextForger) => nextForger.coordinator.URL
   );
@@ -38,7 +40,7 @@ function getNextForgerUrls(coordinatorState) {
  * @param {Object} coordinatorState - Coordinator state returned by the Hermez API
  * @returns Next best forger
  */
-function getNextBestForger(coordinatorState) {
+function getNextBestForger(coordinatorState: CoordinatorState): NextForger | undefined {
   const nextForgers = getNextForgers(coordinatorState);
 
   if (nextForgers.length === 0) {

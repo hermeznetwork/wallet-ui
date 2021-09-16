@@ -14,7 +14,7 @@ function fetchTransaction(transactionIdOrHash) {
     const {
       global: { wallet, ethereumNetworkTask, pendingDeposits },
     } = getState();
-    const accountPendingDeposits = storage.getItemsByHermezAddress(
+    const accountPendingDeposits = storage.getPendingDepositsByHermezAddress(
       pendingDeposits,
       ethereumNetworkTask.data.chainId,
       wallet.hermezEthereumAddress
