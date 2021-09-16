@@ -93,14 +93,14 @@ function TransactionInfo({
             status={getTransactionStatus()}
             from={myHermezAddress}
             to={
-              (txData.toHezEthereumAddress && {
+              (txData.toBJJ && {
                 subtitle:
                   txData.toHezEthereumAddress.toLowerCase() ===
                   INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
-                    ? getPartiallyHiddenHermezAddress(txData.toBjj || txData.toBJJ)
+                    ? getPartiallyHiddenHermezAddress(txData.toBJJ)
                     : getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress),
               }) ||
-              (txData.fromAccountIndex == txData.toAccountIndex && myHermezAddress)
+              (txData.fromAccountIndex === txData.toAccountIndex && myHermezAddress)
             }
             date={date}
             fee={txData.fee}
