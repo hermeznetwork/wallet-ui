@@ -156,7 +156,6 @@ declare module "@hermeznetwork/*" {
   // }
 
   // Coordinator State
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface CoordinatorState {
     // node: Node;
     network: Network;
