@@ -12,7 +12,7 @@
     "plugin:react/recommended",
     "plugin:react-hooks/recommended"
   ],
-  "ignorePatterns": ["/node_modules", "/build/", "/public/", "**/*.js"],
+  "ignorePatterns": ["/node_modules", "/build/", "/public/", "**/*.js", "**/*.jsx"],
   "rules": {
     "@typescript-eslint/no-extra-semi": "off"
   }
