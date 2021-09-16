@@ -21,7 +21,7 @@ function WithdrawInfoSidenav({ onClose }) {
         </div>
         <div className={classes.stepCard}>
           <div className={classes.step}>
-            <p className={classes.stepName}>Step 1</p>
+            <p className={classes.stepName}>Step 2</p>
           </div>
           <p className={classes.stepDescription}>
             You will pay for Ethereum gas fees and it may vary from the estimation in step 1.
