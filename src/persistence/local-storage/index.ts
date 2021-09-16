@@ -74,7 +74,7 @@ export function addPendingWithdraw(
       [hermezEthereumAddress]: [...withdraws, pendingWithdraw],
     },
   };
-  localStorage.setItem(constants.PENDING_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageKey(constants.PENDING_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -93,7 +93,7 @@ export function removePendingWithdrawByHash(
       [hermezEthereumAddress]: withdraws.filter((item) => item.hash !== hash),
     },
   };
-  localStorage.setItem(constants.PENDING_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageKey(constants.PENDING_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -127,7 +127,7 @@ export function addPendingDelayedWithdraw(
       [hermezEthereumAddress]: [...delayedWithdraws, pendingDelayedWithdraw],
     },
   };
-  localStorage.setItem(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -151,7 +151,7 @@ export function updatePendingDelayedWithdrawByHash(
       ),
     },
   };
-  localStorage.setItem(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -172,7 +172,7 @@ export function removePendingDelayedWithdrawById(
       [hermezEthereumAddress]: delayedWithdraws.filter((item) => item.id !== id),
     },
   };
-  localStorage.setItem(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -193,7 +193,7 @@ export function removePendingDelayedWithdrawByHash(
       [hermezEthereumAddress]: delayedWithdraws.filter((item) => item.hash !== hash),
     },
   };
-  localStorage.setItem(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -224,7 +224,7 @@ export function addPendingDeposit(
       [hermezEthereumAddress]: [...deposits, pendingDeposit],
     },
   };
-  localStorage.setItem(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageKey(constants.PENDING_DEPOSITS_KEY, newStorage);
   return newStorage;
 }
 
@@ -246,7 +246,7 @@ export function updatePendingDepositByHash(
       ),
     },
   };
-  localStorage.setItem(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageKey(constants.PENDING_DEPOSITS_KEY, newStorage);
   return newStorage;
 }
 
@@ -267,7 +267,7 @@ export function removePendingDepositByTransactionId(
       }),
     },
   };
-  localStorage.setItem(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageKey(constants.PENDING_DEPOSITS_KEY, newStorage);
   return newStorage;
 }
 
@@ -286,7 +286,7 @@ export function removePendingDepositByHash(
       [hermezEthereumAddress]: deposits.filter((deposit) => deposit.hash !== hash),
     },
   };
-  localStorage.setItem(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageKey(constants.PENDING_DEPOSITS_KEY, newStorage);
   return newStorage;
 }
 
