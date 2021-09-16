@@ -2,7 +2,10 @@ import * as z from "zod";
 import * as constants from "src/constants";
 
 // domain
-import { Withdraw, DelayedWithdraw, Deposit, Account, Token } from "src/domain/hermez";
+import { Withdraw, DelayedWithdraw, Deposit } from "src/domain/hermez";
+
+// persistence
+import * as parsers from "src/persistence/parsers";
 
 import {
   PendingWithdraws,
@@ -12,48 +15,6 @@ import {
   PendingDeposits,
   ChainPendingDeposits,
 } from "src/domain/local-storage";
-
-// ToDo: Primitive domain entity parsers can be moved to a more generic persistence module
-
-const withdrawParser: z.ZodSchema<Withdraw> = z.object({
-  accountIndex: z.string(),
-  batchNum: z.number(),
-  hash: z.string(),
-  id: z.string(),
-  timestamp: z.string(),
-});
-
-const tokenParser: z.ZodSchema<Token> = z.object({
-  itemId: z.number(),
-  decimals: z.number(),
-  ethereumAddress: z.string(),
-  ethereumBlockNum: z.number(),
-  id: z.number(),
-  name: z.string(),
-  symbol: z.string(),
-  USD: z.number(),
-});
-
-// ToDo: Investigate why TS does not complain when props present in the parser are not in the interface: https://github.com/colinhacks/zod/issues/652
-//       Also, fiatBalance is optional in the type, but we can remove the .optional() below with no errors
-const accountParser: z.ZodType<Account> = z.object({
-  itemId: z.number(),
-  accountIndex: z.string(),
-  balance: z.string(),
-  bjj: z.string(),
-  token: tokenParser,
-  fiatBalance: z.number().optional(),
-});
-
-const depositParser: z.ZodSchema<Deposit> = z.object({
-  account: accountParser,
-  hash: z.string(),
-  token: tokenParser,
-  amount: z.string(),
-  timestamp: z.string(),
-  type: z.union([z.literal("Deposit"), z.literal("CreateAccountDeposit")]),
-  transactionId: z.string().optional(),
-});
 
 // Storage Helpers
 
@@ -89,7 +50,7 @@ const stringToNumber = z.string().transform((val) => parseFloat(val));
 // Pending Withdraws
 
 const pendingWithdrawsParser: z.ZodSchema<PendingWithdraws> = z.record(
-  z.record(z.array(withdrawParser))
+  z.record(z.array(parsers.withdraw))
 );
 
 export function getPendingWithdraws(): PendingWithdraws {
@@ -138,14 +99,8 @@ export function removePendingWithdrawByHash(
 
 // Pending Delayed Withdraws
 
-const delayedWithdrawParser: z.ZodSchema<DelayedWithdraw> = withdrawParser.and(
-  z.object({
-    instant: z.boolean(),
-  })
-);
-
 const pendingDelayedWithdrawsParser: z.ZodSchema<PendingDelayedWithdraws> = z.record(
-  z.record(z.array(delayedWithdrawParser))
+  z.record(z.array(parsers.delayedWithdraw))
 );
 
 export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
@@ -245,7 +200,7 @@ export function removePendingDelayedWithdrawByHash(
 // Pending Deposits
 
 const pendingDepositsParser: z.ZodSchema<PendingDeposits> = z.record(
-  z.record(z.array(depositParser))
+  z.record(z.array(parsers.deposit))
 );
 
 export function getPendingDeposits(): PendingDeposits {
