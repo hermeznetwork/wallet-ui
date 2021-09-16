@@ -556,7 +556,6 @@ declare module "@hermeznetwork/hermezjs/src/hermez-compressed-amount" {
 
 // Addresses
 declare module "@hermeznetwork/hermezjs/src/addresses" {
-  // import { Account } from "@hermeznetwork/hermezjs";
 
   // declare function getHermezAddress() {};
 
