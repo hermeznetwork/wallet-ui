@@ -89,6 +89,7 @@ function fetchWallet(walletName, accountData) {
       if (walletName === WalletName.WALLET_CONNECT) {
         const walletConnectProvider = new WalletConnectProvider({
           infuraId: process.env.REACT_APP_INFURA_API_KEY,
+          bridge: process.env.REACT_APP_WALLETCONNECT_BRIDGE,
         });
         hermez.Providers.setProvider(walletConnectProvider, hermez.Providers.PROVIDER_TYPES.WEB3);
       }

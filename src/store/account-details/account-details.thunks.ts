@@ -141,7 +141,11 @@ function fetchHistoryTransactions(
       accountDetails: { historyTransactionsTask },
     } = getState();
 
-    if (fromItem === undefined && historyTransactionsTask.status === "successful") {
+    if (
+      fromItem === undefined &&
+      (historyTransactionsTask.status === "reloading" ||
+        historyTransactionsTask.status === "successful")
+    ) {
       return dispatch(refreshHistoryTransactions(accountIndex, historyExits));
     }
 

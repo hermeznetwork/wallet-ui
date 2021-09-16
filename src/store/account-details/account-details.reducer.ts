@@ -188,7 +188,10 @@ function accountDetailsReducer(
       };
     }
     case AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS: {
-      if (state.historyTransactionsTask.status !== "successful") {
+      if (
+        state.historyTransactionsTask.status !== "reloading" &&
+        state.historyTransactionsTask.status !== "successful"
+      ) {
         return state;
       }
       const pagination = getPaginationData(

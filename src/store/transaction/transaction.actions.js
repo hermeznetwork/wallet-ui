@@ -2,8 +2,6 @@ export const transactionActionTypes = {
   GO_TO_CHOOSE_ACCOUNT_STEP: "[TRANSACTION] GO TO CHOOSE ACCOUNT STEP",
   GO_TO_BUILD_TRANSACTION_STEP: "[TRANSACTION GO TO BUILD TRANSACTION STEP",
   GO_TO_REVIEW_TRANSACTION_STEP: "[TRANSACTION] GO TO REVIEW TRANSACTION STEP",
-  GO_TO_FINISH_TRANSACTION_STEP: "[TRANSACTION] GO TO FINISH TRANSACTION STEP",
-  GO_TO_TRANSACTION_ERROR_STEP: "[TRANSACTION] GO TO TRANSACTION ERROR STEP",
   CHANGE_CURRENT_STEP: "[TRANSACTION] CHANGE CURRENT STEP",
   LOAD_ACCOUNT: "[TRANSACTION] LOAD ACCOUNT",
   LOAD_ACCOUNT_SUCCESS: "[TRANSACTION] LOAD ACCOUNT SUCCESS",
@@ -26,8 +24,8 @@ export const transactionActionTypes = {
   LOAD_ESTIMATED_WITHDRAW_FEE: "[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE",
   LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS: "[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE SUCCESS",
   LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE: "[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE FAILURE",
-  START_TRANSACTION_SIGNING: "[TRANSACTION] START TRANSACTION SIGNING",
-  STOP_TRANSACTION_SIGNING: "[TRANSACTION] STOP TRANSACTION SIGNING",
+  START_TRANSACTION_APPROVAL: "[TRANSACTION] START TRANSACTION APPROVAL",
+  STOP_TRANSACTION_APPROVAL: "[TRANSACTION] STOP TRANSACTION APPROVAL",
   RESET_STATE: "[TRANSACTION] RESET STATE",
 };
 
@@ -49,18 +47,6 @@ function goToReviewTransactionStep(transaction) {
   return {
     type: transactionActionTypes.GO_TO_REVIEW_TRANSACTION_STEP,
     transaction,
-  };
-}
-
-function goToFinishTransactionStep() {
-  return {
-    type: transactionActionTypes.GO_TO_FINISH_TRANSACTION_STEP,
-  };
-}
-
-function goToTransactionErrorStep() {
-  return {
-    type: transactionActionTypes.GO_TO_TRANSACTION_ERROR_STEP,
   };
 }
 
@@ -211,15 +197,15 @@ function loadEstimatedWithdrawFeeFailure(error) {
   };
 }
 
-function startTransactionSigning() {
+function startTransactionApproval() {
   return {
-    type: transactionActionTypes.START_TRANSACTION_SIGNING,
+    type: transactionActionTypes.START_TRANSACTION_APPROVAL,
   };
 }
 
-function stopTransactionSigning() {
+function stopTransactionApproval() {
   return {
-    type: transactionActionTypes.STOP_TRANSACTION_SIGNING,
+    type: transactionActionTypes.STOP_TRANSACTION_APPROVAL,
   };
 }
 
@@ -233,8 +219,6 @@ export {
   goToChooseAccountStep,
   goToBuildTransactionStep,
   goToReviewTransactionStep,
-  goToFinishTransactionStep,
-  goToTransactionErrorStep,
   changeCurrentStep,
   loadAccounts,
   loadAccountsSuccess,
@@ -257,7 +241,7 @@ export {
   loadEstimatedWithdrawFee,
   loadEstimatedWithdrawFeeSuccess,
   loadEstimatedWithdrawFeeFailure,
-  startTransactionSigning,
-  stopTransactionSigning,
+  startTransactionApproval,
+  stopTransactionApproval,
   resetState,
 };

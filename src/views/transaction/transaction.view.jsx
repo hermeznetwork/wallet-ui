@@ -14,10 +14,11 @@ import TransactionOverview from "./components/transaction-overview/transaction-o
 import { STEP_NAME } from "../../store/transaction/transaction.reducer";
 import AccountSelector from "./components/account-selector/account-selector.view";
 import TransactionConfirmation from "./components/transaction-confirmation/transaction-confirmation.view";
-import { changeHeader } from "../../store/global/global.actions";
+import { changeHeader, openSnackbar } from "../../store/global/global.actions";
 import Spinner from "../shared/spinner/spinner.view";
 import * as storage from "../../utils/storage";
 import TransactionError from "./components/transaction-error/transaction-error.view";
+import theme from "../../styles/theme";
 
 export const WithdrawRedirectionRoute = {
   Home: "home",
@@ -197,7 +198,7 @@ function Transaction({
             return (
               <TransactionOverview
                 wallet={wallet}
-                isTransactionBeingSigned={stepData.isTransactionBeingSigned}
+                isTransactionBeingApproval={stepData.isTransactionBeingApproval}
                 transactionType={transactionType}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}
@@ -214,27 +215,6 @@ function Transaction({
                 onWithdraw={onWithdraw}
                 onExit={onExit}
                 onTransfer={onTransfer}
-              />
-            );
-          }
-          case STEP_NAME.FINISH_TRANSACTION: {
-            const stepData = steps[STEP_NAME.REVIEW_TRANSACTION];
-            const txAccountIndex = accountIndex || stepData.transaction.from.accountIndex;
-
-            return (
-              <TransactionConfirmation
-                transactionType={transactionType}
-                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex)}
-              />
-            );
-          }
-          case STEP_NAME.TRANSACTION_ERROR: {
-            const stepData = steps[STEP_NAME.REVIEW_TRANSACTION];
-            const txAccountIndex = accountIndex || stepData.transaction.from.accountIndex;
-
-            return (
-              <TransactionError
-                onFinishTransaction={() => onFinishTransaction(transactionType, txAccountIndex)}
               />
             );
           }
@@ -396,13 +376,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(transactionActions.goToBuildTransactionStep(account, receiver)),
   onGoToTransactionOverviewStep: (transaction) =>
     dispatch(transactionActions.goToReviewTransactionStep(transaction)),
-  onFinishTransaction: (transactionType, accountIndex) => {
-    if (transactionType === TxType.Transfer) {
-      dispatch(push(`/accounts/${accountIndex}`));
-    } else {
-      dispatch(push("/"));
-    }
-  },
   onLoadEstimatedWithdrawFee: (token, amount) => {
     dispatch(transactionThunks.fetchEstimatedWithdrawFee(token, amount));
   },
