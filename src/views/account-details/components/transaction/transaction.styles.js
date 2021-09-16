@@ -46,6 +46,16 @@ const useTransactionStyles = createUseStyles((theme) => ({
   pendingTimer: {
     marginLeft: theme.spacing(1),
   },
+  invalidLabelContainer: {
+    background: theme.palette.red.light,
+    padding: theme.spacing(1),
+    borderRadius: theme.spacing(1),
+    margin: `-${theme.spacing(1)}px 0`,
+  },
+  invalidLabelText: {
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.red.main,
+  },
   tokenSymbol: {
     fontWeight: theme.fontWeights.bold,
   },

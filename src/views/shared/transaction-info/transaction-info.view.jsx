@@ -13,6 +13,7 @@ import { copyToClipboard } from "../../../utils/browser";
 const TxStatus = {
   Confirmed: "Confirmed",
   Pending: "Pending",
+  Invalid: "Invalid",
 };
 
 function TransactionInfo({
@@ -41,6 +42,10 @@ function TransactionInfo({
 
     if (txData.state === TxState.Forged) {
       return { subtitle: TxStatus.Confirmed };
+    }
+
+    if (txData.errorCode) {
+      return { subtitle: TxStatus.Invalid };
     }
 
     return { subtitle: TxStatus.Pending };
