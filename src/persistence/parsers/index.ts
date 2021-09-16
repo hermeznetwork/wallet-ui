@@ -30,7 +30,7 @@ const token: z.ZodSchema<Token> = z.object({
 
 // ToDo: Investigate why TS does not complain when props present in the parser are not in the interface: https://github.com/colinhacks/zod/issues/652
 //       Also, fiatBalance is optional in the type, but we can remove the .optional() below with no errors
-const account: z.ZodType<Account> = z.object({
+const account: z.ZodSchema<Account> = z.object({
   itemId: z.number(),
   accountIndex: z.string(),
   balance: z.string(),
