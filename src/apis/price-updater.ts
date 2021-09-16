@@ -18,7 +18,6 @@ const tokenSchema: JTDSchemaType<Token> = {
     decimals: { type: "int32" },
     ethereumAddress: { type: "string" },
     ethereumBlockNum: { type: "int32" },
-    usdUpdate: { type: "string" },
     id: { type: "int32" },
     itemId: { type: "int32" },
     name: { type: "string" },

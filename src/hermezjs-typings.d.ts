@@ -45,7 +45,6 @@ declare module "@hermeznetwork/*" {
     decimals: number;
     ethereumAddress: string;
     ethereumBlockNum: number;
-    usdUpdate: ISOStringDate;
     id: number;
     name: string;
     symbol: string;
@@ -110,7 +109,6 @@ declare module "@hermeznetwork/*" {
     accountIndex: string;
     balance: string;
     bjj: string;
-    fiatBalance: number;
     // hezEthereumAddress: string;
     // nonce: number;
     token: Token;
@@ -161,7 +159,7 @@ declare module "@hermeznetwork/*" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface CoordinatorState {
     // node: Node;
-    // network: Network;
+    network: Network;
     // metrics: Metrics;
     // rollup: Rollup;
     // auction: Auction;
@@ -193,34 +191,34 @@ declare module "@hermeznetwork/*" {
   //   forgedTransactions: number;
   // }
 
-  // type Coordinator = HermezApiResourceItem & {
-  //   bidderAddr: string;
-  //   forgerAddr: string;
-  //   ethereumBlock: number;
-  //   URL: string;
-  // }
+  type Coordinator = HermezApiResourceItem & {
+    // bidderAddr: string;
+    forgerAddr: string;
+    // ethereumBlock: number;
+    URL: string;
+  };
 
-  // interface Period {
-  //   slotNum: number;
-  //   fromBlock: number;
-  //   toBlock: number;
-  //   fromTimestamp: string;
-  //   toTimestamp: string;
-  // }
+  interface Period {
+    // slotNum: number;
+    // fromBlock: number;
+    // toBlock: number;
+    // fromTimestamp: string;
+    toTimestamp: string;
+  }
 
-  // interface NextForger {
-  //   coordinator: Coordinator;
-  //   period: Period;
-  // }
+  export interface NextForger {
+    coordinator: Coordinator;
+    period: Period;
+  }
 
-  // interface Network {
-  //   lastEthereumBlock: number;
-  //   lastSynchedBlock: number;
-  //   lastBatch: LastBatch;
-  //   currentSlot: number;
-  //   nextForgers: NextForger[];
-  //   pendingL1Transactions: number;
-  // }
+  interface Network {
+    // lastEthereumBlock: number;
+    // lastSynchedBlock: number;
+    // lastBatch: LastBatch;
+    // currentSlot: number;
+    nextForgers: NextForger[];
+    // pendingL1Transactions: number;
+  }
 
   // interface Metrics {
   //   transactionsPerBatch: number;
@@ -378,7 +376,10 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
 
   // ToDo: amount is expected to be a ffjavascript Scalar, but since the functions in a Scalar convert
   //       their inputs to BigInt's, amount can be a string | number | bigint | boolean
-  declare function getFeeValue(feeIndex: number, amount: string | number | bigint | boolean): bigint {};
+  declare function getFeeValue(
+    feeIndex: number,
+    amount: string | number | bigint | boolean
+  ): bigint {};
   // declare function getMaxAmountFromMinimumFee() {};
   // declare function getTransactionType() {};
   // declare function getNonce() {};

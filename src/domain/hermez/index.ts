@@ -6,7 +6,7 @@
 import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
-  Account,
+  NextForger,
   CoordinatorState,
   DelayedWithdraw,
   Exit,
@@ -23,4 +23,5 @@ export type {
   Withdraw,
 } from "@hermeznetwork/hermezjs";
 
+export type Account = hermezjs.Account & { fiatBalance?: number; };
 export type Deposit = hermezjs.Deposit & { transactionId?: string };
