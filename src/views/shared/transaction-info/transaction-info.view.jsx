@@ -84,20 +84,24 @@ function TransactionInfo({
     case TxType.TransferToBJJ:
     case TxType.TransferToEthAddr: {
       if (accountIndex === txData.fromAccountIndex) {
+        const myHermezAddress = {
+          subtitle: "My Hermez address",
+          value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress),
+        };
         return (
           <TransactionInfoTable
             status={getTransactionStatus()}
-            from={{
-              subtitle: "My Hermez address",
-              value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress),
-            }}
-            to={{
-              subtitle:
-                txData.toHezEthereumAddress?.toLowerCase() ===
-                INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
-                  ? getPartiallyHiddenHermezAddress(txData.toBjj || txData.toBJJ)
-                  : getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress),
-            }}
+            from={myHermezAddress}
+            to={
+              (txData.toBJJ && {
+                subtitle:
+                  txData.toHezEthereumAddress.toLowerCase() ===
+                  INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
+                    ? getPartiallyHiddenHermezAddress(txData.toBJJ)
+                    : getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress),
+              }) ||
+              (txData.fromAccountIndex === txData.toAccountIndex && myHermezAddress)
+            }
             date={date}
             fee={txData.fee}
             preferredCurrency={preferredCurrency}
