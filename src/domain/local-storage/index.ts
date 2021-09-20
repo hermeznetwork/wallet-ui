@@ -11,3 +11,6 @@ export type ChainPendingDelayedWithdraws = Record<HermezEthereumAddress, Delayed
 
 export type PendingDeposits = Record<ChainId, ChainPendingDeposits>;
 export type ChainPendingDeposits = Record<HermezEthereumAddress, Deposit[]>;
+
+export type AuthSignatures = Record<ChainId, ChainAuthSignatures>;
+export type ChainAuthSignatures = Record<HermezEthereumAddress, string>;

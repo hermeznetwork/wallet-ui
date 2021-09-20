@@ -73,6 +73,20 @@ export interface ResetState {
   type: LoginActionTypes.RESET_STATE;
 }
 
+export type LoginAction =
+  | GoToWalletSelectorStep
+  | GoToAccountSelectorStep
+  | GoToWalletLoaderStep
+  | GoToCreateAccountAuthStep
+  | GoToPreviousStep
+  | LoadWallet
+  | LoadWalletFailure
+  | AddAccountAuth
+  | AddAccountAuthSuccess
+  | AddAccountAuthFailure
+  | SetAccountAuthSignature
+  | ResetState;
+
 function goToWalletSelectorStep(): GoToWalletSelectorStep {
   return {
     type: LoginActionTypes.GO_TO_WALLET_SELECTOR_STEP,
