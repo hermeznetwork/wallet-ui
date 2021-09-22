@@ -16,11 +16,7 @@ function BaseLayout({
 }) {
   return (
     <>
-      {header.type === "main" && (
-        <MainHeader
-          showNotificationsIndicator={false}
-        />
-      )}
+      {header.type === "main" && <MainHeader showNotificationsIndicator={false} />}
       {header.type === "page" && (
         <PageHeader
           title={header.data.title}

@@ -8,7 +8,7 @@ import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 
 import { RootState } from "src/store";
-import { AppDispatch } from "src";
+import { AppDispatch, AppThunk } from "src";
 
 // domain
 import { Transaction, Deposit, FiatExchangeRates, Account } from "src/domain/hermez";
@@ -26,7 +26,7 @@ function fetchTotalBalance(
   pendingDeposits: Deposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
-) {
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       global: { tokensPriceTask },
@@ -71,7 +71,9 @@ function fetchTotalBalance(
           0
         );
         const totalAccountsBalance = res.accounts.reduce((totalBalance, account) => {
-          return totalBalance + Number(account.fiatBalance);
+          return account.fiatBalance !== undefined
+            ? totalBalance + Number(account.fiatBalance)
+            : totalBalance;
         }, 0);
         const totalBalance = totalPendingCreateAccountDepositsBalance + totalAccountsBalance;
 
@@ -93,7 +95,7 @@ function fetchAccounts(
   pendingDeposits: Deposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
-) {
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       home: { accountsTask },
@@ -149,7 +151,7 @@ function refreshAccounts(
   pendingDeposits: Deposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
-) {
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       home: { accountsTask },
@@ -205,7 +207,9 @@ function refreshAccounts(
 
           return { accounts, pendingItems };
         })
-        .then((res) => dispatch(homeActions.refreshAccountsSuccess(res)));
+        .then((res) => dispatch(homeActions.refreshAccountsSuccess(res)))
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        .catch(() => {});
     }
   };
 }
@@ -214,7 +218,7 @@ function refreshAccounts(
  * Fetches the transactions which are in the transactions pool
  * @returns {void}
  */
-function fetchPoolTransactions() {
+function fetchPoolTransactions(): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(homeActions.loadPoolTransactions());
 
@@ -234,7 +238,7 @@ function fetchPoolTransactions() {
  * Fetches the exit data for transactions of type Exit
  * @returns {void}
  */
-function fetchExits() {
+function fetchExits(): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const {
       global: { wallet },

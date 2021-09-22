@@ -1,6 +1,6 @@
 import { loginActionTypes } from "./login.actions";
 import { ACCOUNT_AUTH_SIGNATURES_KEY } from "../../constants";
-import { getStorage } from "../../utils/storage";
+import { getStorage } from "src/persistence/local-storage";
 import { WalletName } from "../../views/login/login.view";
 
 export const STEP_NAME = {

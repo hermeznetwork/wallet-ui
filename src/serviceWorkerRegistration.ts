@@ -15,7 +15,7 @@ const isLocalhost = Boolean(
     // [::1] is the IPv6 localhost address.
     window.location.hostname === "[::1]" ||
     // 127.0.0.0/8 is considered localhost for IPv4.
-    window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
+    /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/.exec(window.location.hostname)
 );
 
 type Config = {
@@ -23,7 +23,7 @@ type Config = {
   onUpdate?: (registration: ServiceWorkerRegistration) => void;
 };
 
-export function register(config?: Config) {
+export function register(config?: Config): void {
   if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
@@ -43,12 +43,15 @@ export function register(config?: Config) {
 
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
-        navigator.serviceWorker.ready.then(() => {
-          console.log(
-            "This web app is being served cache-first by a service " +
-              "worker. To learn more, visit https://cra.link/PWA"
-          );
-        });
+        navigator.serviceWorker.ready
+          .then(() => {
+            console.log(
+              "This web app is being served cache-first by a service " +
+                "worker. To learn more, visit https://cra.link/PWA"
+            );
+          })
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          .catch(() => {});
       } else {
         // Is not localhost. Just register service worker
         registerValidSW(swUrl, config);
@@ -114,11 +117,18 @@ function checkValidServiceWorker(swUrl: string, config?: Config) {
         (contentType != null && contentType.indexOf("javascript") === -1)
       ) {
         // No service worker found. Probably a different app. Reload the page.
-        navigator.serviceWorker.ready.then((registration) => {
-          registration.unregister().then(() => {
-            window.location.reload();
-          });
-        });
+        navigator.serviceWorker.ready
+          .then((registration) => {
+            registration
+              .unregister()
+              .then(() => {
+                window.location.reload();
+              })
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              .catch(() => {});
+          })
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          .catch(() => {});
       } else {
         // Service worker found. Proceed as normal.
         registerValidSW(swUrl, config);
@@ -129,13 +139,16 @@ function checkValidServiceWorker(swUrl: string, config?: Config) {
     });
 }
 
-export function unregister() {
+export function unregister(): void {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.ready
       .then((registration) => {
-        registration.unregister();
+        registration
+          .unregister()
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          .catch(() => {});
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.error(error.message);
       });
   }

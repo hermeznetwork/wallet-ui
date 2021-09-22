@@ -239,7 +239,7 @@ export interface LoadTokensPrice {
 
 export interface LoadTokensPriceSuccess {
   type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS;
-  tokensPrice: unknown;
+  tokens: Token[];
 }
 
 export interface LoadTokensPriceFailure {
@@ -581,20 +581,20 @@ function loadCoordinatorStateFailure(error: Error): LoadCoordinatorStateFailure 
   };
 }
 
-function loadTokensPrice() {
+function loadTokensPrice(): LoadTokensPrice {
   return {
     type: GlobalActionTypes.LOAD_TOKENS_PRICE,
   };
 }
 
-function loadTokensPriceSuccess(tokensPrice: Token[]) {
+function loadTokensPriceSuccess(tokens: Token[]): LoadTokensPriceSuccess {
   return {
     type: GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS,
-    tokensPrice,
+    tokens,
   };
 }
 
-function loadTokensPriceFailure(error: string) {
+function loadTokensPriceFailure(error: string): LoadTokensPriceFailure {
   return {
     type: GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE,
     error,

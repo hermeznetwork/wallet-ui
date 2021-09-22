@@ -1,6 +1,4 @@
 import { GlobalActionTypes, GlobalAction } from "./global.actions";
-import * as constants from "src/constants";
-import * as storage from "src/utils/storage";
 import { AsyncTask } from "src/utils/types";
 
 // domain
@@ -8,16 +6,17 @@ import { Header } from "src/domain/";
 import { EthereumNetwork } from "src/domain/ethereum";
 import {
   HermezStatus,
-  Deposit,
   HermezNetworkStatus,
   Withdraw,
-  DelayedWithdraw,
   Wallet,
   Signer,
   FiatExchangeRates,
   CoordinatorState,
   Token,
 } from "src/domain/hermez";
+
+import * as localStorageDomain from "src/domain/local-storage";
+import * as localStoragePersistence from "src/persistence/local-storage";
 
 type SnackbarState =
   | {
@@ -29,12 +28,6 @@ type SnackbarState =
       backgroundColor?: string;
     };
 
-type ChainId = number;
-type HermezEthereumAddress = string;
-type PendingWithdraws = Record<ChainId, Record<HermezEthereumAddress, Withdraw[]>>;
-type PendingDelayedWithdraws = Record<ChainId, Record<HermezEthereumAddress, DelayedWithdraw[]>>;
-type PendingDeposits = Record<ChainId, Record<HermezEthereumAddress, Deposit[]>>;
-
 export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
@@ -45,11 +38,11 @@ export interface GlobalState {
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   snackbar: SnackbarState;
   networkStatus: HermezNetworkStatus;
-  pendingWithdraws: PendingWithdraws;
-  pendingDelayedWithdraws: PendingDelayedWithdraws;
+  pendingWithdraws: localStorageDomain.PendingWithdraws;
+  pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
   pendingDelayedWithdrawCheckTask: AsyncTask<null, string>;
   pendingWithdrawalsCheckTask: AsyncTask<null, string>;
-  pendingDeposits: PendingDeposits;
+  pendingDeposits: localStorageDomain.PendingDeposits;
   pendingDepositsCheckTask: AsyncTask<null, string>;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
   tokensPriceTask: AsyncTask<Token[], string>;
@@ -76,15 +69,15 @@ function getInitialGlobalState(): GlobalState {
       status: "closed",
     },
     networkStatus: "online",
-    pendingWithdraws: storage.getStorage(constants.PENDING_WITHDRAWS_KEY),
-    pendingDelayedWithdraws: storage.getStorage(constants.PENDING_DELAYED_WITHDRAWS_KEY),
+    pendingWithdraws: localStoragePersistence.getPendingWithdraws(),
+    pendingDelayedWithdraws: localStoragePersistence.getPendingDelayedWithdraws(),
     pendingDelayedWithdrawCheckTask: {
       status: "pending",
     },
     pendingWithdrawalsCheckTask: {
       status: "pending",
     },
-    pendingDeposits: storage.getStorage(constants.PENDING_DEPOSITS_KEY),
+    pendingDeposits: localStoragePersistence.getPendingDeposits(),
     pendingDepositsCheckTask: {
       status: "pending",
     },
@@ -97,7 +90,7 @@ function getInitialGlobalState(): GlobalState {
   };
 }
 
-function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
+function globalReducer(state = getInitialGlobalState(), action: GlobalAction): GlobalState {
   switch (action.type) {
     case GlobalActionTypes.LOAD_HERMEZ_STATUS: {
       return {
@@ -120,7 +113,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
       return {
         ...state,
         hermezStatusTask: {
-          status: "failure",
+          status: "failed",
           error: action.error,
         },
       };
@@ -335,6 +328,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
         ...state,
         pendingDelayedWithdrawCheckTask: {
           status: "successful",
+          data: null,
         },
       };
     }
@@ -351,6 +345,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
         ...state,
         pendingWithdrawalsCheckTask: {
           status: "successful",
+          data: null,
         },
       };
     }
@@ -436,6 +431,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
         ...state,
         pendingDepositsCheckTask: {
           status: "successful",
+          data: null,
         },
       };
     }
@@ -465,7 +461,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
       return {
         ...state,
         coordinatorStateTask: {
-          status: "failure",
+          status: "failed",
           error: action.error,
         },
       };
@@ -483,7 +479,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction) {
         ...state,
         tokensPriceTask: {
           status: "successful",
-          data: action.tokensPrice,
+          data: action.tokens,
         },
       };
     }
