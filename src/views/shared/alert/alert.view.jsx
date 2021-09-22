@@ -16,7 +16,7 @@ function Alert({
   onHelpClick,
 }) {
   const classes = useAlertStyles({ variant });
-  const Button = helpButtonLink ? "a" : "button";
+  const Component = helpButtonLink ? "a" : "button";
 
   return (
     <div className={classes.root}>
@@ -25,14 +25,14 @@ function Alert({
         <p className={classes.message}>{message}</p>
       </div>
       {showHelpButton && (
-        <Button
+        <Component
           className={classes.helpButton}
           {...(helpButtonLink
             ? { href: helpButtonLink, target: "_blank" }
             : { onClick: onHelpClick })}
         >
           More info
-        </Button>
+        </Component>
       )}
     </div>
   );

@@ -10,7 +10,7 @@ const useFormButtonStyles = createUseStyles((theme) => ({
     border: 0,
     outline: "none",
     borderRadius: 100,
-    fontSize: `${theme.spacing(2)}px`,
+    fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.white,
     transition: theme.hoverTransition,
@@ -22,8 +22,30 @@ const useFormButtonStyles = createUseStyles((theme) => ({
       cursor: "default",
     },
     [theme.breakpoints.upSm]: {
-      fontSize: `${theme.spacing(2.5)}px`,
+      fontSize: theme.spacing(2.5),
       padding: `${theme.spacing(3)}px ${theme.spacing(9)}px`,
+    },
+  },
+  boxedButton: {
+    marginTop: 0,
+    padding: `${theme.spacing(1.5)}px ${theme.spacing(4)}px`,
+    [theme.breakpoints.upSm]: {
+      fontSize: theme.spacing(2),
+    },
+  },
+  inRowButton: {
+    marginBottom: theme.spacing(1.5),
+    [theme.breakpoints.upSm]: {
+      marginBottom: 0,
+      fontSize: theme.spacing(2),
+      width: theme.spacing(34),
+    },
+  },
+  lastButton: {
+    backgroundColor: theme.palette.grey.dark05,
+    marginBottom: 0,
+    "&:hover": {
+      backgroundColor: theme.palette.grey.hover,
     },
   },
 }));

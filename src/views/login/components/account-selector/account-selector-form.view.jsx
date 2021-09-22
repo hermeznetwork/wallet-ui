@@ -2,7 +2,7 @@ import React from "react";
 
 import useAccountSelectorFormStyles from "./account-selector-form.styles";
 import { ReactComponent as InfoIcon } from "../../../../images/icons/info.svg";
-import FormButton from "../../../shared/form-button/form-button.view";
+import PrimaryButton from "../../../shared/primary-button/primary-button.view";
 
 const ACCOUNTS_LIMIT = 20;
 const DEFAULT_ACCOUNT = 0;
@@ -61,7 +61,7 @@ function AccountSelectorForm({ walletName, walletLabel, onSelectAccount }) {
         <InfoIcon className={classes.helperIcon} />
         <p className={classes.helperText}>The account index of the account that you want to add</p>
       </div>
-      <FormButton label={`Connect with ${walletLabel}`} type="submit" />
+      <PrimaryButton label={`Connect with ${walletLabel}`} type="submit" />
     </form>
   );
 }
