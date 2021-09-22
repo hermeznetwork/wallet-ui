@@ -2,12 +2,9 @@ import React from "react";
 
 import useCreateAccountAuthStyles from "./create-account-auth.styles";
 import Spinner from "../../../shared/spinner/spinner.view";
-import { STEP_NAME } from "../../../../store/login/login.reducer";
 
-function CreateAccountAuth({ hermezAddressAuthSignature, steps, onCreateAccountAuthorization }) {
+function CreateAccountAuth({ hermezAddressAuthSignature, wallet, onCreateAccountAuthorization }) {
   const classes = useCreateAccountAuthStyles();
-  const wallet = steps[STEP_NAME.CREATE_ACCOUNT_AUTH].wallet;
-
   React.useEffect(() => {
     onCreateAccountAuthorization(wallet);
   }, [wallet, onCreateAccountAuthorization]);

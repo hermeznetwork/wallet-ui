@@ -43,7 +43,7 @@ const initialAccountDetailsState: AccountDetailsState = {
 };
 
 function accountDetailsReducer(
-  state = initialAccountDetailsState,
+  state: AccountDetailsState = initialAccountDetailsState,
   action: AccountDetailsAction
 ): AccountDetailsState {
   switch (action.type) {

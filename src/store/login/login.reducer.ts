@@ -1,4 +1,9 @@
-import { LoginActionTypes, LoginAction, WalletName, AccountData } from "src/store/login/login.actions";
+import {
+  LoginActionTypes,
+  LoginAction,
+  WalletName,
+  AccountData,
+} from "src/store/login/login.actions";
 
 import { AsyncTask } from "src/utils/types";
 
@@ -61,7 +66,7 @@ function getInitialLoginState(): LoginState {
   };
 }
 
-function loginReducer(state: LoginState, action: LoginAction): LoginState {
+function loginReducer(state: LoginState = getInitialLoginState(), action: LoginAction): LoginState {
   switch (action.type) {
     case LoginActionTypes.GO_TO_WALLET_SELECTOR_STEP: {
       const initialLoginState = getInitialLoginState();

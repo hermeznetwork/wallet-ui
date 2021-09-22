@@ -38,7 +38,7 @@ const initialHomeState: HomeState = {
   },
 };
 
-function homeReducer(state = initialHomeState, action: HomeAction): HomeState {
+function homeReducer(state: HomeState = initialHomeState, action: HomeAction): HomeState {
   switch (action.type) {
     case HomeActionTypes.LOAD_TOTAL_BALANCE: {
       return {

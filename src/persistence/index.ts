@@ -35,19 +35,23 @@ export function postCreateAccountAuthorization(
   ).catch((error: AxiosError<PostCreateAccountAuthorizationError>) => {
     // If the coordinators already have the CreateAccountsAuth signature,
     // we ignore the error
-    if (error.response?.status !== HttpStatusCode.DUPLICATED) {
+    const isDuplicationError = error.response?.status === HttpStatusCode.DUPLICATED;
+    if (isDuplicationError === false) {
       console.log(error);
-      throw error;
-    }
-    const parsedErrorResponse = postCreateAccountAuthorizationErrorParser.safeParse(error.response);
-    if (parsedErrorResponse.success) {
-      const errorMessage =
-        parsedErrorResponse.data.code === -32603
-          ? "Sorry, hardware wallets are not supported in Hermez yet"
-          : error.message;
-      throw new Error(errorMessage);
-    } else {
-      throw new Error("Oops... An unknown error occurred while creating the account authorization");
+      const parsedErrorResponse = postCreateAccountAuthorizationErrorParser.safeParse(
+        error.response?.data
+      );
+      if (parsedErrorResponse.success) {
+        const errorMessage =
+          parsedErrorResponse.data.code === -32603
+            ? "Sorry, hardware wallets are not supported in Hermez yet"
+            : error.message;
+        throw new Error(errorMessage);
+      } else {
+        throw new Error(
+          "Oops... An error occurred while creating the account authorization but I could not decode the error response from the server."
+        );
+      }
     }
   });
 }

@@ -90,7 +90,10 @@ function getInitialGlobalState(): GlobalState {
   };
 }
 
-function globalReducer(state = getInitialGlobalState(), action: GlobalAction): GlobalState {
+function globalReducer(
+  state: GlobalState = getInitialGlobalState(),
+  action: GlobalAction
+): GlobalState {
   switch (action.type) {
     case GlobalActionTypes.LOAD_HERMEZ_STATUS: {
       return {
