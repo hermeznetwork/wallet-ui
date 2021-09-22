@@ -13,7 +13,6 @@ function Button({ Icon, text, className, disabled, onClick }) {
       disabled={disabled}
       className={clsx({
         [classes.root]: true,
-        [classes.button]: true,
         [className]: className,
       })}
     >
