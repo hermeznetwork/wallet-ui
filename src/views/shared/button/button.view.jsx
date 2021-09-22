@@ -6,22 +6,20 @@ import useButtonStyles from "./button.styles";
 
 function Button({ Icon, text, className, disabled, onClick }) {
   const classes = useButtonStyles({ rounded: !text });
-  const isClickable = onClick !== undefined;
-  const Component = isClickable ? "button" : "div";
 
   return (
-    <Component
+    <button
       onClick={onClick}
       disabled={disabled}
       className={clsx({
         [classes.root]: true,
-        [classes.button]: isClickable,
+        [classes.button]: true,
         [className]: className,
       })}
     >
       {Icon || <></>}
       {text && <p className={clsx({ [classes.textSpacer]: Icon !== undefined })}>{text}</p>}
-    </Component>
+    </button>
   );
 }
 
