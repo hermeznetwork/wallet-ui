@@ -6,7 +6,7 @@ import { BigNumber } from "ethers";
 import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "src/constants";
 
 // domain
-import { Wallet, Token, ISOStringDate } from "src/domain/hermez";
+import { HermezWallet, Token, ISOStringDate } from "src/domain/hermez";
 
 /**
  * Fetches token balances in the user's Ethereum account. Only for those tokens registered in Hermez and Ether.
@@ -16,7 +16,7 @@ import { Wallet, Token, ISOStringDate } from "src/domain/hermez";
  * @returns {Promise} - Array of { balance, token } where balance is a Number and token is the Token schema returned from the API.
  */
 function getTokens(
-  wallet: Wallet,
+  wallet: HermezWallet.HermezWallet,
   hermezTokens: Token[]
 ): Promise<
   {

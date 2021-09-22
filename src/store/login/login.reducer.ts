@@ -1,12 +1,9 @@
-import { LoginActionTypes } from "src/store/login/login.actions";
-import { WalletName } from "src/views/login/login.view";
-
-import { LoginAction } from "src/store/login/login.actions";
+import { LoginActionTypes, LoginAction, WalletName, AccountData } from "src/store/login/login.actions";
 
 import { AsyncTask } from "src/utils/types";
 
 // domain
-import { Wallet } from "src/domain/hermez";
+import { HermezWallet } from "src/domain/hermez";
 import { AuthSignatures } from "src/domain/local-storage";
 import { getAuthSignatures } from "src/persistence/local-storage";
 
@@ -30,22 +27,22 @@ export type Step =
   | {
       type: "wallet-selector";
       // ToDo: Why don't we move walletName to LoginState? It's in three steps and can be undefined...
-      walletName: string | undefined;
+      walletName: WalletName | undefined;
     }
   | {
       type: "account-selector";
       // ToDo: What is this for? Isn't it the same as wallet-selector?
-      walletName: string | undefined;
+      walletName: WalletName | undefined;
     }
   | {
       type: "wallet-loader";
-      walletName: string | undefined;
-      accountData: unknown | undefined;
-      walletTask: AsyncTask<Wallet, string>;
+      walletName: WalletName | undefined;
+      accountData: AccountData | undefined;
+      walletTask: AsyncTask<HermezWallet.HermezWallet, string>;
     }
   | {
       type: "create-account-auth";
-      wallet: Wallet | undefined;
+      wallet: HermezWallet.HermezWallet | undefined;
     };
 
 function getInitialLoginState(): LoginState {
@@ -64,7 +61,7 @@ function getInitialLoginState(): LoginState {
   };
 }
 
-function loginReducer(state: LoginState = getInitialLoginState(), action: LoginAction): LoginState {
+function loginReducer(state: LoginState, action: LoginAction): LoginState {
   switch (action.type) {
     case LoginActionTypes.GO_TO_WALLET_SELECTOR_STEP: {
       const initialLoginState = getInitialLoginState();

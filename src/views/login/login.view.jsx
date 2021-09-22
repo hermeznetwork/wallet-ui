@@ -13,6 +13,7 @@ import CreateAccountAuth from "./components/create-account-auth/create-account-a
 import Alert, { AlertVariant } from "../shared/alert/alert.view";
 import * as constants from "../../constants";
 
+// ToDo: Shouldn't we import this from the login actions?
 export const WalletName = {
   METAMASK: "metaMask",
   WALLET_CONNECT: "walletConnect",

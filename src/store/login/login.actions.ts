@@ -1,4 +1,16 @@
-import { Wallet } from "src/domain/hermez";
+import { HermezWallet } from "src/domain/hermez";
+
+export type AccountData = {
+  accountType: number;
+  accountIndex: number;
+}
+
+export enum WalletName {
+  METAMASK = "metaMask",
+  WALLET_CONNECT = "walletConnect",
+  LEDGER = "ledger",
+  TREZOR = "trezor",
+}
 
 export enum LoginActionTypes {
   GO_TO_WALLET_SELECTOR_STEP = "[LOGIN] GO TO WALLET SELECTOR STEP",
@@ -21,19 +33,18 @@ export interface GoToWalletSelectorStep {
 
 export interface GoToAccountSelectorStep {
   type: LoginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP;
-  walletName: string;
+  walletName: WalletName;
 }
 
 export interface GoToWalletLoaderStep {
   type: LoginActionTypes.GO_TO_WALLET_LOADER_STEP;
-  walletName: string;
-  // ToDo: Find out the shape of accountData
-  accountData: unknown;
+  walletName: WalletName;
+  accountData: AccountData;
 }
 
 export interface GoToCreateAccountAuthStep {
   type: LoginActionTypes.GO_TO_CREATE_ACCOUNT_AUTH_STEP;
-  wallet: Wallet;
+  wallet: HermezWallet.HermezWallet;
 }
 
 export interface GoToPreviousStep {
@@ -93,14 +104,14 @@ function goToWalletSelectorStep(): GoToWalletSelectorStep {
   };
 }
 
-function goToAccountSelectorStep(walletName: string): GoToAccountSelectorStep {
+function goToAccountSelectorStep(walletName: WalletName): GoToAccountSelectorStep {
   return {
     type: LoginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP,
     walletName,
   };
 }
 
-function goToWalletLoaderStep(walletName: string, accountData: unknown): GoToWalletLoaderStep {
+function goToWalletLoaderStep(walletName: WalletName, accountData: AccountData): GoToWalletLoaderStep {
   return {
     type: LoginActionTypes.GO_TO_WALLET_LOADER_STEP,
     walletName,
@@ -108,7 +119,7 @@ function goToWalletLoaderStep(walletName: string, accountData: unknown): GoToWal
   };
 }
 
-function goToCreateAccountAuthStep(wallet: Wallet): GoToCreateAccountAuthStep {
+function goToCreateAccountAuthStep(wallet: HermezWallet.HermezWallet): GoToCreateAccountAuthStep {
   return {
     type: LoginActionTypes.GO_TO_CREATE_ACCOUNT_AUTH_STEP,
     wallet,

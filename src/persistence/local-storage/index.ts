@@ -58,6 +58,10 @@ export function getAuthSignatures(): AuthSignatures {
   return parsedAuthSignatures.success ? parsedAuthSignatures.data : {};
 }
 
+export function setAuthSignatures(authSignatures: AuthSignatures): void {
+  setStorageKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY, authSignatures);
+}
+
 // Pending Withdraws
 
 const pendingWithdrawsParser: z.ZodSchema<PendingWithdraws> = z.record(

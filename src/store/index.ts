@@ -11,7 +11,7 @@ import accountDetailsReducer, {
 } from "./account-details/account-details.reducer";
 import transactionDetailsReducer from "./transaction-details/transaction-details.reducer";
 import transactionReducer from "./transaction/transaction.reducer";
-import loginReducer from "./login/login.reducer";
+import loginReducer, { LoginState } from "./login/login.reducer";
 import tokenSwapReducer from "./token-swap/token-swap.reducer";
 import { History } from "history";
 
@@ -19,6 +19,7 @@ export interface RootState {
   accountDetails: AccountDetailsState;
   global: GlobalState;
   home: HomeState;
+  login: LoginState;
 }
 
 /**

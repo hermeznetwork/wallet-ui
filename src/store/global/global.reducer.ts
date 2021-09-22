@@ -8,8 +8,8 @@ import {
   HermezStatus,
   HermezNetworkStatus,
   Withdraw,
-  Wallet,
-  Signer,
+  HermezWallet,
+  SignerData,
   FiatExchangeRates,
   CoordinatorState,
   Token,
@@ -31,8 +31,8 @@ type SnackbarState =
 export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
-  wallet: Wallet | undefined;
-  signer: Signer | undefined;
+  wallet: HermezWallet.HermezWallet | undefined;
+  signer: SignerData | undefined;
   header: Header;
   redirectRoute: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
