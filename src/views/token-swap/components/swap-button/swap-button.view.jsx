@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import FormButton from "../../../shared/form-button/form-button.view";
+import PrimaryButton from "../../../shared/primary-button/primary-button.view";
 import useSwapButtonStyles from "./swap-button.style";
 
 function SwapButton({ selectedQuote }) {
@@ -28,7 +28,7 @@ function SwapButton({ selectedQuote }) {
     <div className={classes.root}>
       {selectedQuote && (
         <div className={classes.buttonBox}>
-          <FormButton
+          <PrimaryButton
             label={countdown > 0 ? `Swap ${msToTime(countdown)}` : "Time expired"}
             disabled={countdown <= 0}
           />

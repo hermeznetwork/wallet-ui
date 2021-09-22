@@ -13,7 +13,7 @@ import Container from "../../../shared/container/container.view";
 import FiatAmount from "../../../shared/fiat-amount/fiat-amount.view";
 import TokenBalance from "../../../shared/token-balance/token-balance.view";
 import Spinner from "../../../shared/spinner/spinner.view";
-import FormButton from "../../../shared/form-button/form-button.view";
+import PrimaryButton from "../../../shared/primary-button/primary-button.view";
 import { getRealFee } from "../../../../utils/fees";
 import Alert from "../../../shared/alert/alert.view";
 import WithdrawInfoSidenav from "../withdraw-info-sidenav/withdraw-info-sidenav.view";
@@ -170,7 +170,7 @@ function TransactionOverview({
               </p>
             </div>
           ) : (
-            <FormButton
+            <PrimaryButton
               label={getButtonLabel()}
               onClick={handleFormSubmit}
               disabled={isButtonDisabled}

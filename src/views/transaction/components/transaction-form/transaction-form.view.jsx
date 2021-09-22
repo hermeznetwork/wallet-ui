@@ -17,7 +17,7 @@ import { ReactComponent as CloseIcon } from "../../../../images/icons/close.svg"
 import { ReactComponent as QRScannerIcon } from "../../../../images/icons/qr-scanner.svg";
 import Container from "../../../shared/container/container.view";
 import QRScanner from "../../../shared/qr-scanner/qr-scanner.view";
-import FormButton from "../../../shared/form-button/form-button.view";
+import PrimaryButton from "../../../shared/primary-button/primary-button.view";
 import Spinner from "../../../shared/spinner/spinner.view";
 import * as addresses from "../../../../utils/addresses";
 import * as browser from "../../../../utils/browser";
@@ -375,7 +375,7 @@ function TransactionForm({
                     </p>
                   </div>
                 )}
-                <FormButton type="submit" label="Continue" disabled={isContinueDisabled()} />
+                <PrimaryButton type="submit" label="Continue" disabled={isContinueDisabled()} />
               </form>
               <Fee
                 transactionType={transactionType}

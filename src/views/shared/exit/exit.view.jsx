@@ -8,6 +8,7 @@ import useExitStyles from "./exit.styles";
 import { CurrencySymbol } from "../../../utils/currencies";
 import { getTxPendingTime } from "../../../utils/transactions";
 import { ReactComponent as InfoIcon } from "../../../images/icons/info.svg";
+import PrimaryButton from "../primary-button/primary-button.view";
 
 const STEPS = {
   FIRST: 1,
@@ -318,18 +319,19 @@ function Exit({
                   </span>
                 </div>
                 <div className={classes.withdrawDelayedButtons}>
-                  <button
-                    className={`${classes.withdrawButton} ${classes.withdrawDelayerInstantButton}`}
+                  <PrimaryButton
                     onClick={onCheckAvailabilityClick}
-                  >
-                    Check availability in 10m
-                  </button>
-                  <button
-                    className={`${classes.withdrawButton} ${classes.withdrawDelayerButton}`}
+                    label={"Check availability in 10m"}
+                    boxed
+                    inRow
+                  />
+                  <PrimaryButton
                     onClick={onWithdrawDelayedClick}
-                  >
-                    Withdraw in {getWithdrawalDelayerTime()}
-                  </button>
+                    label={`Withdraw in ${getWithdrawalDelayerTime()}`}
+                    boxed
+                    inRow
+                    last
+                  />
                 </div>
               </div>
             );
@@ -339,11 +341,11 @@ function Exit({
         return (
           <div className={classes.withdraw}>
             <div className={classes.withdrawInfo}>
-              <InfoIcon className={classes.infoIcon} />
-              <span className={classes.infoText}>Signing required to finalize withdraw.</span>
-              <button className={classes.withdrawButton} onClick={onWithdrawClick}>
-                Finalise
-              </button>
+              <p>
+                <InfoIcon className={classes.infoIcon} />
+                <span className={classes.infoText}>Signing required to finalize withdraw.</span>
+              </p>
+              <PrimaryButton onClick={onWithdrawClick} label={"Finalise"} boxed />
             </div>
           </div>
         );

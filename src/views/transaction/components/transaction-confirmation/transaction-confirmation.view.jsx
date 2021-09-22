@@ -4,7 +4,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import useTransactionConfirmationStyles from "./transaction-confirmation.styles";
 import transactionConfirmation from "../../../../images/transaction-confirmation.svg";
-import FormButton from "../../../shared/form-button/form-button.view";
+import PrimaryButton from "../../../shared/primary-button/primary-button.view";
 
 function TransactionConfirmation({ transactionType, onFinishTransaction }) {
   const classes = useTransactionConfirmationStyles();
@@ -38,7 +38,7 @@ function TransactionConfirmation({ transactionType, onFinishTransaction }) {
         alt="Hermez transaction confirmed"
       />
       <p className={classes.text}>{getExplanation()}</p>
-      <FormButton label="Done" onClick={onFinishTransaction} />
+      <PrimaryButton label="Done" onClick={onFinishTransaction} />
     </section>
   );
 }
