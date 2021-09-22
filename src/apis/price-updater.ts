@@ -1,11 +1,8 @@
 import axios from "axios";
 import * as z from "zod";
-
 import { CurrencySymbol } from "src/utils/currencies";
-
 // domain
 import { FiatExchangeRates, Token } from "src/domain/hermez";
-
 // persistence
 import * as parsers from "src/persistence/parsers";
 

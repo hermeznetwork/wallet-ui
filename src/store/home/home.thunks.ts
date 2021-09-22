@@ -2,14 +2,11 @@ import axios from "axios";
 import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
-
 import * as homeActions from "src/store/home/home.actions";
 import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
-
 import { RootState } from "src/store";
 import { AppDispatch, AppThunk } from "src";
-
 // domain
 import { PooledTransaction, Deposit, FiatExchangeRates, Account } from "src/domain/hermez";
 import { Accounts } from "src/persistence";

@@ -10,10 +10,8 @@ import { push } from "connected-react-router";
 import { ethers } from "ethers";
 import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import Connector from "@walletconnect/web3-provider";
-
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
-
 import * as globalActions from "src/store/global/global.actions";
 import * as priceUpdaterApi from "src/apis/price-updater";
 import * as hermezWebApi from "src/apis/hermez-web";
@@ -21,10 +19,8 @@ import * as storage from "src/utils/storage";
 import { isTxMined, hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from "src/utils/ethereum";
 import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
-
 import { RootState } from "src/store";
 import { AppDispatch, AppThunk } from "src";
-
 // domain
 import { ISOStringDate } from "src/domain/";
 import {
@@ -39,7 +35,6 @@ import {
   PooledTransaction,
   Token,
 } from "src/domain/hermez";
-
 // persistence
 import * as localStoragePersistence from "src/persistence/local-storage";
 

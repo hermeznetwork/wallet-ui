@@ -1,5 +1,4 @@
 import React from "react";
-
 import useCreateAccountAuthStyles from "./create-account-auth.styles";
 import Spinner from "../../../shared/spinner/spinner.view";
 

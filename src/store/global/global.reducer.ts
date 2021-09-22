@@ -1,6 +1,5 @@
 import { GlobalActionTypes, GlobalAction } from "./global.actions";
 import { AsyncTask } from "src/utils/types";
-
 // domain
 import { Header } from "src/domain/";
 import { EthereumNetwork } from "src/domain/ethereum";
@@ -14,7 +13,6 @@ import {
   CoordinatorState,
   Token,
 } from "src/domain/hermez";
-
 import * as localStorageDomain from "src/domain/local-storage";
 import * as localStoragePersistence from "src/persistence/local-storage";
 

@@ -4,9 +4,7 @@ import {
   WalletName,
   AccountData,
 } from "src/store/login/login.actions";
-
 import { AsyncTask } from "src/utils/types";
-
 // domain
 import { HermezWallet } from "src/domain/hermez";
 import { AuthSignatures } from "src/domain/local-storage";

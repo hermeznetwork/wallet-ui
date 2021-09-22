@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-
 import useLoginStyles from "./login.styles";
 import * as globalActions from "../../store/global/global.actions";
 import * as loginActions from "../../store/login/login.actions";

@@ -5,9 +5,7 @@ import { utils } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
-
 import { isEnvironmentSupported } from "@hermeznetwork/hermezjs/src/environment";
-
 import * as globalActions from "src/store/global/global.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as loginActions from "src/store/login/login.actions";
@@ -15,13 +13,11 @@ import { TREZOR_MANIFEST_MAIL } from "src/constants";
 import { buildEthereumBIP44Path } from "src/utils/hw-wallets";
 import { STEP_NAME } from "src/store/login/login.reducer";
 import { getNextForgerUrls } from "src/utils/coordinator";
-
 import { RootState } from "src/store";
 import { AppDispatch, AppThunk } from "src";
-
 // domain
 import { SignerData, HermezWallet } from "src/domain/hermez";
-
+// persistence
 import * as persistence from "src/persistence";
 import { getAuthSignatures, setAuthSignatures } from "src/persistence/local-storage";
 

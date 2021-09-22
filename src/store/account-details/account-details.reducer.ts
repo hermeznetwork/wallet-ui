@@ -1,11 +1,8 @@
 import { Pagination } from "src/utils/api";
-
 // domain
 import { Account, Transaction, PooledTransaction } from "src/domain/hermez";
-
 // persistence
 import { Exits } from "src/persistence";
-
 import { AccountDetailsActionTypes, AccountDetailsAction } from "./account-details.actions";
 import { getPaginationData } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";

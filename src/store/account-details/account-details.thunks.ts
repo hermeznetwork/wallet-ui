@@ -8,7 +8,6 @@ import * as ethereum from "src/utils/ethereum";
 import { createAccount } from "src/utils/accounts";
 import { RootState } from "src/store";
 import { AppDispatch, AppThunk } from "src";
-
 // domain
 import {
   Account,
@@ -18,7 +17,6 @@ import {
   Exit,
   FiatExchangeRates,
 } from "src/domain/hermez";
-
 // persistence
 import { Transactions, Exits } from "src/persistence";
 
