@@ -15,6 +15,7 @@ export type {
   HermezNetworkStatus,
   HermezStatus,
   Transaction,
+  PooledTransaction,
   Wallet,
   ISOStringDate,
   MerkleProof,
@@ -23,5 +24,5 @@ export type {
   Withdraw,
 } from "@hermeznetwork/hermezjs";
 
-export type Account = hermezjs.Account & { fiatBalance?: number; };
+export type Account = hermezjs.Account & { fiatBalance?: number };
 export type Deposit = hermezjs.Deposit & { transactionId?: string };

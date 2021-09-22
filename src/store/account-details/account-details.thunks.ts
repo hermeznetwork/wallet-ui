@@ -10,7 +10,14 @@ import { RootState } from "src/store";
 import { AppDispatch, AppThunk } from "src";
 
 // domain
-import { Account, Token, Transaction, Exit, FiatExchangeRates } from "src/domain/hermez";
+import {
+  Account,
+  Token,
+  Transaction,
+  PooledTransaction,
+  Exit,
+  FiatExchangeRates,
+} from "src/domain/hermez";
 
 // persistence
 import { Transactions, Exits } from "src/persistence";
@@ -99,8 +106,8 @@ function fetchPoolTransactions(accountIndex: Account["accountIndex"]): AppThunk 
     if (wallet !== undefined) {
       getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
         // We need to reverse the txs to match the order of the txs from the history (DESC)
-        .then((transactions: Transaction[]) => transactions.reverse())
-        .then((transactions: Transaction[]) =>
+        .then((transactions: PooledTransaction[]) => transactions.reverse())
+        .then((transactions: PooledTransaction[]) =>
           dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions))
         )
         .catch((err: Error) => dispatch(accountDetailsActions.loadPoolTransactionsFailure(err)));
