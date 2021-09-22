@@ -242,7 +242,6 @@ function refreshHistoryTransactions(
         .then((historyTransactions: Transactions) =>
           dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
         )
-        // ToDo: Shouldn't we dispatch refreshHistoryTransactionsFailure here?
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         .catch(() => {});
     }
