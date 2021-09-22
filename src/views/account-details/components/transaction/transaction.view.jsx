@@ -20,6 +20,7 @@ function Transaction({
   preferredCurrency,
   coordinatorState,
   onClick,
+  invalid,
 }) {
   const classes = useTransactionStyles();
 
@@ -49,16 +50,23 @@ function Transaction({
           </p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
-          {isPending ? (
+          {(invalid && (
             <div className={classes.pendingContainer}>
-              <div className={classes.pendingLabelContainer}>
-                <p className={classes.pendingLabelText}>Pending</p>
+              <div className={classes.invalidLabelContainer}>
+                <p className={classes.invalidLabelText}>Invalid</p>
               </div>
-              {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
             </div>
-          ) : (
-            <p>{new Date(timestamp).toLocaleDateString()}</p>
-          )}
+          )) ||
+            (isPending ? (
+              <div className={classes.pendingContainer}>
+                <div className={classes.pendingLabelContainer}>
+                  <p className={classes.pendingLabelText}>Pending</p>
+                </div>
+                {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
+              </div>
+            ) : (
+              <p>{new Date(timestamp).toLocaleDateString()}</p>
+            ))}
           <TransactionAmount
             fiatAmount={fiatAmount}
             preferredCurrency={preferredCurrency}
@@ -81,6 +89,7 @@ Transaction.propTypes = {
   timestamp: PropTypes.string,
   preferredCurrency: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
+  invalid: PropTypes.number,
 };
 
 export default Transaction;
