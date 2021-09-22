@@ -61,7 +61,6 @@ function getTokens(
         // eslint-disable-next-line
         const balance: Promise<BigNumber> = contract
           .balanceOf(ethereumAddress)
-          .then((balance: number) => BigNumber.from(balance))
           // eslint-disable-next-line @typescript-eslint/no-empty-function
           .catch(() => {});
 

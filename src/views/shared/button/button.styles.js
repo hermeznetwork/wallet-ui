@@ -14,6 +14,7 @@ const useButtonStyles = createUseStyles((theme) => ({
     color: theme.palette.grey.dark,
     fontWeight: theme.fontWeights.medium,
     transition: theme.hoverTransition,
+    cursor: "pointer",
     "&:focus": {
       outline: "none",
     },
@@ -21,9 +22,6 @@ const useButtonStyles = createUseStyles((theme) => ({
       opacity: 0.5,
       cursor: "default",
     },
-  },
-  button: {
-    cursor: "pointer",
     "&:hover:not(:disabled)": {
       background: theme.palette.primary.hover,
     },
