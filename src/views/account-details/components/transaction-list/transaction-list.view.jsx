@@ -62,6 +62,7 @@ function TransactionList({
               timestamp={transaction.timestamp}
               preferredCurrency={preferredCurrency}
               coordinatorState={coordinatorState}
+              invalid={transaction.errorCode}
               onClick={() => handleTransactionClick(transaction)}
             />
           </div>

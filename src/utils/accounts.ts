@@ -25,7 +25,8 @@ function getAccountBalance(
 
   if (poolTransactions !== undefined && poolTransactions.length) {
     const accountPoolTransactions = poolTransactions.filter(
-      (transaction) => transaction.fromAccountIndex === account.accountIndex
+      (transaction) =>
+        transaction.fromAccountIndex === account.accountIndex && !transaction.errorCode
     );
 
     accountPoolTransactions.forEach((pendingTransaction) => {
