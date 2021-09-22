@@ -3,7 +3,7 @@ import { getPaginationData } from "src/utils/api";
 import { Pagination } from "src/utils/api";
 
 // domain
-import { Account, Transaction } from "src/domain/hermez";
+import { Account, PooledTransaction } from "src/domain/hermez";
 
 // persistence
 import { Exits } from "src/persistence";
@@ -19,7 +19,7 @@ interface ViewAccounts {
 export interface HomeState {
   totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
-  poolTransactionsTask: AsyncTask<Transaction[], string>;
+  poolTransactionsTask: AsyncTask<PooledTransaction[], string>;
   exitsTask: AsyncTask<Exits, Error>;
 }
 

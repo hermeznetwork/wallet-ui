@@ -36,6 +36,7 @@ import {
   Exit,
   Deposit,
   Transaction,
+  PooledTransaction,
   Token,
 } from "src/domain/hermez";
 
@@ -766,7 +767,7 @@ function checkPendingTransactions(): AppThunk {
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
 
       hermezjs.TxPool.getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((poolTransactions: Transaction[]) => {
+        .then((poolTransactions: PooledTransaction[]) => {
           const tenMinutesInMs = 10 * 60 * 1000;
           const oneDayInMs = 24 * 60 * 60 * 1000;
           const resendTransactionsRequests = poolTransactions

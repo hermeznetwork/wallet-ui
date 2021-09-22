@@ -15,6 +15,7 @@ export type {
   HermezNetworkStatus,
   HermezStatus,
   Transaction,
+  PooledTransaction,
   HermezWallet,
   ISOStringDate,
   MerkleProof,
@@ -25,5 +26,5 @@ export type {
   JsonRpcSignerData,
 } from "@hermeznetwork/hermezjs";
 
-export type Account = hermezjs.Account & { fiatBalance?: number; };
+export type Account = hermezjs.Account & { fiatBalance?: number };
 export type Deposit = hermezjs.Deposit & { transactionId?: string };

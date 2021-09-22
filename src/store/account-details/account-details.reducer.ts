@@ -1,7 +1,7 @@
 import { Pagination } from "src/utils/api";
 
 // domain
-import { Account, Transaction } from "src/domain/hermez";
+import { Account, Transaction, PooledTransaction } from "src/domain/hermez";
 
 // persistence
 import { Exits } from "src/persistence";
@@ -21,7 +21,7 @@ export interface AccountDetailsState {
   exitsTask: AsyncTask<Exits, Error>;
   historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
   l1TokenBalanceTask: AsyncTask<null, string>;
-  poolTransactionsTask: AsyncTask<Transaction[], string>;
+  poolTransactionsTask: AsyncTask<PooledTransaction[], string>;
 }
 
 const initialAccountDetailsState: AccountDetailsState = {
