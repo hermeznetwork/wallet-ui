@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 import * as constants from "src/constants";
 
 // domain

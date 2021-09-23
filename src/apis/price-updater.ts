@@ -1,5 +1,5 @@
 import axios from "axios";
-import * as z from "zod";
+import { z } from "zod";
 
 import { CurrencySymbol } from "src/utils/currencies";
 
