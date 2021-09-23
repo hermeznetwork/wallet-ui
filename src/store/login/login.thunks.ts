@@ -11,7 +11,6 @@ import * as globalThunks from "src/store/global/global.thunks";
 import * as loginActions from "src/store/login/login.actions";
 import { TREZOR_MANIFEST_MAIL } from "src/constants";
 import { buildEthereumBIP44Path } from "src/utils/hw-wallets";
-import { STEP_NAME } from "src/store/login/login.reducer";
 import { getNextForgerUrls } from "src/utils/coordinator";
 import { RootState } from "src/store";
 import { AppDispatch, AppThunk } from "src";
@@ -181,7 +180,7 @@ function fetchWallet(
         login: { step },
       } = getState();
 
-      if (step.type === STEP_NAME.WALLET_LOADER) {
+      if (step.type === "wallet-loader") {
         dispatch(globalActions.loadWallet(wallet));
         // ToDo: SignerData does not have the prop "address" on all its shapes. Why do we need to add the address?
         //       For now I'm creating an IIFE to set the address where it makes sense, but we should confirm whether
@@ -209,7 +208,7 @@ function fetchWallet(
       const {
         login: { step },
       } = getState();
-      if (step.type === STEP_NAME.WALLET_LOADER) {
+      if (step.type === "wallet-loader") {
         const stringError: string =
           error instanceof Error
             ? error.message
