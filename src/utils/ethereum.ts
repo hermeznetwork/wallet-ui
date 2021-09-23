@@ -110,8 +110,7 @@ function isTxExpectedToFail(
   date: ISOStringDate,
   accountEthBalance: BigNumber
 ): boolean {
-  // ToDo: According to ethers types tx?.blockNumber can not be null
-  //       This should be clarified. Is type TransactionResponse incorrect here?
+  // According to ethers types tx?.blockNumber is a number but it can also be null
   if (tx.blockNumber === null) {
     const maxTxFee = tx.gasLimit.mul(tx.gasPrice);
     if (
