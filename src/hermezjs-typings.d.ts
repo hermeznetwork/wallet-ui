@@ -1,4 +1,5 @@
 /* eslint-disable no-empty */
+/* eslint-disable @typescript-eslint/no-extra-semi */
 /**
  * HermezJS Type Definitions
  *
