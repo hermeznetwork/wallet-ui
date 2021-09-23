@@ -86,13 +86,13 @@ function signMessageHelper(
           return Promise.resolve(signature);
         } else {
           return Promise.reject(
-            "Oppps... The function signMessage() from the WalletConnectProvider's connector did not return a valid string signature"
+            "Oops... The function signMessage() from the WalletConnectProvider's connector did not return a valid string signature"
           );
         }
       });
     } else {
       return Promise.reject(
-        "The Web3Provider passed as providerOrSigner to the function signMessageHelper is not a valid WalletConnectProvider"
+        "Oops... The Web3Provider passed as providerOrSigner to the function signMessageHelper is not a valid WalletConnectProvider"
       );
     }
   } else {
