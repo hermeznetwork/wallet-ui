@@ -88,12 +88,12 @@ function AccountDetails({
         onCheckPendingDelayedWithdrawals();
       };
       const intervalId = setInterval(loadInitialData, AUTO_REFRESH_RATE);
-  
+
       loadInitialData();
-  
+
       return () => {
         clearInterval(intervalId);
-      };  
+      };
     }
   }, [accountIndex, onCheckPendingDeposits, onLoadAccount, onLoadPoolTransactions]);
 
@@ -361,7 +361,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  onLoadAccount: (accountIndex, fiatExchangeRates, preferredCurrency) => dispatch(accountDetailsThunks.fetchAccount(accountIndex, fiatExchangeRates, preferredCurrency)),
+  onLoadAccount: (accountIndex, fiatExchangeRates, preferredCurrency) =>
+    dispatch(accountDetailsThunks.fetchAccount(accountIndex, fiatExchangeRates, preferredCurrency)),
   onLoadL1TokenBalance: (token) => dispatch(accountDetailsThunks.fetchL1TokenBalance(token)),
   onChangeHeader: (tokenName) =>
     dispatch(
