@@ -24,65 +24,57 @@ function getTokens(
     token: Token;
   }[]
 > {
-  // ToDo: Can we remove this check below?
-  if (wallet) {
-    const provider = hermezjs.Providers.getProvider();
-    const ethereumAddress = hermezjs.Addresses.getEthereumAddress(wallet.hermezEthereumAddress);
-    const partialERC20ABI = [
-      {
-        constant: true,
-        inputs: [
-          {
-            name: "_owner",
-            type: "address",
-          },
-        ],
-        name: "balanceOf",
-        outputs: [
-          {
-            name: "balance",
-            type: "uint256",
-          },
-        ],
-        payable: false,
-        type: "function",
-      },
-    ];
-    const balancePromises: Promise<BigNumber>[] = hermezTokens.map((token) => {
-      if (token.id === ETHER_TOKEN_ID) {
-        // tokenID 0 is for Ether
-        return provider.getBalance(ethereumAddress);
-      } else {
-        // For ERC 20 tokens, check the balance from the smart contract
-        const contract = new ethers.Contract(token.ethereumAddress, partialERC20ABI, provider);
+  const provider = hermezjs.Providers.getProvider();
+  const ethereumAddress = hermezjs.Addresses.getEthereumAddress(wallet.hermezEthereumAddress);
+  const partialERC20ABI = [
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "_owner",
+          type: "address",
+        },
+      ],
+      name: "balanceOf",
+      outputs: [
+        {
+          name: "balance",
+          type: "uint256",
+        },
+      ],
+      payable: false,
+      type: "function",
+    },
+  ];
+  const balancePromises: Promise<BigNumber>[] = hermezTokens.map((token) => {
+    if (token.id === ETHER_TOKEN_ID) {
+      // tokenID 0 is for Ether
+      return provider.getBalance(ethereumAddress);
+    } else {
+      // For ERC 20 tokens, check the balance from the smart contract
+      const contract = new ethers.Contract(token.ethereumAddress, partialERC20ABI, provider);
 
-        // We can ignore if a call to the contract of a specific token fails.
-        // ToDo: Find a way to properly type the functions of the contract declared through the ABI.
-        // eslint-disable-next-line
-        const balance: Promise<BigNumber> = contract
-          .balanceOf(ethereumAddress)
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          .catch(() => {});
+      // We can ignore if a call to the contract of a specific token fails.
+      // ToDo: Find a way to properly type the functions of the contract declared through the ABI.
+      // eslint-disable-next-line
+      const balance: Promise<BigNumber> = contract.balanceOf(ethereumAddress).catch(() => ({}));
 
-        return balance;
-      }
-    });
-    const balances = Promise.all(balancePromises).then((balanceList) => {
-      return balanceList
-        .filter((tokenBalance) => tokenBalance.gt(BigNumber.from(0)))
-        .map((balance, index) => {
-          const token = hermezTokens[index];
-          return {
-            balance,
-            token,
-          };
-        });
-    });
+      return balance;
+    }
+  });
+  const balances = Promise.all(balancePromises).then((balanceList) => {
+    return balanceList
+      .filter((tokenBalance) => tokenBalance.gt(BigNumber.from(0)))
+      .map((balance, index) => {
+        const token = hermezTokens[index];
+        return {
+          balance,
+          token,
+        };
+      });
+  });
 
-    return balances;
-  } else {
-    throw Error("Ethereum wallet has not loaded");
-  }
+  return balances;
 }
 
 /**
@@ -118,8 +110,7 @@ function isTxExpectedToFail(
   date: ISOStringDate,
   accountEthBalance: BigNumber
 ): boolean {
-  // ToDo: According to ethers types tx?.blockNumber can not be null
-  //       This should be clarified. Is type TransactionResponse incorrect here?
+  // According to ethers types tx?.blockNumber is a number but it can also be null
   if (tx.blockNumber === null) {
     const maxTxFee = tx.gasLimit.mul(tx.gasPrice);
     if (

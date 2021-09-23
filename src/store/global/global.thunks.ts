@@ -384,8 +384,7 @@ function checkPendingDelayedWithdrawals(): AppThunk {
                       );
                     }
                   })
-                  // eslint-disable-next-line @typescript-eslint/no-empty-function
-                  .catch(() => {});
+                  .catch(() => ({}));
               }
               // Checks here to have access to pendingDelayedWithdraw.timestamp
               if (
@@ -432,11 +431,9 @@ function checkPendingDelayedWithdrawals(): AppThunk {
                   dispatch(globalActions.checkPendingDelayedWithdrawalsSuccess())
                 );
               })
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
-              .catch(() => {});
+              .catch(() => ({}));
           })
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          .catch(() => {});
+          .catch(() => ({}));
       }
     }
   };
@@ -520,11 +517,9 @@ function checkPendingWithdrawals(): AppThunk {
                   dispatch(globalActions.checkPendingWithdrawalsSuccess())
                 );
               })
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
-              .catch(() => {});
+              .catch(() => ({}));
           })
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          .catch(() => {});
+          .catch(() => ({}));
       }
     }
   };
@@ -742,11 +737,9 @@ function checkPendingDeposits(): AppThunk {
                   })
                   .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()));
               })
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
-              .catch(() => {});
+              .catch(() => ({}));
           })
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          .catch(() => {});
+          .catch(() => ({}));
       }
     }
   };
@@ -796,16 +789,12 @@ function checkPendingTransactions(): AppThunk {
                 transaction.token,
                 nextForgerUrls,
                 false
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-              ).catch(() => {});
+              ).catch(() => ({}));
             });
 
-          Promise.all(resendTransactionsRequests)
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            .catch(() => {});
+          Promise.all(resendTransactionsRequests).catch(() => ({}));
         })
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        .catch(() => {});
+        .catch(() => ({}));
     }
   };
 }
@@ -836,8 +825,7 @@ function disconnectWallet(): AppThunk {
 
     if (provider.provider instanceof Connector) {
       // Kills the stored Web Connect session to show QR with next login
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      provider.provider.connector.killSession().catch(() => {});
+      provider.provider.connector.killSession().catch(() => ({}));
     }
 
     dispatch(globalActions.unloadWallet());

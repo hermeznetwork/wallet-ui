@@ -1,4 +1,5 @@
 /* eslint-disable no-empty */
+/* eslint-disable @typescript-eslint/no-extra-semi */
 /**
  * HermezJS Type Definitions
  *
@@ -140,8 +141,6 @@ declare module "@hermeznetwork/*" {
     // requestTokenId?: unknown;
   };
 
-  // ToDo: According to the docs: https://apidoc.hermez.network/#model-TransactionType supported types are:
-  //       CreateAccountDeposit, CreateAccountDepositTransfer, Deposit, DepositTransfer, Exit, ForceExit, ForceTransfer, Transfer, TransferToBJJ TransferToEthAddr
   export type Transaction = HermezApiResourceItem & {
     amount: string;
     batchNum: number;

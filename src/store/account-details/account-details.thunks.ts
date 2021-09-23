@@ -247,8 +247,7 @@ function refreshHistoryTransactions(
         .then((historyTransactions: Transactions) =>
           dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
         )
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        .catch(() => {});
+        .catch(() => ({}));
     }
   };
 }

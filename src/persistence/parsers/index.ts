@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 // domain
 import { Withdraw, DelayedWithdraw, Deposit, Account, Token } from "src/domain/hermez";
 

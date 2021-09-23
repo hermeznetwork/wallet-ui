@@ -1,5 +1,5 @@
 import axios from "axios";
-import * as z from "zod";
+import { z } from "zod";
 import { HERMEZ_WEB_URL } from "src/constants";
 
 const baseApiUrl = HERMEZ_WEB_URL;
