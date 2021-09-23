@@ -1,43 +1,43 @@
-import { transactionDetailsActionTypes } from './transaction-details.actions'
+import { transactionDetailsActionTypes } from "./transaction-details.actions";
 
 const initialTransactionDetailsReducer = {
   transactionTask: {
-    status: 'pending'
-  }
-}
+    status: "pending",
+  },
+};
 
-function transactionDetailsReducer (state = initialTransactionDetailsReducer, action) {
+function transactionDetailsReducer(state = initialTransactionDetailsReducer, action) {
   switch (action.type) {
     case transactionDetailsActionTypes.LOAD_TRANSACTION: {
       return {
         ...state,
         transactionTask: {
-          status: 'loading'
-        }
-      }
+          status: "loading",
+        },
+      };
     }
     case transactionDetailsActionTypes.LOAD_TRANSACTION_SUCCESS: {
       return {
         ...state,
         transactionTask: {
-          status: 'successful',
-          data: action.transaction
-        }
-      }
+          status: "successful",
+          data: action.transaction,
+        },
+      };
     }
     case transactionDetailsActionTypes.LOAD_TRANSACTION_FAILURE: {
       return {
         ...state,
         transactionTask: {
-          status: 'failed',
-          error: 'An error ocurred loading the transaction'
-        }
-      }
+          status: "failed",
+          error: "An error ocurred loading the transaction",
+        },
+      };
     }
     default: {
-      return state
+      return state;
     }
   }
 }
 
-export default transactionDetailsReducer
+export default transactionDetailsReducer;

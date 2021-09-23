@@ -1,13 +1,13 @@
-import React from 'react'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import React from "react";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-import AccountList from '../../../shared/account-list/account-list.view'
-import Container from '../../../shared/container/container.view'
-import InfiniteScroll from '../../../shared/infinite-scroll/infinite-scroll.view'
-import Spinner from '../../../shared/spinner/spinner.view'
-import useAccountSelectorStyles from './account-selector.styles'
+import AccountList from "../../../shared/account-list/account-list.view";
+import Container from "../../../shared/container/container.view";
+import InfiniteScroll from "../../../shared/infinite-scroll/infinite-scroll.view";
+import Spinner from "../../../shared/spinner/spinner.view";
+import useAccountSelectorStyles from "./account-selector.styles";
 
-function AccountSelector ({
+function AccountSelector({
   transactionType,
   accountsTask,
   poolTransactionsTask,
@@ -15,15 +15,15 @@ function AccountSelector ({
   fiatExchangeRates,
   pendingDeposits,
   onLoadAccounts,
-  onAccountClick
+  onAccountClick,
 }) {
-  const classes = useAccountSelectorStyles()
+  const classes = useAccountSelectorStyles();
   const disabledTokenIds = pendingDeposits
-    .filter(deposit => deposit.type === TxType.CreateAccountDeposit)
-    .map(deposit => deposit.token.id)
+    .filter((deposit) => deposit.type === TxType.CreateAccountDeposit)
+    .map((deposit) => deposit.token.id);
 
   React.useEffect(() => {
-    if (accountsTask.status === 'pending' && poolTransactionsTask.status === 'successful') {
+    if (accountsTask.status === "pending" && poolTransactionsTask.status === "successful") {
       onLoadAccounts(
         transactionType,
         undefined,
@@ -31,9 +31,9 @@ function AccountSelector ({
         pendingDeposits,
         fiatExchangeRates,
         preferredCurrency
-      )
+      );
     }
-  }, [accountsTask, poolTransactionsTask, onLoadAccounts])
+  }, [accountsTask, poolTransactionsTask, onLoadAccounts]);
 
   return (
     <div className={classes.root}>
@@ -41,20 +41,20 @@ function AccountSelector ({
         <section className={classes.accountListWrapper}>
           {(() => {
             switch (accountsTask.status) {
-              case 'pending':
-              case 'loading':
-              case 'failed': {
-                return <Spinner />
+              case "pending":
+              case "loading":
+              case "failed": {
+                return <Spinner />;
               }
-              case 'reloading':
-              case 'successful': {
+              case "reloading":
+              case "successful": {
                 if (transactionType === TxType.Deposit) {
                   if (accountsTask.data.length === 0) {
                     return (
                       <p className={classes.emptyState}>
                         No compatible tokens with Hermez wallet to deposit.
                       </p>
-                    )
+                    );
                   }
 
                   return (
@@ -68,7 +68,7 @@ function AccountSelector ({
                         onAccountClick={onAccountClick}
                       />
                     </div>
-                  )
+                  );
                 } else {
                   return (
                     <InfiniteScroll
@@ -82,7 +82,7 @@ function AccountSelector ({
                           pendingDeposits,
                           fiatExchangeRates,
                           preferredCurrency
-                        )
+                        );
                       }}
                     >
                       <AccountList
@@ -92,18 +92,18 @@ function AccountSelector ({
                         onAccountClick={onAccountClick}
                       />
                     </InfiniteScroll>
-                  )
+                  );
                 }
               }
               default: {
-                return <></>
+                return <></>;
               }
             }
           })()}
         </section>
       </Container>
     </div>
-  )
+  );
 }
 
-export default AccountSelector
+export default AccountSelector;
