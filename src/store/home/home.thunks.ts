@@ -208,8 +208,7 @@ function refreshAccounts(
           return { accounts, pendingItems };
         })
         .then((res) => dispatch(homeActions.refreshAccountsSuccess(res)))
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        .catch(() => {});
+        .catch(() => ({}));
     }
   };
 }

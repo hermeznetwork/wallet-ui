@@ -57,10 +57,7 @@ function getTokens(
       // We can ignore if a call to the contract of a specific token fails.
       // ToDo: Find a way to properly type the functions of the contract declared through the ABI.
       // eslint-disable-next-line
-      const balance: Promise<BigNumber> = contract
-        .balanceOf(ethereumAddress)
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        .catch(() => {});
+      const balance: Promise<BigNumber> = contract.balanceOf(ethereumAddress).catch(() => ({}));
 
       return balance;
     }

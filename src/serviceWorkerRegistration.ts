@@ -50,8 +50,7 @@ export function register(config?: Config): void {
                 "worker. To learn more, visit https://cra.link/PWA"
             );
           })
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          .catch(() => {});
+          .catch(() => ({}));
       } else {
         // Is not localhost. Just register service worker
         registerValidSW(swUrl, config);
@@ -124,11 +123,9 @@ function checkValidServiceWorker(swUrl: string, config?: Config) {
               .then(() => {
                 window.location.reload();
               })
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
-              .catch(() => {});
+              .catch(() => ({}));
           })
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          .catch(() => {});
+          .catch(() => ({}));
       } else {
         // Service worker found. Proceed as normal.
         registerValidSW(swUrl, config);
@@ -143,10 +140,7 @@ export function unregister(): void {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.ready
       .then((registration) => {
-        registration
-          .unregister()
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          .catch(() => {});
+        registration.unregister().catch(() => ({}));
       })
       .catch((error: Error) => {
         console.error(error.message);
