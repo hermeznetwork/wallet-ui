@@ -1,10 +1,9 @@
 import { HomeActionTypes, HomeAction } from "src/store/home/home.actions";
 import { getPaginationData } from "src/utils/api";
-import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 import { Pagination } from "src/utils/api";
 
 // domain
-import { Account, Transaction } from "src/domain/hermez";
+import { Account, PooledTransaction } from "src/domain/hermez";
 
 // persistence
 import { Exits } from "src/persistence";
@@ -20,8 +19,8 @@ interface ViewAccounts {
 export interface HomeState {
   totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
-  poolTransactionsTask: AsyncTask<Transaction[], string>;
-  exitsTask: AsyncTask<Exits, string>;
+  poolTransactionsTask: AsyncTask<PooledTransaction[], string>;
+  exitsTask: AsyncTask<Exits, Error>;
 }
 
 const initialHomeState: HomeState = {
@@ -39,17 +38,15 @@ const initialHomeState: HomeState = {
   },
 };
 
-function homeReducer(state = initialHomeState, action: HomeAction) {
+function homeReducer(state = initialHomeState, action: HomeAction): HomeState {
   switch (action.type) {
     case HomeActionTypes.LOAD_TOTAL_BALANCE: {
-      const totalBalanceTask =
-        state.totalBalanceTask.status === "successful"
-          ? { status: "reloading", data: state.totalBalanceTask.data }
-          : { status: "loading" };
-
       return {
         ...state,
-        totalBalanceTask,
+        totalBalanceTask:
+          state.totalBalanceTask.status === "successful"
+            ? { status: "reloading", data: state.totalBalanceTask.data }
+            : { status: "loading" },
       };
     }
     case HomeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS: {
@@ -117,10 +114,15 @@ function homeReducer(state = initialHomeState, action: HomeAction) {
     case HomeActionTypes.REFRESH_ACCOUNTS: {
       return {
         ...state,
-        accountsTask: {
-          ...state.accountsTask,
-          status: "reloading",
-        },
+        accountsTask:
+          state.accountsTask.status === "successful"
+            ? {
+                status: "reloading",
+                data: state.accountsTask.data,
+              }
+            : {
+                status: "loading",
+              },
       };
     }
     case HomeActionTypes.REFRESH_ACCOUNTS_SUCCESS: {
@@ -146,10 +148,9 @@ function homeReducer(state = initialHomeState, action: HomeAction) {
       return {
         ...state,
         poolTransactionsTask:
-          state.poolTransactionsTask.status === "pending" ||
-          state.poolTransactionsTask.status === "failed"
-            ? { status: "loading" }
-            : { ...state.poolTransactionsTask, status: "reloading" },
+          state.poolTransactionsTask.status === "successful"
+            ? { status: "reloading", data: state.poolTransactionsTask.data }
+            : { status: "loading" },
       };
     }
     case HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
@@ -174,9 +175,9 @@ function homeReducer(state = initialHomeState, action: HomeAction) {
       return {
         ...state,
         exitsTask:
-          state.exitsTask.status === "pending" || state.exitsTask.status === "failed"
-            ? { status: "loading" }
-            : { ...state.exitsTask, status: "reloading" },
+          state.exitsTask.status === "successful"
+            ? { status: "reloading", data: state.exitsTask.data }
+            : { status: "loading" },
       };
     }
     case HomeActionTypes.LOAD_EXITS_SUCCESS: {

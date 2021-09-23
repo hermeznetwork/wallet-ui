@@ -1,20 +1,43 @@
 import axios from "axios";
+import { z } from "zod";
 
 import { CurrencySymbol } from "src/utils/currencies";
 
 // domain
 import { FiatExchangeRates, Token } from "src/domain/hermez";
 
+// persistence
+import * as parsers from "src/persistence/parsers";
+
+const tokenListParser: z.ZodSchema<Token[]> = z.array(parsers.token);
+
+interface GetTokensPriceResponse {
+  tokens: Token[];
+}
+
+const getTokensPriceResponseParser: z.ZodSchema<GetTokensPriceResponse> = z.object({
+  tokens: tokenListParser,
+});
+
+// api exchange rates validation
 interface ApiExchangeRate {
   currency: string;
   price: number;
 }
 
-const baseApiUrl = `${process.env.REACT_APP_PRICE_UPDATER_API_URL}`;
-const apiKey = `${process.env.REACT_APP_PRICE_UPDATER_API_KEY}`;
-const client = axios.create({
-  baseURL: baseApiUrl,
-  headers: { "X-API-KEY": apiKey },
+const apiExchangeRateParser: z.ZodSchema<ApiExchangeRate> = z.object({
+  currency: z.string(),
+  price: z.number(),
+});
+
+const apiExchangeRateListParser: z.ZodSchema<ApiExchangeRate[]> = z.array(apiExchangeRateParser);
+
+interface ApiExchangeRateResponse {
+  currencies: ApiExchangeRate[];
+}
+
+const getFiatExchangeRatesResponseParser: z.ZodSchema<ApiExchangeRateResponse> = z.object({
+  currencies: apiExchangeRateListParser,
 });
 
 const mockedFiatExchangeRates = {
@@ -24,14 +47,37 @@ const mockedFiatExchangeRates = {
   GBP: 0.716945,
 };
 
+const parsedReactAppPriceUpdaterApiUrl = z
+  .string()
+  .safeParse(process.env.REACT_APP_PRICE_UPDATER_API_URL);
+
+const parsedReactAppPriceUpdaterApiKey = z
+  .string()
+  .safeParse(process.env.REACT_APP_PRICE_UPDATER_API_KEY);
+
 /**
  * Returns a list of tokens with usd price.>
  * @returns {Promise<Token[]>} - List of tokens
  */
 function getTokensPrice(): Promise<Token[]> {
-  return client.get(`${baseApiUrl}/v1/tokens`).then(({ data }) => {
-    return data.tokens;
-  });
+  if (parsedReactAppPriceUpdaterApiUrl.success === false) {
+    return Promise.reject(parsedReactAppPriceUpdaterApiUrl.error.message);
+  } else if (parsedReactAppPriceUpdaterApiKey.success === false) {
+    return Promise.reject(parsedReactAppPriceUpdaterApiKey.error.message);
+  } else {
+    const client = axios.create({
+      baseURL: parsedReactAppPriceUpdaterApiUrl.data,
+      headers: { "X-API-KEY": parsedReactAppPriceUpdaterApiKey.data },
+    });
+    return client.get(`${parsedReactAppPriceUpdaterApiUrl.data}/v1/tokens`).then(({ data }) => {
+      const parsedgGetTokensPriceResponse = getTokensPriceResponseParser.safeParse(data);
+      if (parsedgGetTokensPriceResponse.success) {
+        return parsedgGetTokensPriceResponse.data.tokens;
+      } else {
+        return Promise.reject(parsedgGetTokensPriceResponse.error.message);
+      }
+    });
+  }
 }
 
 /**
@@ -41,18 +87,34 @@ function getTokensPrice(): Promise<Token[]> {
  */
 // eslint-disable-next-line no-unused-vars
 function getFiatExchangeRates(symbols: string[]): Promise<FiatExchangeRates> {
-  const params = { base: CurrencySymbol.USD.code, symbols: symbols.join("|") };
-
-  return client.get(`${baseApiUrl}/v1/currencies`, { params }).then((res) => {
-    const currencies: ApiExchangeRate[] = res.data.currencies;
-    return currencies.reduce(
-      (acc, rate) => ({
-        ...acc,
-        [rate.currency]: rate.price,
-      }),
-      {}
-    );
-  });
+  if (parsedReactAppPriceUpdaterApiUrl.success === false) {
+    return Promise.reject(parsedReactAppPriceUpdaterApiUrl.error.message);
+  } else if (parsedReactAppPriceUpdaterApiKey.success === false) {
+    return Promise.reject(parsedReactAppPriceUpdaterApiKey.error.message);
+  } else {
+    const params = { base: CurrencySymbol.USD.code, symbols: symbols.join("|") };
+    const client = axios.create({
+      baseURL: parsedReactAppPriceUpdaterApiUrl.data,
+      headers: { "X-API-KEY": parsedReactAppPriceUpdaterApiKey.data },
+    });
+    return client
+      .get(`${parsedReactAppPriceUpdaterApiUrl.data}/v1/currencies`, { params })
+      .then((res) => {
+        const parsedFiatExchangeRates = getFiatExchangeRatesResponseParser.safeParse(res.data);
+        if (parsedFiatExchangeRates.success) {
+          const currencies: ApiExchangeRate[] = parsedFiatExchangeRates.data.currencies;
+          return currencies.reduce(
+            (acc, rate) => ({
+              ...acc,
+              [rate.currency]: rate.price,
+            }),
+            {}
+          );
+        } else {
+          return Promise.reject(parsedFiatExchangeRates.error.message);
+        }
+      });
+  }
 }
 
 export { mockedFiatExchangeRates, getFiatExchangeRates, getTokensPrice };

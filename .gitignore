@@ -13,3 +13,6 @@ build/
 
 # System files
 **/.DS_Store
+
+# linting and formatting
+.eslintcache

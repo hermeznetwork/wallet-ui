@@ -3,15 +3,18 @@ import { BigNumber } from "ethers";
 
 import { convertTokenAmountToFiat } from "./currencies";
 
-/** */
-function getAccountBalance(account, poolTransactions, pendingDeposits) {
-  if (!account) {
-    return undefined;
-  }
+import { Account, PooledTransaction, Deposit, Token, FiatExchangeRates } from "src/domain/hermez";
 
+import { AsyncTask } from "src/utils/types";
+
+function getAccountBalance(
+  account: Account,
+  poolTransactions?: PooledTransaction[],
+  pendingDeposits?: Deposit[]
+): string {
   let totalBalance = BigNumber.from(account.balance);
 
-  if (pendingDeposits && pendingDeposits.length) {
+  if (pendingDeposits !== undefined && pendingDeposits.length) {
     const pendingAccountDeposits = pendingDeposits.filter(
       (deposit) => deposit.account.accountIndex === account.accountIndex
     );
@@ -20,7 +23,7 @@ function getAccountBalance(account, poolTransactions, pendingDeposits) {
     });
   }
 
-  if (poolTransactions && poolTransactions.length) {
+  if (poolTransactions !== undefined && poolTransactions.length) {
     const accountPoolTransactions = poolTransactions.filter(
       (transaction) =>
         transaction.fromAccountIndex === account.accountIndex && !transaction.errorCode
@@ -39,19 +42,19 @@ function getAccountBalance(account, poolTransactions, pendingDeposits) {
 
 // TODO Study if this belongs to the domain model, as it's the function who creates a domain entity Account and move it there
 function createAccount(
-  account,
-  poolTransactions,
-  pendingDeposits,
-  tokensPriceTask,
-  fiatExchangeRates,
-  preferredCurrency
-) {
-  const accountToken =
+  account: Account,
+  poolTransactions: PooledTransaction[] | undefined,
+  pendingDeposits: Deposit[] | undefined,
+  tokensPriceTask: AsyncTask<Token[], string>,
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
+): Account {
+  const accountToken: Account =
     tokensPriceTask.status === "successful"
       ? { ...account, token: { ...tokensPriceTask.data[account.token.id] } }
       : { ...account };
   const accountBalance = getAccountBalance(accountToken, poolTransactions, pendingDeposits);
-  const fiatBalance = convertTokenAmountToFiat(
+  const fiatBalance: number = convertTokenAmountToFiat(
     accountBalance,
     accountToken.token,
     preferredCurrency,
