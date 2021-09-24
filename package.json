@@ -11,7 +11,7 @@
     "start:prod": "serve -s -C -p 80 build"
   },
   "dependencies": {
-    "@hermeznetwork/hermezjs": "1.2.2",
+    "@hermeznetwork/hermezjs": "1.2.3",
     "@types/history": "^4.7.9",
     "@types/react": "^17.0.18",
     "@types/react-dom": "^17.0.9",
