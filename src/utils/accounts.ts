@@ -50,7 +50,7 @@ function createAccount(
   preferredCurrency: string
 ): Account {
   const accountToken: Account =
-    tokensPriceTask.status === "successful"
+    tokensPriceTask.status === "successful" && tokensPriceTask.data[account.token.id]
       ? { ...account, token: { ...tokensPriceTask.data[account.token.id] } }
       : { ...account };
   const accountBalance = getAccountBalance(accountToken, poolTransactions, pendingDeposits);

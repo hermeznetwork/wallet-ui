@@ -38,6 +38,7 @@ function Transaction({
   pendingDeposits,
   pendingWithdraws,
   pendingDelayedWithdraws,
+  tokensPriceTask,
   onChangeHeader,
   onCheckPendingDeposits,
   onLoadEthereumAccount,
@@ -183,6 +184,7 @@ function Transaction({
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}
                 accountBalanceTask={stepData.accountBalanceTask}
                 feesTask={stepData.feesTask}
+                tokensPriceTask={tokensPriceTask}
                 estimatedWithdrawFeeTask={stepData.estimatedWithdrawFeeTask}
                 onLoadAccountBalance={onLoadAccountBalance}
                 onLoadFees={onLoadFees}
@@ -248,6 +250,7 @@ const mapStateToProps = (state) => ({
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
+  tokensPriceTask: state.global.tokensPriceTask,
 });
 
 const getTransactionOverviewHeaderTitle = (transactionType) => {

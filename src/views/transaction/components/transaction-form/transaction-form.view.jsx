@@ -33,6 +33,7 @@ function TransactionForm({
   fiatExchangeRates,
   accountBalanceTask,
   feesTask,
+  tokensPriceTask,
   estimatedWithdrawFeeTask,
   onLoadAccountBalance,
   onLoadFees,
@@ -44,6 +45,7 @@ function TransactionForm({
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false);
   const [amount, setAmount] = useState(BigNumber.from(0));
   const [isAmountValid, setIsAmountValid] = useState(undefined);
+  const [isAmountMoreThanWithFees, setIsAmountMoreThanWithFees] = useState(false);
   const [showInFiat, setShowInFiat] = useState(false);
   const [receiver, setReceiver] = useState("");
   const [isReceiverValid, setIsReceiverValid] = React.useState(undefined);
@@ -146,6 +148,7 @@ function TransactionForm({
     setAmount(data.amount.tokens);
     setShowInFiat(data.showInFiat);
     setIsAmountValid(!data.isInvalid);
+    setIsAmountMoreThanWithFees(data.isAmountMoreThanWithFees);
   }
 
   /**
@@ -288,6 +291,13 @@ function TransactionForm({
                   </p>
                 )}
               </div>
+              {isAmountMoreThanWithFees && transactionType === TxType.Deposit && (
+                <Alert
+                  message={`You don’t have enough ETH to cover deposit transaction fee (you need at least ${getFee(
+                    feesTask.data
+                  )} ETH) ${feesTask.data ? "~ " + feesTask.data.createAccount + " USD" : ""}`}
+                />
+              )}
               {transactionType === TxType.Exit &&
                 doesUserHaveEnoughEthForWithdraw === false &&
                 estimatedWithdrawFeeTask.status === "successful" && (
@@ -309,7 +319,7 @@ function TransactionForm({
                   account={account}
                   fiatExchangeRates={fiatExchangeRates}
                   preferredCurrency={preferredCurrency}
-                  l2Fee={getFee(feesTask.data)}
+                  fee={getFee(feesTask.data)}
                   onChange={handleAmountChange}
                 />
                 {transactionType === TxType.Transfer && (
@@ -380,12 +390,13 @@ function TransactionForm({
               <Fee
                 transactionType={transactionType}
                 amount={amount}
-                l2Fee={getFee(feesTask.data)}
+                fee={getFee(feesTask.data)}
                 estimatedWithdrawFee={estimatedWithdrawFeeTask.data}
                 token={account.token}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
                 showInFiat={showInFiat}
+                tokensPriceTask={tokensPriceTask}
               />
             </>
           ) : (
