@@ -11,7 +11,11 @@ jobs:
     environment: internal-testnet
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+        
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -28,9 +32,6 @@ jobs:
           echo 'REACT_APP_PRICE_UPDATER_API_KEY=${{ secrets.TESTNET_PRICE_UPDATER_API_KEY }}' >> .env
           echo 'REACT_APP_INFURA_API_KEY=${{ secrets.INFURA_API_KEY }}'
           echo 'REACT_APP_WALLETCONNECT_BRIDGE=${{ secrets.WALLETCONNECT_BRIDGE}}'
-      
-      - name: Install correct npm version
-        run: npm i -g npm@7
 
       - name: Install dependencies
         run: npm i
