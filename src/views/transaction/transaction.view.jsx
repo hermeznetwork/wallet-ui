@@ -188,6 +188,7 @@ function Transaction({
                 onLoadFees={onLoadFees}
                 onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
                 onSubmit={onGoToTransactionOverviewStep}
+                onGoToChooseAccountStep={onGoToChooseAccountStep}
               />
             );
           }

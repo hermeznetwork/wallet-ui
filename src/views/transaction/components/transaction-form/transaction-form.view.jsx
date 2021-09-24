@@ -38,6 +38,7 @@ function TransactionForm({
   onLoadFees,
   onLoadEstimatedWithdrawFee,
   onSubmit,
+  onGoToChooseAccountStep,
 }) {
   const classes = useTransactionFormStyles();
   const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false);
@@ -274,7 +275,7 @@ function TransactionForm({
         <section className={classes.sectionWrapper}>
           {feesTask.status === "successful" ? (
             <>
-              <div className={classes.token}>
+              <button className={classes.token} onClick={onGoToChooseAccountStep}>
                 <p className={classes.tokenName}>{account.token.name}</p>
                 {showInFiat ? (
                   <p>
@@ -287,7 +288,7 @@ function TransactionForm({
                     <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span>
                   </p>
                 )}
-              </div>
+              </button>
               {transactionType === TxType.Exit &&
                 doesUserHaveEnoughEthForWithdraw === false &&
                 estimatedWithdrawFeeTask.status === "successful" && (

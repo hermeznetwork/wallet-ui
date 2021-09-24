@@ -20,11 +20,6 @@ function TransactionAmountInput({
   onSwapCurrency,
 }) {
   const classes = useTransactionAmountInputStyles();
-  const inputRef = React.useRef("");
-
-  React.useEffect(() => {
-    inputRef.current.focus();
-  }, []);
 
   function hasErrors() {
     return isAmountMoreThanFunds || isAmountCompressedInvalid;
@@ -53,7 +48,7 @@ function TransactionAmountInput({
             {showInFiat ? preferredCurrency : account.token.symbol}
           </p>
           <input
-            ref={inputRef}
+            autoFocus
             className={classes.amountInput}
             value={value}
             placeholder="0.00"

@@ -17,7 +17,9 @@ const useTransactionFormStyles = createUseStyles((theme) => ({
   },
   token: {
     width: "100%",
+    cursor: "pointer",
     display: "flex",
+    border: "none",
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: theme.palette.grey.light,
