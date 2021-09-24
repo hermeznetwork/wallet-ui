@@ -1,6 +1,6 @@
 {
   "name": "wallet-ui",
-  "version": "v1.1.7",
+  "version": "1.2.1",
   "private": true,
   "scripts": {
     "build": "react-scripts build",
@@ -11,7 +11,7 @@
     "start:prod": "serve -s -C -p 80 build"
   },
   "dependencies": {
-    "@hermeznetwork/hermezjs": "1.2.1",
+    "@hermeznetwork/hermezjs": "1.2.2",
     "@types/history": "^4.7.9",
     "@types/react": "^17.0.18",
     "@types/react-dom": "^17.0.9",
@@ -41,7 +41,8 @@
     "workbox-cacheable-response": "^6.2.4",
     "workbox-core": "^6.2.4",
     "workbox-routing": "^6.2.4",
-    "workbox-strategies": "^6.2.4"
+    "workbox-strategies": "^6.2.4",
+    "zod": "^3.8.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.31.0",

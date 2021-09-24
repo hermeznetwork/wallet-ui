@@ -233,7 +233,7 @@ function TransactionForm({
         const accountChecks = [
           getAccounts(receiver, [account.token.id]),
           ...(!isHermezBjjAddress(receiver)
-            ? [getCreateAccountAuthorization(receiver).catch(() => {})]
+            ? [getCreateAccountAuthorization(receiver).catch(() => ({}))]
             : []),
         ];
         return Promise.all(accountChecks).then((res) => {

@@ -1,5 +1,7 @@
+/* eslint-disable no-empty */
+/* eslint-disable @typescript-eslint/no-extra-semi */
 /**
- * Hermez network types.
+ * HermezJS Type Definitions
  *
  * Some types and props are currently commented because are not used by this app.
  * As we proceed with the migration of the application to typescript, more
@@ -44,7 +46,6 @@ declare module "@hermeznetwork/*" {
     decimals: number;
     ethereumAddress: string;
     ethereumBlockNum: number;
-    fiatUpdate: ISOStringDate;
     id: number;
     name: string;
     symbol: string;
@@ -92,7 +93,7 @@ declare module "@hermeznetwork/*" {
   };
 
   export interface Deposit {
-    // account: Account;
+    account: Account;
     hash: string;
     // fromHezEthereumAddress: string;
     // toHezEthereumAddress: string;
@@ -109,25 +110,28 @@ declare module "@hermeznetwork/*" {
     accountIndex: string;
     balance: string;
     bjj: string;
-    fiatBalance: number;
     // hezEthereumAddress: string;
     // nonce: number;
     token: Token;
   };
 
-  export type Transaction = HermezApiResourceItem & {
-    // accountIndex: string;
+  export type PooledTransaction = HermezApiResourceItem & {
     amount: string;
-    // balance: string;
-    batchNum: number;
+    errorCode: number | null;
+    errorType: string | null;
+    fee: number;
     fromAccountIndex: string;
-    // hash: string;
-    // historicUSD: number;
+    fromBJJ: string;
+    fromHezEthereumAddress: string;
     id: string;
+    nonce: number;
+    signature: string;
+    state: "fged" | "fing" | "pend" | "invl";
     timestamp: ISOStringDate;
+    toAccountIndex: string;
+    toBJJ: string;
+    toHezEthereumAddress: string;
     token: Token;
-    // ToDo: According to the docs: https://apidoc.hermez.network/#model-TransactionType supported types are:
-    //       CreateAccountDeposit, CreateAccountDepositTransfer, Deposit, DepositTransfer, Exit, ForceExit, ForceTransfer, Transfer, TransferToBJJ TransferToEthAddr
     type:
       | "CreateAccountDeposit"
       | "Deposit"
@@ -137,12 +141,45 @@ declare module "@hermeznetwork/*" {
       | "TransferToBJJ"
       | "TransferToEthAddr"
       | "Withdrawn";
-    state: "fged" | "fing" | "pend" | "invl";
-    toHezEthereumAddress: string | null;
-    toAccountIndex: string;
+    // batchNum: number | null;
+    // info: string | null;
+    // maxNumBatch: number;
+    // requestAmount?: unknown;
+    // requestFee?: unknown;
+    // requestFromAccountIndex?: unknown;
+    // requestNonce?: unknown;
+    // requestToAccountIndex?: unknown;
+    // requestToBJJ?: unknown;
+    // requestToHezEthereumAddress?: unknown;
+    // requestTokenId?: unknown;
+  };
+
+  export type Transaction = HermezApiResourceItem & {
+    amount: string;
+    batchNum: number;
     fee: number;
-    // L1orL2: "L1" | "L2";
+    fromAccountIndex: string;
+    id: string;
+    state: "fged" | "fing" | "pend" | "invl";
+    timestamp: ISOStringDate;
+    toAccountIndex: string;
+    toHezEthereumAddress: string | null;
+    token: Token;
+    type:
+      | "CreateAccountDeposit"
+      | "Deposit"
+      | "Exit"
+      | "ForceExit"
+      | "Transfer"
+      | "TransferToBJJ"
+      | "TransferToEthAddr"
+      | "Withdrawn";
+    // accountIndex: string;
+    // balance: string;
+    // hash: string;
+    // historicUSD: number;
     // L1Info: L1Info | null;
+    // L1orL2: "L1" | "L2";
     // L2Info?: L2Info | null;
   };
 
@@ -159,7 +196,7 @@ declare module "@hermeznetwork/*" {
   // Coordinator State
   export interface CoordinatorState {
     // node: Node;
-    // network: Network;
+    network: Network;
     // metrics: Metrics;
     // rollup: Rollup;
     // auction: Auction;
@@ -191,34 +228,34 @@ declare module "@hermeznetwork/*" {
   //   forgedTransactions: number;
   // }
 
-  // type Coordinator = HermezApiResourceItem & {
-  //   bidderAddr: string;
-  //   forgerAddr: string;
-  //   ethereumBlock: number;
-  //   URL: string;
-  // }
+  type Coordinator = HermezApiResourceItem & {
+    // bidderAddr: string;
+    forgerAddr: string;
+    // ethereumBlock: number;
+    URL: string;
+  };
 
-  // interface Period {
-  //   slotNum: number;
-  //   fromBlock: number;
-  //   toBlock: number;
-  //   fromTimestamp: string;
-  //   toTimestamp: string;
-  // }
+  interface Period {
+    // slotNum: number;
+    // fromBlock: number;
+    // toBlock: number;
+    // fromTimestamp: string;
+    toTimestamp: string;
+  }
 
-  // interface NextForger {
-  //   coordinator: Coordinator;
-  //   period: Period;
-  // }
+  export interface NextForger {
+    coordinator: Coordinator;
+    period: Period;
+  }
 
-  // interface Network {
-  //   lastEthereumBlock: number;
-  //   lastSynchedBlock: number;
-  //   lastBatch: LastBatch;
-  //   currentSlot: number;
-  //   nextForgers: NextForger[];
-  //   pendingL1Transactions: number;
-  // }
+  interface Network {
+    // lastEthereumBlock: number;
+    // lastSynchedBlock: number;
+    // lastBatch: LastBatch;
+    // currentSlot: number;
+    nextForgers: NextForger[];
+    // pendingL1Transactions: number;
+  }
 
   // interface Metrics {
   //   transactionsPerBatch: number;
@@ -373,7 +410,13 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
 
   // declare function getL2TxId() {};
   // declare function getFeeIndex() {};
-  // declare function getFeeValue() {};
+
+  // ToDo: amount is expected to be a ffjavascript Scalar, but since the functions in a Scalar convert
+  //       their inputs to BigInt's, amount can be a string | number | bigint | boolean
+  declare function getFeeValue(
+    feeIndex: number,
+    amount: string | number | bigint | boolean
+  ): bigint {};
   // declare function getMaxAmountFromMinimumFee() {};
   // declare function getTransactionType() {};
   // declare function getNonce() {};
@@ -394,7 +437,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-fees" {
 
 // TxPool
 declare module "@hermeznetwork/hermezjs/src/tx-pool" {
-  import { Transaction } from "@hermeznetwork/hermezjs";
+  import { PooledTransaction } from "@hermeznetwork/hermezjs";
   import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 
   declare function initializeTransactionPool() {};
@@ -409,7 +452,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-pool" {
     order?: PaginationOrder,
     limit?: number,
     axiosConfig?: Record<string, unknown>
-  ): Promise<Transaction[]> {};
+  ): Promise<PooledTransaction[]> {};
 
   // declare function addPoolTransaction() {};
   // declare function removePoolTransaction() {};
@@ -551,8 +594,6 @@ declare module "@hermeznetwork/hermezjs/src/hermez-compressed-amount" {
 
 // Addresses
 declare module "@hermeznetwork/hermezjs/src/addresses" {
-  import { Account } from "@hermeznetwork/hermezjs";
-
   // declare function getHermezAddress() {};
 
   declare function getEthereumAddress(accountIndex: string): string {};
@@ -595,7 +636,7 @@ declare module "@hermeznetwork/hermezjs/src/signers" {
 
 // Environment
 declare module "@hermeznetwork/hermezjs/src/environment" {
-  declare function setEnvironment(env: Number | Record<string, unknown>) {};
+  declare function setEnvironment(env: number | Record<string, unknown>) {};
 
   // declare function getCurrentEnvironment() {};
   // declare function getSupportedEnvironments() {};
