@@ -60,10 +60,17 @@ const useMyAccountStyles = createUseStyles((theme) => ({
     marginLeft: theme.spacing(2),
   },
   settingSubTitle: {
+    display: "flex",
+    alignItems: "center",
     color: theme.palette.grey.main,
     fontWeight: theme.fontWeights.medium,
     marginTop: theme.spacing(1),
     paddingLeft: theme.spacing(4.5),
+    textAlign: "left",
+    width: "100%",
+    "& svg": {
+      marginLeft: theme.spacing(1),
+    },
   },
   settingContent: {
     marginTop: theme.spacing(1.75),

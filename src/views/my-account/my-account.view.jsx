@@ -14,6 +14,8 @@ import { ReactComponent as ExchangeIcon } from "../../images/icons/exchange.svg"
 import { ReactComponent as ExitIcon } from "../../images/icons/exit.svg";
 import { ReactComponent as OpenInNewTabIcon } from "../../images/icons/open-in-new-tab.svg";
 import { ReactComponent as PowerOffIcon } from "../../images/icons/power-off.svg";
+import { ReactComponent as InternalAddress } from "../../images/icons/internal-address.svg";
+import { ReactComponent as CopyBtn } from "../../images/icons/copy-btn.svg";
 import { CurrencySymbol } from "../../utils/currencies";
 import PreferredCurrencySelector from "./components/preferred-currency-selector/preferred-currency-selector.view";
 import { getPartiallyHiddenHermezAddress } from "../../utils/addresses";
@@ -113,19 +115,35 @@ function MyAccount({
               </div>
             </div>
             {wallet && (
-              <a
-                className={classes.settingContainer}
-                href={`${hermezjs.Environment.getBatchExplorerUrl()}/user-account/${
-                  wallet.hermezEthereumAddress
-                }`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <div className={classes.settingHeader}>
-                  <OpenInNewTabIcon />
-                  <p className={classes.settingTitle}>View in batch explorer</p>
-                </div>
-              </a>
+              <>
+                {wallet.publicKeyBase64 && (
+                  <button
+                    className={classes.settingContainer}
+                    onClick={() => handleEthereumAddressClick(wallet.publicKeyBase64)}
+                  >
+                    <div className={classes.settingHeader}>
+                      <InternalAddress />
+                      <p className={classes.settingTitle}>Hermez internal address</p>
+                      <p className={classes.settingSubTitle}>
+                        {getPartiallyHiddenHermezAddress(wallet.publicKeyBase64)} <CopyBtn />
+                      </p>
+                    </div>
+                  </button>
+                )}
+                <a
+                  className={classes.settingContainer}
+                  href={`${hermezjs.Environment.getBatchExplorerUrl()}/user-account/${
+                    wallet.hermezEthereumAddress
+                  }`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className={classes.settingHeader}>
+                    <OpenInNewTabIcon />
+                    <p className={classes.settingTitle}>View in batch explorer</p>
+                  </div>
+                </a>
+              </>
             )}
             <button className={classes.settingContainer} onClick={handleOnDisconnectWallet}>
               <div className={classes.settingHeader}>
