@@ -34,7 +34,7 @@ function Fee({
   );
 
   function getTotalEstimatedWithdrawFee() {
-    if (!estimatedWithdrawFee) {
+    if (!estimatedWithdrawFee.USD) {
       return "--";
     }
 
