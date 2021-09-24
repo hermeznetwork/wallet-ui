@@ -12,6 +12,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install npm 7
+        run: npm i -g npm@7
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -33,7 +36,7 @@ jobs:
           echo 'REACT_APP_ETHERSCAN_URL=${{ secrets.INTERNAL_TESTNET_ETHERSCAN_URL }}' >> .env
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --loglevel verbose
 
       - name: Generate production build
         run: npm run build
