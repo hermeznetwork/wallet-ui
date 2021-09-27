@@ -23,7 +23,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
   }
 
   function getEstimatedWithdrawFeeInFiat() {
-    if (!estimatedWithdrawFee) {
+    if (!estimatedWithdrawFee?.USD) {
       return "--";
     }
 
@@ -31,7 +31,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
       estimatedWithdrawFee.USD,
       preferredCurrency,
       fiatExchangeRates
-    );
+    ).toFixed(2);
   }
 
   function getFormattedWithdrawFee() {
@@ -54,9 +54,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
         <TransactionInfoRow
           title="Ethereum fee (estimated)"
           hint="Step 2"
-          subtitle={`${
-            CurrencySymbol[preferredCurrency].symbol
-          }${getEstimatedWithdrawFeeInFiat().toFixed(2)}`}
+          subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getEstimatedWithdrawFeeInFiat()}`}
           value={`${getFormattedWithdrawFee().toFixed(MAX_TOKEN_DECIMALS)} ETH`}
         />
       </div>
@@ -73,9 +71,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
       {estimatedWithdrawFee && (
         <TransactionInfoRow
           title="Ethereum fee (estimated)"
-          subtitle={`${
-            CurrencySymbol[preferredCurrency].symbol
-          }${getEstimatedWithdrawFeeInFiat().toFixed(2)}`}
+          subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getEstimatedWithdrawFeeInFiat()}`}
           value={`${getFormattedWithdrawFee().toFixed(MAX_TOKEN_DECIMALS)} ETH`}
         />
       )}
