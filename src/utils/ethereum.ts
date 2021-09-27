@@ -111,8 +111,9 @@ function isTxExpectedToFail(
   accountEthBalance: BigNumber
 ): boolean {
   // According to ethers types tx?.blockNumber is a number but it can also be null
-  if (tx.blockNumber === null) {
+  if (tx.blockNumber === null && tx.gasPrice) {
     const maxTxFee = tx.gasLimit.mul(tx.gasPrice);
+
     if (
       Date.now() > new Date(date).getTime() + DEPOSIT_TX_TIMEOUT ||
       maxTxFee.gt(accountEthBalance)

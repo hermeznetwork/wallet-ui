@@ -1,7 +1,8 @@
 import { createStore, applyMiddleware, combineReducers } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
-import { connectRouter, routerMiddleware } from "connected-react-router";
+import { connectRouter, routerMiddleware, RouterState } from "connected-react-router";
 import thunk from "redux-thunk";
+import { History } from "history";
 
 import globalReducer, { GlobalState } from "./global/global.reducer";
 import homeReducer, { HomeState } from "./home/home.reducer";
@@ -13,12 +14,12 @@ import transactionDetailsReducer from "./transaction-details/transaction-details
 import transactionReducer from "./transaction/transaction.reducer";
 import loginReducer, { LoginState } from "./login/login.reducer";
 import tokenSwapReducer from "./token-swap/token-swap.reducer";
-import { History } from "history";
 
 export interface RootState {
-  accountDetails: AccountDetailsState;
+  router: RouterState;
   global: GlobalState;
   home: HomeState;
+  accountDetails: AccountDetailsState;
   login: LoginState;
 }
 
@@ -27,6 +28,7 @@ export interface RootState {
  * @param {History} history - Browser history
  * @returns {Object} - Root reducer
  */
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function createRootReducer(history: History) {
   return combineReducers({
     router: connectRouter(history),
@@ -47,11 +49,14 @@ export function createRootReducer(history: History) {
  * @param {History} history - Browser history
  * @returns {Object} - Redux store
  */
+// ToDo: Create the AppAction type and replace this AnyAction with the AppAction
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function configureStore(history: History) {
   const middlewares = [thunk, routerMiddleware(history)];
   const middlewareEnhancer = applyMiddleware(...middlewares);
   const enhancers = [middlewareEnhancer];
   const composedEnhancers = composeWithDevTools(...enhancers);
   const rootReducer = createRootReducer(history);
+
   return createStore(rootReducer, composedEnhancers);
 }
