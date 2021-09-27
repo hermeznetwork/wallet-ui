@@ -1,10 +1,14 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from "react";
+import PropTypes from "prop-types";
 
-import Exit from '../exit/exit.view'
-import { getFixedTokenAmount, getAmountInPreferredCurrency, getTokenAmountInPreferredCurrency } from '../../../utils/currencies'
+import Exit from "../exit/exit.view";
+import {
+  getFixedTokenAmount,
+  getAmountInPreferredCurrency,
+  getTokenAmountInPreferredCurrency,
+} from "../../../utils/currencies";
 
-function ExitList ({
+function ExitList({
   transactions,
   preferredCurrency,
   fiatExchangeRates,
@@ -14,16 +18,13 @@ function ExitList ({
   coordinatorState,
   redirectTo,
   onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw
+  onRemovePendingDelayedWithdraw,
 }) {
   return (
     <>
       {transactions.map((transaction) => {
-        const amount = transaction.amount || transaction.balance
-        const fixedTokenAmount = getFixedTokenAmount(
-          amount,
-          transaction.token.decimals
-        )
+        const amount = transaction.amount || transaction.balance;
+        const fixedTokenAmount = getFixedTokenAmount(amount, transaction.token.decimals);
 
         return (
           <Exit
@@ -31,18 +32,20 @@ function ExitList ({
             amount={amount}
             fixedTokenAmount={fixedTokenAmount}
             token={transaction.token}
-            fiatAmount={transaction.historicUSD
-              ? getAmountInPreferredCurrency(
-                  transaction.historicUSD,
-                  preferredCurrency,
-                  fiatExchangeRates
-                )
-              : getTokenAmountInPreferredCurrency(
-                fixedTokenAmount,
-                transaction.token.USD,
-                preferredCurrency,
-                fiatExchangeRates
-              )}
+            fiatAmount={
+              transaction.historicUSD
+                ? getAmountInPreferredCurrency(
+                    transaction.historicUSD,
+                    preferredCurrency,
+                    fiatExchangeRates
+                  )
+                : getTokenAmountInPreferredCurrency(
+                    fixedTokenAmount,
+                    transaction.token.USD,
+                    preferredCurrency,
+                    fiatExchangeRates
+                  )
+            }
             preferredCurrency={preferredCurrency}
             batchNum={transaction.batchNum}
             exitId={transaction.accountIndex + transaction.batchNum}
@@ -56,10 +59,10 @@ function ExitList ({
             coordinatorState={coordinatorState}
             redirectTo={redirectTo}
           />
-        )
+        );
       })}
     </>
-  )
+  );
 }
 
 ExitList.propTypes = {
@@ -70,7 +73,7 @@ ExitList.propTypes = {
   pendingDelayedWithdraws: PropTypes.array,
   coordinatorState: PropTypes.object,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
-  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired
-}
+  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
+};
 
-export default ExitList
+export default ExitList;

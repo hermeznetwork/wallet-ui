@@ -1,30 +1,27 @@
-import React from 'react'
-import { BigNumber } from 'ethers'
+import React from "react";
+import { BigNumber } from "ethers";
 
-import Quote from '../quote/quote.view'
-import useQuoteListStyles from './quote-list.styles'
+import Quote from "../quote/quote.view";
+import useQuoteListStyles from "./quote-list.styles";
 
-function QuoteList ({
+function QuoteList({
   toToken,
   quotes,
   bestQuote,
   selectedQuote,
   onQuoteSelect,
-  onShowMoreQuoteInfo
+  onShowMoreQuoteInfo,
 }) {
-  const classes = useQuoteListStyles()
+  const classes = useQuoteListStyles();
 
-  function getBestQuoteAmountDiff (quote) {
-    return BigNumber.from(quote.amountToToken).sub(BigNumber.from(bestQuote.amountToToken))
+  function getBestQuoteAmountDiff(quote) {
+    return BigNumber.from(quote.amountToToken).sub(BigNumber.from(bestQuote.amountToToken));
   }
 
   return (
     <div className={classes.root}>
       {quotes.map((quote) => (
-        <div
-          key={quote.lpId}
-          className={classes.quote}
-        >
+        <div key={quote.lpId} className={classes.quote}>
           <Quote
             info={quote.lpInfo}
             toToken={toToken}
@@ -38,7 +35,7 @@ function QuoteList ({
         </div>
       ))}
     </div>
-  )
+  );
 }
 
-export default QuoteList
+export default QuoteList;

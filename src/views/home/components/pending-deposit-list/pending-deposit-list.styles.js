@@ -1,10 +1,10 @@
-import { createUseStyles } from 'react-jss'
+import { createUseStyles } from "react-jss";
 
-const usePendingDepositListStyles = createUseStyles(theme => ({
+const usePendingDepositListStyles = createUseStyles((theme) => ({
   pendingDeposit: {
-    width: '100%',
-    marginBottom: theme.spacing(2.5)
-  }
-}))
+    width: "100%",
+    marginBottom: theme.spacing(2.5),
+  },
+}));
 
-export default usePendingDepositListStyles
+export default usePendingDepositListStyles;
