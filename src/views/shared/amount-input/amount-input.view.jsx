@@ -25,9 +25,18 @@ function AmountInput(Component) {
     const [isAmountCompressedInvalid, setIsAmountCompressedInvalid] = React.useState(undefined);
 
     React.useEffect(() => {
+      let isActive = true;
+
       getProvider()
         .getGasPrice()
-        .then((gasPrice) => setGasPrice(gasPrice));
+        .then((gasPrice) => {
+          if (isActive) {
+            setGasPrice(gasPrice);
+          }
+        });
+      return () => {
+        isActive = false;
+      };
     }, []);
 
     React.useEffect(() => {
