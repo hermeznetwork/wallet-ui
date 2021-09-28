@@ -34,6 +34,7 @@ function AmountInput(Component) {
             setGasPrice(gasPrice);
           }
         });
+
       return () => {
         isActive = false;
       };
