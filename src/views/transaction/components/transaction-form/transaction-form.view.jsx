@@ -45,7 +45,7 @@ function TransactionForm({
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false);
   const [amount, setAmount] = useState(BigNumber.from(0));
   const [isAmountValid, setIsAmountValid] = useState(undefined);
-  const [isAmountMoreThanWithFees, setIsAmountMoreThanWithFees] = useState(false);
+  const [areFundsExceededDueToFee, setAreFundsExceededDueToFee] = useState(false);
   const [showInFiat, setShowInFiat] = useState(false);
   const [receiver, setReceiver] = useState("");
   const [isReceiverValid, setIsReceiverValid] = React.useState(undefined);
@@ -148,7 +148,7 @@ function TransactionForm({
     setAmount(data.amount.tokens);
     setShowInFiat(data.showInFiat);
     setIsAmountValid(!data.isInvalid);
-    setIsAmountMoreThanWithFees(data.isAmountMoreThanWithFees);
+    setAreFundsExceededDueToFee(data.areFundsExceededDueToFee);
   }
 
   /**
@@ -291,7 +291,7 @@ function TransactionForm({
                   </p>
                 )}
               </div>
-              {isAmountMoreThanWithFees && transactionType === TxType.Deposit && (
+              {areFundsExceededDueToFee && transactionType === TxType.Deposit && (
                 <Alert
                   message={`You don’t have enough ETH to cover deposit transaction fee (you need at least ${getFee(
                     feesTask.data

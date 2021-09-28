@@ -21,8 +21,8 @@ function AmountInput(Component) {
     const [amount, setAmount] = React.useState({ tokens: BigNumber.from(0), fiat: 0 });
     const [showInFiat, setShowInFiat] = React.useState(false);
     const [isAmountNegative, setIsAmountNegative] = React.useState(false);
-    const [isAmountMoreThanFunds, setIsAmountMoreThanFunds] = React.useState(false);
-    const [isAmountMoreThanWithFees, setIsAmountMoreThanWithFees] = React.useState(false);
+    const [isAmountWithFeeMoreThanFunds, setIsAmountWithFeeMoreThanFunds] = React.useState(false);
+    const [areFundsExceededDueToFee, setAreFundsExceededDueToFee] = React.useState(false);
     const [isAmountCompressedInvalid, setIsAmountCompressedInvalid] = React.useState(false);
 
     React.useEffect(() => {
@@ -39,23 +39,23 @@ function AmountInput(Component) {
       if (props.onChange) {
         const isInvalid =
           isAmountNegative ||
-          isAmountMoreThanFunds ||
+          isAmountWithFeeMoreThanFunds ||
           isAmountCompressedInvalid ||
-          isAmountMoreThanWithFees;
+          areFundsExceededDueToFee;
 
         props.onChange({
           amount,
           showInFiat,
           isInvalid,
-          isAmountMoreThanWithFees,
+          areFundsExceededDueToFee,
         });
       }
     }, [
       amount,
       showInFiat,
-      isAmountMoreThanFunds,
+      isAmountWithFeeMoreThanFunds,
       isAmountCompressedInvalid,
-      isAmountMoreThanWithFees,
+      areFundsExceededDueToFee,
     ]);
 
     /**
@@ -96,14 +96,12 @@ function AmountInput(Component) {
     function checkAmountValidity(newAmount) {
       const newFee = getTransactionFee(transactionType, newAmount, account.token, fee, gasPrice);
       const newAmountWithFee = newAmount.add(newFee);
-      const isNewAmountMoreThanFunds = newAmountWithFee.gt(BigNumber.from(account.balance));
+      const isNewAmountWithFeeMoreThanFunds = newAmountWithFee.gt(BigNumber.from(account.balance));
 
-      setIsAmountNegative(newAmountWithFee.lte(BigNumber.from(0)));
-      setIsAmountMoreThanFunds(isNewAmountMoreThanFunds);
-      setIsAmountMoreThanWithFees(
-        isNewAmountMoreThanFunds &&
-          transactionType === TxType.Deposit &&
-          newAmount.lte(BigNumber.from(account.balance))
+      setIsAmountNegative(newAmount.lte(BigNumber.from(0)));
+      setIsAmountWithFeeMoreThanFunds(isNewAmountWithFeeMoreThanFunds);
+      setAreFundsExceededDueToFee(
+        isNewAmountWithFeeMoreThanFunds && newAmount.lte(BigNumber.from(account.balance))
       );
       if (transactionType !== TxType.Deposit && transactionType !== TxType.ForceExit) {
         setIsAmountCompressedInvalid(isTransactionAmountCompressedValid(newAmount) === false);
@@ -192,7 +190,7 @@ function AmountInput(Component) {
         amount={amount}
         showInFiat={showInFiat}
         isAmountNegative={isAmountNegative}
-        isAmountMoreThanFunds={isAmountMoreThanFunds}
+        isAmountWithFeeMoreThanFunds={isAmountWithFeeMoreThanFunds}
         isAmountCompressedInvalid={isAmountCompressedInvalid}
         onInputChange={handleInputChange}
         onSendAll={handleSendAll}
