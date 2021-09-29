@@ -30,8 +30,8 @@ jobs:
           echo 'REACT_APP_ENABLE_HARDWARE_WALLETS=false' >> .env
           echo 'REACT_APP_PRICE_UPDATER_API_URL=${{ secrets.TESTNET_PRICE_UPDATER_API_URL }}' >> .env
           echo 'REACT_APP_PRICE_UPDATER_API_KEY=${{ secrets.TESTNET_PRICE_UPDATER_API_KEY }}' >> .env
-          echo 'REACT_APP_INFURA_API_KEY=${{ secrets.INFURA_API_KEY }}'
-          echo 'REACT_APP_WALLETCONNECT_BRIDGE=${{ secrets.WALLETCONNECT_BRIDGE}}'
+          echo 'REACT_APP_INFURA_API_KEY=${{ secrets.INFURA_API_KEY }}' >> .env
+          echo 'REACT_APP_WALLETCONNECT_BRIDGE=${{ secrets.WALLETCONNECT_BRIDGE}}' >> .env
 
       - name: Install dependencies
         run: npm i
