@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: internal-testnet
+    environment: testnet
     steps:
       - name: Checkout
         uses: actions/checkout@v2
