@@ -1,28 +1,28 @@
-import { BigNumber } from 'ethers'
-import { HermezCompressedAmount } from '@hermeznetwork/hermezjs'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
-import { parseUnits } from 'ethers/lib/utils'
+import { BigNumber } from "ethers";
+import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { parseUnits } from "ethers/lib/utils";
 
-import { getMaxAmountFromMinimumFee } from '@hermeznetwork/hermezjs/src/tx-utils'
-import { getDepositFee } from './fees'
+import { getMaxAmountFromMinimumFee } from "@hermeznetwork/hermezjs/src/tx-utils";
+import { getDepositFee } from "./fees";
 
 /**
  * Returns the correct amount for a transaction from the Hermez API depending on its type
  * @param {Object} transaction - Transaction from the Hermez API
  * @returns amount
  */
-function getTransactionAmount (transaction) {
+function getTransactionAmount(transaction) {
   if (!transaction) {
-    return undefined
+    return undefined;
   }
 
   if (!transaction.L1Info) {
-    return transaction.amount
+    return transaction.amount;
   } else {
     if (transaction.type === TxType.Deposit || transaction.type === TxType.CreateAccountDeposit) {
-      return transaction.L1Info.depositAmount
+      return transaction.L1Info.depositAmount;
     } else {
-      return transaction.amount
+      return transaction.amount;
     }
   }
 }
@@ -37,18 +37,21 @@ function getTransactionAmount (transaction) {
  *
  * @returns {Number} timeLeftToForgeInMinutes
  */
-function getTxPendingTime (coordinatorState, isL1, timestamp) {
+function getTxPendingTime(coordinatorState, isL1, timestamp) {
   if (!coordinatorState) {
-    return 0
+    return 0;
   }
-  const timeToForge = coordinatorState.node.forgeDelay
-  const lastBatchForgedInSeconds = Date.parse(coordinatorState.network.lastBatch.timestamp) / 1000
-  const whenToForgeInSeconds = timeToForge + lastBatchForgedInSeconds
-  const nowInSeconds = Date.now() / 1000
-  const timestampInSeconds = Date.parse(timestamp) / 1000
-  const timeLeftToForgeInSeconds = whenToForgeInSeconds - nowInSeconds + (isL1 && timestampInSeconds > lastBatchForgedInSeconds ? timeToForge : 0)
-  const timeLeftToForgeInMinutes = Math.round(timeLeftToForgeInSeconds / 60)
-  return timeLeftToForgeInMinutes > 0 ? timeLeftToForgeInMinutes : 0
+  const timeToForge = coordinatorState.node.forgeDelay;
+  const lastBatchForgedInSeconds = Date.parse(coordinatorState.network.lastBatch.timestamp) / 1000;
+  const whenToForgeInSeconds = timeToForge + lastBatchForgedInSeconds;
+  const nowInSeconds = Date.now() / 1000;
+  const timestampInSeconds = Date.parse(timestamp) / 1000;
+  const timeLeftToForgeInSeconds =
+    whenToForgeInSeconds -
+    nowInSeconds +
+    (isL1 && timestampInSeconds > lastBatchForgedInSeconds ? timeToForge : 0);
+  const timeLeftToForgeInMinutes = Math.round(timeLeftToForgeInSeconds / 60);
+  return timeLeftToForgeInMinutes > 0 ? timeLeftToForgeInMinutes : 0;
 }
 
 /**
@@ -59,16 +62,17 @@ function getTxPendingTime (coordinatorState, isL1, timestamp) {
  * @param {Array} pendingDelayedWithdraws - All the pending delayed withdraws stored in LocalStorage
  * @returns {Array} mergedPendingDelayedWithdraws
  */
-function mergeDelayedWithdraws (pendingDelayedWithdraws) {
-  return pendingDelayedWithdraws
-    .reduce((mergedPendingDelayedWithdraws, pendingDelayedWithdraw) => {
-      const existingPendingDelayedWithdrawWithToken = mergedPendingDelayedWithdraws
-        .find((delayedWithdraw) => delayedWithdraw.token.id === pendingDelayedWithdraw.token.id)
+function mergeDelayedWithdraws(pendingDelayedWithdraws) {
+  return pendingDelayedWithdraws.reduce((mergedPendingDelayedWithdraws, pendingDelayedWithdraw) => {
+    const existingPendingDelayedWithdrawWithToken = mergedPendingDelayedWithdraws.find(
+      (delayedWithdraw) => delayedWithdraw.token.id === pendingDelayedWithdraw.token.id
+    );
 
-      if (!existingPendingDelayedWithdrawWithToken) {
-        mergedPendingDelayedWithdraws.push(pendingDelayedWithdraw)
-      } else {
-        mergedPendingDelayedWithdraws = mergedPendingDelayedWithdraws.map((mergedPendingDelayedWithdraw) => {
+    if (!existingPendingDelayedWithdrawWithToken) {
+      mergedPendingDelayedWithdraws.push(pendingDelayedWithdraw);
+    } else {
+      mergedPendingDelayedWithdraws = mergedPendingDelayedWithdraws.map(
+        (mergedPendingDelayedWithdraw) => {
           if (mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken) {
             // We need to sum up the amounts and use the latest timestamp for the timer
             return {
@@ -76,18 +80,21 @@ function mergeDelayedWithdraws (pendingDelayedWithdraws) {
               amount: BigNumber.from(mergedPendingDelayedWithdraw.amount)
                 .add(BigNumber.from(pendingDelayedWithdraw.amount))
                 .toString(),
-              timestamp: Date.parse(mergedPendingDelayedWithdraw.timestamp) > Date.parse(pendingDelayedWithdraw.timestamp)
-                ? mergedPendingDelayedWithdraw.timestamp
-                : pendingDelayedWithdraw.timestamp
-            }
+              timestamp:
+                Date.parse(mergedPendingDelayedWithdraw.timestamp) >
+                Date.parse(pendingDelayedWithdraw.timestamp)
+                  ? mergedPendingDelayedWithdraw.timestamp
+                  : pendingDelayedWithdraw.timestamp,
+            };
           } else {
-            return mergedPendingDelayedWithdraw
+            return mergedPendingDelayedWithdraw;
           }
-        })
-      }
+        }
+      );
+    }
 
-      return mergedPendingDelayedWithdraws
-    }, [])
+    return mergedPendingDelayedWithdraws;
+  }, []);
 }
 
 /**
@@ -97,18 +104,19 @@ function mergeDelayedWithdraws (pendingDelayedWithdraws) {
  * @param {Array} pendingDelayedWithdraws - All the pending delayed withdraws stored in LocalStorage
  * @returns {Array} mergedExits
  */
-function mergeExits (exits, pendingDelayedWithdraws) {
+function mergeExits(exits, pendingDelayedWithdraws) {
   // Remove Exits that are now pending Delayed Withdraws
   const nonDelayedExits = exits.filter((exit) => {
-    const exitId = exit.accountIndex + exit.batchNum
-    return !pendingDelayedWithdraws
-      .find((pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId)
-  })
+    const exitId = exit.accountIndex + exit.batchNum;
+    return !pendingDelayedWithdraws.find(
+      (pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId
+    );
+  });
 
   // Merge pending Delayed Withdraws that share the same token id
-  const mergedDelayedExits = mergeDelayedWithdraws(pendingDelayedWithdraws)
+  const mergedDelayedExits = mergeDelayedWithdraws(pendingDelayedWithdraws);
 
-  return [...mergedDelayedExits, ...nonDelayedExits]
+  return [...mergedDelayedExits, ...nonDelayedExits];
 }
 
 /**
@@ -117,14 +125,14 @@ function mergeExits (exits, pendingDelayedWithdraws) {
  * @param {Number} amount - Selector amount
  * @returns {Boolean} Whether it is valid
  */
-function isTransactionAmountCompressedValid (amount) {
+function isTransactionAmountCompressedValid(amount) {
   try {
-    const compressedAmount = HermezCompressedAmount.compressAmount(amount)
-    const decompressedAmount = HermezCompressedAmount.decompressAmount(compressedAmount)
+    const compressedAmount = HermezCompressedAmount.compressAmount(amount);
+    const decompressedAmount = HermezCompressedAmount.decompressAmount(compressedAmount);
 
-    return amount.toString() === decompressedAmount.toString()
+    return amount.toString() === decompressedAmount.toString();
   } catch (e) {
-    return false
+    return false;
   }
 }
 
@@ -133,12 +141,12 @@ function isTransactionAmountCompressedValid (amount) {
  * @param {BigNumber} amount - Transaction amount to be fixed
  * @returns fixedTxAmount
  */
-function fixTransactionAmount (amount) {
+function fixTransactionAmount(amount) {
   const fixedTxAmount = HermezCompressedAmount.decompressAmount(
     HermezCompressedAmount.floorCompressAmount(amount)
-  )
+  );
 
-  return BigNumber.from(fixedTxAmount)
+  return BigNumber.from(fixedTxAmount);
 }
 
 /**
@@ -150,29 +158,27 @@ function fixTransactionAmount (amount) {
  * @param {BigNumber} gasPrice - Ethereum gas price
  * @returns maxTxAmount
  */
-function getMaxTxAmount (txType, maxAmount, token, l2Fee, gasPrice) {
+function getMaxTxAmount(txType, maxAmount, token, l2Fee, gasPrice) {
   const maxTxAmount = (() => {
     switch (txType) {
       case TxType.ForceExit: {
-        return maxAmount
+        return maxAmount;
       }
       case TxType.Deposit: {
-        const depositFee = getDepositFee(token, gasPrice)
-        const newMaxAmount = maxAmount.sub(depositFee)
+        const depositFee = getDepositFee(token, gasPrice);
+        const newMaxAmount = maxAmount.sub(depositFee);
 
-        return newMaxAmount.gt(0)
-          ? newMaxAmount
-          : BigNumber.from(0)
+        return newMaxAmount.gt(0) ? newMaxAmount : BigNumber.from(0);
       }
       default: {
-        const l2FeeBigInt = parseUnits(l2Fee.toFixed(token.decimals), token.decimals)
+        const l2FeeBigInt = parseUnits(l2Fee.toFixed(token.decimals), token.decimals);
 
-        return BigNumber.from(getMaxAmountFromMinimumFee(l2FeeBigInt, maxAmount).toString())
+        return BigNumber.from(getMaxAmountFromMinimumFee(l2FeeBigInt, maxAmount).toString());
       }
     }
-  })()
+  })();
 
-  return fixTransactionAmount(maxTxAmount)
+  return fixTransactionAmount(maxTxAmount);
 }
 
 export {
@@ -182,5 +188,5 @@ export {
   mergeExits,
   isTransactionAmountCompressedValid,
   fixTransactionAmount,
-  getMaxTxAmount
-}
+  getMaxTxAmount,
+};

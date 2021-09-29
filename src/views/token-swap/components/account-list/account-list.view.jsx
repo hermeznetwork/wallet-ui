@@ -1,21 +1,20 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from "react";
+import PropTypes from "prop-types";
 
-import useAccountListStyles from './account-list.styles'
-import { getTokenIcon } from '../../../../utils/tokens'
-import { getFixedTokenAmount } from '../../../../utils/currencies'
+import useAccountListStyles from "./account-list.styles";
+import { getTokenIcon } from "../../../../utils/tokens";
+import { getFixedTokenAmount } from "../../../../utils/currencies";
 
-function AccountList ({ accounts, onClick }) {
-  const classes = useAccountListStyles()
+function AccountList({ accounts, onClick }) {
+  const classes = useAccountListStyles();
 
   return (
     <div className={classes.listBox}>
-      {accounts.map(account => {
-        const Icon = getTokenIcon(account.token.symbol)
-        const balance = `${getFixedTokenAmount(
-          account.balance,
-          account.token.decimals
-        )} ${account.token.symbol}`
+      {accounts.map((account) => {
+        const Icon = getTokenIcon(account.token.symbol);
+        const balance = `${getFixedTokenAmount(account.balance, account.token.decimals)} ${
+          account.token.symbol
+        }`;
 
         return (
           <div
@@ -32,15 +31,15 @@ function AccountList ({ accounts, onClick }) {
             </div>
             <span className={classes.balanceText}>{balance}</span>
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
 
 AccountList.propTypes = {
   accounts: PropTypes.array,
-  onClick: PropTypes.func
-}
+  onClick: PropTypes.func,
+};
 
-export default AccountList
+export default AccountList;

@@ -1,14 +1,14 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { TxType } from '@hermeznetwork/hermezjs/src/enums'
+import React from "react";
+import PropTypes from "prop-types";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-import useTransactionStyles from './transaction.styles'
-import TransactionType from '../transaction-type/transaction-type.view'
-import TransactionLabel from '../transaction-label/transaction-label.view'
-import TransactionAmount from '../transaction-amount/transaction-amount.view'
-import { getTxPendingTime } from '../../../../utils/transactions'
+import useTransactionStyles from "./transaction.styles";
+import TransactionType from "../transaction-type/transaction-type.view";
+import TransactionLabel from "../transaction-label/transaction-label.view";
+import TransactionAmount from "../transaction-amount/transaction-amount.view";
+import { getTxPendingTime } from "../../../../utils/transactions";
 
-function Transaction ({
+function Transaction({
   accountIndex,
   type,
   fromAccountIndex,
@@ -19,14 +19,14 @@ function Transaction ({
   isPending,
   preferredCurrency,
   coordinatorState,
-  onClick
+  onClick,
+  invalid,
 }) {
-  const classes = useTransactionStyles()
+  const classes = useTransactionStyles();
 
-  const isL1 = type === TxType.Deposit ||
-    type === TxType.CreateAccountDeposit ||
-    type === TxType.ForceExit
-  const pendingTime = getTxPendingTime(coordinatorState, isL1, timestamp)
+  const isL1 =
+    type === TxType.Deposit || type === TxType.CreateAccountDeposit || type === TxType.ForceExit;
+  const pendingTime = getTxPendingTime(coordinatorState, isL1, timestamp);
 
   return (
     <div className={classes.root} onClick={onClick}>
@@ -45,21 +45,28 @@ function Transaction ({
             fromAccountIndex={fromAccountIndex}
             accountIndex={accountIndex}
           />
-          <p className={classes.tokenSymbol}>{amount} {tokenSymbol}</p>
+          <p className={classes.tokenSymbol}>
+            {amount} {tokenSymbol}
+          </p>
         </div>
         <div className={`${classes.row} ${classes.bottomRow}`}>
-          {
-            isPending
-              ? (
-                <div className={classes.pendingContainer}>
-                  <div className={classes.pendingLabelContainer}>
-                    <p className={classes.pendingLabelText}>Pending</p>
-                  </div>
-                  {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
+          {(invalid && (
+            <div className={classes.pendingContainer}>
+              <div className={classes.invalidLabelContainer}>
+                <p className={classes.invalidLabelText}>Invalid</p>
+              </div>
+            </div>
+          )) ||
+            (isPending ? (
+              <div className={classes.pendingContainer}>
+                <div className={classes.pendingLabelContainer}>
+                  <p className={classes.pendingLabelText}>Pending</p>
                 </div>
-                )
-              : <p>{new Date(timestamp).toLocaleDateString()}</p>
-          }
+                {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
+              </div>
+            ) : (
+              <p>{new Date(timestamp).toLocaleDateString()}</p>
+            ))}
           <TransactionAmount
             fiatAmount={fiatAmount}
             preferredCurrency={preferredCurrency}
@@ -70,7 +77,7 @@ function Transaction ({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 Transaction.propTypes = {
@@ -81,7 +88,8 @@ Transaction.propTypes = {
   fiatAmount: PropTypes.number.isRequired,
   timestamp: PropTypes.string,
   preferredCurrency: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired
-}
+  onClick: PropTypes.func.isRequired,
+  invalid: PropTypes.number,
+};
 
-export default Transaction
+export default Transaction;
