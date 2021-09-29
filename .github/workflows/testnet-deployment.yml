@@ -1,0 +1,43 @@
+name: Testnet deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: internal-testnet
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create .env file
+        run: |
+          echo 'REACT_APP_ENV=production' >> .env
+          echo 'REACT_APP_ENABLE_HARDWARE_WALLETS=false' >> .env
+          echo 'REACT_APP_PRICE_UPDATER_API_URL=${{ secrets.TESTNET_PRICE_UPDATER_API_URL }}' >> .env
+          echo 'REACT_APP_PRICE_UPDATER_API_KEY=${{ secrets.TESTNET_PRICE_UPDATER_API_KEY }}' >> .env
+          echo 'REACT_APP_INFURA_API_KEY=${{ secrets.INFURA_API_KEY }}' >> .env
+          echo 'REACT_APP_WALLETCONNECT_BRIDGE=${{ secrets.WALLETCONNECT_BRIDGE}}' >> .env
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Generate production build
+        run: npm run build
+
+      - name: Deploy to S3 Bucket
+        run: aws s3 sync ./build s3://${{ secrets.TESTNET_AWS_S3_BUCKET_NAME }} --delete

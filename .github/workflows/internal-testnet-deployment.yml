@@ -8,10 +8,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: internal-testnet
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
+        
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
@@ -29,8 +30,8 @@ jobs:
           echo 'REACT_APP_ENABLE_HARDWARE_WALLETS=false' >> .env
           echo 'REACT_APP_PRICE_UPDATER_API_URL=${{ secrets.INTERNAL_TESTNET_PRICE_UPDATER_API_URL }}' >> .env
           echo 'REACT_APP_PRICE_UPDATER_API_KEY=${{ secrets.INTERNAL_TESTNET_PRICE_UPDATER_API_KEY }}' >> .env
-          echo 'REACT_APP_INFURA_API_KEY=${{ secrets.INFURA_API_KEY }}'
-          echo 'REACT_APP_WALLETCONNECT_BRIDGE=${{ secrets.WALLETCONNECT_BRIDGE}}'
+          echo 'REACT_APP_INFURA_API_KEY=${{ secrets.INFURA_API_KEY }}' >> .env
+          echo 'REACT_APP_WALLETCONNECT_BRIDGE=${{ secrets.WALLETCONNECT_BRIDGE }}' >> .env
           echo 'REACT_APP_HERMEZ_API_URL=${{ secrets.INTERNAL_TESTNET_HERMEZ_API_URL }}' >> .env
           echo 'REACT_APP_HERMEZ_CONTRACT_ADDRESS=${{ secrets.INTERNAL_TESTNET_HERMEZ_CONTRACT_ADDRESS }}' >> .env
           echo 'REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS=${{ secrets.INTERNAL_TESTNET_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS }}' >> .env
@@ -44,4 +45,4 @@ jobs:
         run: npm run build
 
       - name: Deploy to S3 Bucket
-        run: aws s3 sync ./build s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
+        run: aws s3 sync ./build s3://${{ secrets.INTERNAL_TESTNET_AWS_S3_BUCKET_NAME }} --delete

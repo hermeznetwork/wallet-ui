@@ -64,14 +64,14 @@ function getTokens(
   });
   const balances = Promise.all(balancePromises).then((balanceList) => {
     return balanceList
-      .filter((tokenBalance) => tokenBalance.gt(BigNumber.from(0)))
       .map((balance, index) => {
         const token = hermezTokens[index];
         return {
           balance,
           token,
         };
-      });
+      })
+      .filter((tokenAndBalance) => tokenAndBalance.balance.gt(BigNumber.from(0)));
   });
 
   return balances;
