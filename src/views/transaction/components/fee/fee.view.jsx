@@ -38,7 +38,7 @@ function Fee({
     fiatExchangeRates
   );
 
-  function getDepositFeeInFiat() {
+  function getDepositFee() {
     if (depositFee) {
       const fiatAmount = getTokenAmountInPreferredCurrency(
         depositFee.amount,
@@ -46,7 +46,12 @@ function Fee({
         preferredCurrency,
         fiatExchangeRates
       );
-      return ` ~ ${fiatAmount} ${CurrencySymbol[preferredCurrency].symbol}`;
+      return (
+        <>
+          Ethereum fee (estimated) -<span>${depositFee.amount} ETH</span>
+          {` ~ ${fiatAmount} ${CurrencySymbol[preferredCurrency].symbol}`}
+        </>
+      );
     }
     return null;
   }
@@ -94,10 +99,7 @@ function Fee({
   if (transactionType === TxType.Deposit) {
     return (
       <div className={classes.feeWrapper}>
-        <p className={classes.fee}>
-          Ethereum fee (estimated) -<span>{` ${depositFee?.amount} ETH`}</span>
-          {getDepositFeeInFiat()}
-        </p>
+        <p className={classes.fee}>{getDepositFee()}</p>
       </div>
     );
   }
