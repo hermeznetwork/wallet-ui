@@ -53,6 +53,7 @@ function Transaction({
   onGoToTransactionOverviewStep,
   onFinishTransaction,
   onLoadEstimatedWithdrawFee,
+  onLoadEstimatedDepositFee,
   onDeposit,
   onForceExit,
   onWithdraw,
@@ -186,9 +187,11 @@ function Transaction({
                 feesTask={stepData.feesTask}
                 tokensPriceTask={tokensPriceTask}
                 estimatedWithdrawFeeTask={stepData.estimatedWithdrawFeeTask}
+                estimatedDepositFeeTask={stepData.estimatedDepositFeeTask}
                 onLoadAccountBalance={onLoadAccountBalance}
                 onLoadFees={onLoadFees}
                 onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
+                onLoadEstimatedDepositFee={onLoadEstimatedDepositFee}
                 onSubmit={onGoToTransactionOverviewStep}
               />
             );
@@ -382,6 +385,7 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadEstimatedWithdrawFee: (token, amount) => {
     dispatch(transactionThunks.fetchEstimatedWithdrawFee(token, amount));
   },
+  onLoadEstimatedDepositFee: () => dispatch(transactionThunks.fetchEstimatedDepositFee()),
   onDeposit: (amount, account) => dispatch(transactionThunks.deposit(amount, account)),
   onForceExit: (amount, account) => dispatch(transactionThunks.forceExit(amount, account)),
   onWithdraw: (amount, account, exit, completeDelayedWithdrawal, instantWithdrawal) =>

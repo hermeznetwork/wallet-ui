@@ -14,9 +14,15 @@ import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 
 function AmountInput(Component) {
   return function (props) {
-    const { defaultValue, transactionType, account, fee, fiatExchangeRates, preferredCurrency } =
-      props;
-    const [gasPrice, setGasPrice] = React.useState(BigNumber.from(0));
+    const {
+      defaultValue,
+      transactionType,
+      account,
+      fee,
+      fiatExchangeRates,
+      preferredCurrency,
+      gasPrice,
+    } = props;
     const [value, setValue] = React.useState("");
     const [amount, setAmount] = React.useState({ tokens: BigNumber.from(0), fiat: 0 });
     const [showInFiat, setShowInFiat] = React.useState(false);
@@ -24,12 +30,6 @@ function AmountInput(Component) {
     const [isAmountWithFeeMoreThanFunds, setIsAmountWithFeeMoreThanFunds] = React.useState(false);
     const [areFundsExceededDueToFee, setAreFundsExceededDueToFee] = React.useState(false);
     const [isAmountCompressedInvalid, setIsAmountCompressedInvalid] = React.useState(false);
-
-    React.useEffect(() => {
-      getProvider()
-        .getGasPrice()
-        .then((gasPrice) => setGasPrice(gasPrice));
-    }, []);
 
     React.useEffect(() => {
       handleInputChange({ target: { value: defaultValue } });

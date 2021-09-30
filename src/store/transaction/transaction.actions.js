@@ -24,6 +24,9 @@ export const transactionActionTypes = {
   LOAD_ESTIMATED_WITHDRAW_FEE: "[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE",
   LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS: "[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE SUCCESS",
   LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE: "[TRANSACTION] LOAD ESTIMATED WITHDRAW FEE FAILURE",
+  LOAD_ESTIMATED_DEPOSIT_FEE: "[TRANSACTION] LOAD ESTIMATED DEPOSIT FEE",
+  LOAD_ESTIMATED_DEPOSIT_FEE_SUCCESS: "[TRANSACTION] LOAD ESTIMATED DEPOSIT FEE SUCCESS",
+  LOAD_ESTIMATED_DEPOSIT_FEE_FAILURE: "[TRANSACTION] LOAD ESTIMATED DEPOSIT FEE FAILURE",
   START_TRANSACTION_APPROVAL: "[TRANSACTION] START TRANSACTION APPROVAL",
   STOP_TRANSACTION_APPROVAL: "[TRANSACTION] STOP TRANSACTION APPROVAL",
   RESET_STATE: "[TRANSACTION] RESET STATE",
@@ -197,6 +200,26 @@ function loadEstimatedWithdrawFeeFailure(error) {
   };
 }
 
+function loadEstimatedDepositFee() {
+  return {
+    type: transactionActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE,
+  };
+}
+
+function loadEstimatedDepositFeeSuccess(estimatedFee) {
+  return {
+    type: transactionActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE_SUCCESS,
+    estimatedFee,
+  };
+}
+
+function loadEstimatedDepositFeeFailure(error) {
+  return {
+    type: transactionActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE_FAILURE,
+    error,
+  };
+}
+
 function startTransactionApproval() {
   return {
     type: transactionActionTypes.START_TRANSACTION_APPROVAL,
@@ -241,6 +264,9 @@ export {
   loadEstimatedWithdrawFee,
   loadEstimatedWithdrawFeeSuccess,
   loadEstimatedWithdrawFeeFailure,
+  loadEstimatedDepositFee,
+  loadEstimatedDepositFeeSuccess,
+  loadEstimatedDepositFeeFailure,
   startTransactionApproval,
   stopTransactionApproval,
   resetState,

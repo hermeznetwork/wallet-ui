@@ -1,6 +1,8 @@
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { parseUnits } from "ethers/lib/utils";
+import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
+import { BigNumber } from "ethers";
 
 import useFeeStyles from "./fee.styles";
 import {
@@ -12,6 +14,7 @@ import {
 import { ReactComponent as AngleDownIcon } from "../../../../images/icons/angle-down.svg";
 import FeesTable from "../fees-table/fees-table.view";
 import { getRealFee } from "../../../../utils/fees";
+import { ETHER_TOKEN_ID } from "../../../../constants";
 
 function Fee({
   transactionType,
@@ -23,6 +26,7 @@ function Fee({
   fiatExchangeRates,
   showInFiat,
   tokensPriceTask,
+  depositFee,
 }) {
   const [isWithdrawFeeExpanded, setIsWithdrawFeeExpanded] = React.useState(false);
   const classes = useFeeStyles({ isWithdrawFeeExpanded });
@@ -34,14 +38,15 @@ function Fee({
     fiatExchangeRates
   );
 
-  function getFeeInFiat() {
-    return getTokenAmountInPreferredCurrency(fee, token.USD, preferredCurrency, fiatExchangeRates);
-  }
-
-  function getDepositFee() {
-    if (tokensPriceTask.status == "successful") {
-      const tokenFee = getFeeInFiat();
-      return tokenFee / tokensPriceTask.data[0].USD;
+  function getDepositFeeInFiat() {
+    if (depositFee) {
+      const fiatAmount = getTokenAmountInPreferredCurrency(
+        depositFee.amount,
+        depositFee.USD,
+        preferredCurrency,
+        fiatExchangeRates
+      );
+      return ` ~ ${fiatAmount} ${CurrencySymbol[preferredCurrency].symbol}`;
     }
     return null;
   }
@@ -87,16 +92,11 @@ function Fee({
   }
 
   if (transactionType === TxType.Deposit) {
-    const amountUSD = getFeeInFiat();
     return (
       <div className={classes.feeWrapper}>
         <p className={classes.fee}>
-          Ethereum fee (estimated) -
-          <span>{` ${getFixedTokenAmount(
-            parseUnits(getDepositFee().toFixed(token.decimals).toString(), token.decimals),
-            token.decimals
-          )} ETH`}</span>
-          {amountUSD ? ` ~ ${amountUSD} ${CurrencySymbol[preferredCurrency].symbol}` : ""}
+          Ethereum fee (estimated) -<span>{` ${depositFee?.amount} ETH`}</span>
+          {getDepositFeeInFiat()}
         </p>
       </div>
     );
