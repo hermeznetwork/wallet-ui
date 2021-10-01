@@ -144,7 +144,7 @@ function SwapForm({
         transactionType="Transfer" // TODO we need to check this with the new api
         fiatExchangeRates={fiatExchangeRates}
         preferredCurrency={preferredCurrency}
-        l2Fee={0}
+        fee={0}
         onChange={(value) => handleAmountChange(value, position)}
         position={position}
         accounts={accounts.data?.accounts}

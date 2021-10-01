@@ -1,6 +1,8 @@
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { parseUnits } from "ethers/lib/utils";
+import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
+import { BigNumber } from "ethers";
 
 import useFeeStyles from "./fee.styles";
 import {
@@ -12,26 +14,47 @@ import {
 import { ReactComponent as AngleDownIcon } from "../../../../images/icons/angle-down.svg";
 import FeesTable from "../fees-table/fees-table.view";
 import { getRealFee } from "../../../../utils/fees";
+import { ETHER_TOKEN_ID } from "../../../../constants";
 
 function Fee({
   transactionType,
   amount,
-  l2Fee,
+  fee,
   estimatedWithdrawFee,
   token,
   preferredCurrency,
   fiatExchangeRates,
   showInFiat,
+  tokensPriceTask,
+  depositFee,
 }) {
   const [isWithdrawFeeExpanded, setIsWithdrawFeeExpanded] = React.useState(false);
   const classes = useFeeStyles({ isWithdrawFeeExpanded });
-  const l2RealFee = getRealFee(amount, token, l2Fee);
+  const l2RealFee = getRealFee(amount, token, fee);
   const l2FeeInFiat = getTokenAmountInPreferredCurrency(
     l2RealFee,
     token.USD,
     preferredCurrency,
     fiatExchangeRates
   );
+
+  function getDepositFee() {
+    if (depositFee) {
+      const fiatAmount = getTokenAmountInPreferredCurrency(
+        depositFee.amount,
+        depositFee.USD,
+        preferredCurrency,
+        fiatExchangeRates
+      );
+      return (
+        <>
+          Ethereum fee (estimated) -<span>${depositFee.amount} ETH</span>
+          {` ~ ${fiatAmount.toFixed(2)} ${CurrencySymbol[preferredCurrency].symbol}`}
+        </>
+      );
+    }
+    return null;
+  }
 
   function getTotalEstimatedWithdrawFee() {
     if (!estimatedWithdrawFee?.USD) {
@@ -73,6 +96,14 @@ function Fee({
     );
   }
 
+  if (transactionType === TxType.Deposit) {
+    return (
+      <div className={classes.feeWrapper}>
+        <p className={classes.fee}>{getDepositFee()}</p>
+      </div>
+    );
+  }
+
   if (transactionType === TxType.Exit) {
     return (
       <div className={classes.withdrawFeeWrapper}>
@@ -87,7 +118,7 @@ function Fee({
         </button>
         {isWithdrawFeeExpanded && (
           <FeesTable
-            l2Fee={getRealFee(amount, token, l2Fee)}
+            l2Fee={getRealFee(amount, token, fee)}
             estimatedWithdrawFee={estimatedWithdrawFee}
             token={token}
             preferredCurrency={preferredCurrency}
