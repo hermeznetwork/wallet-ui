@@ -13,7 +13,7 @@ function TransactionAmountInput({
   value,
   amount,
   showInFiat,
-  isAmountMoreThanFunds,
+  isAmountWithFeeMoreThanFunds,
   isAmountCompressedInvalid,
   onInputChange,
   onSendAll,
@@ -22,11 +22,11 @@ function TransactionAmountInput({
   const classes = useTransactionAmountInputStyles();
 
   function hasErrors() {
-    return isAmountMoreThanFunds || isAmountCompressedInvalid;
+    return isAmountWithFeeMoreThanFunds || isAmountCompressedInvalid;
   }
 
   function getErrorMessage() {
-    if (isAmountMoreThanFunds) {
+    if (isAmountWithFeeMoreThanFunds) {
       return "You don't have enough funds";
     }
     if (isAmountCompressedInvalid) {

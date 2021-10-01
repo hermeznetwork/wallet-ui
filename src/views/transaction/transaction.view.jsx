@@ -38,6 +38,7 @@ function Transaction({
   pendingDeposits,
   pendingWithdraws,
   pendingDelayedWithdraws,
+  tokensPriceTask,
   onChangeHeader,
   onCheckPendingDeposits,
   onLoadEthereumAccount,
@@ -52,6 +53,7 @@ function Transaction({
   onGoToTransactionOverviewStep,
   onFinishTransaction,
   onLoadEstimatedWithdrawFee,
+  onLoadEstimatedDepositFee,
   onDeposit,
   onForceExit,
   onWithdraw,
@@ -183,10 +185,13 @@ function Transaction({
                 fiatExchangeRates={fiatExchangeRatesTask.data || {}}
                 accountBalanceTask={stepData.accountBalanceTask}
                 feesTask={stepData.feesTask}
+                tokensPriceTask={tokensPriceTask}
                 estimatedWithdrawFeeTask={stepData.estimatedWithdrawFeeTask}
+                estimatedDepositFeeTask={stepData.estimatedDepositFeeTask}
                 onLoadAccountBalance={onLoadAccountBalance}
                 onLoadFees={onLoadFees}
                 onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
+                onLoadEstimatedDepositFee={onLoadEstimatedDepositFee}
                 onSubmit={onGoToTransactionOverviewStep}
                 onGoToChooseAccountStep={onGoToChooseAccountStep}
               />
@@ -249,6 +254,7 @@ const mapStateToProps = (state) => ({
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
+  tokensPriceTask: state.global.tokensPriceTask,
 });
 
 const getTransactionOverviewHeaderTitle = (transactionType) => {
@@ -380,6 +386,7 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadEstimatedWithdrawFee: (token, amount) => {
     dispatch(transactionThunks.fetchEstimatedWithdrawFee(token, amount));
   },
+  onLoadEstimatedDepositFee: () => dispatch(transactionThunks.fetchEstimatedDepositFee()),
   onDeposit: (amount, account) => dispatch(transactionThunks.deposit(amount, account)),
   onForceExit: (amount, account) => dispatch(transactionThunks.forceExit(amount, account)),
   onWithdraw: (amount, account, exit, completeDelayedWithdrawal, instantWithdrawal) =>
