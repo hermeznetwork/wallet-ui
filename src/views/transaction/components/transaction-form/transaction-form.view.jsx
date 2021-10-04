@@ -43,6 +43,7 @@ function TransactionForm({
   onLoadEstimatedWithdrawFee,
   onLoadEstimatedDepositFee,
   onSubmit,
+  onGoToChooseAccountStep,
 }) {
   const classes = useTransactionFormStyles();
   const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false);
@@ -296,7 +297,7 @@ function TransactionForm({
         <section className={classes.sectionWrapper}>
           {feesTask.status === "successful" ? (
             <>
-              <div className={classes.token}>
+              <button className={classes.token} onClick={onGoToChooseAccountStep}>
                 <p className={classes.tokenName}>{account.token.name}</p>
                 {showInFiat ? (
                   <p>
@@ -309,7 +310,7 @@ function TransactionForm({
                     <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span>
                   </p>
                 )}
-              </div>
+              </button>
               {areFundsExceededDueToFee && transactionType === TxType.Deposit && (
                 <Alert
                   message={`You don’t have enough ETH to cover deposit transaction fee (you need at least ${

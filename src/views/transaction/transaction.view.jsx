@@ -193,6 +193,7 @@ function Transaction({
                 onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
                 onLoadEstimatedDepositFee={onLoadEstimatedDepositFee}
                 onSubmit={onGoToTransactionOverviewStep}
+                onGoToChooseAccountStep={onGoToChooseAccountStep}
               />
             );
           }
