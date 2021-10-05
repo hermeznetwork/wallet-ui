@@ -5,6 +5,7 @@
 import { AxiosError } from "axios";
 import * as z from "zod";
 import hermez from "@hermeznetwork/hermezjs";
+
 import { HttpStatusCode } from "src/utils/http";
 
 export type { Transactions, Exits, Accounts } from "@hermeznetwork/hermezjs";

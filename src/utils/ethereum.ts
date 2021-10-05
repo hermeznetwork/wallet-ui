@@ -1,10 +1,8 @@
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import { TransactionResponse, TransactionReceipt } from "@ethersproject/abstract-provider";
 import hermezjs from "@hermeznetwork/hermezjs";
-import { BigNumber } from "ethers";
 
 import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "src/constants";
-
 // domain
 import { HermezWallet, Token, ISOStringDate } from "src/domain/hermez";
 

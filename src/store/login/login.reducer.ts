@@ -1,13 +1,14 @@
+import { AsyncTask } from "src/utils/types";
 import {
   LoginActionTypes,
   LoginAction,
   WalletName,
   AccountData,
 } from "src/store/login/login.actions";
-import { AsyncTask } from "src/utils/types";
 // domain
 import { HermezWallet } from "src/domain/hermez";
 import { AuthSignatures } from "src/domain/local-storage";
+// persistence
 import { getAuthSignatures } from "src/persistence/local-storage";
 
 export interface LoginState {

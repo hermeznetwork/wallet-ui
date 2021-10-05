@@ -1,3 +1,7 @@
+import { push } from "connected-react-router";
+import { ethers } from "ethers";
+import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
+import Connector from "@walletconnect/web3-provider";
 import hermezjs, {
   CoordinatorAPI,
   Providers,
@@ -6,12 +10,9 @@ import hermezjs, {
   HermezCompressedAmount,
   Addresses,
 } from "@hermeznetwork/hermezjs";
-import { push } from "connected-react-router";
-import { ethers } from "ethers";
-import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
-import Connector from "@walletconnect/web3-provider";
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
+
 import * as globalActions from "src/store/global/global.actions";
 import * as priceUpdaterApi from "src/apis/price-updater";
 import * as hermezWebApi from "src/apis/hermez-web";

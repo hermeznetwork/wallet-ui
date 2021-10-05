@@ -1,4 +1,4 @@
-import { GlobalActionTypes, GlobalAction } from "./global.actions";
+import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
 import { Header } from "src/domain/";
@@ -14,6 +14,7 @@ import {
   Token,
 } from "src/domain/hermez";
 import * as localStorageDomain from "src/domain/local-storage";
+// persistence
 import * as localStoragePersistence from "src/persistence/local-storage";
 
 type SnackbarState =
