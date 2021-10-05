@@ -13,25 +13,20 @@ function TransactionAmountInput({
   value,
   amount,
   showInFiat,
-  isAmountMoreThanFunds,
+  isAmountWithFeeMoreThanFunds,
   isAmountCompressedInvalid,
   onInputChange,
   onSendAll,
   onSwapCurrency,
 }) {
   const classes = useTransactionAmountInputStyles();
-  const inputRef = React.useRef("");
-
-  React.useEffect(() => {
-    inputRef.current.focus();
-  }, []);
 
   function hasErrors() {
-    return isAmountMoreThanFunds || isAmountCompressedInvalid;
+    return isAmountWithFeeMoreThanFunds || isAmountCompressedInvalid;
   }
 
   function getErrorMessage() {
-    if (isAmountMoreThanFunds) {
+    if (isAmountWithFeeMoreThanFunds) {
       return "You don't have enough funds";
     }
     if (isAmountCompressedInvalid) {
@@ -53,7 +48,7 @@ function TransactionAmountInput({
             {showInFiat ? preferredCurrency : account.token.symbol}
           </p>
           <input
-            ref={inputRef}
+            autoFocus
             className={classes.amountInput}
             value={value}
             placeholder="0.00"

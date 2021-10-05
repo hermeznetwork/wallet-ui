@@ -12,8 +12,6 @@ import { getAuthSignatures } from "src/persistence/local-storage";
 
 export interface LoginState {
   step: Step;
-  // ToDo: This state is never set. The actions do not exist.
-  // networkNameTask: AsyncTask<string, string>;
   addAccountAuthTask: AsyncTask<null, string>;
   accountAuthSignatures: AuthSignatures;
 }
@@ -54,9 +52,6 @@ function getInitialLoginState(): LoginState {
       type: "wallet-selector",
       walletName: undefined,
     },
-    // networkNameTask: {
-    //   status: "pending",
-    // },
     addAccountAuthTask: {
       status: "pending",
     },
@@ -205,32 +200,6 @@ function loginReducer(state: LoginState = getInitialLoginState(), action: LoginA
         },
       };
     }
-    // case LoginActionTypes.LOAD_NETWORK_NAME: {
-    //   return {
-    //     ...state,
-    //     networkNameTask: {
-    //       status: "loading",
-    //     },
-    //   };
-    // }
-    // case LoginActionTypes.LOAD_NETWORK_NAME_SUCCESS: {
-    //   return {
-    //     ...state,
-    //     networkNameTask: {
-    //       status: "successful",
-    //       data: action.networkName,
-    //     },
-    //   };
-    // }
-    // case LoginActionTypes.LOAD_NETWORK_NAME_FAILURE: {
-    //   return {
-    //     ...state,
-    //     networkNameTask: {
-    //       status: "failure",
-    //       error: action.error,
-    //     },
-    //   };
-    // }
     case LoginActionTypes.RESET_STATE: {
       const initialLoginState = getInitialLoginState();
 
