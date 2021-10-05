@@ -35,6 +35,8 @@ const account: z.ZodSchema<Account> = z.object({
   accountIndex: z.string(),
   balance: z.string(),
   bjj: z.string(),
+  hezEthereumAddress: z.string(),
+  hezBjjAddress: z.string().optional(),
   token: token,
   fiatBalance: z.number().optional(),
 });
