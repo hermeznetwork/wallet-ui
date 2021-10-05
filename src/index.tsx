@@ -2,14 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Action } from "redux";
 import { Provider } from "react-redux";
-import { ThunkAction } from "redux-thunk";
+import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { ThemeProvider } from "react-jss";
 import { createBrowserHistory } from "history";
 import { ConnectedRouter } from "connected-react-router";
 import "normalize.css/normalize.css";
 
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import { configureStore, RootState } from "./store";
+import { configureStore, RootState, AppAction } from "./store";
 import * as storage from "./utils/storage";
 import theme from "./styles/theme";
 import App from "./views/app.view";
@@ -19,7 +19,7 @@ storage.checkVersion();
 const history = createBrowserHistory<RootState>();
 const store = configureStore(history);
 
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = ThunkDispatch<RootState, undefined, AppAction>;
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
   RootState,
