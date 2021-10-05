@@ -1,13 +1,14 @@
 import axios from "axios";
+import { push } from "connected-react-router";
 import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { push } from "connected-react-router";
-import * as accountDetailsActions from "./account-details.actions";
+
+import { AppDispatch, AppThunk } from "src";
+import { RootState } from "src/store";
 import * as ethereum from "src/utils/ethereum";
 import { createAccount } from "src/utils/accounts";
-import { RootState } from "src/store";
-import { AppDispatch, AppThunk } from "src";
+import * as accountDetailsActions from "src/store/account-details/account-details.actions";
 // domain
 import {
   Account,

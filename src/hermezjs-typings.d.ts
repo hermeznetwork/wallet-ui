@@ -639,7 +639,6 @@ declare module "@hermeznetwork/hermezjs/src/providers" {
 declare module "@hermeznetwork/hermezjs/src/signers" {
   import { Web3Provider } from "@ethersproject/providers";
   import { Signer } from "@ethersproject/abstract-signer";
-
   import { Manifest } from "trezor-connect";
 
   export enum SignerType {

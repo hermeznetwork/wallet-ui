@@ -4,16 +4,16 @@ import { connectRouter, routerMiddleware, RouterState } from "connected-react-ro
 import thunk from "redux-thunk";
 import { History } from "history";
 
-import globalReducer, { GlobalState } from "./global/global.reducer";
-import homeReducer, { HomeState } from "./home/home.reducer";
-import myAccountReducer from "./my-account/my-account.reducer";
+import globalReducer, { GlobalState } from "src/store/global/global.reducer";
+import homeReducer, { HomeState } from "src/store/home/home.reducer";
+import myAccountReducer from "src/store/my-account/my-account.reducer";
 import accountDetailsReducer, {
   AccountDetailsState,
-} from "./account-details/account-details.reducer";
-import transactionDetailsReducer from "./transaction-details/transaction-details.reducer";
-import transactionReducer from "./transaction/transaction.reducer";
-import loginReducer, { LoginState } from "./login/login.reducer";
-import tokenSwapReducer from "./token-swap/token-swap.reducer";
+} from "src/store/account-details/account-details.reducer";
+import transactionDetailsReducer from "src/store/transaction-details/transaction-details.reducer";
+import transactionReducer from "src/store/transaction/transaction.reducer";
+import loginReducer, { LoginState } from "src/store/login/login.reducer";
+import tokenSwapReducer from "src/store/token-swap/token-swap.reducer";
 
 export interface RootState {
   router: RouterState;

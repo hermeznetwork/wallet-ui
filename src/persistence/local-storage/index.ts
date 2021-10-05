@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import * as constants from "src/constants";
 // domain
 import { Withdraw, DelayedWithdraw, Deposit } from "src/domain/hermez";
