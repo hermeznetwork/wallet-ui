@@ -3,7 +3,7 @@
 import React from "react";
 import { useTheme } from "react-jss";
 
-import useTransactionOverviewStyles from "./transaction-overview.styles";
+import useTransactionOverviewStyles from "src/views/transactions/components/transaction-overview/transaction-overview.styles";
 import { getTokenAmountInPreferredCurrency, getFixedTokenAmount } from "src/utils/currencies";
 import TransactionInfo from "src/views/shared/transaction-info/transaction-info.view";
 import Container from "src/views/shared/container/container.view";
@@ -13,7 +13,7 @@ import Spinner from "src/views/shared/spinner/spinner.view";
 import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
 import { getRealFee } from "src/utils/fees";
 import Alert from "src/views/shared/alert/alert.view";
-import WithdrawInfoSidenav from "../withdraw-info-sidenav/withdraw-info-sidenav.view";
+import WithdrawInfoSidenav from "src/views/transactions/components/withdraw-info-sidenav/withdraw-info-sidenav.view";
 import { AsyncTask } from "src/utils/types";
 import { Theme } from "src/styles/theme";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
