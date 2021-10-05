@@ -19,10 +19,8 @@ import transactionReducer from "src/store/transaction/transaction.reducer";
 import loginReducer, { LoginState } from "src/store/login/login.reducer";
 import { LoginAction } from "src/store/login/login.actions";
 import tokenSwapReducer from "src/store/token-swap/token-swap.reducer";
-import transactionTransferReducer, {
-  TransactionTransferState,
-} from "src/store/transactions/transfer/transfer.reducer";
-import { TransactionTransferAction } from "src/store/transactions/transfer/transfer.actions";
+import transferReducer, { TransferState } from "src/store/transactions/transfer/transfer.reducer";
+import { TransferAction } from "src/store/transactions/transfer/transfer.actions";
 
 export type AppAction =
   | RouterAction
@@ -31,7 +29,7 @@ export type AppAction =
   | MyAccountAction
   | AccountDetailsAction
   | LoginAction
-  | TransactionTransferAction;
+  | TransferAction;
 
 export interface RootState {
   router: RouterState;
@@ -40,7 +38,7 @@ export interface RootState {
   accountDetails: AccountDetailsState;
   myAccount: MyAccountState;
   login: LoginState;
-  transactionTransfer: TransactionTransferState;
+  transfer: TransferState;
 }
 
 /**
@@ -58,7 +56,7 @@ export function createRootReducer(history: History) {
     myAccount: myAccountReducer,
     transactionDetails: transactionDetailsReducer,
     transaction: transactionReducer,
-    transactionTransfer: transactionTransferReducer,
+    transfer: transferReducer,
     login: loginReducer,
     tokenSwap: tokenSwapReducer,
   });

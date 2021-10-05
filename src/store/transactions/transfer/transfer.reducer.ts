@@ -1,7 +1,7 @@
 import { getPaginationData, Pagination } from "src/utils/api";
 import {
-  TransactionTransferActionTypes,
-  TransactionTransferAction,
+  TransferActionTypes,
+  TransferAction,
   TransactionToReview,
   Step,
 } from "src/store/transactions/transfer/transfer.actions";
@@ -14,7 +14,7 @@ export interface AccountsWithPagination {
   pagination: Pagination;
 }
 
-export interface TransactionTransferState {
+export interface TransferState {
   step: Step;
   pooledTransactionsTask: AsyncTask<PooledTransaction[], Error>;
   accountTask: AsyncTask<Account, string>;
@@ -25,7 +25,7 @@ export interface TransactionTransferState {
   isTransactionBeingApproval: boolean;
 }
 
-const initialTransactionState: TransactionTransferState = {
+const initialTransferState: TransferState = {
   step: "load-account",
   pooledTransactionsTask: {
     status: "pending",
@@ -46,18 +46,18 @@ const initialTransactionState: TransactionTransferState = {
   isTransactionBeingApproval: false,
 };
 
-function transactionReducer(
-  state: TransactionTransferState = initialTransactionState,
-  action: TransactionTransferAction
-): TransactionTransferState {
+function transferReducer(
+  state: TransferState = initialTransferState,
+  action: TransferAction
+): TransferState {
   switch (action.type) {
-    case TransactionTransferActionTypes.GO_TO_CHOOSE_ACCOUNT_STEP: {
+    case TransferActionTypes.GO_TO_CHOOSE_ACCOUNT_STEP: {
       return {
         ...state,
         step: "choose-account",
       };
     }
-    case TransactionTransferActionTypes.GO_TO_BUILD_TRANSACTION_STEP: {
+    case TransferActionTypes.GO_TO_BUILD_TRANSACTION_STEP: {
       return {
         ...state,
         step: "build-transaction",
@@ -67,20 +67,20 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.GO_TO_REVIEW_TRANSACTION_STEP: {
+    case TransferActionTypes.GO_TO_REVIEW_TRANSACTION_STEP: {
       return {
         ...state,
         step: "review-transaction",
         transaction: action.transaction,
       };
     }
-    case TransactionTransferActionTypes.CHANGE_CURRENT_STEP: {
+    case TransferActionTypes.CHANGE_CURRENT_STEP: {
       return {
         ...state,
         step: action.nextStep,
       };
     }
-    case TransactionTransferActionTypes.LOAD_POOLED_TRANSACTIONS: {
+    case TransferActionTypes.LOAD_POOLED_TRANSACTIONS: {
       return {
         ...state,
         pooledTransactionsTask:
@@ -94,7 +94,7 @@ function transactionReducer(
               },
       };
     }
-    case TransactionTransferActionTypes.LOAD_POOLED_TRANSACTIONS_SUCCESS: {
+    case TransferActionTypes.LOAD_POOLED_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
         pooledTransactionsTask: {
@@ -103,7 +103,7 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.LOAD_POOLED_TRANSACTIONS_FAILURE: {
+    case TransferActionTypes.LOAD_POOLED_TRANSACTIONS_FAILURE: {
       return {
         ...state,
         pooledTransactionsTask: {
@@ -112,7 +112,7 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.LOAD_ACCOUNTS: {
+    case TransferActionTypes.LOAD_ACCOUNTS: {
       return {
         ...state,
         accountsTask:
@@ -124,7 +124,7 @@ function transactionReducer(
             : { status: "loading" },
       };
     }
-    case TransactionTransferActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+    case TransferActionTypes.LOAD_ACCOUNTS_SUCCESS: {
       const accounts =
         state.accountsTask.status === "reloading"
           ? [...state.accountsTask.data.accounts, ...action.accounts.accounts]
@@ -139,7 +139,7 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.LOAD_ACCOUNTS_FAILURE: {
+    case TransferActionTypes.LOAD_ACCOUNTS_FAILURE: {
       return {
         ...state,
         accountsTask: {
@@ -148,7 +148,7 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.LOAD_ACCOUNT: {
+    case TransferActionTypes.LOAD_ACCOUNT: {
       return {
         ...state,
         accountTask: {
@@ -156,7 +156,7 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.LOAD_ACCOUNT_SUCCESS: {
+    case TransferActionTypes.LOAD_ACCOUNT_SUCCESS: {
       return {
         ...state,
         step: "build-transaction",
@@ -166,7 +166,7 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.LOAD_ACCOUNT_FAILURE: {
+    case TransferActionTypes.LOAD_ACCOUNT_FAILURE: {
       return {
         ...state,
         accountTask: {
@@ -175,7 +175,7 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.LOAD_ACCOUNT_BALANCE: {
+    case TransferActionTypes.LOAD_ACCOUNT_BALANCE: {
       return {
         ...state,
         accountBalanceTask: {
@@ -183,7 +183,7 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS: {
+    case TransferActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS: {
       return {
         ...state,
         accountBalanceTask: {
@@ -192,7 +192,7 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE: {
+    case TransferActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE: {
       return {
         ...state,
         accountBalanceTask: {
@@ -201,14 +201,14 @@ function transactionReducer(
         },
       };
     }
-    case TransactionTransferActionTypes.LOAD_FEES:
+    case TransferActionTypes.LOAD_FEES:
       return {
         ...state,
         feesTask: {
           status: "loading",
         },
       };
-    case TransactionTransferActionTypes.LOAD_FEES_SUCCESS:
+    case TransferActionTypes.LOAD_FEES_SUCCESS:
       return {
         ...state,
         feesTask: {
@@ -216,7 +216,7 @@ function transactionReducer(
           data: action.fees,
         },
       };
-    case TransactionTransferActionTypes.LOAD_FEES_FAILURE:
+    case TransferActionTypes.LOAD_FEES_FAILURE:
       return {
         ...state,
         feesTask: {
@@ -224,20 +224,20 @@ function transactionReducer(
           error: action.error,
         },
       };
-    case TransactionTransferActionTypes.START_TRANSACTION_APPROVAL: {
+    case TransferActionTypes.START_TRANSACTION_APPROVAL: {
       return {
         ...state,
         isTransactionBeingApproval: true,
       };
     }
-    case TransactionTransferActionTypes.STOP_TRANSACTION_APPROVAL: {
+    case TransferActionTypes.STOP_TRANSACTION_APPROVAL: {
       return {
         ...state,
         isTransactionBeingApproval: false,
       };
     }
-    case TransactionTransferActionTypes.RESET_STATE: {
-      return initialTransactionState;
+    case TransferActionTypes.RESET_STATE: {
+      return initialTransferState;
     }
     default: {
       return state;
@@ -245,4 +245,4 @@ function transactionReducer(
   }
 }
 
-export default transactionReducer;
+export default transferReducer;

@@ -7,7 +7,7 @@ import { push } from "connected-react-router";
 
 import { RootState } from "src/store";
 import { AppDispatch, AppThunk } from "src";
-import * as transactionActions from "src/store/transactions/transfer/transfer.actions";
+import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import { openSnackbar } from "src/store/global/global.actions";
 import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
@@ -32,10 +32,10 @@ function fetchHermezAccount(
       global: { wallet, tokensPriceTask },
     } = getState();
 
-    dispatch(transactionActions.loadAccount());
+    dispatch(transferActions.loadAccount());
 
     if (!wallet) {
-      return dispatch(transactionActions.loadAccountFailure("Ethereum wallet is not loaded"));
+      return dispatch(transferActions.loadAccountFailure("Ethereum wallet is not loaded"));
     }
 
     return CoordinatorAPI.getAccount(accountIndex)
@@ -49,8 +49,8 @@ function fetchHermezAccount(
           preferredCurrency
         )
       )
-      .then((res) => dispatch(transactionActions.loadAccountSuccess(res)))
-      .catch((error: Error) => dispatch(transactionActions.loadAccountFailure(error.message)));
+      .then((res) => dispatch(transferActions.loadAccountSuccess(res)))
+      .catch((error: Error) => dispatch(transferActions.loadAccountFailure(error.message)));
   };
 }
 
@@ -60,7 +60,7 @@ function fetchHermezAccount(
  */
 function fetchPoolTransactions(): AppThunk {
   return (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(transactionActions.loadPoolTransactions());
+    dispatch(transferActions.loadPooledTransactions());
 
     const {
       global: { wallet },
@@ -69,9 +69,9 @@ function fetchPoolTransactions(): AppThunk {
     if (wallet !== undefined) {
       getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) =>
-          dispatch(transactionActions.loadPoolTransactionsSuccess(transactions))
+          dispatch(transferActions.loadPooledTransactionsSuccess(transactions))
         )
-        .catch((err) => dispatch(transactionActions.loadPoolTransactionsFailure(err)));
+        .catch((err) => dispatch(transferActions.loadPooledTransactionsFailure(err)));
     }
   };
 }
@@ -93,7 +93,7 @@ function fetchAccounts(
     } = getState();
 
     if (wallet !== undefined) {
-      dispatch(transactionActions.loadAccounts());
+      dispatch(transferActions.loadAccounts());
 
       return CoordinatorAPI.getAccounts(wallet.publicKeyBase64, undefined, fromItem)
         .then((res) => {
@@ -110,8 +110,8 @@ function fetchAccounts(
 
           return { ...res, accounts };
         })
-        .then((res) => dispatch(transactionActions.loadAccountsSuccess(res)))
-        .catch((err) => dispatch(transactionActions.loadAccountsFailure(err)));
+        .then((res) => dispatch(transferActions.loadAccountsSuccess(res)))
+        .catch((err) => dispatch(transferActions.loadAccountsFailure(err)));
     }
   };
 }
@@ -123,7 +123,7 @@ function fetchAccountBalance(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      dispatch(transactionActions.loadAccountBalance());
+      dispatch(transferActions.loadAccountBalance());
 
       const ethereumAddress = getEthereumAddress(wallet.hermezEthereumAddress);
       const provider = getProvider();
@@ -131,9 +131,9 @@ function fetchAccountBalance(): AppThunk {
       return provider
         .getBalance(ethereumAddress)
         .then((balance) =>
-          dispatch(transactionActions.loadAccountBalanceSuccess(ethers.utils.formatUnits(balance)))
+          dispatch(transferActions.loadAccountBalanceSuccess(ethers.utils.formatUnits(balance)))
         )
-        .catch((err) => dispatch(transactionActions.loadAccountBalanceFailure(err)));
+        .catch((err) => dispatch(transferActions.loadAccountBalanceFailure(err)));
     }
   };
 }
@@ -155,11 +155,11 @@ function fetchFees(): AppThunk {
       const nextForger = getNextBestForger(coordinatorStateTask.data);
 
       if (nextForger !== undefined) {
-        dispatch(transactionActions.loadFees());
+        dispatch(transferActions.loadFees());
 
         return CoordinatorAPI.getState({}, nextForger.coordinator.URL)
-          .then((res) => dispatch(transactionActions.loadFeesSuccess(res.recommendedFee)))
-          .catch((err) => dispatch(transactionActions.loadFeesFailure(err)));
+          .then((res) => dispatch(transferActions.loadFeesSuccess(res.recommendedFee)))
+          .catch((err) => dispatch(transferActions.loadFeesFailure(err)));
       }
     }
   };
@@ -175,7 +175,7 @@ function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: n
       wallet !== undefined &&
       (coordinatorStateTask.status === "successful" || coordinatorStateTask.status === "reloading")
     ) {
-      dispatch(transactionActions.startTransactionApproval());
+      dispatch(transferActions.startTransactionApproval());
 
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
       const txData = {
@@ -190,7 +190,7 @@ function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: n
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
         .catch((error) => {
           console.error(error);
-          dispatch(transactionActions.stopTransactionApproval());
+          dispatch(transferActions.stopTransactionApproval());
           handleTransactionFailure(dispatch, error);
         });
     }

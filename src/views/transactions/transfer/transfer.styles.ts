@@ -2,7 +2,7 @@
 // @ts-nocheck
 import { createUseStyles } from "react-jss";
 
-const useTransactionLayoutStyles = createUseStyles((theme) => ({
+const useTransferLayoutStyles = createUseStyles((theme) => ({
   root: {
     width: "100%",
   },
@@ -17,4 +17,4 @@ const useTransactionLayoutStyles = createUseStyles((theme) => ({
   },
 }));
 
-export default useTransactionLayoutStyles;
+export default useTransferLayoutStyles;
