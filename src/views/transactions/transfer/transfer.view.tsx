@@ -13,10 +13,10 @@ import * as transactionThunks from "src/store/transactions/transfer/transfer.thu
 import * as transactionActions from "src/store/transactions/transfer/transfer.actions";
 import * as transactionReducer from "src/store/transactions/transfer/transfer.reducer";
 import { changeHeader } from "src/store/global/global.actions";
-import useTransactionStyles from "src/views/transaction-transfer/transaction-transfer.styles";
-import TransactionForm from "src/views/transaction-transfer/components/transaction-form/transaction-form.view";
-import TransactionOverview from "src/views/transaction-transfer/components/transaction-overview/transaction-overview.view";
-import AccountSelector from "src/views/transaction-transfer/components/account-selector/account-selector.view";
+import useTransactionStyles from "src/views/transactions/transfer/transfer.styles";
+import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
+import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
+import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
 import Spinner from "src/views/shared/spinner/spinner.view";
 import * as storage from "src/utils/storage";
 import { AsyncTask } from "src/utils/types";
