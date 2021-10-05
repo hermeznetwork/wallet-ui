@@ -34,6 +34,9 @@ const initialTransactionState = {
       estimatedWithdrawFeeTask: {
         status: "pending",
       },
+      estimatedDepositFeeTask: {
+        status: "pending",
+      },
       account: undefined,
     },
     [STEP_NAME.REVIEW_TRANSACTION]: {
@@ -372,6 +375,50 @@ function transactionReducer(state = initialTransactionState, action) {
           [STEP_NAME.BUILD_TRANSACTION]: {
             ...state.steps[STEP_NAME.BUILD_TRANSACTION],
             estimatedWithdrawFeeTask: {
+              status: "failed",
+              error: action.error,
+            },
+          },
+        },
+      };
+    }
+    case transactionActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            estimatedDepositFeeTask: {
+              status: "loading",
+            },
+          },
+        },
+      };
+    }
+    case transactionActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE_SUCCESS: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            estimatedDepositFeeTask: {
+              status: "successful",
+              data: action.estimatedFee,
+            },
+          },
+        },
+      };
+    }
+    case transactionActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE_FAILURE: {
+      return {
+        ...state,
+        steps: {
+          ...state.steps,
+          [STEP_NAME.BUILD_TRANSACTION]: {
+            ...state.steps[STEP_NAME.BUILD_TRANSACTION],
+            estimatedDepositFeeTask: {
               status: "failed",
               error: action.error,
             },

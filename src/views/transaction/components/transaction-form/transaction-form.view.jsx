@@ -4,14 +4,16 @@ import clsx from "clsx";
 import { getAccounts, getCreateAccountAuthorization } from "@hermeznetwork/hermezjs/src/api";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
+import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { BigNumber, ethers } from "ethers";
 
 import useTransactionFormStyles from "./transaction-form.styles";
 import {
   getTokenAmountInPreferredCurrency,
   getFixedTokenAmount,
+  CurrencySymbol,
 } from "../../../../utils/currencies";
-import { MAX_FEE_USD } from "../../../../constants";
+import { MAX_FEE_USD, ETHER_TOKEN_ID } from "../../../../constants";
 import { ReactComponent as ErrorIcon } from "../../../../images/icons/error.svg";
 import { ReactComponent as CloseIcon } from "../../../../images/icons/close.svg";
 import { ReactComponent as QRScannerIcon } from "../../../../images/icons/qr-scanner.svg";
@@ -33,23 +35,43 @@ function TransactionForm({
   fiatExchangeRates,
   accountBalanceTask,
   feesTask,
+  tokensPriceTask,
   estimatedWithdrawFeeTask,
+  estimatedDepositFeeTask,
   onLoadAccountBalance,
   onLoadFees,
   onLoadEstimatedWithdrawFee,
+  onLoadEstimatedDepositFee,
   onSubmit,
+  onGoToChooseAccountStep,
 }) {
   const classes = useTransactionFormStyles();
   const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false);
   const [amount, setAmount] = useState(BigNumber.from(0));
   const [isAmountValid, setIsAmountValid] = useState(undefined);
+  const [areFundsExceededDueToFee, setAreFundsExceededDueToFee] = useState(false);
   const [showInFiat, setShowInFiat] = useState(false);
   const [receiver, setReceiver] = useState("");
   const [isReceiverValid, setIsReceiverValid] = React.useState(undefined);
   const [doesReceiverExist, setDoesReceiverExist] = React.useState(undefined);
   const [doesUserHaveEnoughEthForWithdraw, setDoesUserHaveEnoughEthForWithdraw] =
     React.useState(undefined);
+  const [gasPrice, setGasPrice] = React.useState(BigNumber.from(0));
+  const [depositFee, setDepositFee] = React.useState(undefined);
+
+  React.useEffect(() => {
+    if (transactionType === TxType.Deposit) {
+      onLoadEstimatedDepositFee();
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (estimatedDepositFeeTask.status === "successful") {
+      setGasPrice(estimatedDepositFeeTask.data.gasPrice);
+      setDepositFee(estimatedDepositFeeTask.data);
+    }
+  }, [estimatedDepositFeeTask]);
 
   React.useEffect(() => {
     onLoadFees();
@@ -146,6 +168,7 @@ function TransactionForm({
     setAmount(data.amount.tokens);
     setShowInFiat(data.showInFiat);
     setIsAmountValid(!data.isInvalid);
+    setAreFundsExceededDueToFee(data.areFundsExceededDueToFee);
   }
 
   /**
@@ -274,7 +297,7 @@ function TransactionForm({
         <section className={classes.sectionWrapper}>
           {feesTask.status === "successful" ? (
             <>
-              <div className={classes.token}>
+              <button className={classes.token} onClick={onGoToChooseAccountStep}>
                 <p className={classes.tokenName}>{account.token.name}</p>
                 {showInFiat ? (
                   <p>
@@ -287,7 +310,23 @@ function TransactionForm({
                     <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span>
                   </p>
                 )}
-              </div>
+              </button>
+              {areFundsExceededDueToFee && transactionType === TxType.Deposit && (
+                <Alert
+                  message={`You don’t have enough ETH to cover deposit transaction fee (you need at least ${
+                    depositFee && depositFee.amount
+                  } ETH) ${
+                    depositFee
+                      ? ` ~ ${getTokenAmountInPreferredCurrency(
+                          depositFee.amount,
+                          depositFee.USD,
+                          preferredCurrency,
+                          fiatExchangeRates
+                        )} ${CurrencySymbol[preferredCurrency].symbol}`
+                      : ""
+                  }`}
+                />
+              )}
               {transactionType === TxType.Exit &&
                 doesUserHaveEnoughEthForWithdraw === false &&
                 estimatedWithdrawFeeTask.status === "successful" && (
@@ -309,8 +348,9 @@ function TransactionForm({
                   account={account}
                   fiatExchangeRates={fiatExchangeRates}
                   preferredCurrency={preferredCurrency}
-                  l2Fee={getFee(feesTask.data)}
+                  fee={getFee(feesTask.data)}
                   onChange={handleAmountChange}
+                  gasPrice={gasPrice}
                 />
                 {transactionType === TxType.Transfer && (
                   <div className={classes.receiverWrapper}>
@@ -380,12 +420,14 @@ function TransactionForm({
               <Fee
                 transactionType={transactionType}
                 amount={amount}
-                l2Fee={getFee(feesTask.data)}
+                fee={getFee(feesTask.data)}
                 estimatedWithdrawFee={estimatedWithdrawFeeTask.data}
                 token={account.token}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
                 showInFiat={showInFiat}
+                tokensPriceTask={tokensPriceTask}
+                depositFee={depositFee}
               />
             </>
           ) : (
