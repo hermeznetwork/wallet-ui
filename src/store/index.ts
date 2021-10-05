@@ -21,8 +21,8 @@ import { LoginAction } from "src/store/login/login.actions";
 import tokenSwapReducer from "src/store/token-swap/token-swap.reducer";
 import transactionTransferReducer, {
   TransactionTransferState,
-} from "src/store/transaction-transfer/transaction-transfer.reducer";
-import { TransactionTransferAction } from "src/store/transaction-transfer/transaction-transfer.actions";
+} from "src/store/transactions/transfer/transfer.reducer";
+import { TransactionTransferAction } from "src/store/transactions/transfer/transfer.actions";
 
 export type AppAction =
   | RouterAction

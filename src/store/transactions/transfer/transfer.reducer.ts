@@ -4,7 +4,7 @@ import {
   TransactionTransferAction,
   TransactionToReview,
   Step,
-} from "src/store/transaction-transfer/transaction-transfer.actions";
+} from "src/store/transactions/transfer/transfer.actions";
 
 import { AsyncTask } from "src/utils/types";
 import { PooledTransaction, Account } from "src/domain/hermez";

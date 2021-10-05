@@ -7,11 +7,11 @@ import { push } from "connected-react-router";
 
 import { RootState } from "src/store";
 import { AppDispatch, AppThunk } from "src";
-import * as transactionActions from "./transaction-transfer.actions";
-import { openSnackbar } from "../global/global.actions";
-import { createAccount } from "../../utils/accounts";
-import { getNextBestForger, getNextForgerUrls } from "../../utils/coordinator";
-import theme from "../../styles/theme";
+import * as transactionActions from "./transfer.actions";
+import { openSnackbar } from "../../global/global.actions";
+import { createAccount } from "../../../utils/accounts";
+import { getNextBestForger, getNextForgerUrls } from "../../../utils/coordinator";
+import theme from "../../../styles/theme";
 // domain
 import { Account, FiatExchangeRates, PooledTransaction, Deposit } from "src/domain/hermez";
 
