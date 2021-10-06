@@ -7,7 +7,7 @@ import { push } from "connected-react-router";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { RootState } from "src/store";
+import { AppState } from "src/store";
 import { AppDispatch } from "src";
 import * as transferThunks from "src/store/transactions/transfer/transfer.thunks";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
@@ -262,7 +262,7 @@ function Transfer({
   );
 }
 
-const mapStateToProps = (state: RootState): TransferViewState => ({
+const mapStateToProps = (state: AppState): TransferViewState => ({
   ethereumNetworkTask: state.global.ethereumNetworkTask,
   pooledTransactionsTask: state.transfer.pooledTransactionsTask,
   step: state.transfer.step,

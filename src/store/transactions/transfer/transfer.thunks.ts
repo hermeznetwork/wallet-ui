@@ -5,7 +5,7 @@ import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { ethers, BigNumber } from "ethers";
 import { push } from "connected-react-router";
 
-import { RootState } from "src/store";
+import { AppState } from "src/store";
 import { AppDispatch, AppThunk } from "src";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import { openSnackbar } from "src/store/global/global.actions";
@@ -27,7 +27,7 @@ function fetchHermezAccount(
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, tokensPriceTask },
     } = getState();
@@ -59,7 +59,7 @@ function fetchHermezAccount(
  * @returns {void}
  */
 function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     dispatch(transferActions.loadPooledTransactions());
 
     const {
@@ -87,7 +87,7 @@ function fetchAccounts(
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, tokensPriceTask },
     } = getState();
@@ -117,7 +117,7 @@ function fetchAccounts(
 }
 
 function fetchAccountBalance(): AppThunk {
-  return async (dispatch: AppDispatch, getState: () => RootState) => {
+  return async (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet },
     } = getState();
@@ -143,7 +143,7 @@ function fetchAccountBalance(): AppThunk {
  * @returns {void}
  */
 function fetchFees(): AppThunk {
-  return function (dispatch: AppDispatch, getState: () => RootState) {
+  return function (dispatch: AppDispatch, getState: () => AppState) {
     const {
       global: { coordinatorStateTask },
     } = getState();
@@ -166,7 +166,7 @@ function fetchFees(): AppThunk {
 }
 
 function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: number): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, coordinatorStateTask },
     } = getState();

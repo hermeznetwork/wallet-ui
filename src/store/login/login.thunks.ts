@@ -11,7 +11,7 @@ import { AppDispatch, AppThunk } from "src";
 import { TREZOR_MANIFEST_MAIL } from "src/constants";
 import { buildEthereumBIP44Path } from "src/utils/hw-wallets";
 import { getNextForgerUrls } from "src/utils/coordinator";
-import { RootState } from "src/store";
+import { AppState } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as loginActions from "src/store/login/login.actions";
@@ -110,7 +110,7 @@ function fetchWallet(
   walletName: loginActions.WalletName,
   accountData: loginActions.AccountData
 ): AppThunk {
-  return async (dispatch: AppDispatch, getState: () => RootState) => {
+  return async (dispatch: AppDispatch, getState: () => AppState) => {
     try {
       if (
         walletName === loginActions.WalletName.LEDGER ||
@@ -231,7 +231,7 @@ function fetchWallet(
  * for the current coordinator
  */
 function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       login: { accountAuthSignatures },
       global: { redirectRoute, ethereumNetworkTask, coordinatorStateTask },
@@ -279,7 +279,7 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
  * @param {String} signature
  */
 function setAccountAuthSignature(hermezEthereumAddress: string, signature: string): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { ethereumNetworkTask },
     } = getState();

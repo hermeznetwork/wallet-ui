@@ -6,7 +6,7 @@ import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { AppDispatch, AppThunk } from "src";
 import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
-import { RootState } from "src/store";
+import { AppState } from "src/store";
 import * as homeActions from "src/store/home/home.actions";
 // domain
 import { PooledTransaction, Deposit, FiatExchangeRates, Account } from "src/domain/hermez";
@@ -25,7 +25,7 @@ function fetchTotalBalance(
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { tokensPriceTask },
     } = getState();
@@ -94,7 +94,7 @@ function fetchAccounts(
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       home: { accountsTask },
       global: { tokensPriceTask },
@@ -150,7 +150,7 @@ function refreshAccounts(
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       home: { accountsTask },
       global: { tokensPriceTask },
@@ -216,7 +216,7 @@ function refreshAccounts(
  * @returns {void}
  */
 function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     dispatch(homeActions.loadPoolTransactions());
 
     const {
@@ -236,7 +236,7 @@ function fetchPoolTransactions(): AppThunk {
  * @returns {void}
  */
 function fetchExits(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet },
     } = getState();

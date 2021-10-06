@@ -9,20 +9,20 @@ import { ConnectedRouter } from "connected-react-router";
 import "normalize.css/normalize.css";
 
 import * as serviceWorkerRegistration from "src/serviceWorkerRegistration";
-import { configureStore, RootState, AppAction } from "src/store";
+import { configureStore, AppState, AppAction } from "src/store";
 import * as storage from "src/utils/storage";
 import theme from "src/styles/theme";
 import App from "src/views/app.view";
 
 storage.checkVersion();
 
-const history = createBrowserHistory<RootState>();
+const history = createBrowserHistory<AppState>();
 const store = configureStore(history);
 
-export type AppDispatch = ThunkDispatch<RootState, undefined, AppAction>;
+export type AppDispatch = ThunkDispatch<AppState, undefined, AppAction>;
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
-  RootState,
+  AppState,
   unknown,
   Action<string>
 >;

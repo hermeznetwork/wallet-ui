@@ -31,7 +31,7 @@ export type AppAction =
   | LoginAction
   | TransferAction;
 
-export interface RootState {
+export interface AppState {
   router: RouterState;
   global: GlobalState;
   home: HomeState;
@@ -47,7 +47,7 @@ export interface RootState {
  * @returns {Object} - Root reducer
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function createRootReducer(history: History) {
+export function createAppReducer(history: History) {
   return combineReducers({
     router: connectRouter(history),
     global: globalReducer,
@@ -74,7 +74,7 @@ export function configureStore(history: History) {
   const middlewareEnhancer = applyMiddleware(...middlewares);
   const enhancers = [middlewareEnhancer];
   const composedEnhancers = composeWithDevTools(...enhancers);
-  const rootReducer = createRootReducer(history);
+  const appReducer = createAppReducer(history);
 
-  return createStore(rootReducer, composedEnhancers);
+  return createStore(appReducer, composedEnhancers);
 }

@@ -20,7 +20,7 @@ import * as storage from "src/utils/storage";
 import { isTxMined, hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from "src/utils/ethereum";
 import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
-import { RootState } from "src/store";
+import { AppState } from "src/store";
 import { AppDispatch, AppThunk } from "src";
 // domain
 import { ISOStringDate } from "src/domain/";
@@ -122,7 +122,7 @@ function changeNetworkStatus(
   newNetworkStatus: HermezNetworkStatus,
   backgroundColor: string
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { networkStatus: previousNetworkStatus },
     } = getState();
@@ -158,7 +158,7 @@ function checkHermezStatus(): AppThunk {
  * @returns {void}
  */
 function addPendingWithdraw(pendingWithdraw: Withdraw): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
     } = getState();
@@ -181,7 +181,7 @@ function addPendingWithdraw(pendingWithdraw: Withdraw): AppThunk {
  * @returns {void}
  */
 function removePendingWithdraw(hash: string): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
     } = getState();
@@ -204,7 +204,7 @@ function removePendingWithdraw(hash: string): AppThunk {
  * @returns {void}
  */
 function addPendingDelayedWithdraw(pendingDelayedWithdraw: DelayedWithdraw): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
     } = getState();
@@ -237,7 +237,7 @@ function addPendingDelayedWithdraw(pendingDelayedWithdraw: DelayedWithdraw): App
  * @returns {void}
  */
 function removePendingDelayedWithdraw(pendingDelayedWithdrawId: string): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
     } = getState();
@@ -270,7 +270,7 @@ function removePendingDelayedWithdraw(pendingDelayedWithdrawId: string): AppThun
  * @returns {void}
  */
 function removePendingDelayedWithdrawByHash(pendingDelayedWithdrawHash: string): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
     } = getState();
@@ -307,7 +307,7 @@ function updatePendingDelayedWithdrawDate(
   transactionHash: string,
   pendingDelayedWithdrawDate: ISOStringDate
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
     } = getState();
@@ -343,7 +343,7 @@ function updatePendingDelayedWithdrawDate(
  * @returns {void}
  */
 function checkPendingDelayedWithdrawals(): AppThunk {
-  return async (dispatch: AppDispatch, getState: () => RootState) => {
+  return async (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, pendingDelayedWithdraws, ethereumNetworkTask },
     } = getState();
@@ -446,7 +446,7 @@ function checkPendingDelayedWithdrawals(): AppThunk {
  * @returns {void}
  */
 function checkPendingWithdrawals(): AppThunk {
-  return async (dispatch: AppDispatch, getState: () => RootState) => {
+  return async (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask, pendingWithdraws },
     } = getState();
@@ -532,7 +532,7 @@ function checkPendingWithdrawals(): AppThunk {
  * @returns {void}
  */
 function addPendingDeposit(pendingDeposit: Deposit): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
     } = getState();
@@ -555,7 +555,7 @@ function addPendingDeposit(pendingDeposit: Deposit): AppThunk {
  * @returns {void}
  */
 function removePendingDepositByTransactionId(transactionId: string): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
     } = getState();
@@ -588,7 +588,7 @@ function removePendingDepositByTransactionId(transactionId: string): AppThunk {
  * @returns {void}
  */
 function removePendingDepositByHash(hash: string): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
     } = getState();
@@ -606,7 +606,7 @@ function removePendingDepositByHash(hash: string): AppThunk {
 }
 
 function updatePendingDepositId(transactionHash: string, transactionId: string): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
     } = getState();
@@ -636,7 +636,7 @@ function updatePendingDepositId(transactionHash: string, transactionId: string):
 }
 
 function checkPendingDeposits(): AppThunk {
-  return async (dispatch: AppDispatch, getState: () => RootState) => {
+  return async (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, pendingDeposits, ethereumNetworkTask },
     } = getState();
@@ -747,7 +747,7 @@ function checkPendingDeposits(): AppThunk {
 }
 
 function checkPendingTransactions(): AppThunk {
-  return (_: AppDispatch, getState: () => RootState) => {
+  return (_: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, coordinatorStateTask },
     } = getState();

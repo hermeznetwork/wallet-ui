@@ -5,7 +5,7 @@ import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppDispatch, AppThunk } from "src";
-import { RootState } from "src/store";
+import { AppState } from "src/store";
 import * as ethereum from "src/utils/ethereum";
 import { createAccount } from "src/utils/accounts";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
@@ -33,7 +33,7 @@ function fetchAccount(
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, tokensPriceTask },
     } = getState();
@@ -66,7 +66,7 @@ function fetchAccount(
  * @returns {void}
  */
 function fetchL1TokenBalance(token: Token): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet },
     } = getState();
@@ -96,7 +96,7 @@ function fetchL1TokenBalance(token: Token): AppThunk {
  * @returns {void}
  */
 function fetchPoolTransactions(accountIndex: Account["accountIndex"]): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     dispatch(accountDetailsActions.loadPoolTransactions());
 
     const {
@@ -142,7 +142,7 @@ function fetchHistoryTransactions(
   fromItem: number,
   historyExits: Exits
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       accountDetails: { historyTransactionsTask },
     } = getState();
@@ -193,7 +193,7 @@ function refreshHistoryTransactions(
   accountIndex: Account["accountIndex"],
   historyExits: Exits
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       accountDetails: { historyTransactionsTask },
     } = getState();
@@ -259,7 +259,7 @@ function refreshHistoryTransactions(
  * @returns {void}
  */
 function fetchExits(tokenId: Token["id"]): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     dispatch(accountDetailsActions.loadExits());
 
     const {
