@@ -1,8 +1,7 @@
-/* eslint-disable */
-// @ts-nocheck
+import { Theme } from "src/styles/theme";
 import { createUseStyles } from "react-jss";
 
-const useTransferLayoutStyles = createUseStyles((theme) => ({
+const useTransferLayoutStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
   },
