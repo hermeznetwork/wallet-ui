@@ -41,7 +41,7 @@ interface TransferViewState {
   accountTask: AsyncTask<Account, string>;
   accountsTask: AsyncTask<transferReducer.AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
-  isTransactionBeingApproval: boolean;
+  isTransactionBeingApproved: boolean;
   transactionToReview: transferActions.TransactionToReview | undefined;
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
@@ -84,7 +84,7 @@ function Transfer({
   accountTask,
   accountsTask,
   feesTask,
-  isTransactionBeingApproval,
+  isTransactionBeingApproved,
   transactionToReview,
   wallet,
   preferredCurrency,
@@ -228,7 +228,7 @@ function Transfer({
               (accountTask.status === "successful" || accountTask.status === "reloading") ? (
               <TransactionOverview
                 wallet={wallet}
-                isTransactionBeingApproval={isTransactionBeingApproval}
+                isTransactionBeingApproved={isTransactionBeingApproved}
                 transaction={{
                   type: TxType.Transfer,
                   amount: transactionToReview.amount,
@@ -264,7 +264,7 @@ const mapStateToProps = (state: AppState): TransferViewState => ({
   accountTask: state.transfer.accountTask,
   accountsTask: state.transfer.accountsTask,
   feesTask: state.transfer.feesTask,
-  isTransactionBeingApproval: state.transfer.isTransactionBeingApproval,
+  isTransactionBeingApproved: state.transfer.isTransactionBeingApproved,
   transactionToReview: state.transfer.transaction,
   pendingDeposits: state.global.pendingDeposits,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,

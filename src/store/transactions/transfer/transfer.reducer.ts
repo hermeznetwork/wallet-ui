@@ -21,7 +21,7 @@ export interface TransferState {
   accountsTask: AsyncTask<AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   transaction: TransactionToReview | undefined;
-  isTransactionBeingApproval: boolean;
+  isTransactionBeingApproved: boolean;
 }
 
 const initialTransferState: TransferState = {
@@ -39,7 +39,7 @@ const initialTransferState: TransferState = {
     status: "pending",
   },
   transaction: undefined,
-  isTransactionBeingApproval: false,
+  isTransactionBeingApproved: false,
 };
 
 function transferReducer(
@@ -197,13 +197,13 @@ function transferReducer(
     case TransferActionTypes.START_TRANSACTION_APPROVAL: {
       return {
         ...state,
-        isTransactionBeingApproval: true,
+        isTransactionBeingApproved: true,
       };
     }
     case TransferActionTypes.STOP_TRANSACTION_APPROVAL: {
       return {
         ...state,
-        isTransactionBeingApproval: false,
+        isTransactionBeingApproved: false,
       };
     }
     case TransferActionTypes.RESET_STATE: {

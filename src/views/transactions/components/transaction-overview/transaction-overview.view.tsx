@@ -73,7 +73,7 @@ type Transaction =
 
 interface Props {
   wallet: HermezWallet.HermezWallet;
-  isTransactionBeingApproval: boolean;
+  isTransactionBeingApproved: boolean;
   preferredCurrency: string;
   fiatExchangeRates: FiatExchangeRates;
   transaction: Transaction;
@@ -81,7 +81,7 @@ interface Props {
 
 function TransactionOverview({
   wallet,
-  isTransactionBeingApproval,
+  isTransactionBeingApproved,
   preferredCurrency,
   fiatExchangeRates,
   transaction,
@@ -92,10 +92,10 @@ function TransactionOverview({
   const [isWithdrawInfoSidenavOpen, setIsWithdrawInfoSidenavOpen] = React.useState(false);
   const { account, amount, type } = transaction;
   React.useEffect(() => {
-    if (!isTransactionBeingApproval) {
+    if (!isTransactionBeingApproved) {
       setIsButtonDisabled(false);
     }
-  }, [isTransactionBeingApproval]);
+  }, [isTransactionBeingApproved]);
 
   /**
    * Converts the transaction amount to fiat in the preferred currency
@@ -171,7 +171,7 @@ function TransactionOverview({
   );
 
   const footer = (buttonLabel: string): JSX.Element =>
-    isTransactionBeingApproval ? (
+    isTransactionBeingApproved ? (
       <div className={classes.signingSpinnerWrapper}>
         <Spinner />
         <p className={classes.signingText}>Sign in your connected wallet to confirm transaction</p>
