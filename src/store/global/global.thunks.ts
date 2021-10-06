@@ -771,7 +771,7 @@ function checkPendingTransactions(): AppThunk {
                 txTimestampInMs + oneDayInMs > nowInMs
               );
             })
-            .map((transaction) => {
+            .map((transaction: PooledTransaction) => {
               const txData = {
                 type: transaction.type,
                 from: transaction.fromAccountIndex,

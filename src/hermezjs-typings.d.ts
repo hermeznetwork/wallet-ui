@@ -11,7 +11,7 @@
 
 declare module "@hermeznetwork/*" {
   import { BigNumber } from "ethers";
-  import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
+  import { TxTypesUnion, TxStatesUnion } from "@hermeznetwork/hermezjs/src/enums";
 
   export type ISOStringDate = string;
 
@@ -117,25 +117,13 @@ declare module "@hermeznetwork/*" {
     id: string;
     nonce: number;
     signature: string;
-    state:
-      | typeof TxState.Forged
-      | typeof TxState.Forging
-      | typeof TxState.Pending
-      | typeof TxState.Invalid;
+    state: TxStatesUnion;
     timestamp: ISOStringDate;
     toAccountIndex: string;
     toBJJ: string;
     toHezEthereumAddress: string;
     token: Token;
-    type:
-      | typeof TxType.CreateAccountDeposit
-      | typeof TxType.Deposit
-      | typeof TxType.Exit
-      | typeof TxType.ForceExit
-      | typeof TxType.Transfer
-      | typeof TxType.TransferToBJJ
-      | typeof TxType.TransferToEthAddr
-      | typeof TxType.Withdrawn;
+    type: TxTypesUnion;
     // batchNum: number | null;
     // info: string | null;
     // maxNumBatch: number;
@@ -155,24 +143,12 @@ declare module "@hermeznetwork/*" {
     fee: number;
     fromAccountIndex: string;
     id: string;
-    state:
-      | typeof TxState.Forged
-      | typeof TxState.Forging
-      | typeof TxState.Pending
-      | typeof TxState.Invalid;
+    state: TxStatesUnion;
     timestamp: ISOStringDate;
     toAccountIndex: string;
     toHezEthereumAddress: string | null;
     token: Token;
-    type:
-      | typeof TxType.CreateAccountDeposit
-      | typeof TxType.Deposit
-      | typeof TxType.Exit
-      | typeof TxType.ForceExit
-      | typeof TxType.Transfer
-      | typeof TxType.TransferToBJJ
-      | typeof TxType.TransferToEthAddr
-      | typeof TxType.Withdrawn;
+    type: TxTypesUnion;
     // accountIndex: string;
     // balance: string;
     // hash: string;
@@ -723,12 +699,28 @@ declare module "@hermeznetwork/hermezjs/src/enums" {
     ForceExit = "ForceExit",
   } as const;
 
+  export type TxTypesUnion =
+    | typeof TxType.CreateAccountDeposit
+    | typeof TxType.Deposit
+    | typeof TxType.Exit
+    | typeof TxType.ForceExit
+    | typeof TxType.Transfer
+    | typeof TxType.TransferToBJJ
+    | typeof TxType.TransferToEthAddr
+    | typeof TxType.Withdraw;
+
   export declare const TxState = {
     Forged = "fged",
     Forging = "fing",
     Pending = "pend",
     Invalid = "invl",
   } as const;
+
+  export type TxStatesUnion =
+    | typeof TxState.Forged
+    | typeof TxState.Forging
+    | typeof TxState.Invalid
+    | typeof TxState.Pending;
 
   // declare const TxLevel = {
   //   L1: "L1",
