@@ -1,9 +1,9 @@
+import { push } from "connected-react-router";
+import { ethers, BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
-import { ethers, BigNumber } from "ethers";
-import { push } from "connected-react-router";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";

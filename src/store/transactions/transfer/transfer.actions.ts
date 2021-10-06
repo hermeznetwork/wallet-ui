@@ -4,6 +4,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Account, PooledTransaction, RecommendedFee } from "src/domain/hermez";
 // persistence
 import { Accounts } from "src/persistence";
+
 export enum TransferActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[TRANSFER] GO TO CHOOSE ACCOUNT STEP",
   GO_TO_BUILD_TRANSACTION_STEP = "[TRANSFER] GO TO BUILD TRANSACTION STEP",

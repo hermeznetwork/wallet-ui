@@ -1,12 +1,12 @@
-import { getPaginationData, Pagination } from "src/utils/api";
 import {
   TransferActionTypes,
   TransferAction,
   TransactionToReview,
   Step,
 } from "src/store/transactions/transfer/transfer.actions";
-
+import { getPaginationData, Pagination } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";
+// domain
 import { PooledTransaction, Account } from "src/domain/hermez";
 
 export interface AccountsWithPagination {
