@@ -3,10 +3,9 @@ import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
-import { AppDispatch, AppThunk } from "src";
+import { AppState, AppDispatch, AppThunk } from "src/store";
 import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
-import { AppState } from "src/store";
 import * as homeActions from "src/store/home/home.actions";
 // domain
 import { PooledTransaction, Deposit, FiatExchangeRates, Account } from "src/domain/hermez";

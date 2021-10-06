@@ -5,10 +5,9 @@ import { connect } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { push } from "connected-react-router";
 import { BigNumber } from "@ethersproject/bignumber";
-
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { AppState } from "src/store";
-import { AppDispatch } from "src";
+
+import { AppState, AppDispatch } from "src/store";
 import * as transferThunks from "src/store/transactions/transfer/transfer.thunks";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import * as transferReducer from "src/store/transactions/transfer/transfer.reducer";

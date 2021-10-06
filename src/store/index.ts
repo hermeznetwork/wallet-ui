@@ -1,4 +1,5 @@
 import { createStore, applyMiddleware, combineReducers } from "redux";
+import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { connectRouter, routerMiddleware, RouterState, RouterAction } from "connected-react-router";
 import thunk from "redux-thunk";
@@ -30,7 +31,6 @@ export type AppAction =
   | AccountDetailsAction
   | LoginAction
   | TransferAction;
-
 export interface AppState {
   router: RouterState;
   global: GlobalState;
@@ -40,6 +40,8 @@ export interface AppState {
   login: LoginState;
   transfer: TransferState;
 }
+export type AppDispatch = ThunkDispatch<AppState, undefined, AppAction>;
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, AppAction>;
 
 /**
  * Creates the Redux store root reducer combining all the reducers used in the app

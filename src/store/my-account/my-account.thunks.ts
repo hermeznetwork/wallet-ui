@@ -1,4 +1,4 @@
-import { AppDispatch, AppThunk } from "src";
+import { AppDispatch, AppThunk } from "src/store";
 import * as myAccountActions from "src/store/my-account/my-account.actions";
 // persistence
 import * as localStorage from "src/persistence/local-storage";

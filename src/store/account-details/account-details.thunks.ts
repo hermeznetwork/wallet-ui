@@ -4,8 +4,7 @@ import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-import { AppDispatch, AppThunk } from "src";
-import { AppState } from "src/store";
+import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as ethereum from "src/utils/ethereum";
 import { createAccount } from "src/utils/accounts";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";

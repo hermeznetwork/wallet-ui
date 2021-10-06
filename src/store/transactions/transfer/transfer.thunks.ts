@@ -5,8 +5,7 @@ import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { ethers, BigNumber } from "ethers";
 import { push } from "connected-react-router";
 
-import { AppState } from "src/store";
-import { AppDispatch, AppThunk } from "src";
+import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import { openSnackbar } from "src/store/global/global.actions";
 import { createAccount } from "src/utils/accounts";

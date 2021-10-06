@@ -7,11 +7,10 @@ import { Signer } from "@ethersproject/abstract-signer";
 import hermez from "@hermeznetwork/hermezjs";
 import { isEnvironmentSupported } from "@hermeznetwork/hermezjs/src/environment";
 
-import { AppDispatch, AppThunk } from "src";
+import { AppState, AppDispatch, AppThunk } from "src/store";
 import { TREZOR_MANIFEST_MAIL } from "src/constants";
 import { buildEthereumBIP44Path } from "src/utils/hw-wallets";
 import { getNextForgerUrls } from "src/utils/coordinator";
-import { AppState } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as loginActions from "src/store/login/login.actions";
