@@ -43,9 +43,7 @@ export interface GoToBuildTransactionStep {
 export interface TransactionToReview {
   amount: BigNumber;
   fee: number;
-  from: {
-    accountIndex: string;
-  };
+  from: Account;
   to: Partial<Account>;
 }
 
