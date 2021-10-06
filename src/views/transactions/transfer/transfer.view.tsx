@@ -29,6 +29,7 @@ import {
   FiatExchangeRates,
   PooledTransaction,
   Deposit,
+  Token,
 } from "src/domain/hermez";
 // persistence
 import * as localStorageDomain from "src/domain/local-storage";
@@ -47,6 +48,7 @@ interface TransferViewState {
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   pendingDeposits: localStorageDomain.PendingDeposits;
+  tokensPriceTask: AsyncTask<Token[], string>;
 }
 
 interface TransferViewHandlers {
@@ -91,6 +93,7 @@ function Transfer({
   preferredCurrency,
   fiatExchangeRatesTask,
   pendingDeposits,
+  tokensPriceTask,
   onChangeHeader,
   onLoadHermezAccount,
   onLoadAccountBalance,
@@ -209,13 +212,19 @@ function Transfer({
                 }
                 accountBalanceTask={accountBalanceTask}
                 feesTask={feesTask}
+                tokensPriceTask={tokensPriceTask}
                 // ToDo: To be removed
                 estimatedWithdrawFeeTask={{ status: "pending" }}
+                // ToDo: To be removed
+                estimatedDepositFeeTask={{ status: "pending" }}
                 onLoadAccountBalance={onLoadAccountBalance}
                 onLoadFees={onLoadFees}
                 // ToDo: To be removed
                 onLoadEstimatedWithdrawFee={() => ({})}
+                // ToDo: To be removed
+                onLoadEstimatedDepositFee={() => ({})}
                 onSubmit={onGoToTransactionOverviewStep}
+                onGoToChooseAccountStep={onGoToChooseAccountStep}
               />
             ) : null;
           }
@@ -267,6 +276,7 @@ const mapStateToProps = (state: RootState): TransferViewState => ({
   pendingDeposits: state.global.pendingDeposits,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
+  tokensPriceTask: state.global.tokensPriceTask,
 });
 
 const getHeaderCloseAction = (accountIndex: string | null) => {
