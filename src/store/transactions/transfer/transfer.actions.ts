@@ -13,9 +13,6 @@ export enum TransferActionTypes {
   LOAD_ACCOUNT = "[TRANSFER] LOAD ACCOUNT",
   LOAD_ACCOUNT_SUCCESS = "[TRANSFER] LOAD ACCOUNT SUCCESS",
   LOAD_ACCOUNT_FAILURE = "[TRANSFER] LOAD ACCOUNT FAILURE",
-  LOAD_ACCOUNT_BALANCE = "[TRANSFER] LOAD ACCOUNT BALANCE",
-  LOAD_ACCOUNT_BALANCE_SUCCESS = "[TRANSFER] LOAD ACCOUNT BALANCE SUCCESS",
-  LOAD_ACCOUNT_BALANCE_FAILURE = "[TRANSFER] LOAD ACCOUNT BALANCE FAILURE",
   LOAD_FEES = "[TRANSFER] LOAD FEES",
   LOAD_FEES_SUCCESS = "[TRANSFER] LOAD FEES SUCCESS",
   LOAD_FEES_FAILURE = "[TRANSFER] LOAD FEES FAILURE",
@@ -70,20 +67,6 @@ export interface LoadAccountSuccess {
 export interface LoadAccountFailure {
   type: TransferActionTypes.LOAD_ACCOUNT_FAILURE;
   error: string;
-}
-
-export interface LoadAccountBalance {
-  type: TransferActionTypes.LOAD_ACCOUNT_BALANCE;
-}
-
-export interface LoadAccountBalanceSuccess {
-  type: TransferActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS;
-  accountBalance: string;
-}
-
-export interface LoadAccountBalanceFailure {
-  type: TransferActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE;
-  error: Error;
 }
 
 export interface LoadFees {
@@ -148,9 +131,6 @@ export type TransferAction =
   | LoadAccount
   | LoadAccountSuccess
   | LoadAccountFailure
-  | LoadAccountBalance
-  | LoadAccountBalanceSuccess
-  | LoadAccountBalanceFailure
   | LoadFees
   | LoadFeesSuccess
   | LoadFeesFailure
@@ -207,26 +187,6 @@ function loadAccountSuccess(account: Account): LoadAccountSuccess {
 function loadAccountFailure(error: string): LoadAccountFailure {
   return {
     type: TransferActionTypes.LOAD_ACCOUNT_FAILURE,
-    error,
-  };
-}
-
-function loadAccountBalance(): LoadAccountBalance {
-  return {
-    type: TransferActionTypes.LOAD_ACCOUNT_BALANCE,
-  };
-}
-
-function loadAccountBalanceSuccess(accountBalance: string): LoadAccountBalanceSuccess {
-  return {
-    type: TransferActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS,
-    accountBalance,
-  };
-}
-
-function loadAccountBalanceFailure(error: Error): LoadAccountBalanceFailure {
-  return {
-    type: TransferActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE,
     error,
   };
 }
@@ -325,9 +285,6 @@ export {
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,
-  loadAccountBalance,
-  loadAccountBalanceSuccess,
-  loadAccountBalanceFailure,
   loadFees,
   loadFeesSuccess,
   loadFeesFailure,

@@ -19,7 +19,6 @@ export interface TransferState {
   pooledTransactionsTask: AsyncTask<PooledTransaction[], Error>;
   accountTask: AsyncTask<Account, string>;
   accountsTask: AsyncTask<AccountsWithPagination, Error>;
-  accountBalanceTask: AsyncTask<unknown, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproval: boolean;
@@ -34,9 +33,6 @@ const initialTransferState: TransferState = {
     status: "pending",
   },
   accountsTask: {
-    status: "pending",
-  },
-  accountBalanceTask: {
     status: "pending",
   },
   feesTask: {
@@ -170,32 +166,6 @@ function transferReducer(
       return {
         ...state,
         accountTask: {
-          status: "failed",
-          error: action.error,
-        },
-      };
-    }
-    case TransferActionTypes.LOAD_ACCOUNT_BALANCE: {
-      return {
-        ...state,
-        accountBalanceTask: {
-          status: "loading",
-        },
-      };
-    }
-    case TransferActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS: {
-      return {
-        ...state,
-        accountBalanceTask: {
-          status: "successful",
-          data: action.accountBalance,
-        },
-      };
-    }
-    case TransferActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE: {
-      return {
-        ...state,
-        accountBalanceTask: {
           status: "failed",
           error: action.error,
         },

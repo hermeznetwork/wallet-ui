@@ -1,8 +1,6 @@
 import { push } from "connected-react-router";
-import { ethers, BigNumber } from "ethers";
+import { BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
-import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
-import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
@@ -115,28 +113,6 @@ function fetchAccounts(
   };
 }
 
-function fetchAccountBalance(): AppThunk {
-  return async (dispatch: AppDispatch, getState: () => AppState) => {
-    const {
-      global: { wallet },
-    } = getState();
-
-    if (wallet !== undefined) {
-      dispatch(transferActions.loadAccountBalance());
-
-      const ethereumAddress = getEthereumAddress(wallet.hermezEthereumAddress);
-      const provider = getProvider();
-
-      return provider
-        .getBalance(ethereumAddress)
-        .then((balance) =>
-          dispatch(transferActions.loadAccountBalanceSuccess(ethers.utils.formatUnits(balance)))
-        )
-        .catch((err) => dispatch(transferActions.loadAccountBalanceFailure(err)));
-    }
-  };
-}
-
 /**
  * Fetches the recommended fees from the Coordinator
  * @returns {void}
@@ -207,11 +183,4 @@ function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) 
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
-export {
-  fetchHermezAccount,
-  fetchPoolTransactions,
-  fetchAccounts,
-  fetchAccountBalance,
-  fetchFees,
-  transfer,
-};
+export { fetchHermezAccount, fetchPoolTransactions, fetchAccounts, fetchFees, transfer };

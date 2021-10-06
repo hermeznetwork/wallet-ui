@@ -40,7 +40,6 @@ interface TransferViewState {
   step: transferActions.Step;
   accountTask: AsyncTask<Account, string>;
   accountsTask: AsyncTask<transferReducer.AccountsWithPagination, Error>;
-  accountBalanceTask: AsyncTask<unknown, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   isTransactionBeingApproval: boolean;
   transactionToReview: transferActions.TransactionToReview | undefined;
@@ -60,7 +59,6 @@ interface TransferViewHandlers {
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) => void;
-  onLoadAccountBalance: () => void;
   onLoadFees: () => void;
   onLoadPooledTransactions: () => void;
   onLoadAccounts: (
@@ -85,7 +83,6 @@ function Transfer({
   step,
   accountTask,
   accountsTask,
-  accountBalanceTask,
   feesTask,
   isTransactionBeingApproval,
   transactionToReview,
@@ -96,7 +93,6 @@ function Transfer({
   tokensPriceTask,
   onChangeHeader,
   onLoadHermezAccount,
-  onLoadAccountBalance,
   onLoadFees,
   onLoadPooledTransactions,
   onLoadAccounts,
@@ -210,19 +206,17 @@ function Transfer({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                accountBalanceTask={accountBalanceTask}
                 feesTask={feesTask}
                 tokensPriceTask={tokensPriceTask}
-                // ToDo: To be removed
+                // ToDo: To be removed START
+                accountBalanceTask={{ status: "pending" }}
                 estimatedWithdrawFeeTask={{ status: "pending" }}
-                // ToDo: To be removed
                 estimatedDepositFeeTask={{ status: "pending" }}
-                onLoadAccountBalance={onLoadAccountBalance}
-                onLoadFees={onLoadFees}
-                // ToDo: To be removed
+                onLoadAccountBalance={() => ({})}
                 onLoadEstimatedWithdrawFee={() => ({})}
-                // ToDo: To be removed
                 onLoadEstimatedDepositFee={() => ({})}
+                // ToDo: To be removed END
+                onLoadFees={onLoadFees}
                 onSubmit={onGoToTransactionOverviewStep}
                 onGoToChooseAccountStep={onGoToChooseAccountStep}
               />
@@ -269,7 +263,6 @@ const mapStateToProps = (state: AppState): TransferViewState => ({
   wallet: state.global.wallet,
   accountTask: state.transfer.accountTask,
   accountsTask: state.transfer.accountsTask,
-  accountBalanceTask: state.transfer.accountBalanceTask,
   feesTask: state.transfer.feesTask,
   isTransactionBeingApproval: state.transfer.isTransactionBeingApproval,
   transactionToReview: state.transfer.transaction,
@@ -341,7 +334,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
         preferredCurrency
       )
     ),
-  onLoadAccountBalance: () => dispatch(transferThunks.fetchAccountBalance()),
   onLoadFees: () => dispatch(transferThunks.fetchFees()),
   onLoadPooledTransactions: () => dispatch(transferThunks.fetchPoolTransactions()),
   onLoadAccounts: (
