@@ -258,7 +258,7 @@ function Exit({
         </div>
         <span className={classes.amountFiat}>
           {CurrencySymbol[preferredCurrency].symbol}
-          {fiatAmount.toFixed(2)}
+          {fiatAmount}
         </span>
       </div>
       {(() => {

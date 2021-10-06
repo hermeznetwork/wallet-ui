@@ -72,7 +72,7 @@ function AmountInput(Component) {
         account.token.USD,
         preferredCurrency,
         fiatExchangeRates
-      ).toFixed(2);
+      );
     }
 
     /**
@@ -115,7 +115,9 @@ function AmountInput(Component) {
      * @param {InputEvent} event - Input event
      */
     function handleInputChange(event) {
-      const INPUT_REGEX = new RegExp(`^\\d*(?:\\.\\d{0,${account?.token.decimals}})?$`);
+      const regexToken = `^\\d*(?:\\.\\d{0,${account?.token.decimals}})?$`;
+      const regexFiat = `^\\d*(?:\\.\\d{0,2})?$`;
+      const INPUT_REGEX = new RegExp(showInFiat ? regexFiat : regexToken);
       if (INPUT_REGEX.test(event.target.value)) {
         if (showInFiat) {
           const newAmountInFiat = Number(event.target.value);

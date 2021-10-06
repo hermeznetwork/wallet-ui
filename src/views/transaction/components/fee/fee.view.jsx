@@ -49,7 +49,7 @@ function Fee({
       return (
         <>
           Ethereum fee (estimated) -<span>${depositFee.amount} ETH</span>
-          {` ~ ${fiatAmount.toFixed(2)} ${CurrencySymbol[preferredCurrency].symbol}`}
+          {` ~ ${fiatAmount} ${CurrencySymbol[preferredCurrency].symbol}`}
         </>
       );
     }
@@ -85,7 +85,7 @@ function Fee({
           Fee&nbsp;
           <span>
             {showInFiat
-              ? `${l2FeeInFiat.toFixed(2)} ${preferredCurrency}`
+              ? `${l2FeeInFiat} ${preferredCurrency}`
               : `${getFixedTokenAmount(
                   parseUnits(l2RealFee.toString(), token.decimals),
                   token.decimals
