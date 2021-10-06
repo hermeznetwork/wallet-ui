@@ -1,7 +1,9 @@
+// ToDo: Remove the disable of TS and the linter below once the component are migrated to TS
 /* eslint-disable */
 // @ts-nocheck
 import React from "react";
 import { useTheme } from "react-jss";
+import { BigNumber } from "ethers";
 
 import useTransactionOverviewStyles from "src/views/transactions/components/transaction-overview/transaction-overview.styles";
 import { getTokenAmountInPreferredCurrency, getFixedTokenAmount } from "src/utils/currencies";
@@ -161,11 +163,11 @@ function TransactionOverview({
       <section className={classes.section}>
         <div className={classes.highlightedAmount}>
           <TokenBalance
-            amount={getFixedTokenAmount(amount, account.token.decimals)}
+            amount={getFixedTokenAmount(amount.toString(), account.token.decimals)}
             symbol={account.token.symbol}
           />
         </div>
-        <FiatAmount amount={getAmountInFiat(amount)} currency={preferredCurrency} />
+        <FiatAmount amount={getAmountInFiat(amount.toString())} currency={preferredCurrency} />
       </section>
     </Container>
   );
@@ -282,7 +284,7 @@ function TransactionOverview({
                   // ToDo: To be removed
                   estimatedWithdrawFee: { status: "pending" },
                   fee: {
-                    value: Number(getRealFee(amount, account.token, transaction.fee)),
+                    value: Number(getRealFee(amount.toString(), account.token, transaction.fee)),
                     token: account.token,
                   },
                 }}
@@ -313,7 +315,7 @@ function TransactionOverview({
                   // ToDo: To be removed
                   estimatedWithdrawFee: { status: "pending" },
                   fee: {
-                    value: Number(getRealFee(amount, account.token, transaction.fee)),
+                    value: Number(getRealFee(amount.toString(), account.token, transaction.fee)),
                     token: account.token,
                   },
                 }}
