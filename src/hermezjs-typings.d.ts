@@ -283,7 +283,7 @@ declare module "@hermeznetwork/*" {
   //   emergencyMode: boolean;
   // }
 
-  interface RecommendedFee {
+  export interface RecommendedFee {
     existingAccount: number;
     createAccount: number;
     createAccountInternal: number;

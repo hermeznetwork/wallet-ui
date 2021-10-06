@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { Account, PooledTransaction } from "src/domain/hermez";
+import { Account, PooledTransaction, RecommendedFee } from "src/domain/hermez";
 // persistence
 import { Accounts } from "src/persistence";
 export enum TransferActionTypes {
@@ -89,15 +89,9 @@ export interface LoadFees {
   type: TransferActionTypes.LOAD_FEES;
 }
 
-interface Fees {
-  existingAccount: number;
-  createAccount: number;
-  createAccountInternal: number;
-}
-
 export interface LoadFeesSuccess {
   type: TransferActionTypes.LOAD_FEES_SUCCESS;
-  fees: Fees;
+  fees: RecommendedFee;
 }
 
 export interface LoadFeesFailure {
@@ -242,7 +236,7 @@ function loadFees(): LoadFees {
   };
 }
 
-function loadFeesSuccess(fees: Fees): LoadFeesSuccess {
+function loadFeesSuccess(fees: RecommendedFee): LoadFeesSuccess {
   return {
     type: TransferActionTypes.LOAD_FEES_SUCCESS,
     fees,

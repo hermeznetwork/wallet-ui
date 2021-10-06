@@ -24,6 +24,7 @@ export type {
   SignerData,
   SignerType,
   JsonRpcSignerData,
+  RecommendedFee,
 } from "@hermeznetwork/hermezjs";
 
 export type Account = hermezjs.Account & { fiatBalance?: number };
