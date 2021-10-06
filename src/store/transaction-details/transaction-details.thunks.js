@@ -47,7 +47,12 @@ function fetchTransaction(transactionIdOrHash) {
 
     return transactionPromise
       .then((res) => {
-        if (res.fromBJJ !== wallet.publicKeyBase64 && res.toBJJ !== wallet.publicKeyBase64) {
+        if (
+          res.fromBJJ !== wallet.publicKeyBase64 &&
+          res.toBJJ !== wallet.publicKeyBase64 &&
+          res.fromHezEthereumAddress !== wallet.hermezEthereumAddress &&
+          res.toHezEthereumAddress !== wallet.hermezEthereumAddress
+        ) {
           dispatch(push("/"));
         } else {
           dispatch(transactionDetailsActionTypes.loadTransactionSuccess(res));
