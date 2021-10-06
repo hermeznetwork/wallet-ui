@@ -29,6 +29,7 @@ import {
   PooledTransaction,
   Deposit,
   Token,
+  RecommendedFee,
 } from "src/domain/hermez";
 // persistence
 import * as localStorageDomain from "src/domain/local-storage";
@@ -40,7 +41,7 @@ interface TransferViewState {
   accountTask: AsyncTask<Account, string>;
   accountsTask: AsyncTask<transferReducer.AccountsWithPagination, Error>;
   accountBalanceTask: AsyncTask<unknown, Error>;
-  feesTask: AsyncTask<unknown, Error>;
+  feesTask: AsyncTask<RecommendedFee, Error>;
   isTransactionBeingApproval: boolean;
   transactionToReview: transferActions.TransactionToReview | undefined;
   wallet: HermezWallet.HermezWallet | undefined;

@@ -7,7 +7,7 @@ import {
 import { getPaginationData, Pagination } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PooledTransaction, Account } from "src/domain/hermez";
+import { PooledTransaction, Account, RecommendedFee } from "src/domain/hermez";
 
 export interface AccountsWithPagination {
   accounts: Account[];
@@ -20,7 +20,7 @@ export interface TransferState {
   accountTask: AsyncTask<Account, string>;
   accountsTask: AsyncTask<AccountsWithPagination, Error>;
   accountBalanceTask: AsyncTask<unknown, Error>;
-  feesTask: AsyncTask<unknown, Error>;
+  feesTask: AsyncTask<RecommendedFee, Error>;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproval: boolean;
 }
