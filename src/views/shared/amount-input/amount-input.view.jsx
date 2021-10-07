@@ -11,6 +11,7 @@ import { parseUnits } from "ethers/lib/utils";
 import { getTransactionFee } from "../../../utils/fees";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
+import { MAX_TOKEN_DECIMALS } from "../../../constants";
 
 function AmountInput(Component) {
   return function (props) {
@@ -115,9 +116,12 @@ function AmountInput(Component) {
      * @param {InputEvent} event - Input event
      */
     function handleInputChange(event) {
-      const regexToken = `^\\d*(?:\\.\\d{0,${account?.token.decimals}})?$`;
+      const decimals =
+        account?.token?.decimals === undefined ? MAX_TOKEN_DECIMALS : account.token.decimals;
+      const regexToken = `^\\d*(?:\\.\\d{0,${decimals}})?$`;
       const regexFiat = `^\\d*(?:\\.\\d{0,2})?$`;
       const INPUT_REGEX = new RegExp(showInFiat ? regexFiat : regexToken);
+
       if (INPUT_REGEX.test(event.target.value)) {
         if (showInFiat) {
           const newAmountInFiat = Number(event.target.value);
