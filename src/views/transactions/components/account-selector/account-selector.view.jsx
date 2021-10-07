@@ -24,13 +24,7 @@ function AccountSelector({
 
   React.useEffect(() => {
     if (accountsTask.status === "pending" && pooledTransactionsTask.status === "successful") {
-      onLoadAccounts(
-        undefined,
-        pooledTransactionsTask.data,
-        pendingDeposits,
-        fiatExchangeRates,
-        preferredCurrency
-      );
+      onLoadAccounts(undefined, pooledTransactionsTask.data, fiatExchangeRates, preferredCurrency);
     }
   }, [accountsTask, pooledTransactionsTask, onLoadAccounts]);
 

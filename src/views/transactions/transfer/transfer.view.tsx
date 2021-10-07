@@ -53,7 +53,6 @@ interface TransferViewHandlers {
   onLoadHermezAccount: (
     accountIndex: string,
     pooledTransactions: PooledTransaction[],
-    accountPendingDeposits: Deposit[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) => void;
@@ -62,7 +61,6 @@ interface TransferViewHandlers {
   onLoadAccounts: (
     fromItem: number | undefined,
     pooledTransactions: PooledTransaction[],
-    pendingDeposits: Deposit[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) => void;
@@ -135,7 +133,6 @@ function Transfer({
         onLoadHermezAccount(
           accountIndex,
           pooledTransactionsTask.data,
-          accountPendingDeposits,
           fiatExchangeRatesTask.data,
           preferredCurrency
         );
@@ -319,7 +316,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
   onLoadHermezAccount: (
     accountIndex: string,
     pooledTransactions: PooledTransaction[],
-    accountPendingDeposits: Deposit[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) =>
@@ -327,7 +323,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
       transferThunks.fetchHermezAccount(
         accountIndex,
         pooledTransactions,
-        accountPendingDeposits,
         fiatExchangeRates,
         preferredCurrency
       )
@@ -337,7 +332,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
   onLoadAccounts: (
     fromItem: number | undefined,
     pooledTransactions: PooledTransaction[],
-    pendingDeposits: Deposit[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) =>
@@ -345,7 +339,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
       transferThunks.fetchAccounts(
         fromItem,
         pooledTransactions,
-        pendingDeposits,
         fiatExchangeRates,
         preferredCurrency
       )
