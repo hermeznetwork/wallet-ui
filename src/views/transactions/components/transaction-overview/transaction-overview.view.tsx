@@ -33,7 +33,7 @@ type Transaction =
       type: typeof TxType.Deposit;
       amount: BigNumber;
       account: Account;
-      onDeposit: (amount: BigNumber, account: Account) => Promise<void>;
+      onDeposit: (amount: BigNumber, account: Account) => void;
     }
   | {
       type: typeof TxType.Transfer;
@@ -48,7 +48,7 @@ type Transaction =
       amount: BigNumber;
       account: Account;
       fee: number;
-      onExit: (amount: BigNumber, account: Account, fee: number) => Promise<void>;
+      onExit: (amount: BigNumber, account: Account, fee: number) => void;
     }
   | {
       type: typeof TxType.Withdraw;
@@ -64,13 +64,13 @@ type Transaction =
         exit: Exit,
         completeDelayedWithdrawal: boolean,
         instantWithdrawal: boolean
-      ) => Promise<void>;
+      ) => void;
     }
   | {
       type: typeof TxType.ForceExit;
       amount: BigNumber;
       account: Account;
-      onForceExit: (amount: BigNumber, account: Account) => Promise<void>;
+      onForceExit: (amount: BigNumber, account: Account) => void;
     };
 
 interface Props {
@@ -128,7 +128,7 @@ function TransactionOverview({
    * Bubbles up an event to send the transaction accordingly
    * @returns {void}
    */
-  function handleFormSubmit(): Promise<void> {
+  function handleFormSubmit(): void {
     // We only need to disable the button on L2 txs, as L1 txs are going to display an
     // spinner which will prevent the user from submitting the form twice
     switch (type) {
