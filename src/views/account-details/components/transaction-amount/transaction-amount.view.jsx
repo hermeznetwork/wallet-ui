@@ -19,7 +19,7 @@ function TransactionAmount({
     case TxType.Deposit: {
       return (
         <p className={`${classes.root} ${classes.depositAmount}`}>
-          {currencySymbol} {fiatAmount.toFixed(2)}
+          {currencySymbol} {fiatAmount}
         </p>
       );
     }
@@ -28,7 +28,7 @@ function TransactionAmount({
     case TxType.ForceExit: {
       return (
         <p className={classes.root}>
-          - {currencySymbol} {fiatAmount.toFixed(2)}
+          - {currencySymbol} {fiatAmount}
         </p>
       );
     }
@@ -37,13 +37,13 @@ function TransactionAmount({
       if (fromAccountIndex === accountIndex) {
         return (
           <p className={classes.root}>
-            - {currencySymbol} {fiatAmount.toFixed(2)}
+            - {currencySymbol} {fiatAmount}
           </p>
         );
       } else {
         return (
           <p className={`${classes.root} ${classes.depositAmount}`}>
-            {currencySymbol} {fiatAmount.toFixed(2)}
+            {currencySymbol} {fiatAmount}
           </p>
         );
       }
