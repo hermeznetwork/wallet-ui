@@ -47,12 +47,13 @@ function fetchTransaction(transactionIdOrHash) {
 
     return transactionPromise
       .then((res) => {
-        if (
-          res.fromBJJ !== wallet.publicKeyBase64 &&
-          res.toBJJ !== wallet.publicKeyBase64 &&
+        const txContainsBJJUserAddress =
+          res.fromBJJ !== wallet.publicKeyBase64 && res.toBJJ !== wallet.publicKeyBase64;
+        const txContainsHezEthereumAddressUserValue =
           res.fromHezEthereumAddress !== wallet.hermezEthereumAddress &&
-          res.toHezEthereumAddress !== wallet.hermezEthereumAddress
-        ) {
+          res.toHezEthereumAddress !== wallet.hermezEthereumAddress;
+
+        if (isHezEthereumAddressUserWallet && isHezEthereumAddressUserWallet) {
           dispatch(push("/"));
         } else {
           dispatch(transactionDetailsActionTypes.loadTransactionSuccess(res));
