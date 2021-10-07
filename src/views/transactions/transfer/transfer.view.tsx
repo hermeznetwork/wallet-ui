@@ -143,7 +143,6 @@ function Transfer({
   }, [
     accountIndex,
     pooledTransactionsTask,
-    accountPendingDeposits,
     fiatExchangeRatesTask,
     preferredCurrency,
     onGoToChooseAccountStep,
