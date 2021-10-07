@@ -48,15 +48,15 @@ function fetchTransaction(transactionIdOrHash) {
     return transactionPromise
       .then((res) => {
         const txContainsBJJUserAddress =
-          res.fromBJJ !== wallet.publicKeyBase64 && res.toBJJ !== wallet.publicKeyBase64;
+          res.fromBJJ === wallet.publicKeyBase64 || res.toBJJ === wallet.publicKeyBase64;
         const txContainsHezEthereumAddressUserValue =
-          res.fromHezEthereumAddress !== wallet.hermezEthereumAddress &&
-          res.toHezEthereumAddress !== wallet.hermezEthereumAddress;
+          res.fromHezEthereumAddress === wallet.hermezEthereumAddress ||
+          res.toHezEthereumAddress === wallet.hermezEthereumAddress;
 
-        if (isHezEthereumAddressUserWallet && isHezEthereumAddressUserWallet) {
-          dispatch(push("/"));
-        } else {
+        if (txContainsBJJUserAddress || txContainsHezEthereumAddressUserValue) {
           dispatch(transactionDetailsActionTypes.loadTransactionSuccess(res));
+        } else {
+          dispatch(push("/"));
         }
       })
       .catch(() => dispatch(transactionDetailsActionTypes.loadTransactionFailure()));
