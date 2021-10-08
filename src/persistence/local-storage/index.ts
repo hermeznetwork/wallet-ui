@@ -17,7 +17,7 @@ import {
 
 // Storage Helpers
 
-export function getStorageKey(key: string): unknown {
+export function getStorageByKey(key: string): unknown {
   const storageStringOrNull = localStorage.getItem(key);
   if (storageStringOrNull === null) {
     return initStorage(key);
@@ -30,14 +30,14 @@ export function getStorageKey(key: string): unknown {
   }
 }
 
-export function setStorageKey(key: string, value: string): void {
+export function setStorageByKey(key: string, value: string): void {
   localStorage.setItem(key, value);
 }
 
 export function initStorage(key: string): Record<string, never> {
   const initialStorage = {};
 
-  setStorageKey(key, JSON.stringify(initialStorage));
+  setStorageByKey(key, JSON.stringify(initialStorage));
 
   return initialStorage;
 }
@@ -51,19 +51,19 @@ const stringToNumber = z.string().transform((val) => parseFloat(val));
 const authSignaturesParser: z.ZodSchema<AuthSignatures> = z.record(z.record(z.string()));
 
 export function getAuthSignatures(): AuthSignatures {
-  const authSignatures: unknown = getStorageKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY);
+  const authSignatures: unknown = getStorageByKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY);
   const parsedAuthSignatures = authSignaturesParser.safeParse(authSignatures);
   return parsedAuthSignatures.success ? parsedAuthSignatures.data : {};
 }
 
 export function setAuthSignatures(authSignatures: AuthSignatures): void {
-  setStorageKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY, JSON.stringify(authSignatures));
+  setStorageByKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY, JSON.stringify(authSignatures));
 }
 
 // Preferred currency
 
 export function getPreferredCurrency(): string {
-  const preferredCurrency: unknown = getStorageKey(constants.MY_ACCOUNT.PREFERRED_CURRENCY_KEY);
+  const preferredCurrency: unknown = getStorageByKey(constants.MY_ACCOUNT.PREFERRED_CURRENCY_KEY);
   const parsedPreferredCurrency = z.string().safeParse(preferredCurrency);
   if (parsedPreferredCurrency.success) {
     return parsedPreferredCurrency.data;
@@ -74,7 +74,7 @@ export function getPreferredCurrency(): string {
 }
 
 export function setPreferredCurrency(preferredCurrency: string): void {
-  setStorageKey(constants.MY_ACCOUNT.PREFERRED_CURRENCY_KEY, preferredCurrency);
+  setStorageByKey(constants.MY_ACCOUNT.PREFERRED_CURRENCY_KEY, preferredCurrency);
 }
 
 // Pending Withdraws
@@ -84,7 +84,7 @@ const pendingWithdrawsParser: z.ZodSchema<PendingWithdraws> = z.record(
 );
 
 export function getPendingWithdraws(): PendingWithdraws {
-  const pendingWithdraws: unknown = getStorageKey(constants.PENDING_WITHDRAWS_KEY);
+  const pendingWithdraws: unknown = getStorageByKey(constants.PENDING_WITHDRAWS_KEY);
   const parsedPendingWithdraws = pendingWithdrawsParser.safeParse(pendingWithdraws);
   return parsedPendingWithdraws.success ? parsedPendingWithdraws.data : {};
 }
@@ -104,7 +104,7 @@ export function addPendingWithdraw(
       [hermezEthereumAddress]: [...withdraws, pendingWithdraw],
     },
   };
-  setStorageKey(constants.PENDING_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_WITHDRAWS_KEY, JSON.stringify(newStorage));
   return newStorage;
 }
 
@@ -123,7 +123,7 @@ export function removePendingWithdrawByHash(
       [hermezEthereumAddress]: withdraws.filter((item) => item.hash !== hash),
     },
   };
-  setStorageKey(constants.PENDING_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_WITHDRAWS_KEY, JSON.stringify(newStorage));
   return newStorage;
 }
 
@@ -134,7 +134,7 @@ const pendingDelayedWithdrawsParser: z.ZodSchema<PendingDelayedWithdraws> = z.re
 );
 
 export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
-  const pendingDelayedWithdraws: unknown = getStorageKey(constants.PENDING_DELAYED_WITHDRAWS_KEY);
+  const pendingDelayedWithdraws: unknown = getStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY);
   const parsedPendingDelayedWithdraws =
     pendingDelayedWithdrawsParser.safeParse(pendingDelayedWithdraws);
   return parsedPendingDelayedWithdraws.success ? parsedPendingDelayedWithdraws.data : {};
@@ -157,7 +157,7 @@ export function addPendingDelayedWithdraw(
       [hermezEthereumAddress]: [...delayedWithdraws, pendingDelayedWithdraw],
     },
   };
-  setStorageKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
   return newStorage;
 }
 
@@ -181,7 +181,7 @@ export function updatePendingDelayedWithdrawByHash(
       ),
     },
   };
-  setStorageKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
   return newStorage;
 }
 
@@ -202,7 +202,7 @@ export function removePendingDelayedWithdrawById(
       [hermezEthereumAddress]: delayedWithdraws.filter((item) => item.id !== id),
     },
   };
-  setStorageKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
   return newStorage;
 }
 
@@ -223,7 +223,7 @@ export function removePendingDelayedWithdrawByHash(
       [hermezEthereumAddress]: delayedWithdraws.filter((item) => item.hash !== hash),
     },
   };
-  setStorageKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
   return newStorage;
 }
 
@@ -234,7 +234,7 @@ const pendingDepositsParser: z.ZodSchema<PendingDeposits> = z.record(
 );
 
 export function getPendingDeposits(): PendingDeposits {
-  const pendingDeposits: unknown = getStorageKey(constants.PENDING_DEPOSITS_KEY);
+  const pendingDeposits: unknown = getStorageByKey(constants.PENDING_DEPOSITS_KEY);
   const parsedPendingDeposits = pendingDepositsParser.safeParse(pendingDeposits);
   return parsedPendingDeposits.success ? parsedPendingDeposits.data : {};
 }
@@ -254,7 +254,7 @@ export function addPendingDeposit(
       [hermezEthereumAddress]: [...deposits, pendingDeposit],
     },
   };
-  setStorageKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
   return newStorage;
 }
 
@@ -276,7 +276,7 @@ export function updatePendingDepositByHash(
       ),
     },
   };
-  setStorageKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
   return newStorage;
 }
 
@@ -297,7 +297,7 @@ export function removePendingDepositByTransactionId(
       }),
     },
   };
-  setStorageKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
   return newStorage;
 }
 
@@ -316,14 +316,14 @@ export function removePendingDepositByHash(
       [hermezEthereumAddress]: deposits.filter((deposit) => deposit.hash !== hash),
     },
   };
-  setStorageKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
   return newStorage;
 }
 
 // Storage Version
 
 export function getCurrentStorageVersion(): number | undefined {
-  const currentStorageVersion: unknown = getStorageKey(constants.STORAGE_VERSION_KEY);
+  const currentStorageVersion: unknown = getStorageByKey(constants.STORAGE_VERSION_KEY);
   const parsedCurrentStorageVersion = stringToNumber.safeParse(currentStorageVersion);
   return parsedCurrentStorageVersion.success ? parsedCurrentStorageVersion.data : undefined;
 }
