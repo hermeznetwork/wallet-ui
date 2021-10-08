@@ -18,7 +18,8 @@ function AccountSelector({
   onAccountClick,
 }) {
   const classes = useAccountSelectorStyles();
-  const disabledTokenIds = pendingDeposits
+  const safePendingDeposits = pendingDeposits ? pendingDeposits : [];
+  const disabledTokenIds = safePendingDeposits
     .filter((deposit) => deposit.type === TxType.CreateAccountDeposit)
     .map((deposit) => deposit.token.id);
 
@@ -71,7 +72,7 @@ function AccountSelector({
                         onLoadAccounts(
                           fromItem,
                           pooledTransactionsTask.data,
-                          pendingDeposits,
+                          safePendingDeposits,
                           fiatExchangeRates,
                           preferredCurrency
                         );
