@@ -35,7 +35,7 @@ function SelectedQuote({
       selectedTokens.from.token.USD,
       preferredCurrency,
       fiatExchangeRates
-    ).toFixed(2);
+    );
   }
 
   function isBestQuote() {

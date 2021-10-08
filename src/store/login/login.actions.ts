@@ -3,7 +3,7 @@ import { HermezWallet } from "src/domain/hermez";
 export type AccountData = {
   accountType: number;
   accountIndex: number;
-}
+};
 
 export enum WalletName {
   METAMASK = "metaMask",
@@ -53,6 +53,7 @@ export interface GoToPreviousStep {
 
 export interface LoadWallet {
   type: LoginActionTypes.LOAD_WALLET;
+  walletName: WalletName;
 }
 
 export interface LoadWalletFailure {
@@ -111,7 +112,10 @@ function goToAccountSelectorStep(walletName: WalletName): GoToAccountSelectorSte
   };
 }
 
-function goToWalletLoaderStep(walletName: WalletName, accountData: AccountData): GoToWalletLoaderStep {
+function goToWalletLoaderStep(
+  walletName: WalletName,
+  accountData: AccountData
+): GoToWalletLoaderStep {
   return {
     type: LoginActionTypes.GO_TO_WALLET_LOADER_STEP,
     walletName,
@@ -132,9 +136,10 @@ function goToPreviousStep(): GoToPreviousStep {
   };
 }
 
-function loadWallet(): LoadWallet {
+function loadWallet(walletName: WalletName): LoadWallet {
   return {
     type: LoginActionTypes.LOAD_WALLET,
+    walletName,
   };
 }
 
