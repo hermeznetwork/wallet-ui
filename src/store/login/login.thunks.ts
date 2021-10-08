@@ -149,7 +149,7 @@ function fetchWallet(
 
       const provider = hermez.Providers.getProvider();
 
-      dispatch(loginActions.loadWallet());
+      dispatch(loginActions.loadWallet(walletName));
 
       if (walletName === loginActions.WalletName.METAMASK) {
         try {

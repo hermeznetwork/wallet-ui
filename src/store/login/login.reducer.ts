@@ -35,7 +35,7 @@ export type Step =
     }
   | {
       type: "wallet-loader";
-      walletName: WalletName | undefined;
+      walletName: WalletName;
       accountData: AccountData | undefined;
       walletTask: AsyncTask<HermezWallet.HermezWallet, string>;
     }
@@ -134,7 +134,7 @@ function loginReducer(state: LoginState = getInitialLoginState(), action: LoginA
             status: "loading",
           },
           accountData: undefined,
-          walletName: state.step.type === "wallet-loader" ? state.step.walletName : undefined,
+          walletName: action.walletName,
         },
       };
     }
