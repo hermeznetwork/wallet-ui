@@ -104,12 +104,10 @@ function signMessageHelper(
 
 export interface SignerError {
   message: string;
-  code: number;
 }
 
 const signerErrorParser: z.ZodSchema<SignerError> = z.object({
   message: z.string(),
-  code: z.number(),
 });
 
 function decodeSignerError(error: unknown): string {
