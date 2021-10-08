@@ -15,25 +15,19 @@ import TransactionForm from "src/views/transactions/components/transaction-form/
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
 import Spinner from "src/views/shared/spinner/spinner.view";
-import * as storage from "src/utils/storage";
 import { AsyncTask } from "src/utils/types";
 // domain
 import { Header } from "src/domain/";
-import { EthereumNetwork } from "src/domain/ethereum";
 import {
   Account,
   HermezWallet,
   FiatExchangeRates,
   PooledTransaction,
-  Deposit,
   Token,
   RecommendedFee,
 } from "src/domain/hermez";
-// persistence
-import * as localStorageDomain from "src/domain/local-storage";
 
 interface TransferViewState {
-  ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   pooledTransactionsTask: AsyncTask<PooledTransaction[], Error>;
   step: transferActions.Step;
   accountTask: AsyncTask<Account, string>;
@@ -44,7 +38,6 @@ interface TransferViewState {
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  pendingDeposits: localStorageDomain.PendingDeposits;
   tokensPriceTask: AsyncTask<Token[], string>;
 }
 
@@ -74,7 +67,6 @@ interface TransferViewHandlers {
 type TransferViewProps = TransferViewState & TransferViewHandlers;
 
 function Transfer({
-  ethereumNetworkTask,
   pooledTransactionsTask,
   step,
   accountTask,
@@ -85,7 +77,6 @@ function Transfer({
   wallet,
   preferredCurrency,
   fiatExchangeRatesTask,
-  pendingDeposits,
   tokensPriceTask,
   onChangeHeader,
   onLoadHermezAccount,
@@ -239,7 +230,6 @@ function Transfer({
 }
 
 const mapStateToProps = (state: AppState): TransferViewState => ({
-  ethereumNetworkTask: state.global.ethereumNetworkTask,
   pooledTransactionsTask: state.transfer.pooledTransactionsTask,
   step: state.transfer.step,
   wallet: state.global.wallet,
@@ -248,7 +238,6 @@ const mapStateToProps = (state: AppState): TransferViewState => ({
   feesTask: state.transfer.feesTask,
   isTransactionBeingApproved: state.transfer.isTransactionBeingApproved,
   transactionToReview: state.transfer.transaction,
-  pendingDeposits: state.global.pendingDeposits,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
   tokensPriceTask: state.global.tokensPriceTask,
