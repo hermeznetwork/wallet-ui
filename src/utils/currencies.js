@@ -40,7 +40,7 @@ function getFixedTokenAmount(amount, decimals) {
   // We can lose precision as there will never be more than MAX_DECIMALS_UNTIL_ZERO_AMOUNT significant digits
   const balanceWithDecimals = Number(amount) / Math.pow(10, decimals);
 
-  return Number(balanceWithDecimals.toFixed(MAX_TOKEN_DECIMALS)).toString();
+  return balanceWithDecimals.toFixed(MAX_TOKEN_DECIMALS);
 }
 
 /**
@@ -54,10 +54,10 @@ function getFixedTokenAmount(amount, decimals) {
  */
 function getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchangeRates) {
   if (preferredCurrency === CurrencySymbol.USD.code) {
-    return usdAmount;
+    return Number(usdAmount.toFixed(2));
   }
 
-  return usdAmount * fiatExchangeRates[preferredCurrency];
+  return Number((usdAmount * fiatExchangeRates[preferredCurrency]).toFixed(2));
 }
 
 /**

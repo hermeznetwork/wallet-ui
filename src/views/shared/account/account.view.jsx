@@ -50,7 +50,7 @@ function Account({
           <p className={classes.tokenName}>{token.name}</p>
         )}
         <p className={classes.fiatBalance}>
-          {CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}
+          {CurrencySymbol[preferredCurrency].symbol} {fiatBalance}
         </p>
       </div>
     </div>

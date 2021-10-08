@@ -31,7 +31,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
       estimatedWithdrawFee.USD,
       preferredCurrency,
       fiatExchangeRates
-    ).toFixed(2);
+    );
   }
 
   function getFormattedWithdrawFee() {
@@ -47,7 +47,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
       <div className={classes.feesTable}>
         <TransactionInfoRow
           title="Hermez fee"
-          subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getL2FeeInFiat().toFixed(2)}`}
+          subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getL2FeeInFiat()}`}
           hint="Step 1"
           value={`${Number(l2Fee.toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`}
         />
@@ -65,7 +65,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
     <div className={classes.feesTable}>
       <TransactionInfoRow
         title={estimatedWithdrawFee ? "Hermez fee" : "Fee"}
-        subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getL2FeeInFiat().toFixed(2)}`}
+        subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getL2FeeInFiat()}`}
         value={`${Number(l2Fee.toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`}
       />
       {estimatedWithdrawFee && (
