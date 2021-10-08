@@ -103,18 +103,6 @@ function Transfer({
   const urlSearchParams = new URLSearchParams(search);
   const receiver = urlSearchParams.get("receiver");
   const accountIndex = urlSearchParams.get("accountIndex");
-  const accountPendingDeposits = React.useMemo(
-    () =>
-      (ethereumNetworkTask.status === "successful" || ethereumNetworkTask.status === "reloading") &&
-      wallet !== undefined
-        ? storage.getPendingDepositsByHermezAddress(
-            pendingDeposits,
-            ethereumNetworkTask.data.chainId,
-            wallet.hermezEthereumAddress
-          )
-        : [],
-    [ethereumNetworkTask, pendingDeposits, wallet]
-  );
 
   React.useEffect(() => {
     onChangeHeader(step, accountIndex);
@@ -181,7 +169,7 @@ function Transfer({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                pendingDeposits={accountPendingDeposits}
+                pendingDeposits={[]}
                 onLoadAccounts={onLoadAccounts}
                 onAccountClick={(account: Account) => onGoToBuildTransactionStep(account)}
               />
