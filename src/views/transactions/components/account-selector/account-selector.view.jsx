@@ -18,19 +18,14 @@ function AccountSelector({
   onAccountClick,
 }) {
   const classes = useAccountSelectorStyles();
-  const disabledTokenIds = pendingDeposits
+  const safePendingDeposits = pendingDeposits ? pendingDeposits : [];
+  const disabledTokenIds = safePendingDeposits
     .filter((deposit) => deposit.type === TxType.CreateAccountDeposit)
     .map((deposit) => deposit.token.id);
 
   React.useEffect(() => {
     if (accountsTask.status === "pending" && pooledTransactionsTask.status === "successful") {
-      onLoadAccounts(
-        undefined,
-        pooledTransactionsTask.data,
-        pendingDeposits,
-        fiatExchangeRates,
-        preferredCurrency
-      );
+      onLoadAccounts(undefined, pooledTransactionsTask.data, fiatExchangeRates, preferredCurrency);
     }
   }, [accountsTask, pooledTransactionsTask, onLoadAccounts]);
 
@@ -77,7 +72,7 @@ function AccountSelector({
                         onLoadAccounts(
                           fromItem,
                           pooledTransactionsTask.data,
-                          pendingDeposits,
+                          safePendingDeposits,
                           fiatExchangeRates,
                           preferredCurrency
                         );
