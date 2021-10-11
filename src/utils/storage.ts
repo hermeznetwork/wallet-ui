@@ -21,7 +21,7 @@ import {
   getPendingWithdraws,
   getPendingDelayedWithdraws,
   getCurrentStorageVersion,
-  setStorageKey,
+  setStorageByKey,
 } from "src/persistence/local-storage";
 
 // MIGRATIONS
@@ -58,7 +58,7 @@ function runV2Migration() {
     {}
   );
 
-  setStorageKey(PENDING_WITHDRAWS_KEY, newPendingWithdraws);
+  setStorageByKey(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdraws));
 
   const pendingDelayedWithdraws = getPendingDelayedWithdraws();
   const newPendingDelayedWithdraws: PendingDelayedWithdraws = Object.keys(
@@ -94,14 +94,14 @@ function runV2Migration() {
     };
   }, {});
 
-  setStorageKey(PENDING_DELAYED_WITHDRAWS_KEY, newPendingDelayedWithdraws);
+  setStorageByKey(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newPendingDelayedWithdraws));
 }
 
 function checkVersion(): void {
   const currentStorageVersion = getCurrentStorageVersion();
 
   if (currentStorageVersion === undefined) {
-    setStorageKey(STORAGE_VERSION_KEY, STORAGE_VERSION);
+    setStorageByKey(STORAGE_VERSION_KEY, JSON.stringify(STORAGE_VERSION));
   } else {
     // LocalStorage migrations
     if (STORAGE_VERSION > currentStorageVersion) {
@@ -110,7 +110,7 @@ function checkVersion(): void {
         runV2Migration();
       }
 
-      setStorageKey(STORAGE_VERSION_KEY, STORAGE_VERSION);
+      setStorageByKey(STORAGE_VERSION_KEY, JSON.stringify(STORAGE_VERSION));
     }
   }
 }
