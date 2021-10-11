@@ -11,7 +11,7 @@
 
 declare module "@hermeznetwork/*" {
   import { BigNumber } from "ethers";
-  import { TxTypesUnion, TxStatesUnion } from "@hermeznetwork/hermezjs/src/enums";
+  import { TxTypesUnion, TxStatesUnion, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
   export type ISOStringDate = string;
 
