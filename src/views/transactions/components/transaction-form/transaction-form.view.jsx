@@ -165,6 +165,8 @@ function TransactionForm({
   }
 
   function handleAmountChange(data) {
+    if (data.amount.tokens.eq(amount)) return;
+
     setAmount(data.amount.tokens);
     setShowInFiat(data.showInFiat);
     setIsAmountValid(!data.isInvalid);
