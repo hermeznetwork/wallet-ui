@@ -13,7 +13,6 @@ import TransactionForm from "./components/transaction-form/transaction-form.view
 import TransactionOverview from "./components/transaction-overview/transaction-overview.view";
 import { STEP_NAME } from "../../store/transaction/transaction.reducer";
 import AccountSelector from "./components/account-selector/account-selector.view";
-import TransactionConfirmation from "./components/transaction-confirmation/transaction-confirmation.view";
 import { changeHeader, openSnackbar } from "../../store/global/global.actions";
 import Spinner from "../shared/spinner/spinner.view";
 import * as storage from "../../utils/storage";
