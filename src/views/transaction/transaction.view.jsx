@@ -16,7 +16,6 @@ import AccountSelector from "./components/account-selector/account-selector.view
 import { changeHeader, openSnackbar } from "../../store/global/global.actions";
 import Spinner from "../shared/spinner/spinner.view";
 import * as storage from "../../utils/storage";
-import TransactionError from "./components/transaction-error/transaction-error.view";
 import theme from "../../styles/theme";
 
 export const WithdrawRedirectionRoute = {
