@@ -73,7 +73,7 @@ type Transaction =
       onForceExit: (amount: BigNumber, account: Account) => void;
     };
 
-interface Props {
+interface TransactionOverviewProps {
   wallet: HermezWallet.HermezWallet;
   isTransactionBeingApproved: boolean;
   preferredCurrency: string;
@@ -87,7 +87,7 @@ function TransactionOverview({
   preferredCurrency,
   fiatExchangeRates,
   transaction,
-}: Props): JSX.Element {
+}: TransactionOverviewProps): JSX.Element {
   const theme = useTheme<Theme>();
   const classes = useTransactionOverviewStyles();
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
