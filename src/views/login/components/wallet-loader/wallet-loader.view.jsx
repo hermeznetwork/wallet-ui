@@ -3,14 +3,7 @@ import WalletButton from "../wallet-button/wallet-button.view";
 
 import useWalletLoaderStyles from "./wallet-loader.styles";
 
-function WalletLoader({
-  walletName,
-  accountData,
-  walletTask,
-  onLoadWallet,
-  onLoadWalletSuccess,
-  onLoadWalletFailure,
-}) {
+function WalletLoader({ walletName, accountData, walletTask, onLoadWallet }) {
   const classes = useWalletLoaderStyles();
 
   React.useEffect(() => {
@@ -18,18 +11,6 @@ function WalletLoader({
       onLoadWallet(walletName, accountData);
     }
   }, [walletName, accountData, walletTask, onLoadWallet]);
-
-  React.useEffect(() => {
-    if (walletTask.status === "successful") {
-      onLoadWalletSuccess();
-    }
-  }, [walletTask, onLoadWalletSuccess]);
-
-  React.useEffect(() => {
-    if (walletTask.status === "failed") {
-      onLoadWalletFailure(walletTask.error);
-    }
-  }, [walletTask, onLoadWalletFailure]);
 
   return (
     <div>

@@ -1,6 +1,5 @@
-import { GlobalActionTypes, GlobalAction } from "./global.actions";
+import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
-
 // domain
 import { Header } from "src/domain/";
 import { EthereumNetwork } from "src/domain/ethereum";
@@ -8,14 +7,14 @@ import {
   HermezStatus,
   HermezNetworkStatus,
   Withdraw,
-  Wallet,
-  Signer,
+  HermezWallet,
+  SignerData,
   FiatExchangeRates,
   CoordinatorState,
   Token,
 } from "src/domain/hermez";
-
 import * as localStorageDomain from "src/domain/local-storage";
+// persistence
 import * as localStoragePersistence from "src/persistence/local-storage";
 
 type SnackbarState =
@@ -31,8 +30,8 @@ type SnackbarState =
 export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
-  wallet: Wallet | undefined;
-  signer: Signer | undefined;
+  wallet: HermezWallet.HermezWallet | undefined;
+  signer: SignerData | undefined;
   header: Header;
   redirectRoute: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
@@ -90,7 +89,10 @@ function getInitialGlobalState(): GlobalState {
   };
 }
 
-function globalReducer(state = getInitialGlobalState(), action: GlobalAction): GlobalState {
+function globalReducer(
+  state: GlobalState = getInitialGlobalState(),
+  action: GlobalAction
+): GlobalState {
   switch (action.type) {
     case GlobalActionTypes.LOAD_HERMEZ_STATUS: {
       return {

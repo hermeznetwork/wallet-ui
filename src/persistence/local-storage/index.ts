@@ -1,13 +1,12 @@
 import { z } from "zod";
-import * as constants from "src/constants";
 
+import * as constants from "src/constants";
 // domain
 import { Withdraw, DelayedWithdraw, Deposit } from "src/domain/hermez";
-
 // persistence
 import * as parsers from "src/persistence/parsers";
-
 import {
+  AuthSignatures,
   PendingWithdraws,
   ChainPendingWithdraws,
   PendingDelayedWithdraws,
@@ -46,6 +45,20 @@ export function initStorage(key: string): Record<string, never> {
 // Parsing Helpers
 
 const stringToNumber = z.string().transform((val) => parseFloat(val));
+
+// Auth Signatures
+
+const authSignaturesParser: z.ZodSchema<AuthSignatures> = z.record(z.record(z.string()));
+
+export function getAuthSignatures(): AuthSignatures {
+  const authSignatures: unknown = getStorage(constants.ACCOUNT_AUTH_SIGNATURES_KEY);
+  const parsedAuthSignatures = authSignaturesParser.safeParse(authSignatures);
+  return parsedAuthSignatures.success ? parsedAuthSignatures.data : {};
+}
+
+export function setAuthSignatures(authSignatures: AuthSignatures): void {
+  setStorageKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY, authSignatures);
+}
 
 // Pending Withdraws
 

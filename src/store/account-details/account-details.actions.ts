@@ -1,6 +1,5 @@
 // domain
 import { Account, PooledTransaction } from "src/domain/hermez";
-
 // persistence
 import { Transactions, Exits } from "src/persistence";
 

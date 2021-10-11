@@ -1,12 +1,12 @@
 import { Pagination } from "src/utils/api";
-
 // domain
 import { Account, Transaction, PooledTransaction } from "src/domain/hermez";
-
 // persistence
 import { Exits } from "src/persistence";
-
-import { AccountDetailsActionTypes, AccountDetailsAction } from "./account-details.actions";
+import {
+  AccountDetailsActionTypes,
+  AccountDetailsAction,
+} from "src/store/account-details/account-details.actions";
 import { getPaginationData } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";
 
@@ -43,7 +43,7 @@ const initialAccountDetailsState: AccountDetailsState = {
 };
 
 function accountDetailsReducer(
-  state = initialAccountDetailsState,
+  state: AccountDetailsState = initialAccountDetailsState,
   action: AccountDetailsAction
 ): AccountDetailsState {
   switch (action.type) {

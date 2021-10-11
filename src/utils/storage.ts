@@ -4,7 +4,6 @@ import {
   STORAGE_VERSION,
   STORAGE_VERSION_KEY,
 } from "src/constants";
-
 // domain
 import { Withdraw, DelayedWithdraw, Deposit } from "src/domain/hermez";
 import {
@@ -17,7 +16,6 @@ import {
   PendingDeposits,
   ChainPendingDeposits,
 } from "src/domain/local-storage";
-
 // persistence
 import {
   getPendingWithdraws,

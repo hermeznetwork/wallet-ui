@@ -1,11 +1,10 @@
-import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
 import { BigNumber } from "ethers";
+import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
 
-import { convertTokenAmountToFiat } from "./currencies";
-
-import { Account, PooledTransaction, Deposit, Token, FiatExchangeRates } from "src/domain/hermez";
-
+import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { AsyncTask } from "src/utils/types";
+// domain
+import { Account, PooledTransaction, Deposit, Token, FiatExchangeRates } from "src/domain/hermez";
 
 function getAccountBalance(
   account: Account,

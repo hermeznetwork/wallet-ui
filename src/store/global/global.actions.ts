@@ -1,8 +1,8 @@
 // domain
 import { EthereumNetwork } from "src/domain/ethereum";
 import {
-  Wallet,
-  Signer,
+  HermezWallet,
+  SignerData,
   FiatExchangeRates,
   HermezNetworkStatus,
   Withdraw,
@@ -78,7 +78,7 @@ export interface LoadEthereumNetworkSuccess {
 
 export interface LoadWallet {
   type: GlobalActionTypes.LOAD_WALLET;
-  wallet: Wallet;
+  wallet: HermezWallet.HermezWallet;
 }
 
 export interface UnloadWallet {
@@ -87,7 +87,7 @@ export interface UnloadWallet {
 
 export interface SetSigner {
   type: GlobalActionTypes.SET_SIGNER;
-  signer: Signer;
+  signer: SignerData;
 }
 
 export interface ChangeHeader {
@@ -319,7 +319,7 @@ function loadEthereumNetworkSuccess(ethereumNetwork: EthereumNetwork): LoadEther
   };
 }
 
-function loadWallet(wallet: Wallet): LoadWallet {
+function loadWallet(wallet: HermezWallet.HermezWallet): LoadWallet {
   return {
     type: GlobalActionTypes.LOAD_WALLET,
     wallet,
@@ -332,7 +332,7 @@ function unloadWallet(): UnloadWallet {
   };
 }
 
-function setSigner(signer: Signer): SetSigner {
+function setSigner(signer: SignerData): SetSigner {
   return {
     type: GlobalActionTypes.SET_SIGNER,
     signer,

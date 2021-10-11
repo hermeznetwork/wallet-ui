@@ -16,12 +16,14 @@ export type {
   HermezStatus,
   Transaction,
   PooledTransaction,
-  Wallet,
+  HermezWallet,
   ISOStringDate,
   MerkleProof,
-  Signer,
   Token,
   Withdraw,
+  SignerData,
+  SignerType,
+  JsonRpcSignerData,
 } from "@hermeznetwork/hermezjs";
 
 export type Account = hermezjs.Account & { fiatBalance?: number };

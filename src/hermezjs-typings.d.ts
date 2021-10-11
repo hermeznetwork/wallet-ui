@@ -20,20 +20,7 @@ declare module "@hermeznetwork/*" {
 
   export type HermezNetworkStatus = "online" | "offline";
 
-  export interface Wallet {
-    publicKeyBase64: string;
-    publicKeyCompressedHex: string;
-    hermezEthereumAddress: string;
-    // privateKey: Buffer;
-    // publicKey: string[];
-    // publicKeyHex: string[];
-    // publicKeyCompressed: string;
-  }
-
-  export interface Signer {
-    address: string;
-    type: string;
-  }
+  export * from "@hermeznetwork/hermezjs/src/signers";
 
   // ToDo: Consider explicitly setting the supported FIAT
   export type FiatExchangeRates = Record<string, number>;
@@ -329,7 +316,7 @@ declare module "@hermeznetwork/*" {
   }
 
   // library modules
-  export { default as Wallet } from "@hermeznetwork/hermezjs/src/hermez-wallet";
+  export { default as HermezWallet } from "@hermeznetwork/hermezjs/src/hermez-wallet";
   export { default as Utils } from "@hermeznetwork/hermezjs/src/utils";
   export { default as Tx } from "@hermeznetwork/hermezjs/src/tx";
   export { default as TxUtils } from "@hermeznetwork/hermezjs/src/tx-utils";
@@ -349,6 +336,20 @@ declare module "@hermeznetwork/*" {
 
 // Wallet
 declare module "@hermeznetwork/hermezjs/src/hermez-wallet" {
+  import { SignerData } from "@hermeznetwork/hermezjs";
+  export declare class HermezWallet {
+    constructor(privateKey: Buffer, hermezEthereumAddress: string);
+    privateKey: Buffer;
+    hermezEthereumAddress: string;
+    publicKeyBase64: string;
+    publicKeyCompressedHex: string;
+    // publicKey: string[];
+    // publicKeyHex: string[];
+    // publicKeyCompressed: string;
+    // signTransaction (transaction, encodedTransaction): Transaction;
+    signCreateAccountAuthorization(providerUrl?: string, signerData?: SignerData): Promise<string>;
+  }
+
   // declare function createWalletFromEtherAccount() {};
   // declare function createWalletFromBjjPvtKey() {};
 }
@@ -356,7 +357,7 @@ declare module "@hermeznetwork/hermezjs/src/hermez-wallet" {
 // Utils
 declare module "@hermeznetwork/hermezjs/src/utils" {
   // declare function bufToHex() {};
-  // declare function hexToBuffer() {};
+  declare function hexToBuffer(hex: string): Buffer {};
   // declare function getTokenAmountString() {};
   // declare function getTokenAmountBigInt() {};
   // declare function padZeros() {};
@@ -531,7 +532,15 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   // declare function getCoordinators() {};
   // declare function getSlot() {};
   // declare function getBids() {};
-  // declare function postCreateAccountAuthorization() {};
+
+  // ToDo: The app does not uses the response but it would be nice to type it at some point
+  declare function postCreateAccountAuthorization(
+    hezEthereumAddress: string,
+    bJJ: string,
+    signature: string,
+    nextForgerUrls?: string[],
+    axiosConfig?: Record<string, unknown>
+  ): Promise<unknown> {};
   // declare function getCreateAccountAuthorization() {};
   // declare function getConfig() {};
 
@@ -546,7 +555,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
 // Constants
 declare module "@hermeznetwork/hermezjs/src/constants" {
   // declare const TRANSACTION_POOL_KEY: string;
-  // declare const METAMASK_MESSAGE: string;
+  declare const METAMASK_MESSAGE: string;
   // declare const CREATE_ACCOUNT_AUTH_MESSAGE: string;
   // declare const EIP_712_VERSION: string;
   // declare const EIP_712_PROVIDER: string;
@@ -594,7 +603,7 @@ declare module "@hermeznetwork/hermezjs/src/hermez-compressed-amount" {
 
 // Addresses
 declare module "@hermeznetwork/hermezjs/src/addresses" {
-  // declare function getHermezAddress() {};
+  declare function getHermezAddress(ethereumAddress: string): string {};
 
   declare function getEthereumAddress(accountIndex: string): string {};
 
@@ -612,10 +621,13 @@ declare module "@hermeznetwork/hermezjs/src/addresses" {
 declare module "@hermeznetwork/hermezjs/src/providers" {
   import { Web3Provider } from "@ethersproject/providers";
 
-  // declare const PROVIDER_TYPES: {
-  //   WEB3: "web3";
-  // };
-  // declare function setProvider(providerData?: string | Record<string, unknown>, providerType?: string): Web3Provider {};
+  declare const PROVIDER_TYPES: {
+    WEB3: "web3";
+  };
+  declare function setProvider(
+    providerData?: string | Record<string, unknown>,
+    providerType?: string
+  ): Web3Provider {};
 
   declare function getProvider(
     providerData?: string | Record<string, unknown>,
@@ -625,13 +637,46 @@ declare module "@hermeznetwork/hermezjs/src/providers" {
 
 // Signers
 declare module "@hermeznetwork/hermezjs/src/signers" {
-  // declare const SignerType = {
-  //   JSON_RPC: "JSON-RPC",
-  //   LEDGER: "LEDGER",
-  //   TREZOR: "TREZOR",
-  //   WALLET: "WALLET",
-  // };
-  // declare function getSigner() {};
+  import { Web3Provider } from "@ethersproject/providers";
+  import { Signer } from "@ethersproject/abstract-signer";
+  import { Manifest } from "trezor-connect";
+
+  export enum SignerType {
+    JSON_RPC = "JSON-RPC",
+    LEDGER = "LEDGER",
+    TREZOR = "TREZOR",
+    WALLET = "WALLET",
+  }
+
+  type JsonRpcSignerData = {
+    type: "JSON-RPC";
+    addressOrIndex?: null | string | number;
+  };
+
+  type LedgerSignerData = {
+    type: "LEDGER";
+    path?: string;
+  };
+
+  type TrezorSignerData = {
+    type: "TREZOR";
+    path?: string;
+    manifest: Manifest;
+    address?: string;
+  };
+
+  type WalletSignerData = {
+    type: "WALLET";
+    privateKey: string;
+  };
+
+  export type SignerData =
+    | JsonRpcSignerData
+    | LedgerSignerData
+    | TrezorSignerData
+    | WalletSignerData;
+
+  declare function getSigner(provider: Web3Provider, signerData: SignerData): Promise<Signer> {};
 }
 
 // Environment

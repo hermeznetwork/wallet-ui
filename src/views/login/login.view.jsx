@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-
 import useLoginStyles from "./login.styles";
 import * as globalActions from "../../store/global/global.actions";
 import * as loginActions from "../../store/login/login.actions";
@@ -13,6 +12,7 @@ import CreateAccountAuth from "./components/create-account-auth/create-account-a
 import Alert, { AlertVariant } from "../shared/alert/alert.view";
 import * as constants from "../../constants";
 
+// ToDo: Import this from login actions when this view is migrated to TS
 export const WalletName = {
   METAMASK: "metaMask",
   WALLET_CONNECT: "walletConnect",
@@ -21,10 +21,9 @@ export const WalletName = {
 };
 
 function Login({
-  currentStep,
   onChangeHeader,
   ethereumNetworkTask,
-  steps,
+  step,
   accountAuthSignatures,
   onGoToAccountSelectorStep,
   onGoToWalletLoaderStep,
@@ -34,7 +33,7 @@ function Login({
   onCleanup,
 }) {
   const classes = useLoginStyles();
-  const stepData = steps[currentStep];
+  const currentStep = step.type;
   const MetaMaskAlert = (
     <div className={classes.updateMetaMaskAlert}>
       <Alert
@@ -88,13 +87,13 @@ function Login({
       );
     }
     case STEP_NAME.ACCOUNT_SELECTOR: {
-      const walletLabel = capitalizeLabel(stepData.walletName);
+      const walletLabel = capitalizeLabel(step.walletName);
 
       return (
         <>
           <h1 className={classes.addAccountText}>Add account through {walletLabel}</h1>
           <AccountSelectorForm
-            walletName={stepData.walletName}
+            walletName={step.walletName}
             walletLabel={walletLabel}
             onSelectAccount={handleSelectAccount}
           />
@@ -102,29 +101,29 @@ function Login({
       );
     }
     case STEP_NAME.WALLET_LOADER: {
-      const walletLabel = capitalizeLabel(stepData.walletName);
+      const walletLabel = capitalizeLabel(step.walletName);
 
       return (
         <>
           <h1 className={classes.connectedText}>Connected to {walletLabel}</h1>
           <WalletLoader
-            walletName={stepData.walletName}
-            accountData={stepData.accountData}
-            walletTask={stepData.walletTask}
+            walletName={step.walletName}
+            accountData={step.accountData}
+            walletTask={step.walletTask}
             onLoadWallet={onLoadWallet}
           />
-          {stepData.walletName === WalletName.METAMASK && MetaMaskAlert}
+          {step.walletName === WalletName.METAMASK && MetaMaskAlert}
         </>
       );
     }
     case STEP_NAME.CREATE_ACCOUNT_AUTH: {
       const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.data.chainId] || {};
-      const hermezAddressAuthSignature = chainIdSignatures[stepData.wallet.hermezEthereumAddress];
+      const hermezAddressAuthSignature = chainIdSignatures[step.wallet.hermezEthereumAddress];
 
       return (
         <CreateAccountAuth
           hermezAddressAuthSignature={hermezAddressAuthSignature}
-          steps={steps}
+          wallet={step.wallet}
           onCreateAccountAuthorization={onCreateAccountAuthorization}
         />
       );
@@ -136,9 +135,8 @@ function Login({
 }
 
 const mapStateToProps = (state) => ({
-  currentStep: state.login.currentStep,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
-  steps: state.login.steps,
+  step: state.login.step,
   accountAuthSignatures: state.login.accountAuthSignatures,
 });
 
