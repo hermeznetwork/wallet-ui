@@ -93,6 +93,7 @@ function TransactionOverview({
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [isWithdrawInfoSidenavOpen, setIsWithdrawInfoSidenavOpen] = React.useState(false);
   const { account, amount, type } = transaction;
+
   React.useEffect(() => {
     if (!isTransactionBeingApproved) {
       setIsButtonDisabled(false);
