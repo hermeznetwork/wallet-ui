@@ -15,9 +15,21 @@ const useFeeStyles = createUseStyles((theme) => ({
     fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
+    display: "flex",
     [theme.breakpoints.upSm]: {
       fontSize: theme.spacing(2.5),
       padding: 0,
+    },
+    "& p": {
+      color: theme.palette.grey.main,
+    },
+    "& span": {
+      marginRight: theme.spacing(1),
+    },
+  },
+  transfer: {
+    "& p": {
+      color: theme.palette.black,
     },
   },
   withdrawFeeWrapper: {

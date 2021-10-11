@@ -5,11 +5,6 @@ const useFiatAmountStyles = createUseStyles((theme) => ({
     display: "flex",
     alignItems: "baseline",
     justifyContent: "center",
-    color: theme.palette.grey.dark,
-  },
-  currency: {
-    margin: 0,
-    marginLeft: 8,
   },
 }));
 

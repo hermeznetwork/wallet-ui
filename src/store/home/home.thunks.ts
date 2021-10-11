@@ -76,7 +76,7 @@ function fetchTotalBalance(
 
         const totalBalance = totalPendingCreateAccountDepositsBalance + totalAccountsBalance;
 
-        dispatch(homeActions.loadTotalBalanceSuccess(totalBalance.toFixed(2)));
+        dispatch(homeActions.loadTotalBalanceSuccess(totalBalance));
       })
       .catch((err) => dispatch(homeActions.loadTotalBalanceFailure(err)));
   };

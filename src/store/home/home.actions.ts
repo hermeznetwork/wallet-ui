@@ -27,7 +27,7 @@ export interface LoadTotalBalance {
 
 export interface LoadTotalBalanceSuccess {
   type: HomeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS;
-  balance: string;
+  balance: number;
 }
 
 export interface LoadTotalBalanceFailure {
@@ -113,7 +113,7 @@ function loadTotalBalance(): LoadTotalBalance {
   };
 }
 
-function loadTotalBalanceSuccess(balance: string): LoadTotalBalanceSuccess {
+function loadTotalBalanceSuccess(balance: number): LoadTotalBalanceSuccess {
   return {
     type: HomeActionTypes.LOAD_TOTAL_BALANCE_SUCCESS,
     balance,

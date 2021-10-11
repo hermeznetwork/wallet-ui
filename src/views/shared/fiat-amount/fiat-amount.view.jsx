@@ -8,9 +8,9 @@ function FiatAmount({ amount, currency }) {
   const classes = useFiatAmountStyles();
 
   return (
-    <div className={classes.root}>
-      {CurrencySymbol[currency].symbol} {!isNaN(amount) ? amount : "--"}
-    </div>
+    <p className={classes.root}>
+      {CurrencySymbol[currency].symbol} {!isNaN(amount) ? amount.toFixed(2) : "--"}
+    </p>
   );
 }
 

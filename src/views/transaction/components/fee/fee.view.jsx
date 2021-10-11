@@ -15,6 +15,7 @@ import { ReactComponent as AngleDownIcon } from "../../../../images/icons/angle-
 import FeesTable from "../fees-table/fees-table.view";
 import { getRealFee } from "../../../../utils/fees";
 import { ETHER_TOKEN_ID } from "../../../../constants";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 function Fee({
   transactionType,
@@ -48,8 +49,8 @@ function Fee({
       );
       return (
         <>
-          Ethereum fee (estimated) -<span>${depositFee.amount} ETH</span>
-          {` ~ ${fiatAmount} ${CurrencySymbol[preferredCurrency].symbol}`}
+          Ethereum fee (estimated) - <span>${depositFee.amount} ETH</span> ~{" "}
+          <FiatAmount amount={fiatAmount} currency={preferredCurrency} />
         </>
       );
     }
@@ -67,7 +68,7 @@ function Fee({
       fiatExchangeRates
     );
 
-    return (l2FeeInFiat + estimatedWithdrawFeeInFiat).toFixed(2);
+    return l2FeeInFiat + estimatedWithdrawFeeInFiat;
   }
 
   function handleWithdrawFeeExpansion() {
@@ -81,15 +82,17 @@ function Fee({
   ) {
     return (
       <div className={classes.feeWrapper}>
-        <p className={classes.fee}>
+        <p className={`${classes.fee} ${classes.transfer}`}>
           Fee&nbsp;
           <span>
-            {showInFiat
-              ? `${l2FeeInFiat} ${preferredCurrency}`
-              : `${getFixedTokenAmount(
-                  parseUnits(l2RealFee.toString(), token.decimals),
-                  token.decimals
-                )} ${token.symbol}`}
+            {showInFiat ? (
+              <FiatAmount amount={l2FeeInFiat} currency={preferredCurrency} />
+            ) : (
+              `${getFixedTokenAmount(
+                parseUnits(l2RealFee.toString(), token.decimals),
+                token.decimals
+              )} ${token.symbol}`
+            )}
           </span>
         </p>
       </div>
@@ -109,8 +112,8 @@ function Fee({
       <div className={classes.withdrawFeeWrapper}>
         <button className={classes.withdrawFeeButton} onClick={handleWithdrawFeeExpansion}>
           <p className={classes.withdrawFeeButtonText}>
-            Total estimated fee {CurrencySymbol[preferredCurrency].symbol}
-            {getTotalEstimatedWithdrawFee()}
+            Total estimated fee
+            <FiatAmount amount={getTotalEstimatedWithdrawFee()} currency={preferredCurrency} />
           </p>
           <AngleDownIcon
             className={`${classes.withdrawFeeButtonIcon} ${classes.withdrawFeeButtonIconPath}`}

@@ -14,7 +14,7 @@ interface ViewAccounts {
 }
 
 export interface HomeState {
-  totalBalanceTask: AsyncTask<string, string>;
+  totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
   poolTransactionsTask: AsyncTask<PooledTransaction[], string>;
   exitsTask: AsyncTask<Exits, Error>;

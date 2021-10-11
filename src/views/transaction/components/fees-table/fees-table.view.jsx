@@ -3,6 +3,7 @@ import * as ethers from "ethers";
 
 import useFeesTableStyles from "./fees-table.styles";
 import TransactionInfoRow from "../../../shared/transaction-info-table-row/transaction-info-row.view";
+import FiatAmount from "../../../shared/fiat-amount/fiat-amount.view";
 import { MAX_TOKEN_DECIMALS } from "../../../../constants";
 import {
   CurrencySymbol,
@@ -47,14 +48,16 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
       <div className={classes.feesTable}>
         <TransactionInfoRow
           title="Hermez fee"
-          subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getL2FeeInFiat()}`}
+          subtitle={<FiatAmount amount={getL2FeeInFiat()} currency={preferredCurrency} />}
           hint="Step 1"
           value={`${Number(l2Fee.toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`}
         />
         <TransactionInfoRow
           title="Ethereum fee (estimated)"
           hint="Step 2"
-          subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getEstimatedWithdrawFeeInFiat()}`}
+          subtitle={
+            <FiatAmount amount={getEstimatedWithdrawFeeInFiat()} currency={preferredCurrency} />
+          }
           value={`${getFormattedWithdrawFee().toFixed(MAX_TOKEN_DECIMALS)} ETH`}
         />
       </div>

@@ -2,7 +2,7 @@ import { createUseStyles } from "react-jss";
 
 const useTransactionAmountStyles = createUseStyles((theme) => ({
   depositAmount: {
-    color: theme.palette.green,
+    "& p": { color: theme.palette.green },
   },
 }));
 

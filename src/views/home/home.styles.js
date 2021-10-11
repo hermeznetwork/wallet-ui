@@ -30,7 +30,7 @@ const useHomeStyles = createUseStyles((theme) => ({
     marginTop: `${theme.spacing(4)}px`,
     marginBottom: `${theme.spacing(3)}px`,
     fontSize: theme.spacing(5),
-    "& div": {
+    "& p": {
       color: theme.palette.black,
       fontWeight: theme.fontWeights.medium,
     },

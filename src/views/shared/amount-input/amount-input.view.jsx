@@ -128,7 +128,7 @@ function AmountInput(Component) {
           const newAmountInTokens = convertAmountToTokens(newAmountInFiat);
           const fixedAmountInTokens = fixTransactionAmount(newAmountInTokens);
 
-          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat.toFixed(2) });
+          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat });
           checkAmountValidity(fixedAmountInTokens);
           setValue(event.target.value);
         } else {

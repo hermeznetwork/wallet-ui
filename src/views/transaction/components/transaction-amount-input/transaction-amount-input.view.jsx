@@ -6,6 +6,7 @@ import useTransactionAmountInputStyles from "./transaction-amount-input.styles";
 import { ReactComponent as SwapIcon } from "../../../../images/icons/swap.svg";
 import { ReactComponent as ErrorIcon } from "../../../../images/icons/error.svg";
 import { getFixedTokenAmount } from "../../../../utils/currencies";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 function TransactionAmountInput({
   account,
@@ -72,7 +73,7 @@ function TransactionAmountInput({
               </span>
             ) : (
               <span>
-                {amount.fiat} {preferredCurrency}
+                <FiatAmount amount={amount.fiat} currency={preferredCurrency} />
               </span>
             )}
           </div>
