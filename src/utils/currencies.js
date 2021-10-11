@@ -64,7 +64,7 @@ function getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchange
  * Converts a token amount to a new amount but in the user preferred currency
  *
  * @param {string} amount - The amount to be be converted
- * @param {string | number} usdTokenExchangeRate - Current USD exchange rate for the token
+ * @param {number} usdTokenExchangeRate - Current USD exchange rate for the token
  * @param {string} preferredCurrency - User preferred currency
  * @param {Object} fiatExchangeRates - Exchange rates for all the supported currencies in the app
  *
