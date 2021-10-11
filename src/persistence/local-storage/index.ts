@@ -25,7 +25,7 @@ export function getStorageByKey(key: string): unknown {
     try {
       return JSON.parse(storageStringOrNull);
     } catch (error) {
-      return initStorage(key);
+      return storageStringOrNull;
     }
   }
 }
