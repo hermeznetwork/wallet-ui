@@ -15,25 +15,19 @@ import TransactionForm from "src/views/transactions/components/transaction-form/
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
 import Spinner from "src/views/shared/spinner/spinner.view";
-import * as storage from "src/utils/storage";
 import { AsyncTask } from "src/utils/types";
 // domain
 import { Header } from "src/domain/";
-import { EthereumNetwork } from "src/domain/ethereum";
 import {
   Account,
   HermezWallet,
   FiatExchangeRates,
   PooledTransaction,
-  Deposit,
   Token,
   RecommendedFee,
 } from "src/domain/hermez";
-// persistence
-import * as localStorageDomain from "src/domain/local-storage";
 
 interface TransferViewState {
-  ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   pooledTransactionsTask: AsyncTask<PooledTransaction[], Error>;
   step: transferActions.Step;
   accountTask: AsyncTask<Account, string>;
@@ -44,7 +38,6 @@ interface TransferViewState {
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  pendingDeposits: localStorageDomain.PendingDeposits;
   tokensPriceTask: AsyncTask<Token[], string>;
 }
 
@@ -53,7 +46,6 @@ interface TransferViewHandlers {
   onLoadHermezAccount: (
     accountIndex: string,
     pooledTransactions: PooledTransaction[],
-    accountPendingDeposits: Deposit[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) => void;
@@ -62,7 +54,6 @@ interface TransferViewHandlers {
   onLoadAccounts: (
     fromItem: number | undefined,
     pooledTransactions: PooledTransaction[],
-    pendingDeposits: Deposit[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) => void;
@@ -76,7 +67,6 @@ interface TransferViewHandlers {
 type TransferViewProps = TransferViewState & TransferViewHandlers;
 
 function Transfer({
-  ethereumNetworkTask,
   pooledTransactionsTask,
   step,
   accountTask,
@@ -87,7 +77,6 @@ function Transfer({
   wallet,
   preferredCurrency,
   fiatExchangeRatesTask,
-  pendingDeposits,
   tokensPriceTask,
   onChangeHeader,
   onLoadHermezAccount,
@@ -105,18 +94,6 @@ function Transfer({
   const urlSearchParams = new URLSearchParams(search);
   const receiver = urlSearchParams.get("receiver");
   const accountIndex = urlSearchParams.get("accountIndex");
-  const accountPendingDeposits = React.useMemo(
-    () =>
-      (ethereumNetworkTask.status === "successful" || ethereumNetworkTask.status === "reloading") &&
-      wallet !== undefined
-        ? storage.getPendingDepositsByHermezAddress(
-            pendingDeposits,
-            ethereumNetworkTask.data.chainId,
-            wallet.hermezEthereumAddress
-          )
-        : [],
-    [ethereumNetworkTask, pendingDeposits, wallet]
-  );
 
   React.useEffect(() => {
     onChangeHeader(step, accountIndex);
@@ -135,7 +112,6 @@ function Transfer({
         onLoadHermezAccount(
           accountIndex,
           pooledTransactionsTask.data,
-          accountPendingDeposits,
           fiatExchangeRatesTask.data,
           preferredCurrency
         );
@@ -146,7 +122,6 @@ function Transfer({
   }, [
     accountIndex,
     pooledTransactionsTask,
-    accountPendingDeposits,
     fiatExchangeRatesTask,
     preferredCurrency,
     onGoToChooseAccountStep,
@@ -185,7 +160,7 @@ function Transfer({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                pendingDeposits={accountPendingDeposits}
+                pendingDeposits={[]}
                 onLoadAccounts={onLoadAccounts}
                 onAccountClick={(account: Account) => onGoToBuildTransactionStep(account)}
               />
@@ -255,7 +230,6 @@ function Transfer({
 }
 
 const mapStateToProps = (state: AppState): TransferViewState => ({
-  ethereumNetworkTask: state.global.ethereumNetworkTask,
   pooledTransactionsTask: state.transfer.pooledTransactionsTask,
   step: state.transfer.step,
   wallet: state.global.wallet,
@@ -264,7 +238,6 @@ const mapStateToProps = (state: AppState): TransferViewState => ({
   feesTask: state.transfer.feesTask,
   isTransactionBeingApproved: state.transfer.isTransactionBeingApproved,
   transactionToReview: state.transfer.transaction,
-  pendingDeposits: state.global.pendingDeposits,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
   tokensPriceTask: state.global.tokensPriceTask,
@@ -319,7 +292,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
   onLoadHermezAccount: (
     accountIndex: string,
     pooledTransactions: PooledTransaction[],
-    accountPendingDeposits: Deposit[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) =>
@@ -327,7 +299,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
       transferThunks.fetchHermezAccount(
         accountIndex,
         pooledTransactions,
-        accountPendingDeposits,
         fiatExchangeRates,
         preferredCurrency
       )
@@ -337,7 +308,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
   onLoadAccounts: (
     fromItem: number | undefined,
     pooledTransactions: PooledTransaction[],
-    pendingDeposits: Deposit[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) =>
@@ -345,7 +315,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
       transferThunks.fetchAccounts(
         fromItem,
         pooledTransactions,
-        pendingDeposits,
         fiatExchangeRates,
         preferredCurrency
       )

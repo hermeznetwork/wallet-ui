@@ -20,7 +20,6 @@ import { Account, FiatExchangeRates, PooledTransaction, Deposit } from "src/doma
 function fetchHermezAccount(
   accountIndex: string,
   pooledTransactions: PooledTransaction[],
-  accountPendingDeposits: Deposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
@@ -40,7 +39,7 @@ function fetchHermezAccount(
         createAccount(
           account,
           pooledTransactions,
-          accountPendingDeposits,
+          undefined,
           tokensPriceTask,
           fiatExchangeRates,
           preferredCurrency
@@ -80,7 +79,6 @@ function fetchPoolTransactions(): AppThunk {
 function fetchAccounts(
   fromItem: number | undefined,
   pooledTransactions: PooledTransaction[],
-  pendingDeposits: Deposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
@@ -98,7 +96,7 @@ function fetchAccounts(
             createAccount(
               account,
               pooledTransactions,
-              pendingDeposits,
+              undefined,
               tokensPriceTask,
               fiatExchangeRates,
               preferredCurrency
