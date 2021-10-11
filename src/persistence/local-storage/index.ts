@@ -30,14 +30,18 @@ export function getStorageByKey(key: string): unknown {
   }
 }
 
-export function setStorageByKey(key: string, value: string): void {
-  localStorage.setItem(key, value);
+export function setStorageByKey(key: string, value: unknown): void {
+  if (typeof value === "string") {
+    localStorage.setItem(key, value);
+  } else {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
 }
 
 export function initStorage(key: string): Record<string, never> {
   const initialStorage = {};
 
-  setStorageByKey(key, JSON.stringify(initialStorage));
+  setStorageByKey(key, initialStorage);
 
   return initialStorage;
 }
@@ -57,7 +61,7 @@ export function getAuthSignatures(): AuthSignatures {
 }
 
 export function setAuthSignatures(authSignatures: AuthSignatures): void {
-  setStorageByKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY, JSON.stringify(authSignatures));
+  setStorageByKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY, authSignatures);
 }
 
 // Preferred currency
@@ -104,7 +108,7 @@ export function addPendingWithdraw(
       [hermezEthereumAddress]: [...withdraws, pendingWithdraw],
     },
   };
-  setStorageByKey(constants.PENDING_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -123,7 +127,7 @@ export function removePendingWithdrawByHash(
       [hermezEthereumAddress]: withdraws.filter((item) => item.hash !== hash),
     },
   };
-  setStorageByKey(constants.PENDING_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -157,7 +161,7 @@ export function addPendingDelayedWithdraw(
       [hermezEthereumAddress]: [...delayedWithdraws, pendingDelayedWithdraw],
     },
   };
-  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -181,7 +185,7 @@ export function updatePendingDelayedWithdrawByHash(
       ),
     },
   };
-  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -202,7 +206,7 @@ export function removePendingDelayedWithdrawById(
       [hermezEthereumAddress]: delayedWithdraws.filter((item) => item.id !== id),
     },
   };
-  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -223,7 +227,7 @@ export function removePendingDelayedWithdrawByHash(
       [hermezEthereumAddress]: delayedWithdraws.filter((item) => item.hash !== hash),
     },
   };
-  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY, newStorage);
   return newStorage;
 }
 
@@ -254,7 +258,7 @@ export function addPendingDeposit(
       [hermezEthereumAddress]: [...deposits, pendingDeposit],
     },
   };
-  setStorageByKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DEPOSITS_KEY, newStorage);
   return newStorage;
 }
 
@@ -276,7 +280,7 @@ export function updatePendingDepositByHash(
       ),
     },
   };
-  setStorageByKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DEPOSITS_KEY, newStorage);
   return newStorage;
 }
 
@@ -297,7 +301,7 @@ export function removePendingDepositByTransactionId(
       }),
     },
   };
-  setStorageByKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DEPOSITS_KEY, newStorage);
   return newStorage;
 }
 
@@ -316,7 +320,7 @@ export function removePendingDepositByHash(
       [hermezEthereumAddress]: deposits.filter((deposit) => deposit.hash !== hash),
     },
   };
-  setStorageByKey(constants.PENDING_DEPOSITS_KEY, JSON.stringify(newStorage));
+  setStorageByKey(constants.PENDING_DEPOSITS_KEY, newStorage);
   return newStorage;
 }
 
