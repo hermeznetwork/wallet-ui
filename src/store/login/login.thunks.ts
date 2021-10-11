@@ -6,6 +6,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
 import hermez from "@hermeznetwork/hermezjs";
 import { isEnvironmentSupported } from "@hermeznetwork/hermezjs/src/environment";
+import * as z from "zod";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { TREZOR_MANIFEST_MAIL } from "src/constants";
@@ -100,6 +101,25 @@ function signMessageHelper(
   }
 }
 
+export interface SignerError {
+  message: string;
+}
+
+const signerErrorParser: z.ZodSchema<SignerError> = z.object({
+  message: z.string(),
+});
+
+function decodeSignerError(error: unknown): string {
+  const parsedsignerError = signerErrorParser.safeParse(error);
+  return parsedsignerError.success
+    ? parsedsignerError.data.message
+    : error instanceof Error
+    ? error.message
+    : typeof error === "string"
+    ? error
+    : "An unknown error occurred while attempting to log in";
+}
+
 /**
  * Asks the user to login using a compatible wallet and stores its data in the Redux
  * store
@@ -128,7 +148,7 @@ function fetchWallet(
 
       const provider = hermez.Providers.getProvider();
 
-      dispatch(loginActions.loadWallet());
+      dispatch(loginActions.loadWallet(walletName));
 
       if (walletName === loginActions.WalletName.METAMASK) {
         try {
@@ -209,14 +229,7 @@ function fetchWallet(
         login: { step },
       } = getState();
       if (step.type === "wallet-loader") {
-        const stringError: string =
-          error instanceof Error
-            ? error.message
-            : typeof error === "string"
-            ? error
-            : `An error occurred on fetchWallet while attempting to log in: ${JSON.stringify(
-                error
-              )}`;
+        const stringError = decodeSignerError(error);
         dispatch(loginActions.loadWalletFailure(stringError));
         dispatch(globalActions.openSnackbar(stringError));
         dispatch(loginActions.goToPreviousStep());

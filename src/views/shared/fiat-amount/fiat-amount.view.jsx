@@ -9,7 +9,7 @@ function FiatAmount({ amount, currency }) {
 
   return (
     <div className={classes.root}>
-      {CurrencySymbol[currency].symbol} {!isNaN(amount) ? amount.toFixed(2) : "--"}
+      {CurrencySymbol[currency].symbol} {!isNaN(amount) ? amount : "--"}
     </div>
   );
 }
