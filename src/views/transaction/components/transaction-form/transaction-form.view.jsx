@@ -271,7 +271,7 @@ function TransactionForm({
               amount: amount,
               from: { accountIndex: account.accountIndex },
               to:
-                (isHermezBjjAddress(receiver) && { hezBjjAddress: receiver }) ||
+                (isHermezBjjAddress(receiver) && { bjj: receiver }) ||
                 receiverAccount ||
                 (addresses.isValidHermezAddress(receiver) && { hezEthereumAddress: receiver }),
               fee: transactionFee,

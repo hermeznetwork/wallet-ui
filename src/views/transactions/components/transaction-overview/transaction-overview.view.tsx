@@ -311,8 +311,7 @@ function TransactionOverview({
                 txData={{
                   type: TxType.Transfer,
                   fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  toHezEthereumAddress:
-                    transaction.to.hezEthereumAddress || transaction.to.hezBjjAddress,
+                  toHezEthereumAddress: transaction.to.hezEthereumAddress || transaction.to.bjj,
                   // ToDo: To be removed
                   estimatedWithdrawFee: { status: "pending" },
                   fee: {

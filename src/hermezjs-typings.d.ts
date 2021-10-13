@@ -99,9 +99,6 @@ declare module "@hermeznetwork/*" {
     balance: string;
     bjj: string;
     hezEthereumAddress: string;
-    // ToDo: This prop is referred in several parts of the code but does not come from the API
-    // We should consider whether it belongs to an account and in that case consider adding it on the domain
-    hezBjjAddress?: string;
     // nonce: number;
     token: Token;
   };

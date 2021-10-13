@@ -155,7 +155,7 @@ function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: n
       const txData = {
         type: TxType.Transfer,
         from: from.accountIndex,
-        to: to.accountIndex || to.hezEthereumAddress || to.hezBjjAddress,
+        to: to.accountIndex || to.hezEthereumAddress || to.bjj,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
         fee,
       };

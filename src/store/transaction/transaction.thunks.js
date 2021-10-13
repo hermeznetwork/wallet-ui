@@ -516,7 +516,7 @@ function transfer(amount, from, to, fee) {
     const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
     const txData = {
       from: from.accountIndex,
-      to: to.accountIndex || to.hezEthereumAddress || to.hezBjjAddress,
+      to: to.accountIndex || to.hezEthereumAddress || to.bjj,
       amount: HermezCompressedAmount.compressAmount(amount),
       fee,
     };
