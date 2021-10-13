@@ -355,8 +355,9 @@ declare module "@hermeznetwork/hermezjs/src/utils" {
 
 // Tx
 declare module "@hermeznetwork/hermezjs/src/tx" {
-  import { Transaction, Token, Wallet } from "@hermeznetwork/hermezjs";
+  import { Token, Wallet } from "@hermeznetwork/hermezjs";
   import { HermezCompressedAmount } from "@hermeznetwork/hermezjs/src/hermez-compressed-amount";
+  import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
   // declare function deposit() {};
   // declare function forceExit() {};
@@ -366,7 +367,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   // declare function sendL2Transaction() {};
 
   type Tx = {
-    type: Transaction["type"];
+    type: TxType;
     from: string;
     to?: string;
     amount: HermezCompressedAmount;
