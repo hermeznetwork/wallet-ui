@@ -30,13 +30,13 @@ interface EstimatedWithdrawFee {
 
 type Transaction =
   | {
-      type: typeof TxType.Deposit;
+      type: TxType.Deposit;
       amount: BigNumber;
       account: Account;
       onDeposit: (amount: BigNumber, account: Account) => void;
     }
   | {
-      type: typeof TxType.Transfer;
+      type: TxType.Transfer;
       amount: BigNumber;
       account: Account;
       to: Partial<Account>;
@@ -44,14 +44,14 @@ type Transaction =
       onTransfer: (amount: BigNumber, account: Account, to: Partial<Account>, fee: number) => void;
     }
   | {
-      type: typeof TxType.Exit;
+      type: TxType.Exit;
       amount: BigNumber;
       account: Account;
       fee: number;
       onExit: (amount: BigNumber, account: Account, fee: number) => void;
     }
   | {
-      type: typeof TxType.Withdraw;
+      type: TxType.Withdraw;
       amount: BigNumber;
       account: Account;
       exit: Exit;
@@ -67,7 +67,7 @@ type Transaction =
       ) => void;
     }
   | {
-      type: typeof TxType.ForceExit;
+      type: TxType.ForceExit;
       amount: BigNumber;
       account: Account;
       onForceExit: (amount: BigNumber, account: Account) => void;

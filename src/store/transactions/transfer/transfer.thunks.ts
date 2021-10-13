@@ -2,6 +2,7 @@ import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
@@ -10,7 +11,7 @@ import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
 // domain
-import { Account, FiatExchangeRates, PooledTransaction, Deposit } from "src/domain/hermez";
+import { Account, FiatExchangeRates, PooledTransaction } from "src/domain/hermez";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -152,7 +153,7 @@ function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: n
 
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
       const txData = {
-        type: "Transfer" as const,
+        type: TxType.Transfer,
         from: from.accountIndex,
         to: to.accountIndex || to.hezEthereumAddress || to.hezBjjAddress,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
