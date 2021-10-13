@@ -42,9 +42,11 @@ const theme = {
   breakpoints: {
     upSm: "@media (min-width: 576px)",
   },
-  spacing: (value) => value * 8,
+  spacing: (value: number): number => value * 8,
   headerHeight: 84,
   sidenavWidth: 295,
 };
+
+export type Theme = typeof theme;
 
 export default theme;

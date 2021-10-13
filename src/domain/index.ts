@@ -1,3 +1,4 @@
+import { AppAction } from "src/store";
 /**
  * This namespace contains the abstract definition of the types that are used across the application.
  * These types should correspond to real entities of the domain of the application. Special care must
@@ -14,20 +15,8 @@ interface PageHeader {
   type: "page";
   data: {
     title: string;
-    goBackAction: {
-      type: string;
-      payload: {
-        method: string;
-        args: string[];
-      };
-    };
-    closeAction: {
-      type: string;
-      payload: {
-        method: string;
-        args: string[];
-      };
-    };
+    goBackAction?: AppAction;
+    closeAction?: AppAction;
   };
 }
 

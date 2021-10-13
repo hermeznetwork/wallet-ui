@@ -18,7 +18,7 @@ function getDepositFee(token, gasPrice) {
 /**
  * Calculates the actual fee that will be paid for a specific transaction
  * taking into account the type of transaction, the amount and minimum fee
- * @param {Number} amount - The amount of the transaction
+ * @param {Number | String} amount - The amount of the transaction
  * @param {Object} token - The token used in the transaction
  * @param {Number} minimumFee - The minimum fee that needs to be payed to the coordinator in token value
  * @returns {Number} The real fee that will be paid for this transaction

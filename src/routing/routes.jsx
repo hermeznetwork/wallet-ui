@@ -3,6 +3,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import Home from "../views/home/home.view";
 import Login from "../views/login/login.view";
 import Transaction from "../views/transaction/transaction.view";
+import Transfer from "../views/transactions/transfer/transfer.view";
 import MyAccount from "../views/my-account/my-account.view";
 import AccountDetails from "../views/account-details/account-details.view";
 import TransactionDetails from "../views/transaction-details/transaction-details.view";
@@ -25,7 +26,7 @@ const routes = {
   },
   transfer: {
     path: "/transfer",
-    render: () => <Transaction transactionType={TxType.Transfer} />,
+    render: () => <Transfer />,
   },
   withdraw: {
     path: "/withdraw",

@@ -11,6 +11,7 @@
 
 declare module "@hermeznetwork/*" {
   import { BigNumber } from "ethers";
+  import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
   export type ISOStringDate = string;
 
@@ -57,7 +58,7 @@ declare module "@hermeznetwork/*" {
     // hezEthereumAddress: string;
     // merkleProof: MerkleProof;
     // balance: string;
-    instantWithdraw: number;
+    instantWithdraw: number | null;
     // delayedWithdrawRequest: unknown | null;
     delayedWithdraw: unknown | null;
     // token: Token;
@@ -90,14 +91,14 @@ declare module "@hermeznetwork/*" {
     // ToDo: This states are yet to be validated
     // state: "fged" | "fing" | "pend" | "invl";
     // ToDo: Are there more deposit types??
-    type: "Deposit" | "CreateAccountDeposit";
+    type: TxType.Deposit | TxType.CreateAccountDeposit;
   }
 
   export type Account = HermezApiResourceItem & {
     accountIndex: string;
     balance: string;
     bjj: string;
-    // hezEthereumAddress: string;
+    hezEthereumAddress: string;
     // nonce: number;
     token: Token;
   };
@@ -113,21 +114,13 @@ declare module "@hermeznetwork/*" {
     id: string;
     nonce: number;
     signature: string;
-    state: "fged" | "fing" | "pend" | "invl";
+    state: TxState;
     timestamp: ISOStringDate;
     toAccountIndex: string;
     toBJJ: string;
     toHezEthereumAddress: string;
     token: Token;
-    type:
-      | "CreateAccountDeposit"
-      | "Deposit"
-      | "Exit"
-      | "ForceExit"
-      | "Transfer"
-      | "TransferToBJJ"
-      | "TransferToEthAddr"
-      | "Withdrawn";
+    type: TxType;
     // batchNum: number | null;
     // info: string | null;
     // maxNumBatch: number;
@@ -147,20 +140,12 @@ declare module "@hermeznetwork/*" {
     fee: number;
     fromAccountIndex: string;
     id: string;
-    state: "fged" | "fing" | "pend" | "invl";
+    state: TxState;
     timestamp: ISOStringDate;
     toAccountIndex: string;
     toHezEthereumAddress: string | null;
     token: Token;
-    type:
-      | "CreateAccountDeposit"
-      | "Deposit"
-      | "Exit"
-      | "ForceExit"
-      | "Transfer"
-      | "TransferToBJJ"
-      | "TransferToEthAddr"
-      | "Withdrawn";
+    type: TxType;
     // accountIndex: string;
     // balance: string;
     // hash: string;
@@ -188,7 +173,7 @@ declare module "@hermeznetwork/*" {
     // rollup: Rollup;
     // auction: Auction;
     // withdrawalDelayer: WithdrawalDelayer;
-    // recommendedFee: RecommendedFee;
+    recommendedFee: RecommendedFee;
   }
 
   // interface Node {
@@ -295,11 +280,11 @@ declare module "@hermeznetwork/*" {
   //   emergencyMode: boolean;
   // }
 
-  // interface RecommendedFee {
-  //   existingAccount: number;
-  //   createAccount: number;
-  //   createAccountInternal: number;
-  // }
+  export interface RecommendedFee {
+    existingAccount: number;
+    createAccount: number;
+    createAccountInternal: number;
+  }
 
   // persistence
   export interface Transactions {
@@ -367,8 +352,9 @@ declare module "@hermeznetwork/hermezjs/src/utils" {
 
 // Tx
 declare module "@hermeznetwork/hermezjs/src/tx" {
-  import { Transaction, Token, Wallet } from "@hermeznetwork/hermezjs";
+  import { Token, Wallet } from "@hermeznetwork/hermezjs";
   import { HermezCompressedAmount } from "@hermeznetwork/hermezjs/src/hermez-compressed-amount";
+  import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
   // declare function deposit() {};
   // declare function forceExit() {};
@@ -378,10 +364,13 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   // declare function sendL2Transaction() {};
 
   type Tx = {
-    type: Transaction["type"];
+    type: TxType;
     from: string;
+    to?: string;
     amount: HermezCompressedAmount;
     fee: number;
+    nonce?: number;
+    maxNumBatch?: number;
   };
 
   type SendL2TransactionResponse = {
@@ -395,7 +384,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     wallet: Wallet,
     token: Token,
     nextForgers: string[],
-    addToTxPool: boolean
+    addToTxPool?: boolean
   ): Promise<SendL2TransactionResponse> {};
 
   // declare function sendAtomicGroup() {};
@@ -525,7 +514,10 @@ declare module "@hermeznetwork/hermezjs/src/api" {
 
   declare function getToken(tokenId: number): Promise<Token> {};
 
-  declare function getState(): Promise<CoordinatorState> {};
+  declare function getState(
+    axiosConfig?: Record<string, unknown>,
+    apiUrl?: string
+  ): Promise<CoordinatorState> {};
 
   // declare function getBatches() {};
   // declare function getBatch() {};
@@ -559,7 +551,7 @@ declare module "@hermeznetwork/hermezjs/src/constants" {
   // declare const CREATE_ACCOUNT_AUTH_MESSAGE: string;
   // declare const EIP_712_VERSION: string;
   // declare const EIP_712_PROVIDER: string;
-  // declare const ETHER_TOKEN_ID: number;
+  declare const ETHER_TOKEN_ID: number;
   // declare const GAS_LIMIT: number;
   // declare const GAS_LIMIT_HIGH: number;
   // declare const GAS_LIMIT_LOW: number;
@@ -582,7 +574,7 @@ declare module "@hermeznetwork/hermezjs/src/constants" {
   // declare const STORAGE_VERSION_KEY: string;
   // declare const STORAGE_VERSION: number;
   // declare const APPROVE_AMOUNT: string;
-  // declare const INTERNAL_ACCOUNT_ETH_ADDR: string;
+  declare const INTERNAL_ACCOUNT_ETH_ADDR: string;
   // declare const EMPTY_BJJ_ADDR: string;
   // declare const MAX_NLEVELS: number;
   // declare const WITHDRAWAL_CIRCUIT_NLEVELS: number;
@@ -694,7 +686,7 @@ declare module "@hermeznetwork/hermezjs/src/environment" {
 
 // Enums
 declare module "@hermeznetwork/hermezjs/src/enums" {
-  declare const TxType = {
+  export enum TxType {
     Deposit = "Deposit",
     CreateAccountDeposit = "CreateAccountDeposit",
     Transfer = "Transfer",
@@ -703,19 +695,19 @@ declare module "@hermeznetwork/hermezjs/src/enums" {
     Withdraw = "Withdrawn",
     Exit = "Exit",
     ForceExit = "ForceExit",
-  };
+  }
 
-  declare const TxState = {
+  export enum TxState {
     Forged = "fged",
     Forging = "fing",
     Pending = "pend",
     Invalid = "invl",
-  };
+  }
 
-  // declare const TxLevel = {
-  //   L1: "L1",
-  //   L2: "L2",
-  // };
+  // declare enum TxLevel {
+  //   L1 = "L1",
+  //   L2 = "L2",
+  // }
 }
 
 // AtomicUtils

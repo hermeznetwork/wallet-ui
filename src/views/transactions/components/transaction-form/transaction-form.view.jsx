@@ -269,7 +269,7 @@ function TransactionForm({
 
             onSubmit({
               amount: amount,
-              from: { accountIndex: account.accountIndex },
+              from: account,
               to:
                 (isHermezBjjAddress(receiver) && { bjj: receiver }) ||
                 receiverAccount ||
