@@ -20,16 +20,13 @@ const useFeeStyles = createUseStyles((theme) => ({
       fontSize: theme.spacing(2.5),
       padding: 0,
     },
-    "& p": {
-      color: theme.palette.grey.main,
-    },
     "& span": {
       marginRight: theme.spacing(1),
     },
   },
-  transfer: {
-    "& p": {
-      color: theme.palette.black,
+  deposit: {
+    "& [class^='fiatAmount']": {
+      color: theme.palette.grey.main,
     },
   },
   withdrawFeeWrapper: {

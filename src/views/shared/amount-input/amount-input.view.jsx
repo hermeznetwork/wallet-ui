@@ -159,7 +159,8 @@ function AmountInput(Component) {
         fee,
         gasPrice
       );
-      const maxAmountWithoutFeeInFiat = convertAmountToFiat(maxAmountWithoutFee);
+      //Double conversion to keep at least 2 decimals and return number
+      const maxAmountWithoutFeeInFiat = Number(convertAmountToFiat(maxAmountWithoutFee).toFixed(2));
 
       if (showInFiat) {
         setValue(maxAmountWithoutFeeInFiat);

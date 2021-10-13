@@ -82,18 +82,19 @@ function Fee({
   ) {
     return (
       <div className={classes.feeWrapper}>
-        <p className={`${classes.fee} ${classes.transfer}`}>
+        <p className={classes.fee}>
           Fee&nbsp;
-          <span>
-            {showInFiat ? (
-              <FiatAmount amount={l2FeeInFiat} currency={preferredCurrency} />
-            ) : (
-              `${getFixedTokenAmount(
+          {showInFiat ? (
+            <FiatAmount amount={l2FeeInFiat} currency={preferredCurrency} />
+          ) : (
+            <span>
+              {`${getFixedTokenAmount(
                 parseUnits(l2RealFee.toString(), token.decimals),
                 token.decimals
-              )} ${token.symbol}`
-            )}
-          </span>
+              )} 
+              ${token.symbol}`}
+            </span>
+          )}
         </p>
       </div>
     );
@@ -102,7 +103,7 @@ function Fee({
   if (transactionType === TxType.Deposit) {
     return (
       <div className={classes.feeWrapper}>
-        <p className={classes.fee}>{getDepositFee()}</p>
+        <p className={`${classes.fee} ${classes.deposit}`}>{getDepositFee()}</p>
       </div>
     );
   }

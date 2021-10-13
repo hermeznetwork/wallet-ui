@@ -12,7 +12,7 @@ const useAccountDetailsStyles = createUseStyles((theme) => ({
   },
   fiatBalance: {
     marginBottom: theme.spacing(3),
-    "& p": {
+    "& span": {
       color: theme.palette.grey.dark,
       fontSize: theme.spacing(2.5),
       fontWeight: theme.fontWeights.medium,

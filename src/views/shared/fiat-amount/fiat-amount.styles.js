@@ -1,7 +1,7 @@
 import { createUseStyles } from "react-jss";
 
 const useFiatAmountStyles = createUseStyles((theme) => ({
-  root: {
+  fiatAmount: {
     display: "flex",
     alignItems: "baseline",
     justifyContent: "center",

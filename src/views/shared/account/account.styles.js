@@ -46,7 +46,7 @@ const useAccountStyles = createUseStyles((theme) => ({
     fontWeight: theme.fontWeights.medium,
   },
   fiatBalance: {
-    "& p": {
+    "& span": {
       fontWeight: theme.fontWeights.medium,
       color: theme.palette.grey.main,
     },
