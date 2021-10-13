@@ -73,7 +73,6 @@ function fetchTotalBalance(
             ? totalBalance + Number(account.fiatBalance)
             : totalBalance;
         }, 0);
-
         const totalBalance = totalPendingCreateAccountDepositsBalance + totalAccountsBalance;
 
         dispatch(homeActions.loadTotalBalanceSuccess(totalBalance));
