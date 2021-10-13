@@ -128,7 +128,7 @@ function AmountInput(Component) {
           const newAmountInTokens = convertAmountToTokens(newAmountInFiat);
           const fixedAmountInTokens = fixTransactionAmount(newAmountInTokens);
 
-          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat.toFixed(2) });
+          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat });
           checkAmountValidity(fixedAmountInTokens);
           setValue(event.target.value);
         } else {
@@ -162,7 +162,7 @@ function AmountInput(Component) {
       const maxAmountWithoutFeeInFiat = convertAmountToFiat(maxAmountWithoutFee);
 
       if (showInFiat) {
-        setValue(maxAmountWithoutFeeInFiat);
+        setValue(maxAmountWithoutFeeInFiat.toString());
       } else {
         const newValue = getFixedTokenAmount(maxAmountWithoutFee, account.token.decimals);
 
@@ -181,7 +181,7 @@ function AmountInput(Component) {
     function handleSwapCurrency() {
       const newValue = showInFiat
         ? getFixedTokenAmount(amount.tokens, account.token.decimals)
-        : amount.fiat;
+        : amount.fiat.toString();
 
       if (value.length > 0) {
         setValue(newValue);
