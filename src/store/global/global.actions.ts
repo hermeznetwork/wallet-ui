@@ -234,16 +234,16 @@ export interface LoadCoordinatorStateFailure {
   error: string;
 }
 export interface LoadTokensPrice {
-  type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE;
+  type: GlobalActionTypes.LOAD_TOKENS_PRICE;
 }
 
 export interface LoadTokensPriceSuccess {
-  type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS;
+  type: GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS;
   tokens: Token[];
 }
 
 export interface LoadTokensPriceFailure {
-  type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE;
+  type: GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE;
   error: string;
 }
 
