@@ -165,8 +165,11 @@ function TransactionForm({
   }
 
   function handleAmountChange(data) {
-    setAmount(data.amount.tokens);
     setShowInFiat(data.showInFiat);
+
+    if (data.isUntouched) return;
+
+    setAmount(data.amount.tokens);
     setIsAmountValid(!data.isInvalid);
     setAreFundsExceededDueToFee(data.areFundsExceededDueToFee);
   }

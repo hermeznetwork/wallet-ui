@@ -30,6 +30,7 @@ function AmountInput(Component) {
     const [isAmountWithFeeMoreThanFunds, setIsAmountWithFeeMoreThanFunds] = React.useState(false);
     const [areFundsExceededDueToFee, setAreFundsExceededDueToFee] = React.useState(false);
     const [isAmountCompressedInvalid, setIsAmountCompressedInvalid] = React.useState(false);
+    const [isUntouched, setIsUntouched] = React.useState(true);
 
     React.useEffect(() => {
       handleInputChange({ target: { value: defaultValue } });
@@ -48,6 +49,7 @@ function AmountInput(Component) {
           showInFiat,
           isInvalid,
           areFundsExceededDueToFee,
+          isUntouched,
         });
       }
     }, [
@@ -56,6 +58,7 @@ function AmountInput(Component) {
       isAmountWithFeeMoreThanFunds,
       isAmountCompressedInvalid,
       areFundsExceededDueToFee,
+      isUntouched,
     ]);
 
     /**
@@ -94,6 +97,7 @@ function AmountInput(Component) {
      * @param {BigNumber} newAmount - New amount to be checked.
      */
     function checkAmountValidity(newAmount) {
+      setIsUntouched(false);
       const newFee = getTransactionFee(transactionType, newAmount, account.token, fee, gasPrice);
       const newAmountWithFee = newAmount.add(newFee);
       const isNewAmountWithFeeMoreThanFunds = newAmountWithFee.gt(BigNumber.from(account.balance));
