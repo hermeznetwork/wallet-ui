@@ -72,9 +72,7 @@ function TransactionAmountInput({
                 {getFixedTokenAmount(amount.tokens, account.token.decimals)} {account.token.symbol}
               </span>
             ) : (
-              <span>
-                <FiatAmount amount={amount.fiat} currency={preferredCurrency} />
-              </span>
+              <FiatAmount amount={amount.fiat} currency={preferredCurrency} />
             )}
           </div>
           <button
