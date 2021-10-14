@@ -10,7 +10,7 @@ import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
 // domain
-import { Account, FiatExchangeRates, PooledTransaction, Deposit } from "src/domain/hermez";
+import { Account, FiatExchangeRates, PooledTransaction } from "src/domain/hermez";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
