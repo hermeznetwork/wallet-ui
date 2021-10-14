@@ -1,7 +1,11 @@
 import React from "react";
 import { BigNumber } from "ethers";
 
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "../../../utils/currencies";
+import {
+  getFixedTokenAmount,
+  getTokenAmountInPreferredCurrency,
+  trimZeros,
+} from "../../../utils/currencies";
 import {
   fixTransactionAmount,
   getMaxTxAmount,
@@ -160,7 +164,7 @@ function AmountInput(Component) {
         gasPrice
       );
       //Double conversion to keep at least 2 decimals and return number
-      const maxAmountWithoutFeeInFiat = Number(convertAmountToFiat(maxAmountWithoutFee).toFixed(2));
+      const maxAmountWithoutFeeInFiat = trimZeros(convertAmountToFiat(maxAmountWithoutFee), 2);
 
       if (showInFiat) {
         setValue(maxAmountWithoutFeeInFiat);

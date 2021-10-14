@@ -9,6 +9,7 @@ import {
   CurrencySymbol,
   getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency,
+  trimZeros,
 } from "../../../../utils/currencies";
 
 function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiatExchangeRates }) {
@@ -50,7 +51,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
           title="Hermez fee"
           subtitle={<FiatAmount amount={getL2FeeInFiat()} currency={preferredCurrency} />}
           hint="Step 1"
-          value={`${Number(l2Fee.toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`}
+          value={`${trimZeros(l2Fee, MAX_TOKEN_DECIMALS)} ${token.symbol}`}
         />
         <TransactionInfoRow
           title="Ethereum fee (estimated)"
@@ -69,7 +70,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
       <TransactionInfoRow
         title={estimatedWithdrawFee ? "Hermez fee" : "Fee"}
         subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getL2FeeInFiat()}`}
-        value={`${Number(l2Fee.toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`}
+        value={`${trimZeros(l2Fee, MAX_TOKEN_DECIMALS)} ${token.symbol}`}
       />
       {estimatedWithdrawFee && (
         <TransactionInfoRow

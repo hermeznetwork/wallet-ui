@@ -41,7 +41,7 @@ function getFixedTokenAmount(amount, decimals) {
   const balanceWithDecimals = Number(amount) / Math.pow(10, decimals);
 
   // Double conversion to remove zeros and return a string
-  return Number(balanceWithDecimals.toFixed(MAX_TOKEN_DECIMALS)).toString();
+  return trimZeros(balanceWithDecimals, MAX_TOKEN_DECIMALS).toString();
 }
 
 /**
@@ -120,6 +120,16 @@ function convertTokenAmountToFiat(tokenAmount, token, preferredCurrency, fiatExc
   );
 }
 
+/**
+ * Trim leading and trailing zeros
+ * @param {Number} amount - Amount to trim
+ * @param {Number} decimals - Decimals that the amount should have
+ * @returns {Number}
+ */
+function trimZeros(amount, decimals) {
+  return Number(amount.toFixed(decimals));
+}
+
 export {
   CurrencySymbol,
   getFixedTokenAmount,
@@ -127,4 +137,5 @@ export {
   getTokenAmountInPreferredCurrency,
   getFeeInUsd,
   convertTokenAmountToFiat,
+  trimZeros,
 };
