@@ -3,6 +3,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { CurrencySymbol } from "../../../../utils/currencies";
 import useTransactionAmountStyles from "./transaction-amount.styles";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 function TransactionAmount({
   type,
@@ -12,14 +13,17 @@ function TransactionAmount({
   accountIndex,
 }) {
   const classes = useTransactionAmountStyles();
-  const currencySymbol = CurrencySymbol[preferredCurrency].symbol;
 
   switch (type) {
     case TxType.CreateAccountDeposit:
     case TxType.Deposit: {
       return (
-        <p className={`${classes.root} ${classes.depositAmount}`}>
-          {currencySymbol} {fiatAmount}
+        <p className={classes.root}>
+          <FiatAmount
+            currency={preferredCurrency}
+            amount={fiatAmount}
+            className={classes.depositAmount}
+          />
         </p>
       );
     }
@@ -28,7 +32,7 @@ function TransactionAmount({
     case TxType.ForceExit: {
       return (
         <p className={classes.root}>
-          - {currencySymbol} {fiatAmount}
+          <FiatAmount currency={preferredCurrency} amount={-fiatAmount} />
         </p>
       );
     }
@@ -37,13 +41,17 @@ function TransactionAmount({
       if (fromAccountIndex === accountIndex) {
         return (
           <p className={classes.root}>
-            - {currencySymbol} {fiatAmount}
+            <FiatAmount currency={preferredCurrency} amount={-fiatAmount} />
           </p>
         );
       } else {
         return (
-          <p className={`${classes.root} ${classes.depositAmount}`}>
-            {currencySymbol} {fiatAmount}
+          <p className={classes.root}>
+            <FiatAmount
+              currency={preferredCurrency}
+              amount={fiatAmount}
+              className={classes.depositAmount}
+            />
           </p>
         );
       }

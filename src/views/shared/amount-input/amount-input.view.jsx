@@ -1,7 +1,11 @@
 import React from "react";
 import { BigNumber } from "ethers";
 
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "../../../utils/currencies";
+import {
+  getFixedTokenAmount,
+  getTokenAmountInPreferredCurrency,
+  trimZeros,
+} from "../../../utils/currencies";
 import {
   fixTransactionAmount,
   getMaxTxAmount,
@@ -128,7 +132,7 @@ function AmountInput(Component) {
           const newAmountInTokens = convertAmountToTokens(newAmountInFiat);
           const fixedAmountInTokens = fixTransactionAmount(newAmountInTokens);
 
-          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat.toFixed(2) });
+          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat });
           checkAmountValidity(fixedAmountInTokens);
           setValue(event.target.value);
         } else {
@@ -159,7 +163,8 @@ function AmountInput(Component) {
         fee,
         gasPrice
       );
-      const maxAmountWithoutFeeInFiat = convertAmountToFiat(maxAmountWithoutFee);
+
+      const maxAmountWithoutFeeInFiat = trimZeros(convertAmountToFiat(maxAmountWithoutFee), 2);
 
       if (showInFiat) {
         setValue(maxAmountWithoutFeeInFiat);
