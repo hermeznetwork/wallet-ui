@@ -13,9 +13,7 @@ const useFeeStyles = createUseStyles((theme) => ({
     },
   },
   deposit: {
-    "& .fiatAmount": {
-      color: theme.palette.grey.main,
-    },
+    color: theme.palette.grey.main,
   },
   withdrawFeeWrapper: {
     display: "flex",

@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 
 import { CurrencySymbol } from "../../../utils/currencies";
 
-function FiatAmount({ amount, currency }) {
+function FiatAmount({ amount, currency, className }) {
   return (
-    <span className="fiatAmount">
+    <span className={className}>
       {CurrencySymbol[currency].symbol} {!isNaN(amount) ? amount.toFixed(2) : "--"}
     </span>
   );

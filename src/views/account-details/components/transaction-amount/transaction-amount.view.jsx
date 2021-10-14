@@ -18,8 +18,12 @@ function TransactionAmount({
     case TxType.CreateAccountDeposit:
     case TxType.Deposit: {
       return (
-        <p className={`${classes.root} ${classes.depositAmount}`}>
-          <FiatAmount currency={preferredCurrency} amount={fiatAmount} />
+        <p className={classes.root}>
+          <FiatAmount
+            currency={preferredCurrency}
+            amount={fiatAmount}
+            className={classes.depositAmount}
+          />
         </p>
       );
     }
@@ -42,8 +46,12 @@ function TransactionAmount({
         );
       } else {
         return (
-          <p className={`${classes.root} ${classes.depositAmount}`}>
-            <FiatAmount currency={preferredCurrency} amount={fiatAmount} />
+          <p className={classes.root}>
+            <FiatAmount
+              currency={preferredCurrency}
+              amount={fiatAmount}
+              className={classes.depositAmount}
+            />
           </p>
         );
       }

@@ -50,7 +50,11 @@ function Fee({
       return (
         <>
           Ethereum fee (estimated) - <span>${depositFee.amount} ETH</span> ~{" "}
-          <FiatAmount amount={fiatAmount} currency={preferredCurrency} />
+          <FiatAmount
+            amount={fiatAmount}
+            currency={preferredCurrency}
+            className={classes.deposit}
+          />
         </>
       );
     }
@@ -99,7 +103,7 @@ function Fee({
   }
 
   if (transactionType === TxType.Deposit) {
-    return <p className={`${classes.fee} ${classes.deposit}`}>{getDepositFee()}</p>;
+    return <p className={classes.fee}>{getDepositFee()}</p>;
   }
 
   if (transactionType === TxType.Exit) {

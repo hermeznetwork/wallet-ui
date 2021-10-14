@@ -50,8 +50,12 @@ function Account({
         ) : (
           <p className={classes.tokenName}>{token.name}</p>
         )}
-        <p className={classes.fiatBalance}>
-          <FiatAmount amount={fiatBalance} currency={preferredCurrency} />
+        <p>
+          <FiatAmount
+            amount={fiatBalance}
+            currency={preferredCurrency}
+            className={classes.fiatBalance}
+          />
         </p>
       </div>
     </div>

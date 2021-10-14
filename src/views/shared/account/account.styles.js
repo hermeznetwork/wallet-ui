@@ -46,10 +46,8 @@ const useAccountStyles = createUseStyles((theme) => ({
     fontWeight: theme.fontWeights.medium,
   },
   fiatBalance: {
-    "& span": {
-      fontWeight: theme.fontWeights.medium,
-      color: theme.palette.grey.main,
-    },
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.grey.main,
   },
   bottomRow: ({ hasPendingDeposit }) => ({
     color: hasPendingDeposit ? theme.palette.grey.dark : theme.palette.grey.main,
