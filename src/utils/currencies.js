@@ -40,7 +40,6 @@ function getFixedTokenAmount(amount, decimals) {
   // We can lose precision as there will never be more than MAX_DECIMALS_UNTIL_ZERO_AMOUNT significant digits
   const balanceWithDecimals = Number(amount) / Math.pow(10, decimals);
 
-  // Double conversion to remove zeros and return a string
   return trimZeros(balanceWithDecimals, MAX_TOKEN_DECIMALS).toString();
 }
 
