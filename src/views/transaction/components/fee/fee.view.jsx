@@ -53,7 +53,7 @@ function Fee({
           <FiatAmount
             amount={fiatAmount}
             currency={preferredCurrency}
-            className={classes.deposit}
+            className={classes.fiatAmount}
           />
         </>
       );
@@ -112,7 +112,11 @@ function Fee({
         <button className={classes.withdrawFeeButton} onClick={handleWithdrawFeeExpansion}>
           <span className={classes.withdrawFeeButtonText}>
             Total estimated fee{" "}
-            <FiatAmount amount={getTotalEstimatedWithdrawFee()} currency={preferredCurrency} />
+            <FiatAmount
+              amount={getTotalEstimatedWithdrawFee()}
+              currency={preferredCurrency}
+              className={classes.fiatAmount}
+            />
           </span>
           <AngleDownIcon
             className={`${classes.withdrawFeeButtonIcon} ${classes.withdrawFeeButtonIconPath}`}

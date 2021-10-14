@@ -12,7 +12,7 @@ const useFeeStyles = createUseStyles((theme) => ({
       marginTop: theme.spacing(3),
     },
   },
-  deposit: {
+  fiatAmount: {
     color: theme.palette.grey.main,
   },
   withdrawFeeWrapper: {
