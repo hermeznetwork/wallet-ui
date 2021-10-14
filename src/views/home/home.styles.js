@@ -29,11 +29,10 @@ const useHomeStyles = createUseStyles((theme) => ({
   accountBalance: {
     marginTop: `${theme.spacing(4)}px`,
     marginBottom: `${theme.spacing(3)}px`,
+  },
+  fiatAmount: {
     fontSize: theme.spacing(5),
-    "& div": {
-      color: theme.palette.black,
-      fontWeight: theme.fontWeights.medium,
-    },
+    fontWeight: theme.fontWeights.medium,
   },
   emptyAccounts: {
     maxWidth: 240,

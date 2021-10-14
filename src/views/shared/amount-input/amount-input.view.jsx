@@ -1,7 +1,11 @@
 import React from "react";
 import { BigNumber } from "ethers";
 
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "../../../utils/currencies";
+import {
+  getFixedTokenAmount,
+  getTokenAmountInPreferredCurrency,
+  trimZeros,
+} from "../../../utils/currencies";
 import {
   fixTransactionAmount,
   getMaxTxAmount,
@@ -11,6 +15,7 @@ import { parseUnits } from "ethers/lib/utils";
 import { getTransactionFee } from "../../../utils/fees";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
+import { MAX_TOKEN_DECIMALS } from "../../../constants";
 
 function AmountInput(Component) {
   return function (props) {
@@ -75,7 +80,7 @@ function AmountInput(Component) {
         account.token.USD,
         preferredCurrency,
         fiatExchangeRates
-      ).toFixed(2);
+      );
     }
 
     /**
@@ -119,14 +124,19 @@ function AmountInput(Component) {
      * @param {InputEvent} event - Input event
      */
     function handleInputChange(event) {
-      const INPUT_REGEX = new RegExp(`^\\d*(?:\\.\\d{0,${account?.token.decimals}})?$`);
+      const decimals =
+        account?.token?.decimals === undefined ? MAX_TOKEN_DECIMALS : account.token.decimals;
+      const regexToken = `^\\d*(?:\\.\\d{0,${decimals}})?$`;
+      const regexFiat = `^\\d*(?:\\.\\d{0,2})?$`;
+      const INPUT_REGEX = new RegExp(showInFiat ? regexFiat : regexToken);
+
       if (INPUT_REGEX.test(event.target.value)) {
         if (showInFiat) {
           const newAmountInFiat = Number(event.target.value);
           const newAmountInTokens = convertAmountToTokens(newAmountInFiat);
           const fixedAmountInTokens = fixTransactionAmount(newAmountInTokens);
 
-          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat.toFixed(2) });
+          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat });
           checkAmountValidity(fixedAmountInTokens);
           setValue(event.target.value);
         } else {
@@ -157,7 +167,8 @@ function AmountInput(Component) {
         fee,
         gasPrice
       );
-      const maxAmountWithoutFeeInFiat = convertAmountToFiat(maxAmountWithoutFee);
+
+      const maxAmountWithoutFeeInFiat = trimZeros(convertAmountToFiat(maxAmountWithoutFee), 2);
 
       if (showInFiat) {
         setValue(maxAmountWithoutFeeInFiat);

@@ -1,16 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import useFiatAmountStyles from "./fiat-amount.styles";
 import { CurrencySymbol } from "../../../utils/currencies";
 
-function FiatAmount({ amount, currency }) {
-  const classes = useFiatAmountStyles();
-
+function FiatAmount({ amount, currency, className }) {
   return (
-    <div className={classes.root}>
+    <span className={className}>
       {CurrencySymbol[currency].symbol} {!isNaN(amount) ? amount.toFixed(2) : "--"}
-    </div>
+    </span>
   );
 }
 

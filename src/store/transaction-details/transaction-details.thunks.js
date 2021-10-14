@@ -47,10 +47,16 @@ function fetchTransaction(transactionIdOrHash) {
 
     return transactionPromise
       .then((res) => {
-        if (res.fromBJJ !== wallet.publicKeyBase64 && res.toBJJ !== wallet.publicKeyBase64) {
-          dispatch(push("/"));
-        } else {
+        const txContainsBJJUserAddress =
+          res.fromBJJ === wallet.publicKeyBase64 || res.toBJJ === wallet.publicKeyBase64;
+        const txContainsHezEthereumAddressUserValue =
+          res.fromHezEthereumAddress === wallet.hermezEthereumAddress ||
+          res.toHezEthereumAddress === wallet.hermezEthereumAddress;
+
+        if (txContainsBJJUserAddress || txContainsHezEthereumAddressUserValue) {
           dispatch(transactionDetailsActionTypes.loadTransactionSuccess(res));
+        } else {
+          dispatch(push("/"));
         }
       })
       .catch(() => dispatch(transactionDetailsActionTypes.loadTransactionFailure()));

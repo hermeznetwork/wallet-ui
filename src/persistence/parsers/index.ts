@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 // domain
 import { Withdraw, DelayedWithdraw, Deposit, Account, Token } from "src/domain/hermez";
@@ -36,7 +37,6 @@ const account: z.ZodSchema<Account> = z.object({
   balance: z.string(),
   bjj: z.string(),
   hezEthereumAddress: z.string(),
-  hezBjjAddress: z.string().optional(),
   token: token,
   fiatBalance: z.number().optional(),
 });
@@ -47,7 +47,7 @@ const deposit: z.ZodSchema<Deposit> = z.object({
   token: token,
   amount: z.string(),
   timestamp: z.string(),
-  type: z.union([z.literal("Deposit"), z.literal("CreateAccountDeposit")]),
+  type: z.union([z.literal(TxType.Deposit), z.literal(TxType.CreateAccountDeposit)]),
   transactionId: z.string().optional(),
 });
 

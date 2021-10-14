@@ -30,13 +30,13 @@ interface EstimatedWithdrawFee {
 
 type Transaction =
   | {
-      type: typeof TxType.Deposit;
+      type: TxType.Deposit;
       amount: BigNumber;
       account: Account;
       onDeposit: (amount: BigNumber, account: Account) => void;
     }
   | {
-      type: typeof TxType.Transfer;
+      type: TxType.Transfer;
       amount: BigNumber;
       account: Account;
       to: Partial<Account>;
@@ -44,14 +44,14 @@ type Transaction =
       onTransfer: (amount: BigNumber, account: Account, to: Partial<Account>, fee: number) => void;
     }
   | {
-      type: typeof TxType.Exit;
+      type: TxType.Exit;
       amount: BigNumber;
       account: Account;
       fee: number;
       onExit: (amount: BigNumber, account: Account, fee: number) => void;
     }
   | {
-      type: typeof TxType.Withdraw;
+      type: TxType.Withdraw;
       amount: BigNumber;
       account: Account;
       exit: Exit;
@@ -67,13 +67,13 @@ type Transaction =
       ) => void;
     }
   | {
-      type: typeof TxType.ForceExit;
+      type: TxType.ForceExit;
       amount: BigNumber;
       account: Account;
       onForceExit: (amount: BigNumber, account: Account) => void;
     };
 
-interface Props {
+interface TransactionOverviewProps {
   wallet: HermezWallet.HermezWallet;
   isTransactionBeingApproved: boolean;
   preferredCurrency: string;
@@ -87,12 +87,13 @@ function TransactionOverview({
   preferredCurrency,
   fiatExchangeRates,
   transaction,
-}: Props): JSX.Element {
+}: TransactionOverviewProps): JSX.Element {
   const theme = useTheme<Theme>();
   const classes = useTransactionOverviewStyles();
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [isWithdrawInfoSidenavOpen, setIsWithdrawInfoSidenavOpen] = React.useState(false);
   const { account, amount, type } = transaction;
+
   React.useEffect(() => {
     if (!isTransactionBeingApproved) {
       setIsButtonDisabled(false);
@@ -310,8 +311,7 @@ function TransactionOverview({
                 txData={{
                   type: TxType.Transfer,
                   fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  toHezEthereumAddress:
-                    transaction.to.hezEthereumAddress || transaction.to.hezBjjAddress,
+                  toHezEthereumAddress: transaction.to.hezEthereumAddress || transaction.to.bjj,
                   // ToDo: To be removed
                   estimatedWithdrawFee: { status: "pending" },
                   fee: {

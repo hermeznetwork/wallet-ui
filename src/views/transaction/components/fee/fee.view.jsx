@@ -15,6 +15,7 @@ import { ReactComponent as AngleDownIcon } from "../../../../images/icons/angle-
 import FeesTable from "../fees-table/fees-table.view";
 import { getRealFee } from "../../../../utils/fees";
 import { ETHER_TOKEN_ID } from "../../../../constants";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 function Fee({
   transactionType,
@@ -48,8 +49,12 @@ function Fee({
       );
       return (
         <>
-          Ethereum fee (estimated) -<span>${depositFee.amount} ETH</span>
-          {` ~ ${fiatAmount.toFixed(2)} ${CurrencySymbol[preferredCurrency].symbol}`}
+          Ethereum fee (estimated) - <span>${depositFee.amount} ETH</span> ~{" "}
+          <FiatAmount
+            amount={fiatAmount}
+            currency={preferredCurrency}
+            className={classes.fiatAmount}
+          />
         </>
       );
     }
@@ -58,7 +63,7 @@ function Fee({
 
   function getTotalEstimatedWithdrawFee() {
     if (!estimatedWithdrawFee?.USD) {
-      return "--";
+      return undefined;
     }
 
     const estimatedWithdrawFeeInFiat = getAmountInPreferredCurrency(
@@ -67,7 +72,7 @@ function Fee({
       fiatExchangeRates
     );
 
-    return (l2FeeInFiat + estimatedWithdrawFeeInFiat).toFixed(2);
+    return l2FeeInFiat + estimatedWithdrawFeeInFiat;
   }
 
   function handleWithdrawFeeExpansion() {
@@ -80,38 +85,39 @@ function Fee({
     transactionType === TxType.TransferToEthAddr
   ) {
     return (
-      <div className={classes.feeWrapper}>
-        <p className={classes.fee}>
-          Fee&nbsp;
+      <p className={classes.fee}>
+        Fee&nbsp;
+        {showInFiat ? (
+          <FiatAmount amount={l2FeeInFiat} currency={preferredCurrency} />
+        ) : (
           <span>
-            {showInFiat
-              ? `${l2FeeInFiat.toFixed(2)} ${preferredCurrency}`
-              : `${getFixedTokenAmount(
-                  parseUnits(l2RealFee.toString(), token.decimals),
-                  token.decimals
-                )} ${token.symbol}`}
+            {`${getFixedTokenAmount(
+              parseUnits(l2RealFee.toString(), token.decimals),
+              token.decimals
+            )} 
+              ${token.symbol}`}
           </span>
-        </p>
-      </div>
+        )}
+      </p>
     );
   }
 
   if (transactionType === TxType.Deposit) {
-    return (
-      <div className={classes.feeWrapper}>
-        <p className={classes.fee}>{getDepositFee()}</p>
-      </div>
-    );
+    return <p className={classes.fee}>{getDepositFee()}</p>;
   }
 
   if (transactionType === TxType.Exit) {
     return (
       <div className={classes.withdrawFeeWrapper}>
         <button className={classes.withdrawFeeButton} onClick={handleWithdrawFeeExpansion}>
-          <p className={classes.withdrawFeeButtonText}>
-            Total estimated fee {CurrencySymbol[preferredCurrency].symbol}
-            {getTotalEstimatedWithdrawFee()}
-          </p>
+          <span className={classes.withdrawFeeButtonText}>
+            Total estimated fee{" "}
+            <FiatAmount
+              amount={getTotalEstimatedWithdrawFee()}
+              currency={preferredCurrency}
+              className={classes.fiatAmount}
+            />
+          </span>
           <AngleDownIcon
             className={`${classes.withdrawFeeButtonIcon} ${classes.withdrawFeeButtonIconPath}`}
           />

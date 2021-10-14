@@ -30,7 +30,7 @@ function TransactionInfoRow({ title, subtitle, hint, value, showCopyButton, onCo
 
 TransactionInfoRow.propTypes = {
   title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string,
+  subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   value: PropTypes.string,
 };
 

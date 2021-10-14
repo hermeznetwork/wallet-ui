@@ -11,7 +11,7 @@
 
 declare module "@hermeznetwork/*" {
   import { BigNumber } from "ethers";
-  import { TxTypesUnion, TxStatesUnion } from "@hermeznetwork/hermezjs/src/enums";
+  import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
   export type ISOStringDate = string;
 
@@ -91,7 +91,7 @@ declare module "@hermeznetwork/*" {
     // ToDo: This states are yet to be validated
     // state: "fged" | "fing" | "pend" | "invl";
     // ToDo: Are there more deposit types??
-    type: typeof TxType.Deposit | typeof TxType.CreateAccountDeposit;
+    type: TxType.Deposit | TxType.CreateAccountDeposit;
   }
 
   export type Account = HermezApiResourceItem & {
@@ -99,9 +99,6 @@ declare module "@hermeznetwork/*" {
     balance: string;
     bjj: string;
     hezEthereumAddress: string;
-    // ToDo: This prop is referred in several parts of the code but does not come from the API
-    // We should consider whether it belongs to an account and in that case consider adding it on the domain
-    hezBjjAddress?: string;
     // nonce: number;
     token: Token;
   };
@@ -117,13 +114,13 @@ declare module "@hermeznetwork/*" {
     id: string;
     nonce: number;
     signature: string;
-    state: TxStatesUnion;
+    state: TxState;
     timestamp: ISOStringDate;
     toAccountIndex: string;
     toBJJ: string;
     toHezEthereumAddress: string;
     token: Token;
-    type: TxTypesUnion;
+    type: TxType;
     // batchNum: number | null;
     // info: string | null;
     // maxNumBatch: number;
@@ -143,12 +140,12 @@ declare module "@hermeznetwork/*" {
     fee: number;
     fromAccountIndex: string;
     id: string;
-    state: TxStatesUnion;
+    state: TxState;
     timestamp: ISOStringDate;
     toAccountIndex: string;
     toHezEthereumAddress: string | null;
     token: Token;
-    type: TxTypesUnion;
+    type: TxType;
     // accountIndex: string;
     // balance: string;
     // hash: string;
@@ -355,8 +352,9 @@ declare module "@hermeznetwork/hermezjs/src/utils" {
 
 // Tx
 declare module "@hermeznetwork/hermezjs/src/tx" {
-  import { Transaction, Token, Wallet } from "@hermeznetwork/hermezjs";
+  import { Token, Wallet } from "@hermeznetwork/hermezjs";
   import { HermezCompressedAmount } from "@hermeznetwork/hermezjs/src/hermez-compressed-amount";
+  import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
   // declare function deposit() {};
   // declare function forceExit() {};
@@ -366,7 +364,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   // declare function sendL2Transaction() {};
 
   type Tx = {
-    type: Transaction["type"];
+    type: TxType;
     from: string;
     to?: string;
     amount: HermezCompressedAmount;
@@ -688,7 +686,7 @@ declare module "@hermeznetwork/hermezjs/src/environment" {
 
 // Enums
 declare module "@hermeznetwork/hermezjs/src/enums" {
-  export declare const TxType = {
+  export enum TxType {
     Deposit = "Deposit",
     CreateAccountDeposit = "CreateAccountDeposit",
     Transfer = "Transfer",
@@ -697,35 +695,19 @@ declare module "@hermeznetwork/hermezjs/src/enums" {
     Withdraw = "Withdrawn",
     Exit = "Exit",
     ForceExit = "ForceExit",
-  } as const;
+  }
 
-  export type TxTypesUnion =
-    | typeof TxType.CreateAccountDeposit
-    | typeof TxType.Deposit
-    | typeof TxType.Exit
-    | typeof TxType.ForceExit
-    | typeof TxType.Transfer
-    | typeof TxType.TransferToBJJ
-    | typeof TxType.TransferToEthAddr
-    | typeof TxType.Withdraw;
-
-  export declare const TxState = {
+  export enum TxState {
     Forged = "fged",
     Forging = "fing",
     Pending = "pend",
     Invalid = "invl",
-  } as const;
+  }
 
-  export type TxStatesUnion =
-    | typeof TxState.Forged
-    | typeof TxState.Forging
-    | typeof TxState.Invalid
-    | typeof TxState.Pending;
-
-  // declare const TxLevel = {
-  //   L1: "L1",
-  //   L2: "L2",
-  // } as const;
+  // declare enum TxLevel {
+  //   L1 = "L1",
+  //   L2 = "L2",
+  // }
 }
 
 // AtomicUtils

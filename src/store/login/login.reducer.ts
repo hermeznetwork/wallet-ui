@@ -28,17 +28,14 @@ export enum STEP_NAME {
 export type Step =
   | {
       type: "wallet-selector";
-      // ToDo: Why don't we move walletName to LoginState? It's in three steps and can be undefined...
-      walletName: WalletName | undefined;
     }
   | {
+      // hardware wallets
       type: "account-selector";
-      // ToDo: What is this for? Isn't it the same as wallet-selector?
-      walletName: WalletName | undefined;
     }
   | {
       type: "wallet-loader";
-      walletName: WalletName | undefined;
+      walletName: WalletName;
       accountData: AccountData | undefined;
       walletTask: AsyncTask<HermezWallet.HermezWallet, string>;
     }
@@ -51,7 +48,6 @@ function getInitialLoginState(): LoginState {
   return {
     step: {
       type: "wallet-selector",
-      walletName: undefined,
     },
     addAccountAuthTask: {
       status: "pending",
@@ -75,7 +71,6 @@ function loginReducer(state: LoginState = getInitialLoginState(), action: LoginA
         ...state,
         step: {
           type: "account-selector",
-          walletName: action.walletName,
         },
       };
     }
@@ -108,7 +103,6 @@ function loginReducer(state: LoginState = getInitialLoginState(), action: LoginA
             ...state,
             step: {
               type: "wallet-selector",
-              walletName: state.step.walletName,
             },
           };
         }
@@ -120,11 +114,9 @@ function loginReducer(state: LoginState = getInitialLoginState(), action: LoginA
               state.step.walletName === WalletName.WALLET_CONNECT
                 ? {
                     type: "wallet-selector",
-                    walletName: state.step.walletName,
                   }
                 : {
                     type: "account-selector",
-                    walletName: state.step.walletName,
                   },
           };
         }
@@ -142,7 +134,7 @@ function loginReducer(state: LoginState = getInitialLoginState(), action: LoginA
             status: "loading",
           },
           accountData: undefined,
-          walletName: state.step.type !== "create-account-auth" ? state.step.walletName : undefined,
+          walletName: action.walletName,
         },
       };
     }

@@ -181,10 +181,11 @@ function AccountDetails({
               symbol={accountTask.data?.token.symbol}
             />
           </div>
-          <div className={classes.fiatBalance}>
+          <div className={classes.fiatBalanceWrapper}>
             <FiatAmount
               amount={getAccountFiatBalance(accountTask.data)}
               currency={preferredCurrency}
+              className={classes.fiatBalance}
             />
           </div>
           <TransactionActions

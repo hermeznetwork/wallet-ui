@@ -14,6 +14,7 @@ import {
   getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency,
   getFeeInUsd,
+  trimZeros,
 } from "../../utils/currencies";
 import Container from "../shared/container/container.view";
 import { changeHeader, openSnackbar } from "../../store/global/global.actions";
@@ -106,7 +107,7 @@ function TransactionDetails({
           const feeToken = feeUsd / token.USD;
 
           return !isNaN(feeUsd)
-            ? { value: Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)), token }
+            ? { value: trimZeros(feeToken, MAX_TOKEN_DECIMALS), token }
             : undefined;
         } else if (transactionTask.data.fee || transactionTask.data.L2Info?.fee) {
           const feeUsd = getFeeInUsd(
@@ -117,7 +118,7 @@ function TransactionDetails({
           const feeToken = feeUsd / token.USD;
 
           return !isNaN(feeUsd)
-            ? { value: Number(feeToken.toFixed(MAX_TOKEN_DECIMALS)), token }
+            ? { value: trimZeros(feeToken, MAX_TOKEN_DECIMALS), token }
             : undefined;
         } else {
           return undefined;

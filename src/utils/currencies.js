@@ -40,7 +40,7 @@ function getFixedTokenAmount(amount, decimals) {
   // We can lose precision as there will never be more than MAX_DECIMALS_UNTIL_ZERO_AMOUNT significant digits
   const balanceWithDecimals = Number(amount) / Math.pow(10, decimals);
 
-  return Number(balanceWithDecimals.toFixed(MAX_TOKEN_DECIMALS)).toString();
+  return trimZeros(balanceWithDecimals, MAX_TOKEN_DECIMALS).toString();
 }
 
 /**
@@ -64,7 +64,7 @@ function getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchange
  * Converts a token amount to a new amount but in the user preferred currency
  *
  * @param {string} amount - The amount to be be converted
- * @param {string | number} usdTokenExchangeRate - Current USD exchange rate for the token
+ * @param {number} usdTokenExchangeRate - Current USD exchange rate for the token
  * @param {string} preferredCurrency - User preferred currency
  * @param {Object} fiatExchangeRates - Exchange rates for all the supported currencies in the app
  *
@@ -119,6 +119,16 @@ function convertTokenAmountToFiat(tokenAmount, token, preferredCurrency, fiatExc
   );
 }
 
+/**
+ * Trim leading and trailing zeros
+ * @param {Number} amount - Amount to trim
+ * @param {Number} decimals - Decimals that the amount should have
+ * @returns {Number}
+ */
+function trimZeros(amount, decimals) {
+  return Number(amount.toFixed(decimals));
+}
+
 export {
   CurrencySymbol,
   getFixedTokenAmount,
@@ -126,4 +136,5 @@ export {
   getTokenAmountInPreferredCurrency,
   getFeeInUsd,
   convertTokenAmountToFiat,
+  trimZeros,
 };

@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import useAccountStyles from "./account.styles";
 import { CurrencySymbol, getFixedTokenAmount } from "../../../utils/currencies";
 import { getTxPendingTime } from "../../../utils/transactions";
+import FiatAmount from "../fiat-amount/fiat-amount.view";
 
 function Account({
   balance,
@@ -49,8 +50,12 @@ function Account({
         ) : (
           <p className={classes.tokenName}>{token.name}</p>
         )}
-        <p className={classes.fiatBalance}>
-          {CurrencySymbol[preferredCurrency].symbol} {fiatBalance.toFixed(2)}
+        <p>
+          <FiatAmount
+            amount={fiatBalance}
+            currency={preferredCurrency}
+            className={classes.fiatBalance}
+          />
         </p>
       </div>
     </div>

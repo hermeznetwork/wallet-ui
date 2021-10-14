@@ -2,6 +2,7 @@ import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
@@ -152,9 +153,9 @@ function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: n
 
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
       const txData = {
-        type: "Transfer" as const,
+        type: TxType.Transfer,
         from: from.accountIndex,
-        to: to.accountIndex || to.hezEthereumAddress || to.hezBjjAddress,
+        to: to.accountIndex || to.hezEthereumAddress || to.bjj,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
         fee,
       };

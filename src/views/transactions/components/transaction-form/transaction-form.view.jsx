@@ -274,7 +274,7 @@ function TransactionForm({
               amount: amount,
               from: account,
               to:
-                (isHermezBjjAddress(receiver) && { hezBjjAddress: receiver }) ||
+                (isHermezBjjAddress(receiver) && { bjj: receiver }) ||
                 receiverAccount ||
                 (addresses.isValidHermezAddress(receiver) && { hezEthereumAddress: receiver }),
               fee: transactionFee,
@@ -304,8 +304,7 @@ function TransactionForm({
                 <p className={classes.tokenName}>{account.token.name}</p>
                 {showInFiat ? (
                   <p>
-                    <span>{preferredCurrency}</span>{" "}
-                    <span>{getAmountInFiat(account.balance).toFixed(2)}</span>
+                    <span>{preferredCurrency}</span> <span>{getAmountInFiat(account.balance)}</span>
                   </p>
                 ) : (
                   <p className={classes.tokenSymbolAmount}>
