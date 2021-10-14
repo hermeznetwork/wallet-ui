@@ -81,41 +81,35 @@ function Fee({
     transactionType === TxType.TransferToEthAddr
   ) {
     return (
-      <div className={classes.feeWrapper}>
-        <p className={classes.fee}>
-          Fee&nbsp;
-          {showInFiat ? (
-            <FiatAmount amount={l2FeeInFiat} currency={preferredCurrency} />
-          ) : (
-            <span>
-              {`${getFixedTokenAmount(
-                parseUnits(l2RealFee.toString(), token.decimals),
-                token.decimals
-              )} 
+      <p className={classes.fee}>
+        Fee&nbsp;
+        {showInFiat ? (
+          <FiatAmount amount={l2FeeInFiat} currency={preferredCurrency} />
+        ) : (
+          <span>
+            {`${getFixedTokenAmount(
+              parseUnits(l2RealFee.toString(), token.decimals),
+              token.decimals
+            )} 
               ${token.symbol}`}
-            </span>
-          )}
-        </p>
-      </div>
+          </span>
+        )}
+      </p>
     );
   }
 
   if (transactionType === TxType.Deposit) {
-    return (
-      <div className={classes.feeWrapper}>
-        <p className={`${classes.fee} ${classes.deposit}`}>{getDepositFee()}</p>
-      </div>
-    );
+    return <p className={`${classes.fee} ${classes.deposit}`}>{getDepositFee()}</p>;
   }
 
   if (transactionType === TxType.Exit) {
     return (
       <div className={classes.withdrawFeeWrapper}>
         <button className={classes.withdrawFeeButton} onClick={handleWithdrawFeeExpansion}>
-          <p className={classes.withdrawFeeButtonText}>
-            Total estimated fee
+          <span className={classes.withdrawFeeButtonText}>
+            Total estimated fee{" "}
             <FiatAmount amount={getTotalEstimatedWithdrawFee()} currency={preferredCurrency} />
-          </p>
+          </span>
           <AngleDownIcon
             className={`${classes.withdrawFeeButtonIcon} ${classes.withdrawFeeButtonIconPath}`}
           />

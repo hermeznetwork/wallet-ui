@@ -1,31 +1,19 @@
 import { createUseStyles } from "react-jss";
 
 const useFeeStyles = createUseStyles((theme) => ({
-  feeWrapper: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    marginTop: theme.spacing(2.5),
-    [theme.breakpoints.upSm]: {
-      marginTop: theme.spacing(3),
-    },
-  },
   fee: {
+    marginTop: theme.spacing(2.5),
     fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
-    display: "flex",
     [theme.breakpoints.upSm]: {
       fontSize: theme.spacing(2.5),
       padding: 0,
-    },
-    "& span": {
-      marginRight: theme.spacing(1),
+      marginTop: theme.spacing(3),
     },
   },
   deposit: {
-    "& [class^='fiatAmount']": {
+    "& .fiatAmount": {
       color: theme.palette.grey.main,
     },
   },
@@ -36,9 +24,6 @@ const useFeeStyles = createUseStyles((theme) => ({
     width: "100%",
   },
   withdrawFeeButton: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
     fontSize: theme.spacing(2.5),
     marginTop: theme.spacing(2.5),
     marginBottom: theme.spacing(1),
