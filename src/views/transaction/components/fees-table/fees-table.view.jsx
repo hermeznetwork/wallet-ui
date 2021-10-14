@@ -25,7 +25,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
 
   function getEstimatedWithdrawFeeInFiat() {
     if (!estimatedWithdrawFee?.USD) {
-      return "--";
+      return undefined;
     }
 
     return getAmountInPreferredCurrency(

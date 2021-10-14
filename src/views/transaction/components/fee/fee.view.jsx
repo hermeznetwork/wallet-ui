@@ -59,7 +59,7 @@ function Fee({
 
   function getTotalEstimatedWithdrawFee() {
     if (!estimatedWithdrawFee?.USD) {
-      return "--";
+      return undefined;
     }
 
     const estimatedWithdrawFeeInFiat = getAmountInPreferredCurrency(
