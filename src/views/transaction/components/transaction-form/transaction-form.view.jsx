@@ -60,6 +60,7 @@ function TransactionForm({
     React.useState(undefined);
   const [gasPrice, setGasPrice] = React.useState(BigNumber.from(0));
   const [depositFee, setDepositFee] = React.useState(undefined);
+  const [isAmountInputDirty, setIsAmountInputDirty] = React.useState(false);
 
   React.useEffect(() => {
     if (transactionType === TxType.Deposit) {
@@ -150,7 +151,9 @@ function TransactionForm({
    * @returns {boolean} - Whether the continue button should be disabled or not
    */
   function isContinueDisabled() {
-    if (transactionType === TxType.Exit && doesUserHaveEnoughEthForWithdraw === false) {
+    if (!isAmountInputDirty) {
+      return true;
+    } else if (transactionType === TxType.Exit && doesUserHaveEnoughEthForWithdraw === false) {
       return false;
     } else if (transactionType !== TxType.Transfer && isAmountValid) {
       return false;
@@ -167,12 +170,10 @@ function TransactionForm({
 
   function handleAmountChange(data) {
     setShowInFiat(data.showInFiat);
-
-    if (data.isUntouched) return;
-
     setAmount(data.amount.tokens);
     setIsAmountValid(!data.isInvalid);
     setAreFundsExceededDueToFee(data.areFundsExceededDueToFee);
+    setIsAmountInputDirty(data.isDirty);
   }
 
   /**
