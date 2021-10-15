@@ -8,7 +8,6 @@
  * properties and types will likely be required. We can uncomment them as
  * required and finally remove all those not required.
  */
-
 declare module "@hermeznetwork/*" {
   import { BigNumber } from "ethers";
   import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
@@ -465,6 +464,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     Transactions,
     CoordinatorState,
     Token,
+    PooledTransaction,
   } from "@hermeznetwork/hermezjs";
 
   export type PaginationOrder = "ASC" | "DESC";
@@ -500,7 +500,11 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     axiosConfig?: Record<string, unknown>
   ): Promise<Transaction> {};
 
-  // declare function getPoolTransaction() {};
+  declare function getPoolTransaction(
+    transactionId: string,
+    axiosConfig?: Record<string, unknown>
+  ): PooledTransaction {};
+
   // declare function postPoolTransaction() {};
   // declare function postAtomicGroup() {};
 
