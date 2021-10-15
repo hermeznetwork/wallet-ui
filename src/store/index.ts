@@ -15,7 +15,10 @@ import accountDetailsReducer, {
   AccountDetailsState,
 } from "src/store/account-details/account-details.reducer";
 import { AccountDetailsAction } from "src/store/account-details/account-details.actions";
-import transactionDetailsReducer from "src/store/transaction-details/transaction-details.reducer";
+import transactionDetailsReducer, {
+  TransactionDetailsState,
+} from "src/store/transaction-details/transaction-details.reducer";
+import { TransactionDetailsAction } from "src/store/transaction-details/transaction-details.actions";
 import transactionReducer from "src/store/transaction/transaction.reducer";
 import loginReducer, { LoginState } from "src/store/login/login.reducer";
 import { LoginAction } from "src/store/login/login.actions";
@@ -30,7 +33,9 @@ export type AppAction =
   | MyAccountAction
   | AccountDetailsAction
   | LoginAction
-  | TransferAction;
+  | TransferAction
+  | TransactionDetailsAction;
+
 export interface AppState {
   router: RouterState;
   global: GlobalState;
@@ -39,6 +44,7 @@ export interface AppState {
   myAccount: MyAccountState;
   login: LoginState;
   transfer: TransferState;
+  transactionDetails: TransactionDetailsState;
 }
 export type AppDispatch = ThunkDispatch<AppState, undefined, AppAction>;
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, AppAction>;
