@@ -1,4 +1,4 @@
-import { transactionDetailsActionTypes } from "./transaction-details.actions";
+import { TransactionDetailsActionTypes } from "./transaction-details.actions";
 
 const initialTransactionDetailsReducer = {
   transactionTask: {
@@ -8,7 +8,7 @@ const initialTransactionDetailsReducer = {
 
 function transactionDetailsReducer(state = initialTransactionDetailsReducer, action) {
   switch (action.type) {
-    case transactionDetailsActionTypes.LOAD_TRANSACTION: {
+    case TransactionDetailsActionTypes.LOAD_TRANSACTION: {
       return {
         ...state,
         transactionTask: {
@@ -16,7 +16,7 @@ function transactionDetailsReducer(state = initialTransactionDetailsReducer, act
         },
       };
     }
-    case transactionDetailsActionTypes.LOAD_TRANSACTION_SUCCESS: {
+    case TransactionDetailsActionTypes.LOAD_TRANSACTION_SUCCESS: {
       return {
         ...state,
         transactionTask: {
@@ -25,7 +25,7 @@ function transactionDetailsReducer(state = initialTransactionDetailsReducer, act
         },
       };
     }
-    case transactionDetailsActionTypes.LOAD_TRANSACTION_FAILURE: {
+    case TransactionDetailsActionTypes.LOAD_TRANSACTION_FAILURE: {
       return {
         ...state,
         transactionTask: {
