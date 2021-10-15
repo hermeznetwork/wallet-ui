@@ -1,12 +1,25 @@
-import { TransactionDetailsActionTypes } from "./transaction-details.actions";
+import {
+  TransactionDetailsActionTypes,
+  TransactionDetailsAction,
+} from "src/store/transaction-details/transaction-details.actions";
+import { AsyncTask } from "src/utils/types";
+// domain
+import { Transaction } from "src/domain/hermez";
 
-const initialTransactionDetailsReducer = {
+export interface TransactionDetailsState {
+  transactionTask: AsyncTask<Transaction, string>;
+}
+
+const initialTransactionDetailsReducer: TransactionDetailsState = {
   transactionTask: {
     status: "pending",
   },
 };
 
-function transactionDetailsReducer(state = initialTransactionDetailsReducer, action) {
+function transactionDetailsReducer(
+  state: TransactionDetailsState = initialTransactionDetailsReducer,
+  action: TransactionDetailsAction
+): TransactionDetailsState {
   switch (action.type) {
     case TransactionDetailsActionTypes.LOAD_TRANSACTION: {
       return {
