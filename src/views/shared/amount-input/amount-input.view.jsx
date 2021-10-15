@@ -167,7 +167,7 @@ function AmountInput(Component) {
       const maxAmountWithoutFeeInFiat = trimZeros(convertAmountToFiat(maxAmountWithoutFee), 2);
 
       if (showInFiat) {
-        setValue(maxAmountWithoutFeeInFiat);
+        setValue(maxAmountWithoutFeeInFiat.toString());
       } else {
         const newValue = getFixedTokenAmount(maxAmountWithoutFee, account.token.decimals);
 
@@ -186,7 +186,7 @@ function AmountInput(Component) {
     function handleSwapCurrency() {
       const newValue = showInFiat
         ? getFixedTokenAmount(amount.tokens, account.token.decimals)
-        : amount.fiat;
+        : amount.fiat.toString();
 
       if (value.length > 0) {
         setValue(newValue);
