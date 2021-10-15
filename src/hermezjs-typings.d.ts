@@ -137,22 +137,29 @@ declare module "@hermeznetwork/*" {
   export type Transaction = HermezApiResourceItem & {
     amount: string;
     batchNum: number;
-    fee: number;
     fromAccountIndex: string;
     id: string;
-    state: TxState;
     timestamp: ISOStringDate;
     toAccountIndex: string;
     toHezEthereumAddress: string | null;
     token: Token;
     type: TxType;
-    // accountIndex: string;
-    // balance: string;
-    // hash: string;
     // historicUSD: number;
     // L1Info: L1Info | null;
     // L1orL2: "L1" | "L2";
     // L2Info?: L2Info | null;
+    // position: number;
+    // fromHezEthereumAddress: string;
+    // fromBJJ: string;
+    // toBJJ: string | null;
+
+    // Below some props not present on an L2 TX from /transactions-history endpoint
+    // Probably they need to be removed from this interface
+    // state: TxState;
+    // fee: number;
+    // accountIndex: string;
+    // balance: string;
+    // hash: string;
   };
 
   // interface L1Info {
