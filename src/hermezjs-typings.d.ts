@@ -421,8 +421,20 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
 
 // TxFees
 declare module "@hermeznetwork/hermezjs/src/tx-fees" {
+  import { Token, SignerData } from "@hermeznetwork/hermezjs";
+  import { CallOverrides } from "ethers";
+
   // declare function estimateDepositGasLimit() {};
-  // declare function estimateWithdrawGasLimit() {};
+
+  declare function estimateWithdrawGasLimit(
+    token: Token,
+    estimatedMerkleSiblingsLength: number,
+    amount: BigNumber,
+    overrides: CallOverrides,
+    signerData?: SignerData,
+    providerUrl?: string,
+    isInstant?: boolean
+  ): Promise<number> {};
 }
 
 // TxPool
