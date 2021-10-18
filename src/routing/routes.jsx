@@ -4,6 +4,7 @@ import Home from "../views/home/home.view";
 import Login from "../views/login/login.view";
 import Transaction from "../views/transaction/transaction.view";
 import Transfer from "../views/transactions/transfer/transfer.view";
+import Exit from "src/views/transactions/exit/exit.view";
 import MyAccount from "../views/my-account/my-account.view";
 import AccountDetails from "../views/account-details/account-details.view";
 import TransactionDetails from "../views/transaction-details/transaction-details.view";
@@ -30,7 +31,7 @@ const routes = {
   },
   withdraw: {
     path: "/withdraw",
-    render: () => <Transaction transactionType={TxType.Exit} />,
+    render: () => <Exit />,
   },
   withdrawComplete: {
     path: "/withdraw-complete",

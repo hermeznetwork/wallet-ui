@@ -23,11 +23,6 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 // domain
 import { HermezWallet, Account, FiatExchangeRates, Exit } from "src/domain/hermez";
 
-interface EstimatedWithdrawFee {
-  amount: string;
-  USD: number;
-}
-
 type Transaction =
   | {
       type: TxType.Deposit;
@@ -48,6 +43,7 @@ type Transaction =
       amount: BigNumber;
       account: Account;
       fee: number;
+      estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
       onExit: (amount: BigNumber, account: Account, fee: number) => void;
     }
   | {
@@ -57,7 +53,7 @@ type Transaction =
       exit: Exit;
       completeDelayedWithdrawal: boolean;
       instantWithdrawal: boolean;
-      estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, string>;
+      estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
       onWithdraw: (
         amount: BigNumber,
         account: Account,
@@ -283,7 +279,11 @@ function TransactionOverview({
                   // ToDo: To be removed
                   toHezEthereumAddress: undefined,
                   // ToDo: To be removed
-                  estimatedWithdrawFee: { status: "pending" },
+                  estimatedWithdrawFee:
+                    transaction.estimatedWithdrawFeeTask.status === "successful" ||
+                    transaction.estimatedWithdrawFeeTask.status === "reloading"
+                      ? transaction.estimatedWithdrawFeeTask.data
+                      : null,
                   fee: {
                     value: Number(getRealFee(amount.toString(), account.token, transaction.fee)),
                     token: account.token,

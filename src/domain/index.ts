@@ -28,3 +28,8 @@ export type Header =
       type: "main";
     }
   | PageHeader;
+
+export interface EstimatedWithdrawFee {
+  amount: string;
+  USD: number;
+}

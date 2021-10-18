@@ -22,6 +22,8 @@ import { LoginAction } from "src/store/login/login.actions";
 import tokenSwapReducer from "src/store/token-swap/token-swap.reducer";
 import transferReducer, { TransferState } from "src/store/transactions/transfer/transfer.reducer";
 import { TransferAction } from "src/store/transactions/transfer/transfer.actions";
+import { ExitAction } from "src/store/transactions/exit/exit.actions";
+import exitReducer, { ExitState } from "./transactions/exit/exit.reducer";
 
 export type AppAction =
   | RouterAction
@@ -30,7 +32,9 @@ export type AppAction =
   | MyAccountAction
   | AccountDetailsAction
   | LoginAction
-  | TransferAction;
+  | TransferAction
+  | ExitAction;
+
 export interface AppState {
   router: RouterState;
   global: GlobalState;
@@ -39,8 +43,11 @@ export interface AppState {
   myAccount: MyAccountState;
   login: LoginState;
   transfer: TransferState;
+  exit: ExitState;
 }
+
 export type AppDispatch = ThunkDispatch<AppState, undefined, AppAction>;
+
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, AppAction>;
 
 /**
@@ -59,6 +66,7 @@ export function createAppReducer(history: History) {
     transactionDetails: transactionDetailsReducer,
     transaction: transactionReducer,
     transfer: transferReducer,
+    exit: exitReducer,
     login: loginReducer,
     tokenSwap: tokenSwapReducer,
   });
