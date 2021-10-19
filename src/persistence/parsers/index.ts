@@ -38,7 +38,6 @@ const account: z.ZodSchema<Account> = hermezApiResourceItem.and(
     accountIndex: z.string(),
     balance: z.string(),
     bjj: z.string(),
-    fiatBalance: z.number().optional(),
     hezEthereumAddress: z.string(),
     token: token,
   })
@@ -46,17 +45,11 @@ const account: z.ZodSchema<Account> = hermezApiResourceItem.and(
 
 const historyTransaction: z.ZodSchema<HistoryTransaction> = hermezApiResourceItem.and(
   z.object({
-    amount: z.string(),
     batchNum: z.number(),
     fromAccountIndex: z.string(),
-    fromBJJ: z.string(),
     fromHezEthereumAddress: z.string(),
     id: z.string(),
-    timestamp: z.string(),
-    toAccountIndex: z.string(),
-    toBJJ: z.string().nullable(),
     toHezEthereumAddress: z.string().nullable(),
-    token: token,
     type: z.nativeEnum(TxType),
   })
 );
@@ -78,14 +71,10 @@ const pendingDeposit: z.ZodSchema<PendingDeposit> = hermezApiResourceItem.and(
 const pendingWithdraw: z.ZodSchema<PendingWithdraw> = hermezApiResourceItem.and(
   z.object({
     accountIndex: z.string(),
-    amount: z.string(),
     batchNum: z.number(),
     hash: z.string(),
-    hermezEthereumAddress: z.string(),
     id: z.string(),
     timestamp: z.string(),
-    token,
-    type: z.enum([TxType.Withdraw]),
   })
 );
 
