@@ -131,7 +131,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
 
       dispatch(
         exitActions.loadEstimatedWithdrawFeeSuccess({
-          amount: feeBigNumber.toString(),
+          amount: feeBigNumber,
           USD: feeUSD,
         })
       );
