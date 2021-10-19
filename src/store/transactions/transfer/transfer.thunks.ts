@@ -11,7 +11,7 @@ import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
 // domain
-import { Account, FiatExchangeRates, PooledTransaction } from "src/domain/hermez";
+import { Account, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -20,7 +20,7 @@ import { Account, FiatExchangeRates, PooledTransaction } from "src/domain/hermez
  */
 function fetchHermezAccount(
   accountIndex: string,
-  pooledTransactions: PooledTransaction[],
+  poolTransactions: PoolTransaction[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
@@ -39,7 +39,7 @@ function fetchHermezAccount(
       .then((account) =>
         createAccount(
           account,
-          pooledTransactions,
+          poolTransactions,
           undefined,
           tokensPriceTask,
           fiatExchangeRates,
@@ -57,7 +57,7 @@ function fetchHermezAccount(
  */
 function fetchPoolTransactions(): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(transferActions.loadPooledTransactions());
+    dispatch(transferActions.loadPoolTransactions());
 
     const {
       global: { wallet },
@@ -65,10 +65,8 @@ function fetchPoolTransactions(): AppThunk {
 
     if (wallet !== undefined) {
       getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) =>
-          dispatch(transferActions.loadPooledTransactionsSuccess(transactions))
-        )
-        .catch((err) => dispatch(transferActions.loadPooledTransactionsFailure(err)));
+        .then((transactions) => dispatch(transferActions.loadPoolTransactionsSuccess(transactions)))
+        .catch((err) => dispatch(transferActions.loadPoolTransactionsFailure(err)));
     }
   };
 }
@@ -79,7 +77,7 @@ function fetchPoolTransactions(): AppThunk {
  */
 function fetchAccounts(
   fromItem: number | undefined,
-  pooledTransactions: PooledTransaction[],
+  poolTransactions: PoolTransaction[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
@@ -96,7 +94,7 @@ function fetchAccounts(
           const accounts = res.accounts.map((account) =>
             createAccount(
               account,
-              pooledTransactions,
+              poolTransactions,
               undefined,
               tokensPriceTask,
               fiatExchangeRates,

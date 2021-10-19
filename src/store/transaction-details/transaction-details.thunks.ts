@@ -6,7 +6,7 @@ import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transactionDetailsActionTypes from "./transaction-details.actions";
 import * as storage from "../../utils/storage";
 // domain
-import { PendingDeposit, HistoryTransaction, PooledTransaction } from "src/domain/hermez";
+import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain/hermez";
 import { AxiosError } from "axios";
 
 /**
@@ -30,7 +30,7 @@ function fetchTransaction(transactionIdOrHash: string): AppThunk {
       );
       dispatch(transactionDetailsActionTypes.loadTransaction());
 
-      const transactionPromise: Promise<PendingDeposit | HistoryTransaction | PooledTransaction> =
+      const transactionPromise: Promise<PendingDeposit | HistoryTransaction | PoolTransaction> =
         new Promise((resolve, reject) => {
           if (accountPendingDeposits !== undefined) {
             const pendingDeposit = accountPendingDeposits.find(
@@ -55,7 +55,7 @@ function fetchTransaction(transactionIdOrHash: string): AppThunk {
         });
 
       return transactionPromise
-        .then((res: PendingDeposit | HistoryTransaction | PooledTransaction) => {
+        .then((res: PendingDeposit | HistoryTransaction | PoolTransaction) => {
           const txContainsBJJUserAddress =
             "fromBJJ" in res &&
             (res.fromBJJ === wallet.publicKeyBase64 || res.toBJJ === wallet.publicKeyBase64);

@@ -10,7 +10,7 @@ import useAccountSelectorStyles from "./account-selector.styles";
 function AccountSelector({
   transactionType,
   accountsTask,
-  pooledTransactionsTask,
+  poolTransactionsTask,
   preferredCurrency,
   fiatExchangeRates,
   pendingDeposits,
@@ -24,10 +24,10 @@ function AccountSelector({
     .map((deposit) => deposit.token.id);
 
   React.useEffect(() => {
-    if (accountsTask.status === "pending" && pooledTransactionsTask.status === "successful") {
-      onLoadAccounts(undefined, pooledTransactionsTask.data, fiatExchangeRates, preferredCurrency);
+    if (accountsTask.status === "pending" && poolTransactionsTask.status === "successful") {
+      onLoadAccounts(undefined, poolTransactionsTask.data, fiatExchangeRates, preferredCurrency);
     }
-  }, [accountsTask, pooledTransactionsTask, onLoadAccounts]);
+  }, [accountsTask, poolTransactionsTask, onLoadAccounts]);
 
   return (
     <div className={classes.root}>
@@ -71,7 +71,7 @@ function AccountSelector({
                       onLoadNextPage={(fromItem) => {
                         onLoadAccounts(
                           fromItem,
-                          pooledTransactionsTask.data,
+                          poolTransactionsTask.data,
                           safePendingDeposits,
                           fiatExchangeRates,
                           preferredCurrency

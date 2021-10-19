@@ -19,7 +19,7 @@ export type {
   NextForger,
   PendingDelayedWithdraw,
   PendingWithdraw,
-  PooledTransaction,
+  PoolTransaction,
   RecommendedFee,
   Token,
 } from "@hermeznetwork/hermezjs";
