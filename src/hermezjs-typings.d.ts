@@ -325,7 +325,7 @@ declare module "@hermeznetwork/*" {
 
 // Wallet
 declare module "@hermeznetwork/hermezjs/src/hermez-wallet" {
-  import { SignerData } from "@hermeznetwork/hermezjs";
+  import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
   export declare class HermezWallet {
     constructor(privateKey: Buffer, hermezEthereumAddress: string);
     privateKey: Buffer;
