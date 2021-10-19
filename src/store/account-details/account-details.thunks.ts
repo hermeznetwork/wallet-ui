@@ -12,13 +12,13 @@ import * as accountDetailsActions from "src/store/account-details/account-detail
 import {
   Account,
   Token,
-  Transaction,
+  HistoryTransaction,
   PooledTransaction,
   Exit,
   FiatExchangeRates,
 } from "src/domain/hermez";
 // persistence
-import { Transactions, Exits } from "src/persistence";
+import { HistoryTransactions, Exits } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 
@@ -113,7 +113,10 @@ function fetchPoolTransactions(accountIndex: Account["accountIndex"]): AppThunk 
   };
 }
 
-function filterExitsFromHistoryTransactions(historyTransactions: Transaction[], exits: Exit[]) {
+function filterExitsFromHistoryTransactions(
+  historyTransactions: HistoryTransaction[],
+  exits: Exit[]
+) {
   return historyTransactions.filter((transaction) => {
     if (transaction.type === TxType.Exit) {
       const exitTx = exits.find(
@@ -139,7 +142,7 @@ function filterExitsFromHistoryTransactions(historyTransactions: Transaction[], 
 function fetchHistoryTransactions(
   accountIndex: Account["accountIndex"],
   fromItem: number,
-  historyExits: Exits
+  exits: Exits
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -151,7 +154,7 @@ function fetchHistoryTransactions(
       (historyTransactionsTask.status === "reloading" ||
         historyTransactionsTask.status === "successful")
     ) {
-      return dispatch(refreshHistoryTransactions(accountIndex, historyExits));
+      return dispatch(refreshHistoryTransactions(accountIndex, exits));
     }
 
     dispatch(accountDetailsActions.loadHistoryTransactions());
@@ -168,15 +171,15 @@ function fetchHistoryTransactions(
       fromItem,
       "DESC"
     )
-      .then((historyTransactions: Transactions) => {
+      .then((historyTransactions: HistoryTransactions) => {
         const filteredTransactions = filterExitsFromHistoryTransactions(
           historyTransactions.transactions,
-          historyExits.exits
+          exits.exits
         );
 
         return { ...historyTransactions, transactions: filteredTransactions };
       })
-      .then((historyTransactions: Transactions) =>
+      .then((historyTransactions: HistoryTransactions) =>
         dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
       )
       .catch((err: Error) => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)));
@@ -188,10 +191,7 @@ function fetchHistoryTransactions(
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshHistoryTransactions(
-  accountIndex: Account["accountIndex"],
-  historyExits: Exits
-): AppThunk {
+function refreshHistoryTransactions(accountIndex: Account["accountIndex"], exits: Exits): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       accountDetails: { historyTransactionsTask },
@@ -233,18 +233,21 @@ function refreshHistoryTransactions(
       Promise.all(requests)
         .then((results) => {
           const transactions = results.reduce(
-            (acc: Transaction[], result: Transactions) => [...acc, ...result.transactions],
+            (acc: HistoryTransaction[], result: HistoryTransactions) => [
+              ...acc,
+              ...result.transactions,
+            ],
             []
           );
           const filteredTransactions = filterExitsFromHistoryTransactions(
             transactions,
-            historyExits.exits
+            exits.exits
           );
           const pendingItems: number = results[results.length - 1].pendingItems;
 
           return { transactions: filteredTransactions, pendingItems };
         })
-        .then((historyTransactions: Transactions) =>
+        .then((historyTransactions: HistoryTransactions) =>
           dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
         )
         .catch(() => ({}));
@@ -266,9 +269,7 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
     } = getState();
     if (wallet !== undefined) {
       return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
-        .then((historyExits: Exits) =>
-          dispatch(accountDetailsActions.loadExitsSuccess(historyExits))
-        )
+        .then((exits: Exits) => dispatch(accountDetailsActions.loadExitsSuccess(exits)))
         .catch((err: Error) => dispatch(accountDetailsActions.loadExitsFailure(err)));
     }
   };

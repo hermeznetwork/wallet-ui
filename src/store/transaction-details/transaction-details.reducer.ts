@@ -4,10 +4,10 @@ import {
 } from "src/store/transaction-details/transaction-details.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { Transaction } from "src/domain/hermez";
+import { PendingDeposit, HistoryTransaction, PooledTransaction } from "src/domain/hermez";
 
 export interface TransactionDetailsState {
-  transactionTask: AsyncTask<Transaction, string>;
+  transactionTask: AsyncTask<PendingDeposit | HistoryTransaction | PooledTransaction, string>;
 }
 
 const initialTransactionDetailsReducer: TransactionDetailsState = {

@@ -6,26 +6,30 @@
 import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
-  NextForger,
   CoordinatorState,
-  DelayedWithdraw,
   Exit,
   FiatExchangeRates,
   HermezApiResourceItem,
   HermezNetworkStatus,
   HermezStatus,
-  Transaction,
-  PooledTransaction,
   HermezWallet,
+  HistoryTransaction,
   ISOStringDate,
   MerkleProof,
-  Token,
-  Withdraw,
-  SignerData,
-  SignerType,
-  JsonRpcSignerData,
+  NextForger,
+  PendingDelayedWithdraw,
+  PendingWithdraw,
+  PooledTransaction,
   RecommendedFee,
+  Token,
 } from "@hermeznetwork/hermezjs";
 
+export type { JsonRpcSignerData, SignerData } from "@hermeznetwork/hermezjs/src/signers";
+
+export { SignerType } from "@hermeznetwork/hermezjs/src/signers";
+
 export type Account = hermezjs.Account & { fiatBalance?: number };
-export type Deposit = hermezjs.Deposit & { transactionId?: string };
+
+export type PendingDeposit = hermezjs.PendingDeposit & {
+  transactionId?: string;
+};

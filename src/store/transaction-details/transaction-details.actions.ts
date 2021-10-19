@@ -1,4 +1,5 @@
-import { Transaction } from "src/domain/hermez";
+// domain
+import { PendingDeposit, HistoryTransaction, PooledTransaction } from "src/domain/hermez";
 
 export enum TransactionDetailsActionTypes {
   LOAD_TRANSACTION = "[TRANSACTION DETAILS] LOAD TRANSACTION",
@@ -12,7 +13,7 @@ export interface LoadTransaction {
 
 export interface LoadTransactionSuccess {
   type: TransactionDetailsActionTypes.LOAD_TRANSACTION_SUCCESS;
-  transaction: Transaction;
+  transaction: PendingDeposit | HistoryTransaction | PooledTransaction;
 }
 
 export interface LoadTransactionFailure {
@@ -30,7 +31,9 @@ function loadTransaction(): LoadTransaction {
   };
 }
 
-function loadTransactionSuccess(transaction: Transaction): LoadTransactionSuccess {
+function loadTransactionSuccess(
+  transaction: PendingDeposit | HistoryTransaction | PooledTransaction
+): LoadTransactionSuccess {
   return {
     type: TransactionDetailsActionTypes.LOAD_TRANSACTION_SUCCESS,
     transaction,
