@@ -24,7 +24,7 @@ import TransactionForm from "src/views/transactions/components/transaction-form/
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-interface ExitState {
+interface ExitStateProps {
   poolTransactionsTask: AsyncTask<PooledTransaction[], Error>;
   step: exitActions.Step;
   accountTask: AsyncTask<Account, string>;
@@ -38,7 +38,7 @@ interface ExitState {
   tokensPriceTask: AsyncTask<Token[], string>;
 }
 
-interface ExitHandlers {
+interface ExitHandlerProps {
   onChangeHeader: (step: exitActions.Step, accountIndex: string | null) => void;
   onLoadHermezAccount: (
     accountIndex: string,
@@ -56,7 +56,7 @@ interface ExitHandlers {
   onCleanup: () => void;
 }
 
-type ExitProps = ExitState & ExitHandlers;
+type ExitProps = ExitStateProps & ExitHandlerProps;
 
 function Exit({
   poolTransactionsTask,
@@ -200,7 +200,7 @@ function Exit({
   );
 }
 
-const mapStateToProps = (state: AppState): ExitState => ({
+const mapStateToProps = (state: AppState): ExitStateProps => ({
   poolTransactionsTask: state.exit.poolTransactionsTask,
   step: state.exit.step,
   wallet: state.global.wallet,
@@ -245,7 +245,7 @@ const getHeader = (step: exitActions.Step, accountIndex: string | null): Header 
   }
 };
 
-const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlers => ({
+const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlerProps => ({
   onChangeHeader: (step: exitActions.Step, accountIndex: string | null) =>
     dispatch(changeHeader(getHeader(step, accountIndex))),
   onLoadHermezAccount: (
