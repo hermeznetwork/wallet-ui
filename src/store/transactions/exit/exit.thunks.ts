@@ -158,23 +158,21 @@ function exit(amount: BigNumber, account: Account, fee: number) {
     }
 
     if (
-      coordinatorStateTask.status !== "successful" &&
-      coordinatorStateTask.status !== "reloading"
+      wallet !== undefined &&
+      (coordinatorStateTask.status === "successful" || coordinatorStateTask.status === "reloading")
     ) {
-      return handleTransactionFailure(dispatch, new Error("Coordinator state hasn't been loaded"));
+      const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
+      const txData = {
+        type: TxType.Exit,
+        from: account.accountIndex,
+        amount: HermezCompressedAmount.compressAmount(amount.toString()),
+        fee,
+      };
+
+      return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
+        .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
+        .catch((error) => handleTransactionFailure(dispatch, error));
     }
-
-    const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
-    const txData = {
-      type: TxType.Exit,
-      from: account.accountIndex,
-      amount: HermezCompressedAmount.compressAmount(amount.toString()),
-      fee,
-    };
-
-    return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
-      .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
-      .catch((error) => handleTransactionFailure(dispatch, error));
   };
 }
 
