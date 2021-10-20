@@ -29,26 +29,24 @@ function fetchHermezAccount(
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
-      global: { wallet, tokensPriceTask },
+      global: { tokensPriceTask },
     } = getState();
 
     dispatch(exitActions.loadAccount());
 
-    if (wallet) {
-      return CoordinatorAPI.getAccount(accountIndex)
-        .then((account) =>
-          createAccount(
-            account,
-            poolTransactions,
-            undefined,
-            tokensPriceTask,
-            fiatExchangeRates,
-            preferredCurrency
-          )
+    return CoordinatorAPI.getAccount(accountIndex)
+      .then((account) =>
+        createAccount(
+          account,
+          poolTransactions,
+          undefined,
+          tokensPriceTask,
+          fiatExchangeRates,
+          preferredCurrency
         )
-        .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
-        .catch((error: Error) => dispatch(exitActions.loadAccountFailure(error.message)));
-    }
+      )
+      .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
+      .catch((error: Error) => dispatch(exitActions.loadAccountFailure(error.message)));
   };
 }
 
