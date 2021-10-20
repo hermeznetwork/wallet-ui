@@ -26,6 +26,7 @@ import * as browser from "../../../../utils/browser";
 import Fee from "../fee/fee.view";
 import Alert from "../../../shared/alert/alert.view";
 import TransactionAmountInput from "../transaction-amount-input/transaction-amount-input.view";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 function TransactionForm({
   transactionType,
@@ -59,6 +60,7 @@ function TransactionForm({
     React.useState(undefined);
   const [gasPrice, setGasPrice] = React.useState(BigNumber.from(0));
   const [depositFee, setDepositFee] = React.useState(undefined);
+  const [isAmountInputDirty, setIsAmountInputDirty] = React.useState(false);
 
   React.useEffect(() => {
     if (transactionType === TxType.Deposit) {
@@ -149,7 +151,9 @@ function TransactionForm({
    * @returns {boolean} - Whether the continue button should be disabled or not
    */
   function isContinueDisabled() {
-    if (transactionType === TxType.Exit && doesUserHaveEnoughEthForWithdraw === false) {
+    if (!isAmountInputDirty) {
+      return true;
+    } else if (transactionType === TxType.Exit && doesUserHaveEnoughEthForWithdraw === false) {
       return false;
     } else if (transactionType !== TxType.Transfer && isAmountValid) {
       return false;
@@ -165,10 +169,11 @@ function TransactionForm({
   }
 
   function handleAmountChange(data) {
-    setAmount(data.amount.tokens);
     setShowInFiat(data.showInFiat);
+    setAmount(data.amount.tokens);
     setIsAmountValid(!data.isInvalid);
     setAreFundsExceededDueToFee(data.areFundsExceededDueToFee);
+    setIsAmountInputDirty(data.isDirty);
   }
 
   /**
@@ -301,7 +306,10 @@ function TransactionForm({
                 <p className={classes.tokenName}>{account.token.name}</p>
                 {showInFiat ? (
                   <p>
-                    <span>{preferredCurrency}</span> <span>{getAmountInFiat(account.balance)}</span>
+                    <FiatAmount
+                      currency={preferredCurrency}
+                      amount={getAmountInFiat(account.balance)}
+                    />
                   </p>
                 ) : (
                   <p className={classes.tokenSymbolAmount}>

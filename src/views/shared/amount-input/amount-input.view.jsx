@@ -1,7 +1,11 @@
 import React from "react";
 import { BigNumber } from "ethers";
 
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "../../../utils/currencies";
+import {
+  getFixedTokenAmount,
+  getTokenAmountInPreferredCurrency,
+  trimZeros,
+} from "../../../utils/currencies";
 import {
   fixTransactionAmount,
   getMaxTxAmount,
@@ -31,6 +35,7 @@ function AmountInput(Component) {
     const [isAmountWithFeeMoreThanFunds, setIsAmountWithFeeMoreThanFunds] = React.useState(false);
     const [areFundsExceededDueToFee, setAreFundsExceededDueToFee] = React.useState(false);
     const [isAmountCompressedInvalid, setIsAmountCompressedInvalid] = React.useState(false);
+    const [isDirty, setIsDirty] = React.useState(false);
 
     React.useEffect(() => {
       handleInputChange({ target: { value: defaultValue } });
@@ -49,6 +54,7 @@ function AmountInput(Component) {
           showInFiat,
           isInvalid,
           areFundsExceededDueToFee,
+          isDirty,
         });
       }
     }, [
@@ -57,6 +63,7 @@ function AmountInput(Component) {
       isAmountWithFeeMoreThanFunds,
       isAmountCompressedInvalid,
       areFundsExceededDueToFee,
+      isDirty,
     ]);
 
     /**
@@ -95,6 +102,7 @@ function AmountInput(Component) {
      * @param {BigNumber} newAmount - New amount to be checked.
      */
     function checkAmountValidity(newAmount) {
+      setIsDirty(true);
       const newFee = getTransactionFee(transactionType, newAmount, account.token, fee, gasPrice);
       const newAmountWithFee = newAmount.add(newFee);
       const isNewAmountWithFeeMoreThanFunds = newAmountWithFee.gt(BigNumber.from(account.balance));
@@ -128,7 +136,7 @@ function AmountInput(Component) {
           const newAmountInTokens = convertAmountToTokens(newAmountInFiat);
           const fixedAmountInTokens = fixTransactionAmount(newAmountInTokens);
 
-          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat.toFixed(2) });
+          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat });
           checkAmountValidity(fixedAmountInTokens);
           setValue(event.target.value);
         } else {
@@ -159,10 +167,11 @@ function AmountInput(Component) {
         fee,
         gasPrice
       );
-      const maxAmountWithoutFeeInFiat = convertAmountToFiat(maxAmountWithoutFee);
+
+      const maxAmountWithoutFeeInFiat = trimZeros(convertAmountToFiat(maxAmountWithoutFee), 2);
 
       if (showInFiat) {
-        setValue(maxAmountWithoutFeeInFiat);
+        setValue(maxAmountWithoutFeeInFiat.toString());
       } else {
         const newValue = getFixedTokenAmount(maxAmountWithoutFee, account.token.decimals);
 
@@ -181,7 +190,7 @@ function AmountInput(Component) {
     function handleSwapCurrency() {
       const newValue = showInFiat
         ? getFixedTokenAmount(amount.tokens, account.token.decimals)
-        : amount.fiat;
+        : amount.fiat.toString();
 
       if (value.length > 0) {
         setValue(newValue);
