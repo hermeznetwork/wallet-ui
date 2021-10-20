@@ -17,8 +17,6 @@ export type {
   ISOStringDate,
   MerkleProof,
   NextForger,
-  PendingDelayedWithdraw,
-  PendingWithdraw,
   PooledTransaction,
   RecommendedFee,
   Token,
@@ -30,6 +28,31 @@ export { SignerType } from "@hermeznetwork/hermezjs/src/signers";
 
 export type Account = hermezjs.Account & { fiatBalance?: number };
 
-export type PendingDeposit = hermezjs.PendingDeposit & {
+export interface PendingDeposit {
+  account: Account;
+  amount: string;
+  fromHezEthereumAddress: string;
+  hash: string;
+  state: hermezjs.Enums.TxState;
+  timestamp: hermezjs.ISOStringDate;
+  toHezEthereumAddress: string;
+  token: hermezjs.Token;
+  type: hermezjs.Enums.TxType.Deposit | hermezjs.Enums.TxType.CreateAccountDeposit;
   transactionId?: string;
+}
+
+export interface PendingWithdraw {
+  accountIndex: string;
+  batchNum: number;
+  hash: string;
+  id: string;
+  timestamp: hermezjs.ISOStringDate;
+  // amount: string;
+  // hermezEthereumAddress: string;
+  // token: hermezjs.Token;
+}
+
+export type PendingDelayedWithdraw = PendingWithdraw & {
+  instant: boolean;
+  merkleProof: hermezjs.MerkleProof;
 };
