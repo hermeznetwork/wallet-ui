@@ -181,7 +181,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 
 function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) {
   const errorMsg = error instanceof Error ? error.message : error;
-  console.log(error);
+
   dispatch(exitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
