@@ -276,9 +276,6 @@ function TransactionOverview({
                 txData={{
                   type: TxType.Exit,
                   fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  // ToDo: To be removed
-                  toHezEthereumAddress: undefined,
-                  // ToDo: To be removed
                   estimatedWithdrawFee:
                     transaction.estimatedWithdrawFeeTask.status === "successful" ||
                     transaction.estimatedWithdrawFeeTask.status === "reloading"
