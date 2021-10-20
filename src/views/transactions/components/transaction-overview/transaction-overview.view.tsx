@@ -22,6 +22,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 // domain
 import { HermezWallet, Account, FiatExchangeRates, Exit } from "src/domain/hermez";
+import { EstimatedWithdrawFee } from "src/domain";
 
 type Transaction =
   | {
