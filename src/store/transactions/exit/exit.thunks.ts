@@ -153,6 +153,10 @@ function exit(amount: BigNumber, account: Account, fee: number) {
 
     dispatch(exitActions.startTransactionApproval());
 
+    if (!wallet) {
+      return handleTransactionFailure(dispatch, new Error("Wallet doesn't exist"));
+    }
+
     if (
       coordinatorStateTask.status !== "successful" &&
       coordinatorStateTask.status !== "reloading"
