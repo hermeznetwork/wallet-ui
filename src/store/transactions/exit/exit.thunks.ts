@@ -34,23 +34,21 @@ function fetchHermezAccount(
 
     dispatch(exitActions.loadAccount());
 
-    if (!wallet) {
-      return dispatch(exitActions.loadAccountFailure("Ethereum wallet is not loaded"));
-    }
-
-    return CoordinatorAPI.getAccount(accountIndex)
-      .then((account) =>
-        createAccount(
-          account,
-          poolTransactions,
-          undefined,
-          tokensPriceTask,
-          fiatExchangeRates,
-          preferredCurrency
+    if (wallet) {
+      return CoordinatorAPI.getAccount(accountIndex)
+        .then((account) =>
+          createAccount(
+            account,
+            poolTransactions,
+            undefined,
+            tokensPriceTask,
+            fiatExchangeRates,
+            preferredCurrency
+          )
         )
-      )
-      .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
-      .catch((error: Error) => dispatch(exitActions.loadAccountFailure(error.message)));
+        .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
+        .catch((error: Error) => dispatch(exitActions.loadAccountFailure(error.message)));
+    }
   };
 }
 
@@ -122,19 +120,17 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
       );
       const feeBigNumber = BigNumber.from(gasLimit).mul(gasPrice);
 
-      if (tokensPriceTask.status !== "successful") {
-        throw new Error("Token prices haven't been loaded");
+      if (tokensPriceTask.status === "successful" || tokensPriceTask.status === "reloading") {
+        const tokenUSD = tokensPriceTask.data[ETHER_TOKEN_ID].USD;
+        const feeUSD = Number(formatEther(feeBigNumber)) * tokenUSD;
+
+        dispatch(
+          exitActions.loadEstimatedWithdrawFeeSuccess({
+            amount: feeBigNumber,
+            USD: feeUSD,
+          })
+        );
       }
-
-      const tokenUSD = tokensPriceTask.data[ETHER_TOKEN_ID].USD;
-      const feeUSD = Number(formatEther(feeBigNumber)) * tokenUSD;
-
-      dispatch(
-        exitActions.loadEstimatedWithdrawFeeSuccess({
-          amount: feeBigNumber,
-          USD: feeUSD,
-        })
-      );
     } catch (err) {
       if (err instanceof Error) {
         dispatch(exitActions.loadEstimatedWithdrawFeeFailure(err));
@@ -152,10 +148,6 @@ function exit(amount: BigNumber, account: Account, fee: number) {
     } = getState();
 
     dispatch(exitActions.startTransactionApproval());
-
-    if (!wallet) {
-      return handleTransactionFailure(dispatch, new Error("Wallet doesn't exist"));
-    }
 
     if (
       wallet !== undefined &&
