@@ -17,9 +17,9 @@ export enum ExitActionTypes {
   LOAD_ESTIMATED_WITHDRAW_FEE = "[EXIT] LOAD ESTIMATED WITHDRAW FEE",
   LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS = "[EXIT] LOAD ESTIMATED WITHDRAW FEE SUCCESS",
   LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE = "[EXIT] LOAD ESTIMATED WITHDRAW FEE FAILURE",
-  LOAD_POOLED_TRANSACTIONS = "[EXIT] LOAD POOLED TRANSACTIONS",
-  LOAD_POOLED_TRANSACTIONS_SUCCESS = "[EXIT] LOAD POOLED TRANSACTIONS SUCCESS",
-  LOAD_POOLED_TRANSACTIONS_FAILURE = "[EXIT] LOAD POOLED TRANSACTIONS FAILURE",
+  LOAD_POOL_TRANSACTIONS = "[EXIT] LOAD POOL TRANSACTIONS",
+  LOAD_POOL_TRANSACTIONS_SUCCESS = "[EXIT] LOAD POOL TRANSACTIONS SUCCESS",
+  LOAD_POOL_TRANSACTIONS_FAILURE = "[EXIT] LOAD POOL TRANSACTIONS FAILURE",
   START_TRANSACTION_APPROVAL = "[EXIT] START TRANSACTION APPROVAL",
   STOP_TRANSACTION_APPROVAL = "[EXIT] STOP TRANSACTION APPROVAL",
   RESET_STATE = "[EXIT] RESET STATE",
@@ -91,17 +91,17 @@ export interface LoadEstimatedWithdrawFeeFailure {
   error: Error;
 }
 
-export interface LoadPooledTransactions {
-  type: ExitActionTypes.LOAD_POOLED_TRANSACTIONS;
+export interface LoadPoolTransactions {
+  type: ExitActionTypes.LOAD_POOL_TRANSACTIONS;
 }
 
-export interface LoadPooledTransactionsSuccess {
-  type: ExitActionTypes.LOAD_POOLED_TRANSACTIONS_SUCCESS;
+export interface LoadPoolTransactionsSuccess {
+  type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
   transactions: PooledTransaction[];
 }
 
-export interface LoadPooledTransactionsFailure {
-  type: ExitActionTypes.LOAD_POOLED_TRANSACTIONS_FAILURE;
+export interface LoadPoolTransactionsFailure {
+  type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
   error: Error;
 }
 
@@ -130,9 +130,9 @@ export type ExitAction =
   | LoadEstimatedWithdrawFee
   | LoadEstimatedWithdrawFeeSuccess
   | LoadEstimatedWithdrawFeeFailure
-  | LoadPooledTransactions
-  | LoadPooledTransactionsSuccess
-  | LoadPooledTransactionsFailure
+  | LoadPoolTransactions
+  | LoadPoolTransactionsSuccess
+  | LoadPoolTransactionsFailure
   | StartTransactionApproval
   | StopTransactionApproval
   | ResetState;
@@ -220,24 +220,24 @@ function loadEstimatedWithdrawFeeFailure(error: Error): LoadEstimatedWithdrawFee
   };
 }
 
-function loadPooledTransactions(): LoadPooledTransactions {
+function loadPoolTransactions(): LoadPoolTransactions {
   return {
-    type: ExitActionTypes.LOAD_POOLED_TRANSACTIONS,
+    type: ExitActionTypes.LOAD_POOL_TRANSACTIONS,
   };
 }
 
-function loadPooledTransactionsSuccess(
+function loadPoolTransactionsSuccess(
   transactions: PooledTransaction[]
-): LoadPooledTransactionsSuccess {
+): LoadPoolTransactionsSuccess {
   return {
-    type: ExitActionTypes.LOAD_POOLED_TRANSACTIONS_SUCCESS,
+    type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
     transactions,
   };
 }
 
-function loadPooledTransactionsFailure(error: Error): LoadPooledTransactionsFailure {
+function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
   return {
-    type: ExitActionTypes.LOAD_POOLED_TRANSACTIONS_FAILURE,
+    type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
   };
 }
@@ -264,9 +264,9 @@ export {
   goToBuildTransactionStep,
   goToReviewTransactionStep,
   changeCurrentStep,
-  loadPooledTransactions,
-  loadPooledTransactionsSuccess,
-  loadPooledTransactionsFailure,
+  loadPoolTransactions,
+  loadPoolTransactionsSuccess,
+  loadPoolTransactionsFailure,
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,

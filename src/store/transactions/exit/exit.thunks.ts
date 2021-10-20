@@ -23,7 +23,7 @@ import { ETHER_TOKEN_ID } from "src/constants";
  */
 function fetchHermezAccount(
   accountIndex: string,
-  pooledTransactions: PooledTransaction[],
+  poolTransactions: PooledTransaction[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
@@ -42,7 +42,7 @@ function fetchHermezAccount(
       .then((account) =>
         createAccount(
           account,
-          pooledTransactions,
+          poolTransactions,
           undefined,
           tokensPriceTask,
           fiatExchangeRates,
@@ -60,7 +60,7 @@ function fetchHermezAccount(
  */
 function fetchPoolTransactions(): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(exitActions.loadPooledTransactions());
+    dispatch(exitActions.loadPoolTransactions());
 
     const {
       global: { wallet },
@@ -68,8 +68,8 @@ function fetchPoolTransactions(): AppThunk {
 
     if (wallet !== undefined) {
       getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(exitActions.loadPooledTransactionsSuccess(transactions)))
-        .catch((err) => dispatch(exitActions.loadPooledTransactionsFailure(err)));
+        .then((transactions) => dispatch(exitActions.loadPoolTransactionsSuccess(transactions)))
+        .catch((err) => dispatch(exitActions.loadPoolTransactionsFailure(err)));
     }
   };
 }

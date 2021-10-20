@@ -11,7 +11,7 @@ import { EstimatedWithdrawFee } from "src/domain";
 
 export interface ExitState {
   step: Step;
-  pooledTransactionsTask: AsyncTask<PooledTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PooledTransaction[], Error>;
   accountTask: AsyncTask<Account, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
@@ -21,7 +21,7 @@ export interface ExitState {
 
 const initialExitState: ExitState = {
   step: "load-account",
-  pooledTransactionsTask: {
+  poolTransactionsTask: {
     status: "pending",
   },
   accountTask: {
@@ -62,33 +62,33 @@ function exitReducer(state: ExitState = initialExitState, action: ExitAction): E
         step: action.nextStep,
       };
     }
-    case ExitActionTypes.LOAD_POOLED_TRANSACTIONS: {
+    case ExitActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
-        pooledTransactionsTask:
-          state.pooledTransactionsTask.status === "successful"
+        poolTransactionsTask:
+          state.poolTransactionsTask.status === "successful"
             ? {
                 status: "reloading",
-                data: state.pooledTransactionsTask.data,
+                data: state.poolTransactionsTask.data,
               }
             : {
                 status: "loading",
               },
       };
     }
-    case ExitActionTypes.LOAD_POOLED_TRANSACTIONS_SUCCESS: {
+    case ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
-        pooledTransactionsTask: {
+        poolTransactionsTask: {
           status: "successful",
           data: action.transactions,
         },
       };
     }
-    case ExitActionTypes.LOAD_POOLED_TRANSACTIONS_FAILURE: {
+    case ExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
       return {
         ...state,
-        pooledTransactionsTask: {
+        poolTransactionsTask: {
           status: "failed",
           error: action.error,
         },
