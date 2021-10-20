@@ -19,12 +19,9 @@ export type {
   NextForger,
   PooledTransaction,
   RecommendedFee,
+  Signers,
   Token,
 } from "@hermeznetwork/hermezjs";
-
-export type { JsonRpcSignerData, SignerData } from "@hermeznetwork/hermezjs/src/signers";
-
-export { SignerType } from "@hermeznetwork/hermezjs/src/signers";
 
 export type Account = hermezjs.Account & { fiatBalance?: number };
 

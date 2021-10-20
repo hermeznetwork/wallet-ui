@@ -8,7 +8,7 @@ import {
   HermezNetworkStatus,
   PendingWithdraw,
   HermezWallet,
-  SignerData,
+  Signers,
   FiatExchangeRates,
   CoordinatorState,
   Token,
@@ -31,7 +31,7 @@ export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   wallet: HermezWallet.HermezWallet | undefined;
-  signer: SignerData | undefined;
+  signer: Signers.SignerData | undefined;
   header: Header;
   redirectRoute: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
