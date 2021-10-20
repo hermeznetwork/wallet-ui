@@ -421,7 +421,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
 
 // TxFees
 declare module "@hermeznetwork/hermezjs/src/tx-fees" {
-  import { Token, SignerData } from "@hermeznetwork/hermezjs";
+  import { Token, Signers } from "@hermeznetwork/hermezjs";
   import { CallOverrides } from "ethers";
 
   // declare function estimateDepositGasLimit() {};
@@ -431,7 +431,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-fees" {
     estimatedMerkleSiblingsLength: number,
     amount: BigNumber,
     overrides: CallOverrides,
-    signerData?: SignerData,
+    signerData?: Signers.SignerData,
     providerUrl?: string,
     isInstant?: boolean
   ): Promise<number> {};
