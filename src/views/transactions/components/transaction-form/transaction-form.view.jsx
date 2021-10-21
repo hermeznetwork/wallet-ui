@@ -260,7 +260,7 @@ function TransactionForm({
         const accountChecks = [
           getAccounts(receiver, [account.token.id]),
           ...(!isHermezBjjAddress(receiver)
-            ? [getCreateAccountAuthorization(receiver).catch(() => ({}))]
+            ? [getCreateAccountAuthorization(receiver).catch(() => undefined)]
             : []),
         ];
         return Promise.all(accountChecks).then((res) => {
@@ -285,6 +285,7 @@ function TransactionForm({
       }
       default: {
         const transactionFee = getFee(fees, true);
+
         return onSubmit({
           amount: amount,
           from: {},
