@@ -27,7 +27,7 @@ import {
   RecommendedFee,
 } from "src/domain/hermez";
 
-interface TransferViewState {
+interface TransferStateProps {
   pooledTransactionsTask: AsyncTask<PooledTransaction[], Error>;
   step: transferActions.Step;
   accountTask: AsyncTask<Account, string>;
@@ -41,7 +41,7 @@ interface TransferViewState {
   tokensPriceTask: AsyncTask<Token[], string>;
 }
 
-interface TransferViewHandlers {
+interface TransferHandlerProps {
   onChangeHeader: (step: transferActions.Step, accountIndex: string | null) => void;
   onLoadHermezAccount: (
     accountIndex: string,
@@ -64,7 +64,7 @@ interface TransferViewHandlers {
   onCleanup: () => void;
 }
 
-type TransferViewProps = TransferViewState & TransferViewHandlers;
+type TransferProps = TransferStateProps & TransferHandlerProps;
 
 function Transfer({
   pooledTransactionsTask,
@@ -88,7 +88,7 @@ function Transfer({
   onGoToTransactionOverviewStep,
   onTransfer,
   onCleanup,
-}: TransferViewProps) {
+}: TransferProps) {
   const classes = useTransferLayoutStyles();
   const { search } = useLocation();
   const urlSearchParams = new URLSearchParams(search);
@@ -229,7 +229,7 @@ function Transfer({
   );
 }
 
-const mapStateToProps = (state: AppState): TransferViewState => ({
+const mapStateToProps = (state: AppState): TransferStateProps => ({
   pooledTransactionsTask: state.transfer.pooledTransactionsTask,
   step: state.transfer.step,
   wallet: state.global.wallet,
