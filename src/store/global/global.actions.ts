@@ -2,12 +2,12 @@
 import { EthereumNetwork } from "src/domain/ethereum";
 import {
   HermezWallet,
-  SignerData,
+  Signers,
   FiatExchangeRates,
   HermezNetworkStatus,
-  Withdraw,
-  DelayedWithdraw,
-  Deposit,
+  PendingWithdraw,
+  PendingDelayedWithdraw,
+  PendingDeposit,
   CoordinatorState,
   Token,
 } from "src/domain/hermez";
@@ -87,7 +87,7 @@ export interface UnloadWallet {
 
 export interface SetSigner {
   type: GlobalActionTypes.SET_SIGNER;
-  signer: SignerData;
+  signer: Signers.SignerData;
 }
 
 export interface ChangeHeader {
@@ -128,7 +128,7 @@ export interface AddPendingWithdraw {
   type: GlobalActionTypes.ADD_PENDING_WITHDRAW;
   chainId: number;
   hermezEthereumAddress: string;
-  pendingWithdraw: Withdraw;
+  pendingWithdraw: PendingWithdraw;
 }
 
 export interface RemovePendingWithdraw {
@@ -142,7 +142,7 @@ export interface AddPendingDelayedWithdraw {
   type: GlobalActionTypes.ADD_PENDING_DELAYED_WITHDRAW;
   chainId: number;
   hermezEthereumAddress: string;
-  pendingDelayedWithdraw: DelayedWithdraw;
+  pendingDelayedWithdraw: PendingDelayedWithdraw;
 }
 
 export interface RemovePendingDelayedWithdraw {
@@ -187,7 +187,7 @@ export interface AddPendingDeposit {
   type: GlobalActionTypes.ADD_PENDING_DEPOSIT;
   chainId: number;
   hermezEthereumAddress: string;
-  pendingDeposit: Deposit;
+  pendingDeposit: PendingDeposit;
 }
 
 export interface RemovePendingDepositByHash {
@@ -332,7 +332,7 @@ function unloadWallet(): UnloadWallet {
   };
 }
 
-function setSigner(signer: SignerData): SetSigner {
+function setSigner(signer: Signers.SignerData): SetSigner {
   return {
     type: GlobalActionTypes.SET_SIGNER,
     signer,
@@ -392,7 +392,7 @@ function changeNetworkStatus(networkStatus: HermezNetworkStatus): ChangeNetworkS
 function addPendingWithdraw(
   chainId: number,
   hermezEthereumAddress: string,
-  pendingWithdraw: Withdraw
+  pendingWithdraw: PendingWithdraw
 ): AddPendingWithdraw {
   return {
     type: GlobalActionTypes.ADD_PENDING_WITHDRAW,
@@ -418,7 +418,7 @@ function removePendingWithdraw(
 function addPendingDelayedWithdraw(
   chainId: number,
   hermezEthereumAddress: string,
-  pendingDelayedWithdraw: DelayedWithdraw
+  pendingDelayedWithdraw: PendingDelayedWithdraw
 ): AddPendingDelayedWithdraw {
   return {
     type: GlobalActionTypes.ADD_PENDING_DELAYED_WITHDRAW,
@@ -496,7 +496,7 @@ function checkPendingWithdrawalsSuccess(): CheckPendingWithdrawalsSuccess {
 function addPendingDeposit(
   chainId: number,
   hermezEthereumAddress: string,
-  pendingDeposit: Deposit
+  pendingDeposit: PendingDeposit
 ): AddPendingDeposit {
   return {
     type: GlobalActionTypes.ADD_PENDING_DEPOSIT,

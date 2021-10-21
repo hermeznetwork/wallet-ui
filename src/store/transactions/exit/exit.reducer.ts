@@ -1,30 +1,25 @@
 import {
-  TransferActionTypes,
-  TransferAction,
+  ExitAction,
   TransactionToReview,
   Step,
-} from "src/store/transactions/transfer/transfer.actions";
-import { getPaginationData, Pagination } from "src/utils/api";
+  ExitActionTypes,
+} from "src/store/transactions/exit/exit.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
 import { PoolTransaction, Account, RecommendedFee } from "src/domain/hermez";
+import { EstimatedWithdrawFee } from "src/domain";
 
-export interface AccountsWithPagination {
-  accounts: Account[];
-  pagination: Pagination;
-}
-
-export interface TransferState {
+export interface ExitState {
   step: Step;
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   accountTask: AsyncTask<Account, string>;
-  accountsTask: AsyncTask<AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;
 }
 
-const initialTransferState: TransferState = {
+const initialExitState: ExitState = {
   step: "load-account",
   poolTransactionsTask: {
     status: "pending",
@@ -32,28 +27,19 @@ const initialTransferState: TransferState = {
   accountTask: {
     status: "pending",
   },
-  accountsTask: {
+  feesTask: {
     status: "pending",
   },
-  feesTask: {
+  estimatedWithdrawFeeTask: {
     status: "pending",
   },
   transaction: undefined,
   isTransactionBeingApproved: false,
 };
 
-function transferReducer(
-  state: TransferState = initialTransferState,
-  action: TransferAction
-): TransferState {
+function exitReducer(state: ExitState = initialExitState, action: ExitAction): ExitState {
   switch (action.type) {
-    case TransferActionTypes.GO_TO_CHOOSE_ACCOUNT_STEP: {
-      return {
-        ...state,
-        step: "choose-account",
-      };
-    }
-    case TransferActionTypes.GO_TO_BUILD_TRANSACTION_STEP: {
+    case ExitActionTypes.GO_TO_BUILD_TRANSACTION_STEP: {
       return {
         ...state,
         step: "build-transaction",
@@ -63,20 +49,20 @@ function transferReducer(
         },
       };
     }
-    case TransferActionTypes.GO_TO_REVIEW_TRANSACTION_STEP: {
+    case ExitActionTypes.GO_TO_REVIEW_TRANSACTION_STEP: {
       return {
         ...state,
         step: "review-transaction",
         transaction: action.transaction,
       };
     }
-    case TransferActionTypes.CHANGE_CURRENT_STEP: {
+    case ExitActionTypes.CHANGE_CURRENT_STEP: {
       return {
         ...state,
         step: action.nextStep,
       };
     }
-    case TransferActionTypes.LOAD_POOL_TRANSACTIONS: {
+    case ExitActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
         poolTransactionsTask:
@@ -90,7 +76,7 @@ function transferReducer(
               },
       };
     }
-    case TransferActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
+    case ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
         poolTransactionsTask: {
@@ -99,7 +85,7 @@ function transferReducer(
         },
       };
     }
-    case TransferActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
+    case ExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
       return {
         ...state,
         poolTransactionsTask: {
@@ -108,43 +94,7 @@ function transferReducer(
         },
       };
     }
-    case TransferActionTypes.LOAD_ACCOUNTS: {
-      return {
-        ...state,
-        accountsTask:
-          state.accountsTask.status === "successful"
-            ? {
-                status: "reloading",
-                data: state.accountsTask.data,
-              }
-            : { status: "loading" },
-      };
-    }
-    case TransferActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      const accounts =
-        state.accountsTask.status === "reloading"
-          ? [...state.accountsTask.data.accounts, ...action.accounts.accounts]
-          : action.accounts.accounts;
-      const pagination = getPaginationData(action.accounts.pendingItems, accounts);
-
-      return {
-        ...state,
-        accountsTask: {
-          status: "successful",
-          data: { accounts, pagination },
-        },
-      };
-    }
-    case TransferActionTypes.LOAD_ACCOUNTS_FAILURE: {
-      return {
-        ...state,
-        accountsTask: {
-          status: "failed",
-          error: action.error,
-        },
-      };
-    }
-    case TransferActionTypes.LOAD_ACCOUNT: {
+    case ExitActionTypes.LOAD_ACCOUNT: {
       return {
         ...state,
         accountTask: {
@@ -152,7 +102,7 @@ function transferReducer(
         },
       };
     }
-    case TransferActionTypes.LOAD_ACCOUNT_SUCCESS: {
+    case ExitActionTypes.LOAD_ACCOUNT_SUCCESS: {
       return {
         ...state,
         step: "build-transaction",
@@ -162,7 +112,7 @@ function transferReducer(
         },
       };
     }
-    case TransferActionTypes.LOAD_ACCOUNT_FAILURE: {
+    case ExitActionTypes.LOAD_ACCOUNT_FAILURE: {
       return {
         ...state,
         accountTask: {
@@ -171,14 +121,14 @@ function transferReducer(
         },
       };
     }
-    case TransferActionTypes.LOAD_FEES:
+    case ExitActionTypes.LOAD_FEES:
       return {
         ...state,
         feesTask: {
           status: "loading",
         },
       };
-    case TransferActionTypes.LOAD_FEES_SUCCESS:
+    case ExitActionTypes.LOAD_FEES_SUCCESS:
       return {
         ...state,
         feesTask: {
@@ -186,7 +136,7 @@ function transferReducer(
           data: action.fees,
         },
       };
-    case TransferActionTypes.LOAD_FEES_FAILURE:
+    case ExitActionTypes.LOAD_FEES_FAILURE:
       return {
         ...state,
         feesTask: {
@@ -194,20 +144,46 @@ function transferReducer(
           error: action.error,
         },
       };
-    case TransferActionTypes.START_TRANSACTION_APPROVAL: {
+    case ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE: {
+      return {
+        ...state,
+        estimatedWithdrawFeeTask: {
+          status: "loading",
+        },
+      };
+    }
+    case ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS: {
+      return {
+        ...state,
+        estimatedWithdrawFeeTask: {
+          status: "successful",
+          data: action.estimatedFee,
+        },
+      };
+    }
+    case ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE: {
+      return {
+        ...state,
+        estimatedWithdrawFeeTask: {
+          status: "failed",
+          error: action.error,
+        },
+      };
+    }
+    case ExitActionTypes.START_TRANSACTION_APPROVAL: {
       return {
         ...state,
         isTransactionBeingApproved: true,
       };
     }
-    case TransferActionTypes.STOP_TRANSACTION_APPROVAL: {
+    case ExitActionTypes.STOP_TRANSACTION_APPROVAL: {
       return {
         ...state,
         isTransactionBeingApproved: false,
       };
     }
-    case TransferActionTypes.RESET_STATE: {
-      return initialTransferState;
+    case ExitActionTypes.RESET_STATE: {
+      return initialExitState;
     }
     default: {
       return state;
@@ -215,4 +191,4 @@ function transferReducer(
   }
 }
 
-export default transferReducer;
+export default exitReducer;

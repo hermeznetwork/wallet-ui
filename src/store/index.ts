@@ -15,13 +15,18 @@ import accountDetailsReducer, {
   AccountDetailsState,
 } from "src/store/account-details/account-details.reducer";
 import { AccountDetailsAction } from "src/store/account-details/account-details.actions";
-import transactionDetailsReducer from "src/store/transaction-details/transaction-details.reducer";
+import transactionDetailsReducer, {
+  TransactionDetailsState,
+} from "src/store/transaction-details/transaction-details.reducer";
+import { TransactionDetailsAction } from "src/store/transaction-details/transaction-details.actions";
 import transactionReducer from "src/store/transaction/transaction.reducer";
 import loginReducer, { LoginState } from "src/store/login/login.reducer";
 import { LoginAction } from "src/store/login/login.actions";
 import tokenSwapReducer from "src/store/token-swap/token-swap.reducer";
 import transferReducer, { TransferState } from "src/store/transactions/transfer/transfer.reducer";
 import { TransferAction } from "src/store/transactions/transfer/transfer.actions";
+import { ExitAction } from "src/store/transactions/exit/exit.actions";
+import exitReducer, { ExitState } from "./transactions/exit/exit.reducer";
 
 export type AppAction =
   | RouterAction
@@ -30,7 +35,10 @@ export type AppAction =
   | MyAccountAction
   | AccountDetailsAction
   | LoginAction
-  | TransferAction;
+  | TransferAction
+  | ExitAction
+  | TransactionDetailsAction;
+
 export interface AppState {
   router: RouterState;
   global: GlobalState;
@@ -39,8 +47,12 @@ export interface AppState {
   myAccount: MyAccountState;
   login: LoginState;
   transfer: TransferState;
+  exit: ExitState;
+  transactionDetails: TransactionDetailsState;
 }
+
 export type AppDispatch = ThunkDispatch<AppState, undefined, AppAction>;
+
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, AppAction>;
 
 /**
@@ -59,6 +71,7 @@ export function createAppReducer(history: History) {
     transactionDetails: transactionDetailsReducer,
     transaction: transactionReducer,
     transfer: transferReducer,
+    exit: exitReducer,
     login: loginReducer,
     tokenSwap: tokenSwapReducer,
   });

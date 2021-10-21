@@ -46,7 +46,6 @@ const useAppStyles = createUseStyles((theme) => ({
   "@global": {
     "*": {
       boxSizing: "border-box",
-      color: theme.palette.black,
     },
     body: {
       fontFamily: "Modern Era",
@@ -54,6 +53,7 @@ const useAppStyles = createUseStyles((theme) => ({
       minHeight: "100vh",
       display: "flex",
       flexDirection: "column",
+      color: theme.palette.black,
     },
     "#app-root": {
       zIndex: 0,

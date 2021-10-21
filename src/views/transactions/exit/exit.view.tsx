@@ -1,48 +1,45 @@
 import React from "react";
 import { connect } from "react-redux";
-import { useLocation } from "react-router-dom";
-import { push } from "connected-react-router";
+import { useLocation } from "react-router";
 import { BigNumber } from "@ethersproject/bignumber";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { push } from "connected-react-router";
 
-import { AppState, AppDispatch } from "src/store";
-import * as transferThunks from "src/store/transactions/transfer/transfer.thunks";
-import * as transferActions from "src/store/transactions/transfer/transfer.actions";
-import * as transferReducer from "src/store/transactions/transfer/transfer.reducer";
-import { changeHeader } from "src/store/global/global.actions";
-import useTransferLayoutStyles from "src/views/transactions/transfer/transfer.styles";
-import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
-import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
-import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
-import Spinner from "src/views/shared/spinner/spinner.view";
-import { AsyncTask } from "src/utils/types";
-// domain
-import { Header } from "src/domain/";
 import {
   Account,
-  HermezWallet,
   FiatExchangeRates,
+  HermezWallet,
   PoolTransaction,
-  Token,
   RecommendedFee,
+  Token,
 } from "src/domain/hermez";
+import { AppDispatch, AppState } from "src/store";
+import { AsyncTask } from "src/utils/types";
+import useExitStyles from "src/views/transactions/exit/exit.styles";
+import * as exitActions from "src/store/transactions/exit/exit.actions";
+import * as exitThunks from "src/store/transactions/exit/exit.thunks";
+import { EstimatedWithdrawFee, Header } from "src/domain";
+import { changeHeader } from "src/store/global/global.actions";
+import Spinner from "src/views/shared/spinner/spinner.view";
+import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
+import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-interface TransferStateProps {
+interface ExitStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
-  step: transferActions.Step;
+  step: exitActions.Step;
   accountTask: AsyncTask<Account, string>;
-  accountsTask: AsyncTask<transferReducer.AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
   isTransactionBeingApproved: boolean;
-  transactionToReview: transferActions.TransactionToReview | undefined;
+  transactionToReview: exitActions.TransactionToReview | undefined;
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   tokensPriceTask: AsyncTask<Token[], string>;
 }
 
-interface TransferHandlerProps {
-  onChangeHeader: (step: transferActions.Step, accountIndex: string | null) => void;
+interface ExitHandlerProps {
+  onChangeHeader: (step: exitActions.Step, accountIndex: string | null) => void;
   onLoadHermezAccount: (
     accountIndex: string,
     poolTransactions: PoolTransaction[],
@@ -50,28 +47,23 @@ interface TransferHandlerProps {
     preferredCurrency: string
   ) => void;
   onLoadFees: () => void;
+  onLoadEstimatedWithdrawFee: (token: Token, amount: BigNumber) => void;
   onLoadPoolTransactions: () => void;
-  onLoadAccounts: (
-    fromItem: number | undefined,
-    poolTransactions: PoolTransaction[],
-    fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string
-  ) => void;
-  onGoToChooseAccountStep: () => void;
+  onGoToHome: () => void;
   onGoToBuildTransactionStep: (account: Account) => void;
-  onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) => void;
-  onTransfer: (amount: BigNumber, account: Account, to: Partial<Account>, fee: number) => void;
+  onGoToTransactionOverviewStep: (transactionToReview: exitActions.TransactionToReview) => void;
+  onExit: (amount: BigNumber, account: Account, fee: number) => void;
   onCleanup: () => void;
 }
 
-type TransferProps = TransferStateProps & TransferHandlerProps;
+type ExitProps = ExitStateProps & ExitHandlerProps;
 
-function Transfer({
+function Exit({
   poolTransactionsTask,
   step,
   accountTask,
-  accountsTask,
   feesTask,
+  estimatedWithdrawFeeTask,
   isTransactionBeingApproved,
   transactionToReview,
   wallet,
@@ -81,18 +73,16 @@ function Transfer({
   onChangeHeader,
   onLoadHermezAccount,
   onLoadFees,
+  onLoadEstimatedWithdrawFee,
   onLoadPoolTransactions,
-  onLoadAccounts,
-  onGoToChooseAccountStep,
-  onGoToBuildTransactionStep,
+  onGoToHome,
   onGoToTransactionOverviewStep,
-  onTransfer,
+  onExit,
   onCleanup,
-}: TransferProps) {
-  const classes = useTransferLayoutStyles();
+}: ExitProps) {
+  const classes = useExitStyles();
   const { search } = useLocation();
   const urlSearchParams = new URLSearchParams(search);
-  const receiver = urlSearchParams.get("receiver");
   const accountIndex = urlSearchParams.get("accountIndex");
 
   React.useEffect(() => {
@@ -116,7 +106,7 @@ function Transfer({
           preferredCurrency
         );
       } else {
-        onGoToChooseAccountStep();
+        onGoToHome();
       }
     }
   }, [
@@ -124,15 +114,15 @@ function Transfer({
     poolTransactionsTask,
     fiatExchangeRatesTask,
     preferredCurrency,
-    onGoToChooseAccountStep,
+    onGoToHome,
     onLoadHermezAccount,
   ]);
 
   React.useEffect(() => {
     if (accountTask.status === "failed") {
-      onGoToChooseAccountStep();
+      onGoToHome();
     }
-  }, [accountTask, onGoToChooseAccountStep]);
+  }, [accountTask, onGoToHome]);
 
   React.useEffect(() => onCleanup, [onCleanup]);
 
@@ -147,31 +137,11 @@ function Transfer({
               </div>
             );
           }
-          case "choose-account": {
-            return (
-              <AccountSelector
-                transactionType={TxType.Transfer}
-                accountsTask={accountsTask}
-                poolTransactionsTask={poolTransactionsTask}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
-                pendingDeposits={[]}
-                onLoadAccounts={onLoadAccounts}
-                onAccountClick={(account: Account) => onGoToBuildTransactionStep(account)}
-              />
-            );
-          }
           case "build-transaction": {
             return accountTask.status === "successful" || accountTask.status === "reloading" ? (
               <TransactionForm
                 account={accountTask.data}
-                transactionType={TxType.Transfer}
-                receiverAddress={receiver}
+                transactionType={TxType.Exit}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -181,17 +151,18 @@ function Transfer({
                 }
                 feesTask={feesTask}
                 tokensPriceTask={tokensPriceTask}
+                estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
                 // ToDo: To be removed START
+                receiverAddress={undefined}
                 accountBalanceTask={{ status: "pending" }}
-                estimatedWithdrawFeeTask={{ status: "pending" }}
                 estimatedDepositFeeTask={{ status: "pending" }}
                 onLoadAccountBalance={() => ({})}
-                onLoadEstimatedWithdrawFee={() => ({})}
                 onLoadEstimatedDepositFee={() => ({})}
+                onGoToChooseAccountStep={() => ({})}
                 // ToDo: To be removed END
+                onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
                 onLoadFees={onLoadFees}
                 onSubmit={onGoToTransactionOverviewStep}
-                onGoToChooseAccountStep={onGoToChooseAccountStep}
               />
             ) : null;
           }
@@ -203,12 +174,12 @@ function Transfer({
                 wallet={wallet}
                 isTransactionBeingApproved={isTransactionBeingApproved}
                 transaction={{
-                  type: TxType.Transfer,
+                  type: TxType.Exit,
                   amount: transactionToReview.amount,
                   account: accountTask.data,
-                  to: transactionToReview.to,
                   fee: transactionToReview.fee,
-                  onTransfer,
+                  estimatedWithdrawFeeTask,
+                  onExit,
                 }}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
@@ -229,15 +200,15 @@ function Transfer({
   );
 }
 
-const mapStateToProps = (state: AppState): TransferStateProps => ({
-  poolTransactionsTask: state.transfer.poolTransactionsTask,
-  step: state.transfer.step,
+const mapStateToProps = (state: AppState): ExitStateProps => ({
+  poolTransactionsTask: state.exit.poolTransactionsTask,
+  step: state.exit.step,
   wallet: state.global.wallet,
-  accountTask: state.transfer.accountTask,
-  accountsTask: state.transfer.accountsTask,
-  feesTask: state.transfer.feesTask,
-  isTransactionBeingApproved: state.transfer.isTransactionBeingApproved,
-  transactionToReview: state.transfer.transaction,
+  accountTask: state.exit.accountTask,
+  feesTask: state.exit.feesTask,
+  estimatedWithdrawFeeTask: state.exit.estimatedWithdrawFeeTask,
+  isTransactionBeingApproved: state.exit.isTransactionBeingApproved,
+  transactionToReview: state.exit.transaction,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
   tokensPriceTask: state.global.tokensPriceTask,
@@ -247,25 +218,13 @@ const getHeaderCloseAction = (accountIndex: string | null) => {
   return accountIndex === null ? push("/") : push(`/accounts/${accountIndex}`);
 };
 
-const getHeader = (step: transferActions.Step, accountIndex: string | null): Header => {
+const getHeader = (step: exitActions.Step, accountIndex: string | null): Header => {
   switch (step) {
-    case "choose-account": {
-      return {
-        type: "page",
-        data: {
-          title: "Token",
-          closeAction: getHeaderCloseAction(accountIndex),
-        },
-      };
-    }
     case "build-transaction": {
       return {
         type: "page",
         data: {
-          title: "Send",
-          goBackAction: accountIndex
-            ? push(`/accounts/${accountIndex}`)
-            : transferActions.changeCurrentStep("choose-account"),
+          title: "Withdraw",
           closeAction: getHeaderCloseAction(accountIndex),
         },
       };
@@ -274,8 +233,8 @@ const getHeader = (step: transferActions.Step, accountIndex: string | null): Hea
       return {
         type: "page",
         data: {
-          title: "Send",
-          goBackAction: transferActions.changeCurrentStep("build-transaction"),
+          title: "Withdraw",
+          goBackAction: exitActions.changeCurrentStep("build-transaction"),
           closeAction: getHeaderCloseAction(accountIndex),
         },
       };
@@ -286,8 +245,8 @@ const getHeader = (step: transferActions.Step, accountIndex: string | null): Hea
   }
 };
 
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  onChangeHeader: (step: transferActions.Step, accountIndex: string | null) =>
+const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlerProps => ({
+  onChangeHeader: (step: exitActions.Step, accountIndex: string | null) =>
     dispatch(changeHeader(getHeader(step, accountIndex))),
   onLoadHermezAccount: (
     accountIndex: string,
@@ -296,32 +255,26 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
     preferredCurrency: string
   ) =>
     dispatch(
-      transferThunks.fetchHermezAccount(
+      exitThunks.fetchHermezAccount(
         accountIndex,
         poolTransactions,
         fiatExchangeRates,
         preferredCurrency
       )
     ),
-  onLoadFees: () => dispatch(transferThunks.fetchFees()),
-  onLoadPoolTransactions: () => dispatch(transferThunks.fetchPoolTransactions()),
-  onLoadAccounts: (
-    fromItem: number | undefined,
-    poolTransactions: PoolTransaction[],
-    fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string
-  ) =>
-    dispatch(
-      transferThunks.fetchAccounts(fromItem, poolTransactions, fiatExchangeRates, preferredCurrency)
-    ),
-  onGoToChooseAccountStep: () => dispatch(transferActions.goToChooseAccountStep()),
+  onLoadFees: () => dispatch(exitThunks.fetchFees()),
+  onLoadEstimatedWithdrawFee: (token: Token, amount: BigNumber) => {
+    void dispatch(exitThunks.fetchEstimatedWithdrawFee(token, amount));
+  },
+  onLoadPoolTransactions: () => dispatch(exitThunks.fetchPoolTransactions()),
+  onGoToHome: () => dispatch(push("/")),
   onGoToBuildTransactionStep: (account: Account) =>
-    dispatch(transferActions.goToBuildTransactionStep(account)),
-  onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) =>
-    dispatch(transferActions.goToReviewTransactionStep(transactionToReview)),
-  onTransfer: (amount: BigNumber, from: Account, to: Partial<Account>, fee: number) =>
-    dispatch(transferThunks.transfer(amount, from, to, fee)),
-  onCleanup: () => dispatch(transferActions.resetState()),
+    dispatch(exitActions.goToBuildTransactionStep(account)),
+  onGoToTransactionOverviewStep: (transactionToReview: exitActions.TransactionToReview) =>
+    dispatch(exitActions.goToReviewTransactionStep(transactionToReview)),
+  onExit: (amount: BigNumber, from: Account, fee: number) =>
+    dispatch(exitThunks.exit(amount, from, fee)),
+  onCleanup: () => dispatch(exitActions.resetState()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Transfer);
+export default connect(mapStateToProps, mapDispatchToProps)(Exit);

@@ -8,7 +8,7 @@ import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import * as homeActions from "src/store/home/home.actions";
 // domain
-import { PooledTransaction, Deposit, FiatExchangeRates, Account } from "src/domain/hermez";
+import { PoolTransaction, PendingDeposit, FiatExchangeRates, Account } from "src/domain/hermez";
 import { Accounts } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
@@ -19,8 +19,8 @@ let refreshCancelTokenSource = axios.CancelToken.source();
  */
 function fetchTotalBalance(
   hermezEthereumAddress: string,
-  poolTransactions: PooledTransaction[],
-  pendingDeposits: Deposit[],
+  poolTransactions: PoolTransaction[],
+  pendingDeposits: PendingDeposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
@@ -88,8 +88,8 @@ function fetchTotalBalance(
 function fetchAccounts(
   hermezAddress: string,
   fromItem: number,
-  poolTransactions: PooledTransaction[],
-  pendingDeposits: Deposit[],
+  poolTransactions: PoolTransaction[],
+  pendingDeposits: PendingDeposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
@@ -144,8 +144,8 @@ function fetchAccounts(
  */
 function refreshAccounts(
   hermezAddress: string,
-  poolTransactions: PooledTransaction[],
-  pendingDeposits: Deposit[],
+  poolTransactions: PoolTransaction[],
+  pendingDeposits: PendingDeposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {

@@ -26,14 +26,14 @@ import { getNextForgerUrls } from "src/utils/coordinator";
 import { ISOStringDate } from "src/domain/";
 import {
   CoordinatorState,
-  Withdraw,
-  DelayedWithdraw,
+  PendingWithdraw,
+  PendingDelayedWithdraw,
   FiatExchangeRates,
   HermezNetworkStatus,
   Exit,
-  Deposit,
-  Transaction,
-  PooledTransaction,
+  PendingDeposit,
+  HistoryTransaction,
+  PoolTransaction,
   Token,
 } from "src/domain/hermez";
 // persistence
@@ -157,7 +157,7 @@ function checkHermezStatus(): AppThunk {
  * @param {string} pendingWithdraw - The pendingWithdraw to add to the pool
  * @returns {void}
  */
-function addPendingWithdraw(pendingWithdraw: Withdraw): AppThunk {
+function addPendingWithdraw(pendingWithdraw: PendingWithdraw): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
@@ -200,10 +200,10 @@ function removePendingWithdraw(hash: string): AppThunk {
 
 /**
  * Adds a pendingWithdraw to the pendingDelayedWithdraw store
- * @param {DelayedWithdraw} pendingDelayedWithdraw - The pendingDelayedWithdraw to add to the store
+ * @param {PendingDelayedWithdraw} pendingDelayedWithdraw - The pendingDelayedWithdraw to add to the store
  * @returns {void}
  */
-function addPendingDelayedWithdraw(pendingDelayedWithdraw: DelayedWithdraw): AppThunk {
+function addPendingDelayedWithdraw(pendingDelayedWithdraw: PendingDelayedWithdraw): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
@@ -358,7 +358,7 @@ function checkPendingDelayedWithdrawals(): AppThunk {
         const accountEthBalance = await provider.getBalance(
           Addresses.getEthereumAddress(hermezEthereumAddress)
         );
-        const accountPendingDelayedWithdraws: DelayedWithdraw[] =
+        const accountPendingDelayedWithdraws: PendingDelayedWithdraw[] =
           storage.getPendingDelayedWithdrawsByHermezAddress(
             pendingDelayedWithdraws,
             chainId,
@@ -463,11 +463,12 @@ function checkPendingWithdrawals(): AppThunk {
           Addresses.getEthereumAddress(hermezEthereumAddress)
         );
 
-        const accountPendingWithdraws: Withdraw[] = storage.getPendingWithdrawsByHermezAddress(
-          pendingWithdraws,
-          chainId,
-          hermezEthereumAddress
-        );
+        const accountPendingWithdraws: PendingWithdraw[] =
+          storage.getPendingWithdrawsByHermezAddress(
+            pendingWithdraws,
+            chainId,
+            hermezEthereumAddress
+          );
         // Gets the actual transaction and checks if it doesn't exist or is expected to fail
         const pendingWithdrawsTxs: Promise<TransactionResponse>[] = accountPendingWithdraws.map(
           (pendingWithdraw) => {
@@ -528,10 +529,10 @@ function checkPendingWithdrawals(): AppThunk {
 
 /**
  * Adds a pendingDeposit to the pendingDeposits store
- * @param {Deposit} pendingDeposit - The pendingDeposit to add to the store
+ * @param {PendingDeposit} pendingDeposit - The pendingDeposit to add to the store
  * @returns {void}
  */
-function addPendingDeposit(pendingDeposit: Deposit): AppThunk {
+function addPendingDeposit(pendingDeposit: PendingDeposit): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
@@ -652,7 +653,7 @@ function checkPendingDeposits(): AppThunk {
         const accountEthBalance = await provider.getBalance(
           Addresses.getEthereumAddress(hermezEthereumAddress)
         );
-        const accountPendingDeposits: Deposit[] = storage.getPendingDepositsByHermezAddress(
+        const accountPendingDeposits: PendingDeposit[] = storage.getPendingDepositsByHermezAddress(
           pendingDeposits,
           chainId,
           hermezEthereumAddress
@@ -688,7 +689,7 @@ function checkPendingDeposits(): AppThunk {
                     txReceipt.status === 1 && txReceipt.logs && txReceipt.logs.length > 0
                 );
                 const transactionHistoryPromises = successfulTxReceipts.reduce(
-                  (accL2Transactions: Promise<Transaction>[], txReceipt) => {
+                  (accL2Transactions: Promise<HistoryTransaction>[], txReceipt) => {
                     // Need to parse logs, but only events from the Hermez SC. Ignore errors when trying to parse others
                     const parsedLogs = [];
                     for (const txReceiptLog of txReceipt.logs) {
@@ -756,7 +757,7 @@ function checkPendingTransactions(): AppThunk {
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
 
       hermezjs.TxPool.getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((poolTransactions: PooledTransaction[]) => {
+        .then((poolTransactions: PoolTransaction[]) => {
           const tenMinutesInMs = 10 * 60 * 1000;
           const oneDayInMs = 24 * 60 * 60 * 1000;
           const resendTransactionsRequests = poolTransactions
@@ -771,7 +772,7 @@ function checkPendingTransactions(): AppThunk {
                 txTimestampInMs + oneDayInMs > nowInMs
               );
             })
-            .map((transaction: PooledTransaction) => {
+            .map((transaction: PoolTransaction) => {
               const txData = {
                 type: transaction.type,
                 from: transaction.fromAccountIndex,
