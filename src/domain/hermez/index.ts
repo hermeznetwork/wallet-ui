@@ -17,7 +17,7 @@ export type {
   ISOStringDate,
   MerkleProof,
   NextForger,
-  PooledTransaction,
+  PoolTransaction,
   RecommendedFee,
   Signers,
   Token,

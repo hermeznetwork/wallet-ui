@@ -99,7 +99,7 @@ declare module "@hermeznetwork/*" {
     // token: Token;
   };
 
-  export type PooledTransaction = HermezApiResourceItem & {
+  export type PoolTransaction = HermezApiResourceItem & {
     amount: string;
     errorCode: number | null;
     fee: number;
@@ -415,7 +415,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-fees" {
 
 // TxPool
 declare module "@hermeznetwork/hermezjs/src/tx-pool" {
-  import { PooledTransaction } from "@hermeznetwork/hermezjs";
+  import { PoolTransaction } from "@hermeznetwork/hermezjs";
   import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 
   declare function initializeTransactionPool() {};
@@ -430,7 +430,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-pool" {
     order?: PaginationOrder,
     limit?: number,
     axiosConfig?: Record<string, unknown>
-  ): Promise<PooledTransaction[]> {};
+  ): Promise<PoolTransaction[]> {};
 
   // declare function addPoolTransaction() {};
   // declare function removePoolTransaction() {};
@@ -447,7 +447,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     HistoryTransactions,
     CoordinatorState,
     Token,
-    PooledTransaction,
+    PoolTransaction,
   } from "@hermeznetwork/hermezjs";
 
   export type PaginationOrder = "ASC" | "DESC";
@@ -486,7 +486,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   declare function getPoolTransaction(
     transactionId: string,
     axiosConfig?: Record<string, unknown>
-  ): Promise<PooledTransaction> {};
+  ): Promise<PoolTransaction> {};
 
   // declare function postPoolTransaction() {};
   // declare function postAtomicGroup() {};

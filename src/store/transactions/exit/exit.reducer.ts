@@ -6,12 +6,12 @@ import {
 } from "src/store/transactions/exit/exit.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PooledTransaction, Account, RecommendedFee } from "src/domain/hermez";
+import { PoolTransaction, Account, RecommendedFee } from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
 
 export interface ExitState {
   step: Step;
-  poolTransactionsTask: AsyncTask<PooledTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   accountTask: AsyncTask<Account, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;

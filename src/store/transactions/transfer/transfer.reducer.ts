@@ -7,7 +7,7 @@ import {
 import { getPaginationData, Pagination } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PooledTransaction, Account, RecommendedFee } from "src/domain/hermez";
+import { PoolTransaction, Account, RecommendedFee } from "src/domain/hermez";
 
 export interface AccountsWithPagination {
   accounts: Account[];
@@ -16,7 +16,7 @@ export interface AccountsWithPagination {
 
 export interface TransferState {
   step: Step;
-  pooledTransactionsTask: AsyncTask<PooledTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   accountTask: AsyncTask<Account, string>;
   accountsTask: AsyncTask<AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
@@ -26,7 +26,7 @@ export interface TransferState {
 
 const initialTransferState: TransferState = {
   step: "load-account",
-  pooledTransactionsTask: {
+  poolTransactionsTask: {
     status: "pending",
   },
   accountTask: {
@@ -76,33 +76,33 @@ function transferReducer(
         step: action.nextStep,
       };
     }
-    case TransferActionTypes.LOAD_POOLED_TRANSACTIONS: {
+    case TransferActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
-        pooledTransactionsTask:
-          state.pooledTransactionsTask.status === "successful"
+        poolTransactionsTask:
+          state.poolTransactionsTask.status === "successful"
             ? {
                 status: "reloading",
-                data: state.pooledTransactionsTask.data,
+                data: state.poolTransactionsTask.data,
               }
             : {
                 status: "loading",
               },
       };
     }
-    case TransferActionTypes.LOAD_POOLED_TRANSACTIONS_SUCCESS: {
+    case TransferActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
       return {
         ...state,
-        pooledTransactionsTask: {
+        poolTransactionsTask: {
           status: "successful",
           data: action.transactions,
         },
       };
     }
-    case TransferActionTypes.LOAD_POOLED_TRANSACTIONS_FAILURE: {
+    case TransferActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
       return {
         ...state,
-        pooledTransactionsTask: {
+        poolTransactionsTask: {
           status: "failed",
           error: action.error,
         },

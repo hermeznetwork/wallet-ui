@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { Account, PooledTransaction, RecommendedFee } from "src/domain/hermez";
+import { Account, PoolTransaction, RecommendedFee } from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
 
 export enum ExitActionTypes {
@@ -97,7 +97,7 @@ export interface LoadPoolTransactions {
 
 export interface LoadPoolTransactionsSuccess {
   type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PooledTransaction[];
+  transactions: PoolTransaction[];
 }
 
 export interface LoadPoolTransactionsFailure {
@@ -226,9 +226,7 @@ function loadPoolTransactions(): LoadPoolTransactions {
   };
 }
 
-function loadPoolTransactionsSuccess(
-  transactions: PooledTransaction[]
-): LoadPoolTransactionsSuccess {
+function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
   return {
     type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
     transactions,

@@ -22,13 +22,13 @@ import {
   Account,
   HermezWallet,
   FiatExchangeRates,
-  PooledTransaction,
+  PoolTransaction,
   Token,
   RecommendedFee,
 } from "src/domain/hermez";
 
 interface TransferStateProps {
-  pooledTransactionsTask: AsyncTask<PooledTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: transferActions.Step;
   accountTask: AsyncTask<Account, string>;
   accountsTask: AsyncTask<transferReducer.AccountsWithPagination, Error>;
@@ -45,15 +45,15 @@ interface TransferHandlerProps {
   onChangeHeader: (step: transferActions.Step, accountIndex: string | null) => void;
   onLoadHermezAccount: (
     accountIndex: string,
-    pooledTransactions: PooledTransaction[],
+    poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) => void;
   onLoadFees: () => void;
-  onLoadPooledTransactions: () => void;
+  onLoadPoolTransactions: () => void;
   onLoadAccounts: (
     fromItem: number | undefined,
-    pooledTransactions: PooledTransaction[],
+    poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) => void;
@@ -67,7 +67,7 @@ interface TransferHandlerProps {
 type TransferProps = TransferStateProps & TransferHandlerProps;
 
 function Transfer({
-  pooledTransactionsTask,
+  poolTransactionsTask,
   step,
   accountTask,
   accountsTask,
@@ -81,7 +81,7 @@ function Transfer({
   onChangeHeader,
   onLoadHermezAccount,
   onLoadFees,
-  onLoadPooledTransactions,
+  onLoadPoolTransactions,
   onLoadAccounts,
   onGoToChooseAccountStep,
   onGoToBuildTransactionStep,
@@ -100,18 +100,18 @@ function Transfer({
   }, [step, accountIndex, onChangeHeader]);
 
   React.useEffect(() => {
-    onLoadPooledTransactions();
-  }, [onLoadPooledTransactions]);
+    onLoadPoolTransactions();
+  }, [onLoadPoolTransactions]);
 
   React.useEffect(() => {
     if (
-      pooledTransactionsTask.status === "successful" &&
+      poolTransactionsTask.status === "successful" &&
       fiatExchangeRatesTask.status === "successful"
     ) {
       if (accountIndex) {
         onLoadHermezAccount(
           accountIndex,
-          pooledTransactionsTask.data,
+          poolTransactionsTask.data,
           fiatExchangeRatesTask.data,
           preferredCurrency
         );
@@ -121,7 +121,7 @@ function Transfer({
     }
   }, [
     accountIndex,
-    pooledTransactionsTask,
+    poolTransactionsTask,
     fiatExchangeRatesTask,
     preferredCurrency,
     onGoToChooseAccountStep,
@@ -152,7 +152,7 @@ function Transfer({
               <AccountSelector
                 transactionType={TxType.Transfer}
                 accountsTask={accountsTask}
-                pooledTransactionsTask={pooledTransactionsTask}
+                poolTransactionsTask={poolTransactionsTask}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -230,7 +230,7 @@ function Transfer({
 }
 
 const mapStateToProps = (state: AppState): TransferStateProps => ({
-  pooledTransactionsTask: state.transfer.pooledTransactionsTask,
+  poolTransactionsTask: state.transfer.poolTransactionsTask,
   step: state.transfer.step,
   wallet: state.global.wallet,
   accountTask: state.transfer.accountTask,
@@ -291,33 +291,28 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
     dispatch(changeHeader(getHeader(step, accountIndex))),
   onLoadHermezAccount: (
     accountIndex: string,
-    pooledTransactions: PooledTransaction[],
+    poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) =>
     dispatch(
       transferThunks.fetchHermezAccount(
         accountIndex,
-        pooledTransactions,
+        poolTransactions,
         fiatExchangeRates,
         preferredCurrency
       )
     ),
   onLoadFees: () => dispatch(transferThunks.fetchFees()),
-  onLoadPooledTransactions: () => dispatch(transferThunks.fetchPoolTransactions()),
+  onLoadPoolTransactions: () => dispatch(transferThunks.fetchPoolTransactions()),
   onLoadAccounts: (
     fromItem: number | undefined,
-    pooledTransactions: PooledTransaction[],
+    poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) =>
     dispatch(
-      transferThunks.fetchAccounts(
-        fromItem,
-        pooledTransactions,
-        fiatExchangeRates,
-        preferredCurrency
-      )
+      transferThunks.fetchAccounts(fromItem, poolTransactions, fiatExchangeRates, preferredCurrency)
     ),
   onGoToChooseAccountStep: () => dispatch(transferActions.goToChooseAccountStep()),
   onGoToBuildTransactionStep: (account: Account) =>

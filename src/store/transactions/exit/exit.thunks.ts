@@ -13,7 +13,7 @@ import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
 // domain
-import { Account, FiatExchangeRates, PooledTransaction, Token } from "src/domain/hermez";
+import { Account, FiatExchangeRates, PoolTransaction, Token } from "src/domain/hermez";
 import { ETHER_TOKEN_ID } from "src/constants";
 
 /**
@@ -23,7 +23,7 @@ import { ETHER_TOKEN_ID } from "src/constants";
  */
 function fetchHermezAccount(
   accountIndex: string,
-  poolTransactions: PooledTransaction[],
+  poolTransactions: PoolTransaction[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {

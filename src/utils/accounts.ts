@@ -6,7 +6,7 @@ import { AsyncTask } from "src/utils/types";
 // domain
 import {
   Account,
-  PooledTransaction,
+  PoolTransaction,
   PendingDeposit,
   Token,
   FiatExchangeRates,
@@ -14,7 +14,7 @@ import {
 
 function getAccountBalance(
   account: Account,
-  poolTransactions?: PooledTransaction[],
+  poolTransactions?: PoolTransaction[],
   pendingDeposits?: PendingDeposit[]
 ): string {
   let totalBalance = BigNumber.from(account.balance);
@@ -59,7 +59,7 @@ function updateAccountToken(tokensPrice: AsyncTask<Token[], string>, account: Ac
 // TODO Study if this belongs to the domain model, as it's the function who creates a domain entity Account and move it there
 function createAccount(
   account: Account,
-  poolTransactions: PooledTransaction[] | undefined,
+  poolTransactions: PoolTransaction[] | undefined,
   pendingDeposits: PendingDeposit[] | undefined,
   tokensPriceTask: AsyncTask<Token[], string>,
   fiatExchangeRates: FiatExchangeRates,

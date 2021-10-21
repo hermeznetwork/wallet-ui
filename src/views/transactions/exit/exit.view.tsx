@@ -8,7 +8,7 @@ import {
   Account,
   FiatExchangeRates,
   HermezWallet,
-  PooledTransaction,
+  PoolTransaction,
   RecommendedFee,
   Token,
 } from "src/domain/hermez";
@@ -25,7 +25,7 @@ import TransactionOverview from "src/views/transactions/components/transaction-o
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 interface ExitStateProps {
-  poolTransactionsTask: AsyncTask<PooledTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: exitActions.Step;
   accountTask: AsyncTask<Account, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
@@ -42,7 +42,7 @@ interface ExitHandlerProps {
   onChangeHeader: (step: exitActions.Step, accountIndex: string | null) => void;
   onLoadHermezAccount: (
     accountIndex: string,
-    poolTransactions: PooledTransaction[],
+    poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) => void;
@@ -250,7 +250,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlerProps => ({
     dispatch(changeHeader(getHeader(step, accountIndex))),
   onLoadHermezAccount: (
     accountIndex: string,
-    poolTransactions: PooledTransaction[],
+    poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) =>
