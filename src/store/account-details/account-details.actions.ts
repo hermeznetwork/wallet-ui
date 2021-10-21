@@ -1,7 +1,7 @@
 // domain
 import { Account, PooledTransaction } from "src/domain/hermez";
 // persistence
-import { Transactions, Exits } from "src/persistence";
+import { HistoryTransactions, Exits } from "src/persistence";
 
 export enum AccountDetailsActionTypes {
   LOAD_ACCOUNT = "[ACCOUNT DETAILS] LOAD ACCOUNT",
@@ -70,7 +70,7 @@ export interface LoadHistoryTransactionsAction {
 
 export interface LoadHistoryTransactionsSuccessAction {
   type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS;
-  data: Transactions;
+  data: HistoryTransactions;
 }
 
 export interface LoadHistoryTransactionsFailureAction {
@@ -98,7 +98,7 @@ export interface RefreshHistoryTransactionsAction {
 
 export interface RefreshHistoryTransactionsSuccessAction {
   type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS;
-  historyTransactions: Transactions;
+  historyTransactions: HistoryTransactions;
 }
 
 export interface ResetStateAction {
@@ -191,7 +191,9 @@ function loadHistoryTransactions(): LoadHistoryTransactionsAction {
   };
 }
 
-function loadHistoryTransactionsSuccess(data: Transactions): LoadHistoryTransactionsSuccessAction {
+function loadHistoryTransactionsSuccess(
+  data: HistoryTransactions
+): LoadHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_SUCCESS,
     data,
@@ -232,7 +234,7 @@ function refreshHistoryTransactions(): RefreshHistoryTransactionsAction {
 }
 
 function refreshHistoryTransactionsSuccess(
-  historyTransactions: Transactions
+  historyTransactions: HistoryTransactions
 ): RefreshHistoryTransactionsSuccessAction {
   return {
     type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS,

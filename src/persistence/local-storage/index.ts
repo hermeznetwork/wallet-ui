@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import * as constants from "src/constants";
 // domain
-import { Withdraw, DelayedWithdraw, Deposit } from "src/domain/hermez";
+import { PendingDeposit, PendingWithdraw, PendingDelayedWithdraw } from "src/domain/hermez";
 // persistence
 import * as parsers from "src/persistence/parsers";
 import {
@@ -84,7 +84,7 @@ export function setPreferredCurrency(preferredCurrency: string): void {
 // Pending Withdraws
 
 const pendingWithdrawsParser: z.ZodSchema<PendingWithdraws> = z.record(
-  z.record(z.array(parsers.withdraw))
+  z.record(z.array(parsers.pendingWithdraw))
 );
 
 export function getPendingWithdraws(): PendingWithdraws {
@@ -96,11 +96,11 @@ export function getPendingWithdraws(): PendingWithdraws {
 export function addPendingWithdraw(
   chainId: number,
   hermezEthereumAddress: string,
-  pendingWithdraw: Withdraw
+  pendingWithdraw: PendingWithdraw
 ): PendingWithdraws {
   const pendingWithdraws = getPendingWithdraws();
   const chainPendingWithdraws: ChainPendingWithdraws = pendingWithdraws[chainId] || {};
-  const withdraws: Withdraw[] = chainPendingWithdraws[hermezEthereumAddress] || [];
+  const withdraws: PendingWithdraw[] = chainPendingWithdraws[hermezEthereumAddress] || [];
   const newStorage: PendingWithdraws = {
     ...pendingWithdraws,
     [chainId]: {
@@ -119,7 +119,7 @@ export function removePendingWithdrawByHash(
 ): PendingWithdraws {
   const pendingWithdraws = getPendingWithdraws();
   const chainPendingWithdraws: ChainPendingWithdraws = pendingWithdraws[chainId] || {};
-  const withdraws: Withdraw[] = chainPendingWithdraws[hermezEthereumAddress] || [];
+  const withdraws: PendingWithdraw[] = chainPendingWithdraws[hermezEthereumAddress] || [];
   const newStorage: PendingWithdraws = {
     ...pendingWithdraws,
     [chainId]: {
@@ -134,7 +134,7 @@ export function removePendingWithdrawByHash(
 // Pending Delayed Withdraws
 
 const pendingDelayedWithdrawsParser: z.ZodSchema<PendingDelayedWithdraws> = z.record(
-  z.record(z.array(parsers.delayedWithdraw))
+  z.record(z.array(parsers.pendingDelayedWithdraw))
 );
 
 export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
@@ -147,12 +147,12 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
 export function addPendingDelayedWithdraw(
   chainId: number,
   hermezEthereumAddress: string,
-  pendingDelayedWithdraw: DelayedWithdraw
+  pendingDelayedWithdraw: PendingDelayedWithdraw
 ): PendingDelayedWithdraws {
   const pendingDelayedWithdraws = getPendingDelayedWithdraws();
   const chainPendingDelayedWithdraws: ChainPendingDelayedWithdraws =
     pendingDelayedWithdraws[chainId] || {};
-  const delayedWithdraws: DelayedWithdraw[] =
+  const delayedWithdraws: PendingDelayedWithdraw[] =
     chainPendingDelayedWithdraws[hermezEthereumAddress] || [];
   const newStorage: PendingDelayedWithdraws = {
     ...pendingDelayedWithdraws,
@@ -169,12 +169,12 @@ export function updatePendingDelayedWithdrawByHash(
   chainId: number,
   hermezEthereumAddress: string,
   hash: string,
-  partialDelayedWithdraw: Partial<DelayedWithdraw>
+  partialDelayedWithdraw: Partial<PendingDelayedWithdraw>
 ): PendingDelayedWithdraws {
   const pendingDelayedWithdraws = getPendingDelayedWithdraws();
   const chainPendingDelayedWithdraws: ChainPendingDelayedWithdraws =
     pendingDelayedWithdraws[chainId] || {};
-  const delayedWithdraws: DelayedWithdraw[] =
+  const delayedWithdraws: PendingDelayedWithdraw[] =
     chainPendingDelayedWithdraws[hermezEthereumAddress] || [];
   const newStorage: PendingDelayedWithdraws = {
     ...pendingDelayedWithdraws,
@@ -197,7 +197,7 @@ export function removePendingDelayedWithdrawById(
   const pendingDelayedWithdraws = getPendingDelayedWithdraws();
   const chainPendingDelayedWithdraws: ChainPendingDelayedWithdraws =
     pendingDelayedWithdraws[chainId] || {};
-  const delayedWithdraws: DelayedWithdraw[] =
+  const delayedWithdraws: PendingDelayedWithdraw[] =
     chainPendingDelayedWithdraws[hermezEthereumAddress] || [];
   const newStorage: PendingDelayedWithdraws = {
     ...pendingDelayedWithdraws,
@@ -218,7 +218,7 @@ export function removePendingDelayedWithdrawByHash(
   const pendingDelayedWithdraws = getPendingDelayedWithdraws();
   const chainPendingDelayedWithdraws: ChainPendingDelayedWithdraws =
     pendingDelayedWithdraws[chainId] || {};
-  const delayedWithdraws: DelayedWithdraw[] =
+  const delayedWithdraws: PendingDelayedWithdraw[] =
     chainPendingDelayedWithdraws[hermezEthereumAddress] || [];
   const newStorage: PendingDelayedWithdraws = {
     ...pendingDelayedWithdraws,
@@ -234,7 +234,7 @@ export function removePendingDelayedWithdrawByHash(
 // Pending Deposits
 
 const pendingDepositsParser: z.ZodSchema<PendingDeposits> = z.record(
-  z.record(z.array(parsers.deposit))
+  z.record(z.array(parsers.pendingDeposit))
 );
 
 export function getPendingDeposits(): PendingDeposits {
@@ -246,11 +246,11 @@ export function getPendingDeposits(): PendingDeposits {
 export function addPendingDeposit(
   chainId: number,
   hermezEthereumAddress: string,
-  pendingDeposit: Deposit
+  pendingDeposit: PendingDeposit
 ): PendingDeposits {
   const pendingDeposits = getPendingDeposits();
   const chainPendingDeposits: ChainPendingDeposits = pendingDeposits[chainId] || {};
-  const deposits: Deposit[] = chainPendingDeposits[hermezEthereumAddress] || [];
+  const deposits: PendingDeposit[] = chainPendingDeposits[hermezEthereumAddress] || [];
   const newStorage: PendingDeposits = {
     ...pendingDeposits,
     [chainId]: {
@@ -266,11 +266,11 @@ export function updatePendingDepositByHash(
   chainId: number,
   hermezEthereumAddress: string,
   hash: string,
-  partialPendingDeposit: Partial<Deposit>
+  partialPendingDeposit: Partial<PendingDeposit>
 ): PendingDeposits {
   const pendingDeposits = getPendingDeposits();
   const chainPendingDeposits: ChainPendingDeposits = pendingDeposits[chainId] || {};
-  const deposits: Deposit[] = chainPendingDeposits[hermezEthereumAddress] || [];
+  const deposits: PendingDeposit[] = chainPendingDeposits[hermezEthereumAddress] || [];
   const newStorage: PendingDeposits = {
     ...pendingDeposits,
     [chainId]: {
@@ -291,7 +291,7 @@ export function removePendingDepositByTransactionId(
 ): PendingDeposits {
   const pendingDeposits = getPendingDeposits();
   const chainPendingDeposits: ChainPendingDeposits = pendingDeposits[chainId] || {};
-  const deposits: Deposit[] = chainPendingDeposits[hermezEthereumAddress] || [];
+  const deposits: PendingDeposit[] = chainPendingDeposits[hermezEthereumAddress] || [];
   const newStorage: PendingDeposits = {
     ...pendingDeposits,
     [chainId]: {
@@ -312,7 +312,7 @@ export function removePendingDepositByHash(
 ): PendingDeposits {
   const pendingDeposits = getPendingDeposits();
   const chainPendingDeposits: ChainPendingDeposits = pendingDeposits[chainId] || {};
-  const deposits: Deposit[] = chainPendingDeposits[hermezEthereumAddress] || [];
+  const deposits: PendingDeposit[] = chainPendingDeposits[hermezEthereumAddress] || [];
   const newStorage: PendingDeposits = {
     ...pendingDeposits,
     [chainId]: {

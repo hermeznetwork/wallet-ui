@@ -1,54 +1,100 @@
+// Be careful with Zod parsers! TS will not complain when props present in the parser
+// are not present in the interface: https://github.com/colinhacks/zod/issues/652
+// Also, some modifiers as "optional" can be missing in the parser with no compile errors.
+
 import { z } from "zod";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 // domain
-import { Withdraw, DelayedWithdraw, Deposit, Account, Token } from "src/domain/hermez";
+import {
+  Account,
+  HermezApiResourceItem,
+  HistoryTransaction,
+  MerkleProof,
+  PendingDelayedWithdraw,
+  PendingDeposit,
+  PendingWithdraw,
+  Token,
+} from "src/domain/hermez";
 
-const withdraw: z.ZodSchema<Withdraw> = z.object({
-  accountIndex: z.string(),
-  batchNum: z.number(),
-  hash: z.string(),
-  id: z.string(),
-  timestamp: z.string(),
+const hermezApiResourceItem: z.ZodSchema<HermezApiResourceItem> = z.object({
+  itemId: z.number(),
 });
 
-const delayedWithdraw: z.ZodSchema<DelayedWithdraw> = withdraw.and(
+const token: z.ZodSchema<Token> = hermezApiResourceItem.and(
   z.object({
-    instant: z.boolean(),
+    decimals: z.number(),
+    ethereumAddress: z.string(),
+    ethereumBlockNum: z.number(),
+    id: z.number(),
+    name: z.string(),
+    symbol: z.string(),
+    USD: z.number(),
   })
 );
 
-const token: z.ZodSchema<Token> = z.object({
-  itemId: z.number(),
-  decimals: z.number(),
-  ethereumAddress: z.string(),
-  ethereumBlockNum: z.number(),
-  id: z.number(),
-  name: z.string(),
-  symbol: z.string(),
-  USD: z.number(),
+const account: z.ZodSchema<Account> = hermezApiResourceItem.and(
+  z.object({
+    accountIndex: z.string(),
+    balance: z.string(),
+    bjj: z.string(),
+    hezEthereumAddress: z.string(),
+    token: token,
+  })
+);
+
+const historyTransaction: z.ZodSchema<HistoryTransaction> = hermezApiResourceItem.and(
+  z.object({
+    batchNum: z.number(),
+    fromAccountIndex: z.string(),
+    fromHezEthereumAddress: z.string(),
+    id: z.string(),
+    toHezEthereumAddress: z.string().nullable(),
+    type: z.nativeEnum(TxType),
+  })
+);
+
+const pendingDeposit: z.ZodSchema<PendingDeposit> = hermezApiResourceItem.and(
+  z.object({
+    account,
+    amount: z.string(),
+    fromHezEthereumAddress: z.string(),
+    hash: z.string(),
+    state: z.nativeEnum(TxState),
+    timestamp: z.string(),
+    toHezEthereumAddress: z.string(),
+    token,
+    type: z.enum([TxType.Deposit, TxType.CreateAccountDeposit]),
+  })
+);
+
+const pendingWithdraw: z.ZodSchema<PendingWithdraw> = hermezApiResourceItem.and(
+  z.object({
+    accountIndex: z.string(),
+    batchNum: z.number(),
+    hash: z.string(),
+    id: z.string(),
+    timestamp: z.string(),
+  })
+);
+
+const merkleProof: z.ZodSchema<MerkleProof> = z.object({
+  root: z.string(),
+  siblings: z.string().array(),
 });
 
-// ToDo: Investigate why TS does not complain when props present in the parser are not in the interface: https://github.com/colinhacks/zod/issues/652
-//       Also, fiatBalance is optional in the type, but we can remove the .optional() below with no errors
-const account: z.ZodSchema<Account> = z.object({
-  itemId: z.number(),
-  accountIndex: z.string(),
-  balance: z.string(),
-  bjj: z.string(),
-  hezEthereumAddress: z.string(),
-  token: token,
-  fiatBalance: z.number().optional(),
-});
+const pendingDelayedWithdraw: z.ZodSchema<PendingDelayedWithdraw> = pendingWithdraw.and(
+  z.object({
+    instant: z.boolean(),
+    merkleProof,
+  })
+);
 
-const deposit: z.ZodSchema<Deposit> = z.object({
-  account: account,
-  hash: z.string(),
-  token: token,
-  amount: z.string(),
-  timestamp: z.string(),
-  type: z.union([z.literal(TxType.Deposit), z.literal(TxType.CreateAccountDeposit)]),
-  transactionId: z.string().optional(),
-});
-
-export { withdraw, delayedWithdraw, token, account, deposit };
+export {
+  token,
+  account,
+  historyTransaction,
+  pendingDeposit,
+  pendingWithdraw,
+  pendingDelayedWithdraw,
+};

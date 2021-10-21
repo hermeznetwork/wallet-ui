@@ -8,9 +8,7 @@
  * properties and types will likely be required. We can uncomment them as
  * required and finally remove all those not required.
  */
-
 declare module "@hermeznetwork/*" {
-  import { BigNumber } from "ethers";
   import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
   export type ISOStringDate = string;
@@ -20,8 +18,6 @@ declare module "@hermeznetwork/*" {
   }
 
   export type HermezNetworkStatus = "online" | "offline";
-
-  export * from "@hermeznetwork/hermezjs/src/signers";
 
   // ToDo: Consider explicitly setting the supported FIAT
   export type FiatExchangeRates = Record<string, number>;
@@ -38,61 +34,101 @@ declare module "@hermeznetwork/*" {
     name: string;
     symbol: string;
     USD: number;
+    // fiatUpdate: ISOStringDate;
   };
+
+  // interface L1Info {
+  //   amountSuccess: boolean;
+  //   depositAmount: string;
+  //   depositAmountSuccess: boolean;
+  //   ethereumBlockNum: number;
+  //   historicDepositAmountUSD: number;
+  //   toForgeL1TransactionsNum: number;
+  //   userOrigin: boolean;
+  // }
+
+  // interface L2Info {
+  //   fee: number;
+  //   historicFeeUSD: number;
+  //   nonce: number;
+  // }
 
   export interface MerkleProof {
     root: string;
-    siblings: BigNumber[];
-    // oldKey: string;
-    // oldValue: string;
+    siblings: string[];
+    // fnc: number;
     // isOld0: boolean;
     // key: string;
+    // oldKey: string;
+    // oldValue: string;
     // value: string;
-    // fnc: number;
   }
 
   export type Exit = HermezApiResourceItem & {
-    batchNum: number;
     accountIndex: string;
+    batchNum: number;
+    delayedWithdraw: unknown | null;
+    instantWithdraw: number | null;
+    // balance: string;
     // bjj: string;
+    // delayedWithdrawRequest: unknown | null;
+    // fee: number;
+    // hash: string;
     // hezEthereumAddress: string;
     // merkleProof: MerkleProof;
-    // balance: string;
-    instantWithdraw: number | null;
-    // delayedWithdrawRequest: unknown | null;
-    delayedWithdraw: unknown | null;
     // token: Token;
   };
 
-  export interface Withdraw {
-    accountIndex: string;
-    // amount: string;
+  export type HistoryTransaction = HermezApiResourceItem & {
     batchNum: number;
-    hash: string;
-    // hermezEthereumAddress: string;
+    fromAccountIndex: string;
+    fromHezEthereumAddress: string;
     id: string;
-    timestamp: ISOStringDate;
+    toHezEthereumAddress: string | null;
+    type: TxType;
+    // amount: string;
+    // fromBJJ: string;
+    // historicUSD: number | null;
+    // L1Info: L1Info | null;
+    // L1orL2: "L1" | "L2";
+    // L2Info: L2Info | null;
+    // position: number;
+    // timestamp: ISOStringDate;
+    // toAccountIndex: string;
+    // toBJJ: string | null;
     // token: Token;
-  }
-
-  export type DelayedWithdraw = Withdraw & {
-    // merkleProof: MerkleProof;
-    instant: boolean;
   };
 
-  export interface Deposit {
-    account: Account;
-    hash: string;
-    // fromHezEthereumAddress: string;
-    // toHezEthereumAddress: string;
-    token: Token;
+  export type PooledTransaction = HermezApiResourceItem & {
     amount: string;
+    errorCode: number | null;
+    fee: number;
+    fromAccountIndex: string;
+    fromBJJ: string;
+    fromHezEthereumAddress: string;
+    state: TxState;
     timestamp: ISOStringDate;
-    // ToDo: This states are yet to be validated
-    // state: "fged" | "fing" | "pend" | "invl";
-    // ToDo: Are there more deposit types??
-    type: TxType.Deposit | TxType.CreateAccountDeposit;
-  }
+    toAccountIndex: string;
+    toBJJ: string | null;
+    toHezEthereumAddress: string;
+    token: Token;
+    type: TxType;
+    // batchNum: number | null;
+    // errorType: string | null;
+    // id: string;
+    // info: string | null;
+    // maxNumBatch: number;
+    // nonce: number;
+    // requestAmount: unknown | null;
+    // requestFee: unknown | null;
+    // requestFromAccountIndex: unknown | null;
+    // requestNonce: unknown | null;
+    // requestToAccountIndex: unknown | null;
+    // requestToBJJ: unknown | null;
+    // requestToHezEthereumAddress: unknown | null;
+    // requestTokenId: unknown | null;
+    // signature: string;
+  };
 
   export type Account = HermezApiResourceItem & {
     accountIndex: string;
@@ -102,68 +138,6 @@ declare module "@hermeznetwork/*" {
     // nonce: number;
     token: Token;
   };
-
-  export type PooledTransaction = HermezApiResourceItem & {
-    amount: string;
-    errorCode: number | null;
-    errorType: string | null;
-    fee: number;
-    fromAccountIndex: string;
-    fromBJJ: string;
-    fromHezEthereumAddress: string;
-    id: string;
-    nonce: number;
-    signature: string;
-    state: TxState;
-    timestamp: ISOStringDate;
-    toAccountIndex: string;
-    toBJJ: string;
-    toHezEthereumAddress: string;
-    token: Token;
-    type: TxType;
-    // batchNum: number | null;
-    // info: string | null;
-    // maxNumBatch: number;
-    // requestAmount?: unknown;
-    // requestFee?: unknown;
-    // requestFromAccountIndex?: unknown;
-    // requestNonce?: unknown;
-    // requestToAccountIndex?: unknown;
-    // requestToBJJ?: unknown;
-    // requestToHezEthereumAddress?: unknown;
-    // requestTokenId?: unknown;
-  };
-
-  export type Transaction = HermezApiResourceItem & {
-    amount: string;
-    batchNum: number;
-    fee: number;
-    fromAccountIndex: string;
-    id: string;
-    state: TxState;
-    timestamp: ISOStringDate;
-    toAccountIndex: string;
-    toHezEthereumAddress: string | null;
-    token: Token;
-    type: TxType;
-    // accountIndex: string;
-    // balance: string;
-    // hash: string;
-    // historicUSD: number;
-    // L1Info: L1Info | null;
-    // L1orL2: "L1" | "L2";
-    // L2Info?: L2Info | null;
-  };
-
-  // interface L1Info {
-  //   depositAmount: number;
-  // }
-
-  // interface L2Info {
-  //   fee: number;
-  //   historicFeeUSD: number;
-  //   nonce: number;
-  // }
 
   // Coordinator State
   export interface CoordinatorState {
@@ -179,9 +153,9 @@ declare module "@hermeznetwork/*" {
   // interface Node {
   //   forgeDelay: number;
   //   poolLoad: number;
-  // }
+  // };
 
-  // interface CollectedFees {}
+  // interface CollectedFees {};
 
   // type LastBatch = HermezApiResourceItem & {
   //   batchNum: number;
@@ -198,7 +172,7 @@ declare module "@hermeznetwork/*" {
   //   forgeL1TransactionsNum: number;
   //   slotNum: number;
   //   forgedTransactions: number;
-  // }
+  // };
 
   type Coordinator = HermezApiResourceItem & {
     // bidderAddr: string;
@@ -237,7 +211,7 @@ declare module "@hermeznetwork/*" {
   //   wallets: number;
   //   avgTransactionFee: number;
   //   estimatedTimeToForgeL1: number;
-  // }
+  // };
 
   // interface Bucket {
   //   ceilUSD: string;
@@ -246,7 +220,7 @@ declare module "@hermeznetwork/*" {
   //   rateBlocks: string;
   //   rateWithdrawals: string;
   //   maxWithdrawals: string;
-  // }
+  // };
 
   // interface Rollup {
   //   ethereumBlockNum: number;
@@ -255,7 +229,7 @@ declare module "@hermeznetwork/*" {
   //   withdrawalDelay: number;
   //   buckets: Bucket[];
   //   safeMode: boolean;
-  // }
+  // };
 
   // interface Auction {
   //   ethereumBlockNum: number;
@@ -269,7 +243,7 @@ declare module "@hermeznetwork/*" {
   //   allocationRatio: number[];
   //   outbidding: number;
   //   slotDeadline: number;
-  // }
+  // };
 
   // interface WithdrawalDelayer {
   //   ethereumBlockNum: number;
@@ -278,7 +252,7 @@ declare module "@hermeznetwork/*" {
   //   withdrawalDelay: number;
   //   emergencyModeStartingBlock: number;
   //   emergencyMode: boolean;
-  // }
+  // };
 
   export interface RecommendedFee {
     existingAccount: number;
@@ -287,14 +261,16 @@ declare module "@hermeznetwork/*" {
   }
 
   // persistence
-  export interface Transactions {
-    transactions: Transaction[];
+  export interface HistoryTransactions {
+    transactions: HistoryTransaction[];
     pendingItems: number;
   }
+
   export interface Exits {
     exits: Exit[];
     pendingItems: number;
   }
+
   export interface Accounts {
     accounts: Account[];
     pendingItems: number;
@@ -321,7 +297,7 @@ declare module "@hermeznetwork/*" {
 
 // Wallet
 declare module "@hermeznetwork/hermezjs/src/hermez-wallet" {
-  import { SignerData } from "@hermeznetwork/hermezjs";
+  import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
   export declare class HermezWallet {
     constructor(privateKey: Buffer, hermezEthereumAddress: string);
     privateKey: Buffer;
@@ -331,7 +307,7 @@ declare module "@hermeznetwork/hermezjs/src/hermez-wallet" {
     // publicKey: string[];
     // publicKeyHex: string[];
     // publicKeyCompressed: string;
-    // signTransaction (transaction, encodedTransaction): Transaction;
+    // signTransaction (transaction, encodedTransaction): HistoryTransaction;
     signCreateAccountAuthorization(providerUrl?: string, signerData?: SignerData): Promise<string>;
   }
 
@@ -363,7 +339,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   // declare function isInstantWithdrawalAllowed() {};
   // declare function sendL2Transaction() {};
 
-  type Tx = {
+  interface Tx {
     type: TxType;
     from: string;
     to?: string;
@@ -371,13 +347,13 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     fee: number;
     nonce?: number;
     maxNumBatch?: number;
-  };
+  }
 
-  type SendL2TransactionResponse = {
+  interface SendL2TransactionResponse {
     status: number;
     id: string;
     nonce: number;
-  };
+  }
 
   declare function generateAndSendL2Tx(
     tx: Tx,
@@ -465,11 +441,13 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   import {
     Account,
     Accounts,
-    Transaction,
+    HistoryTransaction,
+    Exit,
     Exits,
-    Transactions,
+    HistoryTransactions,
     CoordinatorState,
     Token,
+    PooledTransaction,
   } from "@hermeznetwork/hermezjs";
 
   export type PaginationOrder = "ASC" | "DESC";
@@ -498,14 +476,18 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     order?: PaginationOrder,
     limit?: number,
     axiosConfig?: Record<string, unknown>
-  ): Promise<Transactions> {};
+  ): Promise<HistoryTransactions> {};
 
   declare function getHistoryTransaction(
     transactionId: string,
     axiosConfig?: Record<string, unknown>
-  ): Promise<Transaction> {};
+  ): Promise<HistoryTransaction> {};
 
-  // declare function getPoolTransaction() {};
+  declare function getPoolTransaction(
+    transactionId: string,
+    axiosConfig?: Record<string, unknown>
+  ): Promise<PooledTransaction> {};
+
   // declare function postPoolTransaction() {};
   // declare function postAtomicGroup() {};
 
@@ -551,7 +533,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   declare function getPoolTransactions(
     accountIndex: string,
     publicKeyCompressedHex: string
-  ): Promise<Transaction[]> {};
+  ): Promise<HistoryTransaction[]> {};
 
   // declare function getHealth() {};
 }
@@ -598,10 +580,10 @@ declare module "@hermeznetwork/hermezjs/src/constants" {
 
 // HermezCompressedAmount
 declare module "@hermeznetwork/hermezjs/src/hermez-compressed-amount" {
-  export type HermezCompressedAmount = {
+  export interface HermezCompressedAmount {
     type: "HermezCompressedAmount";
     value: number;
-  };
+  }
   declare function compressAmount(_f: string): HermezCompressedAmount;
 }
 
@@ -652,27 +634,27 @@ declare module "@hermeznetwork/hermezjs/src/signers" {
     WALLET = "WALLET",
   }
 
-  type JsonRpcSignerData = {
+  export interface JsonRpcSignerData {
     type: "JSON-RPC";
     addressOrIndex?: null | string | number;
-  };
+  }
 
-  type LedgerSignerData = {
+  export interface LedgerSignerData {
     type: "LEDGER";
     path?: string;
-  };
+  }
 
-  type TrezorSignerData = {
+  export interface TrezorSignerData {
     type: "TREZOR";
     path?: string;
     manifest: Manifest;
     address?: string;
-  };
+  }
 
-  type WalletSignerData = {
+  export interface WalletSignerData {
     type: "WALLET";
     privateKey: string;
-  };
+  }
 
   export type SignerData =
     | JsonRpcSignerData

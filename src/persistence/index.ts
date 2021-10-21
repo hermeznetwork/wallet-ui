@@ -8,7 +8,7 @@ import hermez from "@hermeznetwork/hermezjs";
 
 import { HttpStatusCode } from "src/utils/http";
 
-export type { Transactions, Exits, Accounts } from "@hermeznetwork/hermezjs";
+export type { HistoryTransactions, Exits, Accounts } from "@hermeznetwork/hermezjs";
 export interface PostCreateAccountAuthorizationError {
   message: string;
   code: number;

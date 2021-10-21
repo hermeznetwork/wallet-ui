@@ -6,9 +6,9 @@ import { EthereumNetwork } from "src/domain/ethereum";
 import {
   HermezStatus,
   HermezNetworkStatus,
-  Withdraw,
+  PendingWithdraw,
   HermezWallet,
-  SignerData,
+  Signers,
   FiatExchangeRates,
   CoordinatorState,
   Token,
@@ -31,7 +31,7 @@ export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   wallet: HermezWallet.HermezWallet | undefined;
-  signer: SignerData | undefined;
+  signer: Signers.SignerData | undefined;
   header: Header;
   redirectRoute: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
@@ -233,7 +233,7 @@ function globalReducer(
           [action.chainId]: {
             ...chainIdPendingWithdraws,
             [action.hermezEthereumAddress]: accountPendingWithdraws.filter(
-              (withdraw: Withdraw) => withdraw.hash !== action.hash
+              (withdraw: PendingWithdraw) => withdraw.hash !== action.hash
             ),
           },
         },
@@ -270,7 +270,7 @@ function globalReducer(
           [action.chainId]: {
             ...chainIdPendingDelayedWithdraws,
             [action.hermezEthereumAddress]: accountPendingDelayedWithdraws.filter(
-              (withdraw: Withdraw) => withdraw.id !== action.pendingDelayedWithdrawId
+              (withdraw: PendingWithdraw) => withdraw.id !== action.pendingDelayedWithdrawId
             ),
           },
         },
@@ -288,7 +288,7 @@ function globalReducer(
           [action.chainId]: {
             ...chainIdPendingDelayedWithdraws,
             [action.hermezEthereumAddress]: accountPendingDelayedWithdraws.filter(
-              (withdraw: Withdraw) => withdraw.hash !== action.pendingDelayedWithdrawHash
+              (withdraw: PendingWithdraw) => withdraw.hash !== action.pendingDelayedWithdrawHash
             ),
           },
         },

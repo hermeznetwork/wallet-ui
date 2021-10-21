@@ -6,26 +6,50 @@
 import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
-  NextForger,
   CoordinatorState,
-  DelayedWithdraw,
   Exit,
   FiatExchangeRates,
   HermezApiResourceItem,
   HermezNetworkStatus,
   HermezStatus,
-  Transaction,
-  PooledTransaction,
   HermezWallet,
+  HistoryTransaction,
   ISOStringDate,
   MerkleProof,
-  Token,
-  Withdraw,
-  SignerData,
-  SignerType,
-  JsonRpcSignerData,
+  NextForger,
+  PooledTransaction,
   RecommendedFee,
+  Signers,
+  Token,
 } from "@hermeznetwork/hermezjs";
 
 export type Account = hermezjs.Account & { fiatBalance?: number };
-export type Deposit = hermezjs.Deposit & { transactionId?: string };
+
+export interface PendingDeposit {
+  account: Account;
+  amount: string;
+  fromHezEthereumAddress: string;
+  hash: string;
+  state: hermezjs.Enums.TxState;
+  timestamp: hermezjs.ISOStringDate;
+  toHezEthereumAddress: string;
+  token: hermezjs.Token;
+  type: hermezjs.Enums.TxType.Deposit | hermezjs.Enums.TxType.CreateAccountDeposit;
+  transactionId?: string;
+}
+
+export interface PendingWithdraw {
+  accountIndex: string;
+  batchNum: number;
+  hash: string;
+  id: string;
+  timestamp: hermezjs.ISOStringDate;
+  // amount: string;
+  // hermezEthereumAddress: string;
+  // token: hermezjs.Token;
+}
+
+export type PendingDelayedWithdraw = PendingWithdraw & {
+  instant: boolean;
+  merkleProof: hermezjs.MerkleProof;
+};

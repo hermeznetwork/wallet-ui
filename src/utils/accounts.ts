@@ -4,12 +4,18 @@ import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { Account, PooledTransaction, Deposit, Token, FiatExchangeRates } from "src/domain/hermez";
+import {
+  Account,
+  PooledTransaction,
+  PendingDeposit,
+  Token,
+  FiatExchangeRates,
+} from "src/domain/hermez";
 
 function getAccountBalance(
   account: Account,
   poolTransactions?: PooledTransaction[],
-  pendingDeposits?: Deposit[]
+  pendingDeposits?: PendingDeposit[]
 ): string {
   let totalBalance = BigNumber.from(account.balance);
 
@@ -54,7 +60,7 @@ function updateAccountToken(tokensPrice: AsyncTask<Token[], string>, account: Ac
 function createAccount(
   account: Account,
   poolTransactions: PooledTransaction[] | undefined,
-  pendingDeposits: Deposit[] | undefined,
+  pendingDeposits: PendingDeposit[] | undefined,
   tokensPriceTask: AsyncTask<Token[], string>,
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string

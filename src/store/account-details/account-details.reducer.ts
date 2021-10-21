@@ -1,6 +1,6 @@
 import { Pagination } from "src/utils/api";
 // domain
-import { Account, Transaction, PooledTransaction } from "src/domain/hermez";
+import { Account, HistoryTransaction, PooledTransaction } from "src/domain/hermez";
 // persistence
 import { Exits } from "src/persistence";
 import {
@@ -11,7 +11,7 @@ import { getPaginationData } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";
 
 interface ViewHistoryTransactions {
-  transactions: Transaction[];
+  transactions: HistoryTransaction[];
   fromItemHistory: number[];
   pagination: Pagination;
 }
