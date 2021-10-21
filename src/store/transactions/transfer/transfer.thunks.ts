@@ -26,14 +26,10 @@ function fetchHermezAccount(
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
-      global: { wallet, tokensPriceTask },
+      global: { tokensPriceTask },
     } = getState();
 
     dispatch(transferActions.loadAccount());
-
-    if (!wallet) {
-      return dispatch(transferActions.loadAccountFailure("Ethereum wallet is not loaded"));
-    }
 
     return CoordinatorAPI.getAccount(accountIndex)
       .then((account) =>

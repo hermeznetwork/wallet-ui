@@ -1,3 +1,4 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { AppAction } from "src/store";
 /**
  * This namespace contains the abstract definition of the types that are used across the application.
@@ -28,3 +29,8 @@ export type Header =
       type: "main";
     }
   | PageHeader;
+
+export interface EstimatedWithdrawFee {
+  amount: BigNumber;
+  USD: number;
+}
