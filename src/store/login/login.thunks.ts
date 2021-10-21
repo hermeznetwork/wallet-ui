@@ -16,7 +16,7 @@ import * as globalActions from "src/store/global/global.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as loginActions from "src/store/login/login.actions";
 // domain
-import { SignerData, HermezWallet } from "src/domain/hermez";
+import { Signers, HermezWallet } from "src/domain/hermez";
 // persistence
 import * as persistence from "src/persistence";
 import { getAuthSignatures, setAuthSignatures } from "src/persistence/local-storage";
@@ -25,7 +25,7 @@ async function getSignerData(
   provider: Web3Provider,
   walletName: loginActions.WalletName,
   accountData: loginActions.AccountData
-): Promise<SignerData> {
+): Promise<Signers.SignerData> {
   switch (walletName) {
     case loginActions.WalletName.METAMASK:
     case loginActions.WalletName.WALLET_CONNECT: {
@@ -202,10 +202,7 @@ function fetchWallet(
 
       if (step.type === "wallet-loader") {
         dispatch(globalActions.loadWallet(wallet));
-        // ToDo: SignerData does not have the prop "address" on all its shapes. Why do we need to add the address?
-        //       For now I'm creating an IIFE to set the address where it makes sense, but we should confirm whether
-        //       this is necessary or not. Am I messing it up with the wrong types?
-        const signerDataWithAddress: SignerData = ((): SignerData => {
+        const signerDataWithAddress: Signers.SignerData = ((): Signers.SignerData => {
           switch (signerData.type) {
             case "JSON-RPC": {
               return { ...signerData, addressOrIndex: address };

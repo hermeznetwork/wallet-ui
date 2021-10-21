@@ -2,7 +2,7 @@
 import { EthereumNetwork } from "src/domain/ethereum";
 import {
   HermezWallet,
-  SignerData,
+  Signers,
   FiatExchangeRates,
   HermezNetworkStatus,
   PendingWithdraw,
@@ -87,7 +87,7 @@ export interface UnloadWallet {
 
 export interface SetSigner {
   type: GlobalActionTypes.SET_SIGNER;
-  signer: SignerData;
+  signer: Signers.SignerData;
 }
 
 export interface ChangeHeader {
@@ -332,7 +332,7 @@ function unloadWallet(): UnloadWallet {
   };
 }
 
-function setSigner(signer: SignerData): SetSigner {
+function setSigner(signer: Signers.SignerData): SetSigner {
   return {
     type: GlobalActionTypes.SET_SIGNER,
     signer,
