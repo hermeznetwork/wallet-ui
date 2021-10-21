@@ -341,9 +341,11 @@ declare module "@hermeznetwork/hermezjs/src/hermez-wallet" {
 
 // Utils
 declare module "@hermeznetwork/hermezjs/src/utils" {
+  import { BigNumberish } from "@ethersproject/bignumber";
+
   // declare function bufToHex() {};
   declare function hexToBuffer(hex: string): Buffer {};
-  // declare function getTokenAmountString() {};
+  declare function getTokenAmountString(amountBigInt: BigNumberish, decimals: number): string {};
   // declare function getTokenAmountBigInt() {};
   // declare function padZeros() {};
   // declare function extract() {};
@@ -401,12 +403,11 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
   // declare function getL2TxId() {};
   // declare function getFeeIndex() {};
 
-  // ToDo: amount is expected to be a ffjavascript Scalar, but since the functions in a Scalar convert
-  //       their inputs to BigInt's, amount can be a string | number | bigint | boolean
-  declare function getFeeValue(
-    feeIndex: number,
-    amount: string | number | bigint | boolean
-  ): bigint {};
+  // Amount is expected to be a ffjavascript Scalar, but since the functions in a Scalar convert
+  // their input to a BigInt, amount can be anything accepted by the BigInt() constructor,
+  // i.e. string | number | bigint | boolean
+  type BigIntConstructorValue = string | number | bigint | boolean;
+  declare function getFeeValue(feeIndex: number, amount: BigIntConstructorValue): bigint {};
   // declare function getMaxAmountFromMinimumFee() {};
   // declare function getTransactionType() {};
   // declare function getNonce() {};
