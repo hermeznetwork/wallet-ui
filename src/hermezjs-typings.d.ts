@@ -352,7 +352,7 @@ declare module "@hermeznetwork/hermezjs/src/utils" {
 
 // Tx
 declare module "@hermeznetwork/hermezjs/src/tx" {
-  import { Token, Wallet } from "@hermeznetwork/hermezjs";
+  import { Token, HermezWallet } from "@hermeznetwork/hermezjs";
   import { HermezCompressedAmount } from "@hermeznetwork/hermezjs/src/hermez-compressed-amount";
   import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
@@ -381,7 +381,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
 
   declare function generateAndSendL2Tx(
     tx: Tx,
-    wallet: Wallet,
+    wallet: HermezWallet.HermezWallet,
     token: Token,
     nextForgers: string[],
     addToTxPool?: boolean
@@ -421,8 +421,20 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
 
 // TxFees
 declare module "@hermeznetwork/hermezjs/src/tx-fees" {
+  import { Token, Signers } from "@hermeznetwork/hermezjs";
+  import { CallOverrides } from "ethers";
+
   // declare function estimateDepositGasLimit() {};
-  // declare function estimateWithdrawGasLimit() {};
+
+  declare function estimateWithdrawGasLimit(
+    token: Token,
+    estimatedMerkleSiblingsLength: number,
+    amount: BigNumber,
+    overrides: CallOverrides,
+    signerData?: Signers.SignerData,
+    providerUrl?: string,
+    isInstant?: boolean
+  ): Promise<number> {};
 }
 
 // TxPool
