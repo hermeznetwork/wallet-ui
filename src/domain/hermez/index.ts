@@ -21,6 +21,7 @@ export type {
   RecommendedFee,
   Signers,
   Token,
+  L1Info,
 } from "@hermeznetwork/hermezjs";
 
 export type Account = hermezjs.Account & { fiatBalance?: number };
@@ -40,13 +41,13 @@ export interface PendingDeposit {
 
 export interface PendingWithdraw {
   accountIndex: string;
+  amount: string;
   batchNum: number;
   hash: string;
   id: string;
   timestamp: hermezjs.ISOStringDate;
-  // amount: string;
+  token: hermezjs.Token;
   // hermezEthereumAddress: string;
-  // token: hermezjs.Token;
 }
 
 export type PendingDelayedWithdraw = PendingWithdraw & {

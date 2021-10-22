@@ -9,7 +9,14 @@
  * required and finally remove all those not required.
  */
 declare module "@hermeznetwork/*" {
+  import { BigNumber } from "big-integer";
   import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
+
+  // ffjavascript Scalar supports both native BigInt and bigInt from big-integer lib.
+  // Since all the functions in a Scalar convert their input to either BigInt or bigInt,
+  // ScalarValue is the intersection of the inputs supported by BigInt constructor and BigNumber.
+  type BigIntConstructorValue = string | number | bigint | boolean;
+  export type ScalarValue = BigIntConstructorValue & BigNumber;
 
   export type ISOStringDate = string;
 
@@ -37,15 +44,15 @@ declare module "@hermeznetwork/*" {
     // fiatUpdate: ISOStringDate;
   };
 
-  // interface L1Info {
-  //   amountSuccess: boolean;
-  //   depositAmount: string;
-  //   depositAmountSuccess: boolean;
-  //   ethereumBlockNum: number;
-  //   historicDepositAmountUSD: number;
-  //   toForgeL1TransactionsNum: number;
-  //   userOrigin: boolean;
-  // }
+  export interface L1Info {
+    // amountSuccess: boolean;
+    depositAmount: string;
+    // depositAmountSuccess: boolean;
+    // ethereumBlockNum: number;
+    // historicDepositAmountUSD: number;
+    // toForgeL1TransactionsNum: number;
+    // userOrigin: boolean;
+  }
 
   // interface L2Info {
   //   fee: number;
@@ -86,11 +93,11 @@ declare module "@hermeznetwork/*" {
     id: string;
     toHezEthereumAddress: string | null;
     type: TxType;
-    // amount: string;
+    amount: string;
     // fromBJJ: string;
     // historicUSD: number | null;
-    // L1Info: L1Info | null;
-    // L1orL2: "L1" | "L2";
+    L1Info: L1Info | null;
+    L1orL2: "L1" | "L2";
     // L2Info: L2Info | null;
     // position: number;
     // timestamp: ISOStringDate;
@@ -141,7 +148,7 @@ declare module "@hermeznetwork/*" {
 
   // Coordinator State
   export interface CoordinatorState {
-    // node: Node;
+    node: Node;
     network: Network;
     // metrics: Metrics;
     // rollup: Rollup;
@@ -150,29 +157,29 @@ declare module "@hermeznetwork/*" {
     recommendedFee: RecommendedFee;
   }
 
-  // interface Node {
-  //   forgeDelay: number;
-  //   poolLoad: number;
-  // };
+  interface Node {
+    forgeDelay: number;
+    poolLoad: number;
+  }
 
   // interface CollectedFees {};
 
-  // type LastBatch = HermezApiResourceItem & {
-  //   batchNum: number;
-  //   ethereumTxHash: string;
-  //   ethereumBlockNum: number;
-  //   ethereumBlockHash: string;
-  //   timestamp: ISOStringDate;
-  //   forgerAddr: string;
-  //   collectedFees: CollectedFees;
-  //   historicTotalCollectedFeesUSD: number;
-  //   stateRoot: string;
-  //   numAccounts: number;
-  //   exitRoot: string;
-  //   forgeL1TransactionsNum: number;
-  //   slotNum: number;
-  //   forgedTransactions: number;
-  // };
+  type LastBatch = HermezApiResourceItem & {
+    //   batchNum: number;
+    //   ethereumTxHash: string;
+    //   ethereumBlockNum: number;
+    //   ethereumBlockHash: string;
+    timestamp: ISOStringDate;
+    //   forgerAddr: string;
+    //   collectedFees: CollectedFees;
+    //   historicTotalCollectedFeesUSD: number;
+    //   stateRoot: string;
+    //   numAccounts: number;
+    //   exitRoot: string;
+    //   forgeL1TransactionsNum: number;
+    //   slotNum: number;
+    //   forgedTransactions: number;
+  };
 
   type Coordinator = HermezApiResourceItem & {
     // bidderAddr: string;
@@ -197,7 +204,7 @@ declare module "@hermeznetwork/*" {
   interface Network {
     // lastEthereumBlock: number;
     // lastSynchedBlock: number;
-    // lastBatch: LastBatch;
+    lastBatch: LastBatch;
     // currentSlot: number;
     nextForgers: NextForger[];
     // pendingL1Transactions: number;
@@ -372,6 +379,8 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
 
 // TxUtils
 declare module "@hermeznetwork/hermezjs/src/tx-utils" {
+  import { ScalarValue } from "@hermeznetwork/hermezjs";
+
   // declare function _encodeTransaction() {};
 
   declare function getL1UserTxId(toForgeL1TxsNum: number, currentPosition: number): string {};
@@ -379,12 +388,13 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
   // declare function getL2TxId() {};
   // declare function getFeeIndex() {};
 
-  // Amount is expected to be a ffjavascript Scalar, but since the functions in a Scalar convert
-  // their input to a BigInt, amount can be anything accepted by the BigInt() constructor,
-  // i.e. string | number | bigint | boolean
-  type BigIntConstructorValue = string | number | bigint | boolean;
-  declare function getFeeValue(feeIndex: number, amount: BigIntConstructorValue): bigint {};
-  // declare function getMaxAmountFromMinimumFee() {};
+  declare function getFeeValue(feeIndex: number, amount: ScalarValue): bigint {};
+
+  declare function getMaxAmountFromMinimumFee(
+    minimumFee: ScalarValue,
+    balance: ScalarValue
+  ): ScalarValue {};
+
   // declare function getTransactionType() {};
   // declare function getNonce() {};
   // declare function _buildTxCompressedData() {};
@@ -400,6 +410,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
 declare module "@hermeznetwork/hermezjs/src/tx-fees" {
   import { Token, Signers } from "@hermeznetwork/hermezjs";
   import { CallOverrides } from "ethers";
+  import { BigNumber } from "ethers";
 
   // declare function estimateDepositGasLimit() {};
 
@@ -581,11 +592,18 @@ declare module "@hermeznetwork/hermezjs/src/constants" {
 
 // HermezCompressedAmount
 declare module "@hermeznetwork/hermezjs/src/hermez-compressed-amount" {
-  export interface HermezCompressedAmount {
-    type: "HermezCompressedAmount";
-    value: number;
+  import { ScalarValue } from "@hermeznetwork/hermezjs";
+
+  const HERMEZ_COMPRESSED_AMOUNT_TYPE = "HermezCompressedAmount";
+  export default class HermezCompressedAmount {
+    constructor(value: number);
+    static type: typeof HERMEZ_COMPRESSED_AMOUNT_TYPE;
+    static value: number;
+    // static isHermezCompressedAmount(instance: HermezCompressedAmount): boolean;
+    static decompressAmount(hermezCompressedAmount: HermezCompressedAmount): ScalarValue;
+    static compressAmount(value: string): HermezCompressedAmount;
+    static floorCompressAmount(value: ScalarValue): HermezCompressedAmount;
   }
-  declare function compressAmount(_f: string): HermezCompressedAmount;
 }
 
 // Addresses
