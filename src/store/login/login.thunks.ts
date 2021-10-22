@@ -131,19 +131,24 @@ function fetchWallet(
 ): AppThunk {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
     try {
-      if (
-        walletName === loginActions.WalletName.LEDGER ||
-        walletName === loginActions.WalletName.TREZOR
-      ) {
-        hermez.Providers.setProvider(process.env.REACT_APP_HARDWARE_WALLETS_PROVIDER);
-      }
-
-      if (walletName === loginActions.WalletName.WALLET_CONNECT) {
-        const walletConnectProvider = new WalletConnectProvider({
-          infuraId: process.env.REACT_APP_INFURA_API_KEY,
-          bridge: process.env.REACT_APP_WALLETCONNECT_BRIDGE,
-        });
-        hermez.Providers.setProvider(walletConnectProvider, hermez.Providers.PROVIDER_TYPES.WEB3);
+      switch (walletName) {
+        case loginActions.WalletName.LEDGER:
+        case loginActions.WalletName.TREZOR: {
+          hermez.Providers.setProvider(process.env.REACT_APP_HARDWARE_WALLETS_PROVIDER);
+          break;
+        }
+        case loginActions.WalletName.WALLET_CONNECT: {
+          const walletConnectProvider = new WalletConnectProvider({
+            infuraId: process.env.REACT_APP_INFURA_API_KEY,
+            bridge: process.env.REACT_APP_WALLETCONNECT_BRIDGE,
+          });
+          hermez.Providers.setProvider(walletConnectProvider, hermez.Providers.PROVIDER_TYPES.WEB3);
+          break;
+        }
+        case loginActions.WalletName.METAMASK: {
+          hermez.Providers.setProvider();
+          break;
+        }
       }
 
       const provider = hermez.Providers.getProvider();
