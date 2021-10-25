@@ -730,9 +730,9 @@ declare module "@hermeznetwork/hermezjs/src/atomic-utils" {
 
 // HTTP
 declare module "@hermeznetwork/hermezjs/src/http" {
-  enum HttpStatusCode {
-    NOT_FOUND = 404,
-  }
+  const HttpStatusCode: {
+    NOT_FOUND: 404;
+  };
 
   // function extractJSON()
 }
