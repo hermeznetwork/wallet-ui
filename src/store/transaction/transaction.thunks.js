@@ -278,9 +278,9 @@ function fetchEstimatedWithdrawFee(token, amount) {
         global: { signer, tokensPriceTask },
       } = getState();
       const provider = getProvider();
-      const gasPrice = await provider.getGasPrice();
+      const { maxFeePerGas } = await provider.getFeeData();
       const estimatedMerkleSiblingsLength = 4;
-      const overrides = { gasPrice };
+      const overrides = { maxFeePerGas };
       const gasLimit = await TxFees.estimateWithdrawGasLimit(
         token,
         estimatedMerkleSiblingsLength,
@@ -288,7 +288,7 @@ function fetchEstimatedWithdrawFee(token, amount) {
         overrides,
         signer
       );
-      const feeBigNumber = BigNumber.from(gasLimit).mul(gasPrice);
+      const feeBigNumber = BigNumber.from(gasLimit).mul(maxFeePerGas);
       const tokenUSD = tokensPriceTask.data?.[ETHER_TOKEN_ID].USD;
       const feeUSD = Number(ethers.utils.formatEther(feeBigNumber)) * tokenUSD;
 
@@ -313,17 +313,18 @@ function fetchEstimatedDepositFee() {
         global: { signer, tokensPriceTask },
       } = getState();
       const provider = getProvider();
-      const gasPrice = await provider.getGasPrice();
+      const { maxFeePerGas } = await provider.getFeeData();
+
       if (tokensPriceTask.status === "successful") {
         const ethToken = tokensPriceTask.data.find((token) => token.id === ETHER_TOKEN_ID);
         if (ethToken) {
-          const depositFee = getDepositFee(ethToken, gasPrice);
+          const depositFee = getDepositFee(ethToken, maxFeePerGas);
           const amount = getFixedTokenAmount(depositFee, ethToken.decimals);
 
           dispatch(
             transactionActions.loadEstimatedDepositFeeSuccess({
               amount,
-              gasPrice,
+              gasPrice: maxFeePerGas,
               USD: ethToken.USD,
             })
           );
