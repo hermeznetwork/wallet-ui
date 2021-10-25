@@ -12,11 +12,12 @@ declare module "@hermeznetwork/*" {
   import { BigNumber } from "big-integer";
   import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-  // ffjavascript Scalar supports both native BigInt and bigInt from big-integer lib.
-  // Since all the functions in a Scalar convert their input to either BigInt or bigInt,
-  // ScalarValue is the intersection of the inputs supported by BigInt constructor and BigNumber.
+  // ffjavascript Scalar supports, according to the platform, both native BigInt and
+  // bigInt from the big-integer lib. Since all the functions in a Scalar convert their
+  // input to either BigInt or bigInt, ScalarValue is the union of the inputs supported
+  // by BigInt constructor and BigNumber.
   type BigIntConstructorValue = string | number | bigint | boolean;
-  export type ScalarValue = BigIntConstructorValue & BigNumber;
+  export type ScalarValue = BigIntConstructorValue | BigNumber;
 
   export type ISOStringDate = string;
 
@@ -324,12 +325,12 @@ declare module "@hermeznetwork/hermezjs/src/hermez-wallet" {
 
 // Utils
 declare module "@hermeznetwork/hermezjs/src/utils" {
-  import { BigNumberish } from "@ethersproject/bignumber";
+  import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 
   // declare function bufToHex() {};
   declare function hexToBuffer(hex: string): Buffer {};
   declare function getTokenAmountString(amountBigInt: BigNumberish, decimals: number): string {};
-  // declare function getTokenAmountBigInt() {};
+  declare function getTokenAmountBigInt(amountString: BigNumberish, decimals: number): BigNumber {};
   // declare function padZeros() {};
   // declare function extract() {};
   // declare function getRandomBytes() {};
@@ -386,7 +387,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
   declare function getL1UserTxId(toForgeL1TxsNum: number, currentPosition: number): string {};
 
   // declare function getL2TxId() {};
-  // declare function getFeeIndex() {};
+  declare function getFeeIndex(fee: ScalarValue, amount: ScalarValue): number {};
 
   declare function getFeeValue(feeIndex: number, amount: ScalarValue): bigint {};
 
@@ -560,7 +561,7 @@ declare module "@hermeznetwork/hermezjs/src/constants" {
   declare const ETHER_TOKEN_ID: number;
   // declare const GAS_LIMIT: number;
   // declare const GAS_LIMIT_HIGH: number;
-  // declare const GAS_LIMIT_LOW: number;
+  declare const GAS_LIMIT_LOW: number;
   // declare const GAS_STANDARD_ERC20_TX: number;
   // declare const GAS_LIMIT_WITHDRAW: number;
   // declare const SIBLING_GAS_COST: number;

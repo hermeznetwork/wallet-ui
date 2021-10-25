@@ -15,13 +15,14 @@ export type {
   HermezWallet,
   HistoryTransaction,
   ISOStringDate,
+  L1Info,
   MerkleProof,
   NextForger,
   PoolTransaction,
   RecommendedFee,
+  ScalarValue,
   Signers,
   Token,
-  L1Info,
 } from "@hermeznetwork/hermezjs";
 
 export type Account = hermezjs.Account & { fiatBalance?: number };
