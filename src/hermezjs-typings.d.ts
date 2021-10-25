@@ -591,10 +591,9 @@ declare module "@hermeznetwork/hermezjs/src/constants" {
 declare module "@hermeznetwork/hermezjs/src/hermez-compressed-amount" {
   import { ScalarValue } from "@hermeznetwork/hermezjs";
 
-  const HERMEZ_COMPRESSED_AMOUNT_TYPE = "HermezCompressedAmount";
   export default class HermezCompressedAmount {
     constructor(value: number);
-    static type: typeof HERMEZ_COMPRESSED_AMOUNT_TYPE;
+    static type: "HermezCompressedAmount";
     static value: number;
     // static isHermezCompressedAmount(instance: HermezCompressedAmount): boolean;
     static decompressAmount(hermezCompressedAmount: HermezCompressedAmount): ScalarValue;
