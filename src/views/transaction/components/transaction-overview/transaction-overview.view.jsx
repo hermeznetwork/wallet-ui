@@ -150,7 +150,7 @@ function TransactionOverview({
             txData={{
               type: transactionType,
               fromHezEthereumAddress: wallet.hermezEthereumAddress,
-              toHezEthereumAddress: to.hezEthereumAddress || to.hezBjjAddress,
+              toHezEthereumAddress: to.hezEthereumAddress || to.bjj,
               estimatedWithdrawFee: estimatedWithdrawFeeTask.data,
               fee: fee
                 ? {

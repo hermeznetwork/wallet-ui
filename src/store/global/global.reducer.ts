@@ -1,21 +1,20 @@
-import { GlobalActionTypes, GlobalAction } from "./global.actions";
+import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
-
 // domain
 import { Header } from "src/domain/";
 import { EthereumNetwork } from "src/domain/ethereum";
 import {
   HermezStatus,
   HermezNetworkStatus,
-  Withdraw,
-  Wallet,
-  Signer,
+  PendingWithdraw,
+  HermezWallet,
+  Signers,
   FiatExchangeRates,
   CoordinatorState,
   Token,
 } from "src/domain/hermez";
-
 import * as localStorageDomain from "src/domain/local-storage";
+// persistence
 import * as localStoragePersistence from "src/persistence/local-storage";
 
 type SnackbarState =
@@ -31,8 +30,8 @@ type SnackbarState =
 export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
-  wallet: Wallet | undefined;
-  signer: Signer | undefined;
+  wallet: HermezWallet.HermezWallet | undefined;
+  signer: Signers.SignerData | undefined;
   header: Header;
   redirectRoute: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
@@ -90,7 +89,10 @@ function getInitialGlobalState(): GlobalState {
   };
 }
 
-function globalReducer(state = getInitialGlobalState(), action: GlobalAction): GlobalState {
+function globalReducer(
+  state: GlobalState = getInitialGlobalState(),
+  action: GlobalAction
+): GlobalState {
   switch (action.type) {
     case GlobalActionTypes.LOAD_HERMEZ_STATUS: {
       return {
@@ -231,7 +233,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction): G
           [action.chainId]: {
             ...chainIdPendingWithdraws,
             [action.hermezEthereumAddress]: accountPendingWithdraws.filter(
-              (withdraw: Withdraw) => withdraw.hash !== action.hash
+              (withdraw: PendingWithdraw) => withdraw.hash !== action.hash
             ),
           },
         },
@@ -268,7 +270,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction): G
           [action.chainId]: {
             ...chainIdPendingDelayedWithdraws,
             [action.hermezEthereumAddress]: accountPendingDelayedWithdraws.filter(
-              (withdraw: Withdraw) => withdraw.id !== action.pendingDelayedWithdrawId
+              (withdraw: PendingWithdraw) => withdraw.id !== action.pendingDelayedWithdrawId
             ),
           },
         },
@@ -286,7 +288,7 @@ function globalReducer(state = getInitialGlobalState(), action: GlobalAction): G
           [action.chainId]: {
             ...chainIdPendingDelayedWithdraws,
             [action.hermezEthereumAddress]: accountPendingDelayedWithdraws.filter(
-              (withdraw: Withdraw) => withdraw.hash !== action.pendingDelayedWithdrawHash
+              (withdraw: PendingWithdraw) => withdraw.hash !== action.pendingDelayedWithdrawHash
             ),
           },
         },

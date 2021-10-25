@@ -12,9 +12,10 @@ import * as globalThunks from "../global/global.thunks";
 import { openSnackbar } from "../global/global.actions";
 import * as ethereum from "../../utils/ethereum";
 import { createAccount } from "../../utils/accounts";
-import { convertTokenAmountToFiat } from "../../utils/currencies";
+import { convertTokenAmountToFiat, getFixedTokenAmount } from "../../utils/currencies";
 import { mergeDelayedWithdraws } from "../../utils/transactions";
 import { getNextBestForger, getNextForgerUrls } from "../../utils/coordinator";
+import { getDepositFee } from "../../utils/fees";
 import theme from "../../styles/theme";
 
 import { WITHDRAW_WASM_URL, WITHDRAW_HEZ4_FINAL_ZKEY_URL } from "../../constants";
@@ -303,6 +304,37 @@ function fetchEstimatedWithdrawFee(token, amount) {
   };
 }
 
+function fetchEstimatedDepositFee() {
+  return async (dispatch, getState) => {
+    dispatch(transactionActions.loadEstimatedDepositFee());
+
+    try {
+      const {
+        global: { signer, tokensPriceTask },
+      } = getState();
+      const provider = getProvider();
+      const gasPrice = await provider.getGasPrice();
+      if (tokensPriceTask.status === "successful") {
+        const ethToken = tokensPriceTask.data.find((token) => token.id === ETHER_TOKEN_ID);
+        if (ethToken) {
+          const depositFee = getDepositFee(ethToken, gasPrice);
+          const amount = getFixedTokenAmount(depositFee, ethToken.decimals);
+
+          dispatch(
+            transactionActions.loadEstimatedDepositFeeSuccess({
+              amount,
+              gasPrice,
+              USD: ethToken.USD,
+            })
+          );
+        }
+      }
+    } catch (err) {
+      dispatch(transactionActions.loadEstimatedDepositFeeFailure(err));
+    }
+  };
+}
+
 function deposit(amount, account) {
   return (dispatch, getState) => {
     const {
@@ -484,7 +516,7 @@ function transfer(amount, from, to, fee) {
     const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
     const txData = {
       from: from.accountIndex,
-      to: to.accountIndex || to.hezEthereumAddress || to.hezBjjAddress,
+      to: to.accountIndex || to.hezEthereumAddress || to.bjj,
       amount: HermezCompressedAmount.compressAmount(amount),
       fee,
     };
@@ -518,6 +550,7 @@ export {
   fetchAccountBalance,
   fetchFees,
   fetchEstimatedWithdrawFee,
+  fetchEstimatedDepositFee,
   deposit,
   withdraw,
   forceExit,

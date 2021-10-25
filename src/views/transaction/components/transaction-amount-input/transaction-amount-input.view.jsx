@@ -6,6 +6,7 @@ import useTransactionAmountInputStyles from "./transaction-amount-input.styles";
 import { ReactComponent as SwapIcon } from "../../../../images/icons/swap.svg";
 import { ReactComponent as ErrorIcon } from "../../../../images/icons/error.svg";
 import { getFixedTokenAmount } from "../../../../utils/currencies";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 function TransactionAmountInput({
   account,
@@ -13,25 +14,20 @@ function TransactionAmountInput({
   value,
   amount,
   showInFiat,
-  isAmountMoreThanFunds,
+  isAmountWithFeeMoreThanFunds,
   isAmountCompressedInvalid,
   onInputChange,
   onSendAll,
   onSwapCurrency,
 }) {
   const classes = useTransactionAmountInputStyles();
-  const inputRef = React.useRef("");
-
-  React.useEffect(() => {
-    inputRef.current.focus();
-  }, []);
 
   function hasErrors() {
-    return isAmountMoreThanFunds || isAmountCompressedInvalid;
+    return isAmountWithFeeMoreThanFunds || isAmountCompressedInvalid;
   }
 
   function getErrorMessage() {
-    if (isAmountMoreThanFunds) {
+    if (isAmountWithFeeMoreThanFunds) {
       return "You don't have enough funds";
     }
     if (isAmountCompressedInvalid) {
@@ -53,7 +49,7 @@ function TransactionAmountInput({
             {showInFiat ? preferredCurrency : account.token.symbol}
           </p>
           <input
-            ref={inputRef}
+            autoFocus
             className={classes.amountInput}
             value={value}
             placeholder="0.00"
@@ -76,9 +72,7 @@ function TransactionAmountInput({
                 {getFixedTokenAmount(amount.tokens, account.token.decimals)} {account.token.symbol}
               </span>
             ) : (
-              <span>
-                {amount.fiat} {preferredCurrency}
-              </span>
+              <FiatAmount amount={amount.fiat} currency={preferredCurrency} />
             )}
           </div>
           <button

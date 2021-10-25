@@ -4,9 +4,8 @@ import {
   STORAGE_VERSION,
   STORAGE_VERSION_KEY,
 } from "src/constants";
-
 // domain
-import { Withdraw, DelayedWithdraw, Deposit } from "src/domain/hermez";
+import { PendingWithdraw, PendingDelayedWithdraw, PendingDeposit } from "src/domain/hermez";
 import {
   ChainId,
   HermezEthereumAddress,
@@ -17,13 +16,12 @@ import {
   PendingDeposits,
   ChainPendingDeposits,
 } from "src/domain/local-storage";
-
 // persistence
 import {
   getPendingWithdraws,
   getPendingDelayedWithdraws,
   getCurrentStorageVersion,
-  setStorageKey,
+  setStorageByKey,
 } from "src/persistence/local-storage";
 
 // MIGRATIONS
@@ -39,7 +37,8 @@ function runV2Migration() {
           currentAccountPendingWithdraws: ChainPendingWithdraws,
           hezEthereumAddress: HermezEthereumAddress
         ): ChainPendingWithdraws => {
-          const accountPendingWithdraws: Withdraw[] = chainPendingWithdraws[hezEthereumAddress];
+          const accountPendingWithdraws: PendingWithdraw[] =
+            chainPendingWithdraws[hezEthereumAddress];
           const newAccountPendingWithdraws = accountPendingWithdraws.filter(
             (pendingWithdraw) => pendingWithdraw.hash !== undefined
           );
@@ -60,7 +59,7 @@ function runV2Migration() {
     {}
   );
 
-  setStorageKey(PENDING_WITHDRAWS_KEY, newPendingWithdraws);
+  setStorageByKey(PENDING_WITHDRAWS_KEY, JSON.stringify(newPendingWithdraws));
 
   const pendingDelayedWithdraws = getPendingDelayedWithdraws();
   const newPendingDelayedWithdraws: PendingDelayedWithdraws = Object.keys(
@@ -75,9 +74,9 @@ function runV2Migration() {
         currentAccountPendingDelayedWithdraws: ChainPendingDelayedWithdraws,
         hezEthereumAddress: HermezEthereumAddress
       ) => {
-        const accountPendingDelayedWithdraws: DelayedWithdraw[] =
+        const accountPendingDelayedWithdraws: PendingDelayedWithdraw[] =
           chainPendingDelayedWithdraws[hezEthereumAddress];
-        const newAccountPendingDelayedWithdraws: DelayedWithdraw[] =
+        const newAccountPendingDelayedWithdraws: PendingDelayedWithdraw[] =
           accountPendingDelayedWithdraws.filter(
             (pendingDelayedWithdraw) => pendingDelayedWithdraw.hash !== undefined
           );
@@ -96,14 +95,14 @@ function runV2Migration() {
     };
   }, {});
 
-  setStorageKey(PENDING_DELAYED_WITHDRAWS_KEY, newPendingDelayedWithdraws);
+  setStorageByKey(PENDING_DELAYED_WITHDRAWS_KEY, JSON.stringify(newPendingDelayedWithdraws));
 }
 
 function checkVersion(): void {
   const currentStorageVersion = getCurrentStorageVersion();
 
   if (currentStorageVersion === undefined) {
-    setStorageKey(STORAGE_VERSION_KEY, STORAGE_VERSION);
+    setStorageByKey(STORAGE_VERSION_KEY, JSON.stringify(STORAGE_VERSION));
   } else {
     // LocalStorage migrations
     if (STORAGE_VERSION > currentStorageVersion) {
@@ -112,7 +111,7 @@ function checkVersion(): void {
         runV2Migration();
       }
 
-      setStorageKey(STORAGE_VERSION_KEY, STORAGE_VERSION);
+      setStorageByKey(STORAGE_VERSION_KEY, JSON.stringify(STORAGE_VERSION));
     }
   }
 }
@@ -121,9 +120,9 @@ function getPendingWithdrawsByHermezAddress(
   pendingWithdrawsStorage: PendingWithdraws,
   chainId: number,
   hermezEthereumAddress: string
-): Withdraw[] {
+): PendingWithdraw[] {
   const chainPendingWithdraws: ChainPendingWithdraws = pendingWithdrawsStorage[chainId] || {};
-  const accountWithdraws: Withdraw[] = chainPendingWithdraws[hermezEthereumAddress] || [];
+  const accountWithdraws: PendingWithdraw[] = chainPendingWithdraws[hermezEthereumAddress] || [];
   return accountWithdraws;
 }
 
@@ -131,10 +130,10 @@ function getPendingDelayedWithdrawsByHermezAddress(
   pendingDelayedWithdrawsStorage: PendingDelayedWithdraws,
   chainId: number,
   hermezEthereumAddress: string
-): DelayedWithdraw[] {
+): PendingDelayedWithdraw[] {
   const chainPendingDelayedWithdraws: ChainPendingDelayedWithdraws =
     pendingDelayedWithdrawsStorage[chainId] || {};
-  const accountWithdraws: DelayedWithdraw[] =
+  const accountWithdraws: PendingDelayedWithdraw[] =
     chainPendingDelayedWithdraws[hermezEthereumAddress] || [];
   return accountWithdraws;
 }
@@ -143,9 +142,9 @@ function getPendingDepositsByHermezAddress(
   pendingDepositsStorage: PendingDeposits,
   chainId: number,
   hermezEthereumAddress: string
-): Deposit[] {
+): PendingDeposit[] {
   const chainPendingDeposits: ChainPendingDeposits = pendingDepositsStorage[chainId] || {};
-  const accountDeposits: Deposit[] = chainPendingDeposits[hermezEthereumAddress] || [];
+  const accountDeposits: PendingDeposit[] = chainPendingDeposits[hermezEthereumAddress] || [];
   return accountDeposits;
 }
 

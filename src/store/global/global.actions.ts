@@ -1,13 +1,13 @@
 // domain
 import { EthereumNetwork } from "src/domain/ethereum";
 import {
-  Wallet,
-  Signer,
+  HermezWallet,
+  Signers,
   FiatExchangeRates,
   HermezNetworkStatus,
-  Withdraw,
-  DelayedWithdraw,
-  Deposit,
+  PendingWithdraw,
+  PendingDelayedWithdraw,
+  PendingDeposit,
   CoordinatorState,
   Token,
 } from "src/domain/hermez";
@@ -78,7 +78,7 @@ export interface LoadEthereumNetworkSuccess {
 
 export interface LoadWallet {
   type: GlobalActionTypes.LOAD_WALLET;
-  wallet: Wallet;
+  wallet: HermezWallet.HermezWallet;
 }
 
 export interface UnloadWallet {
@@ -87,7 +87,7 @@ export interface UnloadWallet {
 
 export interface SetSigner {
   type: GlobalActionTypes.SET_SIGNER;
-  signer: Signer;
+  signer: Signers.SignerData;
 }
 
 export interface ChangeHeader {
@@ -128,7 +128,7 @@ export interface AddPendingWithdraw {
   type: GlobalActionTypes.ADD_PENDING_WITHDRAW;
   chainId: number;
   hermezEthereumAddress: string;
-  pendingWithdraw: Withdraw;
+  pendingWithdraw: PendingWithdraw;
 }
 
 export interface RemovePendingWithdraw {
@@ -142,7 +142,7 @@ export interface AddPendingDelayedWithdraw {
   type: GlobalActionTypes.ADD_PENDING_DELAYED_WITHDRAW;
   chainId: number;
   hermezEthereumAddress: string;
-  pendingDelayedWithdraw: DelayedWithdraw;
+  pendingDelayedWithdraw: PendingDelayedWithdraw;
 }
 
 export interface RemovePendingDelayedWithdraw {
@@ -187,7 +187,7 @@ export interface AddPendingDeposit {
   type: GlobalActionTypes.ADD_PENDING_DEPOSIT;
   chainId: number;
   hermezEthereumAddress: string;
-  pendingDeposit: Deposit;
+  pendingDeposit: PendingDeposit;
 }
 
 export interface RemovePendingDepositByHash {
@@ -234,16 +234,16 @@ export interface LoadCoordinatorStateFailure {
   error: string;
 }
 export interface LoadTokensPrice {
-  type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE;
+  type: GlobalActionTypes.LOAD_TOKENS_PRICE;
 }
 
 export interface LoadTokensPriceSuccess {
-  type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS;
+  type: GlobalActionTypes.LOAD_TOKENS_PRICE_SUCCESS;
   tokens: Token[];
 }
 
 export interface LoadTokensPriceFailure {
-  type: typeof GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE;
+  type: GlobalActionTypes.LOAD_TOKENS_PRICE_FAILURE;
   error: string;
 }
 
@@ -319,7 +319,7 @@ function loadEthereumNetworkSuccess(ethereumNetwork: EthereumNetwork): LoadEther
   };
 }
 
-function loadWallet(wallet: Wallet): LoadWallet {
+function loadWallet(wallet: HermezWallet.HermezWallet): LoadWallet {
   return {
     type: GlobalActionTypes.LOAD_WALLET,
     wallet,
@@ -332,7 +332,7 @@ function unloadWallet(): UnloadWallet {
   };
 }
 
-function setSigner(signer: Signer): SetSigner {
+function setSigner(signer: Signers.SignerData): SetSigner {
   return {
     type: GlobalActionTypes.SET_SIGNER,
     signer,
@@ -392,7 +392,7 @@ function changeNetworkStatus(networkStatus: HermezNetworkStatus): ChangeNetworkS
 function addPendingWithdraw(
   chainId: number,
   hermezEthereumAddress: string,
-  pendingWithdraw: Withdraw
+  pendingWithdraw: PendingWithdraw
 ): AddPendingWithdraw {
   return {
     type: GlobalActionTypes.ADD_PENDING_WITHDRAW,
@@ -418,7 +418,7 @@ function removePendingWithdraw(
 function addPendingDelayedWithdraw(
   chainId: number,
   hermezEthereumAddress: string,
-  pendingDelayedWithdraw: DelayedWithdraw
+  pendingDelayedWithdraw: PendingDelayedWithdraw
 ): AddPendingDelayedWithdraw {
   return {
     type: GlobalActionTypes.ADD_PENDING_DELAYED_WITHDRAW,
@@ -496,7 +496,7 @@ function checkPendingWithdrawalsSuccess(): CheckPendingWithdrawalsSuccess {
 function addPendingDeposit(
   chainId: number,
   hermezEthereumAddress: string,
-  pendingDeposit: Deposit
+  pendingDeposit: PendingDeposit
 ): AddPendingDeposit {
   return {
     type: GlobalActionTypes.ADD_PENDING_DEPOSIT,

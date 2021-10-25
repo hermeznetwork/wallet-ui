@@ -1,5 +1,5 @@
 import { DELAY_TO_NEXT_FORGER } from "src/constants";
-
+// domain
 import { CoordinatorState, NextForger } from "src/domain/hermez";
 
 /**

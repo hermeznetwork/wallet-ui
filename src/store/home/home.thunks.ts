@@ -3,15 +3,12 @@ import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
-import * as homeActions from "src/store/home/home.actions";
+import { AppState, AppDispatch, AppThunk } from "src/store";
 import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
-
-import { RootState } from "src/store";
-import { AppDispatch, AppThunk } from "src";
-
+import * as homeActions from "src/store/home/home.actions";
 // domain
-import { PooledTransaction, Deposit, FiatExchangeRates, Account } from "src/domain/hermez";
+import { PoolTransaction, PendingDeposit, FiatExchangeRates, Account } from "src/domain/hermez";
 import { Accounts } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
@@ -22,12 +19,12 @@ let refreshCancelTokenSource = axios.CancelToken.source();
  */
 function fetchTotalBalance(
   hermezEthereumAddress: string,
-  poolTransactions: PooledTransaction[],
-  pendingDeposits: Deposit[],
+  poolTransactions: PoolTransaction[],
+  pendingDeposits: PendingDeposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { tokensPriceTask },
     } = getState();
@@ -91,12 +88,12 @@ function fetchTotalBalance(
 function fetchAccounts(
   hermezAddress: string,
   fromItem: number,
-  poolTransactions: PooledTransaction[],
-  pendingDeposits: Deposit[],
+  poolTransactions: PoolTransaction[],
+  pendingDeposits: PendingDeposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       home: { accountsTask },
       global: { tokensPriceTask },
@@ -147,12 +144,12 @@ function fetchAccounts(
  */
 function refreshAccounts(
   hermezAddress: string,
-  poolTransactions: PooledTransaction[],
-  pendingDeposits: Deposit[],
+  poolTransactions: PoolTransaction[],
+  pendingDeposits: PendingDeposit[],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       home: { accountsTask },
       global: { tokensPriceTask },
@@ -218,7 +215,7 @@ function refreshAccounts(
  * @returns {void}
  */
 function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     dispatch(homeActions.loadPoolTransactions());
 
     const {
@@ -238,7 +235,7 @@ function fetchPoolTransactions(): AppThunk {
  * @returns {void}
  */
 function fetchExits(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet },
     } = getState();

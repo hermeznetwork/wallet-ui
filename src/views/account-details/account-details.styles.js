@@ -10,8 +10,13 @@ const useAccountDetailsStyles = createUseStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
   },
-  fiatBalance: {
+  fiatBalanceWrapper: {
     marginBottom: theme.spacing(3),
+  },
+  fiatBalance: {
+    color: theme.palette.grey.dark,
+    fontSize: theme.spacing(2.5),
+    fontWeight: theme.fontWeights.medium,
   },
   tokenBalance: {
     marginTop: theme.spacing(2),

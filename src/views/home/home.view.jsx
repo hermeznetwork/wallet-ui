@@ -180,7 +180,11 @@ function Home({
               onClick={() => handleEthereumAddressClick(wallet.hermezEthereumAddress)}
             />
             <div className={classes.accountBalance}>
-              <FiatAmount amount={totalBalanceTask.data} currency={preferredCurrency} />
+              <FiatAmount
+                amount={totalBalanceTask.data}
+                currency={preferredCurrency}
+                className={classes.fiatAmount}
+              />
             </div>
             <TransactionActions
               hideSend={

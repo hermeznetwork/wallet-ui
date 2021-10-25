@@ -1,26 +1,59 @@
 import { createStore, applyMiddleware, combineReducers } from "redux";
+import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
-import { connectRouter, routerMiddleware, RouterState } from "connected-react-router";
+import { connectRouter, routerMiddleware, RouterState, RouterAction } from "connected-react-router";
 import thunk from "redux-thunk";
 import { History } from "history";
 
-import globalReducer, { GlobalState } from "./global/global.reducer";
-import homeReducer, { HomeState } from "./home/home.reducer";
-import myAccountReducer from "./my-account/my-account.reducer";
+import globalReducer, { GlobalState } from "src/store/global/global.reducer";
+import { GlobalAction } from "src/store/global/global.actions";
+import homeReducer, { HomeState } from "src/store/home/home.reducer";
+import { HomeAction } from "src/store/home/home.actions";
+import myAccountReducer, { MyAccountState } from "src/store/my-account/my-account.reducer";
+import { MyAccountAction } from "src/store/my-account/my-account.actions";
 import accountDetailsReducer, {
   AccountDetailsState,
-} from "./account-details/account-details.reducer";
-import transactionDetailsReducer from "./transaction-details/transaction-details.reducer";
-import transactionReducer from "./transaction/transaction.reducer";
-import loginReducer from "./login/login.reducer";
-import tokenSwapReducer from "./token-swap/token-swap.reducer";
+} from "src/store/account-details/account-details.reducer";
+import { AccountDetailsAction } from "src/store/account-details/account-details.actions";
+import transactionDetailsReducer, {
+  TransactionDetailsState,
+} from "src/store/transaction-details/transaction-details.reducer";
+import { TransactionDetailsAction } from "src/store/transaction-details/transaction-details.actions";
+import transactionReducer from "src/store/transaction/transaction.reducer";
+import loginReducer, { LoginState } from "src/store/login/login.reducer";
+import { LoginAction } from "src/store/login/login.actions";
+import tokenSwapReducer from "src/store/token-swap/token-swap.reducer";
+import transferReducer, { TransferState } from "src/store/transactions/transfer/transfer.reducer";
+import { TransferAction } from "src/store/transactions/transfer/transfer.actions";
+import { ExitAction } from "src/store/transactions/exit/exit.actions";
+import exitReducer, { ExitState } from "./transactions/exit/exit.reducer";
 
-export interface RootState {
-  accountDetails: AccountDetailsState;
+export type AppAction =
+  | RouterAction
+  | GlobalAction
+  | HomeAction
+  | MyAccountAction
+  | AccountDetailsAction
+  | LoginAction
+  | TransferAction
+  | ExitAction
+  | TransactionDetailsAction;
+
+export interface AppState {
+  router: RouterState;
   global: GlobalState;
   home: HomeState;
-  router: RouterState;
+  accountDetails: AccountDetailsState;
+  myAccount: MyAccountState;
+  login: LoginState;
+  transfer: TransferState;
+  exit: ExitState;
+  transactionDetails: TransactionDetailsState;
 }
+
+export type AppDispatch = ThunkDispatch<AppState, undefined, AppAction>;
+
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, AppAction>;
 
 /**
  * Creates the Redux store root reducer combining all the reducers used in the app
@@ -28,7 +61,7 @@ export interface RootState {
  * @returns {Object} - Root reducer
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function createRootReducer(history: History) {
+export function createAppReducer(history: History) {
   return combineReducers({
     router: connectRouter(history),
     global: globalReducer,
@@ -37,6 +70,8 @@ export function createRootReducer(history: History) {
     myAccount: myAccountReducer,
     transactionDetails: transactionDetailsReducer,
     transaction: transactionReducer,
+    transfer: transferReducer,
+    exit: exitReducer,
     login: loginReducer,
     tokenSwap: tokenSwapReducer,
   });
@@ -48,14 +83,13 @@ export function createRootReducer(history: History) {
  * @param {History} history - Browser history
  * @returns {Object} - Redux store
  */
-// ToDo: Create the AppAction type and replace this AnyAction with the AppAction
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function configureStore(history: History) {
   const middlewares = [thunk, routerMiddleware(history)];
   const middlewareEnhancer = applyMiddleware(...middlewares);
   const enhancers = [middlewareEnhancer];
   const composedEnhancers = composeWithDevTools(...enhancers);
-  const rootReducer = createRootReducer(history);
+  const appReducer = createAppReducer(history);
 
-  return createStore(rootReducer, composedEnhancers);
+  return createStore(appReducer, composedEnhancers);
 }

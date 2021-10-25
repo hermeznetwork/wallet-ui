@@ -1,13 +1,10 @@
 import { HomeActionTypes, HomeAction } from "src/store/home/home.actions";
 import { getPaginationData } from "src/utils/api";
 import { Pagination } from "src/utils/api";
-
 // domain
-import { Account, PooledTransaction } from "src/domain/hermez";
-
+import { Account, PoolTransaction } from "src/domain/hermez";
 // persistence
 import { Exits } from "src/persistence";
-
 import { AsyncTask } from "src/utils/types";
 
 interface ViewAccounts {
@@ -19,7 +16,7 @@ interface ViewAccounts {
 export interface HomeState {
   totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
-  poolTransactionsTask: AsyncTask<PooledTransaction[], string>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   exitsTask: AsyncTask<Exits, Error>;
 }
 
@@ -38,7 +35,7 @@ const initialHomeState: HomeState = {
   },
 };
 
-function homeReducer(state = initialHomeState, action: HomeAction): HomeState {
+function homeReducer(state: HomeState = initialHomeState, action: HomeAction): HomeState {
   switch (action.type) {
     case HomeActionTypes.LOAD_TOTAL_BALANCE: {
       return {
