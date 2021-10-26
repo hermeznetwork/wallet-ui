@@ -16,7 +16,6 @@ function ExitList({
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorState,
-  redirectTo,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
 }) {
@@ -57,7 +56,6 @@ function ExitList({
             onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
             onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
             coordinatorState={coordinatorState}
-            redirectTo={redirectTo}
           />
         );
       })}

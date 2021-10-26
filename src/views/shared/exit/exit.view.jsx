@@ -30,7 +30,6 @@ function Exit({
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorState,
-  redirectTo,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
 }) {
@@ -203,7 +202,7 @@ function Exit({
   if (isWithdrawClicked) {
     return (
       <Redirect
-        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true&redirectTo=${redirectTo}`}
+        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`}
       />
     );
   }
@@ -211,7 +210,7 @@ function Exit({
   if (isWithdrawDelayedClicked) {
     return (
       <Redirect
-        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false&redirectTo=${redirectTo}`}
+        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`}
       />
     );
   }
@@ -219,7 +218,7 @@ function Exit({
   if (isCompleteDelayedWithdrawalClicked) {
     return (
       <Redirect
-        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true&redirectTo=${redirectTo}`}
+        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true`}
       />
     );
   }

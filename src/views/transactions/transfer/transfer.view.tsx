@@ -10,7 +10,7 @@ import * as transferThunks from "src/store/transactions/transfer/transfer.thunks
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import * as transferReducer from "src/store/transactions/transfer/transfer.reducer";
 import { changeHeader } from "src/store/global/global.actions";
-import useTransferLayoutStyles from "src/views/transactions/transfer/transfer.styles";
+import useTransferStyles from "src/views/transactions/transfer/transfer.styles";
 import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
@@ -89,7 +89,7 @@ function Transfer({
   onTransfer,
   onCleanup,
 }: TransferProps) {
-  const classes = useTransferLayoutStyles();
+  const classes = useTransferStyles();
   const { search } = useLocation();
   const urlSearchParams = new URLSearchParams(search);
   const receiver = urlSearchParams.get("receiver");

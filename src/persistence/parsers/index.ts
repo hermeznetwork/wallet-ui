@@ -75,6 +75,9 @@ const pendingWithdraw: z.ZodSchema<PendingWithdraw> = hermezApiResourceItem.and(
     hash: z.string(),
     id: z.string(),
     timestamp: z.string(),
+    hermezEthereumAddress: z.string(),
+    amount: z.string(),
+    token,
   })
 );
 

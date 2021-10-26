@@ -69,14 +69,14 @@ declare module "@hermeznetwork/*" {
     batchNum: number;
     delayedWithdraw: unknown | null;
     instantWithdraw: number | null;
-    // balance: string;
+    token: Token;
+    merkleProof: MerkleProof;
+    balance: string;
     // bjj: string;
     // delayedWithdrawRequest: unknown | null;
     // fee: number;
     // hash: string;
     // hezEthereumAddress: string;
-    // merkleProof: MerkleProof;
-    // token: Token;
   };
 
   export type HistoryTransaction = HermezApiResourceItem & {
@@ -297,7 +297,7 @@ declare module "@hermeznetwork/*" {
 
 // Wallet
 declare module "@hermeznetwork/hermezjs/src/hermez-wallet" {
-  import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
+  import { SignerData, SignerData } from "@hermeznetwork/hermezjs/src/signers";
   export declare class HermezWallet {
     constructor(privateKey: Buffer, hermezEthereumAddress: string);
     privateKey: Buffer;
@@ -328,7 +328,7 @@ declare module "@hermeznetwork/hermezjs/src/utils" {
 
 // Tx
 declare module "@hermeznetwork/hermezjs/src/tx" {
-  import { Token, HermezWallet } from "@hermeznetwork/hermezjs";
+  import { Token, HermezWallet, Exit, Signers } from "@hermeznetwork/hermezjs";
   import { HermezCompressedAmount } from "@hermeznetwork/hermezjs/src/hermez-compressed-amount";
   import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
@@ -355,6 +355,10 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     nonce: number;
   }
 
+  interface WithdrawResponse {
+    hash: string;
+  }
+
   declare function generateAndSendL2Tx(
     tx: Tx,
     wallet: HermezWallet.HermezWallet,
@@ -363,9 +367,22 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     addToTxPool?: boolean
   ): Promise<SendL2TransactionResponse> {};
 
+  declare function withdrawCircuit(
+    exit: Exit,
+    isInstant: boolean,
+    wasmFilePath: string,
+    zkeyFilePath: string,
+    signerData: Signers.SignerData
+  ): Promise<WithdrawResponse> {};
+
+  declare function delayedWithdraw(
+    hezEthereumAddress: string,
+    token: Token,
+    signerData: Signers.SignerData
+  ): Promise<WithdrawResponse> {};
+
   // declare function sendAtomicGroup() {};
   // declare function generateAndSendAtomicGroup() {};
-  // declare function withdrawCircuit() {};
 }
 
 // TxUtils
@@ -398,7 +415,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
 // TxFees
 declare module "@hermeznetwork/hermezjs/src/tx-fees" {
   import { Token, Signers } from "@hermeznetwork/hermezjs";
-  import { CallOverrides } from "ethers";
+  import { CallOverrides, BigNumber } from "ethers";
 
   // declare function estimateDepositGasLimit() {};
 
@@ -624,7 +641,7 @@ declare module "@hermeznetwork/hermezjs/src/providers" {
 // Signers
 declare module "@hermeznetwork/hermezjs/src/signers" {
   import { Web3Provider } from "@ethersproject/providers";
-  import { Signer } from "@ethersproject/abstract-signer";
+  import { Signer, Signer } from "@ethersproject/abstract-signer";
   import { Manifest } from "trezor-connect";
 
   export enum SignerType {

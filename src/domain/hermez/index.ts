@@ -44,9 +44,9 @@ export interface PendingWithdraw {
   hash: string;
   id: string;
   timestamp: hermezjs.ISOStringDate;
-  // amount: string;
-  // hermezEthereumAddress: string;
-  // token: hermezjs.Token;
+  token: hermezjs.Token;
+  hermezEthereumAddress: string;
+  amount: string;
 }
 
 export type PendingDelayedWithdraw = PendingWithdraw & {

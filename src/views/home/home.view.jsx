@@ -19,14 +19,12 @@ import { getPartiallyHiddenHermezAddress } from "../../utils/addresses";
 import Button from "../shared/button/button.view";
 import InfiniteScroll from "../shared/infinite-scroll/infinite-scroll.view";
 import { resetState } from "../../store/home/home.actions";
-import { WithdrawRedirectionRoute } from "../transaction/transaction.view";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import PendingDepositList from "./components/pending-deposit-list/pending-deposit-list.view";
 import * as storage from "../../utils/storage";
 import { mergeExits } from "../../utils/transactions";
 import ReportIssueButton from "./components/report-issue-button/report-issue-button.view";
 import { AUTO_REFRESH_RATE } from "../../constants";
-import * as globalActions from "../../store/global/global.actions";
 
 function Home({
   wallet,
@@ -210,7 +208,6 @@ function Home({
                 onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                 onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                 coordinatorState={coordinatorStateTask?.data}
-                redirectTo={WithdrawRedirectionRoute.Home}
               />
             ) : (
               <></>
@@ -230,7 +227,6 @@ function Home({
                 onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                 onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                 coordinatorState={coordinatorStateTask?.data}
-                redirectTo={WithdrawRedirectionRoute.Home}
               />
             )}
             {(() => {
