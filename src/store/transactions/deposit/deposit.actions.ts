@@ -141,6 +141,30 @@ export interface ResetState {
   type: DepositActionTypes.RESET_STATE;
 }
 
+export type DepositAction =
+  | GoToChooseAccountStep
+  | GoToBuildTransactionStep
+  | GoToReviewTransactionStep
+  | ChangeCurrentStep
+  | LoadAccounts
+  | LoadAccountsSuccess
+  | LoadAccountsFailure
+  | LoadPoolTransactions
+  | LoadPoolTransactionsSuccess
+  | LoadPoolTransactionsFailure
+  | LoadAccount
+  | LoadAccountSuccess
+  | LoadAccountFailure
+  | LoadFees
+  | LoadFeesSuccess
+  | LoadFeesFailure
+  | LoadEstimatedDepositFee
+  | LoadEstimatedDepositFeeSuccess
+  | LoadEstimatedDepositFeeFailure
+  | StartTransactionApproval
+  | StopTransactionApproval
+  | ResetState;
+
 function goToChooseAccountStep(): GoToChooseAccountStep {
   return {
     type: DepositActionTypes.GO_TO_CHOOSE_ACCOUNT_STEP,
