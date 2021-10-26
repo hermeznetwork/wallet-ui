@@ -34,3 +34,9 @@ export interface EstimatedWithdrawFee {
   amount: BigNumber;
   USD: number;
 }
+
+export interface EstimatedDepositFee {
+  amount: BigNumber;
+  gasPrice: BigNumber | null;
+  USD: number;
+}
