@@ -315,7 +315,7 @@ function fetchEstimatedDepositFee() {
       const provider = getProvider();
       const { maxFeePerGas } = await provider.getFeeData();
 
-      if (tokensPriceTask.status === "successful") {
+      if (tokensPriceTask.status === "successful" && maxFeePerGas) {
         const ethToken = tokensPriceTask.data.find((token) => token.id === ETHER_TOKEN_ID);
         if (ethToken) {
           const depositFee = getDepositFee(ethToken, maxFeePerGas);
