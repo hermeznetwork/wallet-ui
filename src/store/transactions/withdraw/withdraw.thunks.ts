@@ -25,8 +25,6 @@ import { createAccount } from "src/utils/accounts";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
- * @param {string} accountIndex - accountIndex of the account
- * @returns {void}
  */
 function fetchHermezAccount(
   accountIndex: string,
@@ -114,6 +112,9 @@ function fetchPoolTransactions(): AppThunk {
   };
 }
 
+/**
+ * Fetches the estimated L1 fee for the withdraw
+ */
 function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
   return async (dispatch: AppDispatch, getState: () => AppState): Promise<void> => {
     dispatch(withdrawActions.loadEstimatedWithdrawFee());
@@ -156,6 +157,9 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
   };
 }
 
+/**
+ * Executes the withdraw operation
+ */
 function withdraw(
   amount: BigNumber,
   account: Account,
