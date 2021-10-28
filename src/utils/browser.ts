@@ -55,8 +55,8 @@ function isiOsDevice(): boolean {
   return /iPhone|iPad|iPod/.test(navigator.userAgent);
 }
 
-function isFirefox(): RegExpMatchArray | null {
-  return /firefox/i.exec(navigator.userAgent);
+function isFirefox(): boolean {
+  return /firefox/i.test(navigator.userAgent);
 }
 
 export {
