@@ -283,6 +283,7 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
           : await wallet.signCreateAccountAuthorization();
 
         dispatch(setAccountAuthSignature(wallet.hermezEthereumAddress, signature));
+
         if (!authorization) {
           await persistence.postCreateAccountAuthorization(
             wallet.hermezEthereumAddress,
