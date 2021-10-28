@@ -4,22 +4,21 @@ import {
   TransactionToReview,
   Step,
 } from "src/store/transactions/deposit/deposit.actions";
-import { getPaginationData, Pagination } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";
 // domain
 import { EstimatedDepositFee } from "src/domain";
-import { PoolTransaction, Account, RecommendedFee } from "src/domain/hermez";
-
-export interface AccountsWithPagination {
-  accounts: Account[];
-  pagination: Pagination;
-}
+import {
+  PoolTransaction,
+  RecommendedFee,
+  EthereumAccount,
+  EthereumAccountWithBalance,
+} from "src/domain/hermez";
 
 export interface DepositState {
   step: Step;
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
-  accountTask: AsyncTask<Account, string>;
-  accountsTask: AsyncTask<AccountsWithPagination, Error>;
+  accountTask: AsyncTask<EthereumAccount, string>;
+  accountsTask: AsyncTask<EthereumAccountWithBalance[], Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>;
   transaction: TransactionToReview | undefined;
@@ -81,6 +80,36 @@ function transactionReducer(
         step: action.nextStep,
       };
     }
+    case DepositActionTypes.LOAD_ACCOUNTS: {
+      return {
+        ...state,
+        accountsTask:
+          state.accountsTask.status === "successful"
+            ? {
+                status: "reloading",
+                data: state.accountsTask.data,
+              }
+            : { status: "loading" },
+      };
+    }
+    case DepositActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+      return {
+        ...state,
+        accountsTask: {
+          status: "successful",
+          data: action.accounts,
+        },
+      };
+    }
+    case DepositActionTypes.LOAD_ACCOUNTS_FAILURE: {
+      return {
+        ...state,
+        accountsTask: {
+          status: "failed",
+          error: action.error,
+        },
+      };
+    }
     case DepositActionTypes.LOAD_POOL_TRANSACTIONS: {
       return {
         ...state,
@@ -113,43 +142,7 @@ function transactionReducer(
         },
       };
     }
-    case DepositActionTypes.LOAD_ACCOUNTS: {
-      return {
-        ...state,
-        accountsTask:
-          state.accountsTask.status === "successful"
-            ? {
-                status: "reloading",
-                data: state.accountsTask.data,
-              }
-            : { status: "loading" },
-      };
-    }
-    case DepositActionTypes.LOAD_ACCOUNTS_SUCCESS: {
-      const accounts =
-        state.accountsTask.status === "reloading"
-          ? [...state.accountsTask.data.accounts, ...action.accounts.accounts]
-          : action.accounts.accounts;
-      const pagination = getPaginationData(action.accounts.pendingItems, accounts);
-
-      return {
-        ...state,
-        accountsTask: {
-          status: "successful",
-          data: { accounts, pagination },
-        },
-      };
-    }
-    case DepositActionTypes.LOAD_ACCOUNTS_FAILURE: {
-      return {
-        ...state,
-        accountsTask: {
-          status: "failed",
-          error: action.error,
-        },
-      };
-    }
-    case DepositActionTypes.LOAD_ACCOUNT: {
+    case DepositActionTypes.LOAD_ETHEREUM_ACCOUNT: {
       return {
         ...state,
         accountTask: {
@@ -157,17 +150,17 @@ function transactionReducer(
         },
       };
     }
-    case DepositActionTypes.LOAD_ACCOUNT_SUCCESS: {
+    case DepositActionTypes.LOAD_ETHEREUM_ACCOUNT_SUCCESS: {
       return {
         ...state,
         step: "build-transaction",
         accountTask: {
           status: "successful",
-          data: action.account,
+          data: action.ethereumAccount,
         },
       };
     }
-    case DepositActionTypes.LOAD_ACCOUNT_FAILURE: {
+    case DepositActionTypes.LOAD_ETHEREUM_ACCOUNT_FAILURE: {
       return {
         ...state,
         accountTask: {
@@ -176,6 +169,7 @@ function transactionReducer(
         },
       };
     }
+
     case DepositActionTypes.LOAD_FEES:
       return {
         ...state,
