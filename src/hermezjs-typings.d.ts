@@ -276,6 +276,13 @@ declare module "@hermeznetwork/*" {
     pendingItems: number;
   }
 
+  export interface AccountAuthorization {
+    signature: string;
+    // bjj: string;
+    // hezEthereumAddress: string;
+    // timestamp: ISOStringDate;
+  }
+
   // library modules
   export { default as HermezWallet } from "@hermeznetwork/hermezjs/src/hermez-wallet";
   export { default as Utils } from "@hermeznetwork/hermezjs/src/utils";
@@ -448,6 +455,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     CoordinatorState,
     Token,
     PoolTransaction,
+    AccountAuthorization,
   } from "@hermeznetwork/hermezjs";
 
   export type PaginationOrder = "ASC" | "DESC";
@@ -518,6 +526,11 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   // declare function getCoordinators() {};
   // declare function getSlot() {};
   // declare function getBids() {};
+
+  declare function getCreateAccountAuthorization(
+    hezEthereumAddress: string,
+    axiosConfig?: Record<string, unknown>
+  ): Promise<AccountAuthorization> {};
 
   // ToDo: The app does not uses the response but it would be nice to type it at some point
   declare function postCreateAccountAuthorization(
