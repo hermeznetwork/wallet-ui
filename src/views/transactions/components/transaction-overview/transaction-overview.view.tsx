@@ -21,15 +21,22 @@ import { Theme } from "src/styles/theme";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 // domain
-import { HermezWallet, Account, FiatExchangeRates, Exit } from "src/domain/hermez";
+import {
+  Account,
+  EthereumAccount,
+  EthereumAccountWithBalance,
+  Exit,
+  FiatExchangeRates,
+  HermezWallet,
+} from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
 
 type Transaction =
   | {
       type: TxType.Deposit;
       amount: BigNumber;
-      account: Account;
-      onDeposit: (amount: BigNumber, account: Account) => void;
+      account: EthereumAccount;
+      onDeposit: (amount: BigNumber, account: EthereumAccountWithBalance) => void;
     }
   | {
       type: TxType.Transfer;

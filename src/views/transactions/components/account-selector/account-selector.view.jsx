@@ -25,7 +25,11 @@ function AccountSelector({
 
   React.useEffect(() => {
     if (accountsTask.status === "pending" && poolTransactionsTask.status === "successful") {
-      onLoadAccounts(undefined, poolTransactionsTask.data, fiatExchangeRates, preferredCurrency);
+      if (transactionType === TxType.Deposit) {
+        onLoadAccounts(fiatExchangeRates, preferredCurrency);
+      } else {
+        onLoadAccounts(undefined, poolTransactionsTask.data, fiatExchangeRates, preferredCurrency);
+      }
     }
   }, [accountsTask, poolTransactionsTask, onLoadAccounts]);
 
