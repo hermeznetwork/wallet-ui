@@ -9,15 +9,9 @@
  * required and finally remove all those not required.
  */
 declare module "@hermeznetwork/*" {
-  import { BigNumber } from "big-integer";
   import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-  // ffjavascript Scalar supports, according to the platform, both native BigInt and
-  // bigInt from the big-integer lib. Since all the functions in a Scalar convert their
-  // input to either BigInt or bigInt, ScalarValue is the union of the inputs supported
-  // by BigInt constructor and BigNumber.
-  type BigIntConstructorValue = string | number | bigint | boolean;
-  export type ScalarValue = BigIntConstructorValue | BigNumber;
+  export type ScalarValue = string | number;
 
   export type ISOStringDate = string;
 
