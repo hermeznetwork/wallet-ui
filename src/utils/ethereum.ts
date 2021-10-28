@@ -4,7 +4,7 @@ import hermezjs from "@hermeznetwork/hermezjs";
 
 import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "src/constants";
 // domain
-import { HermezWallet, Token, ISOStringDate } from "src/domain/hermez";
+import { HermezWallet, Token, ISOStringDate, EthereumAccount } from "src/domain/hermez";
 
 /**
  * Fetches token balances in the user's Ethereum account. Only for those tokens registered in Hermez and Ether.
@@ -16,12 +16,7 @@ import { HermezWallet, Token, ISOStringDate } from "src/domain/hermez";
 function getTokens(
   wallet: HermezWallet.HermezWallet,
   hermezTokens: Token[]
-): Promise<
-  {
-    balance: BigNumber;
-    token: Token;
-  }[]
-> {
+): Promise<EthereumAccount[]> {
   const provider = hermezjs.Providers.getProvider();
   const ethereumAddress = hermezjs.Addresses.getEthereumAddress(wallet.hermezEthereumAddress);
   const partialERC20ABI = [
