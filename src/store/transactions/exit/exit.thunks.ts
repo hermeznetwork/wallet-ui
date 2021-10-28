@@ -106,9 +106,9 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         global: { signer, tokensPriceTask },
       } = getState();
       const provider = getProvider();
-      const gasPrice = await provider.getGasPrice();
+      const { maxFeePerGas } = await provider.getFeeData();
       const estimatedMerkleSiblingsLength = 4;
-      const overrides = { gasPrice };
+      const overrides = maxFeePerGas ? { maxFeePerGas } : {};
       const gasLimit = await TxFees.estimateWithdrawGasLimit(
         token,
         estimatedMerkleSiblingsLength,
@@ -116,7 +116,9 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         overrides,
         signer
       );
-      const feeBigNumber = BigNumber.from(gasLimit).mul(gasPrice);
+      const feeBigNumber = maxFeePerGas
+        ? BigNumber.from(gasLimit).mul(maxFeePerGas)
+        : BigNumber.from(gasLimit);
 
       if (tokensPriceTask.status === "successful" || tokensPriceTask.status === "reloading") {
         const tokenUSD = tokensPriceTask.data[ETHER_TOKEN_ID].USD;
