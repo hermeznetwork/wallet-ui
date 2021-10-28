@@ -477,10 +477,10 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   function getAccount(accountIndex: string): Promise<Account>;
 
   function getTransactions(
-    address: string | undefined,
-    tokenId: number | undefined,
-    batchNum: number | undefined,
-    accountIndex: string,
+    address?: string,
+    tokenId?: number,
+    batchNum?: number,
+    accountIndex?: string,
     fromItem?: number,
     order?: PaginationOrder,
     limit?: number,
