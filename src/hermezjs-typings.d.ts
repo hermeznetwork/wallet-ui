@@ -284,6 +284,11 @@ declare module "@hermeznetwork/*" {
     pendingItems: number;
   }
 
+  export interface Tokens {
+    tokens: Token[];
+    pendingItems: number;
+  }
+
   // library modules
   export { default as HermezWallet } from "@hermeznetwork/hermezjs/src/hermez-wallet";
   export { default as Utils } from "@hermeznetwork/hermezjs/src/utils";
@@ -340,13 +345,31 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   import { Token, HermezWallet } from "@hermeznetwork/hermezjs";
   import HermezCompressedAmount from "@hermeznetwork/hermezjs/src/hermez-compressed-amount";
   import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+  import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
 
-  // function deposit();
-  // function forceExit();
-  // function withdraw();
-  // function delayedWithdraw();
-  // function isInstantWithdrawalAllowed();
-  // function sendL2Transaction();
+  export interface TxData {
+    hash: string;
+    // type: number;
+    // accessList: unknown;
+    // blockHash: unknown;
+    // blockNumber: unknown;
+    // transactionIndex: unknown;
+    // confirmations: number;
+    // from: string;
+    // gasPrice: BigNumber;
+    // maxPriorityFeePerGas: BigNumber;
+    // maxFeePerGas: BigNumber;
+    // gasLimit: BigNumber;
+    // to: string;
+    // value: BigNumber;
+    // nonce: number;
+    // data: string;
+    // r: string;
+    // s: string;
+    // v: number;
+    // creates: unknown;
+    // chainId: number;
+  }
 
   interface Tx {
     type: TxType;
@@ -363,6 +386,23 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     id: string;
     nonce: number;
   }
+
+  function deposit(
+    amount: HermezCompressedAmount,
+    hezEthereumAddress: string,
+    token: Token,
+    babyJubJub: string,
+    signerData: SignerData,
+    providerUrl?: string,
+    gasLimit?: number,
+    gasMultiplier?: number
+  ): Promise<TxData>;
+
+  // function forceExit();
+  // function withdraw();
+  // function delayedWithdraw();
+  // function isInstantWithdrawalAllowed();
+  // function sendL2Transaction();
 
   function generateAndSendL2Tx(
     tx: Tx,
@@ -456,6 +496,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     HistoryTransactions,
     CoordinatorState,
     Token,
+    Tokens,
     PoolTransaction,
   } from "@hermeznetwork/hermezjs";
 
@@ -513,7 +554,14 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     fromItem?: number
   ): Promise<Exits>;
 
-  // function getTokens();
+  function getTokens(
+    tokenIds?: number[],
+    tokenSymbols?: string[],
+    fromItem?: number,
+    order?: PaginationOrder,
+    limit?: number,
+    axiosConfig?: Record<string, unknown>
+  ): Promise<Tokens>;
 
   function getToken(tokenId: number): Promise<Token>;
 
