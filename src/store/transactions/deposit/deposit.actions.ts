@@ -9,9 +9,9 @@ export enum DepositActionTypes {
   GO_TO_BUILD_TRANSACTION_STEP = "[DEPOSIT] GO TO BUILD TRANSACTION STEP",
   GO_TO_REVIEW_TRANSACTION_STEP = "[DEPOSIT] GO TO REVIEW TRANSACTION STEP",
   CHANGE_CURRENT_STEP = "[DEPOSIT] CHANGE CURRENT STEP",
-  LOAD_ACCOUNTS = "[DEPOSIT] LOAD ACCOUNTS",
-  LOAD_ACCOUNTS_SUCCESS = "[DEPOSIT] LOAD ACCOUNTS SUCCESS",
-  LOAD_ACCOUNTS_FAILURE = "[DEPOSIT] LOAD ACCOUNTS FAILURE",
+  LOAD_ETHEREUM_ACCOUNTS = "[DEPOSIT] LOAD ETHEREUM ACCOUNTS",
+  LOAD_ETHEREUM_ACCOUNTS_SUCCESS = "[DEPOSIT] LOAD ETHEREUM ACCOUNTS SUCCESS",
+  LOAD_ETHEREUM_ACCOUNTS_FAILURE = "[DEPOSIT] LOAD ETHEREUM ACCOUNTS FAILURE",
   LOAD_POOL_TRANSACTIONS = "[DEPOSIT] LOAD POOL TRANSACTIONS",
   LOAD_POOL_TRANSACTIONS_SUCCESS = "[DEPOSIT] LOAD POOL TRANSACTIONS SUCCESS",
   LOAD_POOL_TRANSACTIONS_FAILURE = "[DEPOSIT] LOAD POOL TRANSACTIONS FAILURE",
@@ -57,17 +57,17 @@ export interface ChangeCurrentStep {
   nextStep: Step;
 }
 
-export interface LoadAccounts {
-  type: DepositActionTypes.LOAD_ACCOUNTS;
+export interface LoadEthereumAccounts {
+  type: DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS;
 }
 
-export interface LoadAccountsSuccess {
-  type: DepositActionTypes.LOAD_ACCOUNTS_SUCCESS;
+export interface LoadEthereumAccountsSuccess {
+  type: DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS_SUCCESS;
   ethereumAccounts: EthereumAccount[];
 }
 
-export interface LoadAccountsFailure {
-  type: DepositActionTypes.LOAD_ACCOUNTS_FAILURE;
+export interface LoadEthereumAccountsFailure {
+  type: DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS_FAILURE;
   error: Error;
 }
 
@@ -144,9 +144,9 @@ export type DepositAction =
   | GoToBuildTransactionStep
   | GoToReviewTransactionStep
   | ChangeCurrentStep
-  | LoadAccounts
-  | LoadAccountsSuccess
-  | LoadAccountsFailure
+  | LoadEthereumAccounts
+  | LoadEthereumAccountsSuccess
+  | LoadEthereumAccountsFailure
   | LoadPoolTransactions
   | LoadPoolTransactionsSuccess
   | LoadPoolTransactionsFailure
@@ -190,22 +190,24 @@ function changeCurrentStep(nextStep: Step): ChangeCurrentStep {
   };
 }
 
-function loadAccounts(): LoadAccounts {
+function loadEthereumAccounts(): LoadEthereumAccounts {
   return {
-    type: DepositActionTypes.LOAD_ACCOUNTS,
+    type: DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS,
   };
 }
 
-function loadAccountsSuccess(ethereumAccounts: EthereumAccount[]): LoadAccountsSuccess {
+function loadEthereumAccountsSuccess(
+  ethereumAccounts: EthereumAccount[]
+): LoadEthereumAccountsSuccess {
   return {
-    type: DepositActionTypes.LOAD_ACCOUNTS_SUCCESS,
+    type: DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS_SUCCESS,
     ethereumAccounts,
   };
 }
 
-function loadAccountsFailure(error: Error): LoadAccountsFailure {
+function loadEthereumAccountsFailure(error: Error): LoadEthereumAccountsFailure {
   return {
-    type: DepositActionTypes.LOAD_ACCOUNTS_FAILURE,
+    type: DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS_FAILURE,
     error,
   };
 }
@@ -315,9 +317,9 @@ export {
   goToBuildTransactionStep,
   goToReviewTransactionStep,
   changeCurrentStep,
-  loadAccounts,
-  loadAccountsSuccess,
-  loadAccountsFailure,
+  loadEthereumAccounts,
+  loadEthereumAccountsSuccess,
+  loadEthereumAccountsFailure,
   loadPoolTransactions,
   loadPoolTransactionsSuccess,
   loadPoolTransactionsFailure,

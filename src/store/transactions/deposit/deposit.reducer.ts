@@ -75,7 +75,7 @@ function transactionReducer(
         step: action.nextStep,
       };
     }
-    case DepositActionTypes.LOAD_ACCOUNTS: {
+    case DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS: {
       return {
         ...state,
         ethereumAccountsTask:
@@ -87,7 +87,7 @@ function transactionReducer(
             : { status: "loading" },
       };
     }
-    case DepositActionTypes.LOAD_ACCOUNTS_SUCCESS: {
+    case DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS_SUCCESS: {
       return {
         ...state,
         ethereumAccountsTask: {
@@ -96,7 +96,7 @@ function transactionReducer(
         },
       };
     }
-    case DepositActionTypes.LOAD_ACCOUNTS_FAILURE: {
+    case DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS_FAILURE: {
       return {
         ...state,
         ethereumAccountsTask: {

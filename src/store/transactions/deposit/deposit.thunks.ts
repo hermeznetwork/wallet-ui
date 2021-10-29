@@ -85,7 +85,7 @@ function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: 
       global: { wallet, tokensPriceTask },
     } = getState();
 
-    dispatch(depositActions.loadAccounts());
+    dispatch(depositActions.loadEthereumAccounts());
 
     if (wallet !== undefined) {
       return CoordinatorAPI.getTokens(undefined, undefined, undefined, undefined, 2049).then(
@@ -109,8 +109,10 @@ function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: 
                 return { ...ethereumAccount, balance: ethereumAccount.balance, fiatBalance };
               });
             })
-            .then((metaMaskTokens) => dispatch(depositActions.loadAccountsSuccess(metaMaskTokens)))
-            .catch((err) => dispatch(depositActions.loadAccountsFailure(err)));
+            .then((metaMaskTokens) =>
+              dispatch(depositActions.loadEthereumAccountsSuccess(metaMaskTokens))
+            )
+            .catch((err) => dispatch(depositActions.loadEthereumAccountsFailure(err)));
         }
       );
     }
