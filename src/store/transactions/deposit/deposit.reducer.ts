@@ -7,18 +7,13 @@ import {
 import { AsyncTask } from "src/utils/types";
 // domain
 import { EstimatedDepositFee } from "src/domain";
-import {
-  PoolTransaction,
-  RecommendedFee,
-  EthereumAccount,
-  EthereumAccountWithBalance,
-} from "src/domain/hermez";
+import { PoolTransaction, RecommendedFee, EthereumAccount } from "src/domain/hermez";
 
 export interface DepositState {
   step: Step;
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
-  accountTask: AsyncTask<EthereumAccount, string>;
-  accountsTask: AsyncTask<EthereumAccountWithBalance[], Error>;
+  ethereumAccountTask: AsyncTask<EthereumAccount, string>;
+  ethereumAccountsTask: AsyncTask<EthereumAccount[], Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>;
   transaction: TransactionToReview | undefined;
@@ -30,10 +25,10 @@ const initialDepositState: DepositState = {
   poolTransactionsTask: {
     status: "pending",
   },
-  accountTask: {
+  ethereumAccountTask: {
     status: "pending",
   },
-  accountsTask: {
+  ethereumAccountsTask: {
     status: "pending",
   },
   feesTask: {
@@ -61,9 +56,9 @@ function transactionReducer(
       return {
         ...state,
         step: "build-transaction",
-        accountTask: {
+        ethereumAccountTask: {
           status: "successful",
-          data: action.account,
+          data: action.ethereumAccount,
         },
       };
     }
@@ -83,11 +78,11 @@ function transactionReducer(
     case DepositActionTypes.LOAD_ACCOUNTS: {
       return {
         ...state,
-        accountsTask:
-          state.accountsTask.status === "successful"
+        ethereumAccountsTask:
+          state.ethereumAccountsTask.status === "successful"
             ? {
                 status: "reloading",
-                data: state.accountsTask.data,
+                data: state.ethereumAccountsTask.data,
               }
             : { status: "loading" },
       };
@@ -95,16 +90,16 @@ function transactionReducer(
     case DepositActionTypes.LOAD_ACCOUNTS_SUCCESS: {
       return {
         ...state,
-        accountsTask: {
+        ethereumAccountsTask: {
           status: "successful",
-          data: action.accounts,
+          data: action.ethereumAccounts,
         },
       };
     }
     case DepositActionTypes.LOAD_ACCOUNTS_FAILURE: {
       return {
         ...state,
-        accountsTask: {
+        ethereumAccountsTask: {
           status: "failed",
           error: action.error,
         },
@@ -145,7 +140,7 @@ function transactionReducer(
     case DepositActionTypes.LOAD_ETHEREUM_ACCOUNT: {
       return {
         ...state,
-        accountTask: {
+        ethereumAccountTask: {
           status: "loading",
         },
       };
@@ -154,7 +149,7 @@ function transactionReducer(
       return {
         ...state,
         step: "build-transaction",
-        accountTask: {
+        ethereumAccountTask: {
           status: "successful",
           data: action.ethereumAccount,
         },
@@ -163,7 +158,7 @@ function transactionReducer(
     case DepositActionTypes.LOAD_ETHEREUM_ACCOUNT_FAILURE: {
       return {
         ...state,
-        accountTask: {
+        ethereumAccountTask: {
           status: "failed",
           error: action.error,
         },

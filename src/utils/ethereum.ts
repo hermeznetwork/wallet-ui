@@ -55,17 +55,22 @@ function getTokens(
       return balance;
     }
   });
-  const balances = Promise.all(balancePromises).then((balanceList) => {
-    return balanceList
-      .map((balance, index) => {
-        const token = hermezTokens[index];
-        return {
-          balance,
-          token,
-        };
-      })
-      .filter((tokenAndBalance) => tokenAndBalance.balance.gt(BigNumber.from(0)));
-  });
+
+  const balances = Promise.all(balancePromises).then((balanceList) =>
+    balanceList.reduce(
+      (acc: EthereumAccount[], balance: BigNumber, index: number) =>
+        balance.gt(BigNumber.from(0))
+          ? [
+              ...acc,
+              {
+                balance: balance.toString(),
+                token: hermezTokens[index],
+              },
+            ]
+          : acc,
+      []
+    )
+  );
 
   return balances;
 }

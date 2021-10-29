@@ -26,14 +26,13 @@ import {
   Token,
   RecommendedFee,
   EthereumAccount,
-  EthereumAccountWithBalance,
 } from "src/domain/hermez";
 import { PendingDeposits } from "src/domain/local-storage";
 import { EthereumNetwork } from "src/domain/ethereum";
 
 interface DepositStateProps {
-  accountsTask: AsyncTask<EthereumAccountWithBalance[], Error>;
-  accountTask: AsyncTask<EthereumAccount, string>;
+  ethereumAccountsTask: AsyncTask<EthereumAccount[], Error>;
+  ethereumAccountTask: AsyncTask<EthereumAccount, string>;
   estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
@@ -53,8 +52,8 @@ interface DepositHandlerProps {
   onChangeHeader: (step: depositActions.Step, accountIndex: string | null) => void;
   onCheckPendingDeposits: () => void;
   onCleanup: () => void;
-  onDeposit: (amount: BigNumber, account: EthereumAccountWithBalance) => void;
-  onGoToBuildTransactionStep: (account: EthereumAccount) => void;
+  onDeposit: (amount: BigNumber, ethereumAccount: EthereumAccount) => void;
+  onGoToBuildTransactionStep: (ethereumAccount: EthereumAccount) => void;
   onGoToChooseAccountStep: () => void;
   onGoToTransactionOverviewStep: (transactionToReview: depositActions.TransactionToReview) => void;
   onLoadEstimatedDepositFee: (token: Token, amount: BigNumber) => void;
@@ -67,8 +66,8 @@ interface DepositHandlerProps {
 type DepositProps = DepositStateProps & DepositHandlerProps;
 
 function Deposit({
-  accountsTask,
-  accountTask,
+  ethereumAccountsTask: accountsTask,
+  ethereumAccountTask: accountTask,
   estimatedDepositFeeTask,
   ethereumNetworkTask,
   feesTask,
@@ -176,7 +175,9 @@ function Deposit({
                 }
                 pendingDeposits={accountPendingDeposits}
                 onLoadAccounts={onLoadEthereumAccounts}
-                onAccountClick={(account: EthereumAccount) => onGoToBuildTransactionStep(account)}
+                onAccountClick={(ethereumAccount: EthereumAccount) =>
+                  onGoToBuildTransactionStep(ethereumAccount)
+                }
               />
             );
           }
@@ -219,7 +220,7 @@ function Deposit({
                 transaction={{
                   type: TxType.Deposit,
                   amount: transactionToReview.amount,
-                  account: accountTask.data,
+                  ethereumAccount: accountTask.data,
                   onDeposit,
                 }}
                 preferredCurrency={preferredCurrency}
@@ -242,8 +243,8 @@ function Deposit({
 }
 
 const mapStateToProps = (state: AppState): DepositStateProps => ({
-  accountsTask: state.deposit.accountsTask,
-  accountTask: state.deposit.accountTask,
+  ethereumAccountsTask: state.deposit.ethereumAccountsTask,
+  ethereumAccountTask: state.deposit.ethereumAccountTask,
   estimatedDepositFeeTask: state.deposit.estimatedDepositFeeTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
   feesTask: state.deposit.feesTask,
@@ -312,13 +313,13 @@ const mapDispatchToProps = (dispatch: AppDispatch): DepositHandlerProps => ({
   onLoadEthereumAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) =>
     dispatch(depositThunks.fetchAccounts(fiatExchangeRates, preferredCurrency)),
   onGoToChooseAccountStep: () => dispatch(depositActions.goToChooseAccountStep()),
-  onGoToBuildTransactionStep: (account: EthereumAccount) =>
-    dispatch(depositActions.goToBuildTransactionStep(account)),
+  onGoToBuildTransactionStep: (ethereumAccount: EthereumAccount) =>
+    dispatch(depositActions.goToBuildTransactionStep(ethereumAccount)),
   onGoToTransactionOverviewStep: (transactionToReview: depositActions.TransactionToReview) =>
     dispatch(depositActions.goToReviewTransactionStep(transactionToReview)),
   onLoadEstimatedDepositFee: () => dispatch(depositThunks.fetchEstimatedDepositFee()),
-  onDeposit: (amount: BigNumber, account: EthereumAccountWithBalance) =>
-    dispatch(depositThunks.deposit(amount, account)),
+  onDeposit: (amount: BigNumber, ethereumAccount: EthereumAccount) =>
+    dispatch(depositThunks.deposit(amount, ethereumAccount)),
   onCleanup: () => dispatch(depositActions.resetState()),
 });
 

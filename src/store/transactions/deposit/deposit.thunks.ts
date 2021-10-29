@@ -16,7 +16,7 @@ import { getNextBestForger } from "src/utils/coordinator";
 import { getDepositFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
-import { FiatExchangeRates, EthereumAccountWithBalance } from "src/domain/hermez";
+import { FiatExchangeRates, EthereumAccount } from "src/domain/hermez";
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
@@ -92,22 +92,21 @@ function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: 
         (res) => {
           ethereum
             .getTokens(wallet, res.tokens)
-            .then((ethereumAccounts): EthereumAccountWithBalance[] => {
+            .then((ethereumAccounts): EthereumAccount[] => {
               return ethereumAccounts.map((ethereumAccount) => {
-                const tokenBalance = ethereumAccount.balance.toString();
-                const token =
-                  tokensPriceTask.status === "successful"
-                    ? { ...tokensPriceTask.data[ethereumAccount.token.id] }
-                    : { ...ethereumAccount.token };
+                const tokenFromTokensPrice =
+                  tokensPriceTask.status === "successful" &&
+                  tokensPriceTask.data[ethereumAccount.token.id];
+                const token = tokenFromTokensPrice ? tokenFromTokensPrice : ethereumAccount.token;
 
                 const fiatBalance = convertTokenAmountToFiat(
-                  tokenBalance,
+                  ethereumAccount.balance,
                   token,
                   preferredCurrency,
                   fiatExchangeRates
                 );
 
-                return { ...ethereumAccount, balance: tokenBalance, fiatBalance };
+                return { ...ethereumAccount, balance: ethereumAccount.balance, fiatBalance };
               });
             })
             .then((metaMaskTokens) => dispatch(depositActions.loadAccountsSuccess(metaMaskTokens)))
@@ -180,7 +179,7 @@ function fetchEstimatedDepositFee(): AppThunk {
   };
 }
 
-function deposit(amount: BigNumber, account: EthereumAccountWithBalance): AppThunk {
+function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, signer },
@@ -192,12 +191,12 @@ function deposit(amount: BigNumber, account: EthereumAccountWithBalance): AppThu
       return Tx.deposit(
         HermezCompressedAmount.compressAmount(amount.toString()),
         wallet.hermezEthereumAddress,
-        account.token,
+        ethereumAccount.token,
         wallet.publicKeyCompressedHex,
         signer
       )
         .then((txData) => {
-          CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [account.token.id])
+          CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [ethereumAccount.token.id])
             .then((res) => {
               // ToDo: What if there's no account?
               const account = res.accounts.length && res.accounts[0];

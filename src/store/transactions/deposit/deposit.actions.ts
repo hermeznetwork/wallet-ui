@@ -2,13 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
 import { EstimatedDepositFee } from "src/domain";
-import {
-  Account,
-  PoolTransaction,
-  RecommendedFee,
-  EthereumAccount,
-  EthereumAccountWithBalance,
-} from "src/domain/hermez";
+import { Account, PoolTransaction, RecommendedFee, EthereumAccount } from "src/domain/hermez";
 
 export enum DepositActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[DEPOSIT] GO TO CHOOSE ACCOUNT STEP",
@@ -43,7 +37,7 @@ export interface GoToChooseAccountStep {
 
 export interface GoToBuildTransactionStep {
   type: DepositActionTypes.GO_TO_BUILD_TRANSACTION_STEP;
-  account: EthereumAccount;
+  ethereumAccount: EthereumAccount;
 }
 
 export interface TransactionToReview {
@@ -69,7 +63,7 @@ export interface LoadAccounts {
 
 export interface LoadAccountsSuccess {
   type: DepositActionTypes.LOAD_ACCOUNTS_SUCCESS;
-  accounts: EthereumAccountWithBalance[];
+  ethereumAccounts: EthereumAccount[];
 }
 
 export interface LoadAccountsFailure {
@@ -175,10 +169,10 @@ function goToChooseAccountStep(): GoToChooseAccountStep {
   };
 }
 
-function goToBuildTransactionStep(account: EthereumAccount): GoToBuildTransactionStep {
+function goToBuildTransactionStep(ethereumAccount: EthereumAccount): GoToBuildTransactionStep {
   return {
     type: DepositActionTypes.GO_TO_BUILD_TRANSACTION_STEP,
-    account,
+    ethereumAccount,
   };
 }
 
@@ -202,10 +196,10 @@ function loadAccounts(): LoadAccounts {
   };
 }
 
-function loadAccountsSuccess(accounts: EthereumAccountWithBalance[]): LoadAccountsSuccess {
+function loadAccountsSuccess(ethereumAccounts: EthereumAccount[]): LoadAccountsSuccess {
   return {
     type: DepositActionTypes.LOAD_ACCOUNTS_SUCCESS,
-    accounts,
+    ethereumAccounts,
   };
 }
 
