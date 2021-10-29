@@ -222,7 +222,6 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
             .catch(() => ({}));
         })
         .catch((error) => {
-          console.error(error);
           dispatch(depositActions.stopTransactionApproval());
           handleTransactionFailure(dispatch, error);
         });

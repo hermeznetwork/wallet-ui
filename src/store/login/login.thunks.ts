@@ -278,7 +278,6 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
           dispatch(push(redirectRoute));
         })
         .catch((error: Error) => {
-          console.error(error);
           dispatch(loginActions.addAccountAuthFailure(error.message));
           dispatch(globalActions.openSnackbar(error.message));
           dispatch(loginActions.goToWalletSelectorStep());

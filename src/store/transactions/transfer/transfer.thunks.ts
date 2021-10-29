@@ -156,7 +156,6 @@ function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: n
       return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
         .catch((error) => {
-          console.error(error);
           dispatch(transferActions.stopTransactionApproval());
           handleTransactionFailure(dispatch, error);
         });
