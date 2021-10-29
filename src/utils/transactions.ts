@@ -26,7 +26,7 @@ function getTransactionAmount(transaction: HistoryTransaction): string | undefin
 
   return (transaction.type === TxType.Deposit ||
     transaction.type === TxType.CreateAccountDeposit) &&
-    transaction.L1Info !== null
+    transaction.L1Info
     ? transaction.L1Info.depositAmount
     : transaction.amount;
 }

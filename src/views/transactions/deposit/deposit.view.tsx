@@ -66,8 +66,8 @@ interface DepositHandlerProps {
 type DepositProps = DepositStateProps & DepositHandlerProps;
 
 function Deposit({
-  ethereumAccountsTask: accountsTask,
-  ethereumAccountTask: accountTask,
+  ethereumAccountsTask,
+  ethereumAccountTask,
   estimatedDepositFeeTask,
   ethereumNetworkTask,
   feesTask,
@@ -142,10 +142,10 @@ function Deposit({
   ]);
 
   React.useEffect(() => {
-    if (accountTask.status === "failed") {
+    if (ethereumAccountTask.status === "failed") {
       onGoToChooseAccountStep();
     }
-  }, [accountTask, onGoToChooseAccountStep]);
+  }, [ethereumAccountTask, onGoToChooseAccountStep]);
 
   React.useEffect(() => onCleanup, [onCleanup]);
 
@@ -164,7 +164,7 @@ function Deposit({
             return (
               <AccountSelector
                 transactionType={TxType.Deposit}
-                accountsTask={accountsTask}
+                accountsTask={ethereumAccountsTask}
                 poolTransactionsTask={poolTransactionsTask}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
@@ -182,9 +182,10 @@ function Deposit({
             );
           }
           case "build-transaction": {
-            return accountTask.status === "successful" || accountTask.status === "reloading" ? (
+            return ethereumAccountTask.status === "successful" ||
+              ethereumAccountTask.status === "reloading" ? (
               <TransactionForm
-                account={accountTask.data}
+                account={ethereumAccountTask.data}
                 transactionType={TxType.Deposit}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
@@ -213,14 +214,15 @@ function Deposit({
           case "review-transaction": {
             return wallet !== undefined &&
               transactionToReview !== undefined &&
-              (accountTask.status === "successful" || accountTask.status === "reloading") ? (
+              (ethereumAccountTask.status === "successful" ||
+                ethereumAccountTask.status === "reloading") ? (
               <TransactionOverview
                 wallet={wallet}
                 isTransactionBeingApproved={isTransactionBeingApproved}
                 transaction={{
                   type: TxType.Deposit,
                   amount: transactionToReview.amount,
-                  ethereumAccount: accountTask.data,
+                  account: ethereumAccountTask.data,
                   onDeposit,
                 }}
                 preferredCurrency={preferredCurrency}

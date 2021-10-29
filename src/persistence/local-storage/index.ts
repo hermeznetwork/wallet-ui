@@ -90,6 +90,9 @@ const pendingWithdrawsParser: z.ZodSchema<PendingWithdraws> = z.record(
 export function getPendingWithdraws(): PendingWithdraws {
   const pendingWithdraws: unknown = getStorageByKey(constants.PENDING_WITHDRAWS_KEY);
   const parsedPendingWithdraws = pendingWithdrawsParser.safeParse(pendingWithdraws);
+  if (!parsedPendingWithdraws.success) {
+    console.error(parsedPendingWithdraws.error);
+  }
   return parsedPendingWithdraws.success ? parsedPendingWithdraws.data : {};
 }
 
@@ -141,6 +144,9 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
   const pendingDelayedWithdraws: unknown = getStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY);
   const parsedPendingDelayedWithdraws =
     pendingDelayedWithdrawsParser.safeParse(pendingDelayedWithdraws);
+  if (!parsedPendingDelayedWithdraws.success) {
+    console.error(parsedPendingDelayedWithdraws.error);
+  }
   return parsedPendingDelayedWithdraws.success ? parsedPendingDelayedWithdraws.data : {};
 }
 
@@ -240,6 +246,9 @@ const pendingDepositsParser: z.ZodSchema<PendingDeposits> = z.record(
 export function getPendingDeposits(): PendingDeposits {
   const pendingDeposits: unknown = getStorageByKey(constants.PENDING_DEPOSITS_KEY);
   const parsedPendingDeposits = pendingDepositsParser.safeParse(pendingDeposits);
+  if (!parsedPendingDeposits.success) {
+    console.error(parsedPendingDeposits.error);
+  }
   return parsedPendingDeposits.success ? parsedPendingDeposits.data : {};
 }
 
