@@ -275,12 +275,14 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
       const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.data.chainId] || {};
       const currentSignature = chainIdSignatures[wallet.hermezEthereumAddress];
-      const authorization = await getCreateAccountAuthorization(wallet.hermezEthereumAddress);
+      const authorization = currentSignature
+        ? null
+        : await getCreateAccountAuthorization(wallet.hermezEthereumAddress);
 
       try {
         const signature = currentSignature
           ? currentSignature
-          : await wallet.signCreateAccountAuthorization();
+          : authorization || (await wallet.signCreateAccountAuthorization());
 
         dispatch(setAccountAuthSignature(wallet.hermezEthereumAddress, signature));
 
