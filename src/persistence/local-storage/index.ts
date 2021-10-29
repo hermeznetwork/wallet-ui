@@ -46,10 +46,6 @@ export function initStorage(key: string): Record<string, never> {
   return initialStorage;
 }
 
-// Parsing Helpers
-
-const stringToNumber = z.string().transform((val) => parseFloat(val));
-
 // Auth Signatures
 
 const authSignaturesParser: z.ZodSchema<AuthSignatures> = z.record(z.record(z.string()));
@@ -60,6 +56,7 @@ export function getAuthSignatures(): AuthSignatures {
   if (parsedAuthSignatures.success) {
     return parsedAuthSignatures.data;
   } else {
+    console.error("An error occurred parsing AuthSignatures");
     console.error(parsedAuthSignatures.error);
     return {};
   }
@@ -78,6 +75,7 @@ export function getPreferredCurrency(): string {
     return parsedPreferredCurrency.data;
   } else {
     setPreferredCurrency(constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY);
+    console.error("An error occurred parsing PreferredCurrency");
     console.error(parsedPreferredCurrency.error);
     return constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY;
   }
@@ -99,6 +97,7 @@ export function getPendingWithdraws(): PendingWithdraws {
   if (parsedPendingWithdraws.success) {
     return parsedPendingWithdraws.data;
   } else {
+    console.error("An error occurred parsing PendingWithdraws");
     console.error(parsedPendingWithdraws.error);
     return {};
   }
@@ -155,6 +154,7 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
   if (parsedPendingDelayedWithdraws.success) {
     return parsedPendingDelayedWithdraws.data;
   } else {
+    console.error("An error occurred parsing PendingDelayedWithdraws");
     console.error(parsedPendingDelayedWithdraws.error);
     return {};
   }
@@ -259,6 +259,7 @@ export function getPendingDeposits(): PendingDeposits {
   if (parsedPendingDeposits.success) {
     return parsedPendingDeposits.data;
   } else {
+    console.error("An error occurred parsing PendingDeposits");
     console.error(parsedPendingDeposits.error);
     return {};
   }
@@ -349,10 +350,11 @@ export function removePendingDepositByHash(
 
 export function getCurrentStorageVersion(): number | undefined {
   const currentStorageVersion: unknown = getStorageByKey(constants.STORAGE_VERSION_KEY);
-  const parsedCurrentStorageVersion = stringToNumber.safeParse(currentStorageVersion);
+  const parsedCurrentStorageVersion = z.number().safeParse(currentStorageVersion);
   if (parsedCurrentStorageVersion.success) {
     return parsedCurrentStorageVersion.data;
   } else {
+    console.error("An error occurred parsing CurrentStorageVersion");
     console.error(parsedCurrentStorageVersion.error);
     return undefined;
   }
