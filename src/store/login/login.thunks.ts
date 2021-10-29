@@ -256,6 +256,28 @@ async function getCreateAccountAuthorization(
     return null;
   }
 }
+export interface SignatureAuth {
+  signature: string;
+  sendSignature: boolean;
+}
+
+async function getSignature(
+  wallet: HermezWallet.HermezWallet,
+  storageSignature: string
+): Promise<SignatureAuth> {
+  if (storageSignature) {
+    return { signature: storageSignature, sendSignature: true };
+  }
+
+  const apiSignature = await getCreateAccountAuthorization(wallet.hermezEthereumAddress);
+
+  if (apiSignature) {
+    return { signature: apiSignature, sendSignature: false };
+  }
+  const signature = await wallet.signCreateAccountAuthorization();
+
+  return { signature, sendSignature: true };
+}
 
 /**
  * Sends a create account authorization request if it hasn't been done
@@ -274,19 +296,14 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
     ) {
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
       const chainIdSignatures = accountAuthSignatures[ethereumNetworkTask.data.chainId] || {};
-      const currentSignature = chainIdSignatures[wallet.hermezEthereumAddress];
-      const authorization = currentSignature
-        ? null
-        : await getCreateAccountAuthorization(wallet.hermezEthereumAddress);
+      const storageSignature = chainIdSignatures[wallet.hermezEthereumAddress];
 
       try {
-        const signature = currentSignature
-          ? currentSignature
-          : authorization || (await wallet.signCreateAccountAuthorization());
+        const { signature, sendSignature } = await getSignature(wallet, storageSignature);
 
         dispatch(setAccountAuthSignature(wallet.hermezEthereumAddress, signature));
 
-        if (!authorization) {
+        if (sendSignature) {
           await persistence.postCreateAccountAuthorization(
             wallet.hermezEthereumAddress,
             wallet.publicKeyBase64,
