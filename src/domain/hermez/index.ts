@@ -15,6 +15,7 @@ export type {
   HermezWallet,
   HistoryTransaction,
   ISOStringDate,
+  L1Info,
   MerkleProof,
   NextForger,
   PoolTransaction,
@@ -40,13 +41,13 @@ export interface PendingDeposit {
 
 export interface PendingWithdraw {
   accountIndex: string;
+  amount: string;
   batchNum: number;
   hash: string;
   id: string;
   timestamp: hermezjs.ISOStringDate;
-  // amount: string;
+  token: hermezjs.Token;
   // hermezEthereumAddress: string;
-  // token: hermezjs.Token;
 }
 
 export type PendingDelayedWithdraw = PendingWithdraw & {
