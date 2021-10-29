@@ -3,11 +3,13 @@ import * as ethers from "ethers";
 
 import useFeesTableStyles from "./fees-table.styles";
 import TransactionInfoRow from "../../../shared/transaction-info-table-row/transaction-info-row.view";
+import FiatAmount from "../../../shared/fiat-amount/fiat-amount.view";
 import { MAX_TOKEN_DECIMALS } from "../../../../constants";
 import {
   CurrencySymbol,
   getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency,
+  trimZeros,
 } from "../../../../utils/currencies";
 
 function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiatExchangeRates }) {
@@ -24,7 +26,7 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
 
   function getEstimatedWithdrawFeeInFiat() {
     if (!estimatedWithdrawFee?.USD) {
-      return "--";
+      return undefined;
     }
 
     return getAmountInPreferredCurrency(
@@ -42,36 +44,21 @@ function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiat
     return Number(ethers.utils.formatEther(estimatedWithdrawFee.amount));
   }
 
-  if (l2Fee && estimatedWithdrawFee) {
-    return (
-      <div className={classes.feesTable}>
-        <TransactionInfoRow
-          title="Hermez fee"
-          subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getL2FeeInFiat()}`}
-          hint="Step 1"
-          value={`${Number(l2Fee.toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`}
-        />
-        <TransactionInfoRow
-          title="Ethereum fee (estimated)"
-          hint="Step 2"
-          subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getEstimatedWithdrawFeeInFiat()}`}
-          value={`${getFormattedWithdrawFee().toFixed(MAX_TOKEN_DECIMALS)} ETH`}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className={classes.feesTable}>
       <TransactionInfoRow
         title={estimatedWithdrawFee ? "Hermez fee" : "Fee"}
-        subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getL2FeeInFiat()}`}
-        value={`${Number(l2Fee.toFixed(MAX_TOKEN_DECIMALS))} ${token.symbol}`}
+        hint={estimatedWithdrawFee && "Step 1"}
+        subtitle={<FiatAmount amount={getL2FeeInFiat()} currency={preferredCurrency} />}
+        value={`${trimZeros(l2Fee, MAX_TOKEN_DECIMALS)} ${token.symbol}`}
       />
       {estimatedWithdrawFee && (
         <TransactionInfoRow
           title="Ethereum fee (estimated)"
-          subtitle={`${CurrencySymbol[preferredCurrency].symbol}${getEstimatedWithdrawFeeInFiat()}`}
+          hint="Step 2"
+          subtitle={
+            <FiatAmount amount={getEstimatedWithdrawFeeInFiat()} currency={preferredCurrency} />
+          }
           value={`${getFormattedWithdrawFee().toFixed(MAX_TOKEN_DECIMALS)} ETH`}
         />
       )}
