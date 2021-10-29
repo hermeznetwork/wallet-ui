@@ -256,6 +256,7 @@ async function getCreateAccountAuthorization(
     return null;
   }
 }
+
 export interface SignatureAuth {
   signature: string;
   sendSignature: boolean;
