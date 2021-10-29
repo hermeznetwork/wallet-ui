@@ -19,7 +19,7 @@ function getDepositFee(token: Token, gasPrice: BigNumber): BigNumber {
  * Calculates the actual fee that will be paid for a specific transaction
  * taking into account the type of transaction, the amount and minimum fee
  */
-function getRealFee(amount: string | number, token: Token, minimumFee: number): number {
+function getRealFee(amount: string, token: Token, minimumFee: number): number {
   const decimals = token.decimals;
   const minimumFeeBigInt = getTokenAmountBigInt(minimumFee.toFixed(decimals), decimals).toString();
   const feeIndex = getFeeIndex(minimumFeeBigInt, amount);
