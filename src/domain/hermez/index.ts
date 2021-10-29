@@ -20,7 +20,6 @@ export type {
   NextForger,
   PoolTransaction,
   RecommendedFee,
-  ScalarValue,
   Signers,
   Token,
 } from "@hermeznetwork/hermezjs";
