@@ -6,7 +6,7 @@ import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 
 // domain
-import { Token, ScalarValue } from "src/domain/hermez";
+import { Token } from "src/domain/hermez";
 
 /**
  * Calculates the fee for a L1 deposit into Hermez Network
@@ -19,7 +19,7 @@ function getDepositFee(token: Token, gasPrice: BigNumber): BigNumber {
  * Calculates the actual fee that will be paid for a specific transaction
  * taking into account the type of transaction, the amount and minimum fee
  */
-function getRealFee(amount: ScalarValue, token: Token, minimumFee: number): number {
+function getRealFee(amount: string, token: Token, minimumFee: number): number {
   const decimals = token.decimals;
   const minimumFeeBigInt = getTokenAmountBigInt(minimumFee.toFixed(decimals), decimals).toString();
   const feeIndex = getFeeIndex(minimumFeeBigInt, amount);
