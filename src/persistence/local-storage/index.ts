@@ -57,7 +57,12 @@ const authSignaturesParser: z.ZodSchema<AuthSignatures> = z.record(z.record(z.st
 export function getAuthSignatures(): AuthSignatures {
   const authSignatures: unknown = getStorageByKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY);
   const parsedAuthSignatures = authSignaturesParser.safeParse(authSignatures);
-  return parsedAuthSignatures.success ? parsedAuthSignatures.data : {};
+  if (parsedAuthSignatures.success) {
+    return parsedAuthSignatures.data;
+  } else {
+    console.error(parsedAuthSignatures.error);
+    return {};
+  }
 }
 
 export function setAuthSignatures(authSignatures: AuthSignatures): void {
@@ -73,6 +78,7 @@ export function getPreferredCurrency(): string {
     return parsedPreferredCurrency.data;
   } else {
     setPreferredCurrency(constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY);
+    console.error(parsedPreferredCurrency.error);
     return constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY;
   }
 }
@@ -90,10 +96,12 @@ const pendingWithdrawsParser: z.ZodSchema<PendingWithdraws> = z.record(
 export function getPendingWithdraws(): PendingWithdraws {
   const pendingWithdraws: unknown = getStorageByKey(constants.PENDING_WITHDRAWS_KEY);
   const parsedPendingWithdraws = pendingWithdrawsParser.safeParse(pendingWithdraws);
-  if (!parsedPendingWithdraws.success) {
+  if (parsedPendingWithdraws.success) {
+    return parsedPendingWithdraws.data;
+  } else {
     console.error(parsedPendingWithdraws.error);
+    return {};
   }
-  return parsedPendingWithdraws.success ? parsedPendingWithdraws.data : {};
 }
 
 export function addPendingWithdraw(
@@ -144,10 +152,12 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
   const pendingDelayedWithdraws: unknown = getStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY);
   const parsedPendingDelayedWithdraws =
     pendingDelayedWithdrawsParser.safeParse(pendingDelayedWithdraws);
-  if (!parsedPendingDelayedWithdraws.success) {
+  if (parsedPendingDelayedWithdraws.success) {
+    return parsedPendingDelayedWithdraws.data;
+  } else {
     console.error(parsedPendingDelayedWithdraws.error);
+    return {};
   }
-  return parsedPendingDelayedWithdraws.success ? parsedPendingDelayedWithdraws.data : {};
 }
 
 export function addPendingDelayedWithdraw(
@@ -246,10 +256,12 @@ const pendingDepositsParser: z.ZodSchema<PendingDeposits> = z.record(
 export function getPendingDeposits(): PendingDeposits {
   const pendingDeposits: unknown = getStorageByKey(constants.PENDING_DEPOSITS_KEY);
   const parsedPendingDeposits = pendingDepositsParser.safeParse(pendingDeposits);
-  if (!parsedPendingDeposits.success) {
+  if (parsedPendingDeposits.success) {
+    return parsedPendingDeposits.data;
+  } else {
     console.error(parsedPendingDeposits.error);
+    return {};
   }
-  return parsedPendingDeposits.success ? parsedPendingDeposits.data : {};
 }
 
 export function addPendingDeposit(
@@ -338,5 +350,10 @@ export function removePendingDepositByHash(
 export function getCurrentStorageVersion(): number | undefined {
   const currentStorageVersion: unknown = getStorageByKey(constants.STORAGE_VERSION_KEY);
   const parsedCurrentStorageVersion = stringToNumber.safeParse(currentStorageVersion);
-  return parsedCurrentStorageVersion.success ? parsedCurrentStorageVersion.data : undefined;
+  if (parsedCurrentStorageVersion.success) {
+    return parsedCurrentStorageVersion.data;
+  } else {
+    console.error(parsedCurrentStorageVersion.error);
+    return undefined;
+  }
 }
