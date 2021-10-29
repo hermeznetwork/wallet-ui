@@ -26,6 +26,7 @@ import * as browser from "../../../../utils/browser";
 import Fee from "../fee/fee.view";
 import Alert from "../../../shared/alert/alert.view";
 import TransactionAmountInput from "../transaction-amount-input/transaction-amount-input.view";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 function TransactionForm({
   transactionType,
@@ -262,7 +263,7 @@ function TransactionForm({
         const accountChecks = [
           getAccounts(receiver, [account.token.id]),
           ...(!isHermezBjjAddress(receiver)
-            ? [getCreateAccountAuthorization(receiver).catch(() => undefined)]
+            ? [getCreateAccountAuthorization(receiver).catch(() => ({}))]
             : []),
         ];
         return Promise.all(accountChecks).then((res) => {
@@ -287,7 +288,6 @@ function TransactionForm({
       }
       default: {
         const transactionFee = getFee(fees, true);
-
         return onSubmit({
           amount: amount,
           from: {},
@@ -308,7 +308,10 @@ function TransactionForm({
                 <p className={classes.tokenName}>{account.token.name}</p>
                 {showInFiat ? (
                   <p>
-                    <span>{preferredCurrency}</span> <span>{getAmountInFiat(account.balance)}</span>
+                    <FiatAmount
+                      currency={preferredCurrency}
+                      amount={getAmountInFiat(account.balance)}
+                    />
                   </p>
                 ) : (
                   <p className={classes.tokenSymbolAmount}>
