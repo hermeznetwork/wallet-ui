@@ -78,9 +78,9 @@ function mergeDelayedWithdraws(
         ? [...mergedPendingDelayedWithdraws, pendingDelayedWithdraw]
         : mergedPendingDelayedWithdraws.map((mergedPendingDelayedWithdraw) => {
             return mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken
-              ? // We need to sum up the amounts and use the latest timestamp for the timer
-                {
+              ? {
                   ...mergedPendingDelayedWithdraw,
+                  // We need to sum up the amounts and use the latest timestamp for the timer
                   amount: BigNumber.from(mergedPendingDelayedWithdraw.amount)
                     .add(BigNumber.from(pendingDelayedWithdraw.amount))
                     .toString(),
