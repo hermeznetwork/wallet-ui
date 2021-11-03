@@ -74,32 +74,24 @@ function mergeDelayedWithdraws(
         (delayedWithdraw) => delayedWithdraw.token.id === pendingDelayedWithdraw.token.id
       );
 
-      if (!existingPendingDelayedWithdrawWithToken) {
-        mergedPendingDelayedWithdraws.push(pendingDelayedWithdraw);
-      } else {
-        mergedPendingDelayedWithdraws = mergedPendingDelayedWithdraws.map(
-          (mergedPendingDelayedWithdraw) => {
-            if (mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken) {
-              // We need to sum up the amounts and use the latest timestamp for the timer
-              return {
-                ...mergedPendingDelayedWithdraw,
-                amount: BigNumber.from(mergedPendingDelayedWithdraw.amount)
-                  .add(BigNumber.from(pendingDelayedWithdraw.amount))
-                  .toString(),
-                timestamp:
-                  Date.parse(mergedPendingDelayedWithdraw.timestamp) >
-                  Date.parse(pendingDelayedWithdraw.timestamp)
-                    ? mergedPendingDelayedWithdraw.timestamp
-                    : pendingDelayedWithdraw.timestamp,
-              };
-            } else {
-              return mergedPendingDelayedWithdraw;
-            }
-          }
-        );
-      }
-
-      return mergedPendingDelayedWithdraws;
+      return existingPendingDelayedWithdrawWithToken === undefined
+        ? [...mergedPendingDelayedWithdraws, pendingDelayedWithdraw]
+        : mergedPendingDelayedWithdraws.map((mergedPendingDelayedWithdraw) => {
+            return mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken
+              ? // We need to sum up the amounts and use the latest timestamp for the timer
+                {
+                  ...mergedPendingDelayedWithdraw,
+                  amount: BigNumber.from(mergedPendingDelayedWithdraw.amount)
+                    .add(BigNumber.from(pendingDelayedWithdraw.amount))
+                    .toString(),
+                  timestamp:
+                    Date.parse(mergedPendingDelayedWithdraw.timestamp) >
+                    Date.parse(pendingDelayedWithdraw.timestamp)
+                      ? mergedPendingDelayedWithdraw.timestamp
+                      : pendingDelayedWithdraw.timestamp,
+                }
+              : mergedPendingDelayedWithdraw;
+          });
     },
     []
   );
