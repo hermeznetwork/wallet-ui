@@ -83,7 +83,15 @@ function fetchExit(
               pendingDelayedWithdrawsWithToken
             );
 
-            dispatch(withdrawActions.loadExitSuccess(mergedPendingDelayedWithdraws[0]));
+            if (mergedPendingDelayedWithdraws.length > 0) {
+              dispatch(withdrawActions.loadExitSuccess(mergedPendingDelayedWithdraws[0]));
+            } else {
+              dispatch(
+                withdrawActions.loadExitFailure(
+                  new Error("Couldn't find the pending delayed withdraw")
+                )
+              );
+            }
           } else {
             dispatch(withdrawActions.loadExitSuccess(exit));
           }
