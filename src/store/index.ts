@@ -26,9 +26,9 @@ import tokenSwapReducer from "src/store/token-swap/token-swap.reducer";
 import transferReducer, { TransferState } from "src/store/transactions/transfer/transfer.reducer";
 import { TransferAction } from "src/store/transactions/transfer/transfer.actions";
 import { ExitAction } from "src/store/transactions/exit/exit.actions";
-import exitReducer, { ExitState } from "./transactions/exit/exit.reducer";
-import { WithdrawAction } from "./transactions/withdraw/withdraw.actions";
-import withdrawReducer, { WithdrawState } from "./transactions/withdraw/withdraw.reducer";
+import exitReducer, { ExitState } from "src/store/transactions/exit/exit.reducer";
+import { WithdrawAction } from "src/store/transactions/withdraw/withdraw.actions";
+import withdrawReducer, { WithdrawState } from "src/store/transactions/withdraw/withdraw.reducer";
 
 export type AppAction =
   | RouterAction
