@@ -297,7 +297,7 @@ declare module "@hermeznetwork/*" {
 
 // Wallet
 declare module "@hermeznetwork/hermezjs/src/hermez-wallet" {
-  import { SignerData, SignerData } from "@hermeznetwork/hermezjs/src/signers";
+  import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
   export declare class HermezWallet {
     constructor(privateKey: Buffer, hermezEthereumAddress: string);
     privateKey: Buffer;
@@ -641,7 +641,7 @@ declare module "@hermeznetwork/hermezjs/src/providers" {
 // Signers
 declare module "@hermeznetwork/hermezjs/src/signers" {
   import { Web3Provider } from "@ethersproject/providers";
-  import { Signer, Signer } from "@ethersproject/abstract-signer";
+  import { Signer } from "@ethersproject/abstract-signer";
   import { Manifest } from "trezor-connect";
 
   export enum SignerType {
