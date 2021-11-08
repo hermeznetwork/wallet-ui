@@ -383,6 +383,11 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
 // TxUtils
 declare module "@hermeznetwork/hermezjs/src/tx-utils" {
   import { ScalarValue } from "@hermeznetwork/hermezjs";
+  import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+
+  interface Transaction {
+    to: string | undefined;
+  }
 
   // function _encodeTransaction();
 
@@ -395,7 +400,8 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
 
   function getMaxAmountFromMinimumFee(minimumFee: ScalarValue, balance: ScalarValue): ScalarValue;
 
-  // function getTransactionType();
+  function getTransactionType(transaction: Transaction): TxType;
+
   // function getNonce();
   // function _buildTxCompressedData();
   // function buildTransactionHashMessage();
