@@ -18,7 +18,7 @@ import { getNextBestForger, getNextForgerUrls } from "../../utils/coordinator";
 import { getDepositFee } from "../../utils/fees";
 import theme from "../../styles/theme";
 
-import { WITHDRAW_WASM_URL, WITHDRAW_HEZ4_FINAL_ZKEY_URL } from "../../constants";
+import { WITHDRAWAL_WASM_URL, WITHDRAWAL_ZKEY_URL } from "../../constants";
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
@@ -390,8 +390,8 @@ function withdraw(amount, account, exit, completeDelayedWithdrawal, instantWithd
       return Tx.withdrawCircuit(
         exit,
         instantWithdrawal,
-        WITHDRAW_WASM_URL,
-        WITHDRAW_HEZ4_FINAL_ZKEY_URL,
+        WITHDRAWAL_WASM_URL,
+        WITHDRAWAL_ZKEY_URL,
         signer
       )
         .then((txData) => {

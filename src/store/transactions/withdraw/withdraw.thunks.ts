@@ -20,7 +20,7 @@ import {
   Token,
 } from "src/domain/hermez";
 import { mergeDelayedWithdraws } from "src/utils/transactions";
-import { ETHER_TOKEN_ID, WITHDRAW_HEZ4_FINAL_ZKEY_URL, WITHDRAW_WASM_URL } from "src/constants";
+import { ETHER_TOKEN_ID, WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
 import { createAccount } from "src/utils/accounts";
 
 /**
@@ -180,8 +180,8 @@ function withdraw(
         Tx.withdrawCircuit(
           exit,
           instantWithdrawal,
-          WITHDRAW_WASM_URL,
-          WITHDRAW_HEZ4_FINAL_ZKEY_URL,
+          WITHDRAWAL_WASM_URL,
+          WITHDRAWAL_ZKEY_URL,
           signer
         )
           .then((txData) => {

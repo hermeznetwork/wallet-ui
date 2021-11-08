@@ -61,8 +61,8 @@ export const DELAY_TO_NEXT_FORGER = 30_000; // 30s
 
 // Whenever WITHDRAW_WASM_URL and WITHDRAW_HEZ4_FINAL_ZKEY_URL are updated, we also need to manually update the values in ./service-worker.js
 
-export const WITHDRAW_WASM_URL =
+export const WITHDRAWAL_WASM_URL =
   "https://raw.githubusercontent.com/hermeznetwork/hermezjs/main/withdraw-circuit-files/withdraw.wasm";
 
-export const WITHDRAW_HEZ4_FINAL_ZKEY_URL =
+export const WITHDRAWAL_ZKEY_URL =
   "https://raw.githubusercontent.com/hermeznetwork/hermezjs/main/withdraw-circuit-files/withdraw_hez4_final.zkey";
