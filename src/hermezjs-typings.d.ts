@@ -355,7 +355,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     nonce: number;
   }
 
-  interface WithdrawResponse {
+  interface TxData {
     hash: string;
   }
 
@@ -373,13 +373,13 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     wasmFilePath: string,
     zkeyFilePath: string,
     signerData: Signers.SignerData
-  ): Promise<WithdrawResponse> {};
+  ): Promise<TxData> {};
 
   declare function delayedWithdraw(
     hezEthereumAddress: string,
     token: Token,
     signerData: Signers.SignerData
-  ): Promise<WithdrawResponse> {};
+  ): Promise<TxData> {};
 
   // declare function sendAtomicGroup() {};
   // declare function generateAndSendAtomicGroup() {};
