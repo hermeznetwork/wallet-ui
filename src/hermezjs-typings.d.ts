@@ -532,10 +532,10 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   // function getSlot();
   // function getBids();
 
-  declare function getCreateAccountAuthorization(
+  function getCreateAccountAuthorization(
     hezEthereumAddress: string,
     axiosConfig?: Record<string, unknown>
-  ): Promise<AccountAuthorization> {};
+  ): Promise<AccountAuthorization>;
 
   // ToDo: The app does not uses the response but it would be nice to type it at some point
   function postCreateAccountAuthorization(
