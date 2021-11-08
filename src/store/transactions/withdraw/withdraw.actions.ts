@@ -22,7 +22,7 @@ export enum WithdrawActionTypes {
   RESET_STATE = "[WITHDRAW] RESET STATE",
 }
 
-export type Step = "load-data" | "build-transaction" | "review-transaction";
+export type Step = "load-data" | "review-transaction";
 
 export interface TransactionToReview {
   amount: BigNumber;
