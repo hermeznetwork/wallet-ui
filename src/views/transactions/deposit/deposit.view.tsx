@@ -19,13 +19,7 @@ import { AsyncTask } from "src/utils/types";
 import { AppDispatch, AppState } from "src/store";
 // domain
 import { Header, EstimatedDepositFee } from "src/domain/";
-import {
-  HermezWallet,
-  FiatExchangeRates,
-  Token,
-  RecommendedFee,
-  EthereumAccount,
-} from "src/domain/hermez";
+import { HermezWallet, FiatExchangeRates, Token, EthereumAccount } from "src/domain/hermez";
 import { PendingDeposits } from "src/domain/local-storage";
 import { EthereumNetwork } from "src/domain/ethereum";
 
@@ -34,7 +28,6 @@ interface DepositStateProps {
   ethereumAccountTask: AsyncTask<EthereumAccount, string>;
   estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
-  feesTask: AsyncTask<RecommendedFee, Error>;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   isTransactionBeingApproved: boolean;
   pendingDeposits: PendingDeposits;
@@ -57,7 +50,6 @@ interface DepositHandlerProps {
   onLoadEstimatedDepositFee: (token: Token, amount: BigNumber) => void;
   onLoadEthereumAccount: (tokenId: number) => void;
   onLoadEthereumAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) => void;
-  onLoadFees: () => void;
 }
 
 type DepositProps = DepositStateProps & DepositHandlerProps;
@@ -67,7 +59,6 @@ function Deposit({
   ethereumAccountTask,
   estimatedDepositFeeTask,
   ethereumNetworkTask,
-  feesTask,
   fiatExchangeRatesTask,
   isTransactionBeingApproved,
   pendingDeposits,
@@ -87,7 +78,6 @@ function Deposit({
   onLoadEstimatedDepositFee,
   onLoadEthereumAccount,
   onLoadEthereumAccounts,
-  onLoadFees,
 }: DepositProps) {
   const classes = useTransactionStyles();
   const { search } = useLocation();
@@ -176,18 +166,18 @@ function Deposit({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                feesTask={feesTask}
                 tokensPriceTask={tokensPriceTask}
                 estimatedDepositFeeTask={estimatedDepositFeeTask}
                 // ToDo: To be removed START
                 receiverAddress={undefined}
+                feesTask={{ status: "successful", data: null }}
                 accountBalanceTask={{ status: "pending" }}
                 estimatedWithdrawFeeTask={{ status: "pending" }}
+                onLoadFees={() => ({})}
                 onLoadAccountBalance={() => ({})}
                 onLoadEstimatedWithdrawFee={() => ({})}
                 // ToDo: To be removed END
                 onLoadEstimatedDepositFee={onLoadEstimatedDepositFee}
-                onLoadFees={onLoadFees}
                 onSubmit={onGoToTransactionOverviewStep}
                 onGoToChooseAccountStep={onGoToChooseAccountStep}
               />
@@ -231,7 +221,6 @@ const mapStateToProps = (state: AppState): DepositStateProps => ({
   ethereumAccountTask: state.deposit.ethereumAccountTask,
   estimatedDepositFeeTask: state.deposit.estimatedDepositFeeTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
-  feesTask: state.deposit.feesTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   isTransactionBeingApproved: state.deposit.isTransactionBeingApproved,
   pendingDeposits: state.global.pendingDeposits,
@@ -291,7 +280,6 @@ const mapDispatchToProps = (dispatch: AppDispatch): DepositHandlerProps => ({
     dispatch(changeHeader(getHeader(step, accountIndex))),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadEthereumAccount: (tokenId: number) => dispatch(depositThunks.fetchEthereumAccount(tokenId)),
-  onLoadFees: () => dispatch(depositThunks.fetchFees()),
   onLoadEthereumAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) =>
     dispatch(depositThunks.fetchAccounts(fiatExchangeRates, preferredCurrency)),
   onGoToChooseAccountStep: () => dispatch(depositActions.goToChooseAccountStep()),

@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
 import { EstimatedDepositFee } from "src/domain";
-import { Account, RecommendedFee, EthereumAccount } from "src/domain/hermez";
+import { Account, EthereumAccount } from "src/domain/hermez";
 
 export enum DepositActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[DEPOSIT] GO TO CHOOSE ACCOUNT STEP",
@@ -15,9 +15,6 @@ export enum DepositActionTypes {
   LOAD_ETHEREUM_ACCOUNT = "[DEPOSIT] LOAD ETHEREUM ACCOUNT",
   LOAD_ETHEREUM_ACCOUNT_SUCCESS = "[DEPOSIT] LOAD ETHEREUM ACCOUNT SUCCESS",
   LOAD_ETHEREUM_ACCOUNT_FAILURE = "[DEPOSIT] LOAD ETHEREUM ACCOUNT FAILURE",
-  LOAD_FEES = "[DEPOSIT] LOAD FEES",
-  LOAD_FEES_SUCCESS = "[DEPOSIT] LOAD FEES SUCCESS",
-  LOAD_FEES_FAILURE = "[DEPOSIT] LOAD FEES FAILURE",
   LOAD_ESTIMATED_DEPOSIT_FEE = "[DEPOSIT] LOAD ESTIMATED DEPOSIT FEE",
   LOAD_ESTIMATED_DEPOSIT_FEE_SUCCESS = "[DEPOSIT] LOAD ESTIMATED DEPOSIT FEE SUCCESS",
   LOAD_ESTIMATED_DEPOSIT_FEE_FAILURE = "[DEPOSIT] LOAD ESTIMATED DEPOSIT FEE FAILURE",
@@ -82,20 +79,6 @@ export interface LoadEthereumAccountFailure {
   error: string;
 }
 
-export interface LoadFees {
-  type: DepositActionTypes.LOAD_FEES;
-}
-
-export interface LoadFeesSuccess {
-  type: DepositActionTypes.LOAD_FEES_SUCCESS;
-  fees: RecommendedFee;
-}
-
-export interface LoadFeesFailure {
-  type: DepositActionTypes.LOAD_FEES_FAILURE;
-  error: Error;
-}
-
 export interface LoadEstimatedDepositFee {
   type: DepositActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE;
 }
@@ -133,9 +116,6 @@ export type DepositAction =
   | LoadEthereumAccount
   | LoadEthereumAccountSuccess
   | LoadEthereumAccountFailure
-  | LoadFees
-  | LoadFeesSuccess
-  | LoadFeesFailure
   | LoadEstimatedDepositFee
   | LoadEstimatedDepositFeeSuccess
   | LoadEstimatedDepositFeeFailure
@@ -212,26 +192,6 @@ function loadEthereumAccountFailure(error: string): LoadEthereumAccountFailure {
   };
 }
 
-function loadFees(): LoadFees {
-  return {
-    type: DepositActionTypes.LOAD_FEES,
-  };
-}
-
-function loadFeesSuccess(fees: RecommendedFee): LoadFeesSuccess {
-  return {
-    type: DepositActionTypes.LOAD_FEES_SUCCESS,
-    fees,
-  };
-}
-
-function loadFeesFailure(error: Error): LoadFeesFailure {
-  return {
-    type: DepositActionTypes.LOAD_FEES_FAILURE,
-    error,
-  };
-}
-
 function loadEstimatedDepositFee(): LoadEstimatedDepositFee {
   return {
     type: DepositActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE,
@@ -283,9 +243,6 @@ export {
   loadEthereumAccount,
   loadEthereumAccountSuccess,
   loadEthereumAccountFailure,
-  loadFees,
-  loadFeesSuccess,
-  loadFeesFailure,
   loadEstimatedDepositFee,
   loadEstimatedDepositFeeSuccess,
   loadEstimatedDepositFeeFailure,

@@ -11,7 +11,6 @@ import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import * as ethereum from "src/utils/ethereum";
 import { convertTokenAmountToFiat, getFixedTokenAmount } from "src/utils/currencies";
-import { getNextBestForger } from "src/utils/coordinator";
 import { getDepositFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
@@ -94,33 +93,6 @@ function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: 
             .catch((err) => dispatch(depositActions.loadEthereumAccountsFailure(err)));
         }
       );
-    }
-  };
-}
-
-/**
- * Fetches the recommended fees from the Coordinator
- * @returns {void}
- */
-function fetchFees(): AppThunk {
-  return function (dispatch: AppDispatch, getState: () => AppState) {
-    const {
-      global: { coordinatorStateTask },
-    } = getState();
-
-    if (
-      coordinatorStateTask.status === "successful" ||
-      coordinatorStateTask.status === "reloading"
-    ) {
-      const nextForger = getNextBestForger(coordinatorStateTask.data);
-
-      if (nextForger !== undefined) {
-        dispatch(depositActions.loadFees());
-
-        return CoordinatorAPI.getState({}, nextForger.coordinator.URL)
-          .then((res) => dispatch(depositActions.loadFeesSuccess(res.recommendedFee)))
-          .catch((err) => dispatch(depositActions.loadFeesFailure(err)));
-      }
     }
   };
 }
@@ -220,4 +192,4 @@ function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) 
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
-export { fetchEthereumAccount, fetchAccounts, fetchFees, fetchEstimatedDepositFee, deposit };
+export { fetchEthereumAccount, fetchAccounts, fetchEstimatedDepositFee, deposit };

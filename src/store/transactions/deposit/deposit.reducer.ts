@@ -7,13 +7,12 @@ import {
 import { AsyncTask } from "src/utils/types";
 // domain
 import { EstimatedDepositFee } from "src/domain";
-import { RecommendedFee, EthereumAccount } from "src/domain/hermez";
+import { EthereumAccount } from "src/domain/hermez";
 
 export interface DepositState {
   step: Step;
   ethereumAccountTask: AsyncTask<EthereumAccount, string>;
   ethereumAccountsTask: AsyncTask<EthereumAccount[], Error>;
-  feesTask: AsyncTask<RecommendedFee, Error>;
   estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;
@@ -25,9 +24,6 @@ const initialDepositState: DepositState = {
     status: "pending",
   },
   ethereumAccountsTask: {
-    status: "pending",
-  },
-  feesTask: {
     status: "pending",
   },
   estimatedDepositFeeTask: {
@@ -128,30 +124,6 @@ function transactionReducer(
         },
       };
     }
-
-    case DepositActionTypes.LOAD_FEES:
-      return {
-        ...state,
-        feesTask: {
-          status: "loading",
-        },
-      };
-    case DepositActionTypes.LOAD_FEES_SUCCESS:
-      return {
-        ...state,
-        feesTask: {
-          status: "successful",
-          data: action.fees,
-        },
-      };
-    case DepositActionTypes.LOAD_FEES_FAILURE:
-      return {
-        ...state,
-        feesTask: {
-          status: "failed",
-          error: action.error,
-        },
-      };
     case DepositActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE: {
       return {
         ...state,

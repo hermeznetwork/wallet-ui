@@ -133,7 +133,7 @@ function TransactionForm({
    * @returns {Number} - Transaction fee
    */
   function getFee(fees, isExistingAccount) {
-    if (account.token.USD === 0) {
+    if (!fees || account.token.USD === 0) {
       return 0;
     }
 
