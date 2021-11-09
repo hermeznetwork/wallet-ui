@@ -201,7 +201,7 @@ function withdraw(
                   id: withdrawalId,
                   accountIndex: account.accountIndex,
                   batchNum: exit.batchNum,
-                  amount: amount.toString(),
+                  balance: amount.toString(),
                   token: account.token,
                   timestamp: new Date().toISOString(),
                 })
@@ -216,7 +216,7 @@ function withdraw(
                   batchNum: exit.batchNum,
                   merkleProof: exit.merkleProof,
                   instant: false,
-                  amount: amount.toString(),
+                  balance: amount.toString(),
                   token: account.token,
                   timestamp: new Date().toISOString(),
                 })
@@ -239,7 +239,7 @@ function withdraw(
                 id: withdrawalId,
                 accountIndex: account.accountIndex,
                 batchNum: exit.batchNum,
-                amount: amount.toString(),
+                balance: amount.toString(),
                 token: account.token,
                 timestamp: new Date().toISOString(),
               })

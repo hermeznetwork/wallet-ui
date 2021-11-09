@@ -21,7 +21,13 @@ import { Theme } from "src/styles/theme";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 // domain
-import { HermezWallet, Account, FiatExchangeRates, Exit } from "src/domain/hermez";
+import {
+  HermezWallet,
+  Account,
+  FiatExchangeRates,
+  Exit,
+  PendingDelayedWithdraw,
+} from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
 
 type Transaction =
@@ -51,7 +57,7 @@ type Transaction =
       type: TxType.Withdraw;
       amount: BigNumber;
       account: Account;
-      exit: Exit;
+      exit: Exit | PendingDelayedWithdraw;
       completeDelayedWithdrawal: boolean;
       instantWithdrawal: boolean;
       estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;

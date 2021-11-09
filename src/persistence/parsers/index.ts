@@ -15,6 +15,7 @@ import {
   PendingDeposit,
   PendingWithdraw,
   Token,
+  L1Info,
 } from "src/domain/hermez";
 
 const hermezApiResourceItem: z.ZodSchema<HermezApiResourceItem> = z.object({
@@ -43,12 +44,21 @@ const account: z.ZodSchema<Account> = hermezApiResourceItem.and(
   })
 );
 
+const l1Info: z.ZodSchema<L1Info> = z.object({
+  depositAmount: z.string(),
+});
+
+const l1orL2: z.ZodSchema<"L1" | "L2"> = z.union([z.literal("L1"), z.literal("L2")]);
+
 const historyTransaction: z.ZodSchema<HistoryTransaction> = hermezApiResourceItem.and(
   z.object({
+    amount: z.string(),
     batchNum: z.number(),
     fromAccountIndex: z.string(),
     fromHezEthereumAddress: z.string(),
     id: z.string(),
+    L1Info: l1Info,
+    L1orL2: l1orL2,
     toHezEthereumAddress: z.string().nullable(),
     type: z.nativeEnum(TxType),
   })
@@ -71,12 +81,12 @@ const pendingDeposit: z.ZodSchema<PendingDeposit> = hermezApiResourceItem.and(
 const pendingWithdraw: z.ZodSchema<PendingWithdraw> = hermezApiResourceItem.and(
   z.object({
     accountIndex: z.string(),
+    hermezEthereumAddress: z.string(),
+    balance: z.string(),
     batchNum: z.number(),
     hash: z.string(),
     id: z.string(),
     timestamp: z.string(),
-    hermezEthereumAddress: z.string(),
-    amount: z.string(),
     token,
   })
 );

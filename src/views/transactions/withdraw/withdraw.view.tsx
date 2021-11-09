@@ -32,7 +32,7 @@ import { account } from "src/persistence/parsers";
 interface WithdrawStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: withdrawActions.Step;
-  exitTask: AsyncTask<Exit, Error>;
+  exitTask: AsyncTask<Exit | PendingDelayedWithdraw, Error>;
   accountTask: AsyncTask<Account, string>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
   isTransactionBeingApproved: boolean;

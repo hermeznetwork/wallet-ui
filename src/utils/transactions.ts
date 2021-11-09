@@ -2,42 +2,45 @@ import { BigNumber } from "ethers";
 import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { parseUnits } from "ethers/lib/utils";
-
 import { getMaxAmountFromMinimumFee } from "@hermeznetwork/hermezjs/src/tx-utils";
-import { getDepositFee } from "./fees";
+
+import { getDepositFee } from "src/utils/fees";
+// domain
+import {
+  CoordinatorState,
+  Exit,
+  HistoryTransaction,
+  ISOStringDate,
+  PendingDelayedWithdraw,
+  Token,
+} from "src/domain/hermez";
 
 /**
  * Returns the correct amount for a transaction from the Hermez API depending on its type
- * @param {Object} transaction - Transaction from the Hermez API
- * @returns amount
  */
-function getTransactionAmount(transaction) {
+function getTransactionAmount(transaction: HistoryTransaction): string | undefined {
+  // ToDo: This check and the undefined return should be removed once all views are migrated to TS
   if (!transaction) {
     return undefined;
   }
 
-  if (!transaction.L1Info) {
-    return transaction.amount;
-  } else {
-    if (transaction.type === TxType.Deposit || transaction.type === TxType.CreateAccountDeposit) {
-      return transaction.L1Info.depositAmount;
-    } else {
-      return transaction.amount;
-    }
-  }
+  return (transaction.type === TxType.Deposit ||
+    transaction.type === TxType.CreateAccountDeposit) &&
+    transaction.L1Info !== null
+    ? transaction.L1Info.depositAmount
+    : transaction.amount;
 }
 
 /**
  * Calculates an estimated time until the transaction will be forged
  * If it's an L1 transaction, it adds the forgeDelay again
- *
- * @param {Object} coordinatorState - As returned from the API
- * @param {Boolean} isL1 - Whether it is an L1 transaction
- * @param {Date} timestamp - If it's an L1 transaction, also pass in the timestamp
- *
- * @returns {Number} timeLeftToForgeInMinutes
  */
-function getTxPendingTime(coordinatorState, isL1, timestamp) {
+function getTxPendingTime(
+  // ToDo: This undefined and the check below can be removed once the views are migrated to TS
+  coordinatorState: CoordinatorState | undefined,
+  isL1: boolean,
+  timestamp: ISOStringDate
+): number {
   if (!coordinatorState) {
     return 0;
   }
@@ -58,56 +61,60 @@ function getTxPendingTime(coordinatorState, isL1, timestamp) {
  * Delayed Withdraws, once they are in the WithdrawalDelayer smart contract,
  * are merged by token. We need to manually merge them to show the correct
  * information to the user.
- *
- * @param {Array} pendingDelayedWithdraws - All the pending delayed withdraws stored in LocalStorage
- * @returns {Array} mergedPendingDelayedWithdraws
  */
-function mergeDelayedWithdraws(pendingDelayedWithdraws) {
-  return pendingDelayedWithdraws.reduce((mergedPendingDelayedWithdraws, pendingDelayedWithdraw) => {
-    const existingPendingDelayedWithdrawWithToken = mergedPendingDelayedWithdraws.find(
-      (delayedWithdraw) => delayedWithdraw.token.id === pendingDelayedWithdraw.token.id
-    );
-
-    if (!existingPendingDelayedWithdrawWithToken) {
-      mergedPendingDelayedWithdraws.push(pendingDelayedWithdraw);
-    } else {
-      mergedPendingDelayedWithdraws = mergedPendingDelayedWithdraws.map(
-        (mergedPendingDelayedWithdraw) => {
-          if (mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken) {
-            // We need to sum up the amounts and use the latest timestamp for the timer
-            return {
-              ...mergedPendingDelayedWithdraw,
-              amount: BigNumber.from(mergedPendingDelayedWithdraw.amount)
-                .add(BigNumber.from(pendingDelayedWithdraw.amount))
-                .toString(),
-              timestamp:
-                Date.parse(mergedPendingDelayedWithdraw.timestamp) >
-                Date.parse(pendingDelayedWithdraw.timestamp)
-                  ? mergedPendingDelayedWithdraw.timestamp
-                  : pendingDelayedWithdraw.timestamp,
-            };
-          } else {
-            return mergedPendingDelayedWithdraw;
-          }
-        }
+function mergeDelayedWithdraws(
+  pendingDelayedWithdraws: PendingDelayedWithdraw[]
+): PendingDelayedWithdraw[] {
+  return pendingDelayedWithdraws.reduce(
+    (
+      mergedPendingDelayedWithdraws: PendingDelayedWithdraw[],
+      pendingDelayedWithdraw: PendingDelayedWithdraw
+    ) => {
+      const existingPendingDelayedWithdrawWithToken = mergedPendingDelayedWithdraws.find(
+        (delayedWithdraw) => delayedWithdraw.token.id === pendingDelayedWithdraw.token.id
       );
-    }
 
-    return mergedPendingDelayedWithdraws;
-  }, []);
+      if (!existingPendingDelayedWithdrawWithToken) {
+        mergedPendingDelayedWithdraws.push(pendingDelayedWithdraw);
+      } else {
+        mergedPendingDelayedWithdraws = mergedPendingDelayedWithdraws.map(
+          (mergedPendingDelayedWithdraw) => {
+            if (mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken) {
+              // We need to sum up the amounts and use the latest timestamp for the timer
+              return {
+                ...mergedPendingDelayedWithdraw,
+                amount: BigNumber.from(mergedPendingDelayedWithdraw.balance)
+                  .add(BigNumber.from(pendingDelayedWithdraw.balance))
+                  .toString(),
+                timestamp:
+                  Date.parse(mergedPendingDelayedWithdraw.timestamp) >
+                  Date.parse(pendingDelayedWithdraw.timestamp)
+                    ? mergedPendingDelayedWithdraw.timestamp
+                    : pendingDelayedWithdraw.timestamp,
+              };
+            } else {
+              return mergedPendingDelayedWithdraw;
+            }
+          }
+        );
+      }
+
+      return mergedPendingDelayedWithdraws;
+    },
+    []
+  );
 }
 
 /**
  * Helper function that merges both Exits and Delayed Withdraws
- *
- * @param {Array} exits - List of Exits returned by the API
- * @param {Array} pendingDelayedWithdraws - All the pending delayed withdraws stored in LocalStorage
- * @returns {Array} mergedExits
  */
-function mergeExits(exits, pendingDelayedWithdraws) {
+function mergeExits(
+  exits: Exit[],
+  pendingDelayedWithdraws: PendingDelayedWithdraw[]
+): (Exit | PendingDelayedWithdraw)[] {
   // Remove Exits that are now pending Delayed Withdraws
   const nonDelayedExits = exits.filter((exit) => {
-    const exitId = exit.accountIndex + exit.batchNum;
+    const exitId = `${exit.accountIndex}${exit.batchNum}`;
     return !pendingDelayedWithdraws.find(
       (pendingDelayedWithdraw) => pendingDelayedWithdraw.id === exitId
     );
@@ -122,12 +129,10 @@ function mergeExits(exits, pendingDelayedWithdraws) {
 /**
  * Checks whether an amount is supported by the compression
  * used in the Hermez network
- * @param {Number} amount - Selector amount
- * @returns {Boolean} Whether it is valid
  */
-function isTransactionAmountCompressedValid(amount) {
+function isTransactionAmountCompressedValid(amount: BigNumber): boolean {
   try {
-    const compressedAmount = HermezCompressedAmount.compressAmount(amount);
+    const compressedAmount = HermezCompressedAmount.compressAmount(amount.toString());
     const decompressedAmount = HermezCompressedAmount.decompressAmount(compressedAmount);
 
     return amount.toString() === decompressedAmount.toString();
@@ -138,12 +143,10 @@ function isTransactionAmountCompressedValid(amount) {
 
 /**
  * Fixes the transaction amount to be sure that it would be supported by Hermez
- * @param {BigNumber} amount - Transaction amount to be fixed
- * @returns fixedTxAmount
  */
-function fixTransactionAmount(amount) {
+function fixTransactionAmount(amount: BigNumber): BigNumber {
   const fixedTxAmount = HermezCompressedAmount.decompressAmount(
-    HermezCompressedAmount.floorCompressAmount(amount)
+    HermezCompressedAmount.floorCompressAmount(amount.toString())
   );
 
   return BigNumber.from(fixedTxAmount);
@@ -158,7 +161,13 @@ function fixTransactionAmount(amount) {
  * @param {BigNumber} gasPrice - Ethereum gas price
  * @returns maxTxAmount
  */
-function getMaxTxAmount(txType, maxAmount, token, l2Fee, gasPrice) {
+function getMaxTxAmount(
+  txType: TxType,
+  maxAmount: BigNumber,
+  token: Token,
+  l2Fee: number,
+  gasPrice: BigNumber
+): BigNumber {
   const maxTxAmount = (() => {
     switch (txType) {
       case TxType.ForceExit: {
@@ -173,7 +182,9 @@ function getMaxTxAmount(txType, maxAmount, token, l2Fee, gasPrice) {
       default: {
         const l2FeeBigInt = parseUnits(l2Fee.toFixed(token.decimals), token.decimals);
 
-        return BigNumber.from(getMaxAmountFromMinimumFee(l2FeeBigInt, maxAmount).toString());
+        return BigNumber.from(
+          getMaxAmountFromMinimumFee(l2FeeBigInt.toString(), maxAmount.toString()).toString()
+        );
       }
     }
   })();
