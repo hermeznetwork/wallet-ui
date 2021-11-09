@@ -70,9 +70,7 @@ function TransactionForm({
 
   React.useEffect(() => {
     if (estimatedDepositFeeTask.status === "successful") {
-      if (estimatedDepositFeeTask.data.gasPrice !== null) {
-        setGasPrice(estimatedDepositFeeTask.data.gasPrice);
-      }
+      setGasPrice(estimatedDepositFeeTask.data.gasPrice);
       setDepositFee(estimatedDepositFeeTask.data);
     }
   }, [estimatedDepositFeeTask]);
