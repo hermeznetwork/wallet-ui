@@ -1,8 +1,7 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
+import { CoordinatorAPI, Tx, HermezCompressedAmount, TxUtils } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
@@ -146,14 +145,15 @@ function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: n
       dispatch(transferActions.startTransactionApproval());
 
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
+      const toAddress = to.accountIndex || to.hezEthereumAddress || to.bjj;
+      const type = TxUtils.getTransactionType({ to: toAddress });
       const txData = {
-        type: TxType.Transfer,
+        type,
         from: from.accountIndex,
-        to: to.accountIndex || to.hezEthereumAddress || to.bjj,
+        to: toAddress,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
         fee,
       };
-
       return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
         .catch((error) => {
