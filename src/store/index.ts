@@ -27,6 +27,8 @@ import transferReducer, { TransferState } from "src/store/transactions/transfer/
 import { TransferAction } from "src/store/transactions/transfer/transfer.actions";
 import { ExitAction } from "src/store/transactions/exit/exit.actions";
 import exitReducer, { ExitState } from "./transactions/exit/exit.reducer";
+import { DepositAction } from "src/store/transactions/deposit/deposit.actions";
+import depositReducer, { DepositState } from "./transactions/deposit/deposit.reducer";
 
 export type AppAction =
   | RouterAction
@@ -37,6 +39,7 @@ export type AppAction =
   | LoginAction
   | TransferAction
   | ExitAction
+  | DepositAction
   | TransactionDetailsAction;
 
 export interface AppState {
@@ -48,6 +51,7 @@ export interface AppState {
   login: LoginState;
   transfer: TransferState;
   exit: ExitState;
+  deposit: DepositState;
   transactionDetails: TransactionDetailsState;
 }
 
@@ -72,6 +76,7 @@ export function createAppReducer(history: History) {
     transaction: transactionReducer,
     transfer: transferReducer,
     exit: exitReducer,
+    deposit: depositReducer,
     login: loginReducer,
     tokenSwap: tokenSwapReducer,
   });

@@ -64,31 +64,28 @@ const historyTransaction: z.ZodSchema<HistoryTransaction> = hermezApiResourceIte
   })
 );
 
-const pendingDeposit: z.ZodSchema<PendingDeposit> = hermezApiResourceItem.and(
-  z.object({
-    account,
-    amount: z.string(),
-    fromHezEthereumAddress: z.string(),
-    hash: z.string(),
-    state: z.nativeEnum(TxState),
-    timestamp: z.string(),
-    toHezEthereumAddress: z.string(),
-    token,
-    type: z.enum([TxType.Deposit, TxType.CreateAccountDeposit]),
-  })
-);
+const pendingDeposit: z.ZodSchema<PendingDeposit> = z.object({
+  account,
+  amount: z.string(),
+  fromHezEthereumAddress: z.string(),
+  hash: z.string(),
+  state: z.nativeEnum(TxState),
+  timestamp: z.string(),
+  toHezEthereumAddress: z.string(),
+  token,
+  type: z.enum([TxType.Deposit, TxType.CreateAccountDeposit]),
+  transactionId: z.string().optional(),
+});
 
-const pendingWithdraw: z.ZodSchema<PendingWithdraw> = hermezApiResourceItem.and(
-  z.object({
-    accountIndex: z.string(),
-    amount: z.string(),
-    batchNum: z.number(),
-    hash: z.string(),
-    id: z.string(),
-    timestamp: z.string(),
-    token,
-  })
-);
+const pendingWithdraw: z.ZodSchema<PendingWithdraw> = z.object({
+  accountIndex: z.string(),
+  amount: z.string(),
+  batchNum: z.number(),
+  hash: z.string(),
+  id: z.string(),
+  timestamp: z.string(),
+  token,
+});
 
 const merkleProof: z.ZodSchema<MerkleProof> = z.object({
   root: z.string(),

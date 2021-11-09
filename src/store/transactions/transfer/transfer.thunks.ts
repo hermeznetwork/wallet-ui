@@ -67,8 +67,7 @@ function fetchPoolTransactions(): AppThunk {
 }
 
 /**
- * Fetches the accounts to use in the transaction. If the transaction is a deposit it will
- * look for them on Ethereum, otherwise it will look for them on the rollup api
+ * Fetches the accounts to use in the transaction in the rollup api.
  */
 function fetchAccounts(
   fromItem: number | undefined,
@@ -157,7 +156,6 @@ function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: n
       return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
         .catch((error) => {
-          console.error(error);
           dispatch(transferActions.stopTransactionApproval());
           handleTransactionFailure(dispatch, error);
         });
