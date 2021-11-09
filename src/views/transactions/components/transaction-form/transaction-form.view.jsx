@@ -76,8 +76,10 @@ function TransactionForm({
   }, [estimatedDepositFeeTask]);
 
   React.useEffect(() => {
-    onLoadFees();
-    if (transactionType === TxType.Exit) {
+    if (transactionType === TxType.Transfer) {
+      onLoadFees();
+    } else if (transactionType === TxType.Exit) {
+      onLoadFees();
       onLoadAccountBalance();
       onLoadEstimatedWithdrawFee(account.token, amount);
     }
