@@ -74,6 +74,7 @@ const pendingDeposit: z.ZodSchema<PendingDeposit> = z.object({
   toHezEthereumAddress: z.string(),
   token,
   type: z.enum([TxType.Deposit, TxType.CreateAccountDeposit]),
+  transactionId: z.string().optional(),
 });
 
 const pendingWithdraw: z.ZodSchema<PendingWithdraw> = z.object({
