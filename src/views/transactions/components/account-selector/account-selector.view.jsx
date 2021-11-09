@@ -24,8 +24,12 @@ function AccountSelector({
     .map((deposit) => deposit.token.id);
 
   React.useEffect(() => {
-    if (accountsTask.status === "pending" && poolTransactionsTask.status === "successful") {
-      onLoadAccounts(undefined, poolTransactionsTask.data, fiatExchangeRates, preferredCurrency);
+    if (accountsTask.status === "pending") {
+      if (transactionType === TxType.Deposit) {
+        onLoadAccounts(fiatExchangeRates, preferredCurrency);
+      } else if (poolTransactionsTask.status === "successful") {
+        onLoadAccounts(undefined, poolTransactionsTask.data, fiatExchangeRates, preferredCurrency);
+      }
     }
   }, [accountsTask, poolTransactionsTask, onLoadAccounts]);
 

@@ -26,6 +26,7 @@ import * as browser from "../../../../utils/browser";
 import Fee from "../fee/fee.view";
 import Alert from "../../../shared/alert/alert.view";
 import TransactionAmountInput from "../transaction-amount-input/transaction-amount-input.view";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 function TransactionForm({
   transactionType,
@@ -75,8 +76,10 @@ function TransactionForm({
   }, [estimatedDepositFeeTask]);
 
   React.useEffect(() => {
-    onLoadFees();
-    if (transactionType === TxType.Exit) {
+    if (transactionType === TxType.Transfer) {
+      onLoadFees();
+    } else if (transactionType === TxType.Exit) {
+      onLoadFees();
       onLoadAccountBalance();
       onLoadEstimatedWithdrawFee(account.token, amount);
     }
@@ -130,7 +133,7 @@ function TransactionForm({
    * @returns {Number} - Transaction fee
    */
   function getFee(fees, isExistingAccount) {
-    if (account.token.USD === 0) {
+    if (!fees || account.token.USD === 0) {
       return 0;
     }
 
@@ -260,7 +263,9 @@ function TransactionForm({
         const accountChecks = [
           getAccounts(receiver, [account.token.id]),
           ...(!isHermezBjjAddress(receiver)
-            ? [getCreateAccountAuthorization(receiver).catch(() => undefined)]
+            ? // Since we don't want to allow sending the tx without having the create account auth signature,
+              // we need to return undefined here for the check in the create authorization form to work.
+              [getCreateAccountAuthorization(receiver).catch(() => undefined)]
             : []),
         ];
         return Promise.all(accountChecks).then((res) => {
@@ -285,7 +290,6 @@ function TransactionForm({
       }
       default: {
         const transactionFee = getFee(fees, true);
-
         return onSubmit({
           amount: amount,
           from: {},
@@ -306,7 +310,10 @@ function TransactionForm({
                 <p className={classes.tokenName}>{account.token.name}</p>
                 {showInFiat ? (
                   <p>
-                    <span>{preferredCurrency}</span> <span>{getAmountInFiat(account.balance)}</span>
+                    <FiatAmount
+                      currency={preferredCurrency}
+                      amount={getAmountInFiat(account.balance)}
+                    />
                   </p>
                 ) : (
                   <p className={classes.tokenSymbolAmount}>

@@ -2,7 +2,6 @@
  * HermezJS type definitions have been moved to the dedicated definitions file hermezjs-typings.d.ts
  * We may decide not to export them from the domain and let other layers import them from the lib.
  */
-
 import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
@@ -54,3 +53,8 @@ export type PendingDelayedWithdraw = PendingWithdraw & {
   instant: boolean;
   merkleProof: hermezjs.MerkleProof;
 };
+export interface EthereumAccount {
+  balance: string;
+  token: hermezjs.Token;
+  fiatBalance?: number;
+}

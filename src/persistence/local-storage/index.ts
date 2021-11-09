@@ -46,10 +46,6 @@ export function initStorage(key: string): Record<string, never> {
   return initialStorage;
 }
 
-// Parsing Helpers
-
-const stringToNumber = z.string().transform((val) => parseFloat(val));
-
 // Auth Signatures
 
 const authSignaturesParser: z.ZodSchema<AuthSignatures> = z.record(z.record(z.string()));
@@ -57,7 +53,13 @@ const authSignaturesParser: z.ZodSchema<AuthSignatures> = z.record(z.record(z.st
 export function getAuthSignatures(): AuthSignatures {
   const authSignatures: unknown = getStorageByKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY);
   const parsedAuthSignatures = authSignaturesParser.safeParse(authSignatures);
-  return parsedAuthSignatures.success ? parsedAuthSignatures.data : {};
+  if (parsedAuthSignatures.success) {
+    return parsedAuthSignatures.data;
+  } else {
+    console.error("An error occurred parsing AuthSignatures");
+    console.error(parsedAuthSignatures.error);
+    return {};
+  }
 }
 
 export function setAuthSignatures(authSignatures: AuthSignatures): void {
@@ -73,6 +75,8 @@ export function getPreferredCurrency(): string {
     return parsedPreferredCurrency.data;
   } else {
     setPreferredCurrency(constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY);
+    console.error("An error occurred parsing PreferredCurrency");
+    console.error(parsedPreferredCurrency.error);
     return constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY;
   }
 }
@@ -90,7 +94,13 @@ const pendingWithdrawsParser: z.ZodSchema<PendingWithdraws> = z.record(
 export function getPendingWithdraws(): PendingWithdraws {
   const pendingWithdraws: unknown = getStorageByKey(constants.PENDING_WITHDRAWS_KEY);
   const parsedPendingWithdraws = pendingWithdrawsParser.safeParse(pendingWithdraws);
-  return parsedPendingWithdraws.success ? parsedPendingWithdraws.data : {};
+  if (parsedPendingWithdraws.success) {
+    return parsedPendingWithdraws.data;
+  } else {
+    console.error("An error occurred parsing PendingWithdraws");
+    console.error(parsedPendingWithdraws.error);
+    return {};
+  }
 }
 
 export function addPendingWithdraw(
@@ -141,7 +151,13 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
   const pendingDelayedWithdraws: unknown = getStorageByKey(constants.PENDING_DELAYED_WITHDRAWS_KEY);
   const parsedPendingDelayedWithdraws =
     pendingDelayedWithdrawsParser.safeParse(pendingDelayedWithdraws);
-  return parsedPendingDelayedWithdraws.success ? parsedPendingDelayedWithdraws.data : {};
+  if (parsedPendingDelayedWithdraws.success) {
+    return parsedPendingDelayedWithdraws.data;
+  } else {
+    console.error("An error occurred parsing PendingDelayedWithdraws");
+    console.error(parsedPendingDelayedWithdraws.error);
+    return {};
+  }
 }
 
 export function addPendingDelayedWithdraw(
@@ -240,7 +256,13 @@ const pendingDepositsParser: z.ZodSchema<PendingDeposits> = z.record(
 export function getPendingDeposits(): PendingDeposits {
   const pendingDeposits: unknown = getStorageByKey(constants.PENDING_DEPOSITS_KEY);
   const parsedPendingDeposits = pendingDepositsParser.safeParse(pendingDeposits);
-  return parsedPendingDeposits.success ? parsedPendingDeposits.data : {};
+  if (parsedPendingDeposits.success) {
+    return parsedPendingDeposits.data;
+  } else {
+    console.error("An error occurred parsing PendingDeposits");
+    console.error(parsedPendingDeposits.error);
+    return {};
+  }
 }
 
 export function addPendingDeposit(
@@ -328,6 +350,12 @@ export function removePendingDepositByHash(
 
 export function getCurrentStorageVersion(): number | undefined {
   const currentStorageVersion: unknown = getStorageByKey(constants.STORAGE_VERSION_KEY);
-  const parsedCurrentStorageVersion = stringToNumber.safeParse(currentStorageVersion);
-  return parsedCurrentStorageVersion.success ? parsedCurrentStorageVersion.data : undefined;
+  const parsedCurrentStorageVersion = z.number().safeParse(currentStorageVersion);
+  if (parsedCurrentStorageVersion.success) {
+    return parsedCurrentStorageVersion.data;
+  } else {
+    console.error("An error occurred parsing CurrentStorageVersion");
+    console.error(parsedCurrentStorageVersion.error);
+    return undefined;
+  }
 }

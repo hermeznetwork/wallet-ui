@@ -26,6 +26,7 @@ import {
   Account,
   FiatExchangeRates,
   Exit,
+  EthereumAccount,
   PendingDelayedWithdraw,
 } from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
@@ -34,8 +35,8 @@ type Transaction =
   | {
       type: TxType.Deposit;
       amount: BigNumber;
-      account: Account;
-      onDeposit: (amount: BigNumber, account: Account) => void;
+      account: EthereumAccount;
+      onDeposit: (amount: BigNumber, account: EthereumAccount) => void;
     }
   | {
       type: TxType.Transfer;
@@ -135,17 +136,17 @@ function TransactionOverview({
   function handleFormSubmit(): void {
     // We only need to disable the button on L2 txs, as L1 txs are going to display an
     // spinner which will prevent the user from submitting the form twice
-    switch (type) {
+    switch (transaction.type) {
       case TxType.Deposit: {
-        return transaction.onDeposit(amount, account);
+        return transaction.onDeposit(amount, transaction.account);
       }
       case TxType.ForceExit: {
-        return transaction.onForceExit(amount, account);
+        return transaction.onForceExit(amount, transaction.account);
       }
       case TxType.Withdraw: {
         return transaction.onWithdraw(
           amount,
-          account,
+          transaction.account,
           transaction.exit,
           transaction.completeDelayedWithdrawal,
           transaction.instantWithdrawal
@@ -153,11 +154,11 @@ function TransactionOverview({
       }
       case TxType.Exit: {
         setIsButtonDisabled(true);
-        return transaction.onExit(amount, account, transaction.fee);
+        return transaction.onExit(amount, transaction.account, transaction.fee);
       }
       default: {
         setIsButtonDisabled(true);
-        return transaction.onTransfer(amount, account, transaction.to, transaction.fee);
+        return transaction.onTransfer(amount, transaction.account, transaction.to, transaction.fee);
       }
     }
   }
