@@ -263,7 +263,9 @@ function TransactionForm({
         const accountChecks = [
           getAccounts(receiver, [account.token.id]),
           ...(!isHermezBjjAddress(receiver)
-            ? [getCreateAccountAuthorization(receiver).catch(() => ({}))]
+            ? // Since we don't want to allow sending the tx without having the create account auth signature,
+              // we need to return undefined here for the check in the create authorization form to work.
+              [getCreateAccountAuthorization(receiver).catch(() => undefined)]
             : []),
         ];
         return Promise.all(accountChecks).then((res) => {
