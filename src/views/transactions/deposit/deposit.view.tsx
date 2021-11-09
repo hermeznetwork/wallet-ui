@@ -22,7 +22,6 @@ import { Header, EstimatedDepositFee } from "src/domain/";
 import {
   HermezWallet,
   FiatExchangeRates,
-  PoolTransaction,
   Token,
   RecommendedFee,
   EthereumAccount,
@@ -40,7 +39,6 @@ interface DepositStateProps {
   isTransactionBeingApproved: boolean;
   pendingDeposits: PendingDeposits;
   pendingDepositsCheckTask: AsyncTask<null, string>;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   preferredCurrency: string;
   step: depositActions.Step;
   tokensPriceTask: AsyncTask<Token[], string>;
@@ -60,7 +58,6 @@ interface DepositHandlerProps {
   onLoadEthereumAccount: (tokenId: number) => void;
   onLoadEthereumAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) => void;
   onLoadFees: () => void;
-  onLoadPoolTransactions: () => void;
 }
 
 type DepositProps = DepositStateProps & DepositHandlerProps;
@@ -75,7 +72,6 @@ function Deposit({
   isTransactionBeingApproved,
   pendingDeposits,
   pendingDepositsCheckTask,
-  poolTransactionsTask,
   preferredCurrency,
   step,
   tokensPriceTask,
@@ -92,7 +88,6 @@ function Deposit({
   onLoadEthereumAccount,
   onLoadEthereumAccounts,
   onLoadFees,
-  onLoadPoolTransactions,
 }: DepositProps) {
   const classes = useTransactionStyles();
   const { search } = useLocation();
@@ -118,28 +113,14 @@ function Deposit({
   }, [onCheckPendingDeposits]);
 
   React.useEffect(() => {
-    onLoadPoolTransactions();
-  }, [onLoadPoolTransactions]);
-
-  React.useEffect(() => {
-    if (
-      pendingDepositsCheckTask.status === "successful" &&
-      poolTransactionsTask.status === "successful"
-    ) {
+    if (pendingDepositsCheckTask.status === "successful") {
       if (tokenId) {
         onLoadEthereumAccount(Number(tokenId));
       } else {
         onGoToChooseAccountStep();
       }
     }
-  }, [
-    pendingDepositsCheckTask,
-    poolTransactionsTask,
-    tokenId,
-    accountIndex,
-    onLoadEthereumAccount,
-    onGoToChooseAccountStep,
-  ]);
+  }, [pendingDepositsCheckTask, tokenId, onLoadEthereumAccount, onGoToChooseAccountStep]);
 
   React.useEffect(() => {
     if (ethereumAccountTask.status === "failed") {
@@ -165,7 +146,8 @@ function Deposit({
               <AccountSelector
                 transactionType={TxType.Deposit}
                 accountsTask={ethereumAccountsTask}
-                poolTransactionsTask={poolTransactionsTask}
+                // ToDo: To be removed
+                poolTransactionsTask={{ status: "pending" }}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -254,7 +236,6 @@ const mapStateToProps = (state: AppState): DepositStateProps => ({
   isTransactionBeingApproved: state.deposit.isTransactionBeingApproved,
   pendingDeposits: state.global.pendingDeposits,
   pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
-  poolTransactionsTask: state.deposit.poolTransactionsTask,
   preferredCurrency: state.myAccount.preferredCurrency,
   step: state.deposit.step,
   tokensPriceTask: state.global.tokensPriceTask,
@@ -311,7 +292,6 @@ const mapDispatchToProps = (dispatch: AppDispatch): DepositHandlerProps => ({
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadEthereumAccount: (tokenId: number) => dispatch(depositThunks.fetchEthereumAccount(tokenId)),
   onLoadFees: () => dispatch(depositThunks.fetchFees()),
-  onLoadPoolTransactions: () => dispatch(depositThunks.fetchPoolTransactions()),
   onLoadEthereumAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) =>
     dispatch(depositThunks.fetchAccounts(fiatExchangeRates, preferredCurrency)),
   onGoToChooseAccountStep: () => dispatch(depositActions.goToChooseAccountStep()),

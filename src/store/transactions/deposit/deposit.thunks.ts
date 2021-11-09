@@ -2,7 +2,6 @@ import { CoordinatorAPI, Tx, HermezCompressedAmount } from "@hermeznetwork/herme
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { ETHER_TOKEN_ID } from "@hermeznetwork/hermezjs/src/constants";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { BigNumber } from "ethers";
 import { push } from "connected-react-router";
 
@@ -52,26 +51,6 @@ function fetchEthereumAccount(tokenId: number): AppThunk {
             });
         }
       );
-    }
-  };
-}
-
-/**
- * Fetches the transactions which are in the transactions pool
- * @returns {void}
- */
-function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(depositActions.loadPoolTransactions());
-
-    const {
-      global: { wallet },
-    } = getState();
-
-    if (wallet !== undefined) {
-      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(depositActions.loadPoolTransactionsSuccess(transactions)))
-        .catch((err) => dispatch(depositActions.loadPoolTransactionsFailure(err)));
     }
   };
 }
@@ -241,11 +220,4 @@ function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) 
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
-export {
-  fetchEthereumAccount,
-  fetchPoolTransactions,
-  fetchAccounts,
-  fetchFees,
-  fetchEstimatedDepositFee,
-  deposit,
-};
+export { fetchEthereumAccount, fetchAccounts, fetchFees, fetchEstimatedDepositFee, deposit };

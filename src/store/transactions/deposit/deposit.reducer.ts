@@ -7,11 +7,10 @@ import {
 import { AsyncTask } from "src/utils/types";
 // domain
 import { EstimatedDepositFee } from "src/domain";
-import { PoolTransaction, RecommendedFee, EthereumAccount } from "src/domain/hermez";
+import { RecommendedFee, EthereumAccount } from "src/domain/hermez";
 
 export interface DepositState {
   step: Step;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   ethereumAccountTask: AsyncTask<EthereumAccount, string>;
   ethereumAccountsTask: AsyncTask<EthereumAccount[], Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
@@ -22,9 +21,6 @@ export interface DepositState {
 
 const initialDepositState: DepositState = {
   step: "load-account",
-  poolTransactionsTask: {
-    status: "pending",
-  },
   ethereumAccountTask: {
     status: "pending",
   },
@@ -100,38 +96,6 @@ function transactionReducer(
       return {
         ...state,
         ethereumAccountsTask: {
-          status: "failed",
-          error: action.error,
-        },
-      };
-    }
-    case DepositActionTypes.LOAD_POOL_TRANSACTIONS: {
-      return {
-        ...state,
-        poolTransactionsTask:
-          state.poolTransactionsTask.status === "successful"
-            ? {
-                status: "reloading",
-                data: state.poolTransactionsTask.data,
-              }
-            : {
-                status: "loading",
-              },
-      };
-    }
-    case DepositActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "successful",
-          data: action.transactions,
-        },
-      };
-    }
-    case DepositActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
-      return {
-        ...state,
-        poolTransactionsTask: {
           status: "failed",
           error: action.error,
         },

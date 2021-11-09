@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
 import { EstimatedDepositFee } from "src/domain";
-import { Account, PoolTransaction, RecommendedFee, EthereumAccount } from "src/domain/hermez";
+import { Account, RecommendedFee, EthereumAccount } from "src/domain/hermez";
 
 export enum DepositActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[DEPOSIT] GO TO CHOOSE ACCOUNT STEP",
@@ -12,9 +12,6 @@ export enum DepositActionTypes {
   LOAD_ETHEREUM_ACCOUNTS = "[DEPOSIT] LOAD ETHEREUM ACCOUNTS",
   LOAD_ETHEREUM_ACCOUNTS_SUCCESS = "[DEPOSIT] LOAD ETHEREUM ACCOUNTS SUCCESS",
   LOAD_ETHEREUM_ACCOUNTS_FAILURE = "[DEPOSIT] LOAD ETHEREUM ACCOUNTS FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[DEPOSIT] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[DEPOSIT] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[DEPOSIT] LOAD POOL TRANSACTIONS FAILURE",
   LOAD_ETHEREUM_ACCOUNT = "[DEPOSIT] LOAD ETHEREUM ACCOUNT",
   LOAD_ETHEREUM_ACCOUNT_SUCCESS = "[DEPOSIT] LOAD ETHEREUM ACCOUNT SUCCESS",
   LOAD_ETHEREUM_ACCOUNT_FAILURE = "[DEPOSIT] LOAD ETHEREUM ACCOUNT FAILURE",
@@ -68,20 +65,6 @@ export interface LoadEthereumAccountsSuccess {
 
 export interface LoadEthereumAccountsFailure {
   type: DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS_FAILURE;
-  error: Error;
-}
-
-export interface LoadPoolTransactions {
-  type: DepositActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
-export interface LoadPoolTransactionsSuccess {
-  type: DepositActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailure {
-  type: DepositActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
   error: Error;
 }
 
@@ -147,9 +130,6 @@ export type DepositAction =
   | LoadEthereumAccounts
   | LoadEthereumAccountsSuccess
   | LoadEthereumAccountsFailure
-  | LoadPoolTransactions
-  | LoadPoolTransactionsSuccess
-  | LoadPoolTransactionsFailure
   | LoadEthereumAccount
   | LoadEthereumAccountSuccess
   | LoadEthereumAccountFailure
@@ -208,26 +188,6 @@ function loadEthereumAccountsSuccess(
 function loadEthereumAccountsFailure(error: Error): LoadEthereumAccountsFailure {
   return {
     type: DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS_FAILURE,
-    error,
-  };
-}
-
-function loadPoolTransactions(): LoadPoolTransactions {
-  return {
-    type: DepositActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
-  return {
-    type: DepositActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
-  return {
-    type: DepositActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
   };
 }
@@ -320,9 +280,6 @@ export {
   loadEthereumAccounts,
   loadEthereumAccountsSuccess,
   loadEthereumAccountsFailure,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   loadEthereumAccount,
   loadEthereumAccountSuccess,
   loadEthereumAccountFailure,
