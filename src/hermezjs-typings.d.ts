@@ -282,6 +282,7 @@ declare module "@hermeznetwork/*" {
     tokens: Token[];
     pendingItems: number;
   }
+
   export interface AccountAuthorization {
     signature: string;
     // bjj: string;
