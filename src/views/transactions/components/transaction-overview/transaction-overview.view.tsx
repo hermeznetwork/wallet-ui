@@ -170,18 +170,15 @@ function TransactionOverview({
     </Container>
   );
 
-  const footer = (buttonLabel: string, loaderText: string): JSX.Element =>
+  const l1Footer = (buttonLabel: string): JSX.Element =>
     isTransactionBeingApproved ? (
       <div className={classes.signingSpinnerWrapper}>
         <Spinner />
-        <p className={classes.signingText}>{loaderText}</p>
+        <p className={classes.signingText}>Sign in your connected wallet to confirm transaction</p>
       </div>
     ) : (
       <PrimaryButton label={buttonLabel} onClick={handleFormSubmit} disabled={isButtonDisabled} />
     );
-
-  const l1TxLoaderText = "Sign in your connected wallet to confirm transaction";
-  const l2TxLoaderText = "Processing transaction";
 
   switch (type) {
     case TxType.Deposit: {
@@ -204,7 +201,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Deposit", l1TxLoaderText)}
+              {l1Footer("Deposit")}
             </section>
           </Container>
         </div>
@@ -230,7 +227,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Force Withdrawal", l1TxLoaderText)}
+              {l1Footer("Force Withdrawal")}
             </section>
           </Container>
         </div>
@@ -259,7 +256,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Withdraw", l1TxLoaderText)}
+              {l1Footer("Withdraw")}
             </section>
           </Container>
         </div>
@@ -293,7 +290,11 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Initiate withdraw", l2TxLoaderText)}
+              <PrimaryButton
+                label="Initiate withdraw"
+                onClick={handleFormSubmit}
+                disabled={isButtonDisabled}
+              />
             </section>
           </Container>
           {isWithdrawInfoSidenavOpen && (
@@ -323,7 +324,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Send", l2TxLoaderText)}
+              <PrimaryButton label="Send" onClick={handleFormSubmit} disabled={isButtonDisabled} />
             </section>
           </Container>
         </div>
