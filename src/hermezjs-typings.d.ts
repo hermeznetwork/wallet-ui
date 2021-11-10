@@ -393,10 +393,6 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     nonce: number;
   }
 
-  interface TxData {
-    hash: string;
-  }
-
   function deposit(
     amount: HermezCompressedAmount,
     hezEthereumAddress: string,
