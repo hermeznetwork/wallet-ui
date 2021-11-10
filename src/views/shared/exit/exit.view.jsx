@@ -9,6 +9,7 @@ import { CurrencySymbol } from "../../../utils/currencies";
 import { getTxPendingTime } from "../../../utils/transactions";
 import { ReactComponent as InfoIcon } from "../../../images/icons/info.svg";
 import PrimaryButton from "../primary-button/primary-button.view";
+import FiatAmount from "../fiat-amount/fiat-amount.view";
 
 const STEPS = {
   FIRST: 1,
@@ -256,10 +257,11 @@ function Exit({
             <p className={classes.pendingTimer}>{pendingTime} min</p>
           )}
         </div>
-        <span className={classes.amountFiat}>
-          {CurrencySymbol[preferredCurrency].symbol}
-          {fiatAmount}
-        </span>
+        <FiatAmount
+          currency={preferredCurrency}
+          amount={fiatAmount}
+          className={classes.amountFiat}
+        />
       </div>
       {(() => {
         if (getStep() !== STEPS.SECOND) {

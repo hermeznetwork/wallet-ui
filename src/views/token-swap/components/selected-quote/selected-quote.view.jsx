@@ -9,6 +9,7 @@ import {
   CurrencySymbol,
 } from "../../../../utils/currencies";
 import { MAX_TOKEN_DECIMALS } from "../../../../constants";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 function SelectedQuote({
   selectedTokens,
@@ -70,8 +71,7 @@ function SelectedQuote({
             <p className={classes.reward}>
               This swap is rewarded with {getRewardAmountInTokens()}{" "}
               {selectedQuote.lpInfo.rewards[0].token}&nbsp; (
-              {CurrencySymbol[preferredCurrency].symbol}
-              {getRewardAmountInFiat()})
+              <FiatAmount amount={getRewardAmountInFiat()} currency={preferredCurrency} />)
               <button className={classes.moreInfo} onClick={onOpenQuoteSidenav}>
                 More info
               </button>
