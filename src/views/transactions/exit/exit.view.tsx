@@ -29,6 +29,7 @@ interface ExitStateProps {
   step: exitActions.Step;
   accountTask: AsyncTask<Account, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
+  accountBalanceTask: AsyncTask<string, Error>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
   isTransactionBeingApproved: boolean;
   transactionToReview: exitActions.TransactionToReview | undefined;
@@ -47,6 +48,7 @@ interface ExitHandlerProps {
     preferredCurrency: string
   ) => void;
   onLoadFees: () => void;
+  onLoadAccountBalance: () => void;
   onLoadEstimatedWithdrawFee: (token: Token, amount: BigNumber) => void;
   onLoadPoolTransactions: () => void;
   onGoToHome: () => void;
@@ -63,6 +65,7 @@ function Exit({
   step,
   accountTask,
   feesTask,
+  accountBalanceTask,
   estimatedWithdrawFeeTask,
   isTransactionBeingApproved,
   transactionToReview,
@@ -73,6 +76,7 @@ function Exit({
   onChangeHeader,
   onLoadHermezAccount,
   onLoadFees,
+  onLoadAccountBalance,
   onLoadEstimatedWithdrawFee,
   onLoadPoolTransactions,
   onGoToHome,
@@ -151,15 +155,15 @@ function Exit({
                 }
                 feesTask={feesTask}
                 tokensPriceTask={tokensPriceTask}
+                accountBalanceTask={accountBalanceTask}
                 estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
                 // ToDo: To be removed START
                 receiverAddress={undefined}
-                accountBalanceTask={{ status: "pending" }}
                 estimatedDepositFeeTask={{ status: "pending" }}
-                onLoadAccountBalance={() => ({})}
                 onLoadEstimatedDepositFee={() => ({})}
                 onGoToChooseAccountStep={() => ({})}
                 // ToDo: To be removed END
+                onLoadAccountBalance={onLoadAccountBalance}
                 onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
                 onLoadFees={onLoadFees}
                 onSubmit={onGoToTransactionOverviewStep}
@@ -206,6 +210,7 @@ const mapStateToProps = (state: AppState): ExitStateProps => ({
   wallet: state.global.wallet,
   accountTask: state.exit.accountTask,
   feesTask: state.exit.feesTask,
+  accountBalanceTask: state.exit.accountBalanceTask,
   estimatedWithdrawFeeTask: state.exit.estimatedWithdrawFeeTask,
   isTransactionBeingApproved: state.exit.isTransactionBeingApproved,
   transactionToReview: state.exit.transaction,
@@ -263,6 +268,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlerProps => ({
       )
     ),
   onLoadFees: () => dispatch(exitThunks.fetchFees()),
+  onLoadAccountBalance: () => dispatch(exitThunks.fetchAccountBalance()),
   onLoadEstimatedWithdrawFee: (token: Token, amount: BigNumber) => {
     void dispatch(exitThunks.fetchEstimatedWithdrawFee(token, amount));
   },
