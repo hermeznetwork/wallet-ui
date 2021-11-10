@@ -170,15 +170,18 @@ function TransactionOverview({
     </Container>
   );
 
-  const footer = (buttonLabel: string): JSX.Element =>
+  const footer = (buttonLabel: string, loaderText: string): JSX.Element =>
     isTransactionBeingApproved ? (
       <div className={classes.signingSpinnerWrapper}>
         <Spinner />
-        <p className={classes.signingText}>Sign in your connected wallet to confirm transaction</p>
+        <p className={classes.signingText}>{loaderText}</p>
       </div>
     ) : (
       <PrimaryButton label={buttonLabel} onClick={handleFormSubmit} disabled={isButtonDisabled} />
     );
+
+  const l1TxLoaderText = "Sign in your connected wallet to confirm transaction";
+  const l2TxLoaderText = "Processing transaction";
 
   switch (type) {
     case TxType.Deposit: {
@@ -201,7 +204,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Deposit")}
+              {footer("Deposit", l1TxLoaderText)}
             </section>
           </Container>
         </div>
@@ -227,7 +230,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Force Withdrawal")}
+              {footer("Force Withdrawal", l1TxLoaderText)}
             </section>
           </Container>
         </div>
@@ -256,7 +259,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Withdraw")}
+              {footer("Withdraw", l1TxLoaderText)}
             </section>
           </Container>
         </div>
@@ -290,7 +293,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Initiate withdraw")}
+              {footer("Initiate withdraw", l2TxLoaderText)}
             </section>
           </Container>
           {isWithdrawInfoSidenavOpen && (
@@ -320,7 +323,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Send")}
+              {footer("Send", l2TxLoaderText)}
             </section>
           </Container>
         </div>
