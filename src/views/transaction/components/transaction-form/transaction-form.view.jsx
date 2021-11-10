@@ -318,20 +318,23 @@ function TransactionForm({
                   </p>
                 )}
               </button>
-              {areFundsExceededDueToFee && transactionType === TxType.Deposit && (
+              {areFundsExceededDueToFee && transactionType === TxType.Deposit && depositFee && (
                 <Alert
-                  message={`You don’t have enough ETH to cover deposit transaction fee (you need at least ${
-                    depositFee && depositFee.amount
-                  } ETH) ${
-                    depositFee
-                      ? ` ~ ${getTokenAmountInPreferredCurrency(
+                  message={
+                    <>
+                      {`You don’t have enough ETH to cover deposit transaction fee (you need at least
+                      ${depositFee.amount} ETH) ~`}
+                      <FiatAmount
+                        amount={getTokenAmountInPreferredCurrency(
                           depositFee.amount,
                           depositFee.USD,
                           preferredCurrency,
                           fiatExchangeRates
-                        )} ${CurrencySymbol[preferredCurrency].symbol}`
-                      : ""
-                  }`}
+                        )}
+                        currency={preferredCurrency}
+                      />
+                    </>
+                  }
                 />
               )}
               {transactionType === TxType.Exit &&

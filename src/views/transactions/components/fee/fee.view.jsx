@@ -49,7 +49,7 @@ function Fee({
       );
       return (
         <>
-          Ethereum fee (estimated) - <span>${depositFee.amount} ETH</span> ~{" "}
+          Ethereum fee (estimated) - <span>{depositFee.amount} ETH</span> ~{" "}
           <FiatAmount
             amount={fiatAmount}
             currency={preferredCurrency}
