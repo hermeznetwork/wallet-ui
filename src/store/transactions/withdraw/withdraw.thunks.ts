@@ -196,28 +196,21 @@ function withdraw(
             if (instantWithdrawal) {
               dispatch(
                 globalThunks.addPendingWithdraw({
+                  ...exit,
                   hash: txData.hash,
-                  hermezEthereumAddress: wallet.hermezEthereumAddress,
                   id: withdrawalId,
-                  accountIndex: account.accountIndex,
-                  batchNum: exit.batchNum,
-                  balance: amount.toString(),
-                  token: account.token,
+                  hermezEthereumAddress: wallet.hermezEthereumAddress,
                   timestamp: new Date().toISOString(),
                 })
               );
             } else {
               dispatch(
                 globalThunks.addPendingDelayedWithdraw({
+                  ...exit,
                   hash: txData.hash,
-                  hermezEthereumAddress: wallet.hermezEthereumAddress,
                   id: withdrawalId,
-                  accountIndex: account.accountIndex,
-                  batchNum: exit.batchNum,
-                  merkleProof: exit.merkleProof,
-                  instant: false,
-                  balance: amount.toString(),
-                  token: account.token,
+                  hermezEthereumAddress: wallet.hermezEthereumAddress,
+                  isInstant: false,
                   timestamp: new Date().toISOString(),
                 })
               );
@@ -234,6 +227,7 @@ function withdraw(
           .then((txData) => {
             dispatch(
               globalThunks.addPendingWithdraw({
+                ...exit,
                 hash: txData.hash,
                 hermezEthereumAddress: wallet.hermezEthereumAddress,
                 id: withdrawalId,

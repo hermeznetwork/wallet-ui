@@ -77,26 +77,30 @@ const pendingDeposit: z.ZodSchema<PendingDeposit> = z.object({
   transactionId: z.string().optional(),
 });
 
-const pendingWithdraw: z.ZodSchema<PendingWithdraw> = z.object({
-  accountIndex: z.string(),
-  hermezEthereumAddress: z.string(),
-  balance: z.string(),
-  batchNum: z.number(),
-  hash: z.string(),
-  id: z.string(),
-  timestamp: z.string(),
-  token,
-});
-
 const merkleProof: z.ZodSchema<MerkleProof> = z.object({
   root: z.string(),
   siblings: z.string().array(),
 });
 
+const pendingWithdraw: z.ZodSchema<PendingWithdraw> = hermezApiResourceItem.and(
+  z.object({
+    accountIndex: z.string(),
+    hermezEthereumAddress: z.string(),
+    balance: z.string(),
+    batchNum: z.number(),
+    hash: z.string(),
+    id: z.string(),
+    timestamp: z.string(),
+    instantWithdraw: z.nullable(z.number()),
+    delayedWithdraw: z.nullable(z.number()),
+    token,
+    merkleProof,
+  })
+);
+
 const pendingDelayedWithdraw: z.ZodSchema<PendingDelayedWithdraw> = pendingWithdraw.and(
   z.object({
-    instant: z.boolean(),
-    merkleProof,
+    isInstant: z.boolean(),
   })
 );
 

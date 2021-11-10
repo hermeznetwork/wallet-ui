@@ -38,21 +38,17 @@ export interface PendingDeposit {
   transactionId?: string;
 }
 
-export interface PendingWithdraw {
-  accountIndex: string;
+export type PendingWithdraw = hermezjs.Exit & {
   hermezEthereumAddress: string;
-  balance: string;
-  batchNum: number;
   hash: string;
   id: string;
   timestamp: hermezjs.ISOStringDate;
-  token: hermezjs.Token;
-}
+};
 
 export type PendingDelayedWithdraw = PendingWithdraw & {
-  instant: boolean;
-  merkleProof: hermezjs.MerkleProof;
+  isInstant: boolean;
 };
+
 export interface EthereumAccount {
   balance: string;
   token: hermezjs.Token;

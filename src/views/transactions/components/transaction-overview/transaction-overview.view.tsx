@@ -58,7 +58,7 @@ type Transaction =
       type: TxType.Withdraw;
       amount: BigNumber;
       account: Account;
-      exit: Exit | PendingDelayedWithdraw;
+      exit: Exit;
       completeDelayedWithdrawal: boolean;
       instantWithdrawal: boolean;
       estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;

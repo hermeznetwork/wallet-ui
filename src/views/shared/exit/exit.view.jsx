@@ -136,7 +136,7 @@ function Exit({
   function getDateString(delayedWithdrawal) {
     const now = Date.now();
     const difference = now - new Date(delayedWithdrawal.timestamp).getTime();
-    if (delayedWithdrawal.instant) {
+    if (delayedWithdrawal.isInstant) {
       const tenMinutes = 10 * 60 * 1000;
       if (difference > tenMinutes) {
         onRemovePendingDelayedWithdraw(exitId);
@@ -193,7 +193,7 @@ function Exit({
   function onCheckAvailabilityClick() {
     onAddPendingDelayedWithdraw({
       id: exitId,
-      instant: true,
+      isInstant: true,
       timestamp: new Date().toISOString(),
       token,
     });
@@ -290,12 +290,12 @@ function Exit({
             return (
               <div className={classes.withdraw}>
                 <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
-                  {pendingDelayedWithdrawal.instant && (
+                  {pendingDelayedWithdrawal.isInstant && (
                     <span className={classes.infoText}>
                       Your request to withdraw is validating with the network.
                     </span>
                   )}
-                  {!pendingDelayedWithdrawal.instant && (
+                  {!pendingDelayedWithdrawal.isInstant && (
                     <span className={classes.infoText}>You have scheduled your withdrawal.</span>
                   )}
 

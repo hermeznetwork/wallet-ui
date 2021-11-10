@@ -418,7 +418,7 @@ function withdraw(amount, account, exit, completeDelayedWithdrawal, instantWithd
                 accountIndex: account.accountIndex,
                 batchNum: exit.batchNum,
                 merkleProof: exit.merkleProof,
-                instant: false,
+                isInstant: false,
                 amount,
                 token: account.token,
                 timestamp: new Date().toISOString(),

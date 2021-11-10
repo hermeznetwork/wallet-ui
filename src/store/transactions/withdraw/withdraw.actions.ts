@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
 import { EstimatedWithdrawFee } from "src/domain";
-import { Account, Exit, PendingDelayedWithdraw, PoolTransaction } from "src/domain/hermez";
+import { Account, Exit, PoolTransaction } from "src/domain/hermez";
 
 export enum WithdrawActionTypes {
   LOAD_ACCOUNT = "[WITHDRAW] LOAD ACCOUNT",
@@ -41,7 +41,7 @@ export interface LoadExit {
 
 export interface LoadExitSuccess {
   type: WithdrawActionTypes.LOAD_EXIT_SUCCESS;
-  exit: Exit | PendingDelayedWithdraw;
+  exit: Exit;
 }
 
 export interface LoadExitFailure {
@@ -122,7 +122,7 @@ function loadExit(): LoadExit {
   };
 }
 
-function loadExitSuccess(exit: Exit | PendingDelayedWithdraw): LoadExitSuccess {
+function loadExitSuccess(exit: Exit): LoadExitSuccess {
   return {
     type: WithdrawActionTypes.LOAD_EXIT_SUCCESS,
     exit,

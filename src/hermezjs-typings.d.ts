@@ -69,7 +69,7 @@ declare module "@hermeznetwork/*" {
   export type Exit = HermezApiResourceItem & {
     accountIndex: string;
     batchNum: number;
-    delayedWithdraw: unknown | null;
+    delayedWithdraw: number | null;
     instantWithdraw: number | null;
     token: Token;
     merkleProof: MerkleProof;

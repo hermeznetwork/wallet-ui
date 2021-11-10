@@ -100,10 +100,7 @@ function mergeDelayedWithdraws(
 /**
  * Helper function that merges both Exits and Delayed Withdraws
  */
-function mergeExits(
-  exits: Exit[],
-  pendingDelayedWithdraws: PendingDelayedWithdraw[]
-): (Exit | PendingDelayedWithdraw)[] {
+function mergeExits(exits: Exit[], pendingDelayedWithdraws: PendingDelayedWithdraw[]): Exit[] {
   // Remove Exits that are now pending Delayed Withdraws
   const nonDelayedExits = exits.filter((exit) => {
     const exitId = `${exit.accountIndex}${exit.batchNum}`;
