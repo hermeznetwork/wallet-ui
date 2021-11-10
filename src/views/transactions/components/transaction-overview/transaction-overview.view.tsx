@@ -170,7 +170,7 @@ function TransactionOverview({
     </Container>
   );
 
-  const l1Footer = (buttonLabel: string): JSX.Element =>
+  const footer = (buttonLabel: string): JSX.Element =>
     isTransactionBeingApproved ? (
       <div className={classes.signingSpinnerWrapper}>
         <Spinner />
@@ -201,7 +201,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {l1Footer("Deposit")}
+              {footer("Deposit")}
             </section>
           </Container>
         </div>
@@ -227,7 +227,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {l1Footer("Force Withdrawal")}
+              {footer("Force Withdrawal")}
             </section>
           </Container>
         </div>
@@ -256,7 +256,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {l1Footer("Withdraw")}
+              {footer("Withdraw")}
             </section>
           </Container>
         </div>
