@@ -14,6 +14,7 @@ export interface ExitState {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   accountTask: AsyncTask<Account, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
+  accountBalanceTask: AsyncTask<string, Error>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;
@@ -28,6 +29,9 @@ const initialExitState: ExitState = {
     status: "pending",
   },
   feesTask: {
+    status: "pending",
+  },
+  accountBalanceTask: {
     status: "pending",
   },
   estimatedWithdrawFeeTask: {
@@ -144,6 +148,32 @@ function exitReducer(state: ExitState = initialExitState, action: ExitAction): E
           error: action.error,
         },
       };
+    case ExitActionTypes.LOAD_ACCOUNT_BALANCE: {
+      return {
+        ...state,
+        accountBalanceTask: {
+          status: "loading",
+        },
+      };
+    }
+    case ExitActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS: {
+      return {
+        ...state,
+        accountBalanceTask: {
+          status: "successful",
+          data: action.balance,
+        },
+      };
+    }
+    case ExitActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE: {
+      return {
+        ...state,
+        accountBalanceTask: {
+          status: "failed",
+          error: action.error,
+        },
+      };
+    }
     case ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE: {
       return {
         ...state,

@@ -69,16 +69,16 @@ declare module "@hermeznetwork/*" {
   export type Exit = HermezApiResourceItem & {
     accountIndex: string;
     batchNum: number;
-    delayedWithdraw: unknown | null;
+    delayedWithdraw: number | null;
     instantWithdraw: number | null;
-    // balance: string;
+    token: Token;
+    merkleProof: MerkleProof;
+    balance: string;
     // bjj: string;
     // delayedWithdrawRequest: unknown | null;
     // fee: number;
     // hash: string;
     // hezEthereumAddress: string;
-    // merkleProof: MerkleProof;
-    // token: Token;
   };
 
   export type HistoryTransaction = HermezApiResourceItem & {
@@ -343,8 +343,13 @@ declare module "@hermeznetwork/hermezjs/src/utils" {
 
 // Tx
 declare module "@hermeznetwork/hermezjs/src/tx" {
-  import { Token, HermezWallet } from "@hermeznetwork/hermezjs";
-  import HermezCompressedAmount from "@hermeznetwork/hermezjs/src/hermez-compressed-amount";
+  import {
+    Token,
+    HermezWallet,
+    Exit,
+    Signers,
+    HermezCompressedAmount,
+  } from "@hermeznetwork/hermezjs";
   import { TxType } from "@hermeznetwork/hermezjs/src/enums";
   import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
 
@@ -401,7 +406,6 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
 
   // function forceExit();
   // function withdraw();
-  // function delayedWithdraw();
   // function isInstantWithdrawalAllowed();
   // function sendL2Transaction();
 
@@ -413,9 +417,22 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     addToTxPool?: boolean
   ): Promise<SendL2TransactionResponse>;
 
+  function withdrawCircuit(
+    exit: Exit,
+    isInstant: boolean,
+    wasmFilePath: string,
+    zkeyFilePath: string,
+    signerData: Signers.SignerData
+  ): Promise<TxData>;
+
+  function delayedWithdraw(
+    hezEthereumAddress: string,
+    token: Token,
+    signerData: Signers.SignerData
+  ): Promise<TxData>;
+
   // function sendAtomicGroup();
   // function generateAndSendAtomicGroup();
-  // function withdrawCircuit();
 }
 
 // TxUtils
@@ -450,8 +467,7 @@ declare module "@hermeznetwork/hermezjs/src/tx-utils" {
 // TxFees
 declare module "@hermeznetwork/hermezjs/src/tx-fees" {
   import { Token, Signers } from "@hermeznetwork/hermezjs";
-  import { CallOverrides } from "ethers";
-  import { BigNumber } from "ethers";
+  import { CallOverrides, BigNumber } from "ethers";
 
   // function estimateDepositGasLimit();
 

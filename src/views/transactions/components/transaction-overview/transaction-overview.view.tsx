@@ -21,7 +21,14 @@ import { Theme } from "src/styles/theme";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 // domain
-import { Account, EthereumAccount, Exit, FiatExchangeRates, HermezWallet } from "src/domain/hermez";
+import {
+  HermezWallet,
+  Account,
+  FiatExchangeRates,
+  Exit,
+  EthereumAccount,
+  PendingDelayedWithdraw,
+} from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
 
 type Transaction =

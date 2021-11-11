@@ -80,9 +80,9 @@ function mergeDelayedWithdraws(
             return mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken
               ? {
                   ...mergedPendingDelayedWithdraw,
-                  // We need to sum up the amounts and use the latest timestamp for the timer
-                  amount: BigNumber.from(mergedPendingDelayedWithdraw.amount)
-                    .add(BigNumber.from(pendingDelayedWithdraw.amount))
+                  // We need to sum up the balances and use the latest timestamp for the timer
+                  balance: BigNumber.from(mergedPendingDelayedWithdraw.balance)
+                    .add(BigNumber.from(pendingDelayedWithdraw.balance))
                     .toString(),
                   timestamp:
                     Date.parse(mergedPendingDelayedWithdraw.timestamp) >
@@ -100,10 +100,7 @@ function mergeDelayedWithdraws(
 /**
  * Helper function that merges both Exits and Delayed Withdraws
  */
-function mergeExits(
-  exits: Exit[],
-  pendingDelayedWithdraws: PendingDelayedWithdraw[]
-): (Exit | PendingDelayedWithdraw)[] {
+function mergeExits(exits: Exit[], pendingDelayedWithdraws: PendingDelayedWithdraw[]): Exit[] {
   // Remove Exits that are now pending Delayed Withdraws
   const nonDelayedExits = exits.filter((exit) => {
     const exitId = `${exit.accountIndex}${exit.batchNum}`;

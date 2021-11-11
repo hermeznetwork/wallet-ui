@@ -14,6 +14,9 @@ export enum ExitActionTypes {
   LOAD_FEES = "[EXIT] LOAD FEES",
   LOAD_FEES_SUCCESS = "[EXIT] LOAD FEES SUCCESS",
   LOAD_FEES_FAILURE = "[EXIT] LOAD FEES FAILURE",
+  LOAD_ACCOUNT_BALANCE = "[EXIT] LOAD ACCOUNT BALANCE",
+  LOAD_ACCOUNT_BALANCE_SUCCESS = "[EXIT] LOAD ACCOUNT BALANCE SUCCESS",
+  LOAD_ACCOUNT_BALANCE_FAILURE = "[EXIT] LOAD ACCOUNT BALANCE FAILURE",
   LOAD_ESTIMATED_WITHDRAW_FEE = "[EXIT] LOAD ESTIMATED WITHDRAW FEE",
   LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS = "[EXIT] LOAD ESTIMATED WITHDRAW FEE SUCCESS",
   LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE = "[EXIT] LOAD ESTIMATED WITHDRAW FEE FAILURE",
@@ -77,6 +80,20 @@ export interface LoadFeesFailure {
   error: Error;
 }
 
+export interface LoadAccountBalance {
+  type: ExitActionTypes.LOAD_ACCOUNT_BALANCE;
+}
+
+export interface LoadAccountBalanceSuccess {
+  type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS;
+  balance: string;
+}
+
+export interface LoadAccountBalanceFailure {
+  type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE;
+  error: Error;
+}
+
 export interface LoadEstimatedWithdrawFee {
   type: ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE;
 }
@@ -127,6 +144,9 @@ export type ExitAction =
   | LoadFees
   | LoadFeesSuccess
   | LoadFeesFailure
+  | LoadAccountBalance
+  | LoadAccountBalanceSuccess
+  | LoadAccountBalanceFailure
   | LoadEstimatedWithdrawFee
   | LoadEstimatedWithdrawFeeSuccess
   | LoadEstimatedWithdrawFeeFailure
@@ -194,6 +214,26 @@ function loadFeesSuccess(fees: RecommendedFee): LoadFeesSuccess {
 function loadFeesFailure(error: Error): LoadFeesFailure {
   return {
     type: ExitActionTypes.LOAD_FEES_FAILURE,
+    error,
+  };
+}
+
+function loadAccountBalance(): LoadAccountBalance {
+  return {
+    type: ExitActionTypes.LOAD_ACCOUNT_BALANCE,
+  };
+}
+
+function loadAccountBalanceSuccess(balance: string): LoadAccountBalanceSuccess {
+  return {
+    type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS,
+    balance,
+  };
+}
+
+function loadAccountBalanceFailure(error: Error): LoadAccountBalanceFailure {
+  return {
+    type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE,
     error,
   };
 }
@@ -271,6 +311,9 @@ export {
   loadFees,
   loadFeesSuccess,
   loadFeesFailure,
+  loadAccountBalance,
+  loadAccountBalanceSuccess,
+  loadAccountBalanceFailure,
   loadEstimatedWithdrawFee,
   loadEstimatedWithdrawFeeSuccess,
   loadEstimatedWithdrawFeeFailure,
