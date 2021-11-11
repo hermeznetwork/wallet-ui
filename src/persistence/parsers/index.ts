@@ -91,8 +91,8 @@ const pendingWithdraw: z.ZodSchema<PendingWithdraw> = hermezApiResourceItem.and(
     hash: z.string(),
     id: z.string(),
     timestamp: z.string(),
-    instantWithdraw: z.nullable(z.number()),
-    delayedWithdraw: z.nullable(z.number()),
+    instantWithdraw: z.number().nullable(),
+    delayedWithdraw: z.number().nullable(),
     token,
     merkleProof,
   })
