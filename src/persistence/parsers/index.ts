@@ -16,6 +16,7 @@ import {
   PendingWithdraw,
   Token,
   L1Info,
+  Exit,
 } from "src/domain/hermez";
 
 const hermezApiResourceItem: z.ZodSchema<HermezApiResourceItem> = z.object({
@@ -82,19 +83,24 @@ const merkleProof: z.ZodSchema<MerkleProof> = z.object({
   siblings: z.string().array(),
 });
 
-const pendingWithdraw: z.ZodSchema<PendingWithdraw> = hermezApiResourceItem.and(
+const exit: z.ZodSchema<Exit> = hermezApiResourceItem.and(
   z.object({
     accountIndex: z.string(),
-    hermezEthereumAddress: z.string(),
-    balance: z.string(),
     batchNum: z.number(),
+    delayedWithdraw: z.number().nullable(),
+    instantWithdraw: z.number().nullable(),
+    token,
+    merkleProof,
+    balance: z.string(),
+  })
+);
+
+const pendingWithdraw: z.ZodSchema<PendingWithdraw> = exit.and(
+  z.object({
+    hermezEthereumAddress: z.string(),
     hash: z.string(),
     id: z.string(),
     timestamp: z.string(),
-    instantWithdraw: z.number().nullable(),
-    delayedWithdraw: z.number().nullable(),
-    token,
-    merkleProof,
   })
 );
 
