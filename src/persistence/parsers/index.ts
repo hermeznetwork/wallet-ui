@@ -15,6 +15,8 @@ import {
   PendingDeposit,
   PendingWithdraw,
   Token,
+  L1Info,
+  Exit,
 } from "src/domain/hermez";
 
 const hermezApiResourceItem: z.ZodSchema<HermezApiResourceItem> = z.object({
@@ -43,50 +45,68 @@ const account: z.ZodSchema<Account> = hermezApiResourceItem.and(
   })
 );
 
+const l1Info: z.ZodSchema<L1Info> = z.object({
+  depositAmount: z.string(),
+});
+
+const l1orL2: z.ZodSchema<"L1" | "L2"> = z.union([z.literal("L1"), z.literal("L2")]);
+
 const historyTransaction: z.ZodSchema<HistoryTransaction> = hermezApiResourceItem.and(
   z.object({
+    amount: z.string(),
     batchNum: z.number(),
     fromAccountIndex: z.string(),
     fromHezEthereumAddress: z.string(),
     id: z.string(),
+    L1Info: l1Info,
+    L1orL2: l1orL2,
     toHezEthereumAddress: z.string().nullable(),
     type: z.nativeEnum(TxType),
   })
 );
 
-const pendingDeposit: z.ZodSchema<PendingDeposit> = hermezApiResourceItem.and(
-  z.object({
-    account,
-    amount: z.string(),
-    fromHezEthereumAddress: z.string(),
-    hash: z.string(),
-    state: z.nativeEnum(TxState),
-    timestamp: z.string(),
-    toHezEthereumAddress: z.string(),
-    token,
-    type: z.enum([TxType.Deposit, TxType.CreateAccountDeposit]),
-  })
-);
-
-const pendingWithdraw: z.ZodSchema<PendingWithdraw> = hermezApiResourceItem.and(
-  z.object({
-    accountIndex: z.string(),
-    batchNum: z.number(),
-    hash: z.string(),
-    id: z.string(),
-    timestamp: z.string(),
-  })
-);
+const pendingDeposit: z.ZodSchema<PendingDeposit> = z.object({
+  accountIndex: z.string().optional(),
+  amount: z.string(),
+  fromHezEthereumAddress: z.string(),
+  hash: z.string(),
+  state: z.nativeEnum(TxState),
+  timestamp: z.string(),
+  toHezEthereumAddress: z.string(),
+  token,
+  type: z.enum([TxType.Deposit, TxType.CreateAccountDeposit]),
+  transactionId: z.string().optional(),
+});
 
 const merkleProof: z.ZodSchema<MerkleProof> = z.object({
   root: z.string(),
   siblings: z.string().array(),
 });
 
+const exit: z.ZodSchema<Exit> = hermezApiResourceItem.and(
+  z.object({
+    accountIndex: z.string(),
+    batchNum: z.number(),
+    delayedWithdraw: z.number().nullable(),
+    instantWithdraw: z.number().nullable(),
+    token,
+    merkleProof,
+    balance: z.string(),
+  })
+);
+
+const pendingWithdraw: z.ZodSchema<PendingWithdraw> = exit.and(
+  z.object({
+    hermezEthereumAddress: z.string(),
+    hash: z.string(),
+    id: z.string(),
+    timestamp: z.string(),
+  })
+);
+
 const pendingDelayedWithdraw: z.ZodSchema<PendingDelayedWithdraw> = pendingWithdraw.and(
   z.object({
-    instant: z.boolean(),
-    merkleProof,
+    isInstant: z.boolean(),
   })
 );
 

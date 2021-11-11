@@ -9,6 +9,7 @@ import { CurrencySymbol } from "../../../utils/currencies";
 import { getTxPendingTime } from "../../../utils/transactions";
 import { ReactComponent as InfoIcon } from "../../../images/icons/info.svg";
 import PrimaryButton from "../primary-button/primary-button.view";
+import FiatAmount from "../fiat-amount/fiat-amount.view";
 
 const STEPS = {
   FIRST: 1,
@@ -30,7 +31,6 @@ function Exit({
   pendingWithdraws,
   pendingDelayedWithdraws,
   coordinatorState,
-  redirectTo,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
 }) {
@@ -137,7 +137,7 @@ function Exit({
   function getDateString(delayedWithdrawal) {
     const now = Date.now();
     const difference = now - new Date(delayedWithdrawal.timestamp).getTime();
-    if (delayedWithdrawal.instant) {
+    if (delayedWithdrawal.isInstant) {
       const tenMinutes = 10 * 60 * 1000;
       if (difference > tenMinutes) {
         onRemovePendingDelayedWithdraw(exitId);
@@ -194,7 +194,7 @@ function Exit({
   function onCheckAvailabilityClick() {
     onAddPendingDelayedWithdraw({
       id: exitId,
-      instant: true,
+      isInstant: true,
       timestamp: new Date().toISOString(),
       token,
     });
@@ -203,7 +203,7 @@ function Exit({
   if (isWithdrawClicked) {
     return (
       <Redirect
-        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true&redirectTo=${redirectTo}`}
+        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`}
       />
     );
   }
@@ -211,7 +211,7 @@ function Exit({
   if (isWithdrawDelayedClicked) {
     return (
       <Redirect
-        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false&redirectTo=${redirectTo}`}
+        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`}
       />
     );
   }
@@ -219,7 +219,7 @@ function Exit({
   if (isCompleteDelayedWithdrawalClicked) {
     return (
       <Redirect
-        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true&redirectTo=${redirectTo}`}
+        to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true`}
       />
     );
   }
@@ -256,10 +256,11 @@ function Exit({
             <p className={classes.pendingTimer}>{pendingTime} min</p>
           )}
         </div>
-        <span className={classes.amountFiat}>
-          {CurrencySymbol[preferredCurrency].symbol}
-          {fiatAmount}
-        </span>
+        <FiatAmount
+          currency={preferredCurrency}
+          amount={fiatAmount}
+          className={classes.amountFiat}
+        />
       </div>
       {(() => {
         if (getStep() !== STEPS.SECOND) {
@@ -291,12 +292,12 @@ function Exit({
             return (
               <div className={classes.withdraw}>
                 <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
-                  {pendingDelayedWithdrawal.instant && (
+                  {pendingDelayedWithdrawal.isInstant && (
                     <span className={classes.infoText}>
                       Your request to withdraw is validating with the network.
                     </span>
                   )}
-                  {!pendingDelayedWithdrawal.instant && (
+                  {!pendingDelayedWithdrawal.isInstant && (
                     <span className={classes.infoText}>You have scheduled your withdrawal.</span>
                   )}
 

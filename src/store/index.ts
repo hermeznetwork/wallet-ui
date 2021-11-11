@@ -26,7 +26,11 @@ import tokenSwapReducer from "src/store/token-swap/token-swap.reducer";
 import transferReducer, { TransferState } from "src/store/transactions/transfer/transfer.reducer";
 import { TransferAction } from "src/store/transactions/transfer/transfer.actions";
 import { ExitAction } from "src/store/transactions/exit/exit.actions";
-import exitReducer, { ExitState } from "./transactions/exit/exit.reducer";
+import exitReducer, { ExitState } from "src/store/transactions/exit/exit.reducer";
+import { WithdrawAction } from "src/store/transactions/withdraw/withdraw.actions";
+import withdrawReducer, { WithdrawState } from "src/store/transactions/withdraw/withdraw.reducer";
+import { DepositAction } from "src/store/transactions/deposit/deposit.actions";
+import depositReducer, { DepositState } from "./transactions/deposit/deposit.reducer";
 
 export type AppAction =
   | RouterAction
@@ -37,6 +41,8 @@ export type AppAction =
   | LoginAction
   | TransferAction
   | ExitAction
+  | WithdrawAction
+  | DepositAction
   | TransactionDetailsAction;
 
 export interface AppState {
@@ -48,6 +54,8 @@ export interface AppState {
   login: LoginState;
   transfer: TransferState;
   exit: ExitState;
+  withdraw: WithdrawState;
+  deposit: DepositState;
   transactionDetails: TransactionDetailsState;
 }
 
@@ -72,6 +80,8 @@ export function createAppReducer(history: History) {
     transaction: transactionReducer,
     transfer: transferReducer,
     exit: exitReducer,
+    withdraw: withdrawReducer,
+    deposit: depositReducer,
     login: loginReducer,
     tokenSwap: tokenSwapReducer,
   });

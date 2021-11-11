@@ -1,3 +1,4 @@
+import { FunctionComponent } from "react";
 import {
   ReactComponent as eth,
   ReactComponent as weth,
@@ -26,7 +27,7 @@ import { ReactComponent as ant } from "cryptocurrency-icons/svg/icon/ant.svg";
 import { ReactComponent as crv } from "cryptocurrency-icons/svg/icon/crv.svg";
 import { ReactComponent as generic } from "cryptocurrency-icons/svg/icon/2give.svg";
 
-const tokens = {
+const tokens: Record<string, FunctionComponent> = {
   eth,
   usdt,
   usdc,
@@ -53,12 +54,9 @@ const tokens = {
   crv,
 };
 
-export const getTokenIcon = (id) => {
+export const getTokenIcon = (id: string): FunctionComponent => {
   const symbol = id?.toLowerCase();
-  if (tokens[symbol]) {
-    return tokens[symbol];
-  }
-  return generic;
+  return tokens[symbol] ? tokens[symbol] : generic;
 };
 
 export default tokens;

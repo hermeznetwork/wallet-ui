@@ -4,7 +4,9 @@ import Home from "../views/home/home.view";
 import Login from "../views/login/login.view";
 import Transaction from "../views/transaction/transaction.view";
 import Transfer from "../views/transactions/transfer/transfer.view";
+import Deposit from "src/views/transactions/deposit/deposit.view";
 import Exit from "src/views/transactions/exit/exit.view";
+import Withdraw from "src/views/transactions/withdraw/withdraw.view";
 import MyAccount from "../views/my-account/my-account.view";
 import AccountDetails from "../views/account-details/account-details.view";
 import TransactionDetails from "../views/transaction-details/transaction-details.view";
@@ -23,7 +25,7 @@ const routes = {
   },
   deposit: {
     path: "/deposit",
-    render: () => <Transaction transactionType={TxType.Deposit} />,
+    render: () => <Deposit />,
   },
   transfer: {
     path: "/transfer",
@@ -35,7 +37,7 @@ const routes = {
   },
   withdrawComplete: {
     path: "/withdraw-complete",
-    render: () => <Transaction transactionType={TxType.Withdraw} />,
+    render: () => <Withdraw />,
   },
   forceWithdraw: {
     path: "/force-withdrawal",

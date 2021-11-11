@@ -1,7 +1,7 @@
 import { Theme } from "src/styles/theme";
 import { createUseStyles } from "react-jss";
 
-const useTransferStyles = createUseStyles((theme: Theme) => ({
+const useWithdrawStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
   },
@@ -16,4 +16,4 @@ const useTransferStyles = createUseStyles((theme: Theme) => ({
   },
 }));
 
-export default useTransferStyles;
+export default useWithdrawStyles;

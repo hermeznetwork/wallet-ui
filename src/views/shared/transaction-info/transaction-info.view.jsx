@@ -30,6 +30,10 @@ function TransactionInfo({
   const date = txData.timestamp && {
     subtitle: new Date(txData.timestamp).toLocaleString(),
   };
+  const myHermezAddress = {
+    subtitle: "My Hermez address",
+    value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress),
+  };
 
   function getTransactionStatus() {
     if (!showStatus) {
@@ -65,6 +69,24 @@ function TransactionInfo({
     onFromCopyClick();
   }
 
+  function getTransferAddressToShow() {
+    if (
+      txData.toBJJ &&
+      txData.toHezEthereumAddress.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
+    ) {
+      return {
+        subtitle: getPartiallyHiddenHermezAddress(txData.toBJJ),
+      };
+    } else if (txData.toHezEthereumAddress) {
+      return {
+        subtitle: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress),
+      };
+    } else if (txData.fromAccountIndex && txData.fromAccountIndex === txData.toAccountIndex) {
+      return myHermezAddress;
+    }
+    return null;
+  }
+
   switch (txData.type) {
     case TxType.CreateAccountDeposit:
     case TxType.Deposit: {
@@ -77,10 +99,7 @@ function TransactionInfo({
               getEthereumAddress(txData.fromHezEthereumAddress)
             ),
           }}
-          to={{
-            subtitle: "My Hermez address",
-            value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress),
-          }}
+          to={myHermezAddress}
           date={date}
         />
       );
@@ -89,24 +108,11 @@ function TransactionInfo({
     case TxType.TransferToBJJ:
     case TxType.TransferToEthAddr: {
       if (accountIndex === txData.fromAccountIndex) {
-        const myHermezAddress = {
-          subtitle: "My Hermez address",
-          value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress),
-        };
         return (
           <TransactionInfoTable
             status={getTransactionStatus()}
             from={myHermezAddress}
-            to={
-              (txData.toBJJ && {
-                subtitle:
-                  txData.toHezEthereumAddress.toLowerCase() ===
-                  INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
-                    ? getPartiallyHiddenHermezAddress(txData.toBJJ)
-                    : getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress),
-              }) ||
-              (txData.fromAccountIndex === txData.toAccountIndex && myHermezAddress)
-            }
+            to={getTransferAddressToShow()}
             date={date}
             fee={txData.fee}
             preferredCurrency={preferredCurrency}
@@ -140,10 +146,7 @@ function TransactionInfo({
       return (
         <TransactionInfoTable
           status={getTransactionStatus()}
-          from={{
-            subtitle: "My Hermez address",
-            value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress),
-          }}
+          from={myHermezAddress}
           to={{
             subtitle: "My Ethereum address",
             value: getPartiallyHiddenEthereumAddress(
@@ -163,10 +166,7 @@ function TransactionInfo({
       return (
         <TransactionInfoTable
           status={getTransactionStatus()}
-          from={{
-            subtitle: "My Hermez address",
-            value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress),
-          }}
+          from={myHermezAddress}
           to={{
             subtitle: "My Ethereum address",
             value: getPartiallyHiddenEthereumAddress(

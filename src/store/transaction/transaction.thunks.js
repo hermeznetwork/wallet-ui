@@ -18,7 +18,7 @@ import { getNextBestForger, getNextForgerUrls } from "../../utils/coordinator";
 import { getDepositFee } from "../../utils/fees";
 import theme from "../../styles/theme";
 
-import { WITHDRAW_WASM_URL, WITHDRAW_HEZ4_FINAL_ZKEY_URL } from "../../constants";
+import { WITHDRAWAL_WASM_URL, WITHDRAWAL_ZKEY_URL } from "../../constants";
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
@@ -278,9 +278,9 @@ function fetchEstimatedWithdrawFee(token, amount) {
         global: { signer, tokensPriceTask },
       } = getState();
       const provider = getProvider();
-      const gasPrice = await provider.getGasPrice();
+      const { maxFeePerGas } = await provider.getFeeData();
       const estimatedMerkleSiblingsLength = 4;
-      const overrides = { gasPrice };
+      const overrides = { maxFeePerGas };
       const gasLimit = await TxFees.estimateWithdrawGasLimit(
         token,
         estimatedMerkleSiblingsLength,
@@ -288,7 +288,7 @@ function fetchEstimatedWithdrawFee(token, amount) {
         overrides,
         signer
       );
-      const feeBigNumber = BigNumber.from(gasLimit).mul(gasPrice);
+      const feeBigNumber = BigNumber.from(gasLimit).mul(maxFeePerGas);
       const tokenUSD = tokensPriceTask.data?.[ETHER_TOKEN_ID].USD;
       const feeUSD = Number(ethers.utils.formatEther(feeBigNumber)) * tokenUSD;
 
@@ -313,17 +313,18 @@ function fetchEstimatedDepositFee() {
         global: { signer, tokensPriceTask },
       } = getState();
       const provider = getProvider();
-      const gasPrice = await provider.getGasPrice();
-      if (tokensPriceTask.status === "successful") {
+      const { maxFeePerGas } = await provider.getFeeData();
+
+      if (tokensPriceTask.status === "successful" && maxFeePerGas) {
         const ethToken = tokensPriceTask.data.find((token) => token.id === ETHER_TOKEN_ID);
         if (ethToken) {
-          const depositFee = getDepositFee(ethToken, gasPrice);
+          const depositFee = getDepositFee(ethToken, maxFeePerGas);
           const amount = getFixedTokenAmount(depositFee, ethToken.decimals);
 
           dispatch(
             transactionActions.loadEstimatedDepositFeeSuccess({
               amount,
-              gasPrice,
+              gasPrice: maxFeePerGas,
               USD: ethToken.USD,
             })
           );
@@ -390,8 +391,8 @@ function withdraw(amount, account, exit, completeDelayedWithdrawal, instantWithd
       return Tx.withdrawCircuit(
         exit,
         instantWithdrawal,
-        WITHDRAW_WASM_URL,
-        WITHDRAW_HEZ4_FINAL_ZKEY_URL,
+        WITHDRAWAL_WASM_URL,
+        WITHDRAWAL_ZKEY_URL,
         signer
       )
         .then((txData) => {
@@ -417,7 +418,7 @@ function withdraw(amount, account, exit, completeDelayedWithdrawal, instantWithd
                 accountIndex: account.accountIndex,
                 batchNum: exit.batchNum,
                 merkleProof: exit.merkleProof,
-                instant: false,
+                isInstant: false,
                 amount,
                 token: account.token,
                 timestamp: new Date().toISOString(),

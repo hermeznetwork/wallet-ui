@@ -1,5 +1,5 @@
 import { push } from "connected-react-router";
-import { BigNumber } from "ethers";
+import { BigNumber, utils } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount, TxFees } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
@@ -15,6 +15,7 @@ import theme from "src/styles/theme";
 // domain
 import { Account, FiatExchangeRates, PoolTransaction, Token } from "src/domain/hermez";
 import { ETHER_TOKEN_ID } from "src/constants";
+import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -97,6 +98,28 @@ function fetchFees(): AppThunk {
   };
 }
 
+function fetchAccountBalance() {
+  return (dispatch: AppDispatch, getState: () => AppState): void => {
+    const {
+      global: { wallet },
+    } = getState();
+
+    dispatch(exitActions.loadAccountBalance());
+
+    if (wallet) {
+      const ethereumAddress = getEthereumAddress(wallet.hermezEthereumAddress);
+      const provider = getProvider();
+
+      provider
+        .getBalance(ethereumAddress)
+        .then((balance) =>
+          dispatch(exitActions.loadAccountBalanceSuccess(utils.formatUnits(balance)))
+        )
+        .catch((err) => dispatch(exitActions.loadAccountBalanceFailure(err)));
+    }
+  };
+}
+
 function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
   return async (dispatch: AppDispatch, getState: () => AppState): Promise<void> => {
     dispatch(exitActions.loadEstimatedWithdrawFee());
@@ -106,9 +129,9 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         global: { signer, tokensPriceTask },
       } = getState();
       const provider = getProvider();
-      const gasPrice = await provider.getGasPrice();
+      const { maxFeePerGas } = await provider.getFeeData();
       const estimatedMerkleSiblingsLength = 4;
-      const overrides = { gasPrice };
+      const overrides = maxFeePerGas ? { maxFeePerGas } : {};
       const gasLimit = await TxFees.estimateWithdrawGasLimit(
         token,
         estimatedMerkleSiblingsLength,
@@ -116,7 +139,9 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         overrides,
         signer
       );
-      const feeBigNumber = BigNumber.from(gasLimit).mul(gasPrice);
+      const feeBigNumber = maxFeePerGas
+        ? BigNumber.from(gasLimit).mul(maxFeePerGas)
+        : BigNumber.from(gasLimit);
 
       if (tokensPriceTask.status === "successful" || tokensPriceTask.status === "reloading") {
         const tokenUSD = tokensPriceTask.data[ETHER_TOKEN_ID].USD;
@@ -178,4 +203,11 @@ function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) 
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
-export { fetchHermezAccount, fetchPoolTransactions, fetchFees, fetchEstimatedWithdrawFee, exit };
+export {
+  fetchHermezAccount,
+  fetchPoolTransactions,
+  fetchFees,
+  fetchAccountBalance,
+  fetchEstimatedWithdrawFee,
+  exit,
+};

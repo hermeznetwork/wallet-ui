@@ -2,7 +2,6 @@
  * HermezJS type definitions have been moved to the dedicated definitions file hermezjs-typings.d.ts
  * We may decide not to export them from the domain and let other layers import them from the lib.
  */
-
 import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
@@ -15,6 +14,7 @@ export type {
   HermezWallet,
   HistoryTransaction,
   ISOStringDate,
+  L1Info,
   MerkleProof,
   NextForger,
   PoolTransaction,
@@ -26,7 +26,7 @@ export type {
 export type Account = hermezjs.Account & { fiatBalance?: number };
 
 export interface PendingDeposit {
-  account: Account;
+  accountIndex?: string;
   amount: string;
   fromHezEthereumAddress: string;
   hash: string;
@@ -38,18 +38,19 @@ export interface PendingDeposit {
   transactionId?: string;
 }
 
-export interface PendingWithdraw {
-  accountIndex: string;
-  batchNum: number;
+export type PendingWithdraw = hermezjs.Exit & {
+  hermezEthereumAddress: string;
   hash: string;
   id: string;
   timestamp: hermezjs.ISOStringDate;
-  // amount: string;
-  // hermezEthereumAddress: string;
-  // token: hermezjs.Token;
-}
+};
 
 export type PendingDelayedWithdraw = PendingWithdraw & {
-  instant: boolean;
-  merkleProof: hermezjs.MerkleProof;
+  isInstant: boolean;
 };
+
+export interface EthereumAccount {
+  balance: string;
+  token: hermezjs.Token;
+  fiatBalance?: number;
+}

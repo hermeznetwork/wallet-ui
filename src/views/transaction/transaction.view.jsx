@@ -18,11 +18,6 @@ import Spinner from "../shared/spinner/spinner.view";
 import * as storage from "../../utils/storage";
 import theme from "../../styles/theme";
 
-export const WithdrawRedirectionRoute = {
-  Home: "home",
-  AccountDetails: "account-details",
-};
-
 function Transaction({
   pendingDepositsCheckTask,
   ethereumNetworkTask,
