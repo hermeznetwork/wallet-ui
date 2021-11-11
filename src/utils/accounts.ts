@@ -21,7 +21,7 @@ function getAccountBalance(
 
   if (pendingDeposits !== undefined && pendingDeposits.length) {
     const pendingAccountDeposits = pendingDeposits.filter(
-      (deposit) => deposit.account.accountIndex === account.accountIndex
+      (deposit) => deposit.accountIndex === account.accountIndex
     );
     pendingAccountDeposits.forEach((pendingDeposit) => {
       totalBalance = totalBalance.add(BigNumber.from(pendingDeposit.amount));
