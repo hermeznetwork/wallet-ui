@@ -66,7 +66,7 @@ const historyTransaction: z.ZodSchema<HistoryTransaction> = hermezApiResourceIte
 );
 
 const pendingDeposit: z.ZodSchema<PendingDeposit> = z.object({
-  account,
+  accountIndex: z.string().optional(),
   amount: z.string(),
   fromHezEthereumAddress: z.string(),
   hash: z.string(),

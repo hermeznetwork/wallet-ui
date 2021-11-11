@@ -26,7 +26,7 @@ export type {
 export type Account = hermezjs.Account & { fiatBalance?: number };
 
 export interface PendingDeposit {
-  account: Account;
+  accountIndex?: string;
   amount: string;
   fromHezEthereumAddress: string;
   hash: string;

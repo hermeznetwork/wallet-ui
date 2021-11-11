@@ -14,7 +14,7 @@ import { convertTokenAmountToFiat, getFixedTokenAmount } from "src/utils/currenc
 import { getDepositFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
-import { FiatExchangeRates, EthereumAccount } from "src/domain/hermez";
+import { FiatExchangeRates, EthereumAccount, Account } from "src/domain/hermez";
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
@@ -149,28 +149,25 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
         signer
       )
         .then((txData) => {
-          CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [ethereumAccount.token.id])
-            .then((res) => {
-              // ToDo: What if there's no account?
-              const account = res.accounts.length && res.accounts[0];
-              if (account) {
-                dispatch(
-                  globalThunks.addPendingDeposit({
-                    hash: txData.hash,
-                    fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                    toHezEthereumAddress: wallet.hermezEthereumAddress,
-                    token: account.token,
-                    amount: amount.toString(),
-                    state: TxState.Pending,
-                    timestamp: new Date().toISOString(),
-                    account,
-                    type: res.accounts.length ? TxType.Deposit : TxType.CreateAccountDeposit,
-                  })
-                );
-                handleTransactionSuccess(dispatch, account.accountIndex);
-              }
-            })
-            .catch(() => ({}));
+          void CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [
+            ethereumAccount.token.id,
+          ]).then((res) => {
+            const account: Account | undefined = res.accounts[0];
+            dispatch(
+              globalThunks.addPendingDeposit({
+                hash: txData.hash,
+                fromHezEthereumAddress: wallet.hermezEthereumAddress,
+                toHezEthereumAddress: wallet.hermezEthereumAddress,
+                token: ethereumAccount.token,
+                amount: amount.toString(),
+                state: TxState.Pending,
+                accountIndex: account?.accountIndex,
+                timestamp: new Date().toISOString(),
+                type: account ? TxType.Deposit : TxType.CreateAccountDeposit,
+              })
+            );
+            handleTransactionSuccess(dispatch, account?.accountIndex);
+          });
         })
         .catch((error) => {
           dispatch(depositActions.stopTransactionApproval());
@@ -180,9 +177,13 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
   };
 }
 
-function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
+function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) {
   dispatch(openSnackbar("Transaction submitted"));
-  dispatch(push(`/accounts/${accountIndex}`));
+  if (accountIndex) {
+    dispatch(push(`/accounts/${accountIndex}`));
+  } else {
+    dispatch(push("/"));
+  }
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) {
