@@ -1,4 +1,4 @@
-import { push } from "connected-react-router";
+import { replace } from "connected-react-router";
 import { BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, TxFees } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
@@ -252,7 +252,7 @@ function withdraw(
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   dispatch(openSnackbar("Transaction submitted"));
-  dispatch(push(`/accounts/${accountIndex}`));
+  dispatch(replace(`/accounts/${accountIndex}`));
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) {
