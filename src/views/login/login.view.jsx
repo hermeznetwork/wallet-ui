@@ -34,16 +34,6 @@ function Login({
 }) {
   const classes = useLoginStyles();
   const currentStep = step.type;
-  const MetaMaskAlert = (
-    <div className={classes.updateMetaMaskAlert}>
-      <Alert
-        message="If you're unable to login with Metamask make sure you have the latest version."
-        variant={AlertVariant.LIGHT}
-        showHelpButton
-        helpButtonLink={constants.METAMASK_UPDATE_HELP_LINK}
-      />
-    </div>
-  );
 
   React.useEffect(() => {
     onChangeHeader(currentStep);
@@ -82,7 +72,6 @@ function Login({
         <>
           <h1 className={classes.connectText}>Connect with</h1>
           <WalletButtonList onClick={handleWalletClick} />
-          {window.ethereum && MetaMaskAlert}
         </>
       );
     }
@@ -112,7 +101,6 @@ function Login({
             walletTask={step.walletTask}
             onLoadWallet={onLoadWallet}
           />
-          {step.walletName === WalletName.METAMASK && MetaMaskAlert}
         </>
       );
     }

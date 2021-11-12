@@ -54,9 +54,6 @@ export const DEPOSIT_TX_TIMEOUT = 8_640_0000; // 24h
 
 export const HEZ_TOKEN_ID = 1;
 
-export const METAMASK_UPDATE_HELP_LINK =
-  "https://twitter.com/hermez_network/status/1405812176053538817";
-
 export const DELAY_TO_NEXT_FORGER = 30_000; // 30s
 
 // Whenever WITHDRAWAL_WASM_URL and WITHDRAWAL_ZKEY_URL are updated, we also need to manually update the values in ./service-worker.js
