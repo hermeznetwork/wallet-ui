@@ -3,7 +3,7 @@
  * We may decide not to export them from the persistence and let other layers import them from the lib.
  */
 import { AxiosError } from "axios";
-import * as z from "zod";
+import { z } from "zod";
 import hermez from "@hermeznetwork/hermezjs";
 
 import { HttpStatusCode } from "src/utils/http";
