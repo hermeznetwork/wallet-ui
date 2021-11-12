@@ -56,3 +56,29 @@ export function postCreateAccountAuthorization(
     }
   });
 }
+
+// Error decoding and message extraction
+interface MetamaskError {
+  message: string;
+}
+
+const metamaskErrorParser: z.ZodSchema<MetamaskError> = z.object({
+  message: z.string(),
+});
+
+export function getErrorText(error: unknown, defaultMsg?: string): string {
+  const parsedMetamaskError = metamaskErrorParser.safeParse(error);
+  if (parsedMetamaskError.success) {
+    return parsedMetamaskError.data.message;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
+  if (defaultMsg !== undefined) {
+    return defaultMsg;
+  }
+  return "An unknown error occurred";
+}

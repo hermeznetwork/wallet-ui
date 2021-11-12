@@ -10,6 +10,9 @@ import * as withdrawActions from "src/store/transactions/withdraw/withdraw.actio
 import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import theme from "src/styles/theme";
+import { mergeDelayedWithdraws } from "src/utils/transactions";
+import { ETHER_TOKEN_ID, WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
+import { createAccount } from "src/utils/accounts";
 // domain
 import {
   Account,
@@ -19,9 +22,8 @@ import {
   PoolTransaction,
   Token,
 } from "src/domain/hermez";
-import { mergeDelayedWithdraws } from "src/utils/transactions";
-import { ETHER_TOKEN_ID, WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
-import { createAccount } from "src/utils/accounts";
+// persistence
+import * as persistence from "src/persistence";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -255,8 +257,8 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
-function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) {
-  const errorMsg = error instanceof Error ? error.message : error;
+function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
+  const errorMsg = persistence.getErrorText(error);
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 

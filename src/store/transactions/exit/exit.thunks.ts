@@ -16,6 +16,8 @@ import theme from "src/styles/theme";
 import { Account, FiatExchangeRates, PoolTransaction, Token } from "src/domain/hermez";
 import { ETHER_TOKEN_ID } from "src/constants";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
+// persistence
+import * as persistence from "src/persistence";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -196,9 +198,8 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
-function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) {
-  const errorMsg = error instanceof Error ? error.message : error;
-
+function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
+  const errorMsg = persistence.getErrorText(error);
   dispatch(exitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }

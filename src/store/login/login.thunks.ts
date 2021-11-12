@@ -6,7 +6,6 @@ import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
 import hermez from "@hermeznetwork/hermezjs";
 import { isEnvironmentSupported } from "@hermeznetwork/hermezjs/src/environment";
-import * as z from "zod";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { TREZOR_MANIFEST_MAIL } from "src/constants";
@@ -99,25 +98,6 @@ function signMessageHelper(
   } else {
     return providerOrSigner.signMessage(message);
   }
-}
-
-export interface SignerError {
-  message: string;
-}
-
-const signerErrorParser: z.ZodSchema<SignerError> = z.object({
-  message: z.string(),
-});
-
-function decodeSignerError(error: unknown): string {
-  const parsedsignerError = signerErrorParser.safeParse(error);
-  return parsedsignerError.success
-    ? parsedsignerError.data.message
-    : error instanceof Error
-    ? error.message
-    : typeof error === "string"
-    ? error
-    : "An unknown error occurred while attempting to log in";
 }
 
 /**
@@ -231,7 +211,7 @@ function fetchWallet(
         login: { step },
       } = getState();
       if (step.type === "wallet-loader") {
-        const stringError = decodeSignerError(error);
+        const stringError = persistence.getErrorText(error);
         dispatch(loginActions.loadWalletFailure(stringError));
         dispatch(globalActions.openSnackbar(stringError));
         dispatch(loginActions.goToPreviousStep());
@@ -317,7 +297,7 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
         dispatch(push(redirectRoute));
       } catch (error) {
         console.error(error);
-        const stringError = decodeSignerError(error);
+        const stringError = persistence.getErrorText(error);
         dispatch(loginActions.addAccountAuthFailure(stringError));
         dispatch(globalActions.openSnackbar(stringError));
         dispatch(loginActions.goToWalletSelectorStep());
