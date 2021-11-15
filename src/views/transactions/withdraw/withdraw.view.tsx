@@ -21,7 +21,6 @@ import {
   HermezWallet,
   FiatExchangeRates,
   PoolTransaction,
-  Token,
   Exit,
   PendingDelayedWithdraw,
 } from "src/domain/hermez";
@@ -41,7 +40,6 @@ interface WithdrawStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  tokensPriceTask: AsyncTask<Token[], string>;
 }
 
 interface WithdrawHandlerProps {
@@ -226,7 +224,6 @@ const mapStateToProps = (state: AppState): WithdrawStateProps => ({
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
-  tokensPriceTask: state.global.tokensPriceTask,
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch): WithdrawHandlerProps => ({

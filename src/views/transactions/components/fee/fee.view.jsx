@@ -1,12 +1,9 @@
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { parseUnits } from "ethers/lib/utils";
-import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
-import { BigNumber } from "ethers";
 
 import useFeeStyles from "./fee.styles";
 import {
-  CurrencySymbol,
   getAmountInPreferredCurrency,
   getFixedTokenAmount,
   getTokenAmountInPreferredCurrency,

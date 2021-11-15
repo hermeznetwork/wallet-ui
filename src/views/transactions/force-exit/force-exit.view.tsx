@@ -12,13 +12,7 @@ import useForceExitStyles from "src/views/transactions/force-exit/force-exit.sty
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import { AsyncTask } from "src/utils/types";
 // domain
-import {
-  Account,
-  HermezWallet,
-  FiatExchangeRates,
-  PoolTransaction,
-  Token,
-} from "src/domain/hermez";
+import { Account, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
 import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
 import { AccountsWithPagination } from "src/store/transactions/transfer/transfer.reducer";
@@ -34,7 +28,6 @@ interface ForceExitStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  tokensPriceTask: AsyncTask<Token[], string>;
 }
 
 interface ForxeExitHandlerProps {
@@ -67,7 +60,6 @@ function ForceExit({
   wallet,
   preferredCurrency,
   fiatExchangeRatesTask,
-  tokensPriceTask,
   onChangeHeader,
   onLoadAccounts,
   onLoadPoolTransactions,
@@ -125,7 +117,6 @@ function ForceExit({
                       ? fiatExchangeRatesTask.data
                       : {}
                   }
-                  tokensPriceTask={tokensPriceTask}
                   // ToDo: To be removed START
                   receiverAddress={undefined}
                   feesTask={{ status: "successful", data: null }}
@@ -184,7 +175,6 @@ const mapStateToProps = (state: AppState): ForceExitStateProps => ({
   transaction: state.forceExit.transaction,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
-  tokensPriceTask: state.global.tokensPriceTask,
 });
 
 const getHeader = (step: forceExitActions.Step): Header => {
