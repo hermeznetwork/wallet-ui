@@ -168,9 +168,6 @@ function ForceExit({
               )
             );
           }
-          default: {
-            return <></>;
-          }
         }
       })()}
     </div>
@@ -220,9 +217,6 @@ const getHeader = (step: forceExitActions.Step): Header => {
           closeAction: push(""),
         },
       };
-    }
-    default: {
-      return { type: undefined };
     }
   }
 };

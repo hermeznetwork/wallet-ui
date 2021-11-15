@@ -184,31 +184,30 @@ function Deposit({
             ) : null;
           }
           case "review-transaction": {
-            return wallet !== undefined &&
+            return (
+              wallet !== undefined &&
               transactionToReview !== undefined &&
               (ethereumAccountTask.status === "successful" ||
-                ethereumAccountTask.status === "reloading") ? (
-              <TransactionOverview
-                wallet={wallet}
-                isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Deposit,
-                  amount: transactionToReview.amount,
-                  account: ethereumAccountTask.data,
-                  onDeposit,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
-              />
-            ) : null;
-          }
-          default: {
-            return <></>;
+                ethereumAccountTask.status === "reloading") && (
+                <TransactionOverview
+                  wallet={wallet}
+                  isTransactionBeingApproved={isTransactionBeingApproved}
+                  transaction={{
+                    type: TxType.Deposit,
+                    amount: transactionToReview.amount,
+                    account: ethereumAccountTask.data,
+                    onDeposit,
+                  }}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRates={
+                    fiatExchangeRatesTask.status === "successful" ||
+                    fiatExchangeRatesTask.status === "reloading"
+                      ? fiatExchangeRatesTask.data
+                      : {}
+                  }
+                />
+              )
+            );
           }
         }
       })()}

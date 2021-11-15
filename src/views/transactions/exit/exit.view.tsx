@@ -195,9 +195,6 @@ function Exit({
               />
             ) : null;
           }
-          default: {
-            return <></>;
-          }
         }
       })()}
     </div>

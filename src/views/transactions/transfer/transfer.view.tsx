@@ -196,32 +196,31 @@ function Transfer({
             ) : null;
           }
           case "review-transaction": {
-            return wallet !== undefined &&
+            return (
+              wallet !== undefined &&
               transactionToReview !== undefined &&
-              (accountTask.status === "successful" || accountTask.status === "reloading") ? (
-              <TransactionOverview
-                wallet={wallet}
-                isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Transfer,
-                  amount: transactionToReview.amount,
-                  account: accountTask.data,
-                  to: transactionToReview.to,
-                  fee: transactionToReview.fee,
-                  onTransfer,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
-              />
-            ) : null;
-          }
-          default: {
-            return <></>;
+              (accountTask.status === "successful" || accountTask.status === "reloading") && (
+                <TransactionOverview
+                  wallet={wallet}
+                  isTransactionBeingApproved={isTransactionBeingApproved}
+                  transaction={{
+                    type: TxType.Transfer,
+                    amount: transactionToReview.amount,
+                    account: accountTask.data,
+                    to: transactionToReview.to,
+                    fee: transactionToReview.fee,
+                    onTransfer,
+                  }}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRates={
+                    fiatExchangeRatesTask.status === "successful" ||
+                    fiatExchangeRatesTask.status === "reloading"
+                      ? fiatExchangeRatesTask.data
+                      : {}
+                  }
+                />
+              )
+            );
           }
         }
       })()}

@@ -208,9 +208,6 @@ function Withdraw({
               />
             ) : null;
           }
-          default: {
-            return <></>;
-          }
         }
       })()}
     </div>
