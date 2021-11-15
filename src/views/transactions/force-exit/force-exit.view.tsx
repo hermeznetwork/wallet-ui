@@ -15,7 +15,7 @@ import { AsyncTask } from "src/utils/types";
 import { Account, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
 import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
-import { AccountsWithPagination } from "src/store/transactions/transfer/transfer.reducer";
+import { AccountsWithPagination } from "src/store/transactions/force-exit/force-exit.reducer";
 import { Header } from "src/domain/";
 
 interface ForceExitStateProps {

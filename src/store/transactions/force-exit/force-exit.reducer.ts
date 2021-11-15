@@ -8,8 +8,12 @@ import { AsyncTask } from "src/utils/types";
 // domain
 import { Account, PoolTransaction } from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
-import { AccountsWithPagination } from "../transfer/transfer.reducer";
-import { getPaginationData } from "src/utils/api";
+import { getPaginationData, Pagination } from "src/utils/api";
+
+export interface AccountsWithPagination {
+  accounts: Account[];
+  pagination: Pagination;
+}
 
 export interface ForceExitState {
   step: Step;
