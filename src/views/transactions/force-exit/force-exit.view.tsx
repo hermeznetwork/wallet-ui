@@ -203,7 +203,7 @@ const getHeader = (step: forceExitActions.Step): Header => {
         type: "page",
         data: {
           title: "Force withdraw",
-          goBackAction: forceExitActions.goToBuildTransactionStep(),
+          goBackAction: forceExitActions.goToBuildTransactionStep(null),
           closeAction: push(""),
         },
       };

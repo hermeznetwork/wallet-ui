@@ -34,7 +34,7 @@ export interface GoToChooseAccountStep {
 
 export interface GoToBuildTransactionStep {
   type: ForceExitActionTypes.GO_TO_BUILD_TRANSACTION_STEP;
-  account?: Account;
+  account: Account | null;
 }
 
 export interface GoToReviewTransactionStep {
@@ -102,7 +102,7 @@ function goToChooseAccountStep(): GoToChooseAccountStep {
   };
 }
 
-function goToBuildTransactionStep(account?: Account): GoToBuildTransactionStep {
+function goToBuildTransactionStep(account: Account | null): GoToBuildTransactionStep {
   return {
     type: ForceExitActionTypes.GO_TO_BUILD_TRANSACTION_STEP,
     account,

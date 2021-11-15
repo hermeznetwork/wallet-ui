@@ -56,7 +56,7 @@ function forceExitReducer(
       return {
         ...state,
         step: "build-transaction",
-        account: action.account,
+        account: action.account || undefined,
       };
     }
     case ForceExitActionTypes.GO_TO_REVIEW_TRANSACTION_STEP: {
