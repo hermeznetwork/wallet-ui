@@ -15,6 +15,8 @@ import { getDepositFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
 import { FiatExchangeRates, EthereumAccount, Account } from "src/domain/hermez";
+// persistence
+import * as persistence from "src/persistence";
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
@@ -42,10 +44,10 @@ function fetchEthereumAccount(tokenId: number): AppThunk {
               }
             })
             .catch((error) => {
-              const errorMsg =
-                error instanceof Error
-                  ? error.message
-                  : "Oops ... There was an error fetching the ethereum account";
+              const errorMsg = persistence.getErrorMessage(
+                error,
+                "Oops ... There was an error fetching the ethereum account"
+              );
               dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
             });
         }
@@ -186,9 +188,8 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) 
   }
 }
 
-function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) {
-  const errorMsg = error instanceof Error ? error.message : error;
-
+function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
+  const errorMsg = persistence.getErrorMessage(error);
   dispatch(depositActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
