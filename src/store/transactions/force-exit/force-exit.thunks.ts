@@ -10,6 +10,8 @@ import theme from "src/styles/theme";
 // domain
 import { Account, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
 import { createAccount } from "src/utils/accounts";
+// persistence
+import * as persistence from "src/persistence";
 
 /**
  * Fetches the accounts to use in the transaction in the rollup api.
@@ -100,8 +102,9 @@ function handleTransactionSuccess(dispatch: AppDispatch) {
   dispatch(push("/"));
 }
 
-function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) {
-  const errorMsg = error instanceof Error ? error.message : error;
+function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
+  const errorMsg = persistence.getErrorMessage(error);
+  dispatch(forceExitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
