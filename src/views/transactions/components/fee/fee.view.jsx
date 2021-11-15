@@ -9,7 +9,7 @@ import {
   getTokenAmountInPreferredCurrency,
 } from "../../../../utils/currencies";
 import { ReactComponent as AngleDownIcon } from "../../../../images/icons/angle-down.svg";
-import FeesTable from "../fees-table/fees-table.view";
+import FeesTable from "../../../shared/fees-table/fees-table.view";
 import { getRealFee } from "../../../../utils/fees";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
