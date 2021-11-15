@@ -44,7 +44,7 @@ function fetchEthereumAccount(tokenId: number): AppThunk {
               }
             })
             .catch((error) => {
-              const errorMsg = persistence.getErrorText(
+              const errorMsg = persistence.getErrorMessage(
                 error,
                 "Oops ... There was an error fetching the ethereum account"
               );
@@ -189,7 +189,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) 
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = persistence.getErrorText(error);
+  const errorMsg = persistence.getErrorMessage(error);
   dispatch(depositActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }

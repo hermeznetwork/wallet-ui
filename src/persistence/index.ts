@@ -66,7 +66,7 @@ const messageKeyErrorParser: z.ZodSchema<MessageKeyError> = z.object({
   message: z.string(),
 });
 
-export function getErrorText(error: unknown, defaultMsg?: string): string {
+export function getErrorMessage(error: unknown, defaultMsg?: string): string {
   if (typeof error === "string") {
     return error;
   }

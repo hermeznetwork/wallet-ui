@@ -211,7 +211,7 @@ function fetchWallet(
         login: { step },
       } = getState();
       if (step.type === "wallet-loader") {
-        const stringError = persistence.getErrorText(error);
+        const stringError = persistence.getErrorMessage(error);
         dispatch(loginActions.loadWalletFailure(stringError));
         dispatch(globalActions.openSnackbar(stringError));
         dispatch(loginActions.goToPreviousStep());
@@ -297,7 +297,7 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
         dispatch(push(redirectRoute));
       } catch (error) {
         console.error(error);
-        const stringError = persistence.getErrorText(error);
+        const stringError = persistence.getErrorMessage(error);
         dispatch(loginActions.addAccountAuthFailure(stringError));
         dispatch(globalActions.openSnackbar(stringError));
         dispatch(loginActions.goToWalletSelectorStep());

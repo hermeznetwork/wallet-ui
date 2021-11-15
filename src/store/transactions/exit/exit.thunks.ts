@@ -199,7 +199,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = persistence.getErrorText(error);
+  const errorMsg = persistence.getErrorMessage(error);
   dispatch(exitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
