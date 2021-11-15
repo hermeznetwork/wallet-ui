@@ -31,7 +31,7 @@ interface ForceExitStateProps {
 }
 
 interface ForxeExitHandlerProps {
-  onChangeHeader: (step: forceExitActions.Step) => void;
+  onChangeHeader: (step: forceExitActions.Step, account?: Account) => void;
   onGoToChooseAccountStep: () => void;
   onGoToBuildTransactionStep: (account: Account) => void;
   onGoToTransactionOverviewStep: (
@@ -72,8 +72,8 @@ function ForceExit({
   const classes = useForceExitStyles();
 
   React.useEffect(() => {
-    onChangeHeader(step);
-  }, [step, onChangeHeader]);
+    onChangeHeader(step, account);
+  }, [step, account, onChangeHeader]);
 
   React.useEffect(() => {
     onLoadPoolTransactions();
@@ -177,7 +177,7 @@ const mapStateToProps = (state: AppState): ForceExitStateProps => ({
   preferredCurrency: state.myAccount.preferredCurrency,
 });
 
-const getHeader = (step: forceExitActions.Step): Header => {
+const getHeader = (step: forceExitActions.Step, account?: Account): Header => {
   switch (step) {
     case "choose-account": {
       return {
@@ -203,7 +203,7 @@ const getHeader = (step: forceExitActions.Step): Header => {
         type: "page",
         data: {
           title: "Force withdraw",
-          goBackAction: forceExitActions.goToBuildTransactionStep(null),
+          goBackAction: account ? forceExitActions.goToBuildTransactionStep(account) : undefined,
           closeAction: push(""),
         },
       };
@@ -212,7 +212,7 @@ const getHeader = (step: forceExitActions.Step): Header => {
 };
 
 const mapDispatchToProps = (dispatch: AppDispatch): ForxeExitHandlerProps => ({
-  onChangeHeader: (step) => dispatch(changeHeader(getHeader(step))),
+  onChangeHeader: (step, account) => dispatch(changeHeader(getHeader(step, account))),
   onGoToChooseAccountStep: () => dispatch(forceExitActions.goToChooseAccountStep()),
   onGoToBuildTransactionStep: (account: Account) =>
     dispatch(forceExitActions.goToBuildTransactionStep(account)),
