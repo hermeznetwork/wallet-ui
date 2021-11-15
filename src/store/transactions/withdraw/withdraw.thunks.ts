@@ -1,4 +1,4 @@
-import { replace } from "connected-react-router";
+import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, TxFees } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
@@ -180,6 +180,7 @@ function withdraw(
       global: { wallet, signer },
     } = getState();
     const withdrawalId = `${account.accountIndex}${exit.batchNum}`;
+    const alreadyDone = "WITHDRAW_ALREADY_DONE";
 
     dispatch(withdrawActions.startTransactionApproval());
 
@@ -217,10 +218,15 @@ function withdraw(
             }
             handleTransactionSuccess(dispatch, account.accountIndex);
           })
-          .catch((error) => {
+          .catch((error: Error) => {
             console.error(error);
             dispatch(withdrawActions.stopTransactionApproval());
-            handleTransactionFailure(dispatch, error);
+
+            if (error?.message.indexOf(alreadyDone)) {
+              handleTransactionFailure(dispatch, alreadyDone);
+            } else {
+              handleTransactionFailure(dispatch, error);
+            }
           });
       } else {
         Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
@@ -240,10 +246,15 @@ function withdraw(
             );
             handleTransactionSuccess(dispatch, account.accountIndex);
           })
-          .catch((error) => {
+          .catch((error: Error) => {
             console.error(error);
             dispatch(withdrawActions.stopTransactionApproval());
-            handleTransactionFailure(dispatch, error);
+
+            if (error?.message.indexOf(alreadyDone)) {
+              handleTransactionFailure(dispatch, alreadyDone);
+            } else {
+              handleTransactionFailure(dispatch, error);
+            }
           });
       }
     }
@@ -252,7 +263,7 @@ function withdraw(
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   dispatch(openSnackbar("Transaction submitted"));
-  dispatch(replace(`/accounts/${accountIndex}`));
+  dispatch(push(`/accounts/${accountIndex}`));
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) {
