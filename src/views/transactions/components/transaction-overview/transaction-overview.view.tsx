@@ -234,7 +234,7 @@ function TransactionOverview({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />
-              {footer("Force Withdrawal")}
+              {footer("Force Withdraw")}
             </section>
           </Container>
         </div>

@@ -36,7 +36,6 @@ interface ExitStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  tokensPriceTask: AsyncTask<Token[], string>;
 }
 
 interface ExitHandlerProps {
@@ -72,7 +71,6 @@ function Exit({
   wallet,
   preferredCurrency,
   fiatExchangeRatesTask,
-  tokensPriceTask,
   onChangeHeader,
   onLoadHermezAccount,
   onLoadFees,
@@ -154,7 +152,6 @@ function Exit({
                     : {}
                 }
                 feesTask={feesTask}
-                tokensPriceTask={tokensPriceTask}
                 accountBalanceTask={accountBalanceTask}
                 estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
                 // ToDo: To be removed START
@@ -195,9 +192,6 @@ function Exit({
               />
             ) : null;
           }
-          default: {
-            return <></>;
-          }
         }
       })()}
     </div>
@@ -216,7 +210,6 @@ const mapStateToProps = (state: AppState): ExitStateProps => ({
   transactionToReview: state.exit.transaction,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
-  tokensPriceTask: state.global.tokensPriceTask,
 });
 
 const getHeaderCloseAction = (accountIndex: string | null) => {
