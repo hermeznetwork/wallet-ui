@@ -182,7 +182,6 @@ function withdraw(
       global: { wallet, signer },
     } = getState();
     const withdrawalId = `${account.accountIndex}${exit.batchNum}`;
-    const alreadyDone = "WITHDRAW_ALREADY_DONE";
 
     dispatch(withdrawActions.startTransactionApproval());
 
@@ -223,12 +222,7 @@ function withdraw(
           .catch((error: Error) => {
             console.error(error);
             dispatch(withdrawActions.stopTransactionApproval());
-
-            if (error?.message.indexOf(alreadyDone)) {
-              handleTransactionFailure(dispatch, alreadyDone);
-            } else {
-              handleTransactionFailure(dispatch, error);
-            }
+            handleTransactionFailure(dispatch, error);
           });
       } else {
         Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
@@ -251,12 +245,7 @@ function withdraw(
           .catch((error: Error) => {
             console.error(error);
             dispatch(withdrawActions.stopTransactionApproval());
-
-            if (error?.message.indexOf(alreadyDone)) {
-              handleTransactionFailure(dispatch, alreadyDone);
-            } else {
-              handleTransactionFailure(dispatch, error);
-            }
+            handleTransactionFailure(dispatch, error);
           });
       }
     }
@@ -269,8 +258,13 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
+  const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
   const errorMsg = persistence.getErrorMessage(error);
-  dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
+  const snackbarMsg = errorMsg.includes(withdrawAlreadyDoneErrorCode)
+    ? "The withdraw has already been done"
+    : errorMsg;
+
+  dispatch(openSnackbar(`Transaction failed - ${snackbarMsg}`, theme.palette.red.main));
 }
 
 export {
