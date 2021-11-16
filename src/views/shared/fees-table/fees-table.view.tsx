@@ -4,7 +4,7 @@
 import React from "react";
 import * as ethers from "ethers";
 
-import useFeesTableStyles from "src/views/transactions/components/fees-table/fees-table.styles";
+import useFeesTableStyles from "src/views/shared/fees-table/fees-table.styles";
 import TransactionInfoRow from "src/views/shared/transaction-info-table-row/transaction-info-row.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import { MAX_TOKEN_DECIMALS } from "src/constants";
@@ -19,7 +19,7 @@ import { EstimatedWithdrawFee } from "src/domain";
 
 interface FeesTableProps {
   l2Fee: number;
-  estimatedWithdrawFee: EstimatedWithdrawFee;
+  estimatedWithdrawFee?: EstimatedWithdrawFee;
   token: Token;
   preferredCurrency: string;
   fiatExchangeRates: FiatExchangeRates;
@@ -43,13 +43,15 @@ function FeesTable({
     );
   }
 
-  const formattedWithdrawFee = Number(ethers.utils.formatEther(estimatedWithdrawFee.amount));
+  const formattedWithdrawFee =
+    estimatedWithdrawFee !== undefined
+      ? Number(ethers.utils.formatEther(estimatedWithdrawFee.amount))
+      : 0;
 
-  const estimatedWithdrawFeeInFiat = getAmountInPreferredCurrency(
-    estimatedWithdrawFee.USD,
-    preferredCurrency,
-    fiatExchangeRates
-  );
+  const estimatedWithdrawFeeInFiat =
+    estimatedWithdrawFee !== undefined
+      ? getAmountInPreferredCurrency(estimatedWithdrawFee.USD, preferredCurrency, fiatExchangeRates)
+      : 0;
 
   return (
     <div className={classes.feesTable}>

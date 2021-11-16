@@ -12,7 +12,7 @@ import {
   getTokenAmountInPreferredCurrency,
 } from "src/utils/currencies";
 import { ReactComponent as AngleDownIcon } from "src/images/icons/angle-down.svg";
-import FeesTable from "src/views/transactions/components/fees-table/fees-table.view";
+import FeesTable from "src/views/shared/fees-table/fees-table.view";
 import { getRealFee } from "src/utils/fees";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 // domain
