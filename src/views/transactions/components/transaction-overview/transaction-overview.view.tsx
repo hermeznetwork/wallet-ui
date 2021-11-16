@@ -19,7 +19,6 @@ import WithdrawInfoSidenav from "src/views/transactions/components/withdraw-info
 import { AsyncTask } from "src/utils/types";
 import { Theme } from "src/styles/theme";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-
 // domain
 import {
   HermezWallet,
