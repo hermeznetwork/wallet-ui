@@ -132,21 +132,20 @@ function Deposit({
           case "choose-account": {
             return (
               <AccountSelector
-                transactionType={TxType.Deposit}
-                accountsTask={ethereumAccountsTask}
-                // ToDo: To be removed
-                poolTransactionsTask={{ status: "pending" }}
+                transaction={{
+                  type: TxType.Deposit,
+                  accountsTask: ethereumAccountsTask,
+                  pendingDeposits: accountPendingDeposits,
+                  onLoadAccounts: onLoadEthereumAccounts,
+                  onAccountClick: (ethereumAccount: EthereumAccount) =>
+                    onGoToBuildTransactionStep(ethereumAccount),
+                }}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
                   fiatExchangeRatesTask.status === "reloading"
                     ? fiatExchangeRatesTask.data
                     : {}
-                }
-                pendingDeposits={accountPendingDeposits}
-                onLoadAccounts={onLoadEthereumAccounts}
-                onAccountClick={(ethereumAccount: EthereumAccount) =>
-                  onGoToBuildTransactionStep(ethereumAccount)
                 }
               />
             );

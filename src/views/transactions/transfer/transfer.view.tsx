@@ -147,9 +147,13 @@ function Transfer({
           case "choose-account": {
             return (
               <AccountSelector
-                transactionType={TxType.Transfer}
-                accountsTask={accountsTask}
-                poolTransactionsTask={poolTransactionsTask}
+                transaction={{
+                  type: TxType.Transfer,
+                  accountsTask: accountsTask,
+                  poolTransactionsTask: poolTransactionsTask,
+                  onLoadAccounts: onLoadAccounts,
+                  onAccountClick: (account: Account) => onGoToBuildTransactionStep(account),
+                }}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -157,9 +161,6 @@ function Transfer({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                pendingDeposits={[]}
-                onLoadAccounts={onLoadAccounts}
-                onAccountClick={(account: Account) => onGoToBuildTransactionStep(account)}
               />
             );
           }
