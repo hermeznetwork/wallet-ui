@@ -219,7 +219,7 @@ function withdraw(
             }
             handleTransactionSuccess(dispatch, account.accountIndex);
           })
-          .catch((error: Error) => {
+          .catch((error) => {
             console.error(error);
             dispatch(withdrawActions.stopTransactionApproval());
             handleTransactionFailure(dispatch, error);
@@ -242,7 +242,7 @@ function withdraw(
             );
             handleTransactionSuccess(dispatch, account.accountIndex);
           })
-          .catch((error: Error) => {
+          .catch((error) => {
             console.error(error);
             dispatch(withdrawActions.stopTransactionApproval());
             handleTransactionFailure(dispatch, error);
