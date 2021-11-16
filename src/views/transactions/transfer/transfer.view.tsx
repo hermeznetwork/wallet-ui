@@ -23,7 +23,6 @@ import {
   HermezWallet,
   FiatExchangeRates,
   PoolTransaction,
-  Token,
   RecommendedFee,
 } from "src/domain/hermez";
 
@@ -38,7 +37,6 @@ interface TransferStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  tokensPriceTask: AsyncTask<Token[], string>;
 }
 
 interface TransferHandlerProps {
@@ -77,7 +75,6 @@ function Transfer({
   wallet,
   preferredCurrency,
   fiatExchangeRatesTask,
-  tokensPriceTask,
   onChangeHeader,
   onLoadHermezAccount,
   onLoadFees,
@@ -180,7 +177,6 @@ function Transfer({
                     : {}
                 }
                 feesTask={feesTask}
-                tokensPriceTask={tokensPriceTask}
                 // ToDo: To be removed START
                 accountBalanceTask={{ status: "pending" }}
                 estimatedWithdrawFeeTask={{ status: "pending" }}
@@ -196,32 +192,31 @@ function Transfer({
             ) : null;
           }
           case "review-transaction": {
-            return wallet !== undefined &&
+            return (
+              wallet !== undefined &&
               transactionToReview !== undefined &&
-              (accountTask.status === "successful" || accountTask.status === "reloading") ? (
-              <TransactionOverview
-                wallet={wallet}
-                isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Transfer,
-                  amount: transactionToReview.amount,
-                  account: accountTask.data,
-                  to: transactionToReview.to,
-                  fee: transactionToReview.fee,
-                  onTransfer,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
-              />
-            ) : null;
-          }
-          default: {
-            return <></>;
+              (accountTask.status === "successful" || accountTask.status === "reloading") && (
+                <TransactionOverview
+                  wallet={wallet}
+                  isTransactionBeingApproved={isTransactionBeingApproved}
+                  transaction={{
+                    type: TxType.Transfer,
+                    amount: transactionToReview.amount,
+                    account: accountTask.data,
+                    to: transactionToReview.to,
+                    fee: transactionToReview.fee,
+                    onTransfer,
+                  }}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRates={
+                    fiatExchangeRatesTask.status === "successful" ||
+                    fiatExchangeRatesTask.status === "reloading"
+                      ? fiatExchangeRatesTask.data
+                      : {}
+                  }
+                />
+              )
+            );
           }
         }
       })()}
@@ -240,7 +235,6 @@ const mapStateToProps = (state: AppState): TransferStateProps => ({
   transactionToReview: state.transfer.transaction,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
-  tokensPriceTask: state.global.tokensPriceTask,
 });
 
 const getHeaderCloseAction = (accountIndex: string | null) => {

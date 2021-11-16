@@ -106,7 +106,7 @@ function MyAccount({
             <div className={classes.settingContainer}>
               <div className={classes.settingHeader} onClick={onNavigateToForceExit}>
                 <ExitIcon />
-                <p className={classes.settingTitle}>Force withdrawal</p>
+                <p className={classes.settingTitle}>Force withdraw</p>
                 <p className={classes.settingSubTitle}>
                   Forces the coordinator to process the transaction (more Gas is required).
                 </p>
@@ -166,7 +166,7 @@ const mapDispatchToProps = (dispatch) => ({
   onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
   onDisconnectWallet: () => dispatch(disconnectWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
-  onNavigateToForceExit: () => dispatch(push("/force-withdrawal")),
+  onNavigateToForceExit: () => dispatch(push("/force-withdraw")),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyAccount);
