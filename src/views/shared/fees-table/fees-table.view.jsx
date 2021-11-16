@@ -2,15 +2,14 @@ import React from "react";
 import * as ethers from "ethers";
 
 import useFeesTableStyles from "./fees-table.styles";
-import TransactionInfoRow from "../../../shared/transaction-info-table-row/transaction-info-row.view";
-import FiatAmount from "../../../shared/fiat-amount/fiat-amount.view";
-import { MAX_TOKEN_DECIMALS } from "../../../../constants";
+import TransactionInfoRow from "../transaction-info-table-row/transaction-info-row.view";
+import FiatAmount from "../fiat-amount/fiat-amount.view";
+import { MAX_TOKEN_DECIMALS } from "../../../constants";
 import {
-  CurrencySymbol,
   getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency,
   trimZeros,
-} from "../../../../utils/currencies";
+} from "../../../utils/currencies";
 
 function FeesTable({ l2Fee, estimatedWithdrawFee, token, preferredCurrency, fiatExchangeRates }) {
   const classes = useFeesTableStyles();

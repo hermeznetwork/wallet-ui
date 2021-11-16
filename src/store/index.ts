@@ -19,7 +19,6 @@ import transactionDetailsReducer, {
   TransactionDetailsState,
 } from "src/store/transaction-details/transaction-details.reducer";
 import { TransactionDetailsAction } from "src/store/transaction-details/transaction-details.actions";
-import transactionReducer from "src/store/transaction/transaction.reducer";
 import loginReducer, { LoginState } from "src/store/login/login.reducer";
 import { LoginAction } from "src/store/login/login.actions";
 import tokenSwapReducer from "src/store/token-swap/token-swap.reducer";
@@ -81,7 +80,6 @@ export function createAppReducer(history: History) {
     accountDetails: accountDetailsReducer,
     myAccount: myAccountReducer,
     transactionDetails: transactionDetailsReducer,
-    transaction: transactionReducer,
     transfer: transferReducer,
     exit: exitReducer,
     withdraw: withdrawReducer,
