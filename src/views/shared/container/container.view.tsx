@@ -1,7 +1,6 @@
 import React from "react";
 
-import useContainerStyles from "./container.styles";
-import PropTypes from "prop-types";
+import useContainerStyles, { ContainerStyles } from "src/views/shared/container/container.styles";
 
 function Container({
   backgroundColor,
@@ -11,7 +10,7 @@ function Container({
   disableTopGutter,
   children,
   fullHeight,
-}) {
+}: ContainerStyles & React.HTMLAttributes<HTMLDivElement>): JSX.Element {
   const classes = useContainerStyles({
     addHeaderPadding,
     disableGutters,
@@ -27,12 +26,5 @@ function Container({
     </div>
   );
 }
-
-Container.propTypes = {
-  backgroundColor: PropTypes.string,
-  disableVerticalGutters: PropTypes.bool,
-  disableTopGutter: PropTypes.bool,
-  fullHeight: PropTypes.bool,
-};
 
 export default Container;
