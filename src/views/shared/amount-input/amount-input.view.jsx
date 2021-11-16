@@ -159,27 +159,29 @@ function AmountInput(Component) {
      * into account (if applicable).
      */
     function handleSendAll() {
-      const maxPossibleAmount = BigNumber.from(account.balance);
-      const maxAmountWithoutFee = getMaxTxAmount(
-        transactionType,
-        maxPossibleAmount,
-        account.token,
-        fee,
-        gasPrice
-      );
+      if (isFinite(fee)) {
+        const maxPossibleAmount = BigNumber.from(account.balance);
+        const maxAmountWithoutFee = getMaxTxAmount(
+          transactionType,
+          maxPossibleAmount,
+          account.token,
+          fee,
+          gasPrice
+        );
 
-      const maxAmountWithoutFeeInFiat = trimZeros(convertAmountToFiat(maxAmountWithoutFee), 2);
+        const maxAmountWithoutFeeInFiat = trimZeros(convertAmountToFiat(maxAmountWithoutFee), 2);
 
-      if (showInFiat) {
-        setValue(maxAmountWithoutFeeInFiat.toString());
-      } else {
-        const newValue = getFixedTokenAmount(maxAmountWithoutFee, account.token.decimals);
+        if (showInFiat) {
+          setValue(maxAmountWithoutFeeInFiat.toString());
+        } else {
+          const newValue = getFixedTokenAmount(maxAmountWithoutFee, account.token.decimals);
 
-        setValue(newValue);
+          setValue(newValue);
+        }
+
+        setAmount({ tokens: maxAmountWithoutFee, fiat: maxAmountWithoutFeeInFiat });
+        checkAmountValidity(maxAmountWithoutFee);
       }
-
-      setAmount({ tokens: maxAmountWithoutFee, fiat: maxAmountWithoutFeeInFiat });
-      checkAmountValidity(maxAmountWithoutFee);
     }
 
     /**

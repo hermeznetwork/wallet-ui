@@ -154,6 +154,11 @@ function TransactionForm({
   function isContinueDisabled() {
     if (!isAmountInputDirty) {
       return true;
+    } else if (
+      account.token.USD === null &&
+      (transactionType === TxType.Transfer || transactionType === TxType.Exit)
+    ) {
+      return true;
     } else if (transactionType === TxType.Exit && doesUserHaveEnoughEthForWithdraw === false) {
       return false;
     } else if (transactionType !== TxType.Transfer && isAmountValid) {

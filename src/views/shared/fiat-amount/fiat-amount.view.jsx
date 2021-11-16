@@ -6,7 +6,7 @@ import { CurrencySymbol } from "../../../utils/currencies";
 function FiatAmount({ amount, currency, className }) {
   return (
     <span className={className}>
-      {CurrencySymbol[currency].symbol} {!isNaN(amount) ? amount.toFixed(2) : "--"}
+      {CurrencySymbol[currency].symbol} {!isNaN(amount) && amount !== 0 ? amount.toFixed(2) : "--"}
     </span>
   );
 }

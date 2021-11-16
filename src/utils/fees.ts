@@ -20,12 +20,18 @@ function getDepositFee(token: Token, gasPrice: BigNumber): BigNumber {
  * taking into account the type of transaction, the amount and minimum fee
  */
 function getRealFee(amount: string, token: Token, minimumFee: number): number {
-  const decimals = token.decimals;
-  const minimumFeeBigInt = getTokenAmountBigInt(minimumFee.toFixed(decimals), decimals).toString();
-  const feeIndex = getFeeIndex(minimumFeeBigInt, amount);
-  const fee = getFeeValue(feeIndex, amount);
+  if (isFinite(minimumFee)) {
+    const decimals = token.decimals;
+    const minimumFeeBigInt = getTokenAmountBigInt(
+      minimumFee.toFixed(decimals),
+      decimals
+    ).toString();
+    const feeIndex = getFeeIndex(minimumFeeBigInt, amount);
+    const fee = getFeeValue(feeIndex, amount);
 
-  return Number(getTokenAmountString(fee, decimals));
+    return Number(getTokenAmountString(fee, decimals));
+  }
+  return 0;
 }
 
 function getTransactionFee(

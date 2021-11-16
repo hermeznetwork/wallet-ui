@@ -68,6 +68,9 @@ function AccountSelector({
                     </div>
                   );
                 } else {
+                  const accounts = accountsTask.data.accounts.filter(
+                    (account) => account.token.USD !== null
+                  );
                   return (
                     <InfiniteScroll
                       asyncTaskStatus={accountsTask.status}
@@ -83,7 +86,7 @@ function AccountSelector({
                       }}
                     >
                       <AccountList
-                        accounts={accountsTask.data.accounts}
+                        accounts={accounts}
                         preferredCurrency={preferredCurrency}
                         fiatExchangeRates={fiatExchangeRates}
                         onAccountClick={onAccountClick}
