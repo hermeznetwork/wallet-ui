@@ -44,7 +44,7 @@ function Exit({
     useState(false);
 
   React.useEffect(() => {
-    if (typeof coordinatorState !== "undefined") {
+    if (typeof coordinatorState !== "undefined" && getStep() <= STEPS.SECOND) {
       isInstantWithdrawalAllowed(
         amount,
         accountIndex,

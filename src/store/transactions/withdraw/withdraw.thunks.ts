@@ -258,8 +258,13 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
+  const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
   const errorMsg = persistence.getErrorMessage(error);
-  dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
+  const snackbarMsg = errorMsg.includes(withdrawAlreadyDoneErrorCode)
+    ? "The withdraw has already been done"
+    : errorMsg;
+
+  dispatch(openSnackbar(`Transaction failed - ${snackbarMsg}`, theme.palette.red.main));
 }
 
 export {
