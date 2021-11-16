@@ -1,6 +1,7 @@
 import { createUseStyles } from "react-jss";
+import { Theme } from "src/styles/theme";
 
-const useFeeStyles = createUseStyles((theme) => ({
+const useFeeStyles = createUseStyles((theme: Theme) => ({
   fee: {
     marginTop: theme.spacing(2.5),
     fontSize: theme.spacing(2),
@@ -42,7 +43,7 @@ const useFeeStyles = createUseStyles((theme) => ({
       fill: theme.palette.grey.main,
     },
   },
-  withdrawFeeButtonIcon: ({ isWithdrawFeeExpanded }) => ({
+  withdrawFeeButtonIcon: ({ isWithdrawFeeExpanded }: { isWithdrawFeeExpanded: boolean }) => ({
     transform: isWithdrawFeeExpanded ? "rotate(180deg)" : "rotate(0)",
   }),
 }));
