@@ -14,7 +14,7 @@ const useContainerStyles = createUseStyles((theme: Theme) => ({
   root: {
     flex: ({ fullHeight }: ContainerStyles) => (fullHeight ? "1 1 auto" : "0 0 auto"),
     width: "100%",
-    background: ({ backgroundColor }: ContainerStyles) => backgroundColor || theme.palette.white,
+    background: ({ backgroundColor }: ContainerStyles) => backgroundColor || "inherit",
     paddingTop: ({ addHeaderPadding }: ContainerStyles) =>
       addHeaderPadding ? theme.headerHeight : 0,
   },
