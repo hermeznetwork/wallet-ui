@@ -22,7 +22,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 // domain
 import {
   HermezWallet,
-  Account,
+  HermezAccount,
   FiatExchangeRates,
   Exit,
   EthereumAccount,
@@ -40,30 +40,35 @@ type Transaction =
   | {
       type: TxType.Transfer;
       amount: BigNumber;
-      account: Account;
-      to: Partial<Account>;
+      account: HermezAccount;
+      to: Partial<HermezAccount>;
       fee: number;
-      onTransfer: (amount: BigNumber, account: Account, to: Partial<Account>, fee: number) => void;
+      onTransfer: (
+        amount: BigNumber,
+        account: HermezAccount,
+        to: Partial<HermezAccount>,
+        fee: number
+      ) => void;
     }
   | {
       type: TxType.Exit;
       amount: BigNumber;
-      account: Account;
+      account: HermezAccount;
       fee: number;
       estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
-      onExit: (amount: BigNumber, account: Account, fee: number) => void;
+      onExit: (amount: BigNumber, account: HermezAccount, fee: number) => void;
     }
   | {
       type: TxType.Withdraw;
       amount: BigNumber;
-      account: Account;
+      account: HermezAccount;
       exit: Exit;
       completeDelayedWithdrawal: boolean;
       instantWithdrawal: boolean;
       estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
       onWithdraw: (
         amount: BigNumber,
-        account: Account,
+        account: HermezAccount,
         exit: Exit,
         completeDelayedWithdrawal: boolean,
         instantWithdrawal: boolean
@@ -72,8 +77,8 @@ type Transaction =
   | {
       type: TxType.ForceExit;
       amount: BigNumber;
-      account: Account;
-      onForceExit: (amount: BigNumber, account: Account) => void;
+      account: HermezAccount;
+      onForceExit: (amount: BigNumber, account: HermezAccount) => void;
     };
 
 interface TransactionOverviewProps {

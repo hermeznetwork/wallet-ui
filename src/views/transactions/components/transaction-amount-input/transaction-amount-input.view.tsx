@@ -8,7 +8,7 @@ import { ReactComponent as ErrorIcon } from "src/images/icons/error.svg";
 import { getFixedTokenAmount } from "src/utils/currencies";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 // domain
-import { Account } from "src/domain/hermez";
+import { HermezAccount } from "src/domain/hermez";
 import { BigNumber } from "@ethersproject/bignumber";
 
 interface Amount {
@@ -17,7 +17,7 @@ interface Amount {
 }
 
 interface TransactionAmountInputProps {
-  account: Account;
+  account: HermezAccount;
   preferredCurrency: string;
   value: string;
   amount: Amount;

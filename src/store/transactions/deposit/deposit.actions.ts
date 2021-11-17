@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
 import { EstimatedDepositFee } from "src/domain";
-import { Account, EthereumAccount } from "src/domain/hermez";
+import { HermezAccount, EthereumAccount } from "src/domain/hermez";
 
 export enum DepositActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[DEPOSIT] GO TO CHOOSE ACCOUNT STEP",
@@ -37,8 +37,8 @@ export interface GoToBuildTransactionStep {
 export interface TransactionToReview {
   amount: BigNumber;
   fee: number;
-  from: Account;
-  to: Partial<Account>;
+  from: HermezAccount;
+  to: Partial<HermezAccount>;
 }
 
 export interface GoToReviewTransactionStep {

@@ -23,7 +23,15 @@ export type {
   Token,
 } from "@hermeznetwork/hermezjs";
 
-export type Account = hermezjs.Account & { fiatBalance?: number };
+export type HermezAccount = hermezjs.Account & { fiatBalance?: number };
+
+export interface EthereumAccount {
+  balance: string;
+  token: hermezjs.Token;
+  fiatBalance?: number;
+}
+
+export type Account = HermezAccount | EthereumAccount;
 
 export interface PendingDeposit {
   accountIndex?: string;
@@ -49,8 +57,14 @@ export type PendingDelayedWithdraw = PendingWithdraw & {
   isInstant: boolean;
 };
 
-export interface EthereumAccount {
-  balance: string;
-  token: hermezjs.Token;
-  fiatBalance?: number;
+export function isHermezAccount(
+  account: EthereumAccount | HermezAccount
+): account is HermezAccount {
+  return "accountIndex" in account;
+}
+
+export function isEthereumAccount(
+  account: EthereumAccount | HermezAccount
+): account is EthereumAccount {
+  return !isHermezAccount(account);
 }

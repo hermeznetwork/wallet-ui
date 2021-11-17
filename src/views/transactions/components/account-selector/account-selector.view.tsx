@@ -13,15 +13,17 @@ import { AsyncTask } from "src/utils/types";
 import { Pagination } from "src/utils/api";
 // domain
 import {
-  Account,
-  FiatExchangeRates,
+  HermezAccount,
   EthereumAccount,
+  FiatExchangeRates,
   PoolTransaction,
   PendingDeposit,
+  isHermezAccount,
+  isEthereumAccount,
 } from "src/domain/hermez";
 
 export interface AccountsWithPagination {
-  accounts: Account[];
+  accounts: HermezAccount[];
   pagination: Pagination;
 }
 
@@ -43,7 +45,7 @@ type Transaction =
         fiatExchangeRates: FiatExchangeRates,
         preferredCurrency: string
       ) => void;
-      onAccountClick: (account: Account) => void;
+      onAccountClick: (account: HermezAccount) => void;
     }
   | {
       type: TxType.ForceExit;
@@ -55,7 +57,7 @@ type Transaction =
         fiatExchangeRates: FiatExchangeRates,
         preferredCurrency: string
       ) => void;
-      onAccountClick: (account: Account) => void;
+      onAccountClick: (account: HermezAccount) => void;
     };
 
 interface AccountSelectorProps {
@@ -122,9 +124,12 @@ function AccountSelector({
                           <AccountList
                             accounts={transaction.accountsTask.data}
                             preferredCurrency={preferredCurrency}
-                            fiatExchangeRates={fiatExchangeRates}
                             disabledTokenIds={disabledTokenIds}
-                            onAccountClick={onAccountClick}
+                            onAccountClick={(account) => {
+                              if (isEthereumAccount(account)) {
+                                onAccountClick(account);
+                              }
+                            }}
                           />
                         </div>
                       );
@@ -176,8 +181,11 @@ function AccountSelector({
                           <AccountList
                             accounts={accountsTask.data.accounts}
                             preferredCurrency={preferredCurrency}
-                            fiatExchangeRates={fiatExchangeRates}
-                            onAccountClick={onAccountClick}
+                            onAccountClick={(account) => {
+                              if (isHermezAccount(account)) {
+                                onAccountClick(account);
+                              }
+                            }}
                           />
                         </InfiniteScroll>
                       );
