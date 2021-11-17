@@ -1,6 +1,7 @@
 import { createUseStyles } from "react-jss";
+import { Theme } from "src/styles/theme";
 
-const useFormButtonStyles = createUseStyles((theme) => ({
+const useFormButtonStyles = createUseStyles((theme: Theme) => ({
   root: {
     cursor: "pointer",
     width: "auto",
