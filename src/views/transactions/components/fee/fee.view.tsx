@@ -1,6 +1,3 @@
-// ToDo: Remove the disable of TS and the linter below once the component are migrated to TS
-/* eslint-disable */
-// @ts-nocheck
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { parseUnits } from "ethers/lib/utils";
@@ -75,10 +72,6 @@ function Fee({
   }
 
   function getTotalEstimatedWithdrawFee() {
-    if (!estimatedWithdrawFee?.USD) {
-      return undefined;
-    }
-
     const estimatedWithdrawFeeInFiat = getAmountInPreferredCurrency(
       estimatedWithdrawFee.USD,
       preferredCurrency,
