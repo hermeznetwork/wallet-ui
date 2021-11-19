@@ -1,6 +1,3 @@
-// ToDo: Remove the disable of TS and the linter below once the component are migrated to TS
-/* eslint-disable */
-// @ts-nocheck
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -17,7 +14,7 @@ import FeesTable from "src/views/shared/fees-table/fees-table.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 // domain
 import { FiatExchangeRates, Token } from "src/domain/hermez";
-import { EstimatedWithdrawFee, EstimatedDepositFee } from "src/domain";
+import { EstimatedL1Fee } from "src/domain";
 import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
 
 export interface CommonFeeProps {
@@ -30,7 +27,7 @@ export interface CommonFeeProps {
 
 interface FeeDepositProps {
   transactionType: TxType.Deposit;
-  estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>;
+  fee: BigNumber;
 }
 
 interface FeeTransferProps {
@@ -41,7 +38,7 @@ interface FeeTransferProps {
 interface FeeExitProps {
   transactionType: TxType.Exit;
   fee: BigNumber;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
 }
 
 type FeeProps = CommonFeeProps & (FeeDepositProps | FeeTransferProps | FeeExitProps);
@@ -52,17 +49,14 @@ function Fee(props: FeeProps): JSX.Element {
 
   const { transactionType, token, showInFiat, preferredCurrency, fiatExchangeRatesTask } = props;
 
-  function getDepositFeeInFiat(estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>) {
-    if (
-      !isAsyncTaskCompleted(estimatedDepositFeeTask) ||
-      !isAsyncTaskCompleted(fiatExchangeRatesTask)
-    ) {
+  function getDepositFeeInFiat(formattedFee: string) {
+    if (!isAsyncTaskCompleted(fiatExchangeRatesTask)) {
       return undefined;
     }
 
     return getTokenAmountInPreferredCurrency(
-      estimatedDepositFeeTask.data.amount.toString(),
-      estimatedDepositFeeTask.data.USD,
+      formattedFee,
+      token.USD,
       preferredCurrency,
       isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
     );
@@ -70,7 +64,7 @@ function Fee(props: FeeProps): JSX.Element {
 
   function getTotalEstimatedWithdrawFee(
     l2FeeInFiat: number,
-    estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>
+    estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>
   ) {
     if (
       !isAsyncTaskCompleted(estimatedWithdrawFeeTask) ||
@@ -94,16 +88,14 @@ function Fee(props: FeeProps): JSX.Element {
 
   switch (transactionType) {
     case TxType.Deposit: {
-      const { estimatedDepositFeeTask } = props;
-      const estimatedDepositFee = isAsyncTaskCompleted(estimatedDepositFeeTask)
-        ? estimatedDepositFeeTask.data.amount
-        : "--";
+      const { fee } = props;
+      const formattedFee = getFixedTokenAmount(fee.toString());
 
       return (
         <p className={classes.fee}>
-          Ethereum fee (estimated) - <span>{estimatedDepositFee} ETH</span> ~{" "}
+          Ethereum fee (estimated) - <span>{formattedFee} ETH</span> ~{" "}
           <FiatAmount
-            amount={getDepositFeeInFiat(estimatedDepositFeeTask)}
+            amount={getDepositFeeInFiat(formattedFee)}
             currency={preferredCurrency}
             className={classes.fiatAmount}
           />
@@ -123,7 +115,12 @@ function Fee(props: FeeProps): JSX.Element {
         <p className={classes.fee}>
           Fee{" "}
           {showInFiat ? (
-            <FiatAmount amount={feeInFiat} currency={preferredCurrency} />
+            <FiatAmount
+              amount={feeInFiat}
+              currency={preferredCurrency}
+              /* ToDo delete */
+              className=""
+            />
           ) : (
             <span>
               {`${getFixedTokenAmount(
