@@ -1,4 +1,4 @@
-FROM node:alpine AS base
+FROM node:lts-alpine3.12 AS base
 
 RUN apk update
 RUN apk upgrade
