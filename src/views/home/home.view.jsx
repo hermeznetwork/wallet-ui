@@ -39,6 +39,7 @@ function Home({
   pendingDeposits,
   pendingWithdraws,
   pendingDelayedWithdraws,
+  availableWithdraws,
   coordinatorStateTask,
   onChangeHeader,
   onCheckPendingDeposits,
@@ -50,6 +51,8 @@ function Home({
   onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
+  onAddAvailableWithdraw,
+  onRemoveAvailableWithdraw,
   onNavigateToAccountDetails,
   onOpenSnackbar,
   onCleanup,
@@ -68,6 +71,11 @@ function Home({
   );
   const accountPendingDelayedWithdraws = storage.getPendingDelayedWithdrawsByHermezAddress(
     pendingDelayedWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  );
+  const accountAvailableWithdraws = storage.getAvailableWithdrawsByHermezAddress(
+    availableWithdraws,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   );
@@ -224,8 +232,11 @@ function Home({
                 babyJubJub={wallet.publicKeyCompressedHex}
                 pendingWithdraws={accountPendingWithdraws}
                 pendingDelayedWithdraws={accountPendingDelayedWithdraws}
+                availableWithdraws={accountAvailableWithdraws}
                 onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                 onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                onAddAvailableWithdraw={onAddAvailableWithdraw}
+                onRemoveAvailableWithdraw={onRemoveAvailableWithdraw}
                 coordinatorState={coordinatorStateTask?.data}
               />
             )}
@@ -308,12 +319,15 @@ Home.propTypes = {
   exitsTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
+  availableWithdraws: PropTypes.object.isRequired,
   onLoadTotalBalance: PropTypes.func.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
+  onAddAvailableWithdraw: PropTypes.func.isRequired,
+  onRemoveAvailableWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired,
 };
 
@@ -330,6 +344,7 @@ const mapStateToProps = (state) => ({
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
+  availableWithdraws: state.global.availableWithdraws,
   coordinatorStateTask: state.global.coordinatorStateTask,
 });
 
@@ -379,6 +394,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onCheckPendingWithdrawals: () => dispatch(globalThunks.checkPendingWithdrawals()),
   onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),
+  onAddAvailableWithdraw: (availableWithdraw) =>
+    dispatch(globalThunks.addAvailableWithdraw(availableWithdraw)),
+  onRemoveAvailableWithdraw: (availableWithdrawId) =>
+    dispatch(globalThunks.removeAvailableWithdraw(availableWithdrawId)),
   onNavigateToAccountDetails: (accountIndex) => dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onCleanup: () => dispatch(resetState()),

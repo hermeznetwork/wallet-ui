@@ -32,6 +32,7 @@ import {
   HermezNetworkStatus,
   Exit,
   PendingDeposit,
+  AvailableWithdraw,
   HistoryTransaction,
   PoolTransaction,
   Token,
@@ -435,6 +436,64 @@ function checkPendingDelayedWithdrawals(): AppThunk {
               .catch(() => ({}));
           })
           .catch(() => ({}));
+      }
+    }
+  };
+}
+
+/**
+ * Adds a availableWithdraw to the availableWithdraw store
+ * @param {AvailableWithdraw} availableWithdraw - The availableWithdraw to add to the store
+ * @returns {void}
+ */
+function addAvailableWithdraw(availableWithdraw: AvailableWithdraw): AppThunk {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { wallet, ethereumNetworkTask },
+    } = getState();
+    if (wallet !== undefined && ethereumNetworkTask.status === "successful") {
+      const {
+        data: { chainId },
+      } = ethereumNetworkTask;
+      if (chainId !== undefined) {
+        const { hermezEthereumAddress } = wallet;
+        localStoragePersistence.addAvailableWithdraw(
+          chainId,
+          hermezEthereumAddress,
+          availableWithdraw
+        );
+        dispatch(
+          globalActions.addAvailableWithdraw(chainId, hermezEthereumAddress, availableWithdraw)
+        );
+      }
+    }
+  };
+}
+
+/**
+ * Removes a availableWithdraw from the availableWithdraw store by id
+ * @param {string} availableWithdrawId - The availableWithdraw id to remove from the store
+ * @returns {void}
+ */
+function removeAvailableWithdraw(availableWithdrawId: string): AppThunk {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { wallet, ethereumNetworkTask },
+    } = getState();
+    if (wallet !== undefined && ethereumNetworkTask.status === "successful") {
+      const {
+        data: { chainId },
+      } = ethereumNetworkTask;
+      if (chainId !== undefined) {
+        const { hermezEthereumAddress } = wallet;
+        localStoragePersistence.removeAvailableWithdraw(
+          chainId,
+          hermezEthereumAddress,
+          availableWithdrawId
+        );
+        dispatch(
+          globalActions.removeAvailableWithdraw(chainId, hermezEthereumAddress, availableWithdrawId)
+        );
       }
     }
   };
@@ -873,6 +932,8 @@ export {
   updatePendingDelayedWithdrawDate,
   checkPendingDelayedWithdrawals,
   checkPendingWithdrawals,
+  addAvailableWithdraw,
+  removeAvailableWithdraw,
   addPendingDeposit,
   removePendingDepositByTransactionId,
   removePendingDepositByHash,

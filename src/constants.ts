@@ -25,6 +25,8 @@ export const PENDING_DELAYED_WITHDRAWS_KEY = "pendingDelayedWithdraws";
 
 export const PENDING_DEPOSITS_KEY = "pendingDeposits";
 
+export const AVAILABLE_WITHDRAW_KEY = "availableWithdraw";
+
 export const ACCOUNT_AUTH_SIGNATURES_KEY = "accountAuthSignatures";
 
 export const TREZOR_MANIFEST_MAIL = "hello@hermez.io";

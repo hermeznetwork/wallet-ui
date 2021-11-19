@@ -7,6 +7,7 @@ import {
   HermezStatus,
   HermezNetworkStatus,
   PendingWithdraw,
+  AvailableWithdraw,
   HermezWallet,
   Signers,
   FiatExchangeRates,
@@ -39,6 +40,7 @@ export interface GlobalState {
   networkStatus: HermezNetworkStatus;
   pendingWithdraws: localStorageDomain.PendingWithdraws;
   pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
+  availableWithdraws: localStorageDomain.AvailableWithdraws;
   pendingDelayedWithdrawCheckTask: AsyncTask<null, string>;
   pendingWithdrawalsCheckTask: AsyncTask<null, string>;
   pendingDeposits: localStorageDomain.PendingDeposits;
@@ -70,6 +72,7 @@ function getInitialGlobalState(): GlobalState {
     networkStatus: "online",
     pendingWithdraws: localStoragePersistence.getPendingWithdraws(),
     pendingDelayedWithdraws: localStoragePersistence.getPendingDelayedWithdraws(),
+    availableWithdraws: localStoragePersistence.getAvailableWithdraws(),
     pendingDelayedWithdrawCheckTask: {
       status: "pending",
     },
@@ -331,6 +334,42 @@ function globalReducer(
         pendingDelayedWithdrawCheckTask: {
           status: "successful",
           data: null,
+        },
+      };
+    }
+    case GlobalActionTypes.ADD_AVAILABLE_WITHDRAW: {
+      const chainIdAvailableWithdraws = state.availableWithdraws[action.chainId] || {};
+      const accountAvailableWithdraws =
+        chainIdAvailableWithdraws[action.hermezEthereumAddress] || [];
+
+      return {
+        ...state,
+        availableWithdraws: {
+          ...state.availableWithdraws,
+          [action.chainId]: {
+            ...chainIdAvailableWithdraws,
+            [action.hermezEthereumAddress]: [
+              ...accountAvailableWithdraws,
+              action.availableWithdraw,
+            ],
+          },
+        },
+      };
+    }
+    case GlobalActionTypes.REMOVE_AVAILABLE_WITHDRAW: {
+      const chainIdAvailableWithdraws = state.availableWithdraws[action.chainId] || {};
+      const accountAvailableWithdraws =
+        chainIdAvailableWithdraws[action.hermezEthereumAddress] || [];
+      return {
+        ...state,
+        availableWithdraws: {
+          ...state.availableWithdraws,
+          [action.chainId]: {
+            ...chainIdAvailableWithdraws,
+            [action.hermezEthereumAddress]: accountAvailableWithdraws.filter(
+              (withdraw: AvailableWithdraw) => withdraw.id !== action.availableWithdrawId
+            ),
+          },
         },
       };
     }

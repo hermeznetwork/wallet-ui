@@ -30,9 +30,12 @@ function Exit({
   babyJubJub,
   pendingWithdraws,
   pendingDelayedWithdraws,
+  availableWithdraws,
   coordinatorState,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
+  onAddAvailableWithdraw,
+  onRemoveAvailableWithdraw,
 }) {
   const classes = useExitStyles();
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false);
@@ -134,13 +137,13 @@ function Exit({
    * @param {Object} delayedWithdrawal - The delayed withdrawal object from LocalStorage
    * @returns {string|void} Returns remaining time as a string, or void if enough time has passed
    */
-  function getDateString(delayedWithdrawal) {
+  function getDateString(delayedWithdrawal, availability) {
     const now = Date.now();
     const difference = now - new Date(delayedWithdrawal.timestamp).getTime();
-    if (delayedWithdrawal.isInstant) {
+    if (availability) {
       const tenMinutes = 10 * 60 * 1000;
       if (difference > tenMinutes) {
-        onRemovePendingDelayedWithdraw(exitId);
+        onRemoveAvailableWithdraw(exitId);
       } else {
         const remainingDifference = tenMinutes - difference;
         // Extracts the minutes from the remaining difference
@@ -192,9 +195,8 @@ function Exit({
   }
 
   function onCheckAvailabilityClick() {
-    onAddPendingDelayedWithdraw({
+    onAddAvailableWithdraw({
       id: exitId,
-      isInstant: true,
       timestamp: new Date().toISOString(),
       token,
     });
@@ -286,18 +288,22 @@ function Exit({
           const pendingDelayedWithdrawal = pendingDelayedWithdraws?.find(
             (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === exitId
           );
+          const availableWithdraw = availableWithdraws?.find(
+            (availableWithdraws) => availableWithdraws.id === exitId
+          );
 
-          if (pendingDelayedWithdrawal) {
-            const remainingTime = getDateString(pendingDelayedWithdrawal);
+          if (pendingDelayedWithdrawal || availableWithdraw) {
+            const withdraw = pendingDelayedWithdrawal || availableWithdraw;
+            const remainingTime = getDateString(withdraw, availableWithdraw);
             return (
               <div className={classes.withdraw}>
                 <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
-                  {pendingDelayedWithdrawal.isInstant && (
+                  {withdraw && (
                     <span className={classes.infoText}>
                       Your request to withdraw is validating with the network.
                     </span>
                   )}
-                  {!pendingDelayedWithdrawal.isInstant && (
+                  {pendingDelayedWithdrawal && (
                     <span className={classes.infoText}>You have scheduled your withdrawal.</span>
                   )}
 
@@ -365,9 +371,12 @@ Exit.propTypes = {
   accountIndex: PropTypes.string,
   pendingWithdraws: PropTypes.array,
   pendingDelayedWithdraws: PropTypes.array,
+  availableWithdraws: PropTypes.array,
   coordinatorState: PropTypes.object,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
+  onAddAvailableWithdraw: PropTypes.func.isRequired,
+  onRemoveAvailableWithdraw: PropTypes.func.isRequired,
 };
 
 export default Exit;

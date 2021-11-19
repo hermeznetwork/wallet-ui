@@ -2,7 +2,12 @@ import { z } from "zod";
 
 import * as constants from "src/constants";
 // domain
-import { PendingDeposit, PendingWithdraw, PendingDelayedWithdraw } from "src/domain/hermez";
+import {
+  PendingDeposit,
+  PendingWithdraw,
+  PendingDelayedWithdraw,
+  AvailableWithdraw,
+} from "src/domain/hermez";
 // persistence
 import * as parsers from "src/persistence/parsers";
 import {
@@ -13,6 +18,8 @@ import {
   ChainPendingDelayedWithdraws,
   PendingDeposits,
   ChainPendingDeposits,
+  AvailableWithdraws,
+  ChainAvailableWithdraws,
 } from "src/domain/local-storage";
 
 // Storage Helpers
@@ -344,6 +351,60 @@ export function removePendingDepositByHash(
   };
   setStorageByKey(constants.PENDING_DEPOSITS_KEY, newStorage);
   return newStorage;
+}
+
+// Available Withdraw
+
+const availableWithdrawParser: z.ZodSchema<AvailableWithdraws> = z.record(
+  z.record(z.array(parsers.availableWithdraw))
+);
+
+export function getAvailableWithdraws(): AvailableWithdraws {
+  const availableWithdraws: unknown = getStorageByKey(constants.AVAILABLE_WITHDRAW_KEY);
+  const parsedAvailableWithdraw = availableWithdrawParser.safeParse(availableWithdraws);
+  if (parsedAvailableWithdraw.success) {
+    return parsedAvailableWithdraw.data;
+  } else {
+    console.error("An error occurred parsing AvailableWithdraws");
+    console.error(parsedAvailableWithdraw.error);
+    return {};
+  }
+}
+
+export function addAvailableWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  availableWithdraw: AvailableWithdraw
+): void {
+  const availableWithdraws = getAvailableWithdraws();
+  const chainAvailableWithdraws: ChainAvailableWithdraws = availableWithdraws[chainId] || {};
+  const withdraws: AvailableWithdraw[] = chainAvailableWithdraws[hermezEthereumAddress] || [];
+  const newStorage: AvailableWithdraws = {
+    ...availableWithdraws,
+    [chainId]: {
+      ...chainAvailableWithdraws,
+      [hermezEthereumAddress]: [...withdraws, availableWithdraw],
+    },
+  };
+  setStorageByKey(constants.AVAILABLE_WITHDRAW_KEY, newStorage);
+}
+
+export function removeAvailableWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  id: string
+): void {
+  const availableWithdraws = getAvailableWithdraws();
+  const chainAvailableWithdraws: ChainAvailableWithdraws = availableWithdraws[chainId] || {};
+  const withdraws: AvailableWithdraw[] = chainAvailableWithdraws[hermezEthereumAddress] || [];
+  const newStorage: AvailableWithdraws = {
+    ...availableWithdraws,
+    [chainId]: {
+      ...chainAvailableWithdraws,
+      [hermezEthereumAddress]: withdraws.filter((item) => item.id !== id),
+    },
+  };
+  setStorageByKey(constants.AVAILABLE_WITHDRAW_KEY, newStorage);
 }
 
 // Storage Version

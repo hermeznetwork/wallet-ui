@@ -49,6 +49,12 @@ export type PendingDelayedWithdraw = PendingWithdraw & {
   isInstant: boolean;
 };
 
+export type AvailableWithdraw = {
+  id: string;
+  timestamp: hermezjs.ISOStringDate;
+  token: hermezjs.Token;
+};
+
 export interface EthereumAccount {
   balance: string;
   token: hermezjs.Token;
