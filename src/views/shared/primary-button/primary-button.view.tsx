@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 
-import usePrimaryButtonStyles from "./primary-button.styles";
+import usePrimaryButtonStyles from "src/views/shared/primary-button/primary-button.styles";
 
 interface PrimaryButtonProps {
   label: string;
