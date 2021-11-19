@@ -20,7 +20,7 @@ interface FeeProps {
   transactionType: TxType;
   amount: string;
   fee: number;
-  estimatedWithdrawFee: EstimatedWithdrawFee;
+  estimatedWithdrawFee?: EstimatedWithdrawFee;
   token: Token;
   preferredCurrency: string;
   fiatExchangeRates: FiatExchangeRates;
@@ -71,9 +71,9 @@ function Fee({
     return null;
   }
 
-  function getTotalEstimatedWithdrawFee() {
+  function getTotalEstimatedWithdrawFee(fee: EstimatedWithdrawFee) {
     const estimatedWithdrawFeeInFiat = getAmountInPreferredCurrency(
-      estimatedWithdrawFee.USD,
+      fee.USD,
       preferredCurrency,
       fiatExchangeRates
     );
@@ -110,13 +110,13 @@ function Fee({
       return <p className={classes.fee}>{getDepositFee()}</p>;
     }
     case TxType.Exit: {
-      return (
+      return estimatedWithdrawFee ? (
         <div className={classes.withdrawFeeWrapper}>
           <button className={classes.withdrawFeeButton} onClick={handleWithdrawFeeExpansion}>
             <span className={classes.withdrawFeeButtonText}>
               Total estimated fee{" "}
               <FiatAmount
-                amount={getTotalEstimatedWithdrawFee()}
+                amount={getTotalEstimatedWithdrawFee(estimatedWithdrawFee)}
                 currency={preferredCurrency}
                 className={classes.fiatAmount}
               />
@@ -135,6 +135,8 @@ function Fee({
             />
           )}
         </div>
+      ) : (
+        <></>
       );
     }
     case TxType.CreateAccountDeposit:
