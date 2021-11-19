@@ -12,10 +12,10 @@ import { changeHeader } from "src/store/global/global.actions";
 import useWithdrawStyles from "src/views/transactions/transfer/transfer.styles";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import Spinner from "src/views/shared/spinner/spinner.view";
-import { AsyncTask } from "src/utils/types";
+import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
 import * as storage from "src/utils/storage";
 // domain
-import { EstimatedWithdrawFee } from "src/domain/";
+import { EstimatedL1Fee } from "src/domain/";
 import {
   Account,
   HermezWallet,
@@ -33,7 +33,7 @@ interface WithdrawStateProps {
   step: withdrawActions.Step;
   exitTask: AsyncTask<Exit, Error>;
   accountTask: AsyncTask<Account, string>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   isTransactionBeingApproved: boolean;
   pendingDelayedWithdraws: PendingDelayedWithdraws;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
@@ -180,31 +180,33 @@ function Withdraw({
             );
           }
           case "review-transaction": {
-            return wallet !== undefined &&
-              accountTask.status === "successful" &&
-              exitTask.status === "successful" ? (
-              <TransactionOverview
-                wallet={wallet}
-                isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Withdraw,
-                  amount: BigNumber.from(exitTask.data.balance),
-                  account: accountTask.data,
-                  exit: exitTask.data,
-                  completeDelayedWithdrawal,
-                  instantWithdrawal,
-                  estimatedWithdrawFeeTask,
-                  onWithdraw,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
-              />
-            ) : null;
+            return (
+              wallet &&
+              isAsyncTaskCompleted(accountTask) &&
+              isAsyncTaskCompleted(exitTask) && (
+                <TransactionOverview
+                  wallet={wallet}
+                  isTransactionBeingApproved={isTransactionBeingApproved}
+                  transaction={{
+                    type: TxType.Withdraw,
+                    amount: BigNumber.from(exitTask.data.balance),
+                    account: accountTask.data,
+                    exit: exitTask.data,
+                    completeDelayedWithdrawal,
+                    instantWithdrawal,
+                    estimatedWithdrawFeeTask,
+                    onWithdraw,
+                  }}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRates={
+                    fiatExchangeRatesTask.status === "successful" ||
+                    fiatExchangeRatesTask.status === "reloading"
+                      ? fiatExchangeRatesTask.data
+                      : {}
+                  }
+                />
+              )
+            );
           }
         }
       })()}

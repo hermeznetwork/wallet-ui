@@ -6,14 +6,14 @@ import {
 } from "src/store/transactions/deposit/deposit.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { EstimatedDepositFee } from "src/domain";
 import { EthereumAccount } from "src/domain/hermez";
+import { EstimatedL1Fee } from "src/domain";
 
 export interface DepositState {
   step: Step;
   ethereumAccountTask: AsyncTask<EthereumAccount, string>;
   ethereumAccountsTask: AsyncTask<EthereumAccount[], Error>;
-  estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>;
+  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;
 }

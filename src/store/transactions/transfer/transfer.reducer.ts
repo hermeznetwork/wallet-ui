@@ -20,6 +20,7 @@ export interface TransferState {
   accountTask: AsyncTask<Account, string>;
   accountsTask: AsyncTask<AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
+  doesReceiverApprovedAccountsCreation: undefined | boolean;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;
 }
@@ -38,6 +39,7 @@ const initialTransferState: TransferState = {
   feesTask: {
     status: "pending",
   },
+  doesReceiverApprovedAccountsCreation: undefined,
   transaction: undefined,
   isTransactionBeingApproved: false,
 };
@@ -194,6 +196,12 @@ function transferReducer(
           error: action.error,
         },
       };
+    case TransferActionTypes.SET_RECEIVER_ACCOUNTS_CREATION_AUTHORIZATION_APPROVAL: {
+      return {
+        ...state,
+        doesReceiverApprovedAccountsCreation: action.approval,
+      };
+    }
     case TransferActionTypes.START_TRANSACTION_APPROVAL: {
       return {
         ...state,

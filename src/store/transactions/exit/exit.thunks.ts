@@ -153,6 +153,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
           exitActions.loadEstimatedWithdrawFeeSuccess({
             amount: feeBigNumber,
             USD: feeUSD,
+            token,
           })
         );
       }
@@ -183,7 +184,7 @@ function exit(amount: BigNumber, account: Account, fee: number) {
         type: TxType.Exit,
         from: account.accountIndex,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
-        fee,
+        fee: fee,
       };
 
       return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)

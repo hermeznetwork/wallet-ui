@@ -11,11 +11,13 @@ import * as transferActions from "src/store/transactions/transfer/transfer.actio
 import * as transferReducer from "src/store/transactions/transfer/transfer.reducer";
 import { changeHeader } from "src/store/global/global.actions";
 import useTransferStyles from "src/views/transactions/transfer/transfer.styles";
-import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
 import Spinner from "src/views/shared/spinner/spinner.view";
-import { AsyncTask } from "src/utils/types";
+import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import TransferForm, {
+  TxData,
+} from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
 import { Header } from "src/domain/";
 import {
@@ -40,7 +42,7 @@ interface TransferStateProps {
 }
 
 interface TransferHandlerProps {
-  onChangeHeader: (step: transferActions.Step, accountIndex: string | null) => void;
+  onChangeHeader: (step: transferActions.Step, accountIndex?: string) => void;
   onLoadHermezAccount: (
     accountIndex: string,
     poolTransactions: PoolTransaction[],
@@ -57,7 +59,7 @@ interface TransferHandlerProps {
   ) => void;
   onGoToChooseAccountStep: () => void;
   onGoToBuildTransactionStep: (account: Account) => void;
-  onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) => void;
+  onCheckTxData: (txData: TxData) => void;
   onTransfer: (amount: BigNumber, account: Account, to: Partial<Account>, fee: number) => void;
   onCleanup: () => void;
 }
@@ -82,15 +84,15 @@ function Transfer({
   onLoadAccounts,
   onGoToChooseAccountStep,
   onGoToBuildTransactionStep,
-  onGoToTransactionOverviewStep,
+  onCheckTxData,
   onTransfer,
   onCleanup,
 }: TransferProps) {
   const classes = useTransferStyles();
   const { search } = useLocation();
   const urlSearchParams = new URLSearchParams(search);
-  const receiver = urlSearchParams.get("receiver");
-  const accountIndex = urlSearchParams.get("accountIndex");
+  const receiver = urlSearchParams.get("receiver") || undefined;
+  const accountIndex = urlSearchParams.get("accountIndex") || undefined;
 
   React.useEffect(() => {
     onChangeHeader(step, accountIndex);
@@ -98,13 +100,11 @@ function Transfer({
 
   React.useEffect(() => {
     onLoadPoolTransactions();
-  }, [onLoadPoolTransactions]);
+    onLoadFees();
+  }, [onLoadPoolTransactions, onLoadFees]);
 
   React.useEffect(() => {
-    if (
-      poolTransactionsTask.status === "successful" &&
-      fiatExchangeRatesTask.status === "successful"
-    ) {
+    if (isAsyncTaskCompleted(poolTransactionsTask) && isAsyncTaskCompleted(fiatExchangeRatesTask)) {
       if (accountIndex) {
         onLoadHermezAccount(
           accountIndex,
@@ -164,38 +164,25 @@ function Transfer({
             );
           }
           case "build-transaction": {
-            return accountTask.status === "successful" || accountTask.status === "reloading" ? (
-              <TransactionForm
-                account={accountTask.data}
-                transactionType={TxType.Transfer}
-                receiverAddress={receiver}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
-                feesTask={feesTask}
-                // ToDo: To be removed START
-                accountBalanceTask={{ status: "pending" }}
-                estimatedWithdrawFeeTask={{ status: "pending" }}
-                estimatedDepositFeeTask={{ status: "pending" }}
-                onLoadAccountBalance={() => ({})}
-                onLoadEstimatedWithdrawFee={() => ({})}
-                onLoadEstimatedDepositFee={() => ({})}
-                // ToDo: To be removed END
-                onLoadFees={onLoadFees}
-                onSubmit={onGoToTransactionOverviewStep}
-                onGoToChooseAccountStep={onGoToChooseAccountStep}
-              />
-            ) : null;
+            return (
+              isAsyncTaskCompleted(accountTask) && (
+                <TransferForm
+                  account={accountTask.data}
+                  defaultReceiverAddress={receiver}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRatesTask={fiatExchangeRatesTask}
+                  feesTask={feesTask}
+                  onSubmit={onCheckTxData}
+                  onGoToChooseAccountStep={onGoToChooseAccountStep}
+                />
+              )
+            );
           }
           case "review-transaction": {
             return (
-              wallet !== undefined &&
-              transactionToReview !== undefined &&
-              (accountTask.status === "successful" || accountTask.status === "reloading") && (
+              wallet &&
+              transactionToReview &&
+              isAsyncTaskCompleted(accountTask) && (
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
@@ -237,11 +224,11 @@ const mapStateToProps = (state: AppState): TransferStateProps => ({
   preferredCurrency: state.myAccount.preferredCurrency,
 });
 
-const getHeaderCloseAction = (accountIndex: string | null) => {
-  return accountIndex === null ? push("/") : push(`/accounts/${accountIndex}`);
+const getHeaderCloseAction = (accountIndex?: string) => {
+  return accountIndex ? push(`/accounts/${accountIndex}`) : push("/");
 };
 
-const getHeader = (step: transferActions.Step, accountIndex: string | null): Header => {
+const getHeader = (step: transferActions.Step, accountIndex?: string): Header => {
   switch (step) {
     case "choose-account": {
       return {
@@ -281,7 +268,7 @@ const getHeader = (step: transferActions.Step, accountIndex: string | null): Hea
 };
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  onChangeHeader: (step: transferActions.Step, accountIndex: string | null) =>
+  onChangeHeader: (step: transferActions.Step, accountIndex?: string) =>
     dispatch(changeHeader(getHeader(step, accountIndex))),
   onLoadHermezAccount: (
     accountIndex: string,

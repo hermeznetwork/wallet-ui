@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import { useLocation } from "react-router";
 import { BigNumber } from "@ethersproject/bignumber";
 import { push } from "connected-react-router";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { ethers } from "ethers";
 
 import {
   Account,
@@ -13,16 +15,15 @@ import {
   Token,
 } from "src/domain/hermez";
 import { AppDispatch, AppState } from "src/store";
-import { AsyncTask } from "src/utils/types";
+import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
 import useExitStyles from "src/views/transactions/exit/exit.styles";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
 import * as exitThunks from "src/store/transactions/exit/exit.thunks";
-import { EstimatedWithdrawFee, Header } from "src/domain";
+import { EstimatedL1Fee, Header } from "src/domain";
 import { changeHeader } from "src/store/global/global.actions";
 import Spinner from "src/views/shared/spinner/spinner.view";
-import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
+import ExitForm from "src/views/transactions/exit/components/exit-form/exit-form.view";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 interface ExitStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
@@ -30,7 +31,7 @@ interface ExitStateProps {
   accountTask: AsyncTask<Account, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   accountBalanceTask: AsyncTask<string, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   isTransactionBeingApproved: boolean;
   transactionToReview: exitActions.TransactionToReview | undefined;
   wallet: HermezWallet.HermezWallet | undefined;
@@ -93,7 +94,9 @@ function Exit({
 
   React.useEffect(() => {
     onLoadPoolTransactions();
-  }, [onLoadPoolTransactions]);
+    onLoadFees();
+    onLoadAccountBalance();
+  }, [onLoadPoolTransactions, onLoadFees, onLoadAccountBalance]);
 
   React.useEffect(() => {
     if (
@@ -128,6 +131,21 @@ function Exit({
 
   React.useEffect(() => onCleanup, [onCleanup]);
 
+  function doesUserHaveEnoughEthForWithdraw(): boolean {
+    if (
+      isAsyncTaskCompleted(accountBalanceTask) &&
+      isAsyncTaskCompleted(estimatedWithdrawFeeTask)
+    ) {
+      const formattedEstimatedWithdrawFee = ethers.utils.formatUnits(
+        estimatedWithdrawFeeTask.data.amount
+      );
+
+      return accountBalanceTask.data >= formattedEstimatedWithdrawFee;
+    } else {
+      return false;
+    }
+  }
+
   return (
     <div className={classes.root}>
       {(() => {
@@ -140,57 +158,45 @@ function Exit({
             );
           }
           case "build-transaction": {
-            return accountTask.status === "successful" || accountTask.status === "reloading" ? (
-              <TransactionForm
+            return isAsyncTaskCompleted(accountTask) ? (
+              <ExitForm
                 account={accountTask.data}
-                transactionType={TxType.Exit}
                 preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
+                fiatExchangeRatesTask={fiatExchangeRatesTask}
                 feesTask={feesTask}
-                accountBalanceTask={accountBalanceTask}
                 estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
-                // ToDo: To be removed START
-                receiverAddress={undefined}
-                estimatedDepositFeeTask={{ status: "pending" }}
-                onLoadEstimatedDepositFee={() => ({})}
-                onGoToChooseAccountStep={() => ({})}
-                // ToDo: To be removed END
-                onLoadAccountBalance={onLoadAccountBalance}
+                doesUserHaveEnoughEthForWithdraw={doesUserHaveEnoughEthForWithdraw()}
                 onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
-                onLoadFees={onLoadFees}
                 onSubmit={onGoToTransactionOverviewStep}
               />
             ) : null;
           }
           case "review-transaction": {
-            return wallet !== undefined &&
-              transactionToReview !== undefined &&
-              (accountTask.status === "successful" || accountTask.status === "reloading") ? (
-              <TransactionOverview
-                wallet={wallet}
-                isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Exit,
-                  amount: transactionToReview.amount,
-                  account: accountTask.data,
-                  fee: transactionToReview.fee,
-                  estimatedWithdrawFeeTask,
-                  onExit,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
-              />
-            ) : null;
+            return (
+              wallet &&
+              transactionToReview &&
+              isAsyncTaskCompleted(accountTask) && (
+                <TransactionOverview
+                  wallet={wallet}
+                  isTransactionBeingApproved={isTransactionBeingApproved}
+                  transaction={{
+                    type: TxType.Exit,
+                    amount: transactionToReview.amount,
+                    account: accountTask.data,
+                    fee: transactionToReview.fee.toNumber(),
+                    estimatedWithdrawFeeTask,
+                    onExit,
+                  }}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRates={
+                    fiatExchangeRatesTask.status === "successful" ||
+                    fiatExchangeRatesTask.status === "reloading"
+                      ? fiatExchangeRatesTask.data
+                      : {}
+                  }
+                />
+              )
+            );
           }
         }
       })()}

@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
 import { Account, PoolTransaction, RecommendedFee } from "src/domain/hermez";
-import { EstimatedWithdrawFee } from "src/domain";
+import { EstimatedL1Fee } from "src/domain";
 
 export enum ExitActionTypes {
   GO_TO_BUILD_TRANSACTION_STEP = "[EXIT] GO TO BUILD TRANSACTION STEP",
@@ -28,18 +28,17 @@ export enum ExitActionTypes {
   RESET_STATE = "[EXIT] RESET STATE",
 }
 
+export interface TransactionToReview {
+  amount: BigNumber;
+  fee: BigNumber;
+  from: Account;
+}
+
 export type Step = "load-account" | "build-transaction" | "review-transaction";
 
 export interface GoToBuildTransactionStep {
   type: ExitActionTypes.GO_TO_BUILD_TRANSACTION_STEP;
   account: Account;
-}
-
-export interface TransactionToReview {
-  amount: BigNumber;
-  fee: number;
-  from: Account;
-  to: Partial<Account>;
 }
 
 export interface GoToReviewTransactionStep {
@@ -100,7 +99,7 @@ export interface LoadEstimatedWithdrawFee {
 
 export interface LoadEstimatedWithdrawFeeSuccess {
   type: ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS;
-  estimatedFee: EstimatedWithdrawFee;
+  estimatedFee: EstimatedL1Fee;
 }
 
 export interface LoadEstimatedWithdrawFeeFailure {
@@ -245,7 +244,7 @@ function loadEstimatedWithdrawFee(): LoadEstimatedWithdrawFee {
 }
 
 function loadEstimatedWithdrawFeeSuccess(
-  estimatedFee: EstimatedWithdrawFee
+  estimatedFee: EstimatedL1Fee
 ): LoadEstimatedWithdrawFeeSuccess {
   return {
     type: ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS,

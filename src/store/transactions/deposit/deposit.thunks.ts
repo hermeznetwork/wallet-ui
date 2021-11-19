@@ -10,8 +10,8 @@ import * as depositActions from "src/store/transactions/deposit/deposit.actions"
 import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import * as ethereum from "src/utils/ethereum";
-import { convertTokenAmountToFiat, getFixedTokenAmount } from "src/utils/currencies";
-import { getDepositFee } from "src/utils/fees";
+import { convertTokenAmountToFiat } from "src/utils/currencies";
+import { getTxFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
 import { FiatExchangeRates, EthereumAccount, Account } from "src/domain/hermez";
@@ -113,13 +113,17 @@ function fetchEstimatedDepositFee(): AppThunk {
       if (tokensPriceTask.status === "successful" && maxFeePerGas !== null) {
         const ethToken = tokensPriceTask.data.find((token) => token.id === ETHER_TOKEN_ID);
         if (ethToken) {
-          const depositFee = getDepositFee(ethToken, maxFeePerGas);
-          const amount = getFixedTokenAmount(depositFee.toString(), ethToken.decimals);
+          const depositFee = getTxFee({
+            txType: TxType.Deposit,
+            token: ethToken,
+            gasPrice: maxFeePerGas,
+          });
+
           dispatch(
             depositActions.loadEstimatedDepositFeeSuccess({
-              amount,
-              gasPrice: maxFeePerGas,
+              amount: depositFee,
               USD: ethToken.USD,
+              token: ethToken,
             })
           );
         }

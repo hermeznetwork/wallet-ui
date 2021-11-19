@@ -3,6 +3,7 @@
 // @ts-nocheck
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { BigNumber } from "@ethersproject/bignumber";
 import { parseUnits } from "ethers/lib/utils";
 
 import useFeeStyles from "src/views/transactions/components/fee/fee.styles";
@@ -12,77 +13,76 @@ import {
   getTokenAmountInPreferredCurrency,
 } from "src/utils/currencies";
 import { ReactComponent as AngleDownIcon } from "src/images/icons/angle-down.svg";
-import FeesTable from "src/views/transactions/components/fees-table/fees-table.view";
-import { getRealFee } from "src/utils/fees";
+import FeesTable from "src/views/shared/fees-table/fees-table.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 // domain
 import { FiatExchangeRates, Token } from "src/domain/hermez";
 import { EstimatedWithdrawFee, EstimatedDepositFee } from "src/domain";
+import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
 
-interface FeeProps {
-  transactionType: TxType;
-  amount: string;
-  fee: number;
-  estimatedWithdrawFee: EstimatedWithdrawFee;
+export interface CommonFeeProps {
   token: Token;
-  preferredCurrency: string;
-  fiatExchangeRates: FiatExchangeRates;
+  amount: BigNumber;
   showInFiat: boolean;
-  depositFee: EstimatedDepositFee;
+  preferredCurrency: string;
+  fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
 }
 
-function Fee({
-  transactionType,
-  amount,
-  fee,
-  estimatedWithdrawFee,
-  token,
-  preferredCurrency,
-  fiatExchangeRates,
-  showInFiat,
-  depositFee,
-}: FeeProps): JSX.Element {
+interface FeeDepositProps {
+  transactionType: TxType.Deposit;
+  estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>;
+}
+
+interface FeeTransferProps {
+  transactionType: TxType.Transfer;
+  fee: BigNumber;
+}
+
+interface FeeExitProps {
+  transactionType: TxType.Exit;
+  fee: BigNumber;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
+}
+
+type FeeProps = CommonFeeProps & (FeeDepositProps | FeeTransferProps | FeeExitProps);
+
+function Fee(props: FeeProps): JSX.Element {
   const [isWithdrawFeeExpanded, setIsWithdrawFeeExpanded] = React.useState(false);
   const classes = useFeeStyles({ isWithdrawFeeExpanded });
-  const l2RealFee = getRealFee(amount, token, fee);
-  const l2FeeInFiat = getTokenAmountInPreferredCurrency(
-    l2RealFee.toString(),
-    token.USD,
-    preferredCurrency,
-    fiatExchangeRates
-  );
 
-  function getDepositFee() {
-    if (depositFee) {
-      const fiatAmount = getTokenAmountInPreferredCurrency(
-        depositFee.amount,
-        depositFee.USD,
-        preferredCurrency,
-        fiatExchangeRates
-      );
-      return (
-        <>
-          Ethereum fee (estimated) - <span>{depositFee.amount} ETH</span> ~{" "}
-          <FiatAmount
-            amount={fiatAmount}
-            currency={preferredCurrency}
-            className={classes.fiatAmount}
-          />
-        </>
-      );
+  const { transactionType, token, showInFiat, preferredCurrency, fiatExchangeRatesTask } = props;
+
+  function getDepositFeeInFiat(estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>) {
+    if (
+      !isAsyncTaskCompleted(estimatedDepositFeeTask) ||
+      !isAsyncTaskCompleted(fiatExchangeRatesTask)
+    ) {
+      return undefined;
     }
-    return null;
+
+    return getTokenAmountInPreferredCurrency(
+      estimatedDepositFeeTask.data.amount.toString(),
+      estimatedDepositFeeTask.data.USD,
+      preferredCurrency,
+      isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
+    );
   }
 
-  function getTotalEstimatedWithdrawFee() {
-    if (!estimatedWithdrawFee?.USD) {
+  function getTotalEstimatedWithdrawFee(
+    l2FeeInFiat: number,
+    estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>
+  ) {
+    if (
+      !isAsyncTaskCompleted(estimatedWithdrawFeeTask) ||
+      !isAsyncTaskCompleted(fiatExchangeRatesTask)
+    ) {
       return undefined;
     }
 
     const estimatedWithdrawFeeInFiat = getAmountInPreferredCurrency(
-      estimatedWithdrawFee.USD,
+      estimatedWithdrawFeeTask.data.USD,
       preferredCurrency,
-      fiatExchangeRates
+      fiatExchangeRatesTask.data
     );
 
     return l2FeeInFiat + estimatedWithdrawFeeInFiat;
@@ -93,18 +93,41 @@ function Fee({
   }
 
   switch (transactionType) {
-    case TxType.Transfer:
-    case TxType.TransferToBJJ:
-    case TxType.TransferToEthAddr: {
+    case TxType.Deposit: {
+      const { estimatedDepositFeeTask } = props;
+      const estimatedDepositFee = isAsyncTaskCompleted(estimatedDepositFeeTask)
+        ? estimatedDepositFeeTask.data.amount
+        : "--";
+
+      return (
+        <p className={classes.fee}>
+          Ethereum fee (estimated) - <span>{estimatedDepositFee} ETH</span> ~{" "}
+          <FiatAmount
+            amount={getDepositFeeInFiat(estimatedDepositFeeTask)}
+            currency={preferredCurrency}
+            className={classes.fiatAmount}
+          />
+        </p>
+      );
+    }
+    case TxType.Transfer: {
+      const { fee } = props;
+      const feeInFiat = getTokenAmountInPreferredCurrency(
+        fee.toString(),
+        token.USD,
+        preferredCurrency,
+        isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
+      );
+
       return (
         <p className={classes.fee}>
           Fee{" "}
           {showInFiat ? (
-            <FiatAmount amount={l2FeeInFiat} currency={preferredCurrency} />
+            <FiatAmount amount={feeInFiat} currency={preferredCurrency} />
           ) : (
             <span>
               {`${getFixedTokenAmount(
-                parseUnits(l2RealFee.toString(), token.decimals).toString(),
+                parseUnits(fee.toString(), token.decimals).toString(),
                 token.decimals
               )} 
                 ${token.symbol}`}
@@ -113,17 +136,22 @@ function Fee({
         </p>
       );
     }
-    case TxType.Deposit: {
-      return <p className={classes.fee}>{getDepositFee()}</p>;
-    }
     case TxType.Exit: {
+      const { estimatedWithdrawFeeTask, fee } = props;
+      const feeInFiat = getTokenAmountInPreferredCurrency(
+        fee.toString(),
+        token.USD,
+        preferredCurrency,
+        isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
+      );
+
       return (
         <div className={classes.withdrawFeeWrapper}>
           <button className={classes.withdrawFeeButton} onClick={handleWithdrawFeeExpansion}>
             <span className={classes.withdrawFeeButtonText}>
               Total estimated fee{" "}
               <FiatAmount
-                amount={getTotalEstimatedWithdrawFee()}
+                amount={getTotalEstimatedWithdrawFee(feeInFiat, estimatedWithdrawFeeTask)}
                 currency={preferredCurrency}
                 className={classes.fiatAmount}
               />
@@ -132,22 +160,22 @@ function Fee({
               className={`${classes.withdrawFeeButtonIcon} ${classes.withdrawFeeButtonIconPath}`}
             />
           </button>
-          {isWithdrawFeeExpanded && (
-            <FeesTable
-              l2Fee={getRealFee(amount, token, fee)}
-              estimatedWithdrawFee={estimatedWithdrawFee}
-              token={token}
-              preferredCurrency={preferredCurrency}
-              fiatExchangeRates={fiatExchangeRates}
-            />
-          )}
+          {isWithdrawFeeExpanded &&
+            isAsyncTaskCompleted(estimatedWithdrawFeeTask) &&
+            isAsyncTaskCompleted(fiatExchangeRatesTask) && (
+              <FeesTable
+                l2Fee={getFixedTokenAmount(
+                  parseUnits(fee.toString(), token.decimals).toString(),
+                  token.decimals
+                )}
+                estimatedWithdrawFee={estimatedWithdrawFeeTask.data}
+                token={token}
+                preferredCurrency={preferredCurrency}
+                fiatExchangeRates={fiatExchangeRatesTask.data}
+              />
+            )}
         </div>
       );
-    }
-    case TxType.CreateAccountDeposit:
-    case TxType.Withdraw:
-    case TxType.ForceExit: {
-      return <></>;
     }
   }
 }

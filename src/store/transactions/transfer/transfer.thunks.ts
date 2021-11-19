@@ -2,6 +2,8 @@ import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount, TxUtils } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
@@ -9,6 +11,8 @@ import { openSnackbar } from "src/store/global/global.actions";
 import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
+import { getMinimumL2Fee, getTxFee } from "src/utils/fees";
+import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
 import { Account, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
 // persistence
@@ -133,6 +137,77 @@ function fetchFees(): AppThunk {
   };
 }
 
+function checkTxData(txData: TxData) {
+  return (dispatch: AppDispatch): void => {
+    const { amount, from, to, feesTask } = txData;
+
+    if (isHermezBjjAddress(txData.to)) {
+      void CoordinatorAPI.getAccounts(to, [from.token.id]).then(
+        (accounts: persistence.Accounts) => {
+          const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
+          const minimumFee = getMinimumL2Fee({
+            txType: TxType.Transfer,
+            receiverAddress: to,
+            feesTask,
+            token: from.token,
+            doesAccountAlreadyExist,
+          });
+          const fee = getTxFee({
+            txType: TxType.Transfer,
+            amount,
+            token: from.token,
+            minimumFee,
+          });
+
+          dispatch(
+            transferActions.goToReviewTransactionStep({
+              amount: amount,
+              from: txData.from,
+              to: { bjj: txData.to },
+              fee: fee.toNumber(),
+            })
+          );
+        }
+      );
+    } else {
+      void Promise.allSettled([
+        CoordinatorAPI.getAccounts(to, [from.token.id]),
+        CoordinatorAPI.getCreateAccountAuthorization(to),
+      ]).then(([accountsResult, accountAuthorizationResult]) => {
+        const doesAccountAlreadyExist: boolean =
+          accountsResult.status === "fulfilled" && accountsResult.value.accounts[0] !== undefined;
+
+        if (!doesAccountAlreadyExist && accountAuthorizationResult.status === "rejected") {
+          dispatch(transferActions.setReceiverCreateAccountsAuthorizationStatus(false));
+        } else {
+          const minimumFee = getMinimumL2Fee({
+            txType: TxType.Transfer,
+            receiverAddress: to,
+            feesTask,
+            token: from.token,
+            doesAccountAlreadyExist,
+          });
+          const fee = getTxFee({
+            txType: TxType.Transfer,
+            amount,
+            token: from.token,
+            minimumFee,
+          });
+
+          dispatch(
+            transferActions.goToReviewTransactionStep({
+              amount: amount,
+              from,
+              to: { hezEthereumAddress: to },
+              fee: fee.toNumber(),
+            })
+          );
+        }
+      });
+    }
+  };
+}
+
 function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: number): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -176,4 +251,11 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
-export { fetchHermezAccount, fetchPoolTransactions, fetchAccounts, fetchFees, transfer };
+export {
+  fetchHermezAccount,
+  fetchPoolTransactions,
+  fetchAccounts,
+  fetchFees,
+  checkTxData,
+  transfer,
+};

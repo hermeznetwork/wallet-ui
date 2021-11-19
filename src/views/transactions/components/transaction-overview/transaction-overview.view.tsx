@@ -289,7 +289,7 @@ function TransactionOverview({
                       ? transaction.estimatedWithdrawFeeTask.data
                       : null,
                   fee: {
-                    value: Number(getRealFee(amount.toString(), account.token, transaction.fee)),
+                    value: transaction.fee,
                     token: account.token,
                   },
                 }}
@@ -323,7 +323,7 @@ function TransactionOverview({
                   // ToDo: To be removed
                   estimatedWithdrawFee: { status: "pending" },
                   fee: {
-                    value: Number(getRealFee(amount.toString(), account.token, transaction.fee)),
+                    value: transaction.fee,
                     token: account.token,
                   },
                 }}

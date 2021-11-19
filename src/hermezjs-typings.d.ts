@@ -688,9 +688,12 @@ declare module "@hermeznetwork/hermezjs/src/addresses" {
 
   function getEthereumAddress(accountIndex: string): string;
 
-  // function isEthereumAddress();
-  // function isHermezEthereumAddress();
-  // function isHermezBjjAddress();
+  function isHermezEthereumAddress(addressToCheck: string): boolean;
+
+  function isHermezBjjAddress(addressToCheck: string): boolean;
+
+  function isEthereumAddress(addressToCheck: string): boolean;
+
   // function isHermezAccountIndex();
   // function getAccountIndex();
   // function hexToBase64BJJ();

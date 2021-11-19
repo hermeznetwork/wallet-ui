@@ -6,14 +6,14 @@ import {
 import { AsyncTask } from "src/utils/types";
 // domain
 import { PoolTransaction, Exit, Account } from "src/domain/hermez";
-import { EstimatedWithdrawFee } from "src/domain";
+import { EstimatedL1Fee } from "src/domain";
 
 export interface WithdrawState {
   step: Step;
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   accountTask: AsyncTask<Account, string>;
   exitTask: AsyncTask<Exit, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   isTransactionBeingApproved: boolean;
 }
 

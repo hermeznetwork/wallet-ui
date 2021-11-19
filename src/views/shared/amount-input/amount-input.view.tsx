@@ -1,35 +1,67 @@
 import React from "react";
 import { BigNumber } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
+// constants
+import { MAX_TOKEN_DECIMALS } from "src/constants";
+// domain
+import { Account, EthereumAccount, FiatExchangeRates } from "src/domain/hermez";
+// utils
 import {
   getFixedTokenAmount,
   getTokenAmountInPreferredCurrency,
   trimZeros,
-} from "../../../utils/currencies";
+} from "src/utils/currencies";
 import {
   fixTransactionAmount,
   getMaxTxAmount,
   isTransactionAmountCompressedValid,
-} from "../../../utils/transactions";
-import { parseUnits } from "ethers/lib/utils";
-import { getTransactionFee } from "../../../utils/fees";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
-import { MAX_TOKEN_DECIMALS } from "../../../constants";
+} from "src/utils/transactions";
+import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
 
-function AmountInput(Component) {
-  return function (props) {
-    const {
-      defaultValue,
-      transactionType,
-      account,
-      fee,
-      fiatExchangeRates,
-      preferredCurrency,
-      gasPrice,
-    } = props;
+export interface Amount {
+  tokens: BigNumber;
+  fiat: number;
+}
+
+export interface AmountInputChangeEventData {
+  amount: Amount;
+  showInFiat: boolean;
+  isInvalid: boolean;
+  areFundsExceededDueToFee: boolean;
+  isDirty: boolean;
+}
+
+interface AmountInputProps {
+  txType: TxType.Deposit | TxType.Transfer | TxType.Exit | TxType.ForceExit;
+  account: Account | EthereumAccount;
+  fee: BigNumber;
+  preferredCurrency: string;
+  fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
+  onChange: (data: AmountInputChangeEventData) => void;
+}
+
+interface AmountInputAddedProps {
+  value: string;
+  amount: Amount;
+  showInFiat: boolean;
+  isAmountNegative: boolean;
+  isAmountWithFeeMoreThanFunds: boolean;
+  isAmountCompressedInvalid: boolean;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSendAll: () => void;
+  onSwapCurrency: () => void;
+}
+
+export type WrappedAmountInputComponentProps = AmountInputProps & AmountInputAddedProps;
+
+function AmountInput(
+  WrappedComponent: React.ComponentType<WrappedAmountInputComponentProps>
+): React.FC<AmountInputProps> {
+  return function Component(props: AmountInputProps): JSX.Element {
     const [value, setValue] = React.useState("");
-    const [amount, setAmount] = React.useState({ tokens: BigNumber.from(0), fiat: 0 });
+    const [amount, setAmount] = React.useState<Amount>({ tokens: BigNumber.from(0), fiat: 0 });
     const [showInFiat, setShowInFiat] = React.useState(false);
     const [isAmountNegative, setIsAmountNegative] = React.useState(false);
     const [isAmountWithFeeMoreThanFunds, setIsAmountWithFeeMoreThanFunds] = React.useState(false);
@@ -37,19 +69,17 @@ function AmountInput(Component) {
     const [isAmountCompressedInvalid, setIsAmountCompressedInvalid] = React.useState(false);
     const [isDirty, setIsDirty] = React.useState(false);
 
-    React.useEffect(() => {
-      handleInputChange({ target: { value: defaultValue } });
-    }, [defaultValue]);
+    const { txType, account, fee, fiatExchangeRatesTask, preferredCurrency, onChange } = props;
 
     React.useEffect(() => {
-      if (props.onChange) {
+      if (onChange) {
         const isInvalid =
           isAmountNegative ||
           isAmountWithFeeMoreThanFunds ||
           isAmountCompressedInvalid ||
           areFundsExceededDueToFee;
 
-        props.onChange({
+        onChange({
           amount,
           showInFiat,
           isInvalid,
@@ -58,37 +88,39 @@ function AmountInput(Component) {
         });
       }
     }, [
-      amount,
-      showInFiat,
+      isAmountNegative,
       isAmountWithFeeMoreThanFunds,
       isAmountCompressedInvalid,
       areFundsExceededDueToFee,
+      amount,
+      showInFiat,
       isDirty,
+      onChange,
     ]);
 
     /**
      * Converts an amount in tokens to fiat. It takes into account the prefered currency
      * of the user.
-     * @param {BigNumber} tokensAmount - Amount to be converted to fiat
-     * @returns fiatAmount
      */
-    function convertAmountToFiat(tokensAmount) {
+    function convertAmountToFiat(tokensAmount: BigNumber) {
+      if (!isAsyncTaskCompleted(fiatExchangeRatesTask)) {
+        return 0;
+      }
+
       const fixedTokenAmount = getFixedTokenAmount(tokensAmount.toString(), account.token.decimals);
 
       return getTokenAmountInPreferredCurrency(
         fixedTokenAmount,
         account.token.USD,
         preferredCurrency,
-        fiatExchangeRates
+        fiatExchangeRatesTask.data
       );
     }
 
     /**
      * Converts an amount in fiat to tokens.
-     * @param {Number} fiatAmount - Amount to be converted to tokens
-     * @returns
      */
-    function convertAmountToTokens(fiatAmount) {
+    function convertAmountToTokens(fiatAmount: number) {
       const tokensAmount = fiatAmount / account.token.USD;
 
       return parseUnits(tokensAmount.toFixed(account.token.decimals), account.token.decimals);
@@ -101,10 +133,9 @@ function AmountInput(Component) {
      * 3. The amount is supported by Hermez.
      * @param {BigNumber} newAmount - New amount to be checked.
      */
-    function checkAmountValidity(newAmount) {
+    function checkAmountValidity(newAmount: BigNumber) {
       setIsDirty(true);
-      const newFee = getTransactionFee(transactionType, newAmount, account.token, fee, gasPrice);
-      const newAmountWithFee = newAmount.add(newFee);
+      const newAmountWithFee = newAmount.add(fee);
       const isNewAmountWithFeeMoreThanFunds = newAmountWithFee.gt(BigNumber.from(account.balance));
 
       setIsAmountNegative(newAmount.lte(BigNumber.from(0)));
@@ -112,7 +143,7 @@ function AmountInput(Component) {
       setAreFundsExceededDueToFee(
         isNewAmountWithFeeMoreThanFunds && newAmount.lte(BigNumber.from(account.balance))
       );
-      if (transactionType !== TxType.Deposit && transactionType !== TxType.ForceExit) {
+      if (txType !== TxType.Deposit && txType !== TxType.ForceExit) {
         setIsAmountCompressedInvalid(isTransactionAmountCompressedValid(newAmount) === false);
       }
     }
@@ -121,9 +152,8 @@ function AmountInput(Component) {
      * Handles input change events. It's going to check that the input value is a valid
      * amount and calculate both the tokens and fiat amounts for a value. It will also
      * trigger the validation checks.
-     * @param {InputEvent} event - Input event
      */
-    function handleInputChange(event) {
+    function handleInputChange(event: { target: { value: string } }) {
       const decimals =
         account?.token?.decimals === undefined ? MAX_TOKEN_DECIMALS : account.token.decimals;
       const regexToken = `^\\d*(?:\\.\\d{0,${decimals}})?$`;
@@ -148,7 +178,9 @@ function AmountInput(Component) {
             setAmount({ tokens: newAmountInTokens, fiat: newAmountInFiat });
             checkAmountValidity(newAmountInTokens);
             setValue(event.target.value);
-          } catch (err) {}
+          } catch (err) {
+            console.log(err);
+          }
         }
       }
     }
@@ -160,20 +192,17 @@ function AmountInput(Component) {
      */
     function handleSendAll() {
       const maxPossibleAmount = BigNumber.from(account.balance);
-      const maxAmountWithoutFee = getMaxTxAmount(
-        transactionType,
-        maxPossibleAmount,
-        account.token,
-        fee,
-        gasPrice
-      );
+      const maxAmountWithoutFee = getMaxTxAmount(txType, maxPossibleAmount, fee);
 
       const maxAmountWithoutFeeInFiat = trimZeros(convertAmountToFiat(maxAmountWithoutFee), 2);
 
       if (showInFiat) {
         setValue(maxAmountWithoutFeeInFiat.toString());
       } else {
-        const newValue = getFixedTokenAmount(maxAmountWithoutFee, account.token.decimals);
+        const newValue = getFixedTokenAmount(
+          maxAmountWithoutFee.toString(),
+          account.token.decimals
+        );
 
         setValue(newValue);
       }
@@ -189,7 +218,7 @@ function AmountInput(Component) {
      */
     function handleSwapCurrency() {
       const newValue = showInFiat
-        ? getFixedTokenAmount(amount.tokens, account.token.decimals)
+        ? getFixedTokenAmount(amount.tokens.toString(), account.token.decimals)
         : amount.fiat.toString();
 
       if (value.length > 0) {
@@ -200,7 +229,7 @@ function AmountInput(Component) {
     }
 
     return (
-      <Component
+      <WrappedComponent
         value={value}
         amount={amount}
         showInFiat={showInFiat}

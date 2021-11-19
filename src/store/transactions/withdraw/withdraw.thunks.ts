@@ -154,6 +154,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
           withdrawActions.loadEstimatedWithdrawFeeSuccess({
             amount: feeBigNumber,
             USD: feeUSD,
+            token,
           })
         );
       }

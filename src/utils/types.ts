@@ -27,3 +27,9 @@ export type AsyncTask<D, E> =
   | SuccessfulAsyncTask<D>
   | ReloadingAsyncTask<D>
   | FailedAsyncTask<E>;
+
+export function isAsyncTaskCompleted<D, E>(
+  task: AsyncTask<D, E>
+): task is SuccessfulAsyncTask<D> | ReloadingAsyncTask<D> {
+  return task.status === "successful" || task.status === "reloading";
+}
