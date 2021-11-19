@@ -1,10 +1,26 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import useTransactionInfoRowStyles from "./transaction-info-row.styles";
-import { ReactComponent as CopyIcon } from "../../../images/icons/copy.svg";
+import useTransactionInfoRowStyles from "src/views/shared/transaction-info-table-row/transaction-info-table-row.styles";
+import { ReactComponent as CopyIcon } from "src/images/icons/copy.svg";
 
-function TransactionInfoRow({ title, subtitle, hint, value, showCopyButton, onCopySubtitle }) {
+interface TransactionInfoTableRowProps {
+  title: string;
+  subtitle: string;
+  hint?: string;
+  value?: string;
+  showCopyButton?: boolean;
+  onCopySubtitle?: () => void;
+}
+
+function TransactionInfoTableRow({
+  title,
+  subtitle,
+  hint,
+  value,
+  showCopyButton,
+  onCopySubtitle,
+}: TransactionInfoTableRowProps): JSX.Element {
   const classes = useTransactionInfoRowStyles();
 
   return (
@@ -28,10 +44,10 @@ function TransactionInfoRow({ title, subtitle, hint, value, showCopyButton, onCo
   );
 }
 
-TransactionInfoRow.propTypes = {
+TransactionInfoTableRow.propTypes = {
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   value: PropTypes.string,
 };
 
-export default TransactionInfoRow;
+export default TransactionInfoTableRow;

@@ -164,6 +164,7 @@ function TransactionDetails({
                   type === TxType.CreateAccountDeposit ||
                   type === TxType.ForceExit;
                 const pendingTime = getTxPendingTime(coordinatorStateTask?.data, isL1);
+                const fee = getTransactionFee(transactionTask);
                 return (
                   <>
                     {!transactionTask.data.batchNum &&
@@ -180,7 +181,7 @@ function TransactionDetails({
                     <TransactionInfo
                       txData={{
                         ...transactionTask.data,
-                        ...{ fee: getTransactionFee(transactionTask) },
+                        ...{ fee: fee ? fee.value : undefined },
                       }}
                       accountIndex={accountIndex}
                       preferredCurrency={preferredCurrency}

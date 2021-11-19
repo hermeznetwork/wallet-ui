@@ -4,21 +4,26 @@
 import React from "react";
 import { useTheme } from "react-jss";
 import { BigNumber } from "ethers";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
 import useTransactionOverviewStyles from "src/views/transactions/components/transaction-overview/transaction-overview.styles";
-import { getTokenAmountInPreferredCurrency, getFixedTokenAmount } from "src/utils/currencies";
-import TransactionInfo from "src/views/shared/transaction-info/transaction-info.view";
 import Container from "src/views/shared/container/container.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import TokenBalance from "src/views/shared/token-balance/token-balance.view";
 import Spinner from "src/views/shared/spinner/spinner.view";
 import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
-import { getRealFee } from "src/utils/fees";
 import Alert from "src/views/shared/alert/alert.view";
 import WithdrawInfoSidenav from "src/views/transactions/components/withdraw-info-sidenav/withdraw-info-sidenav.view";
+import TransactionInfoTable from "src/views/shared/transaction-info-table/transaction-info-table.view";
 import { AsyncTask } from "src/utils/types";
+import { getTokenAmountInPreferredCurrency, getFixedTokenAmount } from "src/utils/currencies";
+import { getRealFee } from "src/utils/fees";
+import {
+  getPartiallyHiddenEthereumAddress,
+  getPartiallyHiddenHermezAddress,
+} from "src/utils/addresses";
 import { Theme } from "src/styles/theme";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 // domain
 import {
   HermezWallet,
@@ -26,7 +31,6 @@ import {
   FiatExchangeRates,
   Exit,
   EthereumAccount,
-  PendingDelayedWithdraw,
 } from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
 
@@ -191,6 +195,16 @@ function TransactionOverview({
       <PrimaryButton label={buttonLabel} onClick={handleFormSubmit} disabled={isButtonDisabled} />
     );
 
+  const myHermezAddress = {
+    subtitle: "My Hermez address",
+    value: getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress),
+  };
+
+  const myEthereumAddress = {
+    subtitle: "My Ethereum address",
+    value: getPartiallyHiddenEthereumAddress(getEthereumAddress(wallet.hermezEthereumAddress)),
+  };
+
   switch (type) {
     case TxType.Deposit: {
       return (
@@ -198,20 +212,7 @@ function TransactionOverview({
           {header}
           <Container>
             <section className={classes.section}>
-              <TransactionInfo
-                txData={{
-                  type: TxType.Deposit,
-                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  // ToDo: To be removed
-                  toHezEthereumAddress: undefined,
-                  // ToDo: To be removed
-                  estimatedWithdrawFee: { status: "pending" },
-                  // ToDo: To be removed
-                  fee: undefined,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRates}
-              />
+              <TransactionInfoTable from={myEthereumAddress} to={myHermezAddress} />
               {footer("Deposit")}
             </section>
           </Container>
@@ -224,20 +225,7 @@ function TransactionOverview({
           {header}
           <Container>
             <section className={classes.section}>
-              <TransactionInfo
-                txData={{
-                  type: TxType.ForceExit,
-                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  // ToDo: To be removed
-                  toHezEthereumAddress: undefined,
-                  // ToDo: To be removed
-                  estimatedWithdrawFee: { status: "pending" },
-                  // ToDo: To be removed
-                  fee: undefined,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRates}
-              />
+              <TransactionInfoTable from={myHermezAddress} to={myEthereumAddress} />
               {footer("Force Withdraw")}
             </section>
           </Container>
@@ -250,23 +238,7 @@ function TransactionOverview({
           {header}
           <Container>
             <section className={classes.section}>
-              <TransactionInfo
-                txData={{
-                  type: TxType.Withdraw,
-                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  // ToDo: To be removed
-                  toHezEthereumAddress: undefined,
-                  estimatedWithdrawFee:
-                    transaction.estimatedWithdrawFeeTask.status === "successful" ||
-                    transaction.estimatedWithdrawFeeTask.status === "reloading"
-                      ? transaction.estimatedWithdrawFeeTask.data
-                      : null,
-                  // ToDo: To be removed
-                  fee: undefined,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRates}
-              />
+              <TransactionInfoTable from={myHermezAddress} to={myEthereumAddress} />
               {footer("Withdraw")}
             </section>
           </Container>
@@ -284,22 +256,19 @@ function TransactionOverview({
                 message="Withdrawal of funds has 2 steps. Once initiated it can’t be canceled."
                 onHelpClick={handleOpenWithdrawInfoSidenav}
               />
-              <TransactionInfo
-                txData={{
-                  type: TxType.Exit,
-                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  estimatedWithdrawFee:
-                    transaction.estimatedWithdrawFeeTask.status === "successful" ||
-                    transaction.estimatedWithdrawFeeTask.status === "reloading"
-                      ? transaction.estimatedWithdrawFeeTask.data
-                      : null,
-                  fee: {
-                    value: Number(getRealFee(amount.toString(), account.token, transaction.fee)),
-                    token: account.token,
-                  },
-                }}
+              <TransactionInfoTable
+                from={myHermezAddress}
+                to={myEthereumAddress}
+                fee={getRealFee(amount.toString(), account.token, transaction.fee)}
+                token={account.token}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
+                estimatedWithdrawFee={
+                  transaction.estimatedWithdrawFeeTask.status === "successful" ||
+                  transaction.estimatedWithdrawFeeTask.status === "reloading"
+                    ? transaction.estimatedWithdrawFeeTask.data
+                    : undefined
+                }
               />
               <PrimaryButton
                 label="Initiate withdraw"
@@ -315,23 +284,24 @@ function TransactionOverview({
       );
     }
     case TxType.Transfer: {
+      const to = transaction.to.hezEthereumAddress || transaction.to.bjj;
+
       return (
         <div className={classes.root}>
           {header}
           <Container>
             <section className={classes.section}>
-              <TransactionInfo
-                txData={{
-                  type: TxType.Transfer,
-                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  toHezEthereumAddress: transaction.to.hezEthereumAddress || transaction.to.bjj,
-                  // ToDo: To be removed
-                  estimatedWithdrawFee: { status: "pending" },
-                  fee: {
-                    value: Number(getRealFee(amount.toString(), account.token, transaction.fee)),
-                    token: account.token,
-                  },
-                }}
+              <TransactionInfoTable
+                from={myHermezAddress}
+                to={
+                  to
+                    ? {
+                        subtitle: getPartiallyHiddenHermezAddress(to),
+                      }
+                    : undefined
+                }
+                fee={getRealFee(amount.toString(), account.token, transaction.fee)}
+                token={account.token}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
               />

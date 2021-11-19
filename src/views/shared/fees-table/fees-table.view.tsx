@@ -5,7 +5,7 @@ import React from "react";
 import * as ethers from "ethers";
 
 import useFeesTableStyles from "src/views/shared/fees-table/fees-table.styles";
-import TransactionInfoRow from "src/views/shared/transaction-info-table-row/transaction-info-row.view";
+import TransactionInfoTableRow from "src/views/shared/transaction-info-table-row/transaction-info-table-row.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import { MAX_TOKEN_DECIMALS } from "src/constants";
 import {
@@ -55,14 +55,14 @@ function FeesTable({
 
   return (
     <div className={classes.feesTable}>
-      <TransactionInfoRow
+      <TransactionInfoTableRow
         title={estimatedWithdrawFee ? "Hermez fee" : "Fee"}
         hint={estimatedWithdrawFee && "Step 1"}
         subtitle={<FiatAmount amount={getL2FeeInFiat()} currency={preferredCurrency} />}
         value={`${trimZeros(l2Fee, MAX_TOKEN_DECIMALS)} ${token.symbol}`}
       />
       {estimatedWithdrawFee && (
-        <TransactionInfoRow
+        <TransactionInfoTableRow
           title="Ethereum fee (estimated)"
           hint="Step 2"
           subtitle={<FiatAmount amount={estimatedWithdrawFeeInFiat} currency={preferredCurrency} />}

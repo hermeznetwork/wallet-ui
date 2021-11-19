@@ -3,18 +3,44 @@ import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { INTERNAL_ACCOUNT_ETH_ADDR } from "@hermeznetwork/hermezjs/src/constants";
 
-import TransactionInfoTable from "../transaction-info-table/transaction-info-table.view";
+import TransactionInfoTable, {
+  StatusRow,
+  AddressRow,
+  DateRow,
+} from "src/views/shared/transaction-info-table/transaction-info-table.view";
 import {
   getPartiallyHiddenEthereumAddress,
   getPartiallyHiddenHermezAddress,
-} from "../../../utils/addresses";
-import { copyToClipboard } from "../../../utils/browser";
+} from "src/utils/addresses";
+import { copyToClipboard } from "src/utils/browser";
+// domain
+import {
+  FiatExchangeRates,
+  HistoryTransaction,
+  PoolTransaction,
+  isPoolTransaction,
+  isHistoryTransaction,
+} from "src/domain/hermez";
 
 const TxStatus = {
   Confirmed: "Confirmed",
   Pending: "Pending",
   Invalid: "Invalid",
 };
+
+type Transaction = HistoryTransaction | PoolTransaction;
+
+interface TransactionInfoProps {
+  txData: Transaction;
+  accountIndex: string;
+  preferredCurrency: string;
+  fiatExchangeRates?: FiatExchangeRates;
+  showStatus: boolean;
+  showToCopyButton: boolean;
+  showFromCopyButton: boolean;
+  onToCopyClick: () => void;
+  onFromCopyClick: () => void;
+}
 
 function TransactionInfo({
   txData,
@@ -26,42 +52,44 @@ function TransactionInfo({
   showFromCopyButton,
   onToCopyClick,
   onFromCopyClick,
-}) {
-  const date = txData.timestamp && {
+}: TransactionInfoProps): JSX.Element {
+  const date: DateRow = {
     subtitle: new Date(txData.timestamp).toLocaleString(),
   };
-  const myHermezAddress = {
+  const myHermezAddress: AddressRow = {
     subtitle: "My Hermez address",
     value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress),
   };
 
-  function getTransactionStatus() {
+  function getTransactionStatus(): StatusRow | undefined {
     if (!showStatus) {
       return undefined;
     }
 
-    if (!txData.state && txData.batchNum) {
+    if (isHistoryTransaction(txData)) {
       return { subtitle: TxStatus.Confirmed };
-    }
+    } else {
+      if (txData.state === TxState.Forged) {
+        return { subtitle: TxStatus.Confirmed };
+      }
 
-    if (txData.state === TxState.Forged) {
-      return { subtitle: TxStatus.Confirmed };
-    }
+      if (txData.errorCode) {
+        return { subtitle: TxStatus.Invalid };
+      }
 
-    if (txData.errorCode) {
-      return { subtitle: TxStatus.Invalid };
+      return { subtitle: TxStatus.Pending };
     }
-
-    return { subtitle: TxStatus.Pending };
   }
 
   function handleCopyToAddress() {
-    copyToClipboard(
-      txData.toHezEthereumAddress.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
-        ? txData.toBjj || txData.toBJJ
-        : txData.toHezEthereumAddress
-    );
-    onToCopyClick();
+    const addressOrNull =
+      txData.toHezEthereumAddress?.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
+        ? txData.toBJJ
+        : txData.toHezEthereumAddress;
+    if (addressOrNull !== null) {
+      copyToClipboard(addressOrNull);
+      onToCopyClick();
+    }
   }
 
   function handleCopyFromAddress() {
@@ -69,10 +97,10 @@ function TransactionInfo({
     onFromCopyClick();
   }
 
-  function getTransferAddressToShow() {
+  function getTransferAddressToShow(): AddressRow | undefined {
     if (
       txData.toBJJ &&
-      txData.toHezEthereumAddress.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
+      txData.toHezEthereumAddress?.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
     ) {
       return {
         subtitle: getPartiallyHiddenHermezAddress(txData.toBJJ),
@@ -81,11 +109,18 @@ function TransactionInfo({
       return {
         subtitle: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress),
       };
-    } else if (txData.fromAccountIndex && txData.fromAccountIndex === txData.toAccountIndex) {
+    } else if (
+      isPoolTransaction(txData) &&
+      txData.fromAccountIndex &&
+      txData.fromAccountIndex === txData.toAccountIndex
+    ) {
       return myHermezAddress;
     }
-    return null;
+    return undefined;
   }
+
+  const fee = isPoolTransaction(txData) ? txData.fee : undefined;
+  const token = isPoolTransaction(txData) ? txData.token : undefined;
 
   switch (txData.type) {
     case TxType.CreateAccountDeposit:
@@ -114,7 +149,8 @@ function TransactionInfo({
             from={myHermezAddress}
             to={getTransferAddressToShow()}
             date={date}
-            fee={txData.fee}
+            fee={fee}
+            token={token}
             preferredCurrency={preferredCurrency}
             fiatExchangeRates={fiatExchangeRates}
             showToCopyButton={showToCopyButton}
@@ -132,10 +168,13 @@ function TransactionInfo({
             }}
             to={{
               subtitle: "My Hermez address",
-              value: getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress),
+              value: txData.toHezEthereumAddress
+                ? getPartiallyHiddenHermezAddress(txData.toHezEthereumAddress)
+                : undefined,
             }}
             date={date}
-            fee={txData.fee}
+            fee={fee}
+            token={token}
             preferredCurrency={preferredCurrency}
             fiatExchangeRates={fiatExchangeRates}
           />
@@ -154,8 +193,8 @@ function TransactionInfo({
             ),
           }}
           date={date}
-          fee={txData.fee}
-          estimatedWithdrawFee={txData.estimatedWithdrawFee}
+          fee={fee}
+          token={token}
           preferredCurrency={preferredCurrency}
           fiatExchangeRates={fiatExchangeRates}
         />
