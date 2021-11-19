@@ -95,9 +95,9 @@ declare module "@hermeznetwork/*" {
     L1orL2: "L1" | "L2";
     // L2Info: L2Info | null;
     // position: number;
-    // timestamp: ISOStringDate;
+    timestamp: ISOStringDate;
     // toAccountIndex: string;
-    // toBJJ: string | null;
+    toBJJ: string | null;
     // token: Token;
   };
 

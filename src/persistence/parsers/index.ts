@@ -60,6 +60,8 @@ const historyTransaction: z.ZodSchema<HistoryTransaction> = hermezApiResourceIte
     id: z.string(),
     L1Info: l1Info,
     L1orL2: l1orL2,
+    timestamp: z.string(),
+    toBJJ: z.string(),
     toHezEthereumAddress: z.string().nullable(),
     type: z.nativeEnum(TxType),
   })
