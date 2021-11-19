@@ -8,11 +8,11 @@ const theme = {
     secondary: {
       light: "#fef5ed",
       main: "#8248e5",
-      dark: "#d8853b",
-      hover: "#d44d20",
+      dark: "#6d00f1",
+      hover: "#7824EB",
     },
     white: "#ffffff",
-    black: "#2b2b2b",
+    black: "#081132",
     grey: {
       veryLight: "#e1e1f1",
       light: "#f3f3f8",
@@ -29,6 +29,11 @@ const theme = {
       light: "rgba(242, 153, 74, 0.1)",
       main: "#ffa600",
       dark: "#d8853b",
+    },
+    purple: {
+      light: "rgba(130, 72, 229, 0.1)",
+      main: "#8248e5",
+      dark: "#6d00f1",
     },
     green: "#219653",
   },

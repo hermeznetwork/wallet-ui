@@ -37,14 +37,14 @@ const useExitStyles = createUseStyles((theme) => ({
   },
   stepTagWrapper: {
     borderRadius: 8,
-    backgroundColor: theme.palette.orange.light,
+    backgroundColor: theme.palette.purple.light,
     padding: `${theme.spacing(1)}px`,
   },
   stepTagWrapperTwo: {
     backgroundColor: theme.palette.red.light,
   },
   stepTag: {
-    color: theme.palette.orange.dark,
+    color: theme.palette.purple.dark,
     fontSize: theme.spacing(1.75),
     fontWeight: theme.fontWeights.medium,
   },

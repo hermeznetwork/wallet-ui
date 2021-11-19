@@ -16,7 +16,7 @@ const useTransactionActionsStyles = createUseStyles((theme) => ({
     background: theme.palette.white,
     borderRadius: "50%",
     margin: `0 ${theme.spacing(2.5)}px ${theme.spacing(1.5)}px`,
-    boxShadow: `0px 3px 16px ${theme.palette.orange.light}`,
+    boxShadow: `0px 3px 16px ${theme.palette.purple.light}`,
     transition: theme.hoverTransition,
     "&:hover": {
       boxShadow: "none",
