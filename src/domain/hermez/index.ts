@@ -32,6 +32,7 @@ export interface EthereumAccount {
 }
 
 export type Account = HermezAccount | EthereumAccount;
+export type Transaction = hermezjs.HistoryTransaction | hermezjs.PoolTransaction;
 
 export interface PendingDeposit {
   accountIndex?: string;
@@ -57,14 +58,24 @@ export type PendingDelayedWithdraw = PendingWithdraw & {
   isInstant: boolean;
 };
 
-export function isHermezAccount(
-  account: EthereumAccount | HermezAccount
-): account is HermezAccount {
+// Type Guards
+
+export function isHermezAccount(account: Account): account is HermezAccount {
   return "accountIndex" in account;
 }
 
-export function isEthereumAccount(
-  account: EthereumAccount | HermezAccount
-): account is EthereumAccount {
+export function isEthereumAccount(account: Account): account is EthereumAccount {
   return !isHermezAccount(account);
+}
+
+export function isPoolTransaction(
+  transaction: Transaction
+): transaction is hermezjs.PoolTransaction {
+  return "state" in transaction;
+}
+
+export function isHistoryTransaction(
+  transaction: Transaction
+): transaction is hermezjs.HistoryTransaction {
+  return !isPoolTransaction(transaction);
 }
