@@ -11,7 +11,7 @@ const useButtonStyles = createUseStyles((theme) => ({
       rounded ? theme.spacing(2) : `${theme.spacing(1.5)}px ${theme.spacing(2.5)}px`,
     borderRadius: ({ rounded }) => (rounded ? "50%" : 50),
     background: theme.palette.primary.dark,
-    color: theme.palette.grey.dark,
+    color: theme.palette.grey.main,
     fontWeight: theme.fontWeights.medium,
     transition: theme.hoverTransition,
     cursor: "pointer",
