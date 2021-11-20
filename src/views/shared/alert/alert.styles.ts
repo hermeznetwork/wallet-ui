@@ -1,11 +1,16 @@
 import { createUseStyles } from "react-jss";
-import { AlertVariant } from "./alert.view";
+import { AlertVariant } from "src/views/shared/alert/alert.view";
+import { Theme } from "src/styles/theme";
 
-const useAlertStyles = createUseStyles((theme) => ({
+const useAlertStyles = createUseStyles<
+  "root" | "icon" | "messageWrapper" | "message" | "helpButton",
+  { variant: AlertVariant },
+  Theme
+>((theme: Theme) => ({
   root: ({ variant }) => ({
     width: "100%",
     fontSize: theme.spacing(1.75),
-    background: variant === AlertVariant.LIGHT ? theme.palette.white : theme.palette.black,
+    background: variant === "light" ? theme.palette.white : theme.palette.black,
     borderRadius: theme.spacing(2),
     padding: theme.spacing(2),
     display: "flex",
@@ -17,7 +22,7 @@ const useAlertStyles = createUseStyles((theme) => ({
     width: theme.spacing(2),
     marginRight: theme.spacing(1),
     "& path": {
-      fill: variant === AlertVariant.LIGHT ? theme.palette.grey.dark : theme.palette.white,
+      fill: variant === "light" ? theme.palette.grey.dark : theme.palette.white,
     },
   }),
   messageWrapper: {
@@ -26,7 +31,7 @@ const useAlertStyles = createUseStyles((theme) => ({
   },
   message: ({ variant }) => ({
     fontWeight: theme.fontWeights.medium,
-    color: variant === AlertVariant.LIGHT ? theme.palette.grey.dark : theme.palette.white,
+    color: variant === "light" ? theme.palette.grey.dark : theme.palette.white,
     lineHeight: 1.57,
   }),
   helpButton: {

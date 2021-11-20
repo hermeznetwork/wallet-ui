@@ -1,6 +1,3 @@
-// ToDo: Remove the disable of TS and the linter below once the component are migrated to TS
-/* eslint-disable */
-// @ts-nocheck
 import React from "react";
 import { useTheme } from "react-jss";
 import { BigNumber } from "ethers";
