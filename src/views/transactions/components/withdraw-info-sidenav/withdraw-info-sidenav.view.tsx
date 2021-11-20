@@ -1,9 +1,13 @@
 import React from "react";
 
-import useWithdrawInfoSidenavStyles from "./withdraw-info-sidenav.styles";
-import Sidenav from "../../../shared/sidenav/sidenav.view";
+import useWithdrawInfoSidenavStyles from "src/views/transactions/components/withdraw-info-sidenav/withdraw-info-sidenav.styles";
+import Sidenav from "src/views/shared/sidenav/sidenav.view";
 
-function WithdrawInfoSidenav({ onClose }) {
+interface WithdrawInfoSidenavProps {
+  onClose: () => void;
+}
+
+function WithdrawInfoSidenav({ onClose }: WithdrawInfoSidenavProps): JSX.Element {
   const classes = useWithdrawInfoSidenavStyles();
 
   return (
