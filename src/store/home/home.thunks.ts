@@ -8,7 +8,12 @@ import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import * as homeActions from "src/store/home/home.actions";
 // domain
-import { PoolTransaction, PendingDeposit, FiatExchangeRates, Account } from "src/domain/hermez";
+import {
+  PoolTransaction,
+  PendingDeposit,
+  FiatExchangeRates,
+  HermezAccount,
+} from "src/domain/hermez";
 import { Accounts } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
@@ -187,7 +192,7 @@ function refreshAccounts(
       Promise.all(requests)
         .then((results) => {
           const accounts = results
-            .reduce((acc: Account[], result: Accounts) => [...acc, ...result.accounts], [])
+            .reduce((acc: HermezAccount[], result: Accounts) => [...acc, ...result.accounts], [])
             .map((account) =>
               createAccount(
                 account,

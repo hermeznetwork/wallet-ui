@@ -10,7 +10,7 @@ import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
 // domain
-import { Account, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
+import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
 // persistence
 import * as persistence from "src/persistence";
 
@@ -133,7 +133,12 @@ function fetchFees(): AppThunk {
   };
 }
 
-function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: number): AppThunk {
+function transfer(
+  amount: BigNumber,
+  from: HermezAccount,
+  to: Partial<HermezAccount>,
+  fee: number
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, coordinatorStateTask },

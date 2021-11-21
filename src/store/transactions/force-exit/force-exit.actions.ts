@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { Account, PoolTransaction } from "src/domain/hermez";
+import { HermezAccount, PoolTransaction } from "src/domain/hermez";
 import { Accounts } from "src/persistence";
 
 export enum ForceExitActionTypes {
@@ -24,8 +24,8 @@ export type Step = "choose-account" | "build-transaction" | "review-transaction"
 export interface TransactionToReview {
   amount: BigNumber;
   fee: number;
-  from: Account;
-  to: Partial<Account>;
+  from: HermezAccount;
+  to: Partial<HermezAccount>;
 }
 
 export interface GoToChooseAccountStep {
@@ -34,7 +34,7 @@ export interface GoToChooseAccountStep {
 
 export interface GoToBuildTransactionStep {
   type: ForceExitActionTypes.GO_TO_BUILD_TRANSACTION_STEP;
-  account: Account;
+  account: HermezAccount;
 }
 
 export interface GoToReviewTransactionStep {
@@ -102,7 +102,7 @@ function goToChooseAccountStep(): GoToChooseAccountStep {
   };
 }
 
-function goToBuildTransactionStep(account: Account): GoToBuildTransactionStep {
+function goToBuildTransactionStep(account: HermezAccount): GoToBuildTransactionStep {
   return {
     type: ForceExitActionTypes.GO_TO_BUILD_TRANSACTION_STEP,
     account,

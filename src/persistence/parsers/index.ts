@@ -7,7 +7,7 @@ import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 // domain
 import {
-  Account,
+  HermezAccount,
   HermezApiResourceItem,
   HistoryTransaction,
   MerkleProof,
@@ -35,7 +35,7 @@ const token: z.ZodSchema<Token> = hermezApiResourceItem.and(
   })
 );
 
-const account: z.ZodSchema<Account> = hermezApiResourceItem.and(
+const account: z.ZodSchema<HermezAccount> = hermezApiResourceItem.and(
   z.object({
     accountIndex: z.string(),
     balance: z.string(),
