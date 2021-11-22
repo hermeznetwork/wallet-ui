@@ -167,7 +167,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
   };
 }
 
-function exit(amount: BigNumber, account: Account, fee: number) {
+function exit(amount: BigNumber, account: Account, fee: BigNumber) {
   return (dispatch: AppDispatch, getState: () => AppState): void | Promise<void> => {
     const {
       global: { wallet, coordinatorStateTask },
@@ -184,7 +184,7 @@ function exit(amount: BigNumber, account: Account, fee: number) {
         type: TxType.Exit,
         from: account.accountIndex,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
-        fee: fee,
+        fee: fee.toString(),
       };
 
       return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)

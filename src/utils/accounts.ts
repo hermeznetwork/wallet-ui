@@ -37,7 +37,7 @@ function getAccountBalance(
     accountPoolTransactions.forEach((pendingTransaction) => {
       totalBalance = totalBalance.sub(BigNumber.from(pendingTransaction.amount));
       totalBalance = totalBalance.sub(
-        BigNumber.from(getFeeValue(pendingTransaction.fee, pendingTransaction.amount))
+        BigNumber.from(getFeeValue(Number(pendingTransaction.fee), pendingTransaction.amount))
       );
     });
   }

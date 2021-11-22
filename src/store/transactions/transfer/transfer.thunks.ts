@@ -164,7 +164,7 @@ function checkTxData(txData: TxData) {
               amount: amount,
               from: txData.from,
               to: { bjj: txData.to },
-              fee: fee.toNumber(),
+              fee,
             })
           );
         }
@@ -199,7 +199,7 @@ function checkTxData(txData: TxData) {
               amount: amount,
               from,
               to: { hezEthereumAddress: to },
-              fee: fee.toNumber(),
+              fee: fee,
             })
           );
         }
@@ -208,7 +208,12 @@ function checkTxData(txData: TxData) {
   };
 }
 
-function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: number): AppThunk {
+function transfer(
+  amount: BigNumber,
+  from: Account,
+  to: Partial<Account>,
+  fee: BigNumber
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, coordinatorStateTask },
@@ -228,7 +233,7 @@ function transfer(amount: BigNumber, from: Account, to: Partial<Account>, fee: n
         from: from.accountIndex,
         to: toAddress,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
-        fee,
+        fee: fee.toString(),
       };
       return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))

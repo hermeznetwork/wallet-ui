@@ -104,7 +104,7 @@ declare module "@hermeznetwork/*" {
   export type PoolTransaction = HermezApiResourceItem & {
     amount: string;
     errorCode: number | null;
-    fee: number;
+    fee: string;
     fromAccountIndex: string;
     fromBJJ: string;
     fromHezEthereumAddress: string;
@@ -382,7 +382,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     from: string;
     to?: string;
     amount: HermezCompressedAmount;
-    fee: number;
+    fee: string;
     nonce?: number;
     maxNumBatch?: number;
   }

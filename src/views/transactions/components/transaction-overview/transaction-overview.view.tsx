@@ -42,16 +42,21 @@ type Transaction =
       amount: BigNumber;
       account: Account;
       to: Partial<Account>;
-      fee: number;
-      onTransfer: (amount: BigNumber, account: Account, to: Partial<Account>, fee: number) => void;
+      fee: BigNumber;
+      onTransfer: (
+        amount: BigNumber,
+        account: Account,
+        to: Partial<Account>,
+        fee: BigNumber
+      ) => void;
     }
   | {
       type: TxType.Exit;
       amount: BigNumber;
       account: Account;
-      fee: number;
+      fee: BigNumber;
       estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
-      onExit: (amount: BigNumber, account: Account, fee: number) => void;
+      onExit: (amount: BigNumber, account: Account, fee: BigNumber) => void;
     }
   | {
       type: TxType.Withdraw;

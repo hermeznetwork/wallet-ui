@@ -134,7 +134,6 @@ function Fee(props: FeeProps): JSX.Element {
             isAsyncTaskCompleted(fiatExchangeRatesTask) && (
               <FeesTable
                 l2Fee={formattedFee}
-                l2FeeInFiat={feeInFiat}
                 estimatedWithdrawFee={estimatedWithdrawFeeTask.data}
                 token={token}
                 preferredCurrency={preferredCurrency}

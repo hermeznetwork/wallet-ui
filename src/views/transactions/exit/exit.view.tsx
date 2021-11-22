@@ -54,7 +54,7 @@ interface ExitHandlerProps {
   onGoToHome: () => void;
   onGoToBuildTransactionStep: (account: Account) => void;
   onGoToTransactionOverviewStep: (transactionToReview: exitActions.TransactionToReview) => void;
-  onExit: (amount: BigNumber, account: Account, fee: number) => void;
+  onExit: (amount: BigNumber, account: Account, fee: BigNumber) => void;
   onCleanup: () => void;
 }
 
@@ -183,7 +183,7 @@ function Exit({
                     type: TxType.Exit,
                     amount: transactionToReview.amount,
                     account: accountTask.data,
-                    fee: transactionToReview.fee.toNumber(),
+                    fee: transactionToReview.fee,
                     estimatedWithdrawFeeTask,
                     onExit,
                   }}
@@ -277,7 +277,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlerProps => ({
     dispatch(exitActions.goToBuildTransactionStep(account)),
   onGoToTransactionOverviewStep: (transactionToReview: exitActions.TransactionToReview) =>
     dispatch(exitActions.goToReviewTransactionStep(transactionToReview)),
-  onExit: (amount: BigNumber, from: Account, fee: number) =>
+  onExit: (amount: BigNumber, from: Account, fee: BigNumber) =>
     dispatch(exitThunks.exit(amount, from, fee)),
   onCleanup: () => dispatch(exitActions.resetState()),
 });

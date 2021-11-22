@@ -31,7 +31,7 @@ export enum TransferActionTypes {
 export interface TransactionToReview {
   amount: BigNumber;
   from: Account;
-  fee: number;
+  fee: BigNumber;
   to: Pick<Account, "bjj"> | Pick<Account, "hezEthereumAddress">;
 }
 

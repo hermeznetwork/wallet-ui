@@ -60,7 +60,7 @@ interface TransferHandlerProps {
   onGoToChooseAccountStep: () => void;
   onGoToBuildTransactionStep: (account: Account) => void;
   onCheckTxData: (txData: TxData) => void;
-  onTransfer: (amount: BigNumber, account: Account, to: Partial<Account>, fee: number) => void;
+  onTransfer: (amount: BigNumber, account: Account, to: Partial<Account>, fee: BigNumber) => void;
   onCleanup: () => void;
 }
 
@@ -299,7 +299,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): TransferHandlerProps => ({
   onGoToBuildTransactionStep: (account: Account) =>
     dispatch(transferActions.goToBuildTransactionStep(account)),
   onCheckTxData: (txData: TxData) => dispatch(transferThunks.checkTxData(txData)),
-  onTransfer: (amount: BigNumber, from: Account, to: Partial<Account>, fee: number) =>
+  onTransfer: (amount: BigNumber, from: Account, to: Partial<Account>, fee: BigNumber) =>
     dispatch(transferThunks.transfer(amount, from, to, fee)),
   onCleanup: () => dispatch(transferActions.resetState()),
 });
