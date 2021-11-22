@@ -181,7 +181,7 @@ function TransactionDetails({
                     <TransactionInfo
                       transaction={{
                         ...transactionTask.data,
-                        ...{ fee: fee ? fee.value : undefined },
+                        fee: fee ? fee.value : undefined,
                       }}
                       accountIndex={accountIndex}
                       preferredCurrency={preferredCurrency}
