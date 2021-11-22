@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import useTransactionInfoRowStyles from "src/views/shared/transaction-info-table-row/transaction-info-table-row.styles";
 import { ReactComponent as CopyIcon } from "src/images/icons/copy.svg";
@@ -43,11 +42,5 @@ function TransactionInfoTableRow({
     </div>
   );
 }
-
-TransactionInfoTableRow.propTypes = {
-  title: PropTypes.string.isRequired,
-  subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  value: PropTypes.string,
-};
 
 export default TransactionInfoTableRow;
