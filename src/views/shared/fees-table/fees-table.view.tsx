@@ -41,14 +41,11 @@ function FeesTable({
   }
 
   const formattedWithdrawFee =
-    estimatedWithdrawFee !== undefined
-      ? Number(ethers.utils.formatEther(estimatedWithdrawFee.amount))
-      : undefined;
+    estimatedWithdrawFee && Number(ethers.utils.formatEther(estimatedWithdrawFee.amount));
 
   const estimatedWithdrawFeeInFiat =
-    estimatedWithdrawFee !== undefined
-      ? getAmountInPreferredCurrency(estimatedWithdrawFee.USD, preferredCurrency, fiatExchangeRates)
-      : undefined;
+    estimatedWithdrawFee &&
+    getAmountInPreferredCurrency(estimatedWithdrawFee.USD, preferredCurrency, fiatExchangeRates);
 
   return (
     <div className={classes.feesTable}>
