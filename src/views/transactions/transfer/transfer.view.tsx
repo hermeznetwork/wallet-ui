@@ -267,7 +267,7 @@ const getHeader = (step: transferActions.Step, accountIndex?: string): Header =>
   }
 };
 
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch): TransferHandlerProps => ({
   onChangeHeader: (step: transferActions.Step, accountIndex?: string) =>
     dispatch(changeHeader(getHeader(step, accountIndex))),
   onLoadHermezAccount: (
@@ -298,8 +298,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
   onGoToChooseAccountStep: () => dispatch(transferActions.goToChooseAccountStep()),
   onGoToBuildTransactionStep: (account: Account) =>
     dispatch(transferActions.goToBuildTransactionStep(account)),
-  onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) =>
-    dispatch(transferActions.goToReviewTransactionStep(transactionToReview)),
+  onCheckTxData: (txData: TxData) => dispatch(transferThunks.checkTxData(txData)),
   onTransfer: (amount: BigNumber, from: Account, to: Partial<Account>, fee: number) =>
     dispatch(transferThunks.transfer(amount, from, to, fee)),
   onCleanup: () => dispatch(transferActions.resetState()),

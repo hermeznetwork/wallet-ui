@@ -75,7 +75,7 @@ const DepositForm: React.FC<DepositFormProps> = ({
   return (
     <FormContainer>
       <SelectedAccount
-        transactionType={TxType.Deposit}
+        txType={TxType.Deposit}
         account={account}
         preferredCurrency={preferredCurrency}
         showInFiat={showInFiat}
@@ -107,7 +107,7 @@ const DepositForm: React.FC<DepositFormProps> = ({
         <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled()} />
       </form>
       <Fee
-        transactionType={TxType.Deposit}
+        txType={TxType.Deposit}
         fee={fee}
         amount={amount}
         token={account.token}

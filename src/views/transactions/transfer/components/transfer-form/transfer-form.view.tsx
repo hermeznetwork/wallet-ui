@@ -107,7 +107,7 @@ const TransferForm: React.FC<TransferFormProps> = ({
   return (
     <FormContainer>
       <SelectedAccount
-        transactionType={TxType.Transfer}
+        txType={TxType.Transfer}
         account={account}
         preferredCurrency={preferredCurrency}
         showInFiat={showInFiat}
@@ -124,7 +124,7 @@ const TransferForm: React.FC<TransferFormProps> = ({
         <TransactionAmountInput
           txType={TxType.Transfer}
           account={account}
-          fee={fee}
+          fee={minimumFee}
           preferredCurrency={preferredCurrency}
           fiatExchangeRatesTask={fiatExchangeRatesTask}
           onChange={handleAmountChange}
@@ -137,7 +137,7 @@ const TransferForm: React.FC<TransferFormProps> = ({
         <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled()} />
       </form>
       <Fee
-        transactionType={TxType.Transfer}
+        txType={TxType.Transfer}
         amount={amount}
         fee={fee}
         token={account.token}

@@ -1,7 +1,6 @@
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { BigNumber } from "@ethersproject/bignumber";
-import { parseUnits } from "ethers/lib/utils";
 
 import useFeeStyles from "src/views/transactions/components/fee/fee.styles";
 import {
@@ -26,17 +25,17 @@ export interface CommonFeeProps {
 }
 
 interface FeeDepositProps {
-  transactionType: TxType.Deposit;
+  txType: TxType.Deposit;
   fee: BigNumber;
 }
 
 interface FeeTransferProps {
-  transactionType: TxType.Transfer;
+  txType: TxType.Transfer;
   fee: BigNumber;
 }
 
 interface FeeExitProps {
-  transactionType: TxType.Exit;
+  txType: TxType.Exit;
   fee: BigNumber;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
 }
@@ -47,23 +46,19 @@ function Fee(props: FeeProps): JSX.Element {
   const [isWithdrawFeeExpanded, setIsWithdrawFeeExpanded] = React.useState(false);
   const classes = useFeeStyles({ isWithdrawFeeExpanded });
 
-  const { transactionType, token, showInFiat, preferredCurrency, fiatExchangeRatesTask } = props;
+  const { txType, token, showInFiat, preferredCurrency, fiatExchangeRatesTask } = props;
 
-  function getDepositFeeInFiat(formattedFee: string) {
-    if (!isAsyncTaskCompleted(fiatExchangeRatesTask)) {
-      return undefined;
-    }
-
-    return getTokenAmountInPreferredCurrency(
-      formattedFee,
-      token.USD,
-      preferredCurrency,
-      isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
-    );
-  }
+  const { fee } = props;
+  const formattedFee = getFixedTokenAmount(fee.toString(), token.decimals);
+  const feeInFiat = getTokenAmountInPreferredCurrency(
+    formattedFee,
+    token.USD,
+    preferredCurrency,
+    isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
+  );
 
   function getTotalEstimatedWithdrawFee(
-    l2FeeInFiat: number,
+    exitFeeInFiat: number,
     estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>
   ) {
     if (
@@ -79,23 +74,20 @@ function Fee(props: FeeProps): JSX.Element {
       fiatExchangeRatesTask.data
     );
 
-    return l2FeeInFiat + estimatedWithdrawFeeInFiat;
+    return exitFeeInFiat + estimatedWithdrawFeeInFiat;
   }
 
   function handleWithdrawFeeExpansion() {
     setIsWithdrawFeeExpanded(!isWithdrawFeeExpanded);
   }
 
-  switch (transactionType) {
+  switch (txType) {
     case TxType.Deposit: {
-      const { fee } = props;
-      const formattedFee = getFixedTokenAmount(fee.toString());
-
       return (
         <p className={classes.fee}>
           Ethereum fee (estimated) - <span>{formattedFee} ETH</span> ~{" "}
           <FiatAmount
-            amount={getDepositFeeInFiat(formattedFee)}
+            amount={feeInFiat}
             currency={preferredCurrency}
             className={classes.fiatAmount}
           />
@@ -103,14 +95,6 @@ function Fee(props: FeeProps): JSX.Element {
       );
     }
     case TxType.Transfer: {
-      const { fee } = props;
-      const feeInFiat = getTokenAmountInPreferredCurrency(
-        fee.toString(),
-        token.USD,
-        preferredCurrency,
-        isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
-      );
-
       return (
         <p className={classes.fee}>
           Fee{" "}
@@ -122,25 +106,13 @@ function Fee(props: FeeProps): JSX.Element {
               className=""
             />
           ) : (
-            <span>
-              {`${getFixedTokenAmount(
-                parseUnits(fee.toString(), token.decimals).toString(),
-                token.decimals
-              )} 
-                ${token.symbol}`}
-            </span>
+            <span>{`${getFixedTokenAmount(fee.toString(), token.decimals)} ${token.symbol}`}</span>
           )}
         </p>
       );
     }
     case TxType.Exit: {
-      const { estimatedWithdrawFeeTask, fee } = props;
-      const feeInFiat = getTokenAmountInPreferredCurrency(
-        fee.toString(),
-        token.USD,
-        preferredCurrency,
-        isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
-      );
+      const { estimatedWithdrawFeeTask } = props;
 
       return (
         <div className={classes.withdrawFeeWrapper}>
@@ -161,10 +133,8 @@ function Fee(props: FeeProps): JSX.Element {
             isAsyncTaskCompleted(estimatedWithdrawFeeTask) &&
             isAsyncTaskCompleted(fiatExchangeRatesTask) && (
               <FeesTable
-                l2Fee={getFixedTokenAmount(
-                  parseUnits(fee.toString(), token.decimals).toString(),
-                  token.decimals
-                )}
+                l2Fee={formattedFee}
+                l2FeeInFiat={feeInFiat}
                 estimatedWithdrawFee={estimatedWithdrawFeeTask.data}
                 token={token}
                 preferredCurrency={preferredCurrency}

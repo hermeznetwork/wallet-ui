@@ -32,9 +32,8 @@ const CurrencySymbol = {
  */
 function getFixedTokenAmount(amount: string, decimals = 18): string {
   // We can lose precision as there will never be more than MAX_DECIMALS_UNTIL_ZERO_AMOUNT significant digits
-  const balanceWithDecimals = Number(amount) / Math.pow(10, decimals);
-
-  return trimZeros(balanceWithDecimals, MAX_TOKEN_DECIMALS).toString();
+  const amountWithDecimals = Number(amount) / Math.pow(10, decimals);
+  return trimZeros(amountWithDecimals, MAX_TOKEN_DECIMALS).toString();
 }
 
 /**

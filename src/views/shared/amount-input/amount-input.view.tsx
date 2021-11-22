@@ -65,38 +65,9 @@ function AmountInput(
     const [showInFiat, setShowInFiat] = React.useState(false);
     const [isAmountNegative, setIsAmountNegative] = React.useState(false);
     const [isAmountWithFeeMoreThanFunds, setIsAmountWithFeeMoreThanFunds] = React.useState(false);
-    const [areFundsExceededDueToFee, setAreFundsExceededDueToFee] = React.useState(false);
     const [isAmountCompressedInvalid, setIsAmountCompressedInvalid] = React.useState(false);
-    const [isDirty, setIsDirty] = React.useState(false);
 
     const { txType, account, fee, fiatExchangeRatesTask, preferredCurrency, onChange } = props;
-
-    React.useEffect(() => {
-      if (onChange) {
-        const isInvalid =
-          isAmountNegative ||
-          isAmountWithFeeMoreThanFunds ||
-          isAmountCompressedInvalid ||
-          areFundsExceededDueToFee;
-
-        onChange({
-          amount,
-          showInFiat,
-          isInvalid,
-          areFundsExceededDueToFee,
-          isDirty,
-        });
-      }
-    }, [
-      isAmountNegative,
-      isAmountWithFeeMoreThanFunds,
-      isAmountCompressedInvalid,
-      areFundsExceededDueToFee,
-      amount,
-      showInFiat,
-      isDirty,
-      onChange,
-    ]);
 
     /**
      * Converts an amount in tokens to fiat. It takes into account the prefered currency
@@ -126,26 +97,36 @@ function AmountInput(
       return parseUnits(tokensAmount.toFixed(account.token.decimals), account.token.decimals);
     }
 
-    /**
-     * Validates the new amount introduced by the user. It checks:
-     * 1. The amount is not negative.
-     * 2. The amount + fees doesn't exceed the account balance.
-     * 3. The amount is supported by Hermez.
-     * @param {BigNumber} newAmount - New amount to be checked.
-     */
-    function checkAmountValidity(newAmount: BigNumber) {
-      setIsDirty(true);
-      const newAmountWithFee = newAmount.add(fee);
+    function updateAmountState({ tokens, fiat }: Amount, inputValue: string, showInFiat: boolean) {
+      const newAmountWithFee = tokens.add(fee);
+      const isDirty = true;
+      const isAmountNegative = tokens.lte(BigNumber.from(0));
       const isNewAmountWithFeeMoreThanFunds = newAmountWithFee.gt(BigNumber.from(account.balance));
+      const areFundsExceededDueToFee =
+        isNewAmountWithFeeMoreThanFunds && tokens.lte(BigNumber.from(account.balance));
+      const isAmountCompressedInvalid =
+        txType === TxType.Deposit || txType === TxType.ForceExit
+          ? false
+          : isTransactionAmountCompressedValid(tokens) === false;
+      const isAmountInvalid =
+        isAmountNegative ||
+        isNewAmountWithFeeMoreThanFunds ||
+        areFundsExceededDueToFee ||
+        isAmountCompressedInvalid;
 
-      setIsAmountNegative(newAmount.lte(BigNumber.from(0)));
+      setValue(inputValue);
+      setAmount({ tokens, fiat });
+      setIsAmountNegative(isAmountNegative);
       setIsAmountWithFeeMoreThanFunds(isNewAmountWithFeeMoreThanFunds);
-      setAreFundsExceededDueToFee(
-        isNewAmountWithFeeMoreThanFunds && newAmount.lte(BigNumber.from(account.balance))
-      );
-      if (txType !== TxType.Deposit && txType !== TxType.ForceExit) {
-        setIsAmountCompressedInvalid(isTransactionAmountCompressedValid(newAmount) === false);
-      }
+      setIsAmountCompressedInvalid(isAmountCompressedInvalid);
+      setShowInFiat(showInFiat);
+      onChange({
+        amount: { tokens, fiat },
+        showInFiat,
+        isInvalid: isAmountInvalid,
+        areFundsExceededDueToFee,
+        isDirty,
+      });
     }
 
     /**
@@ -166,18 +147,22 @@ function AmountInput(
           const newAmountInTokens = convertAmountToTokens(newAmountInFiat);
           const fixedAmountInTokens = fixTransactionAmount(newAmountInTokens);
 
-          setAmount({ tokens: fixedAmountInTokens, fiat: newAmountInFiat });
-          checkAmountValidity(fixedAmountInTokens);
-          setValue(event.target.value);
+          updateAmountState(
+            { tokens: fixedAmountInTokens, fiat: newAmountInFiat },
+            event.target.value,
+            showInFiat
+          );
         } else {
           try {
             const tokensValue = event.target.value.length > 0 ? event.target.value : "0";
             const newAmountInTokens = parseUnits(tokensValue, account.token.decimals);
             const newAmountInFiat = convertAmountToFiat(newAmountInTokens);
 
-            setAmount({ tokens: newAmountInTokens, fiat: newAmountInFiat });
-            checkAmountValidity(newAmountInTokens);
-            setValue(event.target.value);
+            updateAmountState(
+              { tokens: newAmountInTokens, fiat: newAmountInFiat },
+              event.target.value,
+              showInFiat
+            );
           } catch (err) {
             console.log(err);
           }
@@ -193,22 +178,16 @@ function AmountInput(
     function handleSendAll() {
       const maxPossibleAmount = BigNumber.from(account.balance);
       const maxAmountWithoutFee = getMaxTxAmount(txType, maxPossibleAmount, fee);
-
       const maxAmountWithoutFeeInFiat = trimZeros(convertAmountToFiat(maxAmountWithoutFee), 2);
+      const newValue = showInFiat
+        ? maxAmountWithoutFeeInFiat.toString()
+        : getFixedTokenAmount(maxAmountWithoutFee.toString(), account.token.decimals);
 
-      if (showInFiat) {
-        setValue(maxAmountWithoutFeeInFiat.toString());
-      } else {
-        const newValue = getFixedTokenAmount(
-          maxAmountWithoutFee.toString(),
-          account.token.decimals
-        );
-
-        setValue(newValue);
-      }
-
-      setAmount({ tokens: maxAmountWithoutFee, fiat: maxAmountWithoutFeeInFiat });
-      checkAmountValidity(maxAmountWithoutFee);
+      updateAmountState(
+        { tokens: maxAmountWithoutFee, fiat: maxAmountWithoutFeeInFiat },
+        newValue,
+        showInFiat
+      );
     }
 
     /**
@@ -217,19 +196,21 @@ function AmountInput(
      * previous value was fiat).
      */
     function handleSwapCurrency() {
-      const newValue = showInFiat
-        ? getFixedTokenAmount(amount.tokens.toString(), account.token.decimals)
-        : amount.fiat.toString();
+      const newShowInFiat = !showInFiat;
+      const newValue = newShowInFiat
+        ? amount.fiat.toString()
+        : getFixedTokenAmount(amount.tokens.toString(), account.token.decimals);
 
       if (value.length > 0) {
         setValue(newValue);
       }
 
-      setShowInFiat(!showInFiat);
+      updateAmountState(amount, value, newShowInFiat);
     }
 
     return (
       <WrappedComponent
+        {...props}
         value={value}
         amount={amount}
         showInFiat={showInFiat}
@@ -239,7 +220,6 @@ function AmountInput(
         onInputChange={handleInputChange}
         onSendAll={handleSendAll}
         onSwapCurrency={handleSwapCurrency}
-        {...props}
       />
     );
   };

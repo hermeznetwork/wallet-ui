@@ -17,18 +17,18 @@ interface CommonSelectedAccountProps {
 }
 
 interface SelectedAccountDepositProps {
-  transactionType: TxType.Deposit;
+  txType: TxType.Deposit;
   account: EthereumAccount;
   onClick: () => void;
 }
 
 interface SelectedAccountExitProps {
-  transactionType: TxType.Exit;
+  txType: TxType.Exit;
   account: Account;
 }
 
 interface SelectedAccountOtherTxProps {
-  transactionType: TxType.Transfer | TxType.ForceExit;
+  txType: TxType.Transfer | TxType.ForceExit;
   account: EthereumAccount;
   onClick: () => void;
 }
@@ -39,14 +39,14 @@ type SelectedAccountProps = CommonSelectedAccountProps &
 function SelectedAccount(props: SelectedAccountProps): JSX.Element {
   const classes = useSelectedAccountStyles();
 
-  const { transactionType, account, preferredCurrency, showInFiat, fiatExchangeRatesTask } = props;
+  const { txType, account, preferredCurrency, showInFiat, fiatExchangeRatesTask } = props;
 
-  const RootComponent = transactionType === TxType.Exit ? "button" : "div";
+  const RootComponent = txType === TxType.Exit ? "button" : "div";
 
   return (
     <RootComponent
       className={classes.root}
-      {...(transactionType !== TxType.Exit ? { onClick: props.onClick } : {})}
+      {...(txType !== TxType.Exit ? { onClick: props.onClick } : {})}
     >
       <p>{account.token.name}</p>
       {showInFiat ? (
@@ -54,7 +54,7 @@ function SelectedAccount(props: SelectedAccountProps): JSX.Element {
           <FiatAmount
             currency={preferredCurrency}
             amount={getTokenAmountInPreferredCurrency(
-              account.balance.toString(),
+              getFixedTokenAmount(account.balance, account.decimals),
               account.token.USD,
               preferredCurrency,
               isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
@@ -63,8 +63,8 @@ function SelectedAccount(props: SelectedAccountProps): JSX.Element {
         </p>
       ) : (
         <p className={classes.tokenAmount}>
-          <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span>
-          <span>{account.token.symbol}</span>{" "}
+          <span>{getFixedTokenAmount(account.balance, account.token.decimals)}</span>{" "}
+          <span>{account.token.symbol}</span>
         </p>
       )}
     </RootComponent>

@@ -67,7 +67,7 @@ const ForceExitForm: React.FC<ForceExitFormProps> = ({
   return (
     <FormContainer>
       <SelectedAccount
-        transactionType={TxType.ForceExit}
+        txType={TxType.ForceExit}
         account={account}
         preferredCurrency={preferredCurrency}
         showInFiat={showInFiat}

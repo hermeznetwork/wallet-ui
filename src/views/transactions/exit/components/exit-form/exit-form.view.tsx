@@ -89,7 +89,7 @@ const ExitForm: React.FC<ExitFormProps> = ({
   return (
     <FormContainer>
       <SelectedAccount
-        transactionType={TxType.Exit}
+        txType={TxType.Exit}
         account={account}
         preferredCurrency={preferredCurrency}
         showInFiat={showInFiat}
@@ -116,7 +116,7 @@ const ExitForm: React.FC<ExitFormProps> = ({
         <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled()} />
       </form>
       <Fee
-        transactionType={TxType.Exit}
+        txType={TxType.Exit}
         amount={amount}
         fee={fee}
         estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}

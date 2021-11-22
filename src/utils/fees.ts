@@ -2,11 +2,11 @@ import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { GAS_LIMIT_LOW } from "@hermeznetwork/hermezjs/src/constants";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getFeeIndex, getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
-import { getTokenAmountBigInt, getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
+import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 // constants
-import { MAX_FEE_USD } from "src/constants";
+import { MAX_FEE_USD, MAX_TOKEN_DECIMALS } from "src/constants";
 // domain
 import { RecommendedFee, Token } from "src/domain/hermez";
 import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
@@ -38,14 +38,14 @@ type GetMinimumL2FeeParams = GetMinimumTransferFee | GetMinimumExitFee;
  * Calculates the minimum fee that will be paid for the transaction, without taking into account
  * the amount
  */
-function getMinimumL2Fee(params: GetMinimumL2FeeParams): number {
+function getMinimumL2Fee(params: GetMinimumL2FeeParams): BigNumber {
   const { txType, token, feesTask } = params;
 
   if (!isAsyncTaskCompleted(feesTask) || token.USD === 0) {
-    return 0;
+    return BigNumber.from(0);
   }
 
-  const fee = (() => {
+  const feeInUsd = (() => {
     if (txType === TxType.Exit) {
       return feesTask.data.existingAccount;
     } else {
@@ -56,21 +56,20 @@ function getMinimumL2Fee(params: GetMinimumL2FeeParams): number {
         : feesTask.data.createAccount;
     }
   })();
-
   // Limits the fee, in case a crazy fee is returned
-  const fixedFee = fee > MAX_FEE_USD ? MAX_FEE_USD : fee;
+  const limitedFee = feeInUsd > MAX_FEE_USD ? MAX_FEE_USD : feeInUsd;
+  const fee = (limitedFee / token.USD).toFixed(MAX_TOKEN_DECIMALS);
 
-  return fixedFee / token.USD;
+  return parseUnits(fee, token.decimals);
 }
 
 /**
  * Calculates the actual fee that will be paid for a specific transaction
  * taking into account the type of transaction, the amount and minimum fee
  */
-function getL2Fee(amount: string, token: Token, minimumFee: number): number {
+function getL2Fee(amount: string, token: Token, minimumFee: BigNumber): number {
   const decimals = token.decimals;
-  const minimumFeeBigInt = getTokenAmountBigInt(minimumFee.toFixed(decimals), decimals).toString();
-  const feeIndex = getFeeIndex(minimumFeeBigInt, amount);
+  const feeIndex = getFeeIndex(minimumFee.toString(), amount);
   const fee = getFeeValue(feeIndex, amount);
 
   return Number(getTokenAmountString(fee, decimals));
@@ -90,7 +89,7 @@ interface GetL2FeeParams {
   txType: TxType.Transfer | TxType.Exit;
   amount: BigNumber;
   token: Token;
-  minimumFee: number;
+  minimumFee: BigNumber;
 }
 
 type GetTxFeeParams = GetDepositFeeParams | GetForceExitFeeParams | GetL2FeeParams;
