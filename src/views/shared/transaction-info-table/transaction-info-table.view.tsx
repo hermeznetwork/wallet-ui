@@ -8,10 +8,10 @@ import { FiatExchangeRates, Token } from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
 
 interface TransactionInfoTableProps {
-  status?: StatusRow;
-  from?: AddressRow;
-  to?: AddressRow;
-  date?: DateRow;
+  status?: Row;
+  from?: Row;
+  to?: Row;
+  date?: Row;
   fee?: number;
   token?: Token;
   estimatedWithdrawFee?: EstimatedWithdrawFee;
@@ -23,18 +23,9 @@ interface TransactionInfoTableProps {
   onCopyFromAddress?: () => void;
 }
 
-export interface StatusRow {
+export interface Row {
   subtitle: string;
   value?: string;
-}
-
-export interface AddressRow {
-  subtitle: string;
-  value?: string;
-}
-
-export interface DateRow {
-  subtitle: string;
 }
 
 function TransactionInfoTable({

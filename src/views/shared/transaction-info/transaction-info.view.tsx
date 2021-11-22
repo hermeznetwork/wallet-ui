@@ -4,9 +4,7 @@ import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { INTERNAL_ACCOUNT_ETH_ADDR } from "@hermeznetwork/hermezjs/src/constants";
 
 import TransactionInfoTable, {
-  StatusRow,
-  AddressRow,
-  DateRow,
+  Row,
 } from "src/views/shared/transaction-info-table/transaction-info-table.view";
 import {
   getPartiallyHiddenEthereumAddress,
@@ -53,15 +51,15 @@ function TransactionInfo({
   onToCopyClick,
   onFromCopyClick,
 }: TransactionInfoProps): JSX.Element {
-  const date: DateRow = {
+  const date: Row = {
     subtitle: new Date(txData.timestamp).toLocaleString(),
   };
-  const myHermezAddress: AddressRow = {
+  const myHermezAddress: Row = {
     subtitle: "My Hermez address",
     value: getPartiallyHiddenHermezAddress(txData.fromHezEthereumAddress),
   };
 
-  function getTransactionStatus(): StatusRow | undefined {
+  function getTransactionStatus(): Row | undefined {
     if (!showStatus) {
       return undefined;
     }
@@ -97,7 +95,7 @@ function TransactionInfo({
     onFromCopyClick();
   }
 
-  function getTransferAddressToShow(): AddressRow | undefined {
+  function getTransferAddressToShow(): Row | undefined {
     if (
       txData.toBJJ &&
       txData.toHezEthereumAddress?.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
