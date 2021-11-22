@@ -157,7 +157,7 @@ function Transfer({
                   accountsTask: accountsTask,
                   poolTransactionsTask: poolTransactionsTask,
                   onLoadAccounts: onLoadAccounts,
-                  onAccountClick: (account: HermezAccount) => onGoToBuildTransactionStep(account),
+                  onAccountClick: onGoToBuildTransactionStep,
                 }}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={

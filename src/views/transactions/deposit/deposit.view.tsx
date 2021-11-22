@@ -137,8 +137,7 @@ function Deposit({
                   accountsTask: ethereumAccountsTask,
                   pendingDeposits: accountPendingDeposits,
                   onLoadAccounts: onLoadEthereumAccounts,
-                  onAccountClick: (ethereumAccount: EthereumAccount) =>
-                    onGoToBuildTransactionStep(ethereumAccount),
+                  onAccountClick: onGoToBuildTransactionStep,
                 }}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
