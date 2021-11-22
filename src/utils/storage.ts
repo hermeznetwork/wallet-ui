@@ -9,7 +9,7 @@ import {
   PendingWithdraw,
   PendingDelayedWithdraw,
   PendingDeposit,
-  AvailableWithdraw,
+  TimerWithdraw,
 } from "src/domain/hermez";
 import {
   ChainId,
@@ -20,8 +20,8 @@ import {
   ChainPendingDelayedWithdraws,
   PendingDeposits,
   ChainPendingDeposits,
-  AvailableWithdraws,
-  ChainAvailableWithdraws,
+  TimerWithdraws,
+  ChainTimerWithdraws,
 } from "src/domain/local-storage";
 // persistence
 import {
@@ -155,14 +155,13 @@ function getPendingDepositsByHermezAddress(
   return accountDeposits;
 }
 
-function getAvailableWithdrawsByHermezAddress(
-  availableWithdrawsStorage: AvailableWithdraws,
+function getTimerWithdrawsByHermezAddress(
+  timerWithdrawsStorage: TimerWithdraws,
   chainId: number,
   hermezEthereumAddress: string
-): AvailableWithdraw[] {
-  const chainAvailableWithdraws: ChainAvailableWithdraws = availableWithdrawsStorage[chainId] || {};
-  const accountWithdraws: AvailableWithdraw[] =
-    chainAvailableWithdraws[hermezEthereumAddress] || [];
+): TimerWithdraw[] {
+  const chainTimerWithdraws: ChainTimerWithdraws = timerWithdrawsStorage[chainId] || {};
+  const accountWithdraws: TimerWithdraw[] = chainTimerWithdraws[hermezEthereumAddress] || [];
   return accountWithdraws;
 }
 
@@ -171,5 +170,5 @@ export {
   getPendingWithdrawsByHermezAddress,
   getPendingDelayedWithdrawsByHermezAddress,
   getPendingDepositsByHermezAddress,
-  getAvailableWithdrawsByHermezAddress,
+  getTimerWithdrawsByHermezAddress,
 };

@@ -32,7 +32,7 @@ import {
   HermezNetworkStatus,
   Exit,
   PendingDeposit,
-  AvailableWithdraw,
+  TimerWithdraw,
   HistoryTransaction,
   PoolTransaction,
   Token,
@@ -442,11 +442,11 @@ function checkPendingDelayedWithdrawals(): AppThunk {
 }
 
 /**
- * Adds a availableWithdraw to the availableWithdraw store
- * @param {AvailableWithdraw} availableWithdraw - The availableWithdraw to add to the store
+ * Adds a timerWithdraw to the timerWithdraw store
+ * @param {TimerWithdraw} timerWithdraw - The timerWithdraw to add to the store
  * @returns {void}
  */
-function addAvailableWithdraw(availableWithdraw: AvailableWithdraw): AppThunk {
+function addTimerWithdraw(timerWithdraw: TimerWithdraw): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
@@ -457,25 +457,19 @@ function addAvailableWithdraw(availableWithdraw: AvailableWithdraw): AppThunk {
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
-        localStoragePersistence.addAvailableWithdraw(
-          chainId,
-          hermezEthereumAddress,
-          availableWithdraw
-        );
-        dispatch(
-          globalActions.addAvailableWithdraw(chainId, hermezEthereumAddress, availableWithdraw)
-        );
+        localStoragePersistence.addTimerWithdraw(chainId, hermezEthereumAddress, timerWithdraw);
+        dispatch(globalActions.addTimerWithdraw(chainId, hermezEthereumAddress, timerWithdraw));
       }
     }
   };
 }
 
 /**
- * Removes a availableWithdraw from the availableWithdraw store by id
- * @param {string} availableWithdrawId - The availableWithdraw id to remove from the store
+ * Removes a timerWithdraw from the timerWithdraw store by id
+ * @param {string} timerWithdrawId - The timerWithdraw id to remove from the store
  * @returns {void}
  */
-function removeAvailableWithdraw(availableWithdrawId: string): AppThunk {
+function removeTimerWithdraw(timerWithdrawId: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, ethereumNetworkTask },
@@ -486,13 +480,13 @@ function removeAvailableWithdraw(availableWithdrawId: string): AppThunk {
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
-        localStoragePersistence.removeAvailableWithdraw(
+        localStoragePersistence.removeTimerWithdraw(
           chainId,
           hermezEthereumAddress,
-          availableWithdrawId
+          timerWithdrawId
         );
         dispatch(
-          globalActions.removeAvailableWithdraw(chainId, hermezEthereumAddress, availableWithdrawId)
+          globalActions.removeTimerWithdraw(chainId, hermezEthereumAddress, timerWithdrawId)
         );
       }
     }
@@ -932,8 +926,8 @@ export {
   updatePendingDelayedWithdrawDate,
   checkPendingDelayedWithdrawals,
   checkPendingWithdrawals,
-  addAvailableWithdraw,
-  removeAvailableWithdraw,
+  addTimerWithdraw,
+  removeTimerWithdraw,
   addPendingDeposit,
   removePendingDepositByTransactionId,
   removePendingDepositByHash,

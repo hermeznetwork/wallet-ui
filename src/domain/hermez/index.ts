@@ -49,7 +49,7 @@ export type PendingDelayedWithdraw = PendingWithdraw & {
   isInstant: boolean;
 };
 
-export type AvailableWithdraw = {
+export type TimerWithdraw = {
   id: string;
   timestamp: hermezjs.ISOStringDate;
   token: hermezjs.Token;

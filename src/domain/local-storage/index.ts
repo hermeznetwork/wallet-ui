@@ -2,7 +2,7 @@ import {
   PendingDeposit,
   PendingWithdraw,
   PendingDelayedWithdraw,
-  AvailableWithdraw,
+  TimerWithdraw,
 } from "src/domain/hermez";
 
 export type ChainId = string;
@@ -17,8 +17,8 @@ export type ChainPendingDelayedWithdraws = Record<HermezEthereumAddress, Pending
 export type PendingDeposits = Record<ChainId, ChainPendingDeposits>;
 export type ChainPendingDeposits = Record<HermezEthereumAddress, PendingDeposit[]>;
 
-export type AvailableWithdraws = Record<ChainId, ChainAvailableWithdraws>;
-export type ChainAvailableWithdraws = Record<HermezEthereumAddress, AvailableWithdraw[]>;
+export type TimerWithdraws = Record<ChainId, ChainTimerWithdraws>;
+export type ChainTimerWithdraws = Record<HermezEthereumAddress, TimerWithdraw[]>;
 
 export type AuthSignatures = Record<ChainId, ChainAuthSignatures>;
 export type ChainAuthSignatures = Record<HermezEthereumAddress, string>;

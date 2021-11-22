@@ -30,12 +30,12 @@ function Exit({
   babyJubJub,
   pendingWithdraws,
   pendingDelayedWithdraws,
-  availableWithdraws,
+  timerWithdraws,
   coordinatorState,
   onAddPendingDelayedWithdraw,
   onRemovePendingDelayedWithdraw,
-  onAddAvailableWithdraw,
-  onRemoveAvailableWithdraw,
+  onAddTimerWithdraw,
+  onRemoveTimerWithdraw,
 }) {
   const classes = useExitStyles();
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false);
@@ -135,15 +135,16 @@ function Exit({
    * It detects the type and caculates the time accordingly (in hours for instant and days for delayed)
    * If enough time has already passed, it deletes the pendingDelayedWithdraw from LocalStorage
    * @param {Object} delayedWithdrawal - The delayed withdrawal object from LocalStorage
+   * @param {Object} timer - Timer manually activated
    * @returns {string|void} Returns remaining time as a string, or void if enough time has passed
    */
-  function getDateString(delayedWithdrawal, availability) {
+  function getDateString(delayedWithdrawal, timer) {
     const now = Date.now();
     const difference = now - new Date(delayedWithdrawal.timestamp).getTime();
-    if (availability) {
+    if (timer) {
       const tenMinutes = 10 * 60 * 1000;
       if (difference > tenMinutes) {
-        onRemoveAvailableWithdraw(exitId);
+        onRemoveTimerWithdraw(exitId);
       } else {
         const remainingDifference = tenMinutes - difference;
         // Extracts the minutes from the remaining difference
@@ -195,7 +196,7 @@ function Exit({
   }
 
   function onCheckAvailabilityClick() {
-    onAddAvailableWithdraw({
+    onAddTimerWithdraw({
       id: exitId,
       timestamp: new Date().toISOString(),
       token,
@@ -288,17 +289,17 @@ function Exit({
           const pendingDelayedWithdrawal = pendingDelayedWithdraws?.find(
             (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === exitId
           );
-          const availableWithdraw = availableWithdraws?.find(
-            (availableWithdraws) => availableWithdraws.id === exitId
+          const timerWithdraw = timerWithdraws?.find(
+            (timerWithdraws) => timerWithdraws.id === exitId
           );
 
-          if (pendingDelayedWithdrawal || availableWithdraw) {
-            const withdraw = pendingDelayedWithdrawal || availableWithdraw;
-            const remainingTime = getDateString(withdraw, availableWithdraw);
+          if (pendingDelayedWithdrawal || timerWithdraw) {
+            const withdraw = pendingDelayedWithdrawal || timerWithdraw;
+            const remainingTime = getDateString(withdraw, timerWithdraw);
             return (
               <div className={classes.withdraw}>
                 <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
-                  {withdraw && (
+                  {timerWithdraw && (
                     <span className={classes.infoText}>
                       Your request to withdraw is validating with the network.
                     </span>
@@ -371,12 +372,12 @@ Exit.propTypes = {
   accountIndex: PropTypes.string,
   pendingWithdraws: PropTypes.array,
   pendingDelayedWithdraws: PropTypes.array,
-  availableWithdraws: PropTypes.array,
+  timerWithdraws: PropTypes.array,
   coordinatorState: PropTypes.object,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
-  onAddAvailableWithdraw: PropTypes.func.isRequired,
-  onRemoveAvailableWithdraw: PropTypes.func.isRequired,
+  onAddTimerWithdraw: PropTypes.func.isRequired,
+  onRemoveTimerWithdraw: PropTypes.func.isRequired,
 };
 
 export default Exit;

@@ -39,7 +39,7 @@ function AccountDetails({
   pendingWithdraws,
   pendingDelayedWithdraws,
   pendingDeposits,
-  availableWithdraws,
+  timerWithdraws,
   coordinatorStateTask,
   onChangeHeader,
   onLoadAccount,
@@ -52,8 +52,8 @@ function AccountDetails({
   onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
-  onAddAvailableWithdraw,
-  onRemoveAvailableWithdraw,
+  onAddTimerWithdraw,
+  onRemoveTimerWithdraw,
   onNavigateToTransactionDetails,
   onCleanup,
 }) {
@@ -76,8 +76,8 @@ function AccountDetails({
     wallet.hermezEthereumAddress
   );
 
-  const accountAvailableWithdraws = storage.getAvailableWithdrawsByHermezAddress(
-    availableWithdraws,
+  const accountTimerWithdraws = storage.getTimerWithdrawsByHermezAddress(
+    timerWithdraws,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   );
@@ -246,7 +246,7 @@ function AccountDetails({
               const tokenPendingDelayedWithdraws = accountPendingDelayedWithdraws.filter(
                 (withdraw) => withdraw.token.id === accountTask.data.token.id
               );
-              const tokenAvailableWithdraws = accountAvailableWithdraws.filter(
+              const tokenTimerWithdraws = accountTimerWithdraws.filter(
                 (withdraw) => withdraw.token.id === accountTask.data.token.id
               );
 
@@ -261,11 +261,11 @@ function AccountDetails({
                       babyJubJub={wallet.publicKeyCompressedHex}
                       pendingWithdraws={tokenPendingWithdraws}
                       pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                      availableWithdraws={tokenAvailableWithdraws}
+                      timerWithdraws={tokenTimerWithdraws}
                       onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                       onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                      onAddAvailableWithdraw={onAddAvailableWithdraw}
-                      onRemoveAvailableWithdraw={onRemoveAvailableWithdraw}
+                      onAddTimerWithdraw={onAddTimerWithdraw}
+                      onRemoveTimerWithdraw={onRemoveTimerWithdraw}
                       coordinatorState={coordinatorStateTask?.data}
                     />
                   )}
@@ -280,11 +280,11 @@ function AccountDetails({
                       babyJubJub={wallet.publicKeyCompressedHex}
                       pendingWithdraws={tokenPendingWithdraws}
                       pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                      availableWithdraws={tokenAvailableWithdraws}
+                      timerWithdraws={tokenTimerWithdraws}
                       onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                       onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                      onAddAvailableWithdraw={onAddAvailableWithdraw}
-                      onRemoveAvailableWithdraw={onRemoveAvailableWithdraw}
+                      onAddTimerWithdraw={onAddTimerWithdraw}
+                      onRemoveTimerWithdraw={onRemoveTimerWithdraw}
                       coordinatorState={coordinatorStateTask?.data}
                     />
                   )}
@@ -345,7 +345,7 @@ AccountDetails.propTypes = {
   wallet: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
-  availableWithdraws: PropTypes.object.isRequired,
+  timerWithdraws: PropTypes.object.isRequired,
   coordinatorStateTask: PropTypes.object.isRequired,
   onLoadAccount: PropTypes.func.isRequired,
   onChangeHeader: PropTypes.func.isRequired,
@@ -354,8 +354,8 @@ AccountDetails.propTypes = {
   onLoadExits: PropTypes.func.isRequired,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
-  onAddAvailableWithdraw: PropTypes.func.isRequired,
-  onRemoveAvailableWithdraw: PropTypes.func.isRequired,
+  onAddTimerWithdraw: PropTypes.func.isRequired,
+  onRemoveTimerWithdraw: PropTypes.func.isRequired,
   onNavigateToTransactionDetails: PropTypes.func.isRequired,
 };
 
@@ -372,7 +372,7 @@ const mapStateToProps = (state) => ({
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
-  availableWithdraws: state.global.availableWithdraws,
+  timerWithdraws: state.global.timerWithdraws,
   coordinatorStateTask: state.global.coordinatorStateTask,
 });
 
@@ -400,10 +400,9 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
   onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
     dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
-  onAddAvailableWithdraw: (availableWithdraw) =>
-    dispatch(globalThunks.addAvailableWithdraw(availableWithdraw)),
-  onRemoveAvailableWithdraw: (availableWithdrawId) =>
-    dispatch(globalThunks.removeAvailableWithdraw(availableWithdrawId)),
+  onAddTimerWithdraw: (timerWithdraw) => dispatch(globalThunks.addTimerWithdraw(timerWithdraw)),
+  onRemoveTimerWithdraw: (timerWithdrawId) =>
+    dispatch(globalThunks.removeTimerWithdraw(timerWithdrawId)),
   onCheckPendingWithdrawals: () => dispatch(globalThunks.checkPendingWithdrawals()),
   onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
