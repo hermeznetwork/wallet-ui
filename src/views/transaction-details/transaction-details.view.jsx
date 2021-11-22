@@ -179,7 +179,7 @@ function TransactionDetails({
                         </p>
                       )}
                     <TransactionInfo
-                      txData={{
+                      transaction={{
                         ...transactionTask.data,
                         ...{ fee: fee ? fee.value : undefined },
                       }}

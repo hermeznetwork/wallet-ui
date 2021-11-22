@@ -196,6 +196,7 @@ function TransactionOverview({
     subtitle: "My Hermez address",
     value: getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress),
   };
+  transaction;
 
   const myEthereumAddress = {
     subtitle: "My Ethereum address",
