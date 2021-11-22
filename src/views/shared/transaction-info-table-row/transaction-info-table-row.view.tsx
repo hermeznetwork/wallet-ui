@@ -6,7 +6,7 @@ import { ReactComponent as CopyIcon } from "src/images/icons/copy.svg";
 
 interface TransactionInfoTableRowProps {
   title: string;
-  subtitle: string;
+  subtitle: string | JSX.Element;
   hint?: string;
   value?: string;
   showCopyButton?: boolean;
