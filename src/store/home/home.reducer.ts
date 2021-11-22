@@ -2,13 +2,13 @@ import { HomeActionTypes, HomeAction } from "src/store/home/home.actions";
 import { getPaginationData } from "src/utils/api";
 import { Pagination } from "src/utils/api";
 // domain
-import { Account, PoolTransaction } from "src/domain/hermez";
+import { HermezAccount, PoolTransaction } from "src/domain/hermez";
 // persistence
 import { Exits } from "src/persistence";
 import { AsyncTask } from "src/utils/types";
 
 interface ViewAccounts {
-  accounts: Account[];
+  accounts: HermezAccount[];
   fromItemHistory: number[];
   pagination: Pagination;
 }

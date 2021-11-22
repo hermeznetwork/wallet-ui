@@ -10,7 +10,7 @@ import { createAccount } from "src/utils/accounts";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
 // domain
 import {
-  Account,
+  HermezAccount,
   Token,
   HistoryTransaction,
   PoolTransaction,
@@ -28,7 +28,7 @@ let refreshCancelTokenSource = axios.CancelToken.source();
  * @returns {void}
  */
 function fetchAccount(
-  accountIndex: Account["accountIndex"],
+  accountIndex: HermezAccount["accountIndex"],
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): AppThunk {
@@ -39,7 +39,7 @@ function fetchAccount(
     dispatch(accountDetailsActions.loadAccount());
 
     return CoordinatorAPI.getAccount(accountIndex)
-      .then((account: Account) => {
+      .then((account: HermezAccount) => {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push("/"));
         } else {
@@ -94,7 +94,7 @@ function fetchL1TokenBalance(token: Token): AppThunk {
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-function fetchPoolTransactions(accountIndex: Account["accountIndex"]): AppThunk {
+function fetchPoolTransactions(accountIndex: HermezAccount["accountIndex"]): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     dispatch(accountDetailsActions.loadPoolTransactions());
 
@@ -140,7 +140,7 @@ function filterExitsFromHistoryTransactions(
  */
 // ToDo: Define fromItem type
 function fetchHistoryTransactions(
-  accountIndex: Account["accountIndex"],
+  accountIndex: HermezAccount["accountIndex"],
   fromItem: number,
   exits: Exits
 ): AppThunk {
@@ -191,7 +191,10 @@ function fetchHistoryTransactions(
  * loaded
  * @param {string} accountIndex - Account index
  */
-function refreshHistoryTransactions(accountIndex: Account["accountIndex"], exits: Exits): AppThunk {
+function refreshHistoryTransactions(
+  accountIndex: HermezAccount["accountIndex"],
+  exits: Exits
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       accountDetails: { historyTransactionsTask },
