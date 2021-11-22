@@ -64,6 +64,7 @@ const historyTransaction: z.ZodSchema<HistoryTransaction> = hermezApiResourceIte
     toBJJ: z.string().nullable(),
     toHezEthereumAddress: z.string().nullable(),
     type: z.nativeEnum(TxType),
+    token: token,
   })
 );
 

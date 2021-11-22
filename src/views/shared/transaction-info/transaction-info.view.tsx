@@ -30,6 +30,7 @@ type Transaction = HistoryTransaction | PoolTransaction;
 
 interface TransactionInfoProps {
   transaction: Transaction;
+  fee?: number;
   accountIndex: string;
   preferredCurrency: string;
   fiatExchangeRates?: FiatExchangeRates;
@@ -42,6 +43,7 @@ interface TransactionInfoProps {
 
 function TransactionInfo({
   transaction,
+  fee,
   accountIndex,
   preferredCurrency,
   fiatExchangeRates,
@@ -117,9 +119,6 @@ function TransactionInfo({
     return undefined;
   }
 
-  const fee = isPoolTransaction(transaction) ? transaction.fee : undefined;
-  const token = isPoolTransaction(transaction) ? transaction.token : undefined;
-
   switch (transaction.type) {
     case TxType.CreateAccountDeposit:
     case TxType.Deposit: {
@@ -148,7 +147,7 @@ function TransactionInfo({
             to={getTransferAddressToShow()}
             date={date}
             fee={fee}
-            token={token}
+            token={transaction.token}
             preferredCurrency={preferredCurrency}
             fiatExchangeRates={fiatExchangeRates}
             showToCopyButton={showToCopyButton}
@@ -172,7 +171,7 @@ function TransactionInfo({
             }}
             date={date}
             fee={fee}
-            token={token}
+            token={transaction.token}
             preferredCurrency={preferredCurrency}
             fiatExchangeRates={fiatExchangeRates}
           />
@@ -192,7 +191,7 @@ function TransactionInfo({
           }}
           date={date}
           fee={fee}
-          token={token}
+          token={transaction.token}
           preferredCurrency={preferredCurrency}
           fiatExchangeRates={fiatExchangeRates}
         />

@@ -98,7 +98,7 @@ declare module "@hermeznetwork/*" {
     timestamp: ISOStringDate;
     // toAccountIndex: string;
     toBJJ: string | null;
-    // token: Token;
+    token: Token;
   };
 
   export type PoolTransaction = HermezApiResourceItem & {

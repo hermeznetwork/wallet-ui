@@ -179,10 +179,8 @@ function TransactionDetails({
                         </p>
                       )}
                     <TransactionInfo
-                      transaction={{
-                        ...transactionTask.data,
-                        fee: fee ? fee.value : undefined,
-                      }}
+                      transaction={transactionTask.data}
+                      fee={fee ? fee.value : undefined}
                       accountIndex={accountIndex}
                       preferredCurrency={preferredCurrency}
                       fiatExchangeRates={fiatExchangeRatesTask.data}
