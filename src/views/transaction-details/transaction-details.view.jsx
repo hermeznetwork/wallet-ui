@@ -90,7 +90,7 @@ function TransactionDetails({
   /**
    * Converts the transaction fee to the supported value
    * @param {Object} transactionTask - Asynchronous task of the transaction
-   * @returns {Object}
+   * @returns {number | undefined}
    */
   function getTransactionFee(transactionTask) {
     switch (transactionTask.status) {
@@ -107,7 +107,7 @@ function TransactionDetails({
           const feeToken = feeUsd / token.USD;
 
           return !isNaN(feeUsd)
-            ? { value: trimZeros(feeToken, MAX_TOKEN_DECIMALS), token }
+            ? trimZeros(feeToken, MAX_TOKEN_DECIMALS)
             : undefined;
         } else if (transactionTask.data.fee || transactionTask.data.L2Info?.fee) {
           const feeUsd = getFeeInUsd(
@@ -118,7 +118,7 @@ function TransactionDetails({
           const feeToken = feeUsd / token.USD;
 
           return !isNaN(feeUsd)
-            ? { value: trimZeros(feeToken, MAX_TOKEN_DECIMALS), token }
+            ? trimZeros(feeToken, MAX_TOKEN_DECIMALS)
             : undefined;
         } else {
           return undefined;
@@ -164,7 +164,6 @@ function TransactionDetails({
                   type === TxType.CreateAccountDeposit ||
                   type === TxType.ForceExit;
                 const pendingTime = getTxPendingTime(coordinatorStateTask?.data, isL1);
-                const fee = getTransactionFee(transactionTask);
                 return (
                   <>
                     {!transactionTask.data.batchNum &&
@@ -180,7 +179,7 @@ function TransactionDetails({
                       )}
                     <TransactionInfo
                       transaction={transactionTask.data}
-                      fee={fee ? fee.value : undefined}
+                      fee={getTransactionFee(transactionTask)}
                       accountIndex={accountIndex}
                       preferredCurrency={preferredCurrency}
                       fiatExchangeRates={fiatExchangeRatesTask.data}
