@@ -43,12 +43,12 @@ function FeesTable({
   const formattedWithdrawFee =
     estimatedWithdrawFee !== undefined
       ? Number(ethers.utils.formatEther(estimatedWithdrawFee.amount))
-      : 0;
+      : undefined;
 
   const estimatedWithdrawFeeInFiat =
     estimatedWithdrawFee !== undefined
       ? getAmountInPreferredCurrency(estimatedWithdrawFee.USD, preferredCurrency, fiatExchangeRates)
-      : 0;
+      : undefined;
 
   return (
     <div className={classes.feesTable}>
@@ -58,7 +58,7 @@ function FeesTable({
         subtitle={<FiatAmount amount={getL2FeeInFiat()} currency={preferredCurrency} />}
         value={`${trimZeros(l2Fee, MAX_TOKEN_DECIMALS)} ${token.symbol}`}
       />
-      {estimatedWithdrawFee && (
+      {formattedWithdrawFee && estimatedWithdrawFeeInFiat && (
         <TransactionInfoTableRow
           title="Ethereum fee (estimated)"
           hint="Step 2"
