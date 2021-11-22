@@ -15,7 +15,7 @@ import QRScanner from "src/views/shared/qr-scanner/qr-scanner.view";
 
 export interface ReceiverInputChangeEventData {
   value: string;
-  isValid: boolean;
+  isValid?: boolean;
 }
 
 interface ReceiverInputStateProps {
@@ -108,8 +108,11 @@ function ReceiverInput({
    * Resets the receiver input when the delete button is clicked
    */
   function handleDeleteClick() {
-    setValue("");
-    setIsReceiverValid(undefined);
+    const changeEventData: ReceiverInputChangeEventData = { value: "" };
+
+    setValue(changeEventData.value);
+    setIsReceiverValid(changeEventData.isValid);
+    onChange(changeEventData);
   }
 
   /**

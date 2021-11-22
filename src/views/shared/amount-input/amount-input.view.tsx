@@ -30,7 +30,6 @@ export interface AmountInputChangeEventData {
   showInFiat: boolean;
   isInvalid: boolean;
   areFundsExceededDueToFee: boolean;
-  isDirty: boolean;
 }
 
 interface AmountInputProps {
@@ -99,7 +98,6 @@ function AmountInput(
 
     function updateAmountState({ tokens, fiat }: Amount, inputValue: string, showInFiat: boolean) {
       const newAmountWithFee = tokens.add(fee);
-      const isDirty = true;
       const isAmountNegative = tokens.lte(BigNumber.from(0));
       const isNewAmountWithFeeMoreThanFunds = newAmountWithFee.gt(BigNumber.from(account.balance));
       const areFundsExceededDueToFee =
@@ -125,7 +123,6 @@ function AmountInput(
         showInFiat,
         isInvalid: isAmountInvalid,
         areFundsExceededDueToFee,
-        isDirty,
       });
     }
 
