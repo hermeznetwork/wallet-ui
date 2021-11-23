@@ -141,12 +141,10 @@ function ForceExit({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  transaction={{
-                    type: TxType.ForceExit,
-                    amount: transaction.amount,
-                    account: account,
-                    onForceExit,
-                  }}
+                  type={TxType.ForceExit}
+                  amount={transaction.amount}
+                  account={account}
+                  onForceExit={onForceExit}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={
                     fiatExchangeRatesTask.status === "successful" ||

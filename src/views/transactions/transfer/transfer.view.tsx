@@ -203,14 +203,12 @@ function Transfer({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  transaction={{
-                    type: TxType.Transfer,
-                    amount: transactionToReview.amount,
-                    account: accountTask.data,
-                    to: transactionToReview.to,
-                    fee: transactionToReview.fee,
-                    onTransfer,
-                  }}
+                  type={TxType.Transfer}
+                  amount={transactionToReview.amount}
+                  account={accountTask.data}
+                  to={transactionToReview.to}
+                  fee={transactionToReview.fee}
+                  onTransfer={onTransfer}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={
                     fiatExchangeRatesTask.status === "successful" ||

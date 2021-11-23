@@ -31,7 +31,12 @@ import {
 } from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
 
-type Transaction =
+type TransactionOverviewProps = {
+  wallet: HermezWallet.HermezWallet;
+  isTransactionBeingApproved: boolean;
+  preferredCurrency: string;
+  fiatExchangeRates: FiatExchangeRates;
+} & (
   | {
       type: TxType.Deposit;
       amount: BigNumber;
@@ -80,22 +85,15 @@ type Transaction =
       amount: BigNumber;
       account: HermezAccount;
       onForceExit: (amount: BigNumber, account: HermezAccount) => void;
-    };
-
-interface TransactionOverviewProps {
-  wallet: HermezWallet.HermezWallet;
-  isTransactionBeingApproved: boolean;
-  preferredCurrency: string;
-  fiatExchangeRates: FiatExchangeRates;
-  transaction: Transaction;
-}
+    }
+);
 
 function TransactionOverview({
   wallet,
   isTransactionBeingApproved,
   preferredCurrency,
   fiatExchangeRates,
-  transaction,
+  ...transaction
 }: TransactionOverviewProps): JSX.Element {
   const theme = useTheme<Theme>();
   const classes = useTransactionOverviewStyles();

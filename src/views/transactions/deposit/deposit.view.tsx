@@ -185,12 +185,10 @@ function Deposit({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  transaction={{
-                    type: TxType.Deposit,
-                    amount: transactionToReview.amount,
-                    account: ethereumAccountTask.data,
-                    onDeposit,
-                  }}
+                  type={TxType.Deposit}
+                  amount={transactionToReview.amount}
+                  account={ethereumAccountTask.data}
+                  onDeposit={onDeposit}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={
                     fiatExchangeRatesTask.status === "successful" ||
