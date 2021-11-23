@@ -88,13 +88,11 @@ function ForceExit({
           case "choose-account": {
             return (
               <AccountSelector
-                transaction={{
-                  type: TxType.ForceExit,
-                  accountsTask: accountsTask,
-                  poolTransactionsTask: poolTransactionsTask,
-                  onLoadAccounts: onLoadAccounts,
-                  onAccountClick: onGoToBuildTransactionStep,
-                }}
+                type={TxType.ForceExit}
+                accountsTask={accountsTask}
+                poolTransactionsTask={poolTransactionsTask}
+                onLoadAccounts={onLoadAccounts}
+                onAccountClick={onGoToBuildTransactionStep}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||

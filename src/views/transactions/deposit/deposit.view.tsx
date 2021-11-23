@@ -132,13 +132,11 @@ function Deposit({
           case "choose-account": {
             return (
               <AccountSelector
-                transaction={{
-                  type: TxType.Deposit,
-                  accountsTask: ethereumAccountsTask,
-                  pendingDeposits: accountPendingDeposits,
-                  onLoadAccounts: onLoadEthereumAccounts,
-                  onAccountClick: onGoToBuildTransactionStep,
-                }}
+                type={TxType.Deposit}
+                accountsTask={ethereumAccountsTask}
+                pendingDeposits={accountPendingDeposits}
+                onLoadAccounts={onLoadEthereumAccounts}
+                onAccountClick={onGoToBuildTransactionStep}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||

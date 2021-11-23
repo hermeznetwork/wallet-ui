@@ -24,7 +24,10 @@ export interface AccountsWithPagination {
   pagination: Pagination;
 }
 
-type Transaction =
+type AccountSelectorProps = {
+  fiatExchangeRates: FiatExchangeRates;
+  preferredCurrency: string;
+} & (
   | {
       type: TxType.Deposit;
       accountsTask: AsyncTask<EthereumAccount[], Error>;
@@ -55,18 +58,13 @@ type Transaction =
         preferredCurrency: string
       ) => void;
       onAccountClick: (account: HermezAccount) => void;
-    };
-
-interface AccountSelectorProps {
-  fiatExchangeRates: FiatExchangeRates;
-  preferredCurrency: string;
-  transaction: Transaction;
-}
+    }
+);
 
 function AccountSelector({
   fiatExchangeRates,
   preferredCurrency,
-  transaction,
+  ...transaction
 }: AccountSelectorProps): JSX.Element {
   const classes = useAccountSelectorStyles();
   const { accountsTask, type } = transaction;
