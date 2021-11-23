@@ -93,7 +93,7 @@ const useExitStyles = createUseStyles((theme) => ({
   },
   withdrawInfoIcon: {
     justifyContent: "left",
-    color: "white",
+    color: theme.palette.white,
   },
   infoIcon: {
     width: theme.spacing(2),
