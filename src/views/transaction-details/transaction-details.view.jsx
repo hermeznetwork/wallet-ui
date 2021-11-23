@@ -106,9 +106,7 @@ function TransactionDetails({
           const feeUsd = transactionTask.data.L2Info.historicFeeUSD;
           const feeToken = feeUsd / token.USD;
 
-          return !isNaN(feeUsd)
-            ? trimZeros(feeToken, MAX_TOKEN_DECIMALS)
-            : undefined;
+          return !isNaN(feeUsd) ? trimZeros(feeToken, MAX_TOKEN_DECIMALS) : undefined;
         } else if (transactionTask.data.fee || transactionTask.data.L2Info?.fee) {
           const feeUsd = getFeeInUsd(
             transactionTask.data.fee || transactionTask.data.L2Info?.fee,
@@ -117,9 +115,7 @@ function TransactionDetails({
           );
           const feeToken = feeUsd / token.USD;
 
-          return !isNaN(feeUsd)
-            ? trimZeros(feeToken, MAX_TOKEN_DECIMALS)
-            : undefined;
+          return !isNaN(feeUsd) ? trimZeros(feeToken, MAX_TOKEN_DECIMALS) : undefined;
         } else {
           return undefined;
         }
