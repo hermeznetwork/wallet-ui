@@ -18,7 +18,6 @@ const useTransactionInfoRowStyles = createUseStyles((theme: Theme) => ({
     marginBottom: `${theme.spacing(1.5)}px`,
   },
   title: {
-    color: theme.palette.black,
     fontWeight: theme.fontWeights.medium,
   },
   copyButton: {
@@ -41,7 +40,6 @@ const useTransactionInfoRowStyles = createUseStyles((theme: Theme) => ({
   subtitle: {
     display: "flex",
     alignItems: "center",
-    color: theme.palette.black,
     fontWeight: theme.fontWeights.bold,
   },
   hint: {
