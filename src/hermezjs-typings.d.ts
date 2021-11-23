@@ -404,7 +404,6 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     gasMultiplier?: number
   ): Promise<TxData>;
 
-  // function forceExit();
   // function withdraw();
   // function isInstantWithdrawalAllowed();
   // function sendL2Transaction();
@@ -427,6 +426,13 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
 
   function delayedWithdraw(
     hezEthereumAddress: string,
+    token: Token,
+    signerData: Signers.SignerData
+  ): Promise<TxData>;
+
+  function forceExit(
+    amount: HermezCompressedAmount,
+    accountIndex: string,
     token: Token,
     signerData: Signers.SignerData
   ): Promise<TxData>;

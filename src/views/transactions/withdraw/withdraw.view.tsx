@@ -17,11 +17,10 @@ import * as storage from "src/utils/storage";
 // domain
 import { EstimatedWithdrawFee } from "src/domain/";
 import {
-  Account,
+  HermezAccount,
   HermezWallet,
   FiatExchangeRates,
   PoolTransaction,
-  Token,
   Exit,
   PendingDelayedWithdraw,
 } from "src/domain/hermez";
@@ -33,7 +32,7 @@ interface WithdrawStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: withdrawActions.Step;
   exitTask: AsyncTask<Exit, Error>;
-  accountTask: AsyncTask<Account, string>;
+  accountTask: AsyncTask<HermezAccount, string>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
   isTransactionBeingApproved: boolean;
   pendingDelayedWithdraws: PendingDelayedWithdraws;
@@ -41,7 +40,6 @@ interface WithdrawStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  tokensPriceTask: AsyncTask<Token[], string>;
 }
 
 interface WithdrawHandlerProps {
@@ -62,7 +60,7 @@ interface WithdrawHandlerProps {
   ) => void;
   onWithdraw: (
     amount: BigNumber,
-    account: Account,
+    account: HermezAccount,
     exit: Exit,
     completeDelayedWithdrawal: boolean,
     instantWithdrawal: boolean
@@ -208,9 +206,6 @@ function Withdraw({
               />
             ) : null;
           }
-          default: {
-            return <></>;
-          }
         }
       })()}
     </div>
@@ -229,7 +224,6 @@ const mapStateToProps = (state: AppState): WithdrawStateProps => ({
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
-  tokensPriceTask: state.global.tokensPriceTask,
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch): WithdrawHandlerProps => ({
@@ -275,7 +269,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): WithdrawHandlerProps => ({
     ),
   onWithdraw: (
     amount: BigNumber,
-    account: Account,
+    account: HermezAccount,
     exit: Exit,
     completeDelayedWithdrawal: boolean,
     instantWithdrawal: boolean

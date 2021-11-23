@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import useTransactionInfoTableRowStyles from "./transaction-info-table.styles";
 import TransactionInfoRow from "../transaction-info-table-row/transaction-info-row.view";
-import FeesTable from "../../transaction/components/fees-table/fees-table.view";
+import FeesTable from "../fees-table/fees-table.view";
 
 function TransactionInfoTableRow({
   status,

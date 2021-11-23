@@ -20,10 +20,6 @@ const useLoginStyles = createUseStyles((theme) => ({
     fontWeight: theme.fontWeights.bold,
     marginBottom: theme.spacing(6),
   },
-  updateMetaMaskAlert: {
-    marginTop: theme.spacing(5),
-    maxWidth: 564,
-  },
 }));
 
 export default useLoginStyles;

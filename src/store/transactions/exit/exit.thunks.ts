@@ -13,9 +13,11 @@ import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
 // domain
-import { Account, FiatExchangeRates, PoolTransaction, Token } from "src/domain/hermez";
+import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain/hermez";
 import { ETHER_TOKEN_ID } from "src/constants";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
+// persistence
+import * as persistence from "src/persistence";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -164,7 +166,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
   };
 }
 
-function exit(amount: BigNumber, account: Account, fee: number) {
+function exit(amount: BigNumber, account: HermezAccount, fee: number) {
   return (dispatch: AppDispatch, getState: () => AppState): void | Promise<void> => {
     const {
       global: { wallet, coordinatorStateTask },
@@ -196,9 +198,8 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
-function handleTransactionFailure(dispatch: AppDispatch, error: Error | string) {
-  const errorMsg = error instanceof Error ? error.message : error;
-
+function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
+  const errorMsg = persistence.getErrorMessage(error);
   dispatch(exitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }

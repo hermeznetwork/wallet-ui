@@ -1,6 +1,7 @@
+import { Theme } from "src/styles/theme";
 import { createUseStyles } from "react-jss";
 
-const useTransactionLayoutStyles = createUseStyles((theme) => ({
+const useForceExitStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
   },
@@ -15,4 +16,4 @@ const useTransactionLayoutStyles = createUseStyles((theme) => ({
   },
 }));
 
-export default useTransactionLayoutStyles;
+export default useForceExitStyles;

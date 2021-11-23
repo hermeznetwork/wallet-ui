@@ -5,7 +5,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { push } from "connected-react-router";
 
 import {
-  Account,
+  HermezAccount,
   FiatExchangeRates,
   HermezWallet,
   PoolTransaction,
@@ -27,7 +27,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 interface ExitStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: exitActions.Step;
-  accountTask: AsyncTask<Account, string>;
+  accountTask: AsyncTask<HermezAccount, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   accountBalanceTask: AsyncTask<string, Error>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
@@ -36,7 +36,6 @@ interface ExitStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  tokensPriceTask: AsyncTask<Token[], string>;
 }
 
 interface ExitHandlerProps {
@@ -52,9 +51,9 @@ interface ExitHandlerProps {
   onLoadEstimatedWithdrawFee: (token: Token, amount: BigNumber) => void;
   onLoadPoolTransactions: () => void;
   onGoToHome: () => void;
-  onGoToBuildTransactionStep: (account: Account) => void;
+  onGoToBuildTransactionStep: (account: HermezAccount) => void;
   onGoToTransactionOverviewStep: (transactionToReview: exitActions.TransactionToReview) => void;
-  onExit: (amount: BigNumber, account: Account, fee: number) => void;
+  onExit: (amount: BigNumber, account: HermezAccount, fee: number) => void;
   onCleanup: () => void;
 }
 
@@ -72,7 +71,6 @@ function Exit({
   wallet,
   preferredCurrency,
   fiatExchangeRatesTask,
-  tokensPriceTask,
   onChangeHeader,
   onLoadHermezAccount,
   onLoadFees,
@@ -154,7 +152,6 @@ function Exit({
                     : {}
                 }
                 feesTask={feesTask}
-                tokensPriceTask={tokensPriceTask}
                 accountBalanceTask={accountBalanceTask}
                 estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
                 // ToDo: To be removed START
@@ -195,9 +192,6 @@ function Exit({
               />
             ) : null;
           }
-          default: {
-            return <></>;
-          }
         }
       })()}
     </div>
@@ -216,7 +210,6 @@ const mapStateToProps = (state: AppState): ExitStateProps => ({
   transactionToReview: state.exit.transaction,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
-  tokensPriceTask: state.global.tokensPriceTask,
 });
 
 const getHeaderCloseAction = (accountIndex: string | null) => {
@@ -274,11 +267,11 @@ const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlerProps => ({
   },
   onLoadPoolTransactions: () => dispatch(exitThunks.fetchPoolTransactions()),
   onGoToHome: () => dispatch(push("/")),
-  onGoToBuildTransactionStep: (account: Account) =>
+  onGoToBuildTransactionStep: (account: HermezAccount) =>
     dispatch(exitActions.goToBuildTransactionStep(account)),
   onGoToTransactionOverviewStep: (transactionToReview: exitActions.TransactionToReview) =>
     dispatch(exitActions.goToReviewTransactionStep(transactionToReview)),
-  onExit: (amount: BigNumber, from: Account, fee: number) =>
+  onExit: (amount: BigNumber, from: HermezAccount, fee: number) =>
     dispatch(exitThunks.exit(amount, from, fee)),
   onCleanup: () => dispatch(exitActions.resetState()),
 });

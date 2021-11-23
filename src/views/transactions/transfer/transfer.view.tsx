@@ -19,18 +19,17 @@ import { AsyncTask } from "src/utils/types";
 // domain
 import { Header } from "src/domain/";
 import {
-  Account,
+  HermezAccount,
   HermezWallet,
   FiatExchangeRates,
   PoolTransaction,
-  Token,
   RecommendedFee,
 } from "src/domain/hermez";
 
 interface TransferStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: transferActions.Step;
-  accountTask: AsyncTask<Account, string>;
+  accountTask: AsyncTask<HermezAccount, string>;
   accountsTask: AsyncTask<transferReducer.AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   isTransactionBeingApproved: boolean;
@@ -38,7 +37,6 @@ interface TransferStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  tokensPriceTask: AsyncTask<Token[], string>;
 }
 
 interface TransferHandlerProps {
@@ -58,9 +56,14 @@ interface TransferHandlerProps {
     preferredCurrency: string
   ) => void;
   onGoToChooseAccountStep: () => void;
-  onGoToBuildTransactionStep: (account: Account) => void;
+  onGoToBuildTransactionStep: (account: HermezAccount) => void;
   onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) => void;
-  onTransfer: (amount: BigNumber, account: Account, to: Partial<Account>, fee: number) => void;
+  onTransfer: (
+    amount: BigNumber,
+    account: HermezAccount,
+    to: Partial<HermezAccount>,
+    fee: number
+  ) => void;
   onCleanup: () => void;
 }
 
@@ -77,7 +80,6 @@ function Transfer({
   wallet,
   preferredCurrency,
   fiatExchangeRatesTask,
-  tokensPriceTask,
   onChangeHeader,
   onLoadHermezAccount,
   onLoadFees,
@@ -162,7 +164,7 @@ function Transfer({
                 }
                 pendingDeposits={[]}
                 onLoadAccounts={onLoadAccounts}
-                onAccountClick={(account: Account) => onGoToBuildTransactionStep(account)}
+                onAccountClick={(account: HermezAccount) => onGoToBuildTransactionStep(account)}
               />
             );
           }
@@ -180,7 +182,6 @@ function Transfer({
                     : {}
                 }
                 feesTask={feesTask}
-                tokensPriceTask={tokensPriceTask}
                 // ToDo: To be removed START
                 accountBalanceTask={{ status: "pending" }}
                 estimatedWithdrawFeeTask={{ status: "pending" }}
@@ -196,32 +197,31 @@ function Transfer({
             ) : null;
           }
           case "review-transaction": {
-            return wallet !== undefined &&
+            return (
+              wallet !== undefined &&
               transactionToReview !== undefined &&
-              (accountTask.status === "successful" || accountTask.status === "reloading") ? (
-              <TransactionOverview
-                wallet={wallet}
-                isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Transfer,
-                  amount: transactionToReview.amount,
-                  account: accountTask.data,
-                  to: transactionToReview.to,
-                  fee: transactionToReview.fee,
-                  onTransfer,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
-              />
-            ) : null;
-          }
-          default: {
-            return <></>;
+              (accountTask.status === "successful" || accountTask.status === "reloading") && (
+                <TransactionOverview
+                  wallet={wallet}
+                  isTransactionBeingApproved={isTransactionBeingApproved}
+                  transaction={{
+                    type: TxType.Transfer,
+                    amount: transactionToReview.amount,
+                    account: accountTask.data,
+                    to: transactionToReview.to,
+                    fee: transactionToReview.fee,
+                    onTransfer,
+                  }}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRates={
+                    fiatExchangeRatesTask.status === "successful" ||
+                    fiatExchangeRatesTask.status === "reloading"
+                      ? fiatExchangeRatesTask.data
+                      : {}
+                  }
+                />
+              )
+            );
           }
         }
       })()}
@@ -240,7 +240,6 @@ const mapStateToProps = (state: AppState): TransferStateProps => ({
   transactionToReview: state.transfer.transaction,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
-  tokensPriceTask: state.global.tokensPriceTask,
 });
 
 const getHeaderCloseAction = (accountIndex: string | null) => {
@@ -315,11 +314,11 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
       transferThunks.fetchAccounts(fromItem, poolTransactions, fiatExchangeRates, preferredCurrency)
     ),
   onGoToChooseAccountStep: () => dispatch(transferActions.goToChooseAccountStep()),
-  onGoToBuildTransactionStep: (account: Account) =>
+  onGoToBuildTransactionStep: (account: HermezAccount) =>
     dispatch(transferActions.goToBuildTransactionStep(account)),
   onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) =>
     dispatch(transferActions.goToReviewTransactionStep(transactionToReview)),
-  onTransfer: (amount: BigNumber, from: Account, to: Partial<Account>, fee: number) =>
+  onTransfer: (amount: BigNumber, from: HermezAccount, to: Partial<HermezAccount>, fee: number) =>
     dispatch(transferThunks.transfer(amount, from, to, fee)),
   onCleanup: () => dispatch(transferActions.resetState()),
 });

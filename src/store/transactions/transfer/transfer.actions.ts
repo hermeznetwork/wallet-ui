@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { Account, PoolTransaction, RecommendedFee } from "src/domain/hermez";
+import { HermezAccount, PoolTransaction, RecommendedFee } from "src/domain/hermez";
 // persistence
 import { Accounts } from "src/persistence";
 
@@ -35,14 +35,14 @@ export interface GoToChooseAccountStep {
 
 export interface GoToBuildTransactionStep {
   type: TransferActionTypes.GO_TO_BUILD_TRANSACTION_STEP;
-  account: Account;
+  account: HermezAccount;
 }
 
 export interface TransactionToReview {
   amount: BigNumber;
   fee: number;
-  from: Account;
-  to: Partial<Account>;
+  from: HermezAccount;
+  to: Partial<HermezAccount>;
 }
 
 export interface GoToReviewTransactionStep {
@@ -61,7 +61,7 @@ export interface LoadAccount {
 
 export interface LoadAccountSuccess {
   type: TransferActionTypes.LOAD_ACCOUNT_SUCCESS;
-  account: Account;
+  account: HermezAccount;
 }
 
 export interface LoadAccountFailure {
@@ -150,7 +150,7 @@ function goToChooseAccountStep(): GoToChooseAccountStep {
   };
 }
 
-function goToBuildTransactionStep(account: Account): GoToBuildTransactionStep {
+function goToBuildTransactionStep(account: HermezAccount): GoToBuildTransactionStep {
   return {
     type: TransferActionTypes.GO_TO_BUILD_TRANSACTION_STEP,
     account,
@@ -177,7 +177,7 @@ function loadAccount(): LoadAccount {
   };
 }
 
-function loadAccountSuccess(account: Account): LoadAccountSuccess {
+function loadAccountSuccess(account: HermezAccount): LoadAccountSuccess {
   return {
     type: TransferActionTypes.LOAD_ACCOUNT_SUCCESS,
     account,

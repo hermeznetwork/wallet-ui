@@ -36,7 +36,6 @@ function TransactionForm({
   fiatExchangeRates,
   accountBalanceTask,
   feesTask,
-  tokensPriceTask,
   estimatedWithdrawFeeTask,
   estimatedDepositFeeTask,
   onLoadAccountBalance,
@@ -440,7 +439,6 @@ function TransactionForm({
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={fiatExchangeRates}
                 showInFiat={showInFiat}
-                tokensPriceTask={tokensPriceTask}
                 depositFee={depositFee}
               />
             </>

@@ -3,7 +3,7 @@
  * We may decide not to export them from the persistence and let other layers import them from the lib.
  */
 import { AxiosError } from "axios";
-import * as z from "zod";
+import { z } from "zod";
 import hermez from "@hermeznetwork/hermezjs";
 
 import { HttpStatusCode } from "src/utils/http";
@@ -55,4 +55,30 @@ export function postCreateAccountAuthorization(
       }
     }
   });
+}
+
+// Error decoding and message extraction
+interface MessageKeyError {
+  message: string;
+}
+
+const messageKeyErrorParser: z.ZodSchema<MessageKeyError> = z.object({
+  message: z.string(),
+});
+
+export function getErrorMessage(error: unknown, defaultMsg?: string): string {
+  if (typeof error === "string") {
+    return error;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  const parsedMessageKeyError = messageKeyErrorParser.safeParse(error);
+  if (parsedMessageKeyError.success) {
+    return parsedMessageKeyError.data.message;
+  }
+  if (defaultMsg !== undefined) {
+    return defaultMsg;
+  }
+  return "An unknown error occurred";
 }

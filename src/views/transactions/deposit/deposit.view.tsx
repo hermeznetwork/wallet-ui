@@ -34,7 +34,6 @@ interface DepositStateProps {
   pendingDepositsCheckTask: AsyncTask<null, string>;
   preferredCurrency: string;
   step: depositActions.Step;
-  tokensPriceTask: AsyncTask<Token[], string>;
   transactionToReview: depositActions.TransactionToReview | undefined;
   wallet: HermezWallet.HermezWallet | undefined;
 }
@@ -65,7 +64,6 @@ function Deposit({
   pendingDepositsCheckTask,
   preferredCurrency,
   step,
-  tokensPriceTask,
   transactionToReview,
   wallet,
   onChangeHeader,
@@ -166,7 +164,6 @@ function Deposit({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                tokensPriceTask={tokensPriceTask}
                 estimatedDepositFeeTask={estimatedDepositFeeTask}
                 // ToDo: To be removed START
                 receiverAddress={undefined}
@@ -184,31 +181,30 @@ function Deposit({
             ) : null;
           }
           case "review-transaction": {
-            return wallet !== undefined &&
+            return (
+              wallet !== undefined &&
               transactionToReview !== undefined &&
               (ethereumAccountTask.status === "successful" ||
-                ethereumAccountTask.status === "reloading") ? (
-              <TransactionOverview
-                wallet={wallet}
-                isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Deposit,
-                  amount: transactionToReview.amount,
-                  account: ethereumAccountTask.data,
-                  onDeposit,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
-              />
-            ) : null;
-          }
-          default: {
-            return <></>;
+                ethereumAccountTask.status === "reloading") && (
+                <TransactionOverview
+                  wallet={wallet}
+                  isTransactionBeingApproved={isTransactionBeingApproved}
+                  transaction={{
+                    type: TxType.Deposit,
+                    amount: transactionToReview.amount,
+                    account: ethereumAccountTask.data,
+                    onDeposit,
+                  }}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRates={
+                    fiatExchangeRatesTask.status === "successful" ||
+                    fiatExchangeRatesTask.status === "reloading"
+                      ? fiatExchangeRatesTask.data
+                      : {}
+                  }
+                />
+              )
+            );
           }
         }
       })()}
@@ -227,7 +223,6 @@ const mapStateToProps = (state: AppState): DepositStateProps => ({
   pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
   preferredCurrency: state.myAccount.preferredCurrency,
   step: state.deposit.step,
-  tokensPriceTask: state.global.tokensPriceTask,
   transactionToReview: state.deposit.transaction,
   wallet: state.global.wallet,
 });

@@ -1,20 +1,16 @@
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { parseUnits } from "ethers/lib/utils";
-import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
-import { BigNumber } from "ethers";
 
 import useFeeStyles from "./fee.styles";
 import {
-  CurrencySymbol,
   getAmountInPreferredCurrency,
   getFixedTokenAmount,
   getTokenAmountInPreferredCurrency,
 } from "../../../../utils/currencies";
 import { ReactComponent as AngleDownIcon } from "../../../../images/icons/angle-down.svg";
-import FeesTable from "../fees-table/fees-table.view";
+import FeesTable from "../../../shared/fees-table/fees-table.view";
 import { getRealFee } from "../../../../utils/fees";
-import { ETHER_TOKEN_ID } from "../../../../constants";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 function Fee({
@@ -26,7 +22,6 @@ function Fee({
   preferredCurrency,
   fiatExchangeRates,
   showInFiat,
-  tokensPriceTask,
   depositFee,
 }) {
   const [isWithdrawFeeExpanded, setIsWithdrawFeeExpanded] = React.useState(false);
