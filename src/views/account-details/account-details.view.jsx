@@ -252,42 +252,34 @@ function AccountDetails({
 
               return (
                 <>
-                  {(poolTransactionsTask.status === "successful" ||
-                    poolTransactionsTask.status === "reloading") && (
-                    <ExitList
-                      transactions={getPendingExits(poolTransactionsTask.data)}
-                      fiatExchangeRates={fiatExchangeRatesTask.data}
-                      preferredCurrency={preferredCurrency}
-                      babyJubJub={wallet.publicKeyCompressedHex}
-                      pendingWithdraws={tokenPendingWithdraws}
-                      pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                      timerWithdraws={tokenTimerWithdraws}
-                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                      onAddTimerWithdraw={onAddTimerWithdraw}
-                      onRemoveTimerWithdraw={onRemoveTimerWithdraw}
-                      coordinatorState={coordinatorStateTask?.data}
-                    />
-                  )}
-                  {(exitsTask.status === "successful" || exitsTask.status === "reloading") && (
-                    <ExitList
-                      transactions={mergeExits(
-                        exitsTask.data.exits,
-                        accountPendingDelayedWithdraws
-                      )}
-                      fiatExchangeRates={fiatExchangeRatesTask.data}
-                      preferredCurrency={preferredCurrency}
-                      babyJubJub={wallet.publicKeyCompressedHex}
-                      pendingWithdraws={tokenPendingWithdraws}
-                      pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                      timerWithdraws={tokenTimerWithdraws}
-                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                      onAddTimerWithdraw={onAddTimerWithdraw}
-                      onRemoveTimerWithdraw={onRemoveTimerWithdraw}
-                      coordinatorState={coordinatorStateTask?.data}
-                    />
-                  )}
+                  <ExitList
+                    transactions={getPendingExits(poolTransactionsTask.data)}
+                    fiatExchangeRates={fiatExchangeRatesTask.data}
+                    preferredCurrency={preferredCurrency}
+                    babyJubJub={wallet.publicKeyCompressedHex}
+                    pendingWithdraws={tokenPendingWithdraws}
+                    pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
+                    timerWithdraws={tokenTimerWithdraws}
+                    onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                    onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                    onAddTimerWithdraw={onAddTimerWithdraw}
+                    onRemoveTimerWithdraw={onRemoveTimerWithdraw}
+                    coordinatorState={coordinatorStateTask?.data}
+                  />
+                  <ExitList
+                    transactions={mergeExits(exitsTask.data.exits, tokenPendingDelayedWithdraws)}
+                    fiatExchangeRates={fiatExchangeRatesTask.data}
+                    preferredCurrency={preferredCurrency}
+                    babyJubJub={wallet.publicKeyCompressedHex}
+                    pendingWithdraws={tokenPendingWithdraws}
+                    pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
+                    timerWithdraws={tokenTimerWithdraws}
+                    onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
+                    onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                    onAddTimerWithdraw={onAddTimerWithdraw}
+                    onRemoveTimerWithdraw={onRemoveTimerWithdraw}
+                    coordinatorState={coordinatorStateTask?.data}
+                  />
                   {tokenPendingDeposits && (
                     <TransactionList
                       arePending

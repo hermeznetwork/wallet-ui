@@ -79,6 +79,10 @@ const useExitStyles = createUseStyles((theme) => ({
     justifyContent: "space-between",
     width: "100%",
     color: theme.palette.grey.dark,
+    "& p": {
+      display: "flex",
+      alignItems: "center",
+    },
   },
   withdrawInfoDelayed: {
     flexDirection: "column",
@@ -88,7 +92,8 @@ const useExitStyles = createUseStyles((theme) => ({
     borderRadius: 12,
   },
   withdrawInfoIcon: {
-    color: theme.palette.white,
+    justifyContent: "left",
+    color: "white",
   },
   infoIcon: {
     width: theme.spacing(2),
@@ -96,11 +101,13 @@ const useExitStyles = createUseStyles((theme) => ({
     marginRight: theme.spacing(1),
     fill: theme.palette.grey.dark,
   },
+  infoBoxIcon: {
+    fill: theme.palette.white,
+  },
   infoText: {
     marginBottom: theme.spacing(2),
     fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.medium,
-    color: theme.palette.grey.dark,
     "&:last-child": {
       marginBottom: 0,
     },

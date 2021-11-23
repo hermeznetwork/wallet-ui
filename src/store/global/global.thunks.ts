@@ -441,11 +441,6 @@ function checkPendingDelayedWithdrawals(): AppThunk {
   };
 }
 
-/**
- * Adds a timerWithdraw to the timerWithdraw store
- * @param {TimerWithdraw} timerWithdraw - The timerWithdraw to add to the store
- * @returns {void}
- */
 function addTimerWithdraw(timerWithdraw: TimerWithdraw): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -464,11 +459,6 @@ function addTimerWithdraw(timerWithdraw: TimerWithdraw): AppThunk {
   };
 }
 
-/**
- * Removes a timerWithdraw from the timerWithdraw store by id
- * @param {string} timerWithdrawId - The timerWithdraw id to remove from the store
- * @returns {void}
- */
 function removeTimerWithdraw(timerWithdrawId: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -480,7 +470,7 @@ function removeTimerWithdraw(timerWithdrawId: string): AppThunk {
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
-        localStoragePersistence.removeTimerWithdraw(
+        localStoragePersistence.removeTimerWithdrawById(
           chainId,
           hermezEthereumAddress,
           timerWithdrawId

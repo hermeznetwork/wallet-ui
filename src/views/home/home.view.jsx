@@ -215,6 +215,8 @@ function Home({
                 pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                 onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
                 onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                onAddTimerWithdraw={onAddTimerWithdraw}
+                onRemoveTimerWithdraw={onRemoveTimerWithdraw}
                 coordinatorState={coordinatorStateTask?.data}
               />
             ) : (

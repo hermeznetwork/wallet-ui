@@ -360,7 +360,7 @@ const timerWithdrawParser: z.ZodSchema<TimerWithdraws> = z.record(
 );
 
 export function getTimerWithdraws(): TimerWithdraws {
-  const timerWithdraws: unknown = getStorageByKey(constants.TIMER_WITHDRAW_KEY);
+  const timerWithdraws: unknown = getStorageByKey(constants.TIMER_WITHDRAWS_KEY);
   const parsedTimerWithdraw = timerWithdrawParser.safeParse(timerWithdraws);
   if (parsedTimerWithdraw.success) {
     return parsedTimerWithdraw.data;
@@ -386,10 +386,10 @@ export function addTimerWithdraw(
       [hermezEthereumAddress]: [...withdraws, timerWithdraw],
     },
   };
-  setStorageByKey(constants.TIMER_WITHDRAW_KEY, newStorage);
+  setStorageByKey(constants.TIMER_WITHDRAWS_KEY, newStorage);
 }
 
-export function removeTimerWithdraw(
+export function removeTimerWithdrawById(
   chainId: number,
   hermezEthereumAddress: string,
   id: string
@@ -404,7 +404,7 @@ export function removeTimerWithdraw(
       [hermezEthereumAddress]: withdraws.filter((item) => item.id !== id),
     },
   };
-  setStorageByKey(constants.TIMER_WITHDRAW_KEY, newStorage);
+  setStorageByKey(constants.TIMER_WITHDRAWS_KEY, newStorage);
 }
 
 // Storage Version

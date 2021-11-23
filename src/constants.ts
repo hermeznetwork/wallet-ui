@@ -25,7 +25,7 @@ export const PENDING_DELAYED_WITHDRAWS_KEY = "pendingDelayedWithdraws";
 
 export const PENDING_DEPOSITS_KEY = "pendingDeposits";
 
-export const TIMER_WITHDRAW_KEY = "timerWithdraw";
+export const TIMER_WITHDRAWS_KEY = "timerWithdraws";
 
 export const ACCOUNT_AUTH_SIGNATURES_KEY = "accountAuthSignatures";
 

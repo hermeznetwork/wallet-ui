@@ -148,7 +148,7 @@ function Exit({
       } else {
         const remainingDifference = tenMinutes - difference;
         // Extracts the minutes from the remaining difference
-        const minutes = Math.round(remainingDifference / 1000 / 60);
+        const minutes = Math.ceil(remainingDifference / 1000 / 60);
 
         return `${minutes}m`;
       }
@@ -162,7 +162,7 @@ function Exit({
         const hours = remainingDifference / 1000 / 60 / 60;
         const hoursFixed = Math.floor(hours);
         // Minutes are in a value between 0-1, so we need to convert to 0-59
-        const minutes = Math.round((hours - hoursFixed) * 59);
+        const minutes = Math.ceil((hours - hoursFixed) * 59);
 
         if (hoursFixed < 1) {
           return `${minutes}m`;
@@ -292,9 +292,9 @@ function Exit({
           const timerWithdraw = timerWithdraws?.find(
             (timerWithdraws) => timerWithdraws.id === exitId
           );
+          const withdraw = pendingDelayedWithdrawal || timerWithdraw;
 
-          if (pendingDelayedWithdrawal || timerWithdraw) {
-            const withdraw = pendingDelayedWithdrawal || timerWithdraw;
+          if (withdraw) {
             const remainingTime = getDateString(withdraw, timerWithdraw);
             return (
               <div className={classes.withdraw}>
@@ -309,7 +309,7 @@ function Exit({
                   )}
 
                   <div className={`${classes.withdrawInfo} ${classes.withdrawInfoIcon}`}>
-                    <InfoIcon className={classes.infoIcon} />
+                    <InfoIcon className={`${classes.infoIcon} ${classes.infoBoxIcon}`} />
                     <span className={classes.infoText}>Remaining time: {remainingTime}</span>
                   </div>
                 </div>
