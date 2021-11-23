@@ -227,9 +227,7 @@ function AccountDetails({
               (exitsTask.status === "successful" || exitsTask.status === "reloading")
             ) {
               const tokenPendingDeposits = accountPendingDeposits
-                .filter(
-                  (deposit) => deposit.account?.accountIndex === accountTask.data.accountIndex
-                )
+                .filter((deposit) => deposit.accountIndex === accountTask.data.accountIndex)
                 .reverse();
               const tokenPendingWithdraws = accountPendingWithdraws.filter(
                 (withdraw) => withdraw.token.id === accountTask.data.token.id
