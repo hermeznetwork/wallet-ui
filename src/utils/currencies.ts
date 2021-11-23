@@ -29,8 +29,8 @@ const CurrencySymbol = {
 
 type CurrencySymbolKey = keyof typeof CurrencySymbol;
 
-function isValidCurrencySymbolKey(code: string): code is CurrencySymbolKey {
-  return code === "USD" || code === "EUR" || code === "CNY" || code === "JPY" || code === "GBP";
+function isValidCurrencySymbolKey(key: string): key is CurrencySymbolKey {
+  return key === "USD" || key === "EUR" || key === "CNY" || key === "JPY" || key === "GBP";
 }
 
 /**
