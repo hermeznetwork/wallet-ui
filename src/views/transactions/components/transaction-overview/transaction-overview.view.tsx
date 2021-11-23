@@ -36,16 +36,15 @@ type TransactionOverviewProps = {
   isTransactionBeingApproved: boolean;
   preferredCurrency: string;
   fiatExchangeRates: FiatExchangeRates;
+  amount: BigNumber;
 } & (
   | {
       type: TxType.Deposit;
-      amount: BigNumber;
       account: EthereumAccount;
       onDeposit: (amount: BigNumber, account: EthereumAccount) => void;
     }
   | {
       type: TxType.Transfer;
-      amount: BigNumber;
       account: HermezAccount;
       to: Partial<HermezAccount>;
       fee: number;
@@ -58,7 +57,6 @@ type TransactionOverviewProps = {
     }
   | {
       type: TxType.Exit;
-      amount: BigNumber;
       account: HermezAccount;
       fee: number;
       estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
@@ -66,7 +64,6 @@ type TransactionOverviewProps = {
     }
   | {
       type: TxType.Withdraw;
-      amount: BigNumber;
       account: HermezAccount;
       exit: Exit;
       completeDelayedWithdrawal: boolean;
@@ -82,7 +79,6 @@ type TransactionOverviewProps = {
     }
   | {
       type: TxType.ForceExit;
-      amount: BigNumber;
       account: HermezAccount;
       onForceExit: (amount: BigNumber, account: HermezAccount) => void;
     }
@@ -255,16 +251,17 @@ function TransactionOverview({
               <TransactionInfoTable
                 from={myHermezAddress}
                 to={myEthereumAddress}
-                fee={getRealFee(amount.toString(), account.token, transaction.fee)}
-                token={account.token}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRates}
-                estimatedWithdrawFee={
-                  transaction.estimatedWithdrawFeeTask.status === "successful" ||
-                  transaction.estimatedWithdrawFeeTask.status === "reloading"
-                    ? transaction.estimatedWithdrawFeeTask.data
-                    : undefined
-                }
+                feeData={{
+                  fee: getRealFee(amount.toString(), account.token, transaction.fee),
+                  token: account.token,
+                  preferredCurrency: preferredCurrency,
+                  fiatExchangeRates: fiatExchangeRates,
+                  estimatedWithdrawFee:
+                    transaction.estimatedWithdrawFeeTask.status === "successful" ||
+                    transaction.estimatedWithdrawFeeTask.status === "reloading"
+                      ? transaction.estimatedWithdrawFeeTask.data
+                      : undefined,
+                }}
               />
               <PrimaryButton
                 label="Initiate withdraw"
@@ -296,10 +293,12 @@ function TransactionOverview({
                       }
                     : undefined
                 }
-                fee={getRealFee(amount.toString(), account.token, transaction.fee)}
-                token={account.token}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRates}
+                feeData={{
+                  fee: getRealFee(amount.toString(), account.token, transaction.fee),
+                  token: account.token,
+                  preferredCurrency: preferredCurrency,
+                  fiatExchangeRates: fiatExchangeRates,
+                }}
               />
               <PrimaryButton label="Send" onClick={handleFormSubmit} disabled={isButtonDisabled} />
             </section>

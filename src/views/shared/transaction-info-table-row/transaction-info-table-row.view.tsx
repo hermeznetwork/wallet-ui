@@ -8,7 +8,6 @@ interface TransactionInfoTableRowProps {
   subtitle: string | JSX.Element;
   hint?: string;
   value?: string;
-  showCopyButton?: boolean;
   onCopySubtitle?: () => void;
 }
 
@@ -17,7 +16,6 @@ function TransactionInfoTableRow({
   subtitle,
   hint,
   value,
-  showCopyButton,
   onCopySubtitle,
 }: TransactionInfoTableRowProps): JSX.Element {
   const classes = useTransactionInfoRowStyles();
@@ -27,7 +25,7 @@ function TransactionInfoTableRow({
       <div className={`${classes.row} ${classes.topRow}`}>
         <p className={classes.title}>{title}</p>
         <div className={classes.subtitle}>
-          {showCopyButton && (
+          {onCopySubtitle && (
             <button className={classes.copyButton} onClick={onCopySubtitle}>
               <CopyIcon className={classes.copyIcon} />
             </button>

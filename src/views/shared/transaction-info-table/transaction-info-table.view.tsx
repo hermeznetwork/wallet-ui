@@ -9,20 +9,17 @@ import { EstimatedWithdrawFee } from "src/domain";
 
 interface TransactionInfoTableProps {
   status?: Row;
-  from?: Row;
-  to?: Row;
+  from?: Row & { onCopyFromAddress?: () => void };
+  to?: Row & { onCopyToAddress?: () => void };
   date?: Row;
-  fee?: number;
-  token?: Token;
-  estimatedWithdrawFee?: EstimatedWithdrawFee;
-  preferredCurrency?: string;
-  fiatExchangeRates?: FiatExchangeRates;
-  showToCopyButton?: boolean;
-  showFromCopyButton?: boolean;
-  onCopyToAddress?: () => void;
-  onCopyFromAddress?: () => void;
+  feeData?: {
+    fee?: number;
+    token?: Token;
+    estimatedWithdrawFee?: EstimatedWithdrawFee;
+    preferredCurrency?: string;
+    fiatExchangeRates?: FiatExchangeRates;
+  };
 }
-
 export interface Row {
   subtitle: string;
   value?: string;
@@ -33,15 +30,7 @@ function TransactionInfoTable({
   from,
   to,
   date,
-  fee,
-  token,
-  estimatedWithdrawFee,
-  preferredCurrency,
-  fiatExchangeRates,
-  showToCopyButton,
-  showFromCopyButton,
-  onCopyToAddress,
-  onCopyFromAddress,
+  feeData,
 }: TransactionInfoTableProps): JSX.Element {
   const classes = useTransactionInfoTableStyles();
 
@@ -55,8 +44,7 @@ function TransactionInfoTable({
           title="From"
           subtitle={from.subtitle}
           value={from.value}
-          showCopyButton={showFromCopyButton}
-          onCopySubtitle={onCopyFromAddress}
+          onCopySubtitle={from.onCopyFromAddress}
         />
       )}
       {to && (
@@ -64,20 +52,23 @@ function TransactionInfoTable({
           title="To"
           subtitle={to.subtitle}
           value={to.value}
-          showCopyButton={showToCopyButton}
-          onCopySubtitle={onCopyToAddress}
+          onCopySubtitle={to.onCopyToAddress}
         />
       )}
       {date && <TransactionInfoTableRow title="Date" subtitle={date.subtitle} />}
-      {fee && token && preferredCurrency && fiatExchangeRates && (
-        <FeesTable
-          l2Fee={fee}
-          estimatedWithdrawFee={estimatedWithdrawFee}
-          token={token}
-          preferredCurrency={preferredCurrency}
-          fiatExchangeRates={fiatExchangeRates}
-        />
-      )}
+      {feeData &&
+        feeData.fee &&
+        feeData.token &&
+        feeData.preferredCurrency &&
+        feeData.fiatExchangeRates && (
+          <FeesTable
+            l2Fee={feeData.fee}
+            estimatedWithdrawFee={feeData.estimatedWithdrawFee}
+            token={feeData.token}
+            preferredCurrency={feeData.preferredCurrency}
+            fiatExchangeRates={feeData.fiatExchangeRates}
+          />
+        )}
     </div>
   );
 }

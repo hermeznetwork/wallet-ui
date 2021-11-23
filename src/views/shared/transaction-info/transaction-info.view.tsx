@@ -35,8 +35,6 @@ interface TransactionInfoProps {
   preferredCurrency: string;
   fiatExchangeRates?: FiatExchangeRates;
   showStatus: boolean;
-  showToCopyButton: boolean;
-  showFromCopyButton: boolean;
   onToCopyClick: () => void;
   onFromCopyClick: () => void;
 }
@@ -48,11 +46,10 @@ function TransactionInfo({
   preferredCurrency,
   fiatExchangeRates,
   showStatus,
-  showToCopyButton,
-  showFromCopyButton,
   onToCopyClick,
   onFromCopyClick,
 }: TransactionInfoProps): JSX.Element {
+  const feeData = { fee, fiatExchangeRates, preferredCurrency, token: transaction.token };
   const date: Row = {
     subtitle: new Date(transaction.timestamp).toLocaleString(),
   };
@@ -97,7 +94,7 @@ function TransactionInfo({
     onFromCopyClick();
   }
 
-  function getTransferAddressToShow(): Row | undefined {
+  function getTransferRecipientRow(): Row | undefined {
     if (
       transaction.toBJJ &&
       transaction.toHezEthereumAddress?.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
@@ -139,42 +136,32 @@ function TransactionInfo({
     case TxType.Transfer:
     case TxType.TransferToBJJ:
     case TxType.TransferToEthAddr: {
-      if (accountIndex === transaction.fromAccountIndex) {
+      const status = getTransactionStatus();
+      const wasTransferSentByMe = accountIndex === transaction.fromAccountIndex;
+      if (wasTransferSentByMe) {
+        const from = { ...myHermezAddress, onCopyFromAddress: handleCopyFromAddress };
+        const transferRecipientRow = getTransferRecipientRow();
+        const to = transferRecipientRow && {
+          ...transferRecipientRow,
+          onCopyToAddress: handleCopyToAddress,
+        };
         return (
-          <TransactionInfoTable
-            status={getTransactionStatus()}
-            from={myHermezAddress}
-            to={getTransferAddressToShow()}
-            date={date}
-            fee={fee}
-            token={transaction.token}
-            preferredCurrency={preferredCurrency}
-            fiatExchangeRates={fiatExchangeRates}
-            showToCopyButton={showToCopyButton}
-            showFromCopyButton={showFromCopyButton}
-            onCopyToAddress={handleCopyToAddress}
-            onCopyFromAddress={handleCopyFromAddress}
-          />
+          <TransactionInfoTable status={status} from={from} to={to} date={date} feeData={feeData} />
         );
       } else {
+        const from = {
+          subtitle: getPartiallyHiddenHermezAddress(transaction.fromHezEthereumAddress),
+          onCopyFromAddress: handleCopyFromAddress,
+        };
+        const to = {
+          subtitle: "My Hermez address",
+          value: transaction.toHezEthereumAddress
+            ? getPartiallyHiddenHermezAddress(transaction.toHezEthereumAddress)
+            : undefined,
+          onCopyToAddress: handleCopyToAddress,
+        };
         return (
-          <TransactionInfoTable
-            status={getTransactionStatus()}
-            from={{
-              subtitle: getPartiallyHiddenHermezAddress(transaction.fromHezEthereumAddress),
-            }}
-            to={{
-              subtitle: "My Hermez address",
-              value: transaction.toHezEthereumAddress
-                ? getPartiallyHiddenHermezAddress(transaction.toHezEthereumAddress)
-                : undefined,
-            }}
-            date={date}
-            fee={fee}
-            token={transaction.token}
-            preferredCurrency={preferredCurrency}
-            fiatExchangeRates={fiatExchangeRates}
-          />
+          <TransactionInfoTable status={status} from={from} to={to} date={date} feeData={feeData} />
         );
       }
     }
@@ -190,10 +177,7 @@ function TransactionInfo({
             ),
           }}
           date={date}
-          fee={fee}
-          token={transaction.token}
-          preferredCurrency={preferredCurrency}
-          fiatExchangeRates={fiatExchangeRates}
+          feeData={feeData}
         />
       );
     }

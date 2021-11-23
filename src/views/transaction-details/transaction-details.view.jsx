@@ -184,8 +184,6 @@ function TransactionDetails({
                       preferredCurrency={preferredCurrency}
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       showStatus
-                      showToCopyButton
-                      showFromCopyButton
                       onToCopyClick={() => onOpenSnackbar("Copied")}
                       onFromCopyClick={() => onOpenSnackbar("Copied")}
                     />
