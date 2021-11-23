@@ -1,4 +1,5 @@
 import { createUseStyles } from "react-jss";
+
 import { AlertVariant } from "src/views/shared/alert/alert.view";
 import { Theme } from "src/styles/theme";
 
