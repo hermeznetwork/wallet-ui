@@ -23,7 +23,7 @@ export type {
   Token,
 } from "@hermeznetwork/hermezjs";
 
-export type Account = hermezjs.Account & { fiatBalance?: number };
+export type HermezAccount = hermezjs.Account & { fiatBalance?: number };
 
 export interface PendingDeposit {
   accountIndex?: string;
