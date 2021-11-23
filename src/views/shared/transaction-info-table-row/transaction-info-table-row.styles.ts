@@ -1,4 +1,5 @@
 import { createUseStyles } from "react-jss";
+
 import { Theme } from "src/styles/theme";
 
 const useTransactionInfoRowStyles = createUseStyles((theme: Theme) => ({
