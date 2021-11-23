@@ -1,6 +1,6 @@
 import React from "react";
 
-import { CurrencySymbol } from "src/utils/currencies";
+import { CurrencySymbol, isValidCurrencySymbolKey } from "src/utils/currencies";
 
 type FiatAmountProps = {
   amount: number;
@@ -12,13 +12,7 @@ function FiatAmount({
   currency,
   className,
 }: FiatAmountProps & React.HTMLAttributes<HTMLDivElement>): JSX.Element {
-  if (
-    currency === "USD" ||
-    currency === "EUR" ||
-    currency === "CNY" ||
-    currency === "JPY" ||
-    currency === "GBP"
-  ) {
+  if (isValidCurrencySymbolKey(currency)) {
     return (
       <span className={className}>
         {CurrencySymbol[currency].symbol} {!isNaN(amount) ? amount.toFixed(2) : "--"}
