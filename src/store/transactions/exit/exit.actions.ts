@@ -30,8 +30,8 @@ export enum ExitActionTypes {
 
 export interface TransactionToReview {
   amount: BigNumber;
-  fee: BigNumber;
   from: HermezAccount;
+  fee: BigNumber;
 }
 
 export type Step = "load-account" | "build-transaction" | "review-transaction";

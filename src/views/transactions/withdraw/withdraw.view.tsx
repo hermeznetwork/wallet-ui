@@ -186,7 +186,7 @@ function Withdraw({
               <TransactionOverview
                 wallet={wallet}
                 isTransactionBeingApproved={isTransactionBeingApproved}
-                type={TxType.Withdraw}
+                txType={TxType.Withdraw}
                 amount={BigNumber.from(exitTask.data.balance)}
                 account={accountTask.data}
                 exit={exitTask.data}

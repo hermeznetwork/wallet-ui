@@ -169,7 +169,7 @@ function Deposit({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  type={TxType.Deposit}
+                  txType={TxType.Deposit}
                   amount={transactionToReview.amount}
                   account={ethereumAccountTask.data}
                   onDeposit={onDeposit}

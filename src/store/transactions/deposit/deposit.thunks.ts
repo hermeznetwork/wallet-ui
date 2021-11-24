@@ -112,6 +112,7 @@ function fetchEstimatedDepositFee(): AppThunk {
 
       if (tokensPriceTask.status === "successful" && maxFeePerGas !== null) {
         const ethToken = tokensPriceTask.data.find((token) => token.id === ETHER_TOKEN_ID);
+
         if (ethToken) {
           const depositFee = getTxFee({
             txType: TxType.Deposit,
@@ -122,7 +123,6 @@ function fetchEstimatedDepositFee(): AppThunk {
           dispatch(
             depositActions.loadEstimatedDepositFeeSuccess({
               amount: depositFee,
-              USD: ethToken.USD,
               token: ethToken,
             })
           );

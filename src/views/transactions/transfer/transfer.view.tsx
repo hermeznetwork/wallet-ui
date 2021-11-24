@@ -19,7 +19,7 @@ import TransferForm, {
   TxData,
 } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
-import { Header } from "src/domain/";
+import { Header, TransactionReceiver } from "src/domain/";
 import {
   HermezAccount,
   HermezWallet,
@@ -64,7 +64,7 @@ interface TransferHandlerProps {
   onTransfer: (
     amount: BigNumber,
     account: HermezAccount,
-    to: Partial<HermezAccount>,
+    to: TransactionReceiver,
     fee: BigNumber
   ) => void;
   onCleanup: () => void;
@@ -191,7 +191,7 @@ function Transfer({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  type={TxType.Transfer}
+                  txType={TxType.Transfer}
                   amount={transactionToReview.amount}
                   account={accountTask.data}
                   to={transactionToReview.to}
@@ -304,12 +304,8 @@ const mapDispatchToProps = (dispatch: AppDispatch): TransferHandlerProps => ({
   onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) =>
     dispatch(transferActions.goToReviewTransactionStep(transactionToReview)),
   onCheckTxData: (txData: TxData) => dispatch(transferThunks.checkTxData(txData)),
-  onTransfer: (
-    amount: BigNumber,
-    from: HermezAccount,
-    to: Partial<HermezAccount>,
-    fee: BigNumber
-  ) => dispatch(transferThunks.transfer(amount, from, to, fee)),
+  onTransfer: (amount: BigNumber, from: HermezAccount, to: TransactionReceiver, fee: BigNumber) =>
+    dispatch(transferThunks.transfer(amount, from, to, fee)),
   onCleanup: () => dispatch(transferActions.resetState()),
 });
 

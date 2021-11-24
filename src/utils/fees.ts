@@ -7,9 +7,11 @@ import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 // constants
 import { MAX_FEE_USD, MAX_TOKEN_DECIMALS } from "src/constants";
+import { EstimatedL1Fee } from "src/domain";
 // domain
-import { RecommendedFee, Token } from "src/domain/hermez";
+import { FiatExchangeRates, RecommendedFee, Token } from "src/domain/hermez";
 import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "./currencies";
 
 /**
  * Calculates the fee for a L1 deposit into Hermez Network
@@ -93,6 +95,10 @@ interface GetL2FeeParams {
 }
 
 type GetTxFeeParams = GetDepositFeeParams | GetForceExitFeeParams | GetL2FeeParams;
+
+/**
+ * Calculates the fee that will be paid for all the existing transaction types
+ */
 function getTxFee(params: GetTxFeeParams): BigNumber {
   switch (params.txType) {
     case TxType.Deposit: {
@@ -109,4 +115,33 @@ function getTxFee(params: GetTxFeeParams): BigNumber {
   }
 }
 
-export { getMinimumL2Fee, getTxFee };
+/**
+ * Calculates the total estimated fee for a withdraw in fiat, taking into account the exit fees and
+ * the withdraw fees.
+ */
+function getEstimatedWithdrawFee(
+  exitFee: BigNumber,
+  token: Token,
+  estimatedWithdrawFee: EstimatedL1Fee,
+  preferredCurrency: string,
+  fiatExchangeRates: FiatExchangeRates
+): number {
+  const formattedExitFee = getFixedTokenAmount(exitFee.toString(), token.decimals);
+  const formattedWithdrawFee = getFixedTokenAmount(estimatedWithdrawFee.amount.toString());
+  const exitFeeInFiat = getTokenAmountInPreferredCurrency(
+    formattedExitFee,
+    token.USD,
+    preferredCurrency,
+    fiatExchangeRates
+  );
+  const withdrawFeeInFiat = getTokenAmountInPreferredCurrency(
+    formattedWithdrawFee,
+    estimatedWithdrawFee.token.USD,
+    preferredCurrency,
+    fiatExchangeRates
+  );
+
+  return exitFeeInFiat + withdrawFeeInFiat;
+}
+
+export { getMinimumL2Fee, getTxFee, getEstimatedWithdrawFee };

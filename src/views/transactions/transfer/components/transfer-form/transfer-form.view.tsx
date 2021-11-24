@@ -3,7 +3,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import useTransferFormStyles from "src/views/transactions/transfer/components/transfer-form/transfer-form.styles";
-import { Account, FiatExchangeRates, RecommendedFee } from "src/domain/hermez";
+import { FiatExchangeRates, HermezAccount, RecommendedFee } from "src/domain/hermez";
 import FormContainer from "src/views/transactions/components/form-container/form.container.view";
 import { AsyncTask } from "src/utils/types";
 import ReceiverInput, {
@@ -18,13 +18,13 @@ import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
 
 export interface TxData {
   amount: BigNumber;
-  from: Account;
+  from: HermezAccount;
   to: string;
   feesTask: AsyncTask<RecommendedFee, Error>;
 }
 
 interface TransferFormStateProps {
-  account: Account;
+  account: HermezAccount;
   defaultReceiverAddress?: string;
   doesReceiverApprovedAccountsCreation?: boolean;
   feesTask: AsyncTask<RecommendedFee, Error>;

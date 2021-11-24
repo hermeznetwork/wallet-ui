@@ -124,7 +124,7 @@ function ForceExit({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  type={TxType.ForceExit}
+                  txType={TxType.ForceExit}
                   amount={transaction.amount}
                   account={account}
                   onForceExit={onForceExit}

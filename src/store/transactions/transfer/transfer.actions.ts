@@ -2,6 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
 import { HermezAccount, PoolTransaction, RecommendedFee } from "src/domain/hermez";
+import { TransactionReceiver } from "src/domain";
 // persistence
 import { Accounts } from "src/persistence";
 
@@ -32,7 +33,7 @@ export interface TransactionToReview {
   amount: BigNumber;
   from: HermezAccount;
   fee: BigNumber;
-  to: Pick<HermezAccount, "bjj"> | Pick<HermezAccount, "hezEthereumAddress">;
+  to: TransactionReceiver;
 }
 
 export type Step = "load-account" | "choose-account" | "build-transaction" | "review-transaction";

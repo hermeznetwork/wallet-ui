@@ -1,6 +1,3 @@
-// ToDo: Remove the disable of TS and the linter below once the component are migrated to TS
-/* eslint-disable */
-// @ts-nocheck
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
@@ -54,7 +51,7 @@ function SelectedAccount(props: SelectedAccountProps): JSX.Element {
           <FiatAmount
             currency={preferredCurrency}
             amount={getTokenAmountInPreferredCurrency(
-              getFixedTokenAmount(account.balance, account.decimals),
+              getFixedTokenAmount(account.balance, account.token.decimals),
               account.token.USD,
               preferredCurrency,
               isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}

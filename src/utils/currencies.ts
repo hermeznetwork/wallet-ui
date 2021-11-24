@@ -104,6 +104,13 @@ function trimZeros(amount: number, decimals: number): number {
   return Number(amount.toFixed(decimals));
 }
 
+/**
+ * Formats a fiat amount to be displayed properly
+ */
+function formatFiatAmount(amount?: number): string {
+  return amount && !isNaN(amount) ? amount.toFixed(2) : "--";
+}
+
 export {
   CurrencySymbol,
   isValidCurrencySymbolKey,
@@ -113,4 +120,5 @@ export {
   getFeeInUsd,
   convertTokenAmountToFiat,
   trimZeros,
+  formatFiatAmount,
 };

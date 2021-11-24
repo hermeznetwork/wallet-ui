@@ -15,6 +15,7 @@ import { getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
+import { TransactionReceiver } from "src/domain";
 // persistence
 import * as persistence from "src/persistence";
 
@@ -211,7 +212,7 @@ function checkTxData(txData: TxData) {
 function transfer(
   amount: BigNumber,
   from: HermezAccount,
-  to: Partial<HermezAccount>,
+  to: TransactionReceiver,
   fee: BigNumber
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -226,7 +227,7 @@ function transfer(
       dispatch(transferActions.startTransactionApproval());
 
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
-      const toAddress = to.accountIndex || to.hezEthereumAddress || to.bjj;
+      const toAddress = "bjj" in to ? to.bjj : to.hezEthereumAddress;
       const type = TxUtils.getTransactionType({ to: toAddress });
       const txData = {
         type,

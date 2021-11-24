@@ -1,22 +1,17 @@
 import React from "react";
-import * as ethers from "ethers";
+import { BigNumber } from "@ethersproject/bignumber";
 
 import useFeesTableStyles from "src/views/shared/fees-table/fees-table.styles";
 import TransactionInfoTableRow from "src/views/shared/transaction-info-table-row/transaction-info-table-row.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
-import { MAX_TOKEN_DECIMALS } from "src/constants";
-import {
-  getAmountInPreferredCurrency,
-  getTokenAmountInPreferredCurrency,
-  trimZeros,
-} from "src/utils/currencies";
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 // domain
 import { FiatExchangeRates, Token } from "src/domain/hermez";
-import { EstimatedWithdrawFee } from "src/domain";
+import { EstimatedL1Fee } from "src/domain";
 
 interface FeesTableProps {
-  l2Fee: number;
-  estimatedWithdrawFee?: EstimatedWithdrawFee;
+  l2Fee: BigNumber;
+  estimatedWithdrawFee?: EstimatedL1Fee;
   token: Token;
   preferredCurrency: string;
   fiatExchangeRates: FiatExchangeRates;
@@ -30,39 +25,45 @@ function FeesTable({
   fiatExchangeRates,
 }: FeesTableProps): JSX.Element {
   const classes = useFeesTableStyles();
-
-  function getL2FeeInFiat() {
-    return getTokenAmountInPreferredCurrency(
-      l2Fee.toString(),
-      token.USD,
-      preferredCurrency,
-      fiatExchangeRates
-    );
-  }
-
-  const formattedWithdrawFee =
-    estimatedWithdrawFee && Number(ethers.utils.formatEther(estimatedWithdrawFee.amount));
-
-  const estimatedWithdrawFeeInFiat =
-    estimatedWithdrawFee &&
-    getAmountInPreferredCurrency(estimatedWithdrawFee.USD, preferredCurrency, fiatExchangeRates);
+  const formattedL2Fee = getFixedTokenAmount(l2Fee.toString(), token.decimals);
+  const l2FeeInFiat = getTokenAmountInPreferredCurrency(
+    formattedL2Fee,
+    token.USD,
+    preferredCurrency,
+    fiatExchangeRates
+  );
 
   return (
     <div className={classes.feesTable}>
       <TransactionInfoTableRow
         title={estimatedWithdrawFee ? "Hermez fee" : "Fee"}
         hint={estimatedWithdrawFee && "Step 1"}
-        subtitle={<FiatAmount amount={getL2FeeInFiat()} currency={preferredCurrency} />}
-        value={`${trimZeros(l2Fee, MAX_TOKEN_DECIMALS)} ${token.symbol}`}
+        subtitle={<FiatAmount amount={l2FeeInFiat} currency={preferredCurrency} />}
+        value={`${formattedL2Fee} ${token.symbol}`}
       />
-      {formattedWithdrawFee && estimatedWithdrawFeeInFiat && (
-        <TransactionInfoTableRow
-          title="Ethereum fee (estimated)"
-          hint="Step 2"
-          subtitle={<FiatAmount amount={estimatedWithdrawFeeInFiat} currency={preferredCurrency} />}
-          value={`${formattedWithdrawFee.toFixed(MAX_TOKEN_DECIMALS)} ETH`}
-        />
-      )}
+      {estimatedWithdrawFee &&
+        (() => {
+          const formattedEstimatedWithdrawFee = getFixedTokenAmount(
+            estimatedWithdrawFee.amount.toString()
+          );
+          const estimatedWithdrawFeeInFiat = getTokenAmountInPreferredCurrency(
+            formattedEstimatedWithdrawFee,
+            estimatedWithdrawFee.token.USD,
+            preferredCurrency,
+            fiatExchangeRates
+          );
+
+          return (
+            <TransactionInfoTableRow
+              title="Ethereum fee (estimated)"
+              hint="Step 2"
+              subtitle={
+                <FiatAmount amount={estimatedWithdrawFeeInFiat} currency={preferredCurrency} />
+              }
+              value={`${formattedEstimatedWithdrawFee} ETH`}
+            />
+          );
+        })()}
     </div>
   );
 }

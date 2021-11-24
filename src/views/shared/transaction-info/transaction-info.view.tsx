@@ -2,6 +2,7 @@ import React from "react";
 import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { INTERNAL_ACCOUNT_ETH_ADDR } from "@hermeznetwork/hermezjs/src/constants";
+import { BigNumber } from "@ethersproject/bignumber";
 
 import TransactionInfoTable, {
   Row,
@@ -13,9 +14,8 @@ import {
 import { copyToClipboard } from "src/utils/browser";
 // domain
 import {
+  Transaction,
   FiatExchangeRates,
-  HistoryTransaction,
-  PoolTransaction,
   isPoolTransaction,
   isHistoryTransaction,
 } from "src/domain/hermez";
@@ -26,11 +26,9 @@ const TxStatus = {
   Invalid: "Invalid",
 };
 
-type Transaction = HistoryTransaction | PoolTransaction;
-
 interface TransactionInfoProps {
   transaction: Transaction;
-  fee?: number;
+  fee?: BigNumber;
   accountIndex: string;
   preferredCurrency: string;
   fiatExchangeRates?: FiatExchangeRates;

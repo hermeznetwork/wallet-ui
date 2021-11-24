@@ -3,7 +3,6 @@ import { BigNumber, utils } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount, TxFees } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { formatEther } from "@ethersproject/units";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
@@ -146,14 +145,12 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         : BigNumber.from(gasLimit);
 
       if (tokensPriceTask.status === "successful" || tokensPriceTask.status === "reloading") {
-        const tokenUSD = tokensPriceTask.data[ETHER_TOKEN_ID].USD;
-        const feeUSD = Number(formatEther(feeBigNumber)) * tokenUSD;
+        const ethToken = tokensPriceTask.data[ETHER_TOKEN_ID];
 
         dispatch(
           exitActions.loadEstimatedWithdrawFeeSuccess({
             amount: feeBigNumber,
-            USD: feeUSD,
-            token,
+            token: ethToken,
           })
         );
       }

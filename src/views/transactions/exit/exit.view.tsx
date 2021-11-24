@@ -178,7 +178,7 @@ function Exit({
               <TransactionOverview
                 wallet={wallet}
                 isTransactionBeingApproved={isTransactionBeingApproved}
-                type={TxType.Exit}
+                txType={TxType.Exit}
                 amount={transactionToReview.amount}
                 account={accountTask.data}
                 fee={transactionToReview.fee}

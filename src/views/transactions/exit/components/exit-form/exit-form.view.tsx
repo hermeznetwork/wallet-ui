@@ -8,7 +8,7 @@ import FormContainer from "src/views/transactions/components/form-container/form
 import ExitAlert from "../exit-alert/exit-alert.view";
 import { getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import Fee from "src/views/transactions/components/fee/fee.view";
-import { Account, FiatExchangeRates, RecommendedFee, Token } from "src/domain/hermez";
+import { HermezAccount, FiatExchangeRates, RecommendedFee, Token } from "src/domain/hermez";
 import { AsyncTask } from "src/utils/types";
 import { EstimatedL1Fee } from "src/domain";
 import { AmountInputChangeEventData } from "src/views/shared/amount-input/amount-input.view";
@@ -18,12 +18,12 @@ import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
 
 export interface TxData {
   amount: BigNumber;
-  from: Account;
+  from: HermezAccount;
   fee: BigNumber;
 }
 
 interface ExitFormStateProps {
-  account: Account;
+  account: HermezAccount;
   feesTask: AsyncTask<RecommendedFee, Error>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   doesUserHaveEnoughEthForWithdraw: boolean;
