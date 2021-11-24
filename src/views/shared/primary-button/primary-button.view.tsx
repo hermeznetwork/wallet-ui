@@ -1,9 +1,27 @@
 import React from "react";
 import clsx from "clsx";
 
-import usePrimaryButtonStyles from "./primary-button.styles";
+import usePrimaryButtonStyles from "src/views/shared/primary-button/primary-button.styles";
 
-function PrimaryButton({ label, type, disabled, onClick, boxed, inRow, last }) {
+interface PrimaryButtonProps {
+  label: string;
+  type?: "button" | "reset" | "submit";
+  disabled?: boolean;
+  boxed?: boolean;
+  inRow?: boolean;
+  last?: boolean;
+  onClick: () => void;
+}
+
+function PrimaryButton({
+  label,
+  type,
+  disabled,
+  boxed,
+  inRow,
+  last,
+  onClick,
+}: PrimaryButtonProps): JSX.Element {
   const classes = usePrimaryButtonStyles();
 
   return (

@@ -17,7 +17,7 @@ import * as storage from "src/utils/storage";
 // domain
 import { EstimatedWithdrawFee } from "src/domain/";
 import {
-  Account,
+  HermezAccount,
   HermezWallet,
   FiatExchangeRates,
   PoolTransaction,
@@ -32,7 +32,7 @@ interface WithdrawStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: withdrawActions.Step;
   exitTask: AsyncTask<Exit, Error>;
-  accountTask: AsyncTask<Account, string>;
+  accountTask: AsyncTask<HermezAccount, string>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
   isTransactionBeingApproved: boolean;
   pendingDelayedWithdraws: PendingDelayedWithdraws;
@@ -60,7 +60,7 @@ interface WithdrawHandlerProps {
   ) => void;
   onWithdraw: (
     amount: BigNumber,
-    account: Account,
+    account: HermezAccount,
     exit: Exit,
     completeDelayedWithdrawal: boolean,
     instantWithdrawal: boolean
@@ -186,16 +186,14 @@ function Withdraw({
               <TransactionOverview
                 wallet={wallet}
                 isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Withdraw,
-                  amount: BigNumber.from(exitTask.data.balance),
-                  account: accountTask.data,
-                  exit: exitTask.data,
-                  completeDelayedWithdrawal,
-                  instantWithdrawal,
-                  estimatedWithdrawFeeTask,
-                  onWithdraw,
-                }}
+                type={TxType.Withdraw}
+                amount={BigNumber.from(exitTask.data.balance)}
+                account={accountTask.data}
+                exit={exitTask.data}
+                completeDelayedWithdrawal={completeDelayedWithdrawal}
+                instantWithdrawal={instantWithdrawal}
+                estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
+                onWithdraw={onWithdraw}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -269,7 +267,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): WithdrawHandlerProps => ({
     ),
   onWithdraw: (
     amount: BigNumber,
-    account: Account,
+    account: HermezAccount,
     exit: Exit,
     completeDelayedWithdrawal: boolean,
     instantWithdrawal: boolean

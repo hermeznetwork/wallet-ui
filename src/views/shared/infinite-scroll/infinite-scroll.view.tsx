@@ -1,21 +1,47 @@
 import React from "react";
 import { useTheme } from "react-jss";
 
-import Spinner from "../spinner/spinner.view";
-import useInfiniteScrollStyles from "./infinite-scroll.styles";
+import Spinner from "src/views/shared/spinner/spinner.view";
+import useInfiniteScrollStyles from "src/views/shared/infinite-scroll/infinite-scroll.styles";
+import { AsyncTask } from "src/utils/types";
+import { Theme } from "src/styles/theme";
 
 const TRESHOLD = 0.9;
 
-function InfiniteScroll({ dataLength, asyncTaskStatus, children, onLoadNextPage, paginationData }) {
-  const theme = useTheme();
+interface InfiniteScrollProps {
+  asyncTaskStatus: AsyncTask<never, never>["status"];
+  children: JSX.Element;
+  onLoadNextPage: (fromItem: number) => void;
+  paginationData: Pagination;
+}
+
+type Pagination =
+  | {
+      hasMoreItems: false;
+    }
+  | {
+      hasMoreItems: true;
+      fromItem: number;
+    };
+
+function InfiniteScroll({
+  asyncTaskStatus,
+  children,
+  onLoadNextPage,
+  paginationData,
+}: InfiniteScrollProps): JSX.Element {
+  const theme = useTheme<Theme>();
   const classes = useInfiniteScrollStyles();
   const [shouldLoad, setShouldLoad] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
-  const ref = React.useRef();
+  const ref = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
     const onScroll = () => {
-      if (ref.current.getBoundingClientRect().bottom * TRESHOLD <= window.innerHeight) {
+      if (
+        ref.current &&
+        ref.current.getBoundingClientRect().bottom * TRESHOLD <= window.innerHeight
+      ) {
         setShouldLoad(true);
       }
     };

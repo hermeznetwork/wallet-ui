@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useAccountSelectorStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useAccountSelectorStyles = createUseStyles((theme: Theme) => ({
   root: {
     marginTop: theme.headerHeight,
     marginBottom: theme.spacing(3),

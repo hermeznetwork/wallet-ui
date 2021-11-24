@@ -293,10 +293,9 @@ function Home({
                         <AccountList
                           accounts={accountsTask.data.accounts}
                           preferredCurrency={preferredCurrency}
-                          fiatExchangeRates={fiatExchangeRatesTask.data}
                           pendingDeposits={pendingOnTopDeposits}
-                          onAccountClick={handleAccountClick}
                           coordinatorState={coordinatorStateTask?.data}
+                          onAccountClick={handleAccountClick}
                         />
                       </InfiniteScroll>
                     </>

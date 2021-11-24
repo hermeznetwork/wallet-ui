@@ -12,7 +12,7 @@ import useForceExitStyles from "src/views/transactions/force-exit/force-exit.sty
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { Account, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
+import { HermezAccount, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
 import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
 import { AccountsWithPagination } from "src/store/transactions/force-exit/force-exit.reducer";
@@ -23,7 +23,7 @@ interface ForceExitStateProps {
   accountsTask: AsyncTask<AccountsWithPagination, Error>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   isTransactionBeingApproved: boolean;
-  account?: Account;
+  account?: HermezAccount;
   transaction?: forceExitActions.TransactionToReview;
   wallet: HermezWallet.HermezWallet | undefined;
   preferredCurrency: string;
@@ -31,9 +31,9 @@ interface ForceExitStateProps {
 }
 
 interface ForxeExitHandlerProps {
-  onChangeHeader: (step: forceExitActions.Step, account?: Account) => void;
+  onChangeHeader: (step: forceExitActions.Step, account?: HermezAccount) => void;
   onGoToChooseAccountStep: () => void;
-  onGoToBuildTransactionStep: (account: Account) => void;
+  onGoToBuildTransactionStep: (account: HermezAccount) => void;
   onGoToTransactionOverviewStep: (
     transactionToReview: forceExitActions.TransactionToReview
   ) => void;
@@ -44,7 +44,7 @@ interface ForxeExitHandlerProps {
     preferredCurrency: string
   ) => void;
   onLoadPoolTransactions: () => void;
-  onForceExit: (amount: BigNumber, account: Account) => void;
+  onForceExit: (amount: BigNumber, account: HermezAccount) => void;
   onCleanup: () => void;
 }
 
@@ -88,9 +88,11 @@ function ForceExit({
           case "choose-account": {
             return (
               <AccountSelector
-                transactionType={TxType.ForceExit}
+                type={TxType.ForceExit}
                 accountsTask={accountsTask}
                 poolTransactionsTask={poolTransactionsTask}
+                onLoadAccounts={onLoadAccounts}
+                onAccountClick={onGoToBuildTransactionStep}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -98,9 +100,6 @@ function ForceExit({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                pendingDeposits={[]}
-                onLoadAccounts={onLoadAccounts}
-                onAccountClick={(account: Account) => onGoToBuildTransactionStep(account)}
               />
             );
           }
@@ -142,12 +141,10 @@ function ForceExit({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  transaction={{
-                    type: TxType.ForceExit,
-                    amount: transaction.amount,
-                    account: account,
-                    onForceExit,
-                  }}
+                  type={TxType.ForceExit}
+                  amount={transaction.amount}
+                  account={account}
+                  onForceExit={onForceExit}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={
                     fiatExchangeRatesTask.status === "successful" ||
@@ -177,7 +174,7 @@ const mapStateToProps = (state: AppState): ForceExitStateProps => ({
   preferredCurrency: state.myAccount.preferredCurrency,
 });
 
-const getHeader = (step: forceExitActions.Step, account?: Account): Header => {
+const getHeader = (step: forceExitActions.Step, account?: HermezAccount): Header => {
   switch (step) {
     case "choose-account": {
       return {
@@ -214,7 +211,7 @@ const getHeader = (step: forceExitActions.Step, account?: Account): Header => {
 const mapDispatchToProps = (dispatch: AppDispatch): ForxeExitHandlerProps => ({
   onChangeHeader: (step, account) => dispatch(changeHeader(getHeader(step, account))),
   onGoToChooseAccountStep: () => dispatch(forceExitActions.goToChooseAccountStep()),
-  onGoToBuildTransactionStep: (account: Account) =>
+  onGoToBuildTransactionStep: (account: HermezAccount) =>
     dispatch(forceExitActions.goToBuildTransactionStep(account)),
   onGoToTransactionOverviewStep: (transactionToReview: forceExitActions.TransactionToReview) =>
     dispatch(forceExitActions.goToReviewTransactionStep(transactionToReview)),
@@ -233,7 +230,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): ForxeExitHandlerProps => ({
       )
     ),
   onLoadPoolTransactions: () => dispatch(forceExitThunks.fetchPoolTransactions()),
-  onForceExit: (amount: BigNumber, account: Account) =>
+  onForceExit: (amount: BigNumber, account: HermezAccount) =>
     dispatch(forceExitThunks.forceExit(amount, account)),
   onCleanup: () => dispatch(forceExitActions.resetState()),
 });

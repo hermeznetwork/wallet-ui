@@ -6,12 +6,12 @@ import {
 } from "src/store/transactions/force-exit/force-exit.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { Account, PoolTransaction } from "src/domain/hermez";
+import { HermezAccount, PoolTransaction } from "src/domain/hermez";
 import { EstimatedWithdrawFee } from "src/domain";
 import { getPaginationData, Pagination } from "src/utils/api";
 
 export interface AccountsWithPagination {
-  accounts: Account[];
+  accounts: HermezAccount[];
   pagination: Pagination;
 }
 
@@ -20,7 +20,7 @@ export interface ForceExitState {
   accountsTask: AsyncTask<AccountsWithPagination, Error>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
-  account?: Account;
+  account?: HermezAccount;
   transaction?: TransactionToReview;
   isTransactionBeingApproved: boolean;
 }

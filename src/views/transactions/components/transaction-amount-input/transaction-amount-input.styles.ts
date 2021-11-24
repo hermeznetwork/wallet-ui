@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useTransactionAmountInputStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useTransactionAmountInputStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
   },

@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useTransactionInfoRowStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useTransactionInfoRowStyles = createUseStyles((theme: Theme) => ({
   root: {
     padding: `${theme.spacing(3.5)}px 0 ${theme.spacing(3)}px`,
     display: "flex",
@@ -16,7 +18,6 @@ const useTransactionInfoRowStyles = createUseStyles((theme) => ({
     marginBottom: `${theme.spacing(1.5)}px`,
   },
   title: {
-    color: theme.palette.black.dark,
     fontWeight: theme.fontWeights.medium,
   },
   copyButton: {
@@ -39,7 +40,6 @@ const useTransactionInfoRowStyles = createUseStyles((theme) => ({
   subtitle: {
     display: "flex",
     alignItems: "center",
-    color: theme.palette.black.dark,
     fontWeight: theme.fontWeights.bold,
   },
   hint: {
