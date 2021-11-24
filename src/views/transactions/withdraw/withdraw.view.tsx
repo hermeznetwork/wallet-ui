@@ -186,16 +186,14 @@ function Withdraw({
               <TransactionOverview
                 wallet={wallet}
                 isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Withdraw,
-                  amount: BigNumber.from(exitTask.data.balance),
-                  account: accountTask.data,
-                  exit: exitTask.data,
-                  completeDelayedWithdrawal,
-                  instantWithdrawal,
-                  estimatedWithdrawFeeTask,
-                  onWithdraw,
-                }}
+                type={TxType.Withdraw}
+                amount={BigNumber.from(exitTask.data.balance)}
+                account={accountTask.data}
+                exit={exitTask.data}
+                completeDelayedWithdrawal={completeDelayedWithdrawal}
+                instantWithdrawal={instantWithdrawal}
+                estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
+                onWithdraw={onWithdraw}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||

@@ -88,9 +88,11 @@ function ForceExit({
           case "choose-account": {
             return (
               <AccountSelector
-                transactionType={TxType.ForceExit}
+                type={TxType.ForceExit}
                 accountsTask={accountsTask}
                 poolTransactionsTask={poolTransactionsTask}
+                onLoadAccounts={onLoadAccounts}
+                onAccountClick={onGoToBuildTransactionStep}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -98,9 +100,6 @@ function ForceExit({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                pendingDeposits={[]}
-                onLoadAccounts={onLoadAccounts}
-                onAccountClick={(account: HermezAccount) => onGoToBuildTransactionStep(account)}
               />
             );
           }
@@ -142,12 +141,10 @@ function ForceExit({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  transaction={{
-                    type: TxType.ForceExit,
-                    amount: transaction.amount,
-                    account: account,
-                    onForceExit,
-                  }}
+                  type={TxType.ForceExit}
+                  amount={transaction.amount}
+                  account={account}
+                  onForceExit={onForceExit}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={
                     fiatExchangeRatesTask.status === "successful" ||

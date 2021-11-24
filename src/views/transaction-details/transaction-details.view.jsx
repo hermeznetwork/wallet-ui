@@ -90,7 +90,7 @@ function TransactionDetails({
   /**
    * Converts the transaction fee to the supported value
    * @param {Object} transactionTask - Asynchronous task of the transaction
-   * @returns {Object}
+   * @returns {number | undefined}
    */
   function getTransactionFee(transactionTask) {
     switch (transactionTask.status) {
@@ -106,9 +106,7 @@ function TransactionDetails({
           const feeUsd = transactionTask.data.L2Info.historicFeeUSD;
           const feeToken = feeUsd / token.USD;
 
-          return !isNaN(feeUsd)
-            ? { value: trimZeros(feeToken, MAX_TOKEN_DECIMALS), token }
-            : undefined;
+          return !isNaN(feeUsd) ? trimZeros(feeToken, MAX_TOKEN_DECIMALS) : undefined;
         } else if (transactionTask.data.fee || transactionTask.data.L2Info?.fee) {
           const feeUsd = getFeeInUsd(
             transactionTask.data.fee || transactionTask.data.L2Info?.fee,
@@ -117,9 +115,7 @@ function TransactionDetails({
           );
           const feeToken = feeUsd / token.USD;
 
-          return !isNaN(feeUsd)
-            ? { value: trimZeros(feeToken, MAX_TOKEN_DECIMALS), token }
-            : undefined;
+          return !isNaN(feeUsd) ? trimZeros(feeToken, MAX_TOKEN_DECIMALS) : undefined;
         } else {
           return undefined;
         }
@@ -178,16 +174,12 @@ function TransactionDetails({
                         </p>
                       )}
                     <TransactionInfo
-                      txData={{
-                        ...transactionTask.data,
-                        ...{ fee: getTransactionFee(transactionTask) },
-                      }}
+                      transaction={transactionTask.data}
+                      fee={getTransactionFee(transactionTask)}
                       accountIndex={accountIndex}
                       preferredCurrency={preferredCurrency}
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       showStatus
-                      showToCopyButton
-                      showFromCopyButton
                       onToCopyClick={() => onOpenSnackbar("Copied")}
                       onFromCopyClick={() => onOpenSnackbar("Copied")}
                     />

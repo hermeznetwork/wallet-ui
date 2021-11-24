@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useWithdrawInfoSidenavStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useWithdrawInfoSidenavStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",

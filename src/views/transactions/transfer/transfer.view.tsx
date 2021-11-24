@@ -152,9 +152,11 @@ function Transfer({
           case "choose-account": {
             return (
               <AccountSelector
-                transactionType={TxType.Transfer}
+                type={TxType.Transfer}
                 accountsTask={accountsTask}
                 poolTransactionsTask={poolTransactionsTask}
+                onLoadAccounts={onLoadAccounts}
+                onAccountClick={onGoToBuildTransactionStep}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -162,9 +164,6 @@ function Transfer({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                pendingDeposits={[]}
-                onLoadAccounts={onLoadAccounts}
-                onAccountClick={(account: HermezAccount) => onGoToBuildTransactionStep(account)}
               />
             );
           }
@@ -204,14 +203,12 @@ function Transfer({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  transaction={{
-                    type: TxType.Transfer,
-                    amount: transactionToReview.amount,
-                    account: accountTask.data,
-                    to: transactionToReview.to,
-                    fee: transactionToReview.fee,
-                    onTransfer,
-                  }}
+                  type={TxType.Transfer}
+                  amount={transactionToReview.amount}
+                  account={accountTask.data}
+                  to={transactionToReview.to}
+                  fee={transactionToReview.fee}
+                  onTransfer={onTransfer}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={
                     fiatExchangeRatesTask.status === "successful" ||

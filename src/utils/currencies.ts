@@ -25,7 +25,13 @@ const CurrencySymbol = {
     symbol: "£",
     code: "GBP",
   },
-};
+} as const;
+
+type CurrencySymbolKey = keyof typeof CurrencySymbol;
+
+function isValidCurrencySymbolKey(key: string): key is CurrencySymbolKey {
+  return key === "USD" || key === "EUR" || key === "CNY" || key === "JPY" || key === "GBP";
+}
 
 /**
  * Gets the string representation of a token amount with fixed decimals
@@ -101,6 +107,7 @@ function trimZeros(amount: number, decimals: number): number {
 
 export {
   CurrencySymbol,
+  isValidCurrencySymbolKey,
   getFixedTokenAmount,
   getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency,

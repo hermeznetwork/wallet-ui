@@ -1,10 +1,23 @@
 import React from "react";
-import PropTypes from "prop-types";
 
-import useTransactionInfoRowStyles from "./transaction-info-row.styles";
-import { ReactComponent as CopyIcon } from "../../../images/icons/copy.svg";
+import useTransactionInfoRowStyles from "src/views/shared/transaction-info-table-row/transaction-info-table-row.styles";
+import { ReactComponent as CopyIcon } from "src/images/icons/copy.svg";
 
-function TransactionInfoRow({ title, subtitle, hint, value, showCopyButton, onCopySubtitle }) {
+interface TransactionInfoTableRowProps {
+  title: string;
+  subtitle: string | JSX.Element;
+  hint?: string;
+  value?: string;
+  onCopySubtitle?: () => void;
+}
+
+function TransactionInfoTableRow({
+  title,
+  subtitle,
+  hint,
+  value,
+  onCopySubtitle,
+}: TransactionInfoTableRowProps): JSX.Element {
   const classes = useTransactionInfoRowStyles();
 
   return (
@@ -12,7 +25,7 @@ function TransactionInfoRow({ title, subtitle, hint, value, showCopyButton, onCo
       <div className={`${classes.row} ${classes.topRow}`}>
         <p className={classes.title}>{title}</p>
         <div className={classes.subtitle}>
-          {showCopyButton && (
+          {onCopySubtitle && (
             <button className={classes.copyButton} onClick={onCopySubtitle}>
               <CopyIcon className={classes.copyIcon} />
             </button>
@@ -28,10 +41,4 @@ function TransactionInfoRow({ title, subtitle, hint, value, showCopyButton, onCo
   );
 }
 
-TransactionInfoRow.propTypes = {
-  title: PropTypes.string.isRequired,
-  subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  value: PropTypes.string,
-};
-
-export default TransactionInfoRow;
+export default TransactionInfoTableRow;

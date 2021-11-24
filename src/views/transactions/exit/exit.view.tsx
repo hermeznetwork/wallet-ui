@@ -174,14 +174,12 @@ function Exit({
               <TransactionOverview
                 wallet={wallet}
                 isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Exit,
-                  amount: transactionToReview.amount,
-                  account: accountTask.data,
-                  fee: transactionToReview.fee,
-                  estimatedWithdrawFeeTask,
-                  onExit,
-                }}
+                type={TxType.Exit}
+                amount={transactionToReview.amount}
+                account={accountTask.data}
+                fee={transactionToReview.fee}
+                estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
+                onExit={onExit}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||

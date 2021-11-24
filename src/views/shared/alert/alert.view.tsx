@@ -1,20 +1,25 @@
 import React from "react";
 
-import useAlertStyles from "./alert.styles";
-import { ReactComponent as InfoIcon } from "../../../images/icons/info.svg";
+import useAlertStyles from "src/views/shared/alert/alert.styles";
+import { ReactComponent as InfoIcon } from "src/images/icons/info.svg";
 
-export const AlertVariant = {
-  DARK: "dark",
-  LIGHT: "light",
-};
+export type AlertVariant = "dark" | "light";
+
+interface AlertProps {
+  message: string;
+  variant?: AlertVariant;
+  showHelpButton: boolean;
+  helpButtonLink?: string;
+  onHelpClick: () => void;
+}
 
 function Alert({
   message,
-  variant = AlertVariant.DARK,
+  variant = "dark",
   showHelpButton,
   helpButtonLink,
   onHelpClick,
-}) {
+}: AlertProps): JSX.Element {
   const classes = useAlertStyles({ variant });
   const Component = helpButtonLink ? "a" : "button";
 

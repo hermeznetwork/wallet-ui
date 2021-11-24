@@ -1,12 +1,33 @@
 import React from "react";
 import clsx from "clsx";
 
-import AmountInput from "../../../shared/amount-input/amount-input.view";
-import useTransactionAmountInputStyles from "./transaction-amount-input.styles";
-import { ReactComponent as SwapIcon } from "../../../../images/icons/swap.svg";
-import { ReactComponent as ErrorIcon } from "../../../../images/icons/error.svg";
-import { getFixedTokenAmount } from "../../../../utils/currencies";
+import AmountInput from "src/views/shared/amount-input/amount-input.view";
+import useTransactionAmountInputStyles from "src/views/transactions/components/transaction-amount-input/transaction-amount-input.styles";
+import { ReactComponent as SwapIcon } from "src/images/icons/swap.svg";
+import { ReactComponent as ErrorIcon } from "src/images/icons/error.svg";
+import { getFixedTokenAmount } from "src/utils/currencies";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
+// domain
+import { HermezAccount } from "src/domain/hermez";
+import { BigNumber } from "@ethersproject/bignumber";
+
+interface Amount {
+  fiat: number;
+  tokens: BigNumber;
+}
+
+interface TransactionAmountInputProps {
+  account: HermezAccount;
+  preferredCurrency: string;
+  value: string;
+  amount: Amount;
+  showInFiat: boolean;
+  isAmountWithFeeMoreThanFunds: boolean;
+  isAmountCompressedInvalid: boolean;
+  onInputChange: () => void;
+  onSendAll: () => void;
+  onSwapCurrency: () => void;
+}
 
 function TransactionAmountInput({
   account,
@@ -19,7 +40,7 @@ function TransactionAmountInput({
   onInputChange,
   onSendAll,
   onSwapCurrency,
-}) {
+}: TransactionAmountInputProps): JSX.Element {
   const classes = useTransactionAmountInputStyles();
 
   function hasErrors() {
@@ -61,7 +82,7 @@ function TransactionAmountInput({
           <button
             type="button"
             className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.amountMax}`}
-            tabIndex="-1"
+            tabIndex={-1}
             onClick={onSendAll}
           >
             Max
@@ -69,7 +90,8 @@ function TransactionAmountInput({
           <div className={classes.amountButtonsItem}>
             {showInFiat ? (
               <span>
-                {getFixedTokenAmount(amount.tokens, account.token.decimals)} {account.token.symbol}
+                {getFixedTokenAmount(amount.tokens.toString(), account.token.decimals)}{" "}
+                {account.token.symbol}
               </span>
             ) : (
               <FiatAmount amount={amount.fiat} currency={preferredCurrency} />
@@ -78,7 +100,7 @@ function TransactionAmountInput({
           <button
             type="button"
             className={`${classes.amountButtonsItem} ${classes.amountButton} ${classes.changeCurrency}`}
-            tabIndex="-1"
+            tabIndex={-1}
             onClick={onSwapCurrency}
           >
             <SwapIcon className={classes.changeCurrencyIcon} />
