@@ -17,8 +17,6 @@ function ExitList({
   pendingDelayedWithdraws,
   timerWithdraws,
   coordinatorState,
-  onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw,
   onAddTimerWithdraw,
   onRemoveTimerWithdraw,
 }) {
@@ -56,8 +54,6 @@ function ExitList({
             babyJubJub={babyJubJub}
             pendingWithdraws={pendingWithdraws}
             pendingDelayedWithdraws={pendingDelayedWithdraws}
-            onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-            onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
             timerWithdraws={timerWithdraws}
             onAddTimerWithdraw={onAddTimerWithdraw}
             onRemoveTimerWithdraw={onRemoveTimerWithdraw}
@@ -77,8 +73,6 @@ ExitList.propTypes = {
   pendingDelayedWithdraws: PropTypes.array,
   timerWithdraws: PropTypes.array,
   coordinatorState: PropTypes.object,
-  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
-  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onAddTimerWithdraw: PropTypes.func.isRequired,
   onRemoveTimerWithdraw: PropTypes.func.isRequired,
 };

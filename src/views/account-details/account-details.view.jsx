@@ -48,8 +48,6 @@ function AccountDetails({
   onLoadHistoryTransactions,
   onLoadExits,
   onCheckPendingDeposits,
-  onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
   onAddTimerWithdraw,
@@ -260,8 +258,6 @@ function AccountDetails({
                     pendingWithdraws={tokenPendingWithdraws}
                     pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
                     timerWithdraws={tokenTimerWithdraws}
-                    onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                    onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                     onAddTimerWithdraw={onAddTimerWithdraw}
                     onRemoveTimerWithdraw={onRemoveTimerWithdraw}
                     coordinatorState={coordinatorStateTask?.data}
@@ -274,8 +270,6 @@ function AccountDetails({
                     pendingWithdraws={tokenPendingWithdraws}
                     pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
                     timerWithdraws={tokenTimerWithdraws}
-                    onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                    onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                     onAddTimerWithdraw={onAddTimerWithdraw}
                     onRemoveTimerWithdraw={onRemoveTimerWithdraw}
                     coordinatorState={coordinatorStateTask?.data}
@@ -344,8 +338,6 @@ AccountDetails.propTypes = {
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
-  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
-  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onAddTimerWithdraw: PropTypes.func.isRequired,
   onRemoveTimerWithdraw: PropTypes.func.isRequired,
   onNavigateToTransactionDetails: PropTypes.func.isRequired,
@@ -388,10 +380,6 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadHistoryTransactions: (accountIndex, fromItem, exits) =>
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem, exits)),
   onLoadExits: (tokenId) => dispatch(accountDetailsThunks.fetchExits(tokenId)),
-  onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
-    dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
-  onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
-    dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onAddTimerWithdraw: (timerWithdraw) => dispatch(globalThunks.addTimerWithdraw(timerWithdraw)),
   onRemoveTimerWithdraw: (timerWithdrawId) =>
     dispatch(globalThunks.removeTimerWithdraw(timerWithdrawId)),
