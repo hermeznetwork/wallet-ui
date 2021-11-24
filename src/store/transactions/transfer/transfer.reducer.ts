@@ -7,17 +7,17 @@ import {
 import { getPaginationData, Pagination } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PoolTransaction, Account, RecommendedFee } from "src/domain/hermez";
+import { PoolTransaction, HermezAccount, RecommendedFee } from "src/domain/hermez";
 
 export interface AccountsWithPagination {
-  accounts: Account[];
+  accounts: HermezAccount[];
   pagination: Pagination;
 }
 
 export interface TransferState {
   step: Step;
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
-  accountTask: AsyncTask<Account, string>;
+  accountTask: AsyncTask<HermezAccount, string>;
   accountsTask: AsyncTask<AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   doesReceiverApprovedAccountsCreation: undefined | boolean;

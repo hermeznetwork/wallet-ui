@@ -3,11 +3,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import useFeeStyles from "src/views/transactions/components/fee/fee.styles";
-import {
-  getAmountInPreferredCurrency,
-  getFixedTokenAmount,
-  getTokenAmountInPreferredCurrency,
-} from "src/utils/currencies";
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 import { ReactComponent as AngleDownIcon } from "src/images/icons/angle-down.svg";
 import FeesTable from "src/views/shared/fees-table/fees-table.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
@@ -15,6 +11,7 @@ import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import { FiatExchangeRates, Token } from "src/domain/hermez";
 import { EstimatedL1Fee } from "src/domain";
 import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { getEstimatedWithdrawFee } from "src/utils/fees";
 
 export interface CommonFeeProps {
   token: Token;
@@ -57,26 +54,6 @@ function Fee(props: FeeProps): JSX.Element {
     isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
   );
 
-  function getTotalEstimatedWithdrawFee(
-    exitFeeInFiat: number,
-    estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>
-  ) {
-    if (
-      !isAsyncTaskCompleted(estimatedWithdrawFeeTask) ||
-      !isAsyncTaskCompleted(fiatExchangeRatesTask)
-    ) {
-      return undefined;
-    }
-
-    const estimatedWithdrawFeeInFiat = getAmountInPreferredCurrency(
-      estimatedWithdrawFeeTask.data.USD,
-      preferredCurrency,
-      fiatExchangeRatesTask.data
-    );
-
-    return exitFeeInFiat + estimatedWithdrawFeeInFiat;
-  }
-
   function handleWithdrawFeeExpansion() {
     setIsWithdrawFeeExpanded(!isWithdrawFeeExpanded);
   }
@@ -99,12 +76,7 @@ function Fee(props: FeeProps): JSX.Element {
         <p className={classes.fee}>
           Fee{" "}
           {showInFiat ? (
-            <FiatAmount
-              amount={feeInFiat}
-              currency={preferredCurrency}
-              /* ToDo delete */
-              className=""
-            />
+            <FiatAmount amount={feeInFiat} currency={preferredCurrency} />
           ) : (
             <span>{`${getFixedTokenAmount(fee.toString(), token.decimals)} ${token.symbol}`}</span>
           )}
@@ -120,7 +92,18 @@ function Fee(props: FeeProps): JSX.Element {
             <span className={classes.withdrawFeeButtonText}>
               Total estimated fee{" "}
               <FiatAmount
-                amount={getTotalEstimatedWithdrawFee(feeInFiat, estimatedWithdrawFeeTask)}
+                amount={
+                  isAsyncTaskCompleted(estimatedWithdrawFeeTask) &&
+                  isAsyncTaskCompleted(fiatExchangeRatesTask)
+                    ? getEstimatedWithdrawFee(
+                        fee,
+                        token,
+                        estimatedWithdrawFeeTask.data,
+                        preferredCurrency,
+                        fiatExchangeRatesTask.data
+                      )
+                    : undefined
+                }
                 currency={preferredCurrency}
                 className={classes.fiatAmount}
               />
@@ -133,7 +116,7 @@ function Fee(props: FeeProps): JSX.Element {
             isAsyncTaskCompleted(estimatedWithdrawFeeTask) &&
             isAsyncTaskCompleted(fiatExchangeRatesTask) && (
               <FeesTable
-                l2Fee={formattedFee}
+                l2Fee={fee}
                 estimatedWithdrawFee={estimatedWithdrawFeeTask.data}
                 token={token}
                 preferredCurrency={preferredCurrency}

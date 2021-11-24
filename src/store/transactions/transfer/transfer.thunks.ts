@@ -14,7 +14,7 @@ import theme from "src/styles/theme";
 import { getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
-import { Account, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
+import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
 // persistence
 import * as persistence from "src/persistence";
 
@@ -210,8 +210,8 @@ function checkTxData(txData: TxData) {
 
 function transfer(
   amount: BigNumber,
-  from: Account,
-  to: Partial<Account>,
+  from: HermezAccount,
+  to: Partial<HermezAccount>,
   fee: BigNumber
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {

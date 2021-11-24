@@ -1,8 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
+import { HermezAccount, Exit, PoolTransaction } from "src/domain/hermez";
 import { EstimatedL1Fee } from "src/domain";
-import { Account, Exit, PoolTransaction } from "src/domain/hermez";
 
 export enum WithdrawActionTypes {
   LOAD_ACCOUNT = "[WITHDRAW] LOAD ACCOUNT",
@@ -27,8 +27,8 @@ export type Step = "load-data" | "review-transaction";
 export interface TransactionToReview {
   amount: BigNumber;
   fee: number;
-  from: Account;
-  to: Partial<Account>;
+  from: HermezAccount;
+  to: Partial<HermezAccount>;
 }
 
 export interface LoadPoolTransactions {
@@ -108,7 +108,7 @@ export interface LoadAccount {
 
 export interface LoadAccountSuccess {
   type: WithdrawActionTypes.LOAD_ACCOUNT_SUCCESS;
-  account: Account;
+  account: HermezAccount;
 }
 
 export interface LoadAccountFailure {
@@ -162,7 +162,7 @@ function loadAccount(): LoadAccount {
   };
 }
 
-function loadAccountSuccess(account: Account): LoadAccountSuccess {
+function loadAccountSuccess(account: HermezAccount): LoadAccountSuccess {
   return {
     type: WithdrawActionTypes.LOAD_ACCOUNT_SUCCESS,
     account,

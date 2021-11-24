@@ -21,7 +21,7 @@ import TransferForm, {
 // domain
 import { Header } from "src/domain/";
 import {
-  Account,
+  HermezAccount,
   HermezWallet,
   FiatExchangeRates,
   PoolTransaction,
@@ -31,7 +31,7 @@ import {
 interface TransferStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: transferActions.Step;
-  accountTask: AsyncTask<Account, string>;
+  accountTask: AsyncTask<HermezAccount, string>;
   accountsTask: AsyncTask<transferReducer.AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   isTransactionBeingApproved: boolean;
@@ -58,9 +58,15 @@ interface TransferHandlerProps {
     preferredCurrency: string
   ) => void;
   onGoToChooseAccountStep: () => void;
-  onGoToBuildTransactionStep: (account: Account) => void;
+  onGoToBuildTransactionStep: (account: HermezAccount) => void;
+  onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) => void;
   onCheckTxData: (txData: TxData) => void;
-  onTransfer: (amount: BigNumber, account: Account, to: Partial<Account>, fee: BigNumber) => void;
+  onTransfer: (
+    amount: BigNumber,
+    account: HermezAccount,
+    to: Partial<HermezAccount>,
+    fee: BigNumber
+  ) => void;
   onCleanup: () => void;
 }
 
@@ -147,9 +153,11 @@ function Transfer({
           case "choose-account": {
             return (
               <AccountSelector
-                transactionType={TxType.Transfer}
+                type={TxType.Transfer}
                 accountsTask={accountsTask}
                 poolTransactionsTask={poolTransactionsTask}
+                onLoadAccounts={onLoadAccounts}
+                onAccountClick={onGoToBuildTransactionStep}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -157,9 +165,6 @@ function Transfer({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                pendingDeposits={[]}
-                onLoadAccounts={onLoadAccounts}
-                onAccountClick={(account: Account) => onGoToBuildTransactionStep(account)}
               />
             );
           }
@@ -186,14 +191,12 @@ function Transfer({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  transaction={{
-                    type: TxType.Transfer,
-                    amount: transactionToReview.amount,
-                    account: accountTask.data,
-                    to: transactionToReview.to,
-                    fee: transactionToReview.fee,
-                    onTransfer,
-                  }}
+                  type={TxType.Transfer}
+                  amount={transactionToReview.amount}
+                  account={accountTask.data}
+                  to={transactionToReview.to}
+                  fee={transactionToReview.fee}
+                  onTransfer={onTransfer}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={
                     fiatExchangeRatesTask.status === "successful" ||
@@ -296,11 +299,17 @@ const mapDispatchToProps = (dispatch: AppDispatch): TransferHandlerProps => ({
       transferThunks.fetchAccounts(fromItem, poolTransactions, fiatExchangeRates, preferredCurrency)
     ),
   onGoToChooseAccountStep: () => dispatch(transferActions.goToChooseAccountStep()),
-  onGoToBuildTransactionStep: (account: Account) =>
+  onGoToBuildTransactionStep: (account: HermezAccount) =>
     dispatch(transferActions.goToBuildTransactionStep(account)),
+  onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) =>
+    dispatch(transferActions.goToReviewTransactionStep(transactionToReview)),
   onCheckTxData: (txData: TxData) => dispatch(transferThunks.checkTxData(txData)),
-  onTransfer: (amount: BigNumber, from: Account, to: Partial<Account>, fee: BigNumber) =>
-    dispatch(transferThunks.transfer(amount, from, to, fee)),
+  onTransfer: (
+    amount: BigNumber,
+    from: HermezAccount,
+    to: Partial<HermezAccount>,
+    fee: BigNumber
+  ) => dispatch(transferThunks.transfer(amount, from, to, fee)),
   onCleanup: () => dispatch(transferActions.resetState()),
 });
 

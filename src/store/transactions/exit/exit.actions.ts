@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { Account, PoolTransaction, RecommendedFee } from "src/domain/hermez";
+import { HermezAccount, PoolTransaction, RecommendedFee } from "src/domain/hermez";
 import { EstimatedL1Fee } from "src/domain";
 
 export enum ExitActionTypes {
@@ -31,14 +31,14 @@ export enum ExitActionTypes {
 export interface TransactionToReview {
   amount: BigNumber;
   fee: BigNumber;
-  from: Account;
+  from: HermezAccount;
 }
 
 export type Step = "load-account" | "build-transaction" | "review-transaction";
 
 export interface GoToBuildTransactionStep {
   type: ExitActionTypes.GO_TO_BUILD_TRANSACTION_STEP;
-  account: Account;
+  account: HermezAccount;
 }
 
 export interface GoToReviewTransactionStep {
@@ -57,7 +57,7 @@ export interface LoadAccount {
 
 export interface LoadAccountSuccess {
   type: ExitActionTypes.LOAD_ACCOUNT_SUCCESS;
-  account: Account;
+  account: HermezAccount;
 }
 
 export interface LoadAccountFailure {
@@ -156,7 +156,7 @@ export type ExitAction =
   | StopTransactionApproval
   | ResetState;
 
-function goToBuildTransactionStep(account: Account): GoToBuildTransactionStep {
+function goToBuildTransactionStep(account: HermezAccount): GoToBuildTransactionStep {
   return {
     type: ExitActionTypes.GO_TO_BUILD_TRANSACTION_STEP,
     account,
@@ -183,7 +183,7 @@ function loadAccount(): LoadAccount {
   };
 }
 
-function loadAccountSuccess(account: Account): LoadAccountSuccess {
+function loadAccountSuccess(account: HermezAccount): LoadAccountSuccess {
   return {
     type: ExitActionTypes.LOAD_ACCOUNT_SUCCESS,
     account,

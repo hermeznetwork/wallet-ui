@@ -14,7 +14,7 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { getTxFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
-import { FiatExchangeRates, EthereumAccount, Account } from "src/domain/hermez";
+import { FiatExchangeRates, EthereumAccount, HermezAccount } from "src/domain/hermez";
 // persistence
 import * as persistence from "src/persistence";
 
@@ -158,7 +158,7 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
           void CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [
             ethereumAccount.token.id,
           ]).then((res) => {
-            const account: Account | undefined = res.accounts[0];
+            const account: HermezAccount | undefined = res.accounts[0];
             dispatch(
               globalThunks.addPendingDeposit({
                 hash: txData.hash,

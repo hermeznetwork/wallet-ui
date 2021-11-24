@@ -15,7 +15,7 @@ import { ETHER_TOKEN_ID, WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/co
 import { createAccount } from "src/utils/accounts";
 // domain
 import {
-  Account,
+  HermezAccount,
   Exit,
   FiatExchangeRates,
   PendingDelayedWithdraw,
@@ -173,7 +173,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
  */
 function withdraw(
   amount: BigNumber,
-  account: Account,
+  account: HermezAccount,
   exit: Exit,
   completeDelayedWithdrawal: boolean,
   instantWithdrawal: boolean

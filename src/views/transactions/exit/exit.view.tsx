@@ -7,7 +7,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { ethers } from "ethers";
 
 import {
-  Account,
+  HermezAccount,
   FiatExchangeRates,
   HermezWallet,
   PoolTransaction,
@@ -28,7 +28,7 @@ import TransactionOverview from "src/views/transactions/components/transaction-o
 interface ExitStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: exitActions.Step;
-  accountTask: AsyncTask<Account, string>;
+  accountTask: AsyncTask<HermezAccount, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
   accountBalanceTask: AsyncTask<string, Error>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
@@ -52,9 +52,9 @@ interface ExitHandlerProps {
   onLoadEstimatedWithdrawFee: (token: Token, amount: BigNumber) => void;
   onLoadPoolTransactions: () => void;
   onGoToHome: () => void;
-  onGoToBuildTransactionStep: (account: Account) => void;
+  onGoToBuildTransactionStep: (account: HermezAccount) => void;
   onGoToTransactionOverviewStep: (transactionToReview: exitActions.TransactionToReview) => void;
-  onExit: (amount: BigNumber, account: Account, fee: BigNumber) => void;
+  onExit: (amount: BigNumber, account: HermezAccount, fee: BigNumber) => void;
   onCleanup: () => void;
 }
 
@@ -172,31 +172,27 @@ function Exit({
             ) : null;
           }
           case "review-transaction": {
-            return (
-              wallet &&
-              transactionToReview &&
-              isAsyncTaskCompleted(accountTask) && (
-                <TransactionOverview
-                  wallet={wallet}
-                  isTransactionBeingApproved={isTransactionBeingApproved}
-                  transaction={{
-                    type: TxType.Exit,
-                    amount: transactionToReview.amount,
-                    account: accountTask.data,
-                    fee: transactionToReview.fee,
-                    estimatedWithdrawFeeTask,
-                    onExit,
-                  }}
-                  preferredCurrency={preferredCurrency}
-                  fiatExchangeRates={
-                    fiatExchangeRatesTask.status === "successful" ||
-                    fiatExchangeRatesTask.status === "reloading"
-                      ? fiatExchangeRatesTask.data
-                      : {}
-                  }
-                />
-              )
-            );
+            return wallet !== undefined &&
+              transactionToReview !== undefined &&
+              (accountTask.status === "successful" || accountTask.status === "reloading") ? (
+              <TransactionOverview
+                wallet={wallet}
+                isTransactionBeingApproved={isTransactionBeingApproved}
+                type={TxType.Exit}
+                amount={transactionToReview.amount}
+                account={accountTask.data}
+                fee={transactionToReview.fee}
+                estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
+                onExit={onExit}
+                preferredCurrency={preferredCurrency}
+                fiatExchangeRates={
+                  fiatExchangeRatesTask.status === "successful" ||
+                  fiatExchangeRatesTask.status === "reloading"
+                    ? fiatExchangeRatesTask.data
+                    : {}
+                }
+              />
+            ) : null;
           }
         }
       })()}
@@ -273,11 +269,11 @@ const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlerProps => ({
   },
   onLoadPoolTransactions: () => dispatch(exitThunks.fetchPoolTransactions()),
   onGoToHome: () => dispatch(push("/")),
-  onGoToBuildTransactionStep: (account: Account) =>
+  onGoToBuildTransactionStep: (account: HermezAccount) =>
     dispatch(exitActions.goToBuildTransactionStep(account)),
   onGoToTransactionOverviewStep: (transactionToReview: exitActions.TransactionToReview) =>
     dispatch(exitActions.goToReviewTransactionStep(transactionToReview)),
-  onExit: (amount: BigNumber, from: Account, fee: BigNumber) =>
+  onExit: (amount: BigNumber, from: HermezAccount, fee: BigNumber) =>
     dispatch(exitThunks.exit(amount, from, fee)),
   onCleanup: () => dispatch(exitActions.resetState()),
 });

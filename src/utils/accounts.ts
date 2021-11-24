@@ -5,7 +5,7 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { AsyncTask } from "src/utils/types";
 // domain
 import {
-  Account,
+  HermezAccount,
   PoolTransaction,
   PendingDeposit,
   Token,
@@ -13,7 +13,7 @@ import {
 } from "src/domain/hermez";
 
 function getAccountBalance(
-  account: Account,
+  account: HermezAccount,
   poolTransactions?: PoolTransaction[],
   pendingDeposits?: PendingDeposit[]
 ): string {
@@ -45,7 +45,10 @@ function getAccountBalance(
   return totalBalance.toString();
 }
 
-function updateAccountToken(tokensPrice: AsyncTask<Token[], string>, account: Account): Account {
+function updateAccountToken(
+  tokensPrice: AsyncTask<Token[], string>,
+  account: HermezAccount
+): HermezAccount {
   if (tokensPrice.status === "successful" || tokensPrice.status === "reloading") {
     const token: Token | undefined = tokensPrice.data.find(
       (token) => token.id === account.token.id
@@ -58,14 +61,14 @@ function updateAccountToken(tokensPrice: AsyncTask<Token[], string>, account: Ac
 
 // TODO Study if this belongs to the domain model, as it's the function who creates a domain entity Account and move it there
 function createAccount(
-  account: Account,
+  account: HermezAccount,
   poolTransactions: PoolTransaction[] | undefined,
   pendingDeposits: PendingDeposit[] | undefined,
   tokensPriceTask: AsyncTask<Token[], string>,
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
-): Account {
-  const updatedAccount: Account = updateAccountToken(tokensPriceTask, account);
+): HermezAccount {
+  const updatedAccount: HermezAccount = updateAccountToken(tokensPriceTask, account);
   const accountBalance = getAccountBalance(updatedAccount, poolTransactions, pendingDeposits);
   const fiatBalance: number = convertTokenAmountToFiat(
     accountBalance,

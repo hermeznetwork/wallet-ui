@@ -1,24 +1,19 @@
 import React from "react";
 import clsx from "clsx";
 
-import usePrimaryButtonStyles from "./primary-button.styles";
+import usePrimaryButtonStyles from "src/views/shared/primary-button/primary-button.styles";
 
-interface PrimaryButtonStateProps {
+interface PrimaryButtonProps {
   label: string;
-  type?: "button" | "submit";
+  type?: "button" | "reset" | "submit";
   disabled?: boolean;
   boxed?: boolean;
   inRow?: boolean;
   last?: boolean;
-}
-
-interface PrimaryButtonHandlerProps {
   onClick?: () => void;
 }
 
-type PrimaryButtonProps = PrimaryButtonStateProps & PrimaryButtonHandlerProps;
-
-const PrimaryButton: React.FC<PrimaryButtonProps> = ({
+function PrimaryButton({
   label,
   type,
   disabled,
@@ -26,7 +21,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   inRow,
   last,
   onClick,
-}) => {
+}: PrimaryButtonProps): JSX.Element {
   const classes = usePrimaryButtonStyles();
 
   return (
@@ -44,6 +39,6 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       {label}
     </button>
   );
-};
+}
 
 export default PrimaryButton;
