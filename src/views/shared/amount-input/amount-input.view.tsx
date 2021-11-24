@@ -202,7 +202,7 @@ function AmountInput(
         setValue(newValue);
       }
 
-      updateAmountState(amount, value, newShowInFiat);
+      updateAmountState(amount, newValue, newShowInFiat);
     }
 
     return (
