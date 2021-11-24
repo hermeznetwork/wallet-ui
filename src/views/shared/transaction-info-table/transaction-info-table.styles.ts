@@ -1,6 +1,6 @@
 import { createUseStyles } from "react-jss";
 
-const useTransactionInfoTableRowStyles = createUseStyles((theme) => ({
+const useTransactionInfoTableRowStyles = createUseStyles(() => ({
   root: {
     width: "100%",
     display: "flex",
