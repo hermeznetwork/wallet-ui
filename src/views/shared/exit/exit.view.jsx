@@ -372,7 +372,6 @@ Exit.propTypes = {
   accountIndex: PropTypes.string,
   pendingWithdraws: PropTypes.array,
   pendingDelayedWithdraws: PropTypes.array,
-  timerWithdraws: PropTypes.array,
   coordinatorState: PropTypes.object,
   onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
   onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
