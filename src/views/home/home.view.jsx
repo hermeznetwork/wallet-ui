@@ -47,8 +47,6 @@ function Home({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
-  onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
   onAddTimerWithdraw,
@@ -213,8 +211,6 @@ function Home({
                 babyJubJub={wallet.publicKeyCompressedHex}
                 pendingWithdraws={accountPendingWithdraws}
                 pendingDelayedWithdraws={accountPendingDelayedWithdraws}
-                onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                 onAddTimerWithdraw={onAddTimerWithdraw}
                 onRemoveTimerWithdraw={onRemoveTimerWithdraw}
                 coordinatorState={coordinatorStateTask?.data}
@@ -235,8 +231,6 @@ function Home({
                 pendingWithdraws={accountPendingWithdraws}
                 pendingDelayedWithdraws={accountPendingDelayedWithdraws}
                 timerWithdraws={accountTimerWithdraws}
-                onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
                 onAddTimerWithdraw={onAddTimerWithdraw}
                 onRemoveTimerWithdraw={onRemoveTimerWithdraw}
                 coordinatorState={coordinatorStateTask?.data}
@@ -325,8 +319,6 @@ Home.propTypes = {
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
-  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
-  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
   onAddTimerWithdraw: PropTypes.func.isRequired,
   onRemoveTimerWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired,
@@ -389,10 +381,6 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadPoolTransactions: () => dispatch(homeThunks.fetchPoolTransactions()),
   onLoadExits: (exitTransactions) => dispatch(homeThunks.fetchExits(exitTransactions)),
   onRefreshAccounts: () => dispatch(homeThunks.refreshAccounts()),
-  onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
-    dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
-  onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
-    dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onCheckPendingWithdrawals: () => dispatch(globalThunks.checkPendingWithdrawals()),
   onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),
   onAddTimerWithdraw: (timerWithdraw) => dispatch(globalThunks.addTimerWithdraw(timerWithdraw)),
