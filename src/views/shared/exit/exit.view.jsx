@@ -43,6 +43,7 @@ function Exit({
   const [isDelayedWithdrawalReady, setIsDelayedWithdrawalReady] = useState(false);
   const [isCompleteDelayedWithdrawalClicked, setIsCompleteDelayedWithdrawalClicked] =
     useState(false);
+  const [isTimerCompleted, setIsTimerCompleted] = useState(false);
 
   React.useEffect(() => {
     if (typeof coordinatorState !== "undefined" && getStep() <= STEPS.SECOND) {
@@ -64,6 +65,13 @@ function Exit({
       setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode);
     }
   }, [coordinatorState, isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode]);
+
+  React.useEffect(() => {
+    if (isTimerCompleted) {
+      setIsTimerCompleted(false);
+      onRemoveTimerWithdraw(exitId);
+    }
+  }, [isTimerCompleted]);
 
   /**
    * Calculates in which step is the Exit process in
@@ -141,8 +149,8 @@ function Exit({
     const difference = now - new Date(delayedWithdrawal.timestamp).getTime();
     if (timer) {
       const tenMinutes = 10 * 60 * 1000;
-      if (difference > tenMinutes) {
-        onRemoveTimerWithdraw(exitId);
+      if (difference > tenMinutes && !isTimerCompleted) {
+        setIsTimerCompleted(true);
       } else {
         const remainingDifference = tenMinutes - difference;
         // Extracts the minutes from the remaining difference
