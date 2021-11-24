@@ -108,7 +108,7 @@ function trimZeros(amount: number, decimals: number): number {
  * Formats a fiat amount to be displayed properly
  */
 function formatFiatAmount(amount?: number): string {
-  return amount && !isNaN(amount) ? amount.toFixed(2) : "--";
+  return amount !== undefined && !isNaN(amount) ? amount.toFixed(2) : "--";
 }
 
 export {

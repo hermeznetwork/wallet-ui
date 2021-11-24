@@ -4,7 +4,6 @@ import { useLocation } from "react-router";
 import { BigNumber } from "@ethersproject/bignumber";
 import { push } from "connected-react-router";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { ethers } from "ethers";
 
 import {
   HermezAccount,
@@ -24,13 +23,14 @@ import { changeHeader } from "src/store/global/global.actions";
 import Spinner from "src/views/shared/spinner/spinner.view";
 import ExitForm from "src/views/transactions/exit/components/exit-form/exit-form.view";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
+import { getFixedTokenAmount } from "src/utils/currencies";
 
 interface ExitStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: exitActions.Step;
   accountTask: AsyncTask<HermezAccount, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
-  accountBalanceTask: AsyncTask<string, Error>;
+  accountBalanceTask: AsyncTask<BigNumber, Error>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   isTransactionBeingApproved: boolean;
   transactionToReview: exitActions.TransactionToReview | undefined;
@@ -75,7 +75,6 @@ function Exit({
   onChangeHeader,
   onLoadHermezAccount,
   onLoadFees,
-  onLoadAccountBalance,
   onLoadEstimatedWithdrawFee,
   onLoadPoolTransactions,
   onGoToHome,
@@ -95,8 +94,7 @@ function Exit({
   React.useEffect(() => {
     onLoadPoolTransactions();
     onLoadFees();
-    onLoadAccountBalance();
-  }, [onLoadPoolTransactions, onLoadFees, onLoadAccountBalance]);
+  }, [onLoadPoolTransactions, onLoadFees, onLoadEstimatedWithdrawFee]);
 
   React.useEffect(() => {
     if (
@@ -136,13 +134,13 @@ function Exit({
       isAsyncTaskCompleted(accountBalanceTask) &&
       isAsyncTaskCompleted(estimatedWithdrawFeeTask)
     ) {
-      const formattedEstimatedWithdrawFee = ethers.utils.formatUnits(
-        estimatedWithdrawFeeTask.data.amount
+      const formattedEstimatedWithdrawFee = getFixedTokenAmount(
+        estimatedWithdrawFeeTask.data.amount.toString()
       );
 
-      return accountBalanceTask.data >= formattedEstimatedWithdrawFee;
+      return accountBalanceTask.data.lt(formattedEstimatedWithdrawFee);
     } else {
-      return false;
+      return true;
     }
   }
 

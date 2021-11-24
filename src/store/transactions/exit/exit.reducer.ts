@@ -1,3 +1,5 @@
+import { BigNumber } from "@ethersproject/bignumber";
+
 import {
   ExitAction,
   TransactionToReview,
@@ -14,7 +16,7 @@ export interface ExitState {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   accountTask: AsyncTask<HermezAccount, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
-  accountBalanceTask: AsyncTask<string, Error>;
+  accountBalanceTask: AsyncTask<BigNumber, Error>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;
@@ -177,9 +179,10 @@ function exitReducer(state: ExitState = initialExitState, action: ExitAction): E
     case ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE: {
       return {
         ...state,
-        estimatedWithdrawFeeTask: {
-          status: "loading",
-        },
+        estimatedWithdrawFeeTask:
+          state.estimatedWithdrawFeeTask.status === "successful"
+            ? { status: "reloading", data: state.estimatedWithdrawFeeTask.data }
+            : { status: "loading" },
       };
     }
     case ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS: {

@@ -128,9 +128,10 @@ function withdrawReducer(
     case WithdrawActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE:
       return {
         ...state,
-        estimatedWithdrawFeeTask: {
-          status: "loading",
-        },
+        estimatedWithdrawFeeTask:
+          state.estimatedWithdrawFeeTask.status === "successful"
+            ? { status: "reloading", data: state.estimatedWithdrawFeeTask.data }
+            : { status: "loading" },
       };
     case WithdrawActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS:
       return {

@@ -85,7 +85,7 @@ export interface LoadAccountBalance {
 
 export interface LoadAccountBalanceSuccess {
   type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS;
-  balance: string;
+  balance: BigNumber;
 }
 
 export interface LoadAccountBalanceFailure {
@@ -223,7 +223,7 @@ function loadAccountBalance(): LoadAccountBalance {
   };
 }
 
-function loadAccountBalanceSuccess(balance: string): LoadAccountBalanceSuccess {
+function loadAccountBalanceSuccess(balance: BigNumber): LoadAccountBalanceSuccess {
   return {
     type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS,
     balance,

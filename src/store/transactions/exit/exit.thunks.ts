@@ -1,5 +1,5 @@
 import { push } from "connected-react-router";
-import { BigNumber, utils } from "ethers";
+import { BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount, TxFees } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
@@ -113,9 +113,7 @@ function fetchAccountBalance() {
 
       provider
         .getBalance(ethereumAddress)
-        .then((balance) =>
-          dispatch(exitActions.loadAccountBalanceSuccess(utils.formatUnits(balance)))
-        )
+        .then((balance) => dispatch(exitActions.loadAccountBalanceSuccess(balance)))
         .catch((err) => dispatch(exitActions.loadAccountBalanceFailure(err)));
     }
   };

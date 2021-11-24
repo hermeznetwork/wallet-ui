@@ -55,6 +55,10 @@ const ExitForm: React.FC<ExitFormProps> = ({
   const [showInFiat, setShowInFiat] = React.useState(false);
   const minimumFee = getMinimumL2Fee({ txType: TxType.Exit, feesTask, token: account.token });
 
+  React.useEffect(() => {
+    onLoadEstimatedWithdrawFee(account.token, amount);
+  }, [account, amount, onLoadEstimatedWithdrawFee]);
+
   function isSubmitButtonDisabled() {
     if (isAmountValid === false || !doesUserHaveEnoughEthForWithdraw) {
       return true;
@@ -74,7 +78,6 @@ const ExitForm: React.FC<ExitFormProps> = ({
     setShowInFiat(data.showInFiat);
     setAmount(data.amount.tokens);
     setIsAmountValid(!data.isInvalid);
-    onLoadEstimatedWithdrawFee(account.token, amount);
     setFee(newFee);
   }
 

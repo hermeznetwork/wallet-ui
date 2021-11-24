@@ -27,10 +27,7 @@ function TransactionAmountInput({
   onSwapCurrency,
 }: WrappedAmountInputComponentProps): JSX.Element {
   const classes = useTransactionAmountInputStyles();
-
-  function hasErrors() {
-    return isAmountWithFeeMoreThanFunds || isAmountCompressedInvalid;
-  }
+  const hasErrors = isAmountWithFeeMoreThanFunds || isAmountCompressedInvalid;
 
   function getErrorMessage() {
     if (isAmountWithFeeMoreThanFunds) {
@@ -47,7 +44,7 @@ function TransactionAmountInput({
       <div
         className={clsx({
           [classes.selectAmount]: true,
-          [classes.selectAmountError]: hasErrors(),
+          [classes.selectAmountError]: hasErrors,
         })}
       >
         <div className={classes.amount}>
@@ -95,7 +92,7 @@ function TransactionAmountInput({
       <p
         className={clsx({
           [classes.errorMessage]: true,
-          [classes.selectAmountErrorMessageVisible]: hasErrors(),
+          [classes.selectAmountErrorMessageVisible]: hasErrors,
         })}
       >
         <ErrorIcon className={classes.errorIcon} />
