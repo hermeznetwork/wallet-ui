@@ -19,6 +19,8 @@ interface SelectedAccountDepositProps {
   onClick: () => void;
 }
 
+// Exits are only accessible from the account-details view, so you cannot go back to the
+// account-selector step, and therefore it doesn't have the onClick callback
 interface SelectedAccountExitProps {
   txType: TxType.Exit;
   account: Account;
