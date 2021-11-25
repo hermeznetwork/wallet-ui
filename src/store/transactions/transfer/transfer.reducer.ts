@@ -20,7 +20,7 @@ export interface TransferState {
   accountTask: AsyncTask<HermezAccount, string>;
   accountsTask: AsyncTask<AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
-  doesReceiverApprovedAccountsCreation: undefined | boolean;
+  hasReceiverApprovedAccountsCreation: undefined | boolean;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;
 }
@@ -39,7 +39,7 @@ const initialTransferState: TransferState = {
   feesTask: {
     status: "pending",
   },
-  doesReceiverApprovedAccountsCreation: undefined,
+  hasReceiverApprovedAccountsCreation: undefined,
   transaction: undefined,
   isTransactionBeingApproved: false,
 };
@@ -196,10 +196,10 @@ function transferReducer(
           error: action.error,
         },
       };
-    case TransferActionTypes.SET_RECEIVER_ACCOUNTS_CREATION_AUTHORIZATION_APPROVAL: {
+    case TransferActionTypes.SET_RECEIVER_ACCOUNTS_CREATION_AUTHORIZATION: {
       return {
         ...state,
-        doesReceiverApprovedAccountsCreation: action.approval,
+        hasReceiverApprovedAccountsCreation: action.approval,
       };
     }
     case TransferActionTypes.START_TRANSACTION_APPROVAL: {
