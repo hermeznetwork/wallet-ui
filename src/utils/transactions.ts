@@ -77,20 +77,23 @@ function mergeDelayedWithdraws(
       return existingPendingDelayedWithdrawWithToken === undefined
         ? [...mergedPendingDelayedWithdraws, pendingDelayedWithdraw]
         : mergedPendingDelayedWithdraws.map((mergedPendingDelayedWithdraw) => {
-            return mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken
-              ? {
-                  ...mergedPendingDelayedWithdraw,
-                  // We need to sum up the balances and use the latest timestamp for the timer
-                  balance: BigNumber.from(mergedPendingDelayedWithdraw.balance)
-                    .add(BigNumber.from(pendingDelayedWithdraw.balance))
-                    .toString(),
-                  timestamp:
-                    Date.parse(mergedPendingDelayedWithdraw.timestamp) >
-                    Date.parse(pendingDelayedWithdraw.timestamp)
-                      ? mergedPendingDelayedWithdraw.timestamp
-                      : pendingDelayedWithdraw.timestamp,
-                }
-              : mergedPendingDelayedWithdraw;
+            if (mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken) {
+              const { timestamp, batchNum } =
+                Date.parse(mergedPendingDelayedWithdraw.timestamp) >
+                Date.parse(pendingDelayedWithdraw.timestamp)
+                  ? mergedPendingDelayedWithdraw
+                  : pendingDelayedWithdraw;
+              return {
+                ...mergedPendingDelayedWithdraw,
+                // We need to sum up the balances and use the latest timestamp for the timer
+                balance: BigNumber.from(mergedPendingDelayedWithdraw.balance)
+                  .add(BigNumber.from(pendingDelayedWithdraw.balance))
+                  .toString(),
+                timestamp,
+                batchNum,
+              };
+            }
+            return mergedPendingDelayedWithdraw;
           });
     },
     []

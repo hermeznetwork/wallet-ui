@@ -30,9 +30,10 @@ function Exit({
   babyJubJub,
   pendingWithdraws,
   pendingDelayedWithdraws,
+  timerWithdraws,
   coordinatorState,
-  onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw,
+  onAddTimerWithdraw,
+  onRemoveTimerWithdraw,
 }) {
   const classes = useExitStyles();
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false);
@@ -42,6 +43,7 @@ function Exit({
   const [isDelayedWithdrawalReady, setIsDelayedWithdrawalReady] = useState(false);
   const [isCompleteDelayedWithdrawalClicked, setIsCompleteDelayedWithdrawalClicked] =
     useState(false);
+  const [isTimerCompleted, setIsTimerCompleted] = useState(false);
 
   React.useEffect(() => {
     if (typeof coordinatorState !== "undefined" && getStep() <= STEPS.SECOND) {
@@ -63,6 +65,13 @@ function Exit({
       setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode);
     }
   }, [coordinatorState, isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode]);
+
+  React.useEffect(() => {
+    if (isTimerCompleted) {
+      setIsTimerCompleted(false);
+      onRemoveTimerWithdraw(exitId);
+    }
+  }, [isTimerCompleted]);
 
   /**
    * Calculates in which step is the Exit process in
@@ -132,19 +141,20 @@ function Exit({
    * It detects the type and caculates the time accordingly (in hours for instant and days for delayed)
    * If enough time has already passed, it deletes the pendingDelayedWithdraw from LocalStorage
    * @param {Object} delayedWithdrawal - The delayed withdrawal object from LocalStorage
+   * @param {Object} timer - Timer manually activated
    * @returns {string|void} Returns remaining time as a string, or void if enough time has passed
    */
-  function getDateString(delayedWithdrawal) {
+  function getDateString(delayedWithdrawal, timer) {
     const now = Date.now();
     const difference = now - new Date(delayedWithdrawal.timestamp).getTime();
-    if (delayedWithdrawal.isInstant) {
+    if (timer) {
       const tenMinutes = 10 * 60 * 1000;
-      if (difference > tenMinutes) {
-        onRemovePendingDelayedWithdraw(exitId);
+      if (difference > tenMinutes && !isTimerCompleted) {
+        setIsTimerCompleted(true);
       } else {
         const remainingDifference = tenMinutes - difference;
         // Extracts the minutes from the remaining difference
-        const minutes = Math.round(remainingDifference / 1000 / 60);
+        const minutes = Math.ceil(remainingDifference / 1000 / 60);
 
         return `${minutes}m`;
       }
@@ -158,7 +168,7 @@ function Exit({
         const hours = remainingDifference / 1000 / 60 / 60;
         const hoursFixed = Math.floor(hours);
         // Minutes are in a value between 0-1, so we need to convert to 0-59
-        const minutes = Math.round((hours - hoursFixed) * 59);
+        const minutes = Math.ceil((hours - hoursFixed) * 59);
 
         if (hoursFixed < 1) {
           return `${minutes}m`;
@@ -192,9 +202,8 @@ function Exit({
   }
 
   function onCheckAvailabilityClick() {
-    onAddPendingDelayedWithdraw({
+    onAddTimerWithdraw({
       id: exitId,
-      isInstant: true,
       timestamp: new Date().toISOString(),
       token,
     });
@@ -286,23 +295,27 @@ function Exit({
           const pendingDelayedWithdrawal = pendingDelayedWithdraws?.find(
             (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === exitId
           );
+          const timerWithdraw = timerWithdraws?.find(
+            (timerWithdraws) => timerWithdraws.id === exitId
+          );
+          const withdraw = pendingDelayedWithdrawal || timerWithdraw;
 
-          if (pendingDelayedWithdrawal) {
-            const remainingTime = getDateString(pendingDelayedWithdrawal);
+          if (withdraw) {
+            const remainingTime = getDateString(withdraw, timerWithdraw);
             return (
               <div className={classes.withdraw}>
                 <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
-                  {pendingDelayedWithdrawal.isInstant && (
+                  {timerWithdraw && (
                     <span className={classes.infoText}>
                       Your request to withdraw is validating with the network.
                     </span>
                   )}
-                  {!pendingDelayedWithdrawal.isInstant && (
+                  {pendingDelayedWithdrawal && (
                     <span className={classes.infoText}>You have scheduled your withdrawal.</span>
                   )}
 
                   <div className={`${classes.withdrawInfo} ${classes.withdrawInfoIcon}`}>
-                    <InfoIcon className={classes.infoIcon} />
+                    <InfoIcon className={`${classes.infoIcon} ${classes.infoBoxIcon}`} />
                     <span className={classes.infoText}>Remaining time: {remainingTime}</span>
                   </div>
                 </div>
@@ -365,9 +378,10 @@ Exit.propTypes = {
   accountIndex: PropTypes.string,
   pendingWithdraws: PropTypes.array,
   pendingDelayedWithdraws: PropTypes.array,
+  timerWithdraws: PropTypes.array,
   coordinatorState: PropTypes.object,
-  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
-  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
+  onAddTimerWithdraw: PropTypes.func.isRequired,
+  onRemoveTimerWithdraw: PropTypes.func.isRequired,
 };
 
 export default Exit;

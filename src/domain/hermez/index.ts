@@ -58,6 +58,12 @@ export type PendingDelayedWithdraw = PendingWithdraw & {
   isInstant: boolean;
 };
 
+export type TimerWithdraw = {
+  id: string;
+  timestamp: hermezjs.ISOStringDate;
+  token: hermezjs.Token;
+};
+
 // Type Guards
 
 export function isHermezAccount(account: Account): account is HermezAccount {

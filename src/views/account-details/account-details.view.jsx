@@ -39,6 +39,7 @@ function AccountDetails({
   pendingWithdraws,
   pendingDelayedWithdraws,
   pendingDeposits,
+  timerWithdraws,
   coordinatorStateTask,
   onChangeHeader,
   onLoadAccount,
@@ -47,10 +48,10 @@ function AccountDetails({
   onLoadHistoryTransactions,
   onLoadExits,
   onCheckPendingDeposits,
-  onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
+  onAddTimerWithdraw,
+  onRemoveTimerWithdraw,
   onNavigateToTransactionDetails,
   onCleanup,
 }) {
@@ -69,6 +70,12 @@ function AccountDetails({
   );
   const accountPendingDelayedWithdraws = storage.getPendingDelayedWithdrawsByHermezAddress(
     pendingDelayedWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  );
+
+  const accountTimerWithdraws = storage.getTimerWithdrawsByHermezAddress(
+    timerWithdraws,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   );
@@ -235,43 +242,36 @@ function AccountDetails({
               const tokenPendingDelayedWithdraws = accountPendingDelayedWithdraws.filter(
                 (withdraw) => withdraw.token.id === accountTask.data.token.id
               );
+              const tokenTimerWithdraws = accountTimerWithdraws.filter(
+                (withdraw) => withdraw.token.id === accountTask.data.token.id
+              );
 
               return (
                 <>
-                  {poolTransactionsTask.status === "successful" ||
-                  poolTransactionsTask.status === "reloading" ? (
-                    <ExitList
-                      transactions={getPendingExits(poolTransactionsTask.data)}
-                      fiatExchangeRates={fiatExchangeRatesTask.data}
-                      preferredCurrency={preferredCurrency}
-                      babyJubJub={wallet.publicKeyCompressedHex}
-                      pendingWithdraws={tokenPendingWithdraws}
-                      pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                      coordinatorState={coordinatorStateTask?.data}
-                    />
-                  ) : (
-                    <></>
-                  )}
-                  {exitsTask.status === "successful" || exitsTask.status === "reloading" ? (
-                    <ExitList
-                      transactions={mergeExits(
-                        exitsTask.data.exits,
-                        accountPendingDelayedWithdraws
-                      )}
-                      fiatExchangeRates={fiatExchangeRatesTask.data}
-                      preferredCurrency={preferredCurrency}
-                      babyJubJub={wallet.publicKeyCompressedHex}
-                      pendingWithdraws={tokenPendingWithdraws}
-                      pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
-                      onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                      onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
-                      coordinatorState={coordinatorStateTask?.data}
-                    />
-                  ) : (
-                    <></>
-                  )}
+                  <ExitList
+                    transactions={getPendingExits(poolTransactionsTask.data)}
+                    fiatExchangeRates={fiatExchangeRatesTask.data}
+                    preferredCurrency={preferredCurrency}
+                    babyJubJub={wallet.publicKeyCompressedHex}
+                    pendingWithdraws={tokenPendingWithdraws}
+                    pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
+                    timerWithdraws={tokenTimerWithdraws}
+                    onAddTimerWithdraw={onAddTimerWithdraw}
+                    onRemoveTimerWithdraw={onRemoveTimerWithdraw}
+                    coordinatorState={coordinatorStateTask?.data}
+                  />
+                  <ExitList
+                    transactions={mergeExits(exitsTask.data.exits, tokenPendingDelayedWithdraws)}
+                    fiatExchangeRates={fiatExchangeRatesTask.data}
+                    preferredCurrency={preferredCurrency}
+                    babyJubJub={wallet.publicKeyCompressedHex}
+                    pendingWithdraws={tokenPendingWithdraws}
+                    pendingDelayedWithdraws={tokenPendingDelayedWithdraws}
+                    timerWithdraws={tokenTimerWithdraws}
+                    onAddTimerWithdraw={onAddTimerWithdraw}
+                    onRemoveTimerWithdraw={onRemoveTimerWithdraw}
+                    coordinatorState={coordinatorStateTask?.data}
+                  />
                   {tokenPendingDeposits && (
                     <TransactionList
                       arePending
@@ -329,14 +329,15 @@ AccountDetails.propTypes = {
   wallet: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
+  timerWithdraws: PropTypes.object.isRequired,
   coordinatorStateTask: PropTypes.object.isRequired,
   onLoadAccount: PropTypes.func.isRequired,
   onChangeHeader: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadHistoryTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
-  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
-  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
+  onAddTimerWithdraw: PropTypes.func.isRequired,
+  onRemoveTimerWithdraw: PropTypes.func.isRequired,
   onNavigateToTransactionDetails: PropTypes.func.isRequired,
 };
 
@@ -353,6 +354,7 @@ const mapStateToProps = (state) => ({
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
+  timerWithdraws: state.global.timerWithdraws,
   coordinatorStateTask: state.global.coordinatorStateTask,
 });
 
@@ -376,10 +378,9 @@ const mapDispatchToProps = (dispatch) => ({
   onLoadHistoryTransactions: (accountIndex, fromItem, exits) =>
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem, exits)),
   onLoadExits: (tokenId) => dispatch(accountDetailsThunks.fetchExits(tokenId)),
-  onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
-    dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
-  onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
-    dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
+  onAddTimerWithdraw: (timerWithdraw) => dispatch(globalThunks.addTimerWithdraw(timerWithdraw)),
+  onRemoveTimerWithdraw: (timerWithdrawId) =>
+    dispatch(globalThunks.removeTimerWithdraw(timerWithdrawId)),
   onCheckPendingWithdrawals: () => dispatch(globalThunks.checkPendingWithdrawals()),
   onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),
   onNavigateToTransactionDetails: (accountIndex, transactionId) =>
