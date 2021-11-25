@@ -87,7 +87,6 @@ const TransferForm: React.FC<TransferFormProps> = ({
   }
 
   function handleReceiverInputChange(data: ReceiverInputChangeEventData) {
-    console.log(data.isValid);
     setReceiverAddress(data.value);
     setIsReceiverValid(data.isValid);
   }
