@@ -204,19 +204,19 @@ function Home({
           <section className={`${classes.section} ${classes.sectionLast}`}>
             {(poolTransactionsTask.status === "successful" ||
               poolTransactionsTask.status === "reloading") && (
-                <ExitList
-                  transactions={getPendingExits()}
-                  fiatExchangeRates={fiatExchangeRatesTask.data}
-                  preferredCurrency={preferredCurrency}
-                  babyJubJub={wallet.publicKeyCompressedHex}
-                  pendingWithdraws={accountPendingWithdraws}
-                  pendingDelayedWithdraws={accountPendingDelayedWithdraws}
-                  timerWithdraws={accountTimerWithdraws}
-                  onAddTimerWithdraw={onAddTimerWithdraw}
-                  onRemoveTimerWithdraw={onRemoveTimerWithdraw}
-                  coordinatorState={coordinatorStateTask?.data}
-                />
-              ))}
+              <ExitList
+                transactions={getPendingExits()}
+                fiatExchangeRates={fiatExchangeRatesTask.data}
+                preferredCurrency={preferredCurrency}
+                babyJubJub={wallet.publicKeyCompressedHex}
+                pendingWithdraws={accountPendingWithdraws}
+                pendingDelayedWithdraws={accountPendingDelayedWithdraws}
+                timerWithdraws={accountTimerWithdraws}
+                onAddTimerWithdraw={onAddTimerWithdraw}
+                onRemoveTimerWithdraw={onRemoveTimerWithdraw}
+                coordinatorState={coordinatorStateTask?.data}
+              />
+            )}
             {(exitsTask.status === "successful" || exitsTask.status === "reloading") && (
               <ExitList
                 transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
