@@ -202,8 +202,8 @@ function Home({
         </Container>
         <Container fullHeight>
           <section className={`${classes.section} ${classes.sectionLast}`}>
-            {poolTransactionsTask.status === "successful" ||
-              (poolTransactionsTask.status === "reloading" && (
+            {(poolTransactionsTask.status === "successful" ||
+              poolTransactionsTask.status === "reloading") && (
                 <ExitList
                   transactions={getPendingExits()}
                   fiatExchangeRates={fiatExchangeRatesTask.data}
