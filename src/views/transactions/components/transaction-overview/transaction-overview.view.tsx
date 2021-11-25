@@ -273,7 +273,6 @@ function TransactionOverview({
           <Container>
             <section className={classes.section}>
               <Alert
-                showHelpButton
                 message="Withdrawal of funds has 2 steps. Once initiated it can’t be canceled."
                 onHelpClick={handleOpenWithdrawInfoSidenav}
               />

@@ -1,24 +1,27 @@
-// ToDo: Remove the disable of TS and the linter below once the component are migrated to TS
-/* eslint-disable */
-// @ts-nocheck
 import React from "react";
-import { BigNumber } from "@ethersproject/bignumber";
-import { utils } from "ethers";
 
-import { EstimatedWithdrawFee } from "src/domain";
+// domain
+import { EstimatedL1Fee } from "src/domain";
+// utils
 import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { getFixedTokenAmount } from "src/utils/currencies";
+// views
 import Alert from "src/views/shared/alert/alert.view";
 
 interface ExitAlertProps {
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
 }
 
 function ExitAlert({ estimatedWithdrawFeeTask }: ExitAlertProps): JSX.Element {
-  function getMessage(estimatedWithdrawFee: BigNumber) {
+  function getMessage(estimatedWithdrawFee: EstimatedL1Fee) {
+    const formattedEstimatedWithdrawFee = getFixedTokenAmount(
+      estimatedWithdrawFee.amount.toString()
+    );
+
     return (
       "You don’t have enough ETH to cover withdrawal transaction fee" +
       "(you need at least " +
-      utils.formatUnits(estimatedWithdrawFee) +
+      formattedEstimatedWithdrawFee +
       " ETH"
     );
   }
@@ -26,7 +29,7 @@ function ExitAlert({ estimatedWithdrawFeeTask }: ExitAlertProps): JSX.Element {
   return (
     <>
       {isAsyncTaskCompleted(estimatedWithdrawFeeTask) && (
-        <Alert message={getMessage(estimatedWithdrawFeeTask.data.amount)} />
+        <Alert message={getMessage(estimatedWithdrawFeeTask.data)} />
       )}
     </>
   );
