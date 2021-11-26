@@ -90,7 +90,7 @@ const DepositForm: React.FC<DepositFormProps> = ({
         className={classes.form}
         onSubmit={(event) => {
           event.preventDefault();
-          void handleFormSubmission();
+          handleFormSubmission();
         }}
       >
         <TransactionAmountInput

@@ -114,7 +114,7 @@ const TransferForm: React.FC<TransferFormProps> = ({
         className={classes.form}
         onSubmit={(event) => {
           event.preventDefault();
-          void handleFormSubmission();
+          handleFormSubmission();
         }}
       >
         <TransactionAmountInput

@@ -105,7 +105,7 @@ const ExitForm: React.FC<ExitFormProps> = ({
         className={classes.form}
         onSubmit={(event) => {
           event.preventDefault();
-          void handleFormSubmission();
+          handleFormSubmission();
         }}
       >
         <TransactionAmountInput
