@@ -6,7 +6,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 // constants
 import { MAX_TOKEN_DECIMALS } from "src/constants";
 // domain
-import { Account, EthereumAccount, FiatExchangeRates } from "src/domain/hermez";
+import { Account, FiatExchangeRates } from "src/domain/hermez";
 // utils
 import {
   getFixedTokenAmount,
@@ -34,7 +34,7 @@ export interface AmountInputChangeEventData {
 
 interface AmountInputProps {
   txType: TxType.Deposit | TxType.Transfer | TxType.Exit | TxType.ForceExit;
-  account: Account | EthereumAccount;
+  account: Account;
   fee: BigNumber;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
