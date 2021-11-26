@@ -72,12 +72,12 @@ function AmountInput(
      * Converts an amount in tokens to fiat. It takes into account the prefered currency
      * of the user.
      */
-    function convertAmountToFiat(tokensAmount: BigNumber) {
+    function convertAmountToFiat(tokenAmount: BigNumber) {
       if (!isAsyncTaskCompleted(fiatExchangeRatesTask)) {
         return 0;
       }
 
-      const fixedTokenAmount = getFixedTokenAmount(tokensAmount.toString(), account.token.decimals);
+      const fixedTokenAmount = getFixedTokenAmount(tokenAmount.toString(), account.token.decimals);
 
       return getTokenAmountInPreferredCurrency(
         fixedTokenAmount,
@@ -91,9 +91,9 @@ function AmountInput(
      * Converts an amount in fiat to tokens.
      */
     function convertAmountToTokens(fiatAmount: number) {
-      const tokensAmount = fiatAmount / account.token.USD;
+      const tokenAmount = fiatAmount / account.token.USD;
 
-      return parseUnits(tokensAmount.toFixed(account.token.decimals), account.token.decimals);
+      return parseUnits(tokenAmount.toFixed(account.token.decimals), account.token.decimals);
     }
 
     function updateAmountState({ tokens, fiat }: Amount, inputValue: string, showInFiat: boolean) {
