@@ -54,7 +54,7 @@ function Fee(props: FeeProps): JSX.Element {
       const { estimatedDepositFeeTask } = props;
       const formattedDepositFee = isAsyncTaskCompleted(estimatedDepositFeeTask)
         ? getFixedTokenAmount(estimatedDepositFeeTask.data.amount.toString())
-        : BigNumber.from(0).toString();
+        : "0";
       const depositFeeInFiat = isAsyncTaskCompleted(estimatedDepositFeeTask)
         ? getTokenAmountInPreferredCurrency(
             formattedDepositFee,
