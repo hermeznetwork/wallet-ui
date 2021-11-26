@@ -48,11 +48,7 @@ const DepositForm: React.FC<DepositFormProps> = ({
   const [areFundsExceededDueToFee, setAreFundsExceededDueToFee] = React.useState(false);
 
   function isSubmitButtonDisabled() {
-    if (isAmountValid === false || areFundsExceededDueToFee) {
-      return true;
-    }
-
-    return false;
+    return isAmountValid === false || areFundsExceededDueToFee;
   }
 
   function handleAmountChange(data: AmountInputChangeEventData) {

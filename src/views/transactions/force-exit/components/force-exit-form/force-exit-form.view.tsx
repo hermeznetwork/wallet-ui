@@ -44,11 +44,7 @@ const ForceExitForm: React.FC<ForceExitFormProps> = ({
   const fee = getTxFee({ txType: TxType.ForceExit });
 
   function isSubmitButtonDisabled() {
-    if (isAmountValid === false) {
-      return true;
-    }
-
-    return false;
+    return isAmountValid === false;
   }
 
   function handleAmountChange(data: AmountInputChangeEventData) {

@@ -65,11 +65,7 @@ const TransferForm: React.FC<TransferFormProps> = ({
   });
 
   function isSubmitButtonDisabled() {
-    if (!isAmountValid || !isReceiverValid || doesReceiverApprovedAccountsCreation === false) {
-      return true;
-    }
-
-    return false;
+    return !isAmountValid || !isReceiverValid || doesReceiverApprovedAccountsCreation === false;
   }
 
   function handleAmountChange(data: AmountInputChangeEventData) {

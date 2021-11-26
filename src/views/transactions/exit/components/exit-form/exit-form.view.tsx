@@ -60,11 +60,7 @@ const ExitForm: React.FC<ExitFormProps> = ({
   }, [account, amount, onLoadEstimatedWithdrawFee]);
 
   function isSubmitButtonDisabled() {
-    if (isAmountValid === false || !doesUserHaveEnoughEthForWithdraw) {
-      return true;
-    }
-
-    return false;
+    return isAmountValid === false || !doesUserHaveEnoughEthForWithdraw;
   }
 
   function handleAmountChange(data: AmountInputChangeEventData) {
