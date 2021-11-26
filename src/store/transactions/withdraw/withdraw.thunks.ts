@@ -146,14 +146,16 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
       const feeBigNumber = BigNumber.from(gasLimit).mul(gasPrice);
 
       if (tokensPriceTask.status === "successful" || tokensPriceTask.status === "reloading") {
-        const etherToken = tokensPriceTask.data[ETHER_TOKEN_ID];
+        const ethToken = tokensPriceTask.data.find((token) => token.id === ETHER_TOKEN_ID);
 
-        dispatch(
-          withdrawActions.loadEstimatedWithdrawFeeSuccess({
-            amount: feeBigNumber,
-            token: etherToken,
-          })
-        );
+        if (ethToken) {
+          dispatch(
+            withdrawActions.loadEstimatedWithdrawFeeSuccess({
+              amount: feeBigNumber,
+              token: ethToken,
+            })
+          );
+        }
       }
     } catch (err) {
       if (err instanceof Error) {
