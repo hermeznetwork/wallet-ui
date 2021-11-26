@@ -475,23 +475,27 @@ function recoverPendingDelayedWithdrawals(exits: Exits): AppThunk {
             !batchNumPendingDelayedWithdraws.includes(exit.batchNum) &&
             exit.delayedWithdrawRequest
           ) {
-            const blockWithTransactions = await provider.getBlockWithTransactions(
-              exit.delayedWithdrawRequest
-            );
-            const pendingDelayedWithdraw = blockWithTransactions.transactions.find(
-              (t) => Addresses.getEthereumAddress(hermezEthereumAddress) === t.from
-            );
-            if (pendingDelayedWithdraw) {
-              dispatch(
-                addPendingDelayedWithdraw({
-                  ...exit,
-                  hash: pendingDelayedWithdraw.hash,
-                  id: `${exit.accountIndex}${exit.batchNum}`,
-                  hermezEthereumAddress: wallet.hermezEthereumAddress,
-                  isInstant: false, // TODO I'll remove this key that it's unused with the ExitCard refactor
-                  timestamp: new Date(blockWithTransactions.timestamp * 1000).toISOString(),
-                })
+            try {
+              const blockWithTransactions = await provider.getBlockWithTransactions(
+                exit.delayedWithdrawRequest
               );
+              const pendingDelayedWithdraw = blockWithTransactions.transactions.find(
+                (t) => Addresses.getEthereumAddress(hermezEthereumAddress) === t.from
+              );
+              if (pendingDelayedWithdraw) {
+                dispatch(
+                  addPendingDelayedWithdraw({
+                    ...exit,
+                    hash: pendingDelayedWithdraw.hash,
+                    id: `${exit.accountIndex}${exit.batchNum}`,
+                    hermezEthereumAddress: wallet.hermezEthereumAddress,
+                    isInstant: false, // TODO I'll remove this key that it's unused with the ExitCard refactor
+                    timestamp: new Date(blockWithTransactions.timestamp * 1000).toISOString(),
+                  })
+                );
+              }
+            } catch {
+              return;
             }
           }
         });
