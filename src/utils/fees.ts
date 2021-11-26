@@ -48,12 +48,10 @@ function getMinimumL2Fee(params: GetMinimumL2FeeParams): BigNumber {
   }
 
   const feeInUsd = (() => {
-    if (txType === TxType.Exit) {
+    if (txType === TxType.Exit || params.doesAccountAlreadyExist) {
       return feesTask.data.existingAccount;
     } else {
-      return params.doesAccountAlreadyExist
-        ? feesTask.data.existingAccount
-        : isHermezBjjAddress(params.receiverAddress)
+      return isHermezBjjAddress(params.receiverAddress)
         ? feesTask.data.createAccountInternal
         : feesTask.data.createAccount;
     }
