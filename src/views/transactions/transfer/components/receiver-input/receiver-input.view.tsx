@@ -37,13 +37,13 @@ function ReceiverInput({
   const classes = useReceiverInputStyles();
   const [value, setValue] = React.useState(defaultValue || "");
   const [isReceiverValid, setIsReceiverValid] = React.useState<boolean | undefined>(undefined);
-  const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false);
+  const [isVideoDeviceAvailable, setIsVideoDeviceAvailable] = React.useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false);
 
   React.useEffect(() => {
     isAnyVideoDeviceAvailable()
-      .then(setisVideoDeviceAvailable)
-      .catch(() => setisVideoDeviceAvailable(false));
+      .then(setIsVideoDeviceAvailable)
+      .catch(() => setIsVideoDeviceAvailable(false));
   }, []);
 
   function hasErrors() {
