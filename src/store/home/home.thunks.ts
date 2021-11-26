@@ -6,6 +6,7 @@ import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
+import * as globalThunks from "src/store/global/global.thunks";
 import * as homeActions from "src/store/home/home.actions";
 // domain
 import {
@@ -249,7 +250,10 @@ function fetchExits(): AppThunk {
       dispatch(homeActions.loadExits());
 
       return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
-        .then((exits) => dispatch(homeActions.loadExitsSuccess(exits)))
+        .then((exits) => {
+          dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
+          dispatch(homeActions.loadExitsSuccess(exits));
+        })
         .catch((err) => dispatch(homeActions.loadExitsFailure(err)));
     }
   };
