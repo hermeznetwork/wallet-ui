@@ -443,7 +443,6 @@ function checkPendingDelayedWithdrawals(): AppThunk {
 
 /**
  * Checks if we have some exit that is not saved in localStorage
- * @returns {void}
  */
 function recoverPendingDelayedWithdrawals(exits: Exits): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -480,7 +479,7 @@ function recoverPendingDelayedWithdrawals(exits: Exits): AppThunk {
                 exit.delayedWithdrawRequest
               );
               const pendingDelayedWithdraw = blockWithTransactions.transactions.find(
-                (t) => Addresses.getEthereumAddress(hermezEthereumAddress) === t.from
+                (tx) => Addresses.getEthereumAddress(hermezEthereumAddress) === tx.from
               );
               if (pendingDelayedWithdraw) {
                 dispatch(
