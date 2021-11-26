@@ -15,7 +15,7 @@ import { changeHeader } from "src/store/global/global.actions";
 import Spinner from "src/views/shared/spinner/spinner.view";
 import DepositForm from "src/views/transactions/deposit/components/deposit-form/deposit-form.view";
 import * as storage from "src/utils/storage";
-import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { AppDispatch, AppState } from "src/store";
 // domain
 import { Header, EstimatedL1Fee } from "src/domain/";
@@ -83,7 +83,7 @@ function Deposit({
   const tokenId = urlSearchParams.get("tokenId");
   const accountIndex = urlSearchParams.get("accountIndex");
   const accountPendingDeposits =
-    wallet && isAsyncTaskCompleted(ethereumNetworkTask)
+    wallet && isAsyncTaskDataAvailable(ethereumNetworkTask)
       ? storage.getPendingDepositsByHermezAddress(
           pendingDeposits,
           ethereumNetworkTask.data.chainId,
@@ -149,7 +149,7 @@ function Deposit({
           }
           case "build-transaction": {
             return (
-              isAsyncTaskCompleted(ethereumAccountTask) && (
+              isAsyncTaskDataAvailable(ethereumAccountTask) && (
                 <DepositForm
                   account={ethereumAccountTask.data}
                   preferredCurrency={preferredCurrency}
@@ -165,7 +165,7 @@ function Deposit({
             return (
               wallet &&
               transactionToReview &&
-              isAsyncTaskCompleted(ethereumAccountTask) && (
+              isAsyncTaskDataAvailable(ethereumAccountTask) && (
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}

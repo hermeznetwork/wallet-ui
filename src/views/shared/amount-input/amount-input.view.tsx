@@ -18,7 +18,7 @@ import {
   getMaxTxAmount,
   isTransactionAmountCompressedValid,
 } from "src/utils/transactions";
-import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 
 export interface Amount {
   tokens: BigNumber;
@@ -73,7 +73,7 @@ function AmountInput(
      * of the user.
      */
     function convertAmountToFiat(tokenAmount: BigNumber) {
-      if (!isAsyncTaskCompleted(fiatExchangeRatesTask)) {
+      if (!isAsyncTaskDataAvailable(fiatExchangeRatesTask)) {
         return 0;
       }
 

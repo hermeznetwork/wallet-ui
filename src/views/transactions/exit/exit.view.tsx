@@ -14,7 +14,7 @@ import {
   Token,
 } from "src/domain/hermez";
 import { AppDispatch, AppState } from "src/store";
-import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import useExitStyles from "src/views/transactions/exit/exit.styles";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
 import * as exitThunks from "src/store/transactions/exit/exit.thunks";
@@ -131,8 +131,8 @@ function Exit({
 
   function doesUserHaveEnoughEthForWithdraw(): boolean {
     if (
-      isAsyncTaskCompleted(accountBalanceTask) &&
-      isAsyncTaskCompleted(estimatedWithdrawFeeTask)
+      isAsyncTaskDataAvailable(accountBalanceTask) &&
+      isAsyncTaskDataAvailable(estimatedWithdrawFeeTask)
     ) {
       const formattedEstimatedWithdrawFee = getFixedTokenAmount(
         estimatedWithdrawFeeTask.data.amount.toString()
@@ -156,7 +156,7 @@ function Exit({
             );
           }
           case "build-transaction": {
-            return isAsyncTaskCompleted(accountTask) ? (
+            return isAsyncTaskDataAvailable(accountTask) ? (
               <ExitForm
                 account={accountTask.data}
                 preferredCurrency={preferredCurrency}

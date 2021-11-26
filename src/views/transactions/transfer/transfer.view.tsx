@@ -14,7 +14,7 @@ import useTransferStyles from "src/views/transactions/transfer/transfer.styles";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
 import Spinner from "src/views/shared/spinner/spinner.view";
-import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import TransferForm, {
   TxData,
 } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
@@ -110,7 +110,10 @@ function Transfer({
   }, [onLoadPoolTransactions, onLoadFees]);
 
   React.useEffect(() => {
-    if (isAsyncTaskCompleted(poolTransactionsTask) && isAsyncTaskCompleted(fiatExchangeRatesTask)) {
+    if (
+      isAsyncTaskDataAvailable(poolTransactionsTask) &&
+      isAsyncTaskDataAvailable(fiatExchangeRatesTask)
+    ) {
       if (accountIndex) {
         onLoadHermezAccount(
           accountIndex,
@@ -170,7 +173,7 @@ function Transfer({
           }
           case "build-transaction": {
             return (
-              isAsyncTaskCompleted(accountTask) && (
+              isAsyncTaskDataAvailable(accountTask) && (
                 <TransferForm
                   account={accountTask.data}
                   defaultReceiverAddress={receiver}
@@ -187,7 +190,7 @@ function Transfer({
             return (
               wallet &&
               transactionToReview &&
-              isAsyncTaskCompleted(accountTask) && (
+              isAsyncTaskDataAvailable(accountTask) && (
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}

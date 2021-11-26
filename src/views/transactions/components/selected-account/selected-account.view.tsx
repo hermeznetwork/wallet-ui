@@ -5,7 +5,7 @@ import useSelectedAccountStyles from "src/views/transactions/components/selected
 import { Account, EthereumAccount, FiatExchangeRates } from "src/domain/hermez";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
-import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 
 interface CommonSelectedAccountProps {
   preferredCurrency: string;
@@ -56,7 +56,7 @@ function SelectedAccount(props: SelectedAccountProps): JSX.Element {
               getFixedTokenAmount(account.balance, account.token.decimals),
               account.token.USD,
               preferredCurrency,
-              isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
+              isAsyncTaskDataAvailable(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
             )}
           />
         </p>

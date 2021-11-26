@@ -10,7 +10,7 @@ import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 // domain
 import { FiatExchangeRates, Token } from "src/domain/hermez";
 import { EstimatedL1Fee } from "src/domain";
-import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { getEstimatedWithdrawFee } from "src/utils/fees";
 
 export interface CommonFeeProps {
@@ -52,15 +52,15 @@ function Fee(props: FeeProps): JSX.Element {
   switch (txType) {
     case TxType.Deposit: {
       const { estimatedDepositFeeTask } = props;
-      const formattedDepositFee = isAsyncTaskCompleted(estimatedDepositFeeTask)
+      const formattedDepositFee = isAsyncTaskDataAvailable(estimatedDepositFeeTask)
         ? getFixedTokenAmount(estimatedDepositFeeTask.data.amount.toString())
         : "0";
-      const depositFeeInFiat = isAsyncTaskCompleted(estimatedDepositFeeTask)
+      const depositFeeInFiat = isAsyncTaskDataAvailable(estimatedDepositFeeTask)
         ? getTokenAmountInPreferredCurrency(
             formattedDepositFee,
             estimatedDepositFeeTask.data.token.USD,
             preferredCurrency,
-            isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
+            isAsyncTaskDataAvailable(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
           )
         : undefined;
 
@@ -82,7 +82,7 @@ function Fee(props: FeeProps): JSX.Element {
         formattedFee,
         token.USD,
         preferredCurrency,
-        isAsyncTaskCompleted(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
+        isAsyncTaskDataAvailable(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
       );
 
       return (
@@ -106,8 +106,8 @@ function Fee(props: FeeProps): JSX.Element {
               Total estimated fee{" "}
               <FiatAmount
                 amount={
-                  isAsyncTaskCompleted(estimatedWithdrawFeeTask) &&
-                  isAsyncTaskCompleted(fiatExchangeRatesTask)
+                  isAsyncTaskDataAvailable(estimatedWithdrawFeeTask) &&
+                  isAsyncTaskDataAvailable(fiatExchangeRatesTask)
                     ? getEstimatedWithdrawFee(
                         fee,
                         token,
@@ -125,11 +125,11 @@ function Fee(props: FeeProps): JSX.Element {
               className={`${classes.withdrawFeeButtonIcon} ${classes.withdrawFeeButtonIconPath}`}
             />
           </button>
-          {isWithdrawFeeExpanded && isAsyncTaskCompleted(fiatExchangeRatesTask) && (
+          {isWithdrawFeeExpanded && isAsyncTaskDataAvailable(fiatExchangeRatesTask) && (
             <FeesTable
               l2Fee={fee}
               estimatedWithdrawFee={
-                isAsyncTaskCompleted(estimatedWithdrawFeeTask)
+                isAsyncTaskDataAvailable(estimatedWithdrawFeeTask)
                   ? estimatedWithdrawFeeTask.data
                   : undefined
               }

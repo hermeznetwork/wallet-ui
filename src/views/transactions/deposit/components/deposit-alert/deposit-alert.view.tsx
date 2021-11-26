@@ -5,7 +5,7 @@ import { FiatExchangeRates } from "src/domain/hermez";
 import { EstimatedL1Fee } from "src/domain";
 // utils
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
-import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 // views
 import Alert from "src/views/shared/alert/alert.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
@@ -23,8 +23,8 @@ function DepositAlert({
 }: DepositAlertProps): JSX.Element {
   return (
     <>
-      {isAsyncTaskCompleted(estimatedDepositFeeTask) &&
-        isAsyncTaskCompleted(fiatExchangeRatesTask) && (
+      {isAsyncTaskDataAvailable(estimatedDepositFeeTask) &&
+        isAsyncTaskDataAvailable(fiatExchangeRatesTask) && (
           <Alert
             message={
               <>

@@ -5,7 +5,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import useDepositFormStyles from "src/views/transactions/deposit/components/deposit-form/deposit-form.styles";
 import { EthereumAccount, FiatExchangeRates } from "src/domain/hermez";
 import FormContainer from "src/views/transactions/components/form-container/form.container.view";
-import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { EstimatedL1Fee } from "src/domain";
 import SelectedAccount from "src/views/transactions/components/selected-account/selected-account.view";
 import DepositAlert from "src/views/transactions/deposit/components/deposit-alert/deposit-alert.view";
@@ -93,7 +93,7 @@ const DepositForm: React.FC<DepositFormProps> = ({
           txType={TxType.Deposit}
           account={account}
           fee={
-            isAsyncTaskCompleted(estimatedDepositFeeTask)
+            isAsyncTaskDataAvailable(estimatedDepositFeeTask)
               ? estimatedDepositFeeTask.data.amount
               : BigNumber.from(0)
           }

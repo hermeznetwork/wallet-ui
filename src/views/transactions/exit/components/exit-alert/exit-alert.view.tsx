@@ -3,7 +3,7 @@ import React from "react";
 // domain
 import { EstimatedL1Fee } from "src/domain";
 // utils
-import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { getFixedTokenAmount } from "src/utils/currencies";
 // views
 import Alert from "src/views/shared/alert/alert.view";
@@ -28,7 +28,7 @@ function ExitAlert({ estimatedWithdrawFeeTask }: ExitAlertProps): JSX.Element {
 
   return (
     <>
-      {isAsyncTaskCompleted(estimatedWithdrawFeeTask) && (
+      {isAsyncTaskDataAvailable(estimatedWithdrawFeeTask) && (
         <Alert message={getMessage(estimatedWithdrawFeeTask.data)} />
       )}
     </>

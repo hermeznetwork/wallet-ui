@@ -10,7 +10,7 @@ import { MAX_FEE_USD, MAX_TOKEN_DECIMALS } from "src/constants";
 import { EstimatedL1Fee } from "src/domain";
 // domain
 import { FiatExchangeRates, RecommendedFee, Token } from "src/domain/hermez";
-import { AsyncTask, isAsyncTaskCompleted } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "./currencies";
 
 /**
@@ -43,7 +43,7 @@ type GetMinimumL2FeeParams = GetMinimumTransferFee | GetMinimumExitFee;
 function getMinimumL2Fee(params: GetMinimumL2FeeParams): BigNumber {
   const { txType, token, feesTask } = params;
 
-  if (!isAsyncTaskCompleted(feesTask) || token.USD === 0) {
+  if (!isAsyncTaskDataAvailable(feesTask) || token.USD === 0) {
     return BigNumber.from(0);
   }
 
