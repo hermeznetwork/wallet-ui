@@ -32,6 +32,7 @@ import {
   HermezNetworkStatus,
   Exit,
   PendingDeposit,
+  TimerWithdraw,
   HistoryTransaction,
   PoolTransaction,
   Token,
@@ -435,6 +436,48 @@ function checkPendingDelayedWithdrawals(): AppThunk {
               .catch(() => ({}));
           })
           .catch(() => ({}));
+      }
+    }
+  };
+}
+
+function addTimerWithdraw(timerWithdraw: TimerWithdraw): AppThunk {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { wallet, ethereumNetworkTask },
+    } = getState();
+    if (wallet !== undefined && ethereumNetworkTask.status === "successful") {
+      const {
+        data: { chainId },
+      } = ethereumNetworkTask;
+      if (chainId !== undefined) {
+        const { hermezEthereumAddress } = wallet;
+        localStoragePersistence.addTimerWithdraw(chainId, hermezEthereumAddress, timerWithdraw);
+        dispatch(globalActions.addTimerWithdraw(chainId, hermezEthereumAddress, timerWithdraw));
+      }
+    }
+  };
+}
+
+function removeTimerWithdraw(timerWithdrawId: string): AppThunk {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { wallet, ethereumNetworkTask },
+    } = getState();
+    if (wallet !== undefined && ethereumNetworkTask.status === "successful") {
+      const {
+        data: { chainId },
+      } = ethereumNetworkTask;
+      if (chainId !== undefined) {
+        const { hermezEthereumAddress } = wallet;
+        localStoragePersistence.removeTimerWithdrawById(
+          chainId,
+          hermezEthereumAddress,
+          timerWithdrawId
+        );
+        dispatch(
+          globalActions.removeTimerWithdraw(chainId, hermezEthereumAddress, timerWithdrawId)
+        );
       }
     }
   };
@@ -873,6 +916,8 @@ export {
   updatePendingDelayedWithdrawDate,
   checkPendingDelayedWithdrawals,
   checkPendingWithdrawals,
+  addTimerWithdraw,
+  removeTimerWithdraw,
   addPendingDeposit,
   removePendingDepositByTransactionId,
   removePendingDepositByHash,

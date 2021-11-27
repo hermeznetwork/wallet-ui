@@ -7,6 +7,7 @@ import {
   HermezStatus,
   HermezNetworkStatus,
   PendingWithdraw,
+  TimerWithdraw,
   HermezWallet,
   Signers,
   FiatExchangeRates,
@@ -39,6 +40,7 @@ export interface GlobalState {
   networkStatus: HermezNetworkStatus;
   pendingWithdraws: localStorageDomain.PendingWithdraws;
   pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
+  timerWithdraws: localStorageDomain.TimerWithdraws;
   pendingDelayedWithdrawCheckTask: AsyncTask<null, string>;
   pendingWithdrawalsCheckTask: AsyncTask<null, string>;
   pendingDeposits: localStorageDomain.PendingDeposits;
@@ -70,6 +72,7 @@ function getInitialGlobalState(): GlobalState {
     networkStatus: "online",
     pendingWithdraws: localStoragePersistence.getPendingWithdraws(),
     pendingDelayedWithdraws: localStoragePersistence.getPendingDelayedWithdraws(),
+    timerWithdraws: localStoragePersistence.getTimerWithdraws(),
     pendingDelayedWithdrawCheckTask: {
       status: "pending",
     },
@@ -331,6 +334,37 @@ function globalReducer(
         pendingDelayedWithdrawCheckTask: {
           status: "successful",
           data: null,
+        },
+      };
+    }
+    case GlobalActionTypes.ADD_TIMER_WITHDRAW: {
+      const chainIdTimerWithdraws = state.timerWithdraws[action.chainId] || {};
+      const accountTimerWithdraws = chainIdTimerWithdraws[action.hermezEthereumAddress] || [];
+
+      return {
+        ...state,
+        timerWithdraws: {
+          ...state.timerWithdraws,
+          [action.chainId]: {
+            ...chainIdTimerWithdraws,
+            [action.hermezEthereumAddress]: [...accountTimerWithdraws, action.timerWithdraw],
+          },
+        },
+      };
+    }
+    case GlobalActionTypes.REMOVE_TIMER_WITHDRAW: {
+      const chainIdTimerWithdraws = state.timerWithdraws[action.chainId] || {};
+      const accountTimerWithdraws = chainIdTimerWithdraws[action.hermezEthereumAddress] || [];
+      return {
+        ...state,
+        timerWithdraws: {
+          ...state.timerWithdraws,
+          [action.chainId]: {
+            ...chainIdTimerWithdraws,
+            [action.hermezEthereumAddress]: accountTimerWithdraws.filter(
+              (withdraw: TimerWithdraw) => withdraw.id !== action.timerWithdrawId
+            ),
+          },
         },
       };
     }

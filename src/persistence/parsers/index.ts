@@ -14,6 +14,7 @@ import {
   PendingDelayedWithdraw,
   PendingDeposit,
   PendingWithdraw,
+  TimerWithdraw,
   Token,
   L1Info,
   Exit,
@@ -113,6 +114,12 @@ const pendingDelayedWithdraw: z.ZodSchema<PendingDelayedWithdraw> = pendingWithd
   })
 );
 
+const timerWithdraw: z.ZodSchema<TimerWithdraw> = z.object({
+  id: z.string(),
+  timestamp: z.string(),
+  token,
+});
+
 export {
   token,
   account,
@@ -120,4 +127,5 @@ export {
   pendingDeposit,
   pendingWithdraw,
   pendingDelayedWithdraw,
+  timerWithdraw,
 };

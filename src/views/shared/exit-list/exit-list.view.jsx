@@ -15,9 +15,10 @@ function ExitList({
   babyJubJub,
   pendingWithdraws,
   pendingDelayedWithdraws,
+  timerWithdraws,
   coordinatorState,
-  onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw,
+  onAddTimerWithdraw,
+  onRemoveTimerWithdraw,
 }) {
   return (
     <>
@@ -53,8 +54,9 @@ function ExitList({
             babyJubJub={babyJubJub}
             pendingWithdraws={pendingWithdraws}
             pendingDelayedWithdraws={pendingDelayedWithdraws}
-            onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-            onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+            timerWithdraws={timerWithdraws}
+            onAddTimerWithdraw={onAddTimerWithdraw}
+            onRemoveTimerWithdraw={onRemoveTimerWithdraw}
             coordinatorState={coordinatorState}
           />
         );
@@ -69,9 +71,10 @@ ExitList.propTypes = {
   fiatExchangeRates: PropTypes.object,
   pendingWithdraws: PropTypes.array,
   pendingDelayedWithdraws: PropTypes.array,
+  timerWithdraws: PropTypes.array,
   coordinatorState: PropTypes.object,
-  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
-  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
+  onAddTimerWithdraw: PropTypes.func.isRequired,
+  onRemoveTimerWithdraw: PropTypes.func.isRequired,
 };
 
 export default ExitList;
