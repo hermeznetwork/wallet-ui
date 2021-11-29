@@ -142,4 +142,11 @@ function getEstimatedWithdrawFee(
   return exitFeeInFiat + withdrawFeeInFiat;
 }
 
-export { getMinimumL2Fee, getTxFee, getEstimatedWithdrawFee };
+/**
+ * Converts a fee in BigNumber to a number, which is the format supported by the hermezjs library
+ */
+function feeBigIntToNumber(fee: BigNumber, token: Token): number {
+  return Number(getTokenAmountString(fee, token.decimals));
+}
+
+export { getMinimumL2Fee, getTxFee, getEstimatedWithdrawFee, feeBigIntToNumber };

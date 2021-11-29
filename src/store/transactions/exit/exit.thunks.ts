@@ -4,17 +4,19 @@ import { CoordinatorAPI, Tx, HermezCompressedAmount, TxFees } from "@hermeznetwo
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
+import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
 import { openSnackbar } from "src/store/global/global.actions";
-import { createAccount } from "src/utils/accounts";
-import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
+// utils
+import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
+import { createAccount } from "src/utils/accounts";
+import { feeBigIntToNumber } from "src/utils/fees";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain/hermez";
 import { ETHER_TOKEN_ID } from "src/constants";
-import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 // persistence
 import * as persistence from "src/persistence";
 
@@ -181,7 +183,7 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
         type: TxType.Exit,
         from: account.accountIndex,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
-        fee: fee.toString(),
+        fee: feeBigIntToNumber(fee, account.token),
       };
 
       return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
@@ -198,6 +200,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   const errorMsg = persistence.getErrorMessage(error);
+  console.error(error);
   dispatch(exitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }

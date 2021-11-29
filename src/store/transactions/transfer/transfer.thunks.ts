@@ -11,7 +11,7 @@ import { openSnackbar } from "src/store/global/global.actions";
 import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
-import { getMinimumL2Fee, getTxFee } from "src/utils/fees";
+import { feeBigIntToNumber, getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
@@ -234,7 +234,7 @@ function transfer(
         from: from.accountIndex,
         to: toAddress,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
-        fee: fee.toString(),
+        fee: feeBigIntToNumber(fee, from.token),
       };
       return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
