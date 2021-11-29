@@ -20,7 +20,7 @@ export interface ReceiverInputChangeEventData {
 
 interface ReceiverInputStateProps {
   defaultValue?: string;
-  doesReceiverApprovedAccountsCreation?: boolean;
+  hasReceiverApprovedAccountsCreation?: boolean;
 }
 
 interface ReceiverInputHandlerProps {
@@ -31,7 +31,7 @@ type ReceiverInputProps = ReceiverInputStateProps & ReceiverInputHandlerProps;
 
 function ReceiverInput({
   defaultValue,
-  doesReceiverApprovedAccountsCreation,
+  hasReceiverApprovedAccountsCreation,
   onChange,
 }: ReceiverInputProps): JSX.Element {
   const classes = useReceiverInputStyles();
@@ -39,6 +39,7 @@ function ReceiverInput({
   const [isReceiverValid, setIsReceiverValid] = React.useState<boolean | undefined>(undefined);
   const [isVideoDeviceAvailable, setIsVideoDeviceAvailable] = React.useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false);
+  const hasErrors = isReceiverValid === false || hasReceiverApprovedAccountsCreation === false;
 
   React.useEffect(() => {
     isAnyVideoDeviceAvailable()
@@ -46,15 +47,11 @@ function ReceiverInput({
       .catch(() => setIsVideoDeviceAvailable(false));
   }, []);
 
-  function hasErrors() {
-    return !isReceiverValid || !doesReceiverApprovedAccountsCreation;
-  }
-
   function getErrorMessage() {
-    if (!isReceiverValid) {
+    if (isReceiverValid === false) {
       return "Please, enter a valid Hermez or Ethereum Address";
     }
-    if (!doesReceiverApprovedAccountsCreation) {
+    if (hasReceiverApprovedAccountsCreation === false) {
       return "Please, enter an existing address. Receiver needs to have signed in to Hermez Wallet at least once.";
     }
 
@@ -186,7 +183,7 @@ function ReceiverInput({
           )}
         </div>
       </div>
-      {hasErrors() && (
+      {hasErrors && (
         <p className={classes.errorMessage}>
           <ErrorIcon className={classes.errorIcon} />
           {getErrorMessage()}

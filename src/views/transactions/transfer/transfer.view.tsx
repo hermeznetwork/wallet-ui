@@ -34,6 +34,7 @@ interface TransferStateProps {
   accountTask: AsyncTask<HermezAccount, string>;
   accountsTask: AsyncTask<transferReducer.AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
+  hasReceiverApprovedAccountsCreation?: boolean;
   isTransactionBeingApproved: boolean;
   transactionToReview: transferActions.TransactionToReview | undefined;
   wallet: HermezWallet.HermezWallet | undefined;
@@ -61,6 +62,7 @@ interface TransferHandlerProps {
   onGoToBuildTransactionStep: (account: HermezAccount) => void;
   onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) => void;
   onCheckTxData: (txData: TxData) => void;
+  onResetReceiverCreateAccountsAuthorizationStatus: () => void;
   onTransfer: (
     amount: BigNumber,
     account: HermezAccount,
@@ -78,6 +80,7 @@ function Transfer({
   accountTask,
   accountsTask,
   feesTask,
+  hasReceiverApprovedAccountsCreation,
   isTransactionBeingApproved,
   transactionToReview,
   wallet,
@@ -91,6 +94,7 @@ function Transfer({
   onGoToChooseAccountStep,
   onGoToBuildTransactionStep,
   onCheckTxData,
+  onResetReceiverCreateAccountsAuthorizationStatus,
   onTransfer,
   onCleanup,
 }: TransferProps) {
@@ -180,8 +184,12 @@ function Transfer({
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRatesTask={fiatExchangeRatesTask}
                   feesTask={feesTask}
-                  onSubmit={onCheckTxData}
+                  hasReceiverApprovedAccountsCreation={hasReceiverApprovedAccountsCreation}
                   onGoToChooseAccountStep={onGoToChooseAccountStep}
+                  onResetReceiverCreateAccountsAuthorizationStatus={
+                    onResetReceiverCreateAccountsAuthorizationStatus
+                  }
+                  onSubmit={onCheckTxData}
                 />
               )
             );
@@ -224,6 +232,7 @@ const mapStateToProps = (state: AppState): TransferStateProps => ({
   accountTask: state.transfer.accountTask,
   accountsTask: state.transfer.accountsTask,
   feesTask: state.transfer.feesTask,
+  hasReceiverApprovedAccountsCreation: state.transfer.hasReceiverApprovedAccountsCreation,
   isTransactionBeingApproved: state.transfer.isTransactionBeingApproved,
   transactionToReview: state.transfer.transaction,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
@@ -307,6 +316,8 @@ const mapDispatchToProps = (dispatch: AppDispatch): TransferHandlerProps => ({
   onGoToTransactionOverviewStep: (transactionToReview: transferActions.TransactionToReview) =>
     dispatch(transferActions.goToReviewTransactionStep(transactionToReview)),
   onCheckTxData: (txData: TxData) => dispatch(transferThunks.checkTxData(txData)),
+  onResetReceiverCreateAccountsAuthorizationStatus: () =>
+    dispatch(transferActions.setReceiverCreateAccountsAuthorizationStatus(undefined)),
   onTransfer: (amount: BigNumber, from: HermezAccount, to: TransactionReceiver, fee: BigNumber) =>
     dispatch(transferThunks.transfer(amount, from, to, fee)),
   onCleanup: () => dispatch(transferActions.resetState()),

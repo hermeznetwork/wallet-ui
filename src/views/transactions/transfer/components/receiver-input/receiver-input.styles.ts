@@ -70,7 +70,6 @@ const useReceiverInputStyles = createUseStyles((theme: Theme) => ({
     height: 32,
   },
   errorMessage: {
-    display: "none",
     alignItems: "center",
     marginTop: theme.spacing(1.5),
     fontSize: `${theme.spacing(2)}px`,

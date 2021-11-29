@@ -100,7 +100,6 @@ const useTransactionAmountInputStyles = createUseStyles((theme: Theme) => ({
     height: theme.spacing(2.5),
   },
   errorMessage: {
-    display: "none",
     alignItems: "center",
     marginTop: theme.spacing(1.5),
     fontSize: `${theme.spacing(2)}px`,

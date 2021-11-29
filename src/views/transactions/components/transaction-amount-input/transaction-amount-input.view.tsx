@@ -89,15 +89,12 @@ function TransactionAmountInput({
           </button>
         </div>
       </div>
-      <p
-        className={clsx({
-          [classes.errorMessage]: true,
-          [classes.selectAmountErrorMessageVisible]: hasErrors,
-        })}
-      >
-        <ErrorIcon className={classes.errorIcon} />
-        {getErrorMessage()}
-      </p>
+      {hasErrors && (
+        <p className={classes.errorMessage}>
+          <ErrorIcon className={classes.errorIcon} />
+          {getErrorMessage()}
+        </p>
+      )}
     </div>
   );
 }

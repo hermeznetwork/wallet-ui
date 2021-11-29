@@ -115,7 +115,7 @@ export interface LoadAccountsFailure {
 
 export interface SetReceiverCreateAccountsAuthorizationStatus {
   type: TransferActionTypes.SET_RECEIVER_ACCOUNTS_CREATION_AUTHORIZATION;
-  approval: boolean;
+  approval?: boolean;
 }
 
 export interface StartTransactionApproval {
@@ -260,7 +260,7 @@ function loadAccountsFailure(error: Error): LoadAccountsFailure {
 }
 
 function setReceiverCreateAccountsAuthorizationStatus(
-  approval: boolean
+  approval?: boolean
 ): SetReceiverCreateAccountsAuthorizationStatus {
   return {
     type: TransferActionTypes.SET_RECEIVER_ACCOUNTS_CREATION_AUTHORIZATION,

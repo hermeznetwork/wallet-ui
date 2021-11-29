@@ -26,7 +26,7 @@ export interface TxData {
 interface TransferFormStateProps {
   account: HermezAccount;
   defaultReceiverAddress?: string;
-  doesReceiverApprovedAccountsCreation?: boolean;
+  hasReceiverApprovedAccountsCreation?: boolean;
   feesTask: AsyncTask<RecommendedFee, Error>;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
@@ -34,6 +34,7 @@ interface TransferFormStateProps {
 
 interface TransferFormHandlerProps {
   onGoToChooseAccountStep: () => void;
+  onResetReceiverCreateAccountsAuthorizationStatus: () => void;
   onSubmit: (txData: TxData) => void;
 }
 
@@ -42,11 +43,12 @@ type TransferFormProps = TransferFormStateProps & TransferFormHandlerProps;
 const TransferForm: React.FC<TransferFormProps> = ({
   account,
   defaultReceiverAddress,
-  doesReceiverApprovedAccountsCreation,
+  hasReceiverApprovedAccountsCreation,
   feesTask,
   preferredCurrency,
   fiatExchangeRatesTask,
   onGoToChooseAccountStep,
+  onResetReceiverCreateAccountsAuthorizationStatus,
   onSubmit,
 }) => {
   const classes = useTransferFormStyles();
@@ -65,7 +67,7 @@ const TransferForm: React.FC<TransferFormProps> = ({
   });
 
   function isSubmitButtonDisabled() {
-    return !isAmountValid || !isReceiverValid || doesReceiverApprovedAccountsCreation === false;
+    return !isAmountValid || !isReceiverValid || hasReceiverApprovedAccountsCreation === false;
   }
 
   function handleAmountChange(data: AmountInputChangeEventData) {
@@ -85,6 +87,9 @@ const TransferForm: React.FC<TransferFormProps> = ({
   function handleReceiverInputChange(data: ReceiverInputChangeEventData) {
     setReceiverAddress(data.value);
     setIsReceiverValid(data.isValid);
+    if (data.value || data.isValid === undefined) {
+      onResetReceiverCreateAccountsAuthorizationStatus();
+    }
   }
 
   function handleFormSubmission() {
@@ -123,7 +128,7 @@ const TransferForm: React.FC<TransferFormProps> = ({
         />
         <ReceiverInput
           defaultValue={defaultReceiverAddress}
-          doesReceiverApprovedAccountsCreation={doesReceiverApprovedAccountsCreation}
+          hasReceiverApprovedAccountsCreation={hasReceiverApprovedAccountsCreation}
           onChange={handleReceiverInputChange}
         />
         <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled()} />
