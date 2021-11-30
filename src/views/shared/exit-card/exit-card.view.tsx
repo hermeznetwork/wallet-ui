@@ -98,7 +98,8 @@ function ExitCard({
         batchNum !== null ? batchNum : undefined,
         merkleProof?.siblings
       )
-        .then(() => {
+        .then((a) => {
+          console.log(a);
           setIsWithdrawDelayed(false);
         })
         .catch(() => {
@@ -117,7 +118,7 @@ function ExitCard({
     token,
     babyJubJub,
     batchNum,
-    merkleProof?.siblings,
+    merkleProof,
   ]);
 
   React.useEffect(() => {
