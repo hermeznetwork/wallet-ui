@@ -104,7 +104,7 @@ const ExitForm: React.FC<ExitFormProps> = ({
         <TransactionAmountInput
           txType={TxType.Exit}
           account={account}
-          fee={fee}
+          fee={minimumFee}
           preferredCurrency={preferredCurrency}
           fiatExchangeRatesTask={fiatExchangeRatesTask}
           onChange={handleAmountChange}
