@@ -43,13 +43,10 @@ const DepositForm: React.FC<DepositFormProps> = ({
 }) => {
   const classes = useDepositFormStyles();
   const [amount, setAmount] = React.useState(BigNumber.from(0));
-  const [isAmountValid, setIsAmountValid] = React.useState<boolean | undefined>(undefined);
+  const [isAmountValid, setIsAmountValid] = React.useState(false);
   const [showInFiat, setShowInFiat] = React.useState(false);
   const [areFundsExceededDueToFee, setAreFundsExceededDueToFee] = React.useState(false);
-
-  function isSubmitButtonDisabled() {
-    return isAmountValid === false || areFundsExceededDueToFee;
-  }
+  const isSubmitButtonDisabled = !isAmountValid || areFundsExceededDueToFee;
 
   function handleAmountChange(data: AmountInputChangeEventData) {
     setShowInFiat(data.showInFiat);
@@ -101,7 +98,7 @@ const DepositForm: React.FC<DepositFormProps> = ({
           fiatExchangeRatesTask={fiatExchangeRatesTask}
           onChange={handleAmountChange}
         />
-        <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled()} />
+        <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled} />
       </form>
       <Fee
         txType={TxType.Deposit}

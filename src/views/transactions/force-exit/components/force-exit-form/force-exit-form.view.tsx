@@ -39,13 +39,10 @@ const ForceExitForm: React.FC<ForceExitFormProps> = ({
 }) => {
   const classes = useForceExitFormStyles();
   const [amount, setAmount] = React.useState(BigNumber.from(0));
-  const [isAmountValid, setIsAmountValid] = React.useState<boolean | undefined>(undefined);
+  const [isAmountValid, setIsAmountValid] = React.useState(false);
   const [showInFiat, setShowInFiat] = React.useState(false);
   const fee = getTxFee({ txType: TxType.ForceExit });
-
-  function isSubmitButtonDisabled() {
-    return isAmountValid === false;
-  }
+  const isSubmitButtonDisabled = !isAmountValid;
 
   function handleAmountChange(data: AmountInputChangeEventData) {
     setShowInFiat(data.showInFiat);
@@ -85,7 +82,7 @@ const ForceExitForm: React.FC<ForceExitFormProps> = ({
           fiatExchangeRatesTask={fiatExchangeRatesTask}
           onChange={handleAmountChange}
         />
-        <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled()} />
+        <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled} />
       </form>
     </FormContainer>
   );

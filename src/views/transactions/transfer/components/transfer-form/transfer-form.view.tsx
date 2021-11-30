@@ -53,11 +53,13 @@ const TransferForm: React.FC<TransferFormProps> = ({
 }) => {
   const classes = useTransferFormStyles();
   const [amount, setAmount] = React.useState(BigNumber.from(0));
-  const [isAmountValid, setIsAmountValid] = React.useState<boolean | undefined>(undefined);
+  const [isAmountValid, setIsAmountValid] = React.useState(false);
   const [fee, setFee] = React.useState(BigNumber.from(0));
   const [receiverAddress, setReceiverAddress] = React.useState("");
   const [isReceiverValid, setIsReceiverValid] = React.useState<boolean | undefined>();
   const [showInFiat, setShowInFiat] = React.useState(false);
+  const isSubmitButtonDisabled =
+    !isAmountValid || !isReceiverValid || hasReceiverApprovedAccountsCreation === false;
   const minimumFee = getMinimumL2Fee({
     txType: TxType.Transfer,
     receiverAddress,
@@ -65,10 +67,6 @@ const TransferForm: React.FC<TransferFormProps> = ({
     token: account.token,
     doesAccountAlreadyExist: false,
   });
-
-  function isSubmitButtonDisabled() {
-    return !isAmountValid || !isReceiverValid || hasReceiverApprovedAccountsCreation === false;
-  }
 
   function handleAmountChange(data: AmountInputChangeEventData) {
     const newFee = getTxFee({
@@ -131,7 +129,7 @@ const TransferForm: React.FC<TransferFormProps> = ({
           hasReceiverApprovedAccountsCreation={hasReceiverApprovedAccountsCreation}
           onChange={handleReceiverInputChange}
         />
-        <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled()} />
+        <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled} />
       </form>
       <Fee
         txType={TxType.Transfer}

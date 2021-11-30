@@ -51,17 +51,14 @@ const ExitForm: React.FC<ExitFormProps> = ({
   const classes = useExitFormStyles();
   const [amount, setAmount] = React.useState(BigNumber.from(0));
   const [fee, setFee] = React.useState(BigNumber.from(0));
-  const [isAmountValid, setIsAmountValid] = React.useState<boolean | undefined>(undefined);
+  const [isAmountValid, setIsAmountValid] = React.useState(false);
   const [showInFiat, setShowInFiat] = React.useState(false);
   const minimumFee = getMinimumL2Fee({ txType: TxType.Exit, feesTask, token: account.token });
+  const isSubmitButtonDisabled = !isAmountValid || !doesUserHaveEnoughEthForWithdraw;
 
   React.useEffect(() => {
     onLoadEstimatedWithdrawFee(account.token, amount);
   }, [account, amount, onLoadEstimatedWithdrawFee]);
-
-  function isSubmitButtonDisabled() {
-    return isAmountValid === false || !doesUserHaveEnoughEthForWithdraw;
-  }
 
   function handleAmountChange(data: AmountInputChangeEventData) {
     const newFee = getTxFee({
@@ -107,12 +104,12 @@ const ExitForm: React.FC<ExitFormProps> = ({
         <TransactionAmountInput
           txType={TxType.Exit}
           account={account}
-          fee={fee}
+          fee={minimumFee}
           preferredCurrency={preferredCurrency}
           fiatExchangeRatesTask={fiatExchangeRatesTask}
           onChange={handleAmountChange}
         />
-        <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled()} />
+        <PrimaryButton type="submit" label="Continue" disabled={isSubmitButtonDisabled} />
       </form>
       <Fee
         txType={TxType.Exit}
