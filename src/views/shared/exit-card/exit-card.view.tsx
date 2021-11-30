@@ -30,15 +30,15 @@ interface ExitCardProps {
   token: Token;
   fiatAmount: number;
   preferredCurrency: string;
-  exitId: string | null;
-  merkleProof: MerkleProof | null;
-  batchNum: number | null;
   accountIndex: string;
   babyJubJub: string;
   pendingWithdraws: PendingWithdraw[];
   pendingDelayedWithdraws: PendingDelayedWithdraw[];
   timerWithdraws: TimerWithdraw[];
   coordinatorState: CoordinatorState;
+  exitId?: string;
+  merkleProof?: MerkleProof;
+  batchNum?: number;
   onAddTimerWithdraw: (timer: TimerWithdraw) => void;
   onRemoveTimerWithdraw: (exitId: string) => void;
 }
@@ -98,8 +98,7 @@ function ExitCard({
         batchNum !== null ? batchNum : undefined,
         merkleProof?.siblings
       )
-        .then((a) => {
-          console.log(a);
+        .then(() => {
           setIsWithdrawDelayed(false);
         })
         .catch(() => {

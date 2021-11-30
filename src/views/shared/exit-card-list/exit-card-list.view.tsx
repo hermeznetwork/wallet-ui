@@ -58,13 +58,13 @@ function ExitCardList({
               fiatExchangeRates
             )}
             preferredCurrency={preferredCurrency}
-            batchNum={transaction.batchNum}
+            batchNum={transaction.batchNum ? transaction.batchNum : undefined}
             exitId={
               isExit(transaction)
                 ? transaction.accountIndex + transaction.batchNum.toString()
-                : null
+                : undefined
             }
-            merkleProof={isExit(transaction) ? transaction.merkleProof : null}
+            merkleProof={isExit(transaction) ? transaction.merkleProof : undefined}
             accountIndex={
               isExit(transaction) ? transaction.accountIndex : transaction.fromAccountIndex
             }
