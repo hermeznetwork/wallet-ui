@@ -49,11 +49,11 @@ declare module "@hermeznetwork/*" {
     // userOrigin: boolean;
   }
 
-  // interface L2Info {
-  //   fee: number;
-  //   historicFeeUSD: number;
-  //   nonce: number;
-  // }
+  export interface L2Info {
+    fee: number;
+    historicFeeUSD: number | null;
+    // nonce: number;
+  }
 
   export interface MerkleProof {
     root: string;
@@ -90,10 +90,10 @@ declare module "@hermeznetwork/*" {
     type: TxType;
     amount: string;
     // fromBJJ: string;
-    // historicUSD: number | null;
+    historicUSD: number | null;
     L1Info: L1Info | null;
     L1orL2: "L1" | "L2";
-    // L2Info: L2Info | null;
+    L2Info: L2Info | null;
     // position: number;
     timestamp: ISOStringDate;
     // toAccountIndex: string;
@@ -115,9 +115,9 @@ declare module "@hermeznetwork/*" {
     toHezEthereumAddress: string;
     token: Token;
     type: TxType;
-    // batchNum: number | null;
+    batchNum: number | null;
+    id: string;
     // errorType: string | null;
-    // id: string;
     // info: string | null;
     // maxNumBatch: number;
     // nonce: number;
@@ -796,10 +796,10 @@ declare module "@hermeznetwork/hermezjs/src/enums" {
     Invalid = "invl",
   }
 
-  // declare enum TxLevel {
-  //   L1 = "L1",
-  //   L2 = "L2",
-  // }
+  export enum TxLevel {
+    L1 = "L1",
+    L2 = "L2",
+  }
 }
 
 // AtomicUtils
