@@ -14,7 +14,9 @@ import {
 import { copyToClipboard } from "src/utils/browser";
 // domain
 import {
-  Transaction,
+  PendingDeposit,
+  HistoryTransaction,
+  PoolTransaction,
   FiatExchangeRates,
   isPoolTransaction,
   isHistoryTransaction,
@@ -26,10 +28,12 @@ const TxStatus = {
   Invalid: "Invalid",
 };
 
+type Transaction = PendingDeposit | HistoryTransaction | PoolTransaction;
+
 interface TransactionInfoProps {
   transaction: Transaction;
   fee?: BigNumber;
-  accountIndex: string;
+  accountIndex?: string;
   preferredCurrency: string;
   fiatExchangeRates?: FiatExchangeRates;
   showStatus: boolean;
@@ -68,7 +72,7 @@ function TransactionInfo({
         return { subtitle: TxStatus.Confirmed };
       }
 
-      if (transaction.errorCode !== null) {
+      if (isPoolTransaction(transaction) && transaction.errorCode !== null) {
         return { subtitle: TxStatus.Invalid };
       }
 
@@ -78,6 +82,7 @@ function TransactionInfo({
 
   function handleCopyToAddress() {
     const addressOrNull =
+      (isPoolTransaction(transaction) || isHistoryTransaction(transaction)) &&
       transaction.toHezEthereumAddress?.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
         ? transaction.toBJJ
         : transaction.toHezEthereumAddress;
@@ -94,6 +99,7 @@ function TransactionInfo({
 
   function getTransferRecipientRow(): Row | undefined {
     if (
+      (isPoolTransaction(transaction) || isHistoryTransaction(transaction)) &&
       transaction.toBJJ &&
       transaction.toHezEthereumAddress?.toLowerCase() === INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
     ) {
