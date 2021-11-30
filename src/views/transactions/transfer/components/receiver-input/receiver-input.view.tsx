@@ -150,7 +150,7 @@ function ReceiverInput({
         <div className={classes.buttonGroup}>
           {
             // Pasting is not supported in firefox
-            value.length === 0 && isFirefox() && (
+            value.length === 0 && !isFirefox() && (
               <button
                 type="button"
                 className={classes.button}
