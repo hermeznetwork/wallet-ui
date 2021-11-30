@@ -148,9 +148,6 @@ function Home({
    * @returns {void}
    */
   function getPendingExits() {
-    console.log(
-      poolTransactionsTask.data.filter((transaction) => transaction.type === TxType.Exit)
-    );
     return poolTransactionsTask.data.filter((transaction) => transaction.type === TxType.Exit);
   }
 

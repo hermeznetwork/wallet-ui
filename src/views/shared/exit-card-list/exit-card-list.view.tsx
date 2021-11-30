@@ -39,14 +39,12 @@ function ExitCardList({
   onAddTimerWithdraw,
   onRemoveTimerWithdraw,
 }: ExitCardListProps): JSX.Element {
-  console.log(transactions);
   return (
     <>
       {transactions.map((transaction) => {
         const amount = isExit(transaction) ? transaction.balance : transaction.amount;
         const fixedTokenAmount = getFixedTokenAmount(amount, transaction.token.decimals);
-        console.log(amount);
-        console.log(transactions);
+
         return (
           <ExitCard
             key={transaction.itemId}
