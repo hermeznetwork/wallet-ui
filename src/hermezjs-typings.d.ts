@@ -90,7 +90,7 @@ declare module "@hermeznetwork/*" {
     type: TxType;
     amount: string;
     // fromBJJ: string;
-    historicUSD: number | null;
+    // historicUSD: number | null;
     L1Info: L1Info | null;
     L1orL2: "L1" | "L2";
     // L2Info: L2Info | null;
