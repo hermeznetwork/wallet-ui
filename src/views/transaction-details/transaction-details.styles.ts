@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useTransactionDetailsStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useTransactionDetailsStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
   },
