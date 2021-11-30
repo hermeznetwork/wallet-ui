@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useTokenBalance = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useTokenBalance = createUseStyles((theme: Theme) => ({
   root: {
     textAlign: "center",
     fontSize: theme.spacing(2.5),
