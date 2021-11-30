@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useExitStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useExitStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
     borderRadius: 18,

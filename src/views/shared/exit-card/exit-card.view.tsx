@@ -1,15 +1,22 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import clsx from "clsx";
 import { Redirect } from "react-router-dom";
 import { isInstantWithdrawalAllowed } from "@hermeznetwork/hermezjs/src/tx";
 
-import useExitStyles from "./exit.styles";
-import { CurrencySymbol } from "../../../utils/currencies";
+import useExitStyles from "./exit-card.styles";
 import { getTxPendingTime } from "../../../utils/transactions";
 import { ReactComponent as InfoIcon } from "../../../images/icons/info.svg";
 import PrimaryButton from "../primary-button/primary-button.view";
 import FiatAmount from "../fiat-amount/fiat-amount.view";
+// domain
+import {
+  Token,
+  MerkleProof,
+  PendingDelayedWithdraw,
+  PendingWithdraw,
+  TimerWithdraw,
+  CoordinatorState,
+} from "src/domain/hermez";
 
 const STEPS = {
   FIRST: 1,
@@ -17,7 +24,26 @@ const STEPS = {
   THIRD: 3,
 };
 
-function Exit({
+interface ExitCardProps {
+  amount: string;
+  fixedTokenAmount: string;
+  token: Token;
+  fiatAmount: number;
+  preferredCurrency: string;
+  exitId: string | null;
+  merkleProof: MerkleProof | null;
+  batchNum: number | null;
+  accountIndex: string;
+  babyJubJub: string;
+  pendingWithdraws: PendingWithdraw[];
+  pendingDelayedWithdraws: PendingDelayedWithdraw[];
+  timerWithdraws: TimerWithdraw[];
+  coordinatorState: CoordinatorState;
+  onAddTimerWithdraw: (timer: TimerWithdraw) => void;
+  onRemoveTimerWithdraw: (exitId: string) => void;
+}
+
+function ExitCard({
   amount,
   fixedTokenAmount,
   token,
@@ -34,7 +60,7 @@ function Exit({
   coordinatorState,
   onAddTimerWithdraw,
   onRemoveTimerWithdraw,
-}) {
+}: ExitCardProps): JSX.Element {
   const classes = useExitStyles();
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false);
   const [isWithdrawDelayedClicked, setIsWithdrawDelayedClicked] = useState(false);
@@ -45,39 +71,10 @@ function Exit({
     useState(false);
   const [isTimerCompleted, setIsTimerCompleted] = useState(false);
 
-  React.useEffect(() => {
-    if (typeof coordinatorState !== "undefined" && getStep() <= STEPS.SECOND) {
-      isInstantWithdrawalAllowed(
-        amount,
-        accountIndex,
-        token,
-        babyJubJub,
-        batchNum,
-        merkleProof?.siblings
-      )
-        .then(() => {
-          setIsWithdrawDelayed(false);
-        })
-        .catch(() => {
-          setIsWithdrawDelayed(true);
-        });
-
-      setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode);
-    }
-  }, [coordinatorState, isInstantWithdrawalAllowed, setIsWithdrawDelayed, setIsEmergencyMode]);
-
-  React.useEffect(() => {
-    if (isTimerCompleted) {
-      setIsTimerCompleted(false);
-      onRemoveTimerWithdraw(exitId);
-    }
-  }, [isTimerCompleted]);
-
   /**
    * Calculates in which step is the Exit process in
-   * @returns {Number} - Step of the exit
    */
-  function getStep() {
+  const getStep = React.useCallback(() => {
     if (!merkleProof) {
       return STEPS.FIRST;
     } else if (
@@ -89,7 +86,46 @@ function Exit({
     } else {
       return STEPS.THIRD;
     }
-  }
+  }, [exitId, merkleProof, pendingWithdraws]);
+
+  React.useEffect(() => {
+    if (typeof coordinatorState !== "undefined" && getStep() <= STEPS.SECOND) {
+      isInstantWithdrawalAllowed(
+        amount,
+        accountIndex,
+        token,
+        babyJubJub,
+        batchNum !== null ? batchNum : undefined,
+        merkleProof?.siblings
+      )
+        .then(() => {
+          setIsWithdrawDelayed(false);
+        })
+        .catch(() => {
+          setIsWithdrawDelayed(true);
+        });
+
+      setIsEmergencyMode(coordinatorState.withdrawalDelayer.emergencyMode);
+    }
+  }, [
+    coordinatorState,
+    setIsWithdrawDelayed,
+    setIsEmergencyMode,
+    getStep,
+    amount,
+    accountIndex,
+    token,
+    babyJubJub,
+    batchNum,
+    merkleProof?.siblings,
+  ]);
+
+  React.useEffect(() => {
+    if (isTimerCompleted && exitId) {
+      setIsTimerCompleted(false);
+      onRemoveTimerWithdraw(exitId);
+    }
+  }, [exitId, isTimerCompleted, onRemoveTimerWithdraw]);
 
   function getStepLabel() {
     switch (getStep()) {
@@ -140,11 +176,11 @@ function Exit({
    * Calculates the remaining time until the instant or delayed withdrawal can be made
    * It detects the type and caculates the time accordingly (in hours for instant and days for delayed)
    * If enough time has already passed, it deletes the pendingDelayedWithdraw from LocalStorage
-   * @param {Object} delayedWithdrawal - The delayed withdrawal object from LocalStorage
-   * @param {Object} timer - Timer manually activated
-   * @returns {string|void} Returns remaining time as a string, or void if enough time has passed
    */
-  function getDateString(delayedWithdrawal, timer) {
+  function getDateString(
+    delayedWithdrawal: PendingDelayedWithdraw | TimerWithdraw,
+    timer: boolean
+  ) {
     const now = Date.now();
     const difference = now - new Date(delayedWithdrawal.timestamp).getTime();
     if (timer) {
@@ -202,14 +238,16 @@ function Exit({
   }
 
   function onCheckAvailabilityClick() {
-    onAddTimerWithdraw({
-      id: exitId,
-      timestamp: new Date().toISOString(),
-      token,
-    });
+    if (exitId) {
+      onAddTimerWithdraw({
+        id: exitId,
+        timestamp: new Date().toISOString(),
+        token,
+      });
+    }
   }
 
-  if (isWithdrawClicked) {
+  if (isWithdrawClicked && batchNum) {
     return (
       <Redirect
         to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`}
@@ -217,7 +255,7 @@ function Exit({
     );
   }
 
-  if (isWithdrawDelayedClicked) {
+  if (isWithdrawDelayedClicked && batchNum) {
     return (
       <Redirect
         to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`}
@@ -225,7 +263,7 @@ function Exit({
     );
   }
 
-  if (isCompleteDelayedWithdrawalClicked) {
+  if (isCompleteDelayedWithdrawalClicked && batchNum) {
     return (
       <Redirect
         to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true`}
@@ -233,7 +271,7 @@ function Exit({
     );
   }
 
-  const pendingTime = getTxPendingTime(coordinatorState, false);
+  const pendingTime = getTxPendingTime(coordinatorState, false, new Date().toISOString());
 
   return (
     <div className={classes.root}>
@@ -292,16 +330,16 @@ function Exit({
         }
 
         if (isWithdrawDelayed && !isDelayedWithdrawalReady) {
-          const pendingDelayedWithdrawal = pendingDelayedWithdraws?.find(
+          const pendingDelayedWithdrawal = pendingDelayedWithdraws.find(
             (pendingDelayedWithdrawal) => pendingDelayedWithdrawal.id === exitId
           );
-          const timerWithdraw = timerWithdraws?.find(
+          const timerWithdraw = timerWithdraws.find(
             (timerWithdraws) => timerWithdraws.id === exitId
           );
           const withdraw = pendingDelayedWithdrawal || timerWithdraw;
 
           if (withdraw) {
-            const remainingTime = getDateString(withdraw, timerWithdraw);
+            const remainingTime = getDateString(withdraw, timerWithdraw !== undefined);
             return (
               <div className={classes.withdraw}>
                 <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
@@ -368,20 +406,4 @@ function Exit({
   );
 }
 
-Exit.propTypes = {
-  amount: PropTypes.string.isRequired,
-  token: PropTypes.object.isRequired,
-  fiatAmount: PropTypes.number.isRequired,
-  preferredCurrency: PropTypes.string.isRequired,
-  merkleProof: PropTypes.object,
-  batchNum: PropTypes.number,
-  accountIndex: PropTypes.string,
-  pendingWithdraws: PropTypes.array,
-  pendingDelayedWithdraws: PropTypes.array,
-  timerWithdraws: PropTypes.array,
-  coordinatorState: PropTypes.object,
-  onAddTimerWithdraw: PropTypes.func.isRequired,
-  onRemoveTimerWithdraw: PropTypes.func.isRequired,
-};
-
-export default Exit;
+export default ExitCard;

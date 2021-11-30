@@ -90,7 +90,7 @@ declare module "@hermeznetwork/*" {
     type: TxType;
     amount: string;
     // fromBJJ: string;
-    // historicUSD: number | null;
+    historicUSD: number | null;
     L1Info: L1Info | null;
     L1orL2: "L1" | "L2";
     // L2Info: L2Info | null;
@@ -115,7 +115,7 @@ declare module "@hermeznetwork/*" {
     toHezEthereumAddress: string;
     token: Token;
     type: TxType;
-    // batchNum: number | null;
+    batchNum: number | null;
     // errorType: string | null;
     // id: string;
     // info: string | null;
@@ -148,7 +148,7 @@ declare module "@hermeznetwork/*" {
     // metrics: Metrics;
     // rollup: Rollup;
     // auction: Auction;
-    // withdrawalDelayer: WithdrawalDelayer;
+    withdrawalDelayer: WithdrawalDelayer;
     recommendedFee: RecommendedFee;
   }
 
@@ -247,14 +247,14 @@ declare module "@hermeznetwork/*" {
   //   slotDeadline: number;
   // };
 
-  // interface WithdrawalDelayer {
-  //   ethereumBlockNum: number;
-  //   hermezGovernanceAddress: string;
-  //   emergencyCouncilAddress: string;
-  //   withdrawalDelay: number;
-  //   emergencyModeStartingBlock: number;
-  //   emergencyMode: boolean;
-  // };
+  interface WithdrawalDelayer {
+    // ethereumBlockNum: number;
+    // hermezGovernanceAddress: string;
+    // emergencyCouncilAddress: string;
+    withdrawalDelay: number;
+    // emergencyModeStartingBlock: number;
+    emergencyMode: boolean;
+  }
 
   export interface RecommendedFee {
     existingAccount: number;
@@ -349,6 +349,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     Exit,
     Signers,
     HermezCompressedAmount,
+    MerkleProof,
   } from "@hermeznetwork/hermezjs";
   import { TxType } from "@hermeznetwork/hermezjs/src/enums";
   import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
@@ -405,7 +406,14 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   ): Promise<TxData>;
 
   // function withdraw();
-  // function isInstantWithdrawalAllowed();
+  function isInstantWithdrawalAllowed(
+    amount: string,
+    accountIndex: string,
+    token: Token,
+    babyJubJub: string,
+    batchNum?: number,
+    merkleProofSiblings?: MerkleProof["siblings"]
+  ): Promise<unknown>;
   // function sendL2Transaction();
 
   function generateAndSendL2Tx(
