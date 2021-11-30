@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { Redirect } from "react-router-dom";
 import { isInstantWithdrawalAllowed } from "@hermeznetwork/hermezjs/src/tx";
 
-import useExitStyles from "./exit-card.styles";
+import useExitCardStyles from "./exit-card.styles";
 import { getTxPendingTime } from "../../../utils/transactions";
 import { ReactComponent as InfoIcon } from "../../../images/icons/info.svg";
 import PrimaryButton from "../primary-button/primary-button.view";
@@ -61,7 +61,7 @@ function ExitCard({
   onAddTimerWithdraw,
   onRemoveTimerWithdraw,
 }: ExitCardProps): JSX.Element {
-  const classes = useExitStyles();
+  const classes = useExitCardStyles();
   const [isWithdrawClicked, setIsWithdrawClicked] = useState(false);
   const [isWithdrawDelayedClicked, setIsWithdrawDelayedClicked] = useState(false);
   const [isWithdrawDelayed, setIsWithdrawDelayed] = useState(false);
