@@ -6,7 +6,7 @@ import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 // constants
-import { MAX_FEE_USD, MAX_TOKEN_DECIMALS } from "src/constants";
+import { ETHER_TOKEN_ID, MAX_FEE_USD, MAX_TOKEN_DECIMALS } from "src/constants";
 import { EstimatedL1Fee } from "src/domain";
 // domain
 import { FiatExchangeRates, RecommendedFee, Token } from "src/domain/hermez";
@@ -17,7 +17,9 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "./curren
  * Calculates the fee for a L1 deposit into Hermez Network
  */
 function getDepositFee(token: Token, gasPrice: BigNumber): BigNumber {
-  return token.id === 0 ? BigNumber.from(GAS_LIMIT_LOW).mul(gasPrice) : BigNumber.from(0);
+  return token.id === ETHER_TOKEN_ID
+    ? BigNumber.from(GAS_LIMIT_LOW).mul(gasPrice)
+    : BigNumber.from(0);
 }
 
 interface GetMinimumTransferFee {

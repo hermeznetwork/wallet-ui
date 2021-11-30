@@ -46,7 +46,7 @@ interface DepositHandlerProps {
   onGoToBuildTransactionStep: (ethereumAccount: EthereumAccount) => void;
   onGoToChooseAccountStep: () => void;
   onGoToTransactionOverviewStep: (transactionToReview: depositActions.TransactionToReview) => void;
-  onLoadEstimatedDepositFee: () => void;
+  onLoadEstimatedDepositFee: (ethereumAccount: EthereumAccount) => void;
   onLoadEthereumAccount: (tokenId: number) => void;
   onLoadEthereumAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) => void;
 }
@@ -97,8 +97,13 @@ function Deposit({
 
   React.useEffect(() => {
     onCheckPendingDeposits();
-    onLoadEstimatedDepositFee();
-  }, [onCheckPendingDeposits, onLoadEstimatedDepositFee]);
+  }, [onCheckPendingDeposits]);
+
+  React.useEffect(() => {
+    if (isAsyncTaskDataAvailable(ethereumAccountTask)) {
+      onLoadEstimatedDepositFee(ethereumAccountTask.data);
+    }
+  }, [ethereumAccountTask, onLoadEstimatedDepositFee]);
 
   React.useEffect(() => {
     if (pendingDepositsCheckTask.status === "successful") {
@@ -260,7 +265,8 @@ const mapDispatchToProps = (dispatch: AppDispatch): DepositHandlerProps => ({
     dispatch(depositActions.goToBuildTransactionStep(ethereumAccount)),
   onGoToTransactionOverviewStep: (transactionToReview: depositActions.TransactionToReview) =>
     dispatch(depositActions.goToReviewTransactionStep(transactionToReview)),
-  onLoadEstimatedDepositFee: () => dispatch(depositThunks.fetchEstimatedDepositFee()),
+  onLoadEstimatedDepositFee: (ethereumAccount: EthereumAccount) =>
+    dispatch(depositThunks.fetchEstimatedDepositFee(ethereumAccount)),
   onDeposit: (amount: BigNumber, ethereumAccount: EthereumAccount) =>
     dispatch(depositThunks.deposit(amount, ethereumAccount)),
   onCleanup: () => dispatch(depositActions.resetState()),
