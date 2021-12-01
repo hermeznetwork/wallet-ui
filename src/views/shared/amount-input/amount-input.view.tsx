@@ -96,7 +96,7 @@ function AmountInput(
       return parseUnits(tokenAmount.toFixed(account.token.decimals), account.token.decimals);
     }
 
-    function updateAmountState({ tokens, fiat }: Amount, inputValue: string, showInFiat: boolean) {
+    function updateAmountState({ tokens, fiat }: Amount, showInFiat: boolean, inputValue?: string) {
       const newAmountWithFee = tokens.add(fee);
       const isAmountNegative = tokens.lte(BigNumber.from(0));
       const isNewAmountWithFeeMoreThanFunds = newAmountWithFee.gt(BigNumber.from(account.balance));
@@ -112,7 +112,9 @@ function AmountInput(
         areFundsExceededDueToFee ||
         isAmountCompressedInvalid;
 
-      setValue(inputValue);
+      if (inputValue !== undefined) {
+        setValue(inputValue);
+      }
       setAmount({ tokens, fiat });
       setIsAmountNegative(isAmountNegative);
       setIsAmountWithFeeMoreThanFunds(isNewAmountWithFeeMoreThanFunds);
@@ -132,37 +134,36 @@ function AmountInput(
      * trigger the validation checks.
      */
     function handleInputChange(event: { target: { value: string } }) {
-      const decimals =
-        account?.token?.decimals === undefined ? MAX_TOKEN_DECIMALS : account.token.decimals;
+      const decimals = account.token.decimals || MAX_TOKEN_DECIMALS;
       const regexToken = `^\\d*(?:\\.\\d{0,${decimals}})?$`;
       const regexFiat = `^\\d*(?:\\.\\d{0,2})?$`;
       const INPUT_REGEX = new RegExp(showInFiat ? regexFiat : regexToken);
 
       if (INPUT_REGEX.test(event.target.value)) {
-        if (showInFiat) {
-          const newAmountInFiat = Number(event.target.value);
-          const newAmountInTokens = convertAmountToTokens(newAmountInFiat);
-          const fixedAmountInTokens = fixTransactionAmount(newAmountInTokens);
+        try {
+          if (showInFiat) {
+            const newAmountInFiat = Number(event.target.value);
+            const newAmountInTokens = convertAmountToTokens(newAmountInFiat);
+            const fixedAmountInTokens = fixTransactionAmount(newAmountInTokens);
 
-          updateAmountState(
-            { tokens: fixedAmountInTokens, fiat: newAmountInFiat },
-            event.target.value,
-            showInFiat
-          );
-        } else {
-          try {
+            updateAmountState(
+              { tokens: fixedAmountInTokens, fiat: newAmountInFiat },
+              showInFiat,
+              event.target.value
+            );
+          } else {
             const tokensValue = event.target.value.length > 0 ? event.target.value : "0";
             const newAmountInTokens = parseUnits(tokensValue, account.token.decimals);
             const newAmountInFiat = convertAmountToFiat(newAmountInTokens);
 
             updateAmountState(
               { tokens: newAmountInTokens, fiat: newAmountInFiat },
-              event.target.value,
-              showInFiat
+              showInFiat,
+              event.target.value
             );
-          } catch (err) {
-            console.log(err);
           }
+        } catch (err) {
+          console.log(err);
         }
       }
     }
@@ -182,8 +183,8 @@ function AmountInput(
 
       updateAmountState(
         { tokens: maxAmountWithoutFee, fiat: maxAmountWithoutFeeInFiat },
-        newValue,
-        showInFiat
+        showInFiat,
+        newValue
       );
     }
 
@@ -198,11 +199,8 @@ function AmountInput(
         ? amount.fiat.toString()
         : getFixedTokenAmount(amount.tokens.toString(), account.token.decimals);
 
-      if (value.length > 0) {
-        setValue(newValue);
-      }
-
-      updateAmountState(amount, newValue, newShowInFiat);
+      // We don't want to update the value to a 0 when the input hasn't been touched yet
+      updateAmountState(amount, newShowInFiat, value.length > 0 ? newValue : undefined);
     }
 
     return (
