@@ -99,7 +99,7 @@ function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: 
   };
 }
 
-function fetchEstimatedDepositFee(ethereumAccount: EthereumAccount): AppThunk {
+function fetchEstimatedDepositFee(): AppThunk {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
     dispatch(depositActions.loadEstimatedDepositFee());
 
@@ -116,7 +116,6 @@ function fetchEstimatedDepositFee(ethereumAccount: EthereumAccount): AppThunk {
         if (ethToken) {
           const depositFee = getTxFee({
             txType: TxType.Deposit,
-            token: ethereumAccount.token,
             gasPrice: maxFeePerGas,
           });
 
