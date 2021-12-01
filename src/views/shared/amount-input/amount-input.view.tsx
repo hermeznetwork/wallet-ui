@@ -9,6 +9,7 @@ import { MAX_TOKEN_DECIMALS } from "src/constants";
 import { Account, FiatExchangeRates } from "src/domain/hermez";
 // utils
 import {
+  formatFiatAmount,
   getFixedTokenAmount,
   getTokenAmountInPreferredCurrency,
   trimZeros,
@@ -196,7 +197,7 @@ function AmountInput(
     function handleSwapCurrency() {
       const newShowInFiat = !showInFiat;
       const newValue = newShowInFiat
-        ? amount.fiat.toString()
+        ? formatFiatAmount(amount.fiat)
         : getFixedTokenAmount(amount.tokens.toString(), account.token.decimals);
 
       // We don't want to update the value to a 0 when the input hasn't been touched yet
