@@ -106,9 +106,7 @@ function TransactionDetails({
         ? transactionTask.data.historicUSD
         : null;
 
-      const amount = !isPendingDeposit(transactionTask.data)
-        ? getTransactionAmount(transactionTask.data)
-        : undefined;
+      const amount = getTransactionAmount(transactionTask.data);
 
       if (historicUSD) {
         return getAmountInPreferredCurrency(
@@ -173,10 +171,9 @@ function TransactionDetails({
     }
   }
 
-  const transactionAmount =
-    isAsyncTaskDataAvailable(transactionTask) && !isPendingDeposit(transactionTask.data)
-      ? getTransactionAmount(transactionTask.data)
-      : undefined;
+  const transactionAmount = isAsyncTaskDataAvailable(transactionTask)
+    ? getTransactionAmount(transactionTask.data)
+    : undefined;
 
   return (
     <div className={classes.root}>

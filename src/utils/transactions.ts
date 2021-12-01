@@ -7,11 +7,15 @@ import { getMaxAmountFromMinimumFee } from "@hermeznetwork/hermezjs/src/tx-utils
 import {
   CoordinatorState,
   Exit,
-  Transaction,
+  HistoryTransaction,
+  PoolTransaction,
+  PendingDeposit,
   ISOStringDate,
   PendingDelayedWithdraw,
   isHistoryTransaction,
 } from "src/domain/hermez";
+
+type Transaction = PendingDeposit | HistoryTransaction | PoolTransaction;
 
 /**
  * Returns the correct amount for a transaction from the Hermez API depending on its type
