@@ -7,15 +7,16 @@ import { getMaxAmountFromMinimumFee } from "@hermeznetwork/hermezjs/src/tx-utils
 import {
   CoordinatorState,
   Exit,
-  HistoryTransaction,
+  Transaction,
   ISOStringDate,
   PendingDelayedWithdraw,
+  isHistoryTransaction,
 } from "src/domain/hermez";
 
 /**
  * Returns the correct amount for a transaction from the Hermez API depending on its type
  */
-function getTransactionAmount(transaction: HistoryTransaction): string | undefined {
+function getTransactionAmount(transaction: Transaction): string | undefined {
   // ToDo: This check and the undefined return should be removed once all views are migrated to TS
   if (!transaction) {
     return undefined;
@@ -23,6 +24,7 @@ function getTransactionAmount(transaction: HistoryTransaction): string | undefin
 
   return (transaction.type === TxType.Deposit ||
     transaction.type === TxType.CreateAccountDeposit) &&
+    isHistoryTransaction(transaction) &&
     transaction.L1Info
     ? transaction.L1Info.depositAmount
     : transaction.amount;

@@ -106,7 +106,7 @@ function TransactionDetails({
         ? transactionTask.data.historicUSD
         : null;
 
-      const amount = isHistoryTransaction(transactionTask.data)
+      const amount = !isPendingDeposit(transactionTask.data)
         ? getTransactionAmount(transactionTask.data)
         : undefined;
 
@@ -174,7 +174,7 @@ function TransactionDetails({
   }
 
   const transactionAmount =
-    isAsyncTaskDataAvailable(transactionTask) && isHistoryTransaction(transactionTask.data)
+    isAsyncTaskDataAvailable(transactionTask) && !isPendingDeposit(transactionTask.data)
       ? getTransactionAmount(transactionTask.data)
       : undefined;
 
