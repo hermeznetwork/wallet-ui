@@ -5,7 +5,7 @@ import { useTheme } from "react-jss";
 import { push } from "connected-react-router";
 import { TxType, TxLevel, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { BigNumber } from "@ethersproject/bignumber";
-import { parseUnits } from "@ethersproject/units";
+import { parseUnits } from "ethers/lib/utils";
 
 import { AppState, AppDispatch } from "src/store";
 import * as transactionDetailsThunks from "src/store/transaction-details/transaction-details.thunks";
@@ -140,14 +140,11 @@ function TransactionDetails({
     } else if (L2Info.historicFeeUSD) {
       const feeUsd = L2Info.historicFeeUSD;
       const feeToken = feeUsd / token.USD;
-      return parseUnits(feeToken.toString(), token.decimals);
-      // return BigNumber.from(feeToken);
-      // return !isNaN(feeUsd) ? trimZeros(feeToken, MAX_TOKEN_DECIMALS) : undefined;
+      return parseUnits(feeToken.toFixed(token.decimals), token.decimals);
     } else {
       const feeUsd = getFeeInUsd(L2Info.fee, amount, token);
       const feeToken = feeUsd / token.USD;
-      return parseUnits(feeToken.toString(), token.decimals);
-      // return !isNaN(feeUsd) ? trimZeros(feeToken, MAX_TOKEN_DECIMALS) : undefined;
+      return parseUnits(feeToken.toFixed(token.decimals), token.decimals);
     }
   }
 
@@ -155,9 +152,7 @@ function TransactionDetails({
     const { fee, token, amount } = poolTransaction;
     const feeUsd = getFeeInUsd(fee, amount, token);
     const feeToken = feeUsd / token.USD;
-    return parseUnits(feeToken.toString(), token.decimals);
-
-    // return !isNaN(feeUsd) ? trimZeros(feeToken, MAX_TOKEN_DECIMALS) : undefined;
+    return parseUnits(feeToken.toFixed(token.decimals), token.decimals);
   }
 
   /**
