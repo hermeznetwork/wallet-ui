@@ -23,9 +23,7 @@ export type Step = "choose-account" | "build-transaction" | "review-transaction"
 
 export interface TransactionToReview {
   amount: BigNumber;
-  fee: number;
   from: HermezAccount;
-  to: Partial<HermezAccount>;
 }
 
 export interface GoToChooseAccountStep {

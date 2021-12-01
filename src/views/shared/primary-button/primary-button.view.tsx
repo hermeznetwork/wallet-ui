@@ -10,7 +10,7 @@ interface PrimaryButtonProps {
   boxed?: boolean;
   inRow?: boolean;
   last?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 function PrimaryButton({

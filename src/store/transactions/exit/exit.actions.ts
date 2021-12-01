@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
 import { HermezAccount, PoolTransaction, RecommendedFee } from "src/domain/hermez";
-import { EstimatedWithdrawFee } from "src/domain";
+import { EstimatedL1Fee } from "src/domain";
 
 export enum ExitActionTypes {
   GO_TO_BUILD_TRANSACTION_STEP = "[EXIT] GO TO BUILD TRANSACTION STEP",
@@ -28,18 +28,17 @@ export enum ExitActionTypes {
   RESET_STATE = "[EXIT] RESET STATE",
 }
 
+export interface TransactionToReview {
+  amount: BigNumber;
+  from: HermezAccount;
+  fee: BigNumber;
+}
+
 export type Step = "load-account" | "build-transaction" | "review-transaction";
 
 export interface GoToBuildTransactionStep {
   type: ExitActionTypes.GO_TO_BUILD_TRANSACTION_STEP;
   account: HermezAccount;
-}
-
-export interface TransactionToReview {
-  amount: BigNumber;
-  fee: number;
-  from: HermezAccount;
-  to: Partial<HermezAccount>;
 }
 
 export interface GoToReviewTransactionStep {
@@ -86,7 +85,7 @@ export interface LoadAccountBalance {
 
 export interface LoadAccountBalanceSuccess {
   type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS;
-  balance: string;
+  balance: BigNumber;
 }
 
 export interface LoadAccountBalanceFailure {
@@ -100,7 +99,7 @@ export interface LoadEstimatedWithdrawFee {
 
 export interface LoadEstimatedWithdrawFeeSuccess {
   type: ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS;
-  estimatedFee: EstimatedWithdrawFee;
+  estimatedFee: EstimatedL1Fee;
 }
 
 export interface LoadEstimatedWithdrawFeeFailure {
@@ -224,7 +223,7 @@ function loadAccountBalance(): LoadAccountBalance {
   };
 }
 
-function loadAccountBalanceSuccess(balance: string): LoadAccountBalanceSuccess {
+function loadAccountBalanceSuccess(balance: BigNumber): LoadAccountBalanceSuccess {
   return {
     type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_SUCCESS,
     balance,
@@ -245,7 +244,7 @@ function loadEstimatedWithdrawFee(): LoadEstimatedWithdrawFee {
 }
 
 function loadEstimatedWithdrawFeeSuccess(
-  estimatedFee: EstimatedWithdrawFee
+  estimatedFee: EstimatedL1Fee
 ): LoadEstimatedWithdrawFeeSuccess {
   return {
     type: ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS,

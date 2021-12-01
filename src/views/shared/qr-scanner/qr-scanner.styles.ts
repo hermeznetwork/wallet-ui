@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useQRScannerStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useQRScannerStyles = createUseStyles((theme: Theme) => ({
   section: {
     height: "100%",
     background: theme.palette.primary.main,

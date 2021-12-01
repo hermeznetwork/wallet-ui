@@ -1,51 +1,33 @@
 import React from "react";
 import clsx from "clsx";
 
-import AmountInput from "src/views/shared/amount-input/amount-input.view";
+// styles
 import useTransactionAmountInputStyles from "src/views/transactions/components/transaction-amount-input/transaction-amount-input.styles";
+// images
 import { ReactComponent as SwapIcon } from "src/images/icons/swap.svg";
 import { ReactComponent as ErrorIcon } from "src/images/icons/error.svg";
+// utils
 import { getFixedTokenAmount } from "src/utils/currencies";
+// views
+import AmountInput, {
+  WrappedAmountInputComponentProps,
+} from "src/views/shared/amount-input/amount-input.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
-// domain
-import { HermezAccount } from "src/domain/hermez";
-import { BigNumber } from "@ethersproject/bignumber";
-
-interface Amount {
-  fiat: number;
-  tokens: BigNumber;
-}
-
-interface TransactionAmountInputProps {
-  account: HermezAccount;
-  preferredCurrency: string;
-  value: string;
-  amount: Amount;
-  showInFiat: boolean;
-  isAmountWithFeeMoreThanFunds: boolean;
-  isAmountCompressedInvalid: boolean;
-  onInputChange: () => void;
-  onSendAll: () => void;
-  onSwapCurrency: () => void;
-}
 
 function TransactionAmountInput({
   account,
-  preferredCurrency,
   value,
   amount,
   showInFiat,
   isAmountWithFeeMoreThanFunds,
   isAmountCompressedInvalid,
+  preferredCurrency,
   onInputChange,
   onSendAll,
   onSwapCurrency,
-}: TransactionAmountInputProps): JSX.Element {
+}: WrappedAmountInputComponentProps): JSX.Element {
   const classes = useTransactionAmountInputStyles();
-
-  function hasErrors() {
-    return isAmountWithFeeMoreThanFunds || isAmountCompressedInvalid;
-  }
+  const hasErrors = isAmountWithFeeMoreThanFunds || isAmountCompressedInvalid;
 
   function getErrorMessage() {
     if (isAmountWithFeeMoreThanFunds) {
@@ -62,7 +44,7 @@ function TransactionAmountInput({
       <div
         className={clsx({
           [classes.selectAmount]: true,
-          [classes.selectAmountError]: hasErrors(),
+          [classes.selectAmountError]: hasErrors,
         })}
       >
         <div className={classes.amount}>
@@ -107,15 +89,12 @@ function TransactionAmountInput({
           </button>
         </div>
       </div>
-      <p
-        className={clsx({
-          [classes.errorMessage]: true,
-          [classes.selectAmountErrorMessageVisible]: hasErrors(),
-        })}
-      >
-        <ErrorIcon className={classes.errorIcon} />
-        {getErrorMessage()}
-      </p>
+      {hasErrors && (
+        <p className={classes.errorMessage}>
+          <ErrorIcon className={classes.errorIcon} />
+          {getErrorMessage()}
+        </p>
+      )}
     </div>
   );
 }

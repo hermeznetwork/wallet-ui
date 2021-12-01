@@ -11,9 +11,16 @@ import { ReactComponent as ArrowBackIcon } from "../../../images/icons/arrow-bac
 import { ReactComponent as QRCodeIcon } from "../../../images/icons/qr-code.svg";
 import Spinner from "../spinner/spinner.view";
 import Button from "../button/button.view";
+import { Theme } from "src/styles/theme";
 
-function QRScanner({ hideMyCode, onSuccess, onError, onClose }) {
-  const theme = useTheme();
+interface QRScannerProps {
+  hideMyCode?: boolean;
+  onSuccess: (address: string) => void;
+  onClose: () => void;
+}
+
+function QRScanner({ hideMyCode, onSuccess, onClose }: QRScannerProps): JSX.Element {
+  const theme = useTheme<Theme>();
   const classes = useQRScannerStyles();
   const [isQRScannerLoaded, setIsQRScannerLoaded] = React.useState(false);
 
@@ -31,7 +38,7 @@ function QRScanner({ hideMyCode, onSuccess, onError, onClose }) {
    * hermez address it bubbles up the read value to the parent component
    * @returns {void}
    */
-  function handleQRScan(result) {
+  function handleQRScan(result: string | null) {
     if (
       result &&
       (Addresses.isHermezEthereumAddress(result) || Addresses.isEthereumAddress(result))
@@ -44,8 +51,8 @@ function QRScanner({ hideMyCode, onSuccess, onError, onClose }) {
    * Handles the onError event from the QrReader component. Logs the error to the console
    * @returns {void}
    */
-  function handleQRScanError(error) {
-    console.log(error);
+  function handleQRScanError(error: unknown) {
+    console.error(error);
   }
 
   return (

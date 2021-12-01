@@ -4,7 +4,15 @@ import clsx from "clsx";
 
 import useButtonStyles from "./button.styles";
 
-function Button({ Icon, text, className, disabled, onClick }) {
+interface ButtonProps {
+  Icon: React.ReactElement<React.SVGProps<SVGSVGElement>>;
+  text?: string;
+  className?: string;
+  disabled?: boolean;
+  onClick: () => void;
+}
+
+function Button({ Icon, text, className, disabled, onClick }: ButtonProps): JSX.Element {
   const classes = useButtonStyles({ rounded: !text });
 
   return (
@@ -13,10 +21,10 @@ function Button({ Icon, text, className, disabled, onClick }) {
       disabled={disabled}
       className={clsx({
         [classes.root]: true,
-        [className]: className,
+        ...(className ? { [className]: true } : {}),
       })}
     >
-      {Icon || <></>}
+      {Icon}
       {text && <p className={clsx({ [classes.textSpacer]: Icon !== undefined })}>{text}</p>}
     </button>
   );

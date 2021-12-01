@@ -1,10 +1,8 @@
 import { BigNumber } from "ethers";
 import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { parseUnits } from "ethers/lib/utils";
 import { getMaxAmountFromMinimumFee } from "@hermeznetwork/hermezjs/src/tx-utils";
 
-import { getDepositFee } from "src/utils/fees";
 // domain
 import {
   CoordinatorState,
@@ -12,7 +10,6 @@ import {
   HistoryTransaction,
   ISOStringDate,
   PendingDelayedWithdraw,
-  Token,
 } from "src/domain/hermez";
 
 /**
@@ -146,36 +143,21 @@ function fixTransactionAmount(amount: BigNumber): BigNumber {
 
 /**
  * Calculates the max amoumt that can be sent in a transaction
- * @param {TxType} txType - Transaction type
- * @param {BigNumber} maxAmount - Max amount that can be sent in a transaction (usually it's an account balance)
- * @param {Object} token - Token object
- * @param {Number} l2Fee - Transaction fee
- * @param {BigNumber} gasPrice - Ethereum gas price
- * @returns maxTxAmount
  */
-function getMaxTxAmount(
-  txType: TxType,
-  maxAmount: BigNumber,
-  token: Token,
-  l2Fee: number,
-  gasPrice: BigNumber
-): BigNumber {
+function getMaxTxAmount(txType: TxType, maxAmount: BigNumber, fee: BigNumber): BigNumber {
   const maxTxAmount = (() => {
     switch (txType) {
       case TxType.ForceExit: {
         return maxAmount;
       }
       case TxType.Deposit: {
-        const depositFee = getDepositFee(token, gasPrice);
-        const newMaxAmount = maxAmount.sub(depositFee);
+        const newMaxAmount = maxAmount.sub(fee);
 
         return newMaxAmount.gt(0) ? newMaxAmount : BigNumber.from(0);
       }
       default: {
-        const l2FeeBigInt = parseUnits(l2Fee.toFixed(token.decimals), token.decimals);
-
         return BigNumber.from(
-          getMaxAmountFromMinimumFee(l2FeeBigInt.toString(), maxAmount.toString()).toString()
+          getMaxAmountFromMinimumFee(fee.toString(), maxAmount.toString()).toString()
         );
       }
     }

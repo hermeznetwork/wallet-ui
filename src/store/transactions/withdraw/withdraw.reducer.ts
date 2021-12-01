@@ -6,14 +6,14 @@ import {
 import { AsyncTask } from "src/utils/types";
 // domain
 import { PoolTransaction, Exit, HermezAccount } from "src/domain/hermez";
-import { EstimatedWithdrawFee } from "src/domain";
+import { EstimatedL1Fee } from "src/domain";
 
 export interface WithdrawState {
   step: Step;
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   accountTask: AsyncTask<HermezAccount, string>;
   exitTask: AsyncTask<Exit, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   isTransactionBeingApproved: boolean;
 }
 
@@ -128,9 +128,10 @@ function withdrawReducer(
     case WithdrawActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE:
       return {
         ...state,
-        estimatedWithdrawFeeTask: {
-          status: "loading",
-        },
+        estimatedWithdrawFeeTask:
+          state.estimatedWithdrawFeeTask.status === "successful"
+            ? { status: "reloading", data: state.estimatedWithdrawFeeTask.data }
+            : { status: "loading" },
       };
     case WithdrawActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS:
       return {

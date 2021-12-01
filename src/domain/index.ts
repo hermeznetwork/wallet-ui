@@ -1,5 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
+
 import { AppAction } from "src/store";
+import { HermezAccount, Token } from "src/domain/hermez";
+
 /**
  * This namespace contains the abstract definition of the types that are used across the application.
  * These types should correspond to real entities of the domain of the application. Special care must
@@ -30,13 +33,11 @@ export type Header =
     }
   | PageHeader;
 
-export interface EstimatedWithdrawFee {
+export interface EstimatedL1Fee {
   amount: BigNumber;
-  USD: number;
+  token: Token;
 }
 
-export interface EstimatedDepositFee {
-  amount: string;
-  gasPrice: BigNumber;
-  USD: number;
-}
+export type TransactionReceiver =
+  | Pick<HermezAccount, "bjj">
+  | Pick<HermezAccount, "hezEthereumAddress">;

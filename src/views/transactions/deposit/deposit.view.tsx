@@ -9,24 +9,24 @@ import * as depositThunks from "src/store/transactions/deposit/deposit.thunks";
 import * as depositActions from "src/store/transactions/deposit/deposit.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import useTransactionStyles from "src/views/transactions/deposit/deposit.styles";
-import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
 import { changeHeader } from "src/store/global/global.actions";
 import Spinner from "src/views/shared/spinner/spinner.view";
+import DepositForm from "src/views/transactions/deposit/components/deposit-form/deposit-form.view";
 import * as storage from "src/utils/storage";
-import { AsyncTask } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { AppDispatch, AppState } from "src/store";
 // domain
-import { Header, EstimatedDepositFee } from "src/domain/";
-import { HermezWallet, FiatExchangeRates, Token, EthereumAccount } from "src/domain/hermez";
+import { Header, EstimatedL1Fee } from "src/domain/";
+import { HermezWallet, FiatExchangeRates, EthereumAccount } from "src/domain/hermez";
 import { PendingDeposits } from "src/domain/local-storage";
 import { EthereumNetwork } from "src/domain/ethereum";
 
 interface DepositStateProps {
   ethereumAccountsTask: AsyncTask<EthereumAccount[], Error>;
   ethereumAccountTask: AsyncTask<EthereumAccount, string>;
-  estimatedDepositFeeTask: AsyncTask<EstimatedDepositFee, Error>;
+  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   isTransactionBeingApproved: boolean;
@@ -46,7 +46,7 @@ interface DepositHandlerProps {
   onGoToBuildTransactionStep: (ethereumAccount: EthereumAccount) => void;
   onGoToChooseAccountStep: () => void;
   onGoToTransactionOverviewStep: (transactionToReview: depositActions.TransactionToReview) => void;
-  onLoadEstimatedDepositFee: (token: Token, amount: BigNumber) => void;
+  onLoadEstimatedDepositFee: () => void;
   onLoadEthereumAccount: (tokenId: number) => void;
   onLoadEthereumAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) => void;
 }
@@ -83,8 +83,7 @@ function Deposit({
   const tokenId = urlSearchParams.get("tokenId");
   const accountIndex = urlSearchParams.get("accountIndex");
   const accountPendingDeposits =
-    wallet !== undefined &&
-    (ethereumNetworkTask.status === "successful" || ethereumNetworkTask.status === "reloading")
+    wallet && isAsyncTaskDataAvailable(ethereumNetworkTask)
       ? storage.getPendingDepositsByHermezAddress(
           pendingDeposits,
           ethereumNetworkTask.data.chainId,
@@ -98,7 +97,8 @@ function Deposit({
 
   React.useEffect(() => {
     onCheckPendingDeposits();
-  }, [onCheckPendingDeposits]);
+    onLoadEstimatedDepositFee();
+  }, [onCheckPendingDeposits, onLoadEstimatedDepositFee]);
 
   React.useEffect(() => {
     if (pendingDepositsCheckTask.status === "successful") {
@@ -148,44 +148,28 @@ function Deposit({
             );
           }
           case "build-transaction": {
-            return ethereumAccountTask.status === "successful" ||
-              ethereumAccountTask.status === "reloading" ? (
-              <TransactionForm
-                account={ethereumAccountTask.data}
-                transactionType={TxType.Deposit}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
-                estimatedDepositFeeTask={estimatedDepositFeeTask}
-                // ToDo: To be removed START
-                receiverAddress={undefined}
-                feesTask={{ status: "successful", data: null }}
-                accountBalanceTask={{ status: "pending" }}
-                estimatedWithdrawFeeTask={{ status: "pending" }}
-                onLoadFees={() => ({})}
-                onLoadAccountBalance={() => ({})}
-                onLoadEstimatedWithdrawFee={() => ({})}
-                // ToDo: To be removed END
-                onLoadEstimatedDepositFee={onLoadEstimatedDepositFee}
-                onSubmit={onGoToTransactionOverviewStep}
-                onGoToChooseAccountStep={onGoToChooseAccountStep}
-              />
-            ) : null;
+            return (
+              isAsyncTaskDataAvailable(ethereumAccountTask) && (
+                <DepositForm
+                  account={ethereumAccountTask.data}
+                  preferredCurrency={preferredCurrency}
+                  fiatExchangeRatesTask={fiatExchangeRatesTask}
+                  estimatedDepositFeeTask={estimatedDepositFeeTask}
+                  onGoToChooseAccountStep={onGoToChooseAccountStep}
+                  onSubmit={onGoToTransactionOverviewStep}
+                />
+              )
+            );
           }
           case "review-transaction": {
             return (
-              wallet !== undefined &&
-              transactionToReview !== undefined &&
-              (ethereumAccountTask.status === "successful" ||
-                ethereumAccountTask.status === "reloading") && (
+              wallet &&
+              transactionToReview &&
+              isAsyncTaskDataAvailable(ethereumAccountTask) && (
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  type={TxType.Deposit}
+                  txType={TxType.Deposit}
                   amount={transactionToReview.amount}
                   account={ethereumAccountTask.data}
                   onDeposit={onDeposit}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 
 import useAlertStyles from "src/views/shared/alert/alert.styles";
 import { ReactComponent as InfoIcon } from "src/images/icons/info.svg";
@@ -6,17 +6,15 @@ import { ReactComponent as InfoIcon } from "src/images/icons/info.svg";
 export type AlertVariant = "dark" | "light";
 
 interface AlertProps {
-  message: string;
+  message: string | ReactElement;
   variant?: AlertVariant;
-  showHelpButton: boolean;
   helpButtonLink?: string;
-  onHelpClick: () => void;
+  onHelpClick?: () => void;
 }
 
 function Alert({
   message,
   variant = "dark",
-  showHelpButton,
   helpButtonLink,
   onHelpClick,
 }: AlertProps): JSX.Element {
@@ -29,7 +27,7 @@ function Alert({
         <InfoIcon className={classes.icon} />
         <p className={classes.message}>{message}</p>
       </div>
-      {showHelpButton && (
+      {onHelpClick && (
         <Component
           className={classes.helpButton}
           {...(helpButtonLink

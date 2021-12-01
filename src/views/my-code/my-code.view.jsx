@@ -20,7 +20,7 @@ function MyCode({ wallet, onChangeHeader, onNavigateToTransfer }) {
   const { search } = useLocation();
   const urlSearchParams = new URLSearchParams(search);
   const from = urlSearchParams.get("from");
-  const [isVideoDeviceAvailable, setisVideoDeviceAvailable] = React.useState(false);
+  const [isVideoDeviceAvailable, setIsVideoDeviceAvailable] = React.useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -29,8 +29,8 @@ function MyCode({ wallet, onChangeHeader, onNavigateToTransfer }) {
 
   React.useEffect(() => {
     isAnyVideoDeviceAvailable()
-      .then(setisVideoDeviceAvailable)
-      .catch(() => setisVideoDeviceAvailable(false));
+      .then(setIsVideoDeviceAvailable)
+      .catch(() => setIsVideoDeviceAvailable(false));
   }, []);
 
   /**

@@ -15,7 +15,7 @@ import Spinner from "src/views/shared/spinner/spinner.view";
 import { AsyncTask } from "src/utils/types";
 import * as storage from "src/utils/storage";
 // domain
-import { EstimatedWithdrawFee } from "src/domain/";
+import { EstimatedL1Fee } from "src/domain/";
 import {
   HermezAccount,
   HermezWallet,
@@ -33,7 +33,7 @@ interface WithdrawStateProps {
   step: withdrawActions.Step;
   exitTask: AsyncTask<Exit, Error>;
   accountTask: AsyncTask<HermezAccount, string>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   isTransactionBeingApproved: boolean;
   pendingDelayedWithdraws: PendingDelayedWithdraws;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
@@ -186,7 +186,7 @@ function Withdraw({
               <TransactionOverview
                 wallet={wallet}
                 isTransactionBeingApproved={isTransactionBeingApproved}
-                type={TxType.Withdraw}
+                txType={TxType.Withdraw}
                 amount={BigNumber.from(exitTask.data.balance)}
                 account={accountTask.data}
                 exit={exitTask.data}

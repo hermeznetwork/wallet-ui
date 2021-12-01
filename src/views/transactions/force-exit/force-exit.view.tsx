@@ -14,7 +14,7 @@ import { AsyncTask } from "src/utils/types";
 // domain
 import { HermezAccount, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
-import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
+import ForceExitForm from "src/views/transactions/force-exit/components/force-exit-form/force-exit-form.view";
 import { AccountsWithPagination } from "src/store/transactions/force-exit/force-exit.reducer";
 import { Header } from "src/domain/";
 
@@ -106,27 +106,10 @@ function ForceExit({
           case "build-transaction": {
             return (
               account && (
-                <TransactionForm
-                  transactionType={TxType.ForceExit}
+                <ForceExitForm
                   account={account}
                   preferredCurrency={preferredCurrency}
-                  fiatExchangeRates={
-                    fiatExchangeRatesTask.status === "successful" ||
-                    fiatExchangeRatesTask.status === "reloading"
-                      ? fiatExchangeRatesTask.data
-                      : {}
-                  }
-                  // ToDo: To be removed START
-                  receiverAddress={undefined}
-                  feesTask={{ status: "successful", data: null }}
-                  accountBalanceTask={{ status: "pending" }}
-                  estimatedWithdrawFeeTask={{ status: "pending" }}
-                  estimatedDepositFeeTask={{ status: "pending" }}
-                  onLoadAccountBalance={() => ({})}
-                  onLoadEstimatedWithdrawFee={() => ({})}
-                  onLoadEstimatedDepositFee={() => ({})}
-                  onLoadFees={() => ({})}
-                  // ToDo: To be removed END
+                  fiatExchangeRatesTask={fiatExchangeRatesTask}
                   onSubmit={onGoToTransactionOverviewStep}
                   onGoToChooseAccountStep={onGoToChooseAccountStep}
                 />
@@ -141,7 +124,7 @@ function ForceExit({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  type={TxType.ForceExit}
+                  txType={TxType.ForceExit}
                   amount={transaction.amount}
                   account={account}
                   onForceExit={onForceExit}

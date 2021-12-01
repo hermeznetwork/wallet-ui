@@ -1,11 +1,12 @@
 import React from "react";
+import { BigNumber } from "@ethersproject/bignumber";
 
 import useTransactionInfoTableStyles from "src/views/shared/transaction-info-table/transaction-info-table.styles";
 import TransactionInfoTableRow from "src/views/shared/transaction-info-table-row/transaction-info-table-row.view";
 import FeesTable from "src/views/shared/fees-table/fees-table.view";
 // domain
 import { FiatExchangeRates, Token } from "src/domain/hermez";
-import { EstimatedWithdrawFee } from "src/domain";
+import { EstimatedL1Fee } from "src/domain";
 
 interface TransactionInfoTableProps {
   status?: Row;
@@ -13,9 +14,9 @@ interface TransactionInfoTableProps {
   to?: Row & { onCopyToAddress?: () => void };
   date?: Row;
   feeData?: {
-    fee?: number;
+    fee?: BigNumber;
     token?: Token;
-    estimatedWithdrawFee?: EstimatedWithdrawFee;
+    estimatedWithdrawFee?: EstimatedL1Fee;
     preferredCurrency?: string;
     fiatExchangeRates?: FiatExchangeRates;
   };
