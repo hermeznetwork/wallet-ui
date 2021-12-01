@@ -13,6 +13,7 @@ import Fee from "src/views/transactions/components/fee/fee.view";
 import { AmountInputChangeEventData } from "src/views/shared/amount-input/amount-input.view";
 import TransactionAmountInput from "src/views/transactions/components/transaction-amount-input/transaction-amount-input.view";
 import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
+import { ETHER_TOKEN_ID } from "src/constants";
 
 export interface TxData {
   amount: BigNumber;
@@ -48,7 +49,9 @@ const DepositForm: React.FC<DepositFormProps> = ({
   const [areFundsExceededDueToFee, setAreFundsExceededDueToFee] = React.useState(false);
   const isSubmitButtonDisabled = !isAmountValid || areFundsExceededDueToFee;
   const fee = isAsyncTaskDataAvailable(estimatedDepositFeeTask)
-    ? estimatedDepositFeeTask.data.amount
+    ? account.token.id === ETHER_TOKEN_ID
+      ? estimatedDepositFeeTask.data.amount
+      : BigNumber.from(0)
     : BigNumber.from(0);
 
   function handleAmountChange(data: AmountInputChangeEventData) {

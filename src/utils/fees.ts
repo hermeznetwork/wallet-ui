@@ -6,21 +6,12 @@ import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 // constants
-import { ETHER_TOKEN_ID, MAX_FEE_USD, MAX_TOKEN_DECIMALS } from "src/constants";
+import { MAX_FEE_USD, MAX_TOKEN_DECIMALS } from "src/constants";
 import { EstimatedL1Fee } from "src/domain";
 // domain
 import { FiatExchangeRates, RecommendedFee, Token } from "src/domain/hermez";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "./currencies";
-
-/**
- * Calculates the fee for a L1 deposit into Hermez Network
- */
-function getDepositFee(token: Token, gasPrice: BigNumber): BigNumber {
-  return token.id === ETHER_TOKEN_ID
-    ? BigNumber.from(GAS_LIMIT_LOW).mul(gasPrice)
-    : BigNumber.from(0);
-}
 
 interface GetMinimumTransferFee {
   txType: TxType.Transfer;
@@ -79,7 +70,6 @@ function getL2Fee(amount: string, token: Token, minimumFee: BigNumber): number {
 
 interface GetDepositFeeParams {
   txType: TxType.Deposit;
-  token: Token;
   gasPrice: BigNumber;
 }
 
@@ -102,7 +92,7 @@ type GetTxFeeParams = GetDepositFeeParams | GetForceExitFeeParams | GetL2FeePara
 function getTxFee(params: GetTxFeeParams): BigNumber {
   switch (params.txType) {
     case TxType.Deposit: {
-      return getDepositFee(params.token, params.gasPrice);
+      return BigNumber.from(GAS_LIMIT_LOW).mul(params.gasPrice);
     }
     case TxType.ForceExit: {
       return BigNumber.from(0);

@@ -21,29 +21,33 @@ function DepositAlert({
   preferredCurrency,
   fiatExchangeRatesTask,
 }: DepositAlertProps): JSX.Element {
+  if (
+    !isAsyncTaskDataAvailable(estimatedDepositFeeTask) ||
+    !isAsyncTaskDataAvailable(fiatExchangeRatesTask)
+  ) {
+    return <></>;
+  }
+
+  const fixedTokenAmount = getFixedTokenAmount(estimatedDepositFeeTask.data.amount.toString());
+
   return (
-    <>
-      {isAsyncTaskDataAvailable(estimatedDepositFeeTask) &&
-        isAsyncTaskDataAvailable(fiatExchangeRatesTask) && (
-          <Alert
-            message={
-              <>
-                {`You don’t have enough ETH to cover deposit transaction fee (you need at least
-            ${getFixedTokenAmount(estimatedDepositFeeTask.data.amount.toString())} ETH) ~`}
-                <FiatAmount
-                  amount={getTokenAmountInPreferredCurrency(
-                    estimatedDepositFeeTask.data.amount.toString(),
-                    estimatedDepositFeeTask.data.token.USD,
-                    preferredCurrency,
-                    fiatExchangeRatesTask.data
-                  )}
-                  currency={preferredCurrency}
-                />
-              </>
-            }
+    <Alert
+      message={
+        <>
+          {`You don’t have enough ETH to cover the deposit fee (you need at least
+              ${fixedTokenAmount} ETH) ~ `}
+          <FiatAmount
+            amount={getTokenAmountInPreferredCurrency(
+              fixedTokenAmount,
+              estimatedDepositFeeTask.data.token.USD,
+              preferredCurrency,
+              fiatExchangeRatesTask.data
+            )}
+            currency={preferredCurrency}
           />
-        )}
-    </>
+        </>
+      }
+    />
   );
 }
 
