@@ -214,21 +214,25 @@ function TransactionDetails({
                       transactionTask.data.timestamp
                     )
                   : undefined;
+                const poolTransactionForgingPendingTime =
+                  isPoolTransaction(transactionTask.data) &&
+                  !transactionTask.data.batchNum &&
+                  transactionTask.data.state !== TxState.Forged &&
+                  pendingTime &&
+                  pendingTime > 0
+                    ? pendingTime
+                    : undefined;
                 return (
                   <>
-                    {isPoolTransaction(transactionTask.data) &&
-                      !transactionTask.data.batchNum &&
-                      transactionTask.data.state !== TxState.Forged &&
-                      pendingTime &&
-                      pendingTime > 0 && (
-                        <p className={classes.timeEstimate}>
-                          <InfoIcon className={classes.timeEstimateIcon} />
-                          <span>
-                            The next block will be produced to Layer 2 in an estimated time of{" "}
-                            {pendingTime} minutes.
-                          </span>
-                        </p>
-                      )}
+                    {poolTransactionForgingPendingTime && (
+                      <p className={classes.timeEstimate}>
+                        <InfoIcon className={classes.timeEstimateIcon} />
+                        <span>
+                          The next block will be produced to Layer 2 in an estimated time of{" "}
+                          {poolTransactionForgingPendingTime} minutes.
+                        </span>
+                      </p>
+                    )}
                     <TransactionInfo
                       transaction={transactionTask.data}
                       fee={getTransactionFee(transactionTask)}
