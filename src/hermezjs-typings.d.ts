@@ -413,7 +413,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     babyJubJub: string,
     batchNum?: number,
     merkleProofSiblings?: MerkleProof["siblings"]
-  ): Promise<unknown>;
+  ): Promise<unknown[]>;
   // function sendL2Transaction();
 
   function generateAndSendL2Tx(

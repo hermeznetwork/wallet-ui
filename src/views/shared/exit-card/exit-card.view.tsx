@@ -3,11 +3,11 @@ import clsx from "clsx";
 import { Redirect } from "react-router-dom";
 import { isInstantWithdrawalAllowed } from "@hermeznetwork/hermezjs/src/tx";
 
-import useExitCardStyles from "./exit-card.styles";
-import { getTxPendingTime } from "../../../utils/transactions";
-import { ReactComponent as InfoIcon } from "../../../images/icons/info.svg";
-import PrimaryButton from "../primary-button/primary-button.view";
-import FiatAmount from "../fiat-amount/fiat-amount.view";
+import useExitCardStyles from "src/views/shared/exit-card/exit-card.styles";
+import { getTxPendingTime } from "src/utils/transactions";
+import { ReactComponent as InfoIcon } from "src/images/icons/info.svg";
+import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 // domain
 import {
   Token,
@@ -16,12 +16,15 @@ import {
   PendingWithdraw,
   TimerWithdraw,
   CoordinatorState,
+  ISOStringDate,
 } from "src/domain/hermez";
 
+type Step = 1 | 2 | 3;
+
 const STEPS = {
-  FIRST: 1,
-  SECOND: 2,
-  THIRD: 3,
+  FIRST: 1 as Step,
+  SECOND: 2 as Step,
+  THIRD: 3 as Step,
 };
 
 interface ExitCardProps {
@@ -74,7 +77,7 @@ function ExitCard({
   /**
    * Calculates in which step is the Exit process in
    */
-  const getStep = React.useCallback(() => {
+  const getStep = React.useCallback((): Step => {
     if (!merkleProof) {
       return STEPS.FIRST;
     } else if (
@@ -139,7 +142,6 @@ function ExitCard({
 
   /**
    * Converts the current step of the exit to a readable label
-   * @returns {string} - Label for the current step of the exit
    */
   function getTag() {
     switch (getStep()) {
@@ -149,14 +151,11 @@ function ExitCard({
         return "On hold";
       case STEPS.THIRD:
         return "Pending";
-      default:
-        return "";
     }
   }
 
   /**
    * Converts the withdraw delay from seconds to hours or minutes
-   * @returns {Number} - Withdrawal delay in hours or minutes
    */
   function getWithdrawalDelayerTime() {
     // Extracts the hours and minutes from the withdrawalDelay time stamp
@@ -177,12 +176,9 @@ function ExitCard({
    * It detects the type and caculates the time accordingly (in hours for instant and days for delayed)
    * If enough time has already passed, it deletes the pendingDelayedWithdraw from LocalStorage
    */
-  function getDateString(
-    delayedWithdrawal: PendingDelayedWithdraw | TimerWithdraw,
-    timer: boolean
-  ) {
+  function getDateString(timestamp: ISOStringDate, timer: boolean) {
     const now = Date.now();
-    const difference = now - new Date(delayedWithdrawal.timestamp).getTime();
+    const difference = now - new Date(timestamp).getTime();
     if (timer) {
       const tenMinutes = 10 * 60 * 1000;
       if (difference > tenMinutes && !isTimerCompleted) {
@@ -218,7 +214,6 @@ function ExitCard({
   /*
    * Sets to true a local state variable called (isWithdrawClicked or isCompleteDelayedWithdrawalClicked) to redirect to
    * the Transaction view with the withdraw information depending on whether the withd
-   * @returns {void}
    */
   function onWithdrawClick() {
     if (isDelayedWithdrawalReady) {
@@ -231,7 +226,6 @@ function ExitCard({
   /**
    * Sets to true a local state variable (isWithdrawDelayedClicked) to redirect to the Transaction view with the
    * delayed withdraw information
-   * @returns {void}
    */
   function onWithdrawDelayedClick() {
     setIsWithdrawDelayedClicked(true);
@@ -339,7 +333,7 @@ function ExitCard({
           const withdraw = pendingDelayedWithdrawal || timerWithdraw;
 
           if (withdraw) {
-            const remainingTime = getDateString(withdraw, timerWithdraw !== undefined);
+            const remainingTime = getDateString(withdraw.timestamp, timerWithdraw !== undefined);
             return (
               <div className={classes.withdraw}>
                 <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>

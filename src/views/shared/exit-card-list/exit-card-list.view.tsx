@@ -1,7 +1,7 @@
 import React from "react";
 
-import ExitCard from "../exit-card/exit-card.view";
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "../../../utils/currencies";
+import ExitCard from "src/views/shared/exit-card/exit-card.view";
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 // domain
 import {
   Exit,
@@ -60,9 +60,7 @@ function ExitCardList({
             preferredCurrency={preferredCurrency}
             batchNum={transaction.batchNum ? transaction.batchNum : undefined}
             exitId={
-              isExit(transaction)
-                ? transaction.accountIndex + transaction.batchNum.toString()
-                : undefined
+              isExit(transaction) ? `${transaction.accountIndex}${transaction.batchNum}` : undefined
             }
             merkleProof={isExit(transaction) ? transaction.merkleProof : undefined}
             accountIndex={
