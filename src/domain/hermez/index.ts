@@ -116,3 +116,9 @@ export function isPendingDeposit(
     return false;
   }
 }
+
+export function isExit(
+  transaction: hermezjs.Exit | hermezjs.PoolTransaction
+): transaction is hermezjs.Exit {
+  return "balance" in transaction;
+}

@@ -75,7 +75,7 @@ declare module "@hermeznetwork/*" {
     merkleProof: MerkleProof;
     balance: string;
     // bjj: string;
-    // delayedWithdrawRequest: unknown | null;
+    delayedWithdrawRequest: number | null;
     // fee: number;
     // hash: string;
     // hezEthereumAddress: string;
@@ -148,7 +148,7 @@ declare module "@hermeznetwork/*" {
     // metrics: Metrics;
     // rollup: Rollup;
     // auction: Auction;
-    // withdrawalDelayer: WithdrawalDelayer;
+    withdrawalDelayer: WithdrawalDelayer;
     recommendedFee: RecommendedFee;
   }
 
@@ -247,14 +247,14 @@ declare module "@hermeznetwork/*" {
   //   slotDeadline: number;
   // };
 
-  // interface WithdrawalDelayer {
-  //   ethereumBlockNum: number;
-  //   hermezGovernanceAddress: string;
-  //   emergencyCouncilAddress: string;
-  //   withdrawalDelay: number;
-  //   emergencyModeStartingBlock: number;
-  //   emergencyMode: boolean;
-  // };
+  interface WithdrawalDelayer {
+    // ethereumBlockNum: number;
+    // hermezGovernanceAddress: string;
+    // emergencyCouncilAddress: string;
+    withdrawalDelay: number;
+    // emergencyModeStartingBlock: number;
+    emergencyMode: boolean;
+  }
 
   export interface RecommendedFee {
     existingAccount: number;
@@ -349,6 +349,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     Exit,
     Signers,
     HermezCompressedAmount,
+    MerkleProof,
   } from "@hermeznetwork/hermezjs";
   import { TxType } from "@hermeznetwork/hermezjs/src/enums";
   import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
@@ -405,7 +406,14 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   ): Promise<TxData>;
 
   // function withdraw();
-  // function isInstantWithdrawalAllowed();
+  function isInstantWithdrawalAllowed(
+    amount: string,
+    accountIndex: string,
+    token: Token,
+    babyJubJub: string,
+    batchNum?: number,
+    merkleProofSiblings?: MerkleProof["siblings"]
+  ): Promise<unknown[]>;
   // function sendL2Transaction();
 
   function generateAndSendL2Tx(

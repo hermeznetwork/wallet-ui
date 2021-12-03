@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useExitStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useExitCardStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
     borderRadius: 18,
@@ -126,4 +128,4 @@ const useExitStyles = createUseStyles((theme) => ({
   },
 }));
 
-export default useExitStyles;
+export default useExitCardStyles;

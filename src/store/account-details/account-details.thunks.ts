@@ -8,6 +8,7 @@ import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as ethereum from "src/utils/ethereum";
 import { createAccount } from "src/utils/accounts";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
+import * as globalThunks from "src/store/global/global.thunks";
 // domain
 import {
   HermezAccount,
@@ -272,7 +273,10 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
     } = getState();
     if (wallet !== undefined) {
       return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
-        .then((exits: Exits) => dispatch(accountDetailsActions.loadExitsSuccess(exits)))
+        .then((exits: Exits) => {
+          dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
+          dispatch(accountDetailsActions.loadExitsSuccess(exits));
+        })
         .catch((err: Error) => dispatch(accountDetailsActions.loadExitsFailure(err)));
     }
   };
