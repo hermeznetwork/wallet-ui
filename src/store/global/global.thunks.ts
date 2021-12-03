@@ -456,9 +456,6 @@ function recoverPendingDelayedWithdrawals(exits: Exits): AppThunk {
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
         const provider = Providers.getProvider();
-        const {
-          data: { chainId },
-        } = ethereumNetworkTask;
         const accountPendingDelayedWithdraws: PendingDelayedWithdraw[] =
           storage.getPendingDelayedWithdrawsByHermezAddress(
             pendingDelayedWithdraws,
@@ -469,33 +466,31 @@ function recoverPendingDelayedWithdrawals(exits: Exits): AppThunk {
           (account) => account.batchNum
         );
 
-        exits.exits.map(async (exit) => {
+        exits.exits.forEach((exit) => {
           if (
             !batchNumPendingDelayedWithdraws.includes(exit.batchNum) &&
             exit.delayedWithdrawRequest
           ) {
-            try {
-              const blockWithTransactions = await provider.getBlockWithTransactions(
-                exit.delayedWithdrawRequest
-              );
-              const pendingDelayedWithdraw = blockWithTransactions.transactions.find(
-                (tx) => Addresses.getEthereumAddress(hermezEthereumAddress) === tx.from
-              );
-              if (pendingDelayedWithdraw) {
-                dispatch(
-                  addPendingDelayedWithdraw({
-                    ...exit,
-                    hash: pendingDelayedWithdraw.hash,
-                    id: `${exit.accountIndex}${exit.batchNum}`,
-                    hermezEthereumAddress: wallet.hermezEthereumAddress,
-                    isInstant: false, // TODO I'll remove this key that it's unused with the ExitCard refactor
-                    timestamp: new Date(blockWithTransactions.timestamp * 1000).toISOString(),
-                  })
+            void provider
+              .getBlockWithTransactions(exit.delayedWithdrawRequest)
+              .then((blockWithTransactions) => {
+                const pendingDelayedWithdraw = blockWithTransactions.transactions.find(
+                  (tx) => Addresses.getEthereumAddress(hermezEthereumAddress) === tx.from
                 );
-              }
-            } catch {
-              return;
-            }
+                if (pendingDelayedWithdraw) {
+                  dispatch(
+                    addPendingDelayedWithdraw({
+                      ...exit,
+                      hash: pendingDelayedWithdraw.hash,
+                      id: `${exit.accountIndex}${exit.batchNum}`,
+                      hermezEthereumAddress: wallet.hermezEthereumAddress,
+                      isInstant: false, // TODO I'll remove this key that it's unused with the ExitCard refactor
+                      timestamp: new Date(blockWithTransactions.timestamp * 1000).toISOString(),
+                    })
+                  );
+                }
+              })
+              .catch(() => ({}));
           }
         });
       }
