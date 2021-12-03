@@ -377,7 +377,7 @@ const mapDispatchToProps = (dispatch) => ({
       )
     ),
   onLoadPoolTransactions: () => dispatch(homeThunks.fetchPoolTransactions()),
-  onLoadExits: (exitTransactions) => dispatch(homeThunks.fetchExits(exitTransactions)),
+  onLoadExits: () => dispatch(homeThunks.fetchExits()),
   onRefreshAccounts: () => dispatch(homeThunks.refreshAccounts()),
   onCheckPendingWithdrawals: () => dispatch(globalThunks.checkPendingWithdrawals()),
   onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),

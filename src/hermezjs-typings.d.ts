@@ -75,7 +75,7 @@ declare module "@hermeznetwork/*" {
     merkleProof: MerkleProof;
     balance: string;
     // bjj: string;
-    // delayedWithdrawRequest: unknown | null;
+    delayedWithdrawRequest: number | null;
     // fee: number;
     // hash: string;
     // hezEthereumAddress: string;

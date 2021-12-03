@@ -93,6 +93,7 @@ const exit: z.ZodSchema<Exit> = hermezApiResourceItem.and(
     batchNum: z.number(),
     delayedWithdraw: z.number().nullable(),
     instantWithdraw: z.number().nullable(),
+    delayedWithdrawRequest: z.number().nullable(),
     token,
     merkleProof,
     balance: z.string(),
