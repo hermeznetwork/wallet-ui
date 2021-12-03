@@ -21,12 +21,6 @@ import {
 
 type Step = 1 | 2 | 3;
 
-const STEPS = {
-  FIRST: 1 as Step,
-  SECOND: 2 as Step,
-  THIRD: 3 as Step,
-};
-
 interface ExitCardProps {
   amount: string;
   fixedTokenAmount: string;
@@ -79,20 +73,20 @@ function ExitCard({
    */
   const getStep = React.useCallback((): Step => {
     if (!merkleProof) {
-      return STEPS.FIRST;
+      return 1;
     } else if (
       !pendingWithdraws ||
       (pendingWithdraws &&
         !pendingWithdraws.find((pendingWithdraw) => pendingWithdraw.id === exitId))
     ) {
-      return STEPS.SECOND;
+      return 2;
     } else {
-      return STEPS.THIRD;
+      return 3;
     }
   }, [exitId, merkleProof, pendingWithdraws]);
 
   React.useEffect(() => {
-    if (typeof coordinatorState !== "undefined" && getStep() <= STEPS.SECOND) {
+    if (typeof coordinatorState !== "undefined" && getStep() <= 2) {
       isInstantWithdrawalAllowed(
         amount,
         accountIndex,
@@ -132,7 +126,7 @@ function ExitCard({
 
   function getStepLabel() {
     switch (getStep()) {
-      case STEPS.FIRST: {
+      case 1: {
         return "Step 1/2";
       }
       default:
@@ -145,11 +139,11 @@ function ExitCard({
    */
   function getTag() {
     switch (getStep()) {
-      case STEPS.FIRST:
+      case 1:
         return "Initiated";
-      case STEPS.SECOND:
+      case 2:
         return "On hold";
-      case STEPS.THIRD:
+      case 3:
         return "Pending";
     }
   }
@@ -281,19 +275,19 @@ function ExitCard({
           <div
             className={clsx({
               [classes.stepTagWrapper]: true,
-              [classes.stepTagWrapperTwo]: getStep() === STEPS.SECOND,
+              [classes.stepTagWrapperTwo]: getStep() === 2,
             })}
           >
             <span
               className={clsx({
                 [classes.stepTag]: true,
-                [classes.stepTagTwo]: getStep() === STEPS.SECOND,
+                [classes.stepTagTwo]: getStep() === 2,
               })}
             >
               {getTag()}
             </span>
           </div>
-          {pendingTime > 0 && getStep() === STEPS.FIRST && (
+          {pendingTime > 0 && getStep() === 1 && (
             <p className={classes.pendingTimer}>{pendingTime} min</p>
           )}
         </div>
@@ -304,7 +298,7 @@ function ExitCard({
         />
       </div>
       {(() => {
-        if (getStep() !== STEPS.SECOND) {
+        if (getStep() !== 2) {
           return <></>;
         }
 
