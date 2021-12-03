@@ -85,3 +85,9 @@ export function isHistoryTransaction(
 ): transaction is hermezjs.HistoryTransaction {
   return !isPoolTransaction(transaction);
 }
+
+export function isExit(
+  transaction: hermezjs.Exit | hermezjs.PoolTransaction
+): transaction is hermezjs.Exit {
+  return "balance" in transaction;
+}

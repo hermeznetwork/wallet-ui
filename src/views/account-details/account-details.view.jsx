@@ -16,7 +16,7 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "../../ut
 import Container from "../shared/container/container.view";
 import { changeHeader } from "../../store/global/global.actions";
 import TransactionActions from "../shared/transaction-actions/transaction-actions.view";
-import ExitList from "../shared/exit-list/exit-list.view";
+import ExitCardList from "../shared/exit-card-list/exit-card-list.view";
 import FiatAmount from "../shared/fiat-amount/fiat-amount.view";
 import TokenBalance from "../shared/token-balance/token-balance.view";
 import InfiniteScroll from "../shared/infinite-scroll/infinite-scroll.view";
@@ -248,7 +248,7 @@ function AccountDetails({
 
               return (
                 <>
-                  <ExitList
+                  <ExitCardList
                     transactions={getPendingExits(poolTransactionsTask.data)}
                     fiatExchangeRates={fiatExchangeRatesTask.data}
                     preferredCurrency={preferredCurrency}
@@ -260,7 +260,7 @@ function AccountDetails({
                     onRemoveTimerWithdraw={onRemoveTimerWithdraw}
                     coordinatorState={coordinatorStateTask?.data}
                   />
-                  <ExitList
+                  <ExitCardList
                     transactions={mergeExits(exitsTask.data.exits, tokenPendingDelayedWithdraws)}
                     fiatExchangeRates={fiatExchangeRatesTask.data}
                     preferredCurrency={preferredCurrency}

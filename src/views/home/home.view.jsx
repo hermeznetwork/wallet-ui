@@ -14,7 +14,7 @@ import Container from "../shared/container/container.view";
 import { copyToClipboard } from "../../utils/browser";
 import { changeHeader, openSnackbar } from "../../store/global/global.actions";
 import TransactionActions from "../shared/transaction-actions/transaction-actions.view";
-import ExitList from "../shared/exit-list/exit-list.view";
+import ExitCardList from "../shared/exit-card-list/exit-card-list.view";
 import { getPartiallyHiddenHermezAddress } from "../../utils/addresses";
 import Button from "../shared/button/button.view";
 import InfiniteScroll from "../shared/infinite-scroll/infinite-scroll.view";
@@ -169,7 +169,6 @@ function Home({
     copyToClipboard(hermezEthereumAddress);
     onOpenSnackbar("The Hermez address has been copied to the clipboard!");
   }
-
   return (
     wallet && (
       <div className={classes.root}>
@@ -204,7 +203,7 @@ function Home({
           <section className={`${classes.section} ${classes.sectionLast}`}>
             {(poolTransactionsTask.status === "successful" ||
               poolTransactionsTask.status === "reloading") && (
-              <ExitList
+              <ExitCardList
                 transactions={getPendingExits()}
                 fiatExchangeRates={fiatExchangeRatesTask.data}
                 preferredCurrency={preferredCurrency}
@@ -218,7 +217,7 @@ function Home({
               />
             )}
             {(exitsTask.status === "successful" || exitsTask.status === "reloading") && (
-              <ExitList
+              <ExitCardList
                 transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful"
