@@ -1,8 +1,10 @@
 import { createUseStyles } from "react-jss";
 
-import { MY_CODE } from "../../constants";
+import { Theme } from "src/styles/theme";
 
-const useMyCodeStyles = createUseStyles((theme) => ({
+import { MY_CODE } from "src/constants";
+
+const useMyCodeStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
     height: "100%",
