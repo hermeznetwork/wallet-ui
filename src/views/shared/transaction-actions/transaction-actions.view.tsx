@@ -1,12 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
 
-import useTransactionActionsStyles from "./transaction-actions.styles";
-import { ReactComponent as SendIcon } from "../../../images/icons/send.svg";
-import { ReactComponent as DepositIcon } from "../../../images/icons/deposit.svg";
-import { ReactComponent as WithdrawIcon } from "../../../images/icons/withdraw.svg";
-import { ReactComponent as TokenSwapIcon } from "../../../images/icons/token-swap.svg";
+import useTransactionActionsStyles from "src/views/shared/transaction-actions/transaction-actions.styles";
+import { ReactComponent as SendIcon } from "src/images/icons/send.svg";
+import { ReactComponent as DepositIcon } from "src/images/icons/deposit.svg";
+import { ReactComponent as WithdrawIcon } from "src/images/icons/withdraw.svg";
+import { ReactComponent as TokenSwapIcon } from "src/images/icons/token-swap.svg";
+
+interface TransactionActionsProps {
+  hideWithdraw: boolean;
+  hideSend: boolean;
+  hideDeposit: boolean;
+  hideSwap: boolean;
+  accountIndex: string;
+  tokenId: number;
+}
 
 function TransactionActions({
   hideWithdraw,
@@ -15,7 +23,7 @@ function TransactionActions({
   hideSwap,
   accountIndex,
   tokenId,
-}) {
+}: TransactionActionsProps): JSX.Element {
   const classes = useTransactionActionsStyles();
   const baseQueryString = accountIndex !== undefined ? `?accountIndex=${accountIndex}` : "";
   const depositQueryString =
@@ -66,12 +74,5 @@ function TransactionActions({
     </div>
   );
 }
-
-TransactionActions.propTypes = {
-  hideWithdraw: PropTypes.bool,
-  hideSend: PropTypes.bool,
-  accountIndex: PropTypes.string,
-  tokenId: PropTypes.number,
-};
 
 export default TransactionActions;

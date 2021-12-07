@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useTransactionActionsStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useTransactionActionsStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     justifyContent: "space-between",
