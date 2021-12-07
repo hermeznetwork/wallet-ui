@@ -1,8 +1,12 @@
 import React from "react";
 
-import usePrivateLayoutStyles from "./private-layout.styles";
+import usePrivateLayoutStyles from "src/views/shared/private-layout/private-layout.styles";
 
-function PrivateLayout({ children }) {
+interface PrivateLayoutProps {
+  children: JSX.Element;
+}
+
+function PrivateLayout({ children }: PrivateLayoutProps): JSX.Element {
   const classes = usePrivateLayoutStyles();
 
   return (
