@@ -1,10 +1,10 @@
 import React from "react";
 
-import useUnderMaintenanceErrorStyles from "./under-maintenance-error.styles";
-import { ReactComponent as UnderMaintenanceIcon } from "../../../images/icons/under-maintenance.svg";
-import PublicLayout from "../public-layout/public-layout.view";
+import useUnderMaintenanceErrorStyles from "src/views/shared/under-maintenance-error/under-maintenance-error.styles";
+import { ReactComponent as UnderMaintenanceIcon } from "src/images/icons/under-maintenance.svg";
+import PublicLayout from "src/views/shared/public-layout/public-layout.view";
 
-function UnderMaintenanceError() {
+function UnderMaintenanceError(): JSX.Element {
   const classes = useUnderMaintenanceErrorStyles();
 
   return (
