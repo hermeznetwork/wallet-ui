@@ -4,27 +4,32 @@ import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
 import { MAX_TOKEN_DECIMALS } from "src/constants";
 import { FiatExchangeRates, Token } from "src/domain/hermez";
 
+export type Currency = {
+  code: string;
+  symbol: string;
+};
+
 const CurrencySymbol = {
   USD: {
     symbol: "$",
     code: "USD",
-  },
+  } as Currency,
   EUR: {
     symbol: "€",
     code: "EUR",
-  },
+  } as Currency,
   CNY: {
     symbol: "¥",
     code: "CNY",
-  },
+  } as Currency,
   JPY: {
     symbol: "¥",
     code: "JPY",
-  },
+  } as Currency,
   GBP: {
     symbol: "£",
     code: "GBP",
-  },
+  } as Currency,
 } as const;
 
 type CurrencySymbolKey = keyof typeof CurrencySymbol;

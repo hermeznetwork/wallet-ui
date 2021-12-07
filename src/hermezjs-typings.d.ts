@@ -780,7 +780,7 @@ declare module "@hermeznetwork/hermezjs/src/environment" {
 
   function isEnvironmentSupported(chainId: number): boolean;
 
-  // function getBatchExplorerUrl();
+  function getBatchExplorerUrl(): string;
   // function getEtherscanUrl();
 }
 
