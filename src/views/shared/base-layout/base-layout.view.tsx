@@ -1,19 +1,38 @@
 import React from "react";
 
-import MainHeader from "../main-header/main-header.view";
-import PageHeader from "../page-header/page-header.view";
-import Snackbar from "../snackbar/snackbar.view";
+import MainHeader from "src/views/shared/main-header/main-header.view";
+import PageHeader from "src/views/shared/page-header/page-header.view";
+import Snackbar from "src/views/shared/snackbar/snackbar.view";
+// domain
+import { Header } from "src/domain";
+
+type SnackbarProps =
+  | {
+      status: "closed";
+    }
+  | {
+      status: "open";
+      message: string;
+      backgroundColor?: string;
+    };
+
+interface BaseLayoutProps {
+  header: Header;
+  snackbar: SnackbarProps;
+  children: JSX.Element;
+  onGoBack: () => void;
+  onClose: () => void;
+  onCloseSnackbar: () => void;
+}
 
 function BaseLayout({
   header,
   snackbar,
-  preferredCurrency,
-  fiatExchangeRatesTask,
   children,
   onGoBack,
   onClose,
   onCloseSnackbar,
-}) {
+}: BaseLayoutProps): JSX.Element {
   return (
     <>
       {header.type === "main" && <MainHeader showNotificationsIndicator={false} />}

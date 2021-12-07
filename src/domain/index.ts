@@ -19,6 +19,7 @@ interface PageHeader {
   type: "page";
   data: {
     title: string;
+    subtitle?: string;
     goBackAction?: AppAction;
     closeAction?: AppAction;
   };
