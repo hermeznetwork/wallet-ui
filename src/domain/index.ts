@@ -12,13 +12,6 @@ import { HermezAccount, Token } from "src/domain/hermez";
 
 export type ISOStringDate = string;
 
-export interface Route {
-  path: string;
-  render: () => JSX.Element;
-  isPublic?: boolean;
-  isHidden?: boolean;
-}
-
 // ToDo: Header
 // The types below are required to keep the state of the headers of the pages. They don't belong to the domain.
 // We'll keep them in here until we migrate the views to typescript.

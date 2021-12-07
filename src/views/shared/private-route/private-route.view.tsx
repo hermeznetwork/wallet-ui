@@ -2,11 +2,11 @@ import React from "react";
 import { Route, useLocation, Redirect } from "react-router-dom";
 
 import PrivateLayout from "src/views/shared/private-layout/private-layout.view";
-import * as domain from "src/domain";
+import * as routes from "src/routing/routes";
 
 interface PrivateRouteProps {
   isUserLoggedIn: boolean;
-  route: domain.Route;
+  route: routes.Route;
   onChangeRedirectRoute: (route: string) => void;
 }
 
