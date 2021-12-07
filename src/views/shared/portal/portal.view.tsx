@@ -1,19 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import usePortalStyles from "./portal.styles";
 
-export const PortalSelector = {
-  FULLSCREEN_MODAL: "#fullscreen-modal-root",
-  SIDENAV: "#sidenav-root",
-};
+import usePortalStyles from "src/views/shared/portal/portal.styles";
 
-function Portal({ selector = PortalSelector.FULLSCREEN_MODAL, children }) {
+export type PortalSelector = "#fullscreen-modal-root" | "#sidenav-root";
+
+interface PortalProps {
+  selector?: PortalSelector;
+  children: JSX.Element;
+}
+
+function Portal({ selector = "#fullscreen-modal-root", children }: PortalProps): JSX.Element {
   const classes = usePortalStyles();
   const portalRoot = document.querySelector(selector);
   const [divElement] = React.useState(() => {
     const el = document.createElement("div");
 
-    if (selector === PortalSelector.FULLSCREEN_MODAL) {
+    if (selector === "#fullscreen-modal-root") {
       el.classList.add(classes.fullScreenModalRoot);
     } else {
       el.classList.add(classes.sidenavRoot);
@@ -23,9 +26,13 @@ function Portal({ selector = PortalSelector.FULLSCREEN_MODAL, children }) {
   });
 
   React.useEffect(() => {
-    portalRoot.appendChild(divElement);
+    if (portalRoot) {
+      portalRoot.appendChild(divElement);
 
-    return () => portalRoot.removeChild(divElement);
+      return () => {
+        portalRoot.removeChild(divElement);
+      };
+    }
   }, [portalRoot, divElement]);
 
   return ReactDOM.createPortal(children, divElement);
