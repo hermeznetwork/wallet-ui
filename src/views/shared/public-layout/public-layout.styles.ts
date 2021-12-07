@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const usePublicLayoutStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const usePublicLayoutStyles = createUseStyles((theme: Theme) => ({
   root: {
     position: "relative",
     width: "100%",

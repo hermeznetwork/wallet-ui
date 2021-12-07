@@ -1,13 +1,18 @@
 import React from "react";
 import { useTheme } from "react-jss";
 
-import usePublicLayoutStyles from "./public-layout.styles";
-import * as constants from "../../../constants";
-import Container from "../container/container.view";
-import { ReactComponent as HermezLogoAlternative } from "../../../images/hermez-logo-alternative.svg";
+import usePublicLayoutStyles from "src/views/shared/public-layout/public-layout.styles";
+import Container from "src/views/shared/container/container.view";
+import * as constants from "src/constants";
+import { ReactComponent as HermezLogoAlternative } from "src/images/hermez-logo-alternative.svg";
+import { Theme } from "src/styles/theme";
 
-function PublicLayout({ children }) {
-  const theme = useTheme();
+interface PublicLayoutProps {
+  children: JSX.Element;
+}
+
+function PublicLayout({ children }: PublicLayoutProps): JSX.Element {
+  const theme = useTheme<Theme>();
   const classes = usePublicLayoutStyles();
 
   return (
