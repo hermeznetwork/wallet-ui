@@ -1,7 +1,13 @@
 import { createUseStyles } from "react-jss";
 
-const usePageHeaderStyles = createUseStyles((theme) => ({
-  root: ({ hasSubtitle }) => ({
+import { Theme } from "src/styles/theme";
+
+interface StyleProps {
+  hasSubtitle: boolean;
+}
+
+const usePageHeaderStyles = createUseStyles((theme: Theme) => ({
+  root: ({ hasSubtitle }: StyleProps) => ({
     width: "100%",
     position: "absolute",
     height: theme.headerHeight,
