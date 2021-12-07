@@ -1,10 +1,22 @@
 import React from "react";
-import PropTypes from "prop-types";
 
-import useAccountStyles from "./account.styles";
-import { CurrencySymbol, getFixedTokenAmount } from "../../../utils/currencies";
-import { getTxPendingTime } from "../../../utils/transactions";
-import FiatAmount from "../fiat-amount/fiat-amount.view";
+import useAccountStyles from "src/views/shared/account/account.styles";
+import { getFixedTokenAmount } from "src/utils/currencies";
+import { getTxPendingTime } from "src/utils/transactions";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
+import { CoordinatorState, ISOStringDate, Token } from "src/domain/hermez";
+
+interface AccountProps {
+  balance: string;
+  fiatBalance: number;
+  token: Token;
+  preferredCurrency: string;
+  hasPendingDeposit: boolean;
+  isDisabled?: boolean;
+  coordinatorState?: CoordinatorState;
+  timestamp?: ISOStringDate;
+  onClick: () => void;
+}
 
 function Account({
   balance,
@@ -16,23 +28,17 @@ function Account({
   coordinatorState,
   timestamp,
   onClick,
-}) {
+}: AccountProps): JSX.Element {
   const classes = useAccountStyles({
     hasPendingDeposit,
-    isDisabled,
+    isDisabled: isDisabled || false,
   });
 
-  const pendingTime = getTxPendingTime(coordinatorState, true, timestamp);
+  const pendingTime =
+    timestamp !== undefined ? getTxPendingTime(coordinatorState, true, timestamp) : 0;
 
   return (
-    <div
-      className={`${classes.root} ${classes.account}`}
-      onClick={() => {
-        if (onClick) {
-          onClick();
-        }
-      }}
-    >
+    <div className={`${classes.root} ${classes.account}`} onClick={onClick}>
       <div className={`${classes.values} ${classes.topRow} ${classes.topRowText}`}>
         <p className={classes.tokenSymbol}>{token.symbol}</p>
         <p className={classes.tokenBalance}>
@@ -61,14 +67,5 @@ function Account({
     </div>
   );
 }
-
-Account.propTypes = {
-  balance: PropTypes.string.isRequired,
-  fiatBalance: PropTypes.number.isRequired,
-  token: PropTypes.object.isRequired,
-  preferredCurrency: PropTypes.string.isRequired,
-  coordinatorState: PropTypes.object,
-  onClick: PropTypes.func,
-};
 
 export default Account;
