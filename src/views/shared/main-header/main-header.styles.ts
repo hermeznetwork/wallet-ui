@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useMainHeaderStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useMainHeaderStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
     position: "absolute",
@@ -43,15 +45,6 @@ const useMainHeaderStyles = createUseStyles((theme) => ({
   myAccountIconWrapper: {
     marginRight: theme.spacing(1.5),
     position: "relative",
-  },
-  notificationsIndicator: {
-    width: theme.spacing(1.25),
-    height: theme.spacing(1.25),
-    borderRadius: "50%",
-    background: theme.palette.secondary.main,
-    position: "absolute",
-    bottom: 2,
-    right: -1,
   },
   myCodeIcon: {
     marginLeft: theme.spacing(1.5),

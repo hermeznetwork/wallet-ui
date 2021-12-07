@@ -35,7 +35,7 @@ function BaseLayout({
 }: BaseLayoutProps): JSX.Element {
   return (
     <>
-      {header.type === "main" && <MainHeader showNotificationsIndicator={false} />}
+      {header.type === "main" && <MainHeader />}
       {header.type === "page" && (
         <PageHeader
           title={header.data.title}
