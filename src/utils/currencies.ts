@@ -9,7 +9,7 @@ export type Currency = {
   symbol: string;
 };
 
-const CurrencySymbol: Record<string, Currency> = {
+const CurrencySymbol = {
   USD: {
     symbol: "$",
     code: "USD",
