@@ -4,7 +4,12 @@ import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
 import { MAX_TOKEN_DECIMALS } from "src/constants";
 import { FiatExchangeRates, Token } from "src/domain/hermez";
 
-const CurrencySymbol = {
+export type Currency = {
+  code: string;
+  symbol: string;
+};
+
+const CurrencySymbol: Record<string, Currency> = {
   USD: {
     symbol: "$",
     code: "USD",

@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const usePreferredCurrencySelectorStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const usePreferredCurrencySelectorStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     alignItems: "center",
