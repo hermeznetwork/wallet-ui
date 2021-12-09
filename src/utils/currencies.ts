@@ -9,27 +9,27 @@ export type Currency = {
   symbol: string;
 };
 
-const CurrencySymbol = {
+const CurrencySymbol: Record<string, Currency> = {
   USD: {
     symbol: "$",
     code: "USD",
-  } as Currency,
+  },
   EUR: {
     symbol: "€",
     code: "EUR",
-  } as Currency,
+  },
   CNY: {
     symbol: "¥",
     code: "CNY",
-  } as Currency,
+  },
   JPY: {
     symbol: "¥",
     code: "JPY",
-  } as Currency,
+  },
   GBP: {
     symbol: "£",
     code: "GBP",
-  } as Currency,
+  },
 } as const;
 
 type CurrencySymbolKey = keyof typeof CurrencySymbol;

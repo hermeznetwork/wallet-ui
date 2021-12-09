@@ -1,7 +1,6 @@
 import { createUseStyles } from "react-jss";
 
 import { Theme } from "src/styles/theme";
-
 import { MY_CODE } from "src/constants";
 
 const useMyCodeStyles = createUseStyles((theme: Theme) => ({
