@@ -16,7 +16,6 @@ import {
   getTokenAmountInPreferredCurrency,
   getFeeInUsd,
 } from "src/utils/currencies";
-import { ACCOUNT_INDEX_SEPARATOR } from "src/constants";
 import { getTransactionAmount, getTxPendingTime } from "src/utils/transactions";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { ReactComponent as InfoIcon } from "src/images/icons/info.svg";
@@ -40,10 +39,8 @@ import {
 } from "src/domain/hermez";
 import { Theme } from "src/styles/theme";
 
-type Transaction = PendingDeposit | HistoryTransaction | PoolTransaction;
-
 interface TransactionDetailsStateProps {
-  transactionTask: AsyncTask<Transaction, string>;
+  transactionTask: AsyncTask<PendingDeposit | HistoryTransaction | PoolTransaction, string>;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   preferredCurrency: string;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
@@ -57,6 +54,11 @@ interface TransactionDetailsHandlerProps {
 
 type TransactionDetailsProps = TransactionDetailsStateProps & TransactionDetailsHandlerProps;
 
+interface UrlParams {
+  accountIndex?: string;
+  transactionId?: string;
+}
+
 function TransactionDetails({
   transactionTask,
   fiatExchangeRatesTask,
@@ -69,15 +71,7 @@ function TransactionDetails({
   const theme = useTheme<Theme>();
   const classes = useTransactionDetailsStyles();
 
-  interface UrlParams {
-    accountIndex?: string;
-    transactionId?: string;
-  }
-
   const { accountIndex, transactionId } = useParams<UrlParams>();
-  const [, accountTokenSymbol] = accountIndex
-    ? accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
-    : [undefined];
 
   React.useEffect(() => {
     if (transactionId) {
@@ -183,7 +177,7 @@ function TransactionDetails({
             {isAsyncTaskDataAvailable(transactionTask) && transactionAmount ? (
               <TokenBalance
                 amount={getFixedTokenAmount(transactionAmount, transactionTask.data.token.decimals)}
-                symbol={accountTokenSymbol}
+                symbol={transactionTask.data.token.symbol}
               />
             ) : null}
           </div>
@@ -291,9 +285,6 @@ function getHeaderTitle(transactionType: TxType) {
     case TxType.TransferToBJJ:
     case TxType.Transfer: {
       return "Transfer";
-    }
-    default: {
-      return "";
     }
   }
 }

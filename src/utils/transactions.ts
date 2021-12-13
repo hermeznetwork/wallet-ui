@@ -15,12 +15,12 @@ import {
   isHistoryTransaction,
 } from "src/domain/hermez";
 
-type Transaction = PendingDeposit | HistoryTransaction | PoolTransaction;
-
 /**
  * Returns the correct amount for a transaction from the Hermez API depending on its type
  */
-function getTransactionAmount(transaction: Transaction): string | undefined {
+function getTransactionAmount(
+  transaction: PendingDeposit | HistoryTransaction | PoolTransaction
+): string | undefined {
   // ToDo: This check and the undefined return should be removed once all views are migrated to TS
   if (!transaction) {
     return undefined;

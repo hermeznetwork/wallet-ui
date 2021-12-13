@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useMyAccountStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useMyAccountStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
   },

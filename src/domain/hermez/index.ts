@@ -93,11 +93,8 @@ export function isPoolTransaction(
 export function isHistoryTransaction(
   entity: hermezjs.HistoryTransaction | hermezjs.PoolTransaction | PendingDeposit
 ): entity is hermezjs.HistoryTransaction {
-  if ("hash" in entity) {
-    // entity // is PendingDeposit
-    return false;
-  } else if ("state" in entity) {
-    // entity // is PoolTransaction
+  if ("state" in entity) {
+    // entity // is PoolTransaction or PendingDeposit
     return false;
   } else {
     // entity // is HistoryTransaction
@@ -112,7 +109,7 @@ export function isPendingDeposit(
     // entity // is PendingDeposit
     return true;
   } else {
-    // entity // is HistoryTransaction  or PoolTransaction
+    // entity // is HistoryTransaction or PoolTransaction
     return false;
   }
 }

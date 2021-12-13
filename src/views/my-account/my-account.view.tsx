@@ -1,41 +1,58 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useTheme } from "react-jss";
 import { push } from "connected-react-router";
 import hermezjs from "@hermeznetwork/hermezjs";
 
-import useMyAccountStyles from "./my-account.styles";
-import { changeHeader, openSnackbar } from "../../store/global/global.actions";
-import { changePreferredCurrency } from "../../store/my-account/my-account.thunks";
-import { disconnectWallet } from "../../store/global/global.thunks";
-import Container from "../shared/container/container.view";
-import { ReactComponent as ExchangeIcon } from "../../images/icons/exchange.svg";
-import { ReactComponent as ExitIcon } from "../../images/icons/exit.svg";
-import { ReactComponent as OpenInNewTabIcon } from "../../images/icons/open-in-new-tab.svg";
-import { ReactComponent as PowerOffIcon } from "../../images/icons/power-off.svg";
-import { CurrencySymbol } from "../../utils/currencies";
-import PreferredCurrencySelector from "./components/preferred-currency-selector/preferred-currency-selector.view";
-import { getPartiallyHiddenHermezAddress } from "../../utils/addresses";
-import { ReactComponent as CopyIcon } from "../../images/icons/copy.svg";
-import Button from "../shared/button/button.view";
-import { copyToClipboard } from "../../utils/browser";
-import { ReactComponent as QRCodeIcon } from "../../images/icons/qr-code.svg";
-import { version as packagejsonVersion } from "../../../package.json";
-import * as globalActions from "../../store/global/global.actions";
+import useMyAccountStyles from "src/views/my-account/my-account.styles";
+import { changeHeader, openSnackbar } from "src/store/global/global.actions";
+import { changePreferredCurrency } from "src/store/my-account/my-account.thunks";
+import { disconnectWallet } from "src/store/global/global.thunks";
+import Container from "src/views/shared/container/container.view";
+import { ReactComponent as ExchangeIcon } from "src/images/icons/exchange.svg";
+import { ReactComponent as ExitIcon } from "src/images/icons/exit.svg";
+import { ReactComponent as OpenInNewTabIcon } from "src/images/icons/open-in-new-tab.svg";
+import { ReactComponent as PowerOffIcon } from "src/images/icons/power-off.svg";
+import { CurrencySymbol } from "src/utils/currencies";
+import PreferredCurrencySelector from "src/views/my-account/components/preferred-currency-selector/preferred-currency-selector.view";
+import { getPartiallyHiddenHermezAddress } from "src/utils/addresses";
+import { ReactComponent as CopyIcon } from "src/images/icons/copy.svg";
+import Button from "src/views/shared/button/button.view";
+import { copyToClipboard } from "src/utils/browser";
+import { ReactComponent as QRCodeIcon } from "src/images/icons/qr-code.svg";
+import { version as packagejsonVersion } from "src/../package.json";
+import { AppDispatch, AppState } from "src/store";
+import { Theme } from "src/styles/theme";
+//domain
+import { HermezWallet } from "src/domain/hermez";
+
+interface MyAccountStateProps {
+  wallet: HermezWallet.HermezWallet | undefined;
+  preferredCurrency: string;
+}
+
+interface MyAccountHandlerProps {
+  onChangeHeader: () => void;
+  onChangePreferredCurrency: (selectedTokenId: string) => void;
+  onDisconnectWallet: () => void;
+  onOpenSnackbar: (message: string) => void;
+  onNavigateToForceExit: () => void;
+  onNavigateToMyCode: () => void;
+}
+
+type MyAccountProps = MyAccountStateProps & MyAccountHandlerProps;
 
 function MyAccount({
   wallet,
   preferredCurrency,
-  fiatExchangeRatesTask,
   onChangeHeader,
   onChangePreferredCurrency,
   onDisconnectWallet,
   onOpenSnackbar,
   onNavigateToForceExit,
   onNavigateToMyCode,
-}) {
-  const theme = useTheme();
+}: MyAccountProps): JSX.Element {
+  const theme = useTheme<Theme>();
   const classes = useMyAccountStyles();
 
   React.useEffect(() => {
@@ -44,10 +61,8 @@ function MyAccount({
 
   /**
    * Copies the Hermez Ethereum address to the clipboard when it's clicked
-   * @param {string} hermezEthereumAddress - Hermez ethereum address
-   * @returns {void}
    */
-  function handleEthereumAddressClick(hermezEthereumAddress) {
+  function handleEthereumAddressClick(hermezEthereumAddress: string) {
     copyToClipboard(hermezEthereumAddress);
     onOpenSnackbar("The Hermez address has been copied to the clipboard!");
   }
@@ -55,7 +70,6 @@ function MyAccount({
   /**
    * Disconnects the currently connected Ethereum wallet when the disconnect wallet button
    * is clicked
-   * @returns {void}
    */
   function handleOnDisconnectWallet() {
     onDisconnectWallet();
@@ -140,17 +154,12 @@ function MyAccount({
   );
 }
 
-MyAccount.propTypes = {
-  onChangePreferredCurrency: PropTypes.func,
-};
-
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: AppState): MyAccountStateProps => ({
   wallet: state.global.wallet,
   preferredCurrency: state.myAccount.preferredCurrency,
-  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch): MyAccountHandlerProps => ({
   onChangeHeader: () =>
     dispatch(
       changeHeader({
@@ -163,7 +172,8 @@ const mapDispatchToProps = (dispatch) => ({
       })
     ),
   onNavigateToMyCode: () => dispatch(push("/my-code?from=my-account")),
-  onChangePreferredCurrency: (currency) => dispatch(changePreferredCurrency(currency)),
+  onChangePreferredCurrency: (selectedTokenId) =>
+    dispatch(changePreferredCurrency(selectedTokenId)),
   onDisconnectWallet: () => dispatch(disconnectWallet()),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onNavigateToForceExit: () => dispatch(push("/force-withdraw")),
