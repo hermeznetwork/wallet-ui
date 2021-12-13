@@ -4,7 +4,7 @@ const metaMaskLogoWrapperStyles = (theme) => ({
   border: 0,
   borderRadius: theme.spacing(4),
   background: theme.palette.white,
-  boxShadow: `0px 3px 16px ${theme.palette.purple.light}`,
+  boxShadow: `0px 3px 16px ${theme.palette.primary.hover}`,
   transition: theme.hoverTransition,
   width: theme.spacing(12),
   height: theme.spacing(12),
