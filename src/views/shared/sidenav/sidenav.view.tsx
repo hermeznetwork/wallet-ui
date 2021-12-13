@@ -25,7 +25,7 @@ const Sidenav: React.FC<SidenavProps> = ({ children, onClose }) => {
   }
 
   return (
-    <Portal target="sidenav">
+    <Portal type="sidenav">
       <div className={classes.root}>
         <div
           ref={sidenavContentRef}
