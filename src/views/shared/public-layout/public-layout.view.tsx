@@ -7,11 +7,7 @@ import * as constants from "src/constants";
 import { ReactComponent as HermezLogoAlternative } from "src/images/hermez-logo-alternative.svg";
 import { Theme } from "src/styles/theme";
 
-interface PublicLayoutProps {
-  children: JSX.Element;
-}
-
-function PublicLayout({ children }: PublicLayoutProps): JSX.Element {
+const PublicLayout: React.FC = ({ children }) => {
   const theme = useTheme<Theme>();
   const classes = usePublicLayoutStyles();
 
@@ -43,6 +39,6 @@ function PublicLayout({ children }: PublicLayoutProps): JSX.Element {
       </div>
     </Container>
   );
-}
+};
 
 export default PublicLayout;
