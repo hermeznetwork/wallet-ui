@@ -25,14 +25,14 @@ interface ExitCardProps {
   amount: string;
   fixedTokenAmount: string;
   token: Token;
-  fiatAmount: number;
   preferredCurrency: string;
   accountIndex: string;
   babyJubJub: string;
   pendingWithdraws: PendingWithdraw[];
   pendingDelayedWithdraws: PendingDelayedWithdraw[];
   timerWithdraws: TimerWithdraw[];
-  coordinatorState: CoordinatorState;
+  coordinatorState?: CoordinatorState;
+  fiatAmount?: number;
   exitId?: string;
   merkleProof?: MerkleProof;
   batchNum?: number;
@@ -44,17 +44,17 @@ function ExitCard({
   amount,
   fixedTokenAmount,
   token,
-  fiatAmount,
   preferredCurrency,
-  exitId,
-  merkleProof,
-  batchNum,
   accountIndex,
   babyJubJub,
   pendingWithdraws,
   pendingDelayedWithdraws,
   timerWithdraws,
   coordinatorState,
+  fiatAmount,
+  exitId,
+  merkleProof,
+  batchNum,
   onAddTimerWithdraw,
   onRemoveTimerWithdraw,
 }: ExitCardProps): JSX.Element {
@@ -86,7 +86,7 @@ function ExitCard({
   }, [exitId, merkleProof, pendingWithdraws]);
 
   React.useEffect(() => {
-    if (typeof coordinatorState !== "undefined" && getStep() <= 2) {
+    if (coordinatorState && getStep() <= 2) {
       isInstantWithdrawalAllowed(
         amount,
         accountIndex,
@@ -152,8 +152,11 @@ function ExitCard({
    * Converts the withdraw delay from seconds to hours or minutes
    */
   function getWithdrawalDelayerTime() {
+    if (!coordinatorState) {
+      return "--";
+    }
     // Extracts the hours and minutes from the withdrawalDelay time stamp
-    const hours = coordinatorState?.withdrawalDelayer.withdrawalDelay / 60 / 60;
+    const hours = coordinatorState.withdrawalDelayer.withdrawalDelay / 60 / 60;
     const hoursFixed = Math.floor(hours);
     // Minutes are in a value between 0-1, so we need to convert to 0-59
     const minutes = Math.round((hours - hoursFixed) * 59);
@@ -185,7 +188,10 @@ function ExitCard({
         return `${minutes}m`;
       }
     } else {
-      const delayedTime = coordinatorState?.withdrawalDelayer.withdrawalDelay * 1000;
+      if (!coordinatorState) {
+        return "--";
+      }
+      const delayedTime = coordinatorState.withdrawalDelayer.withdrawalDelay * 1000;
       if (difference > delayedTime) {
         setIsDelayedWithdrawalReady(true);
       } else {

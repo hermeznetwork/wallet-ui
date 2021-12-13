@@ -8,24 +8,25 @@ import {
   CoordinatorState,
   Exit,
   HistoryTransaction,
+  isHistoryTransaction,
   ISOStringDate,
   PendingDelayedWithdraw,
+  PendingDeposit,
+  PoolTransaction,
 } from "src/domain/hermez";
 
 /**
  * Returns the correct amount for a transaction from the Hermez API depending on its type
  */
-function getTransactionAmount(transaction: HistoryTransaction): string | undefined {
+function getTransactionAmount(
+  transaction: HistoryTransaction | PoolTransaction | PendingDeposit
+): string | undefined {
   // ToDo: This check and the undefined return should be removed once all views are migrated to TS
   if (!transaction) {
     return undefined;
   }
 
-  return (transaction.type === TxType.Deposit ||
-    transaction.type === TxType.CreateAccountDeposit) &&
-    transaction.L1Info
-    ? transaction.L1Info.depositAmount
-    : transaction.amount;
+  return isHistoryTransaction(transaction) ? transaction.L1Info.depositAmount : transaction.amount;
 }
 
 /**

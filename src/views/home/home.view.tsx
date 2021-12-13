@@ -1,0 +1,478 @@
+import React from "react";
+import { connect } from "react-redux";
+import { useTheme } from "react-jss";
+import { push } from "connected-react-router";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+
+import useHomeStyles from "src/views/home/home.styles";
+import ReportIssueButton from "src/views/home/components/report-issue-button/report-issue-button.view";
+import PendingDepositList from "src/views/home/components/pending-deposit-list/pending-deposit-list.view";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
+import AccountList from "src/views/shared/account-list/account-list.view";
+import Spinner from "src/views/shared/spinner/spinner.view";
+import Container from "src/views/shared/container/container.view";
+import TransactionActions from "src/views/shared/transaction-actions/transaction-actions.view";
+import ExitCardList from "src/views/shared/exit-card-list/exit-card-list.view";
+import InfiniteScroll from "src/views/shared/infinite-scroll/infinite-scroll.view";
+import Button from "src/views/shared/button/button.view";
+import { changeHeader, openSnackbar } from "src/store/global/global.actions";
+import * as globalThunks from "src/store/global/global.thunks";
+import { GlobalState } from "src/store/global/global.reducer";
+import * as homeThunks from "src/store/home/home.thunks";
+import { HomeState } from "src/store/home/home.reducer";
+import { getPartiallyHiddenHermezAddress } from "src/utils/addresses";
+import { resetState } from "src/store/home/home.actions";
+import { copyToClipboard } from "src/utils/browser";
+import * as storage from "src/utils/storage";
+import { mergeExits } from "src/utils/transactions";
+import { AsyncTask } from "src/utils/types";
+import { Theme } from "src/styles/theme";
+import { AUTO_REFRESH_RATE } from "src/constants";
+//domain
+import {
+  Account,
+  FiatExchangeRates,
+  HermezWallet,
+  isHermezAccount,
+  PendingDeposit,
+  PoolTransaction,
+  TimerWithdraw,
+} from "src/domain/hermez";
+import { EthereumNetwork } from "src/domain/ethereum";
+import { AppDispatch, AppState } from "src/store";
+import { mockedFiatExchangeRates } from "src/apis/price-updater";
+
+type HomeStateProps = HomeState &
+  Pick<
+    GlobalState,
+    | "pendingDeposits"
+    | "pendingWithdraws"
+    | "pendingDelayedWithdraws"
+    | "timerWithdraws"
+    | "coordinatorStateTask"
+    | "fiatExchangeRatesTask"
+  > & {
+    wallet: HermezWallet.HermezWallet | undefined;
+    ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
+    pendingDepositsCheckTask: AsyncTask<null, string>;
+    preferredCurrency: string;
+  };
+
+interface HomeHandlerProps {
+  onChangeHeader: () => void;
+  onCheckPendingDeposits: () => void;
+  onLoadTotalBalance: (
+    hermezEthereumAddress: string,
+    poolTransactions: PoolTransaction[],
+    pendingDeposits: PendingDeposit[],
+    fiatExchangeRates: FiatExchangeRates,
+    preferredCurrency: string
+  ) => void;
+  onLoadAccounts: (
+    hermezAddress: string,
+    poolTransactions: PoolTransaction[],
+    pendingDeposits: PendingDeposit[],
+    fiatExchangeRates: FiatExchangeRates,
+    preferredCurrency: string,
+    fromItem?: number
+  ) => void;
+  onLoadPoolTransactions: () => void;
+  onLoadExits: () => void;
+  onCheckPendingDelayedWithdrawals: () => void;
+  onCheckPendingWithdrawals: () => void;
+  onAddTimerWithdraw: (timer: TimerWithdraw) => void;
+  onRemoveTimerWithdraw: (message: string) => void;
+  onNavigateToAccountDetails: (accountIndex: string) => void;
+  onOpenSnackbar: (message: string) => void;
+  onCleanup: () => void;
+}
+
+type HomeProps = HomeStateProps & HomeHandlerProps;
+
+function Home({
+  wallet,
+  ethereumNetworkTask,
+  pendingDepositsCheckTask,
+  totalBalanceTask,
+  accountsTask,
+  poolTransactionsTask,
+  exitsTask,
+  fiatExchangeRatesTask,
+  preferredCurrency,
+  pendingDeposits,
+  pendingWithdraws,
+  pendingDelayedWithdraws,
+  timerWithdraws,
+  coordinatorStateTask,
+  onChangeHeader,
+  onCheckPendingDeposits,
+  onLoadTotalBalance,
+  onLoadAccounts,
+  onLoadPoolTransactions,
+  onLoadExits,
+  onCheckPendingDelayedWithdrawals,
+  onCheckPendingWithdrawals,
+  onAddTimerWithdraw,
+  onRemoveTimerWithdraw,
+  onNavigateToAccountDetails,
+  onOpenSnackbar,
+  onCleanup,
+}: HomeProps): JSX.Element {
+  const theme = useTheme<Theme>();
+  const classes = useHomeStyles();
+  const ethereumNetworkAndWalletLoaded = ethereumNetworkTask.status === "successful" && wallet;
+  const accountPendingDeposits = React.useMemo(
+    () =>
+      ethereumNetworkAndWalletLoaded
+        ? storage.getPendingDepositsByHermezAddress(
+            pendingDeposits,
+            ethereumNetworkTask.data.chainId,
+            wallet.hermezEthereumAddress
+          )
+        : [],
+    [pendingDeposits, ethereumNetworkTask, wallet, ethereumNetworkAndWalletLoaded]
+  );
+  const accountPendingWithdraws = ethereumNetworkAndWalletLoaded
+    ? storage.getPendingWithdrawsByHermezAddress(
+        pendingWithdraws,
+        ethereumNetworkTask.data.chainId,
+        wallet.hermezEthereumAddress
+      )
+    : [];
+  const accountPendingDelayedWithdraws = ethereumNetworkAndWalletLoaded
+    ? storage.getPendingDelayedWithdrawsByHermezAddress(
+        pendingDelayedWithdraws,
+        ethereumNetworkTask.data.chainId,
+        wallet.hermezEthereumAddress
+      )
+    : [];
+  const accountTimerWithdraws = ethereumNetworkAndWalletLoaded
+    ? storage.getTimerWithdrawsByHermezAddress(
+        timerWithdraws,
+        ethereumNetworkTask.data.chainId,
+        wallet.hermezEthereumAddress
+      )
+    : [];
+  const pendingOnTopDeposits = accountPendingDeposits.filter(
+    (deposit) => deposit.type === TxType.Deposit
+  );
+  const pendingCreateAccountDeposits = accountPendingDeposits.filter(
+    (deposit) => deposit.type === TxType.CreateAccountDeposit
+  );
+  const fiatExchangeRates =
+    fiatExchangeRatesTask.status === "successful" || fiatExchangeRatesTask.status === "reloading"
+      ? fiatExchangeRatesTask.data
+      : mockedFiatExchangeRates;
+  const coordinatorState =
+    coordinatorStateTask.status === "successful" || coordinatorStateTask.status === "reloading"
+      ? coordinatorStateTask.data
+      : undefined;
+
+  React.useEffect(() => {
+    onChangeHeader();
+  }, [theme, onChangeHeader]);
+
+  React.useEffect(() => {
+    onCheckPendingDeposits();
+    onLoadPoolTransactions();
+    onLoadExits();
+    onCheckPendingWithdrawals();
+    onCheckPendingDelayedWithdrawals();
+  }, [
+    onCheckPendingDeposits,
+    onLoadPoolTransactions,
+    onLoadExits,
+    onCheckPendingWithdrawals,
+    onCheckPendingDelayedWithdrawals,
+  ]);
+
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      onCheckPendingDeposits();
+      onLoadPoolTransactions();
+      onLoadExits();
+      onCheckPendingWithdrawals();
+      onCheckPendingDelayedWithdrawals();
+    }, AUTO_REFRESH_RATE);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [
+    onCheckPendingDeposits,
+    onLoadPoolTransactions,
+    onLoadExits,
+    onCheckPendingWithdrawals,
+    onCheckPendingDelayedWithdrawals,
+  ]);
+
+  React.useEffect(() => {
+    if (
+      pendingDepositsCheckTask.status === "successful" &&
+      poolTransactionsTask.status === "successful" &&
+      fiatExchangeRatesTask.status === "successful" &&
+      wallet
+    ) {
+      onLoadTotalBalance(
+        wallet.publicKeyBase64,
+        poolTransactionsTask.data,
+        accountPendingDeposits,
+        fiatExchangeRatesTask.data,
+        preferredCurrency
+      );
+      onLoadAccounts(
+        wallet.publicKeyBase64,
+        poolTransactionsTask.data,
+        accountPendingDeposits,
+        fiatExchangeRatesTask.data,
+        preferredCurrency
+      );
+    }
+  }, [
+    pendingDepositsCheckTask,
+    poolTransactionsTask,
+    fiatExchangeRatesTask,
+    wallet,
+    accountPendingDeposits,
+    preferredCurrency,
+    onLoadTotalBalance,
+    onLoadAccounts,
+  ]);
+
+  React.useEffect(() => onCleanup, [onCleanup]);
+
+  /**
+   * Filters the transactions of type exit from the transaction pool
+   */
+  function getPendingExits() {
+    if (
+      poolTransactionsTask.status === "successful" ||
+      poolTransactionsTask.status === "reloading"
+    ) {
+      return poolTransactionsTask.data.filter((transaction) => transaction.type === TxType.Exit);
+    }
+    return [];
+  }
+
+  /**
+   * Navigates to the AccountDetails view when an account is clicked
+   * @param {Object} account - Account
+   * @returns {void}
+   */
+  function handleAccountClick(account: Account) {
+    isHermezAccount(account) && onNavigateToAccountDetails(account.accountIndex);
+  }
+
+  /**
+   * Copies the Hermez Ethereum address to the clipboard when it's clicked
+   * @param {string} hermezEthereumAddress - Hermez Ethereum address
+   * @returns {void}
+   */
+  function handleEthereumAddressClick(hermezEthereumAddress: string) {
+    copyToClipboard(hermezEthereumAddress);
+    onOpenSnackbar("The Hermez address has been copied to the clipboard!");
+  }
+  return (
+    <>
+      {ethereumNetworkAndWalletLoaded && (
+        <div className={classes.root}>
+          <Container backgroundColor={theme.palette.primary.main} addHeaderPadding disableTopGutter>
+            <section className={classes.section}>
+              {ethereumNetworkTask.data.chainId === 4 && (
+                <p className={classes.networkLabel}>{ethereumNetworkTask.data.name}</p>
+              )}
+              <Button
+                text={getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress)}
+                className={classes.walletAddress}
+                onClick={() => handleEthereumAddressClick(wallet.hermezEthereumAddress)}
+              />
+              <div className={classes.accountBalance}>
+                <FiatAmount
+                  amount={
+                    totalBalanceTask.status === "successful" ||
+                    totalBalanceTask.status === "reloading"
+                      ? totalBalanceTask.data
+                      : undefined
+                  }
+                  currency={preferredCurrency}
+                  className={classes.fiatAmount}
+                />
+              </div>
+              <TransactionActions
+                hideSend={
+                  accountsTask.status === "successful" || accountsTask.status === "reloading"
+                    ? accountsTask.data.accounts.length === 0
+                    : true
+                }
+                hideWithdraw
+              />
+            </section>
+          </Container>
+          <Container fullHeight>
+            <section className={`${classes.section} ${classes.sectionLast}`}>
+              {(poolTransactionsTask.status === "successful" ||
+                poolTransactionsTask.status === "reloading") && (
+                <ExitCardList
+                  transactions={getPendingExits()}
+                  fiatExchangeRates={fiatExchangeRates}
+                  preferredCurrency={preferredCurrency}
+                  babyJubJub={wallet.publicKeyCompressedHex}
+                  pendingWithdraws={accountPendingWithdraws}
+                  pendingDelayedWithdraws={accountPendingDelayedWithdraws}
+                  timerWithdraws={accountTimerWithdraws}
+                  onAddTimerWithdraw={onAddTimerWithdraw}
+                  onRemoveTimerWithdraw={onRemoveTimerWithdraw}
+                  coordinatorState={coordinatorState}
+                />
+              )}
+              {(exitsTask.status === "successful" || exitsTask.status === "reloading") && (
+                <ExitCardList
+                  transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
+                  fiatExchangeRates={fiatExchangeRates}
+                  preferredCurrency={preferredCurrency}
+                  babyJubJub={wallet.publicKeyCompressedHex}
+                  pendingWithdraws={accountPendingWithdraws}
+                  pendingDelayedWithdraws={accountPendingDelayedWithdraws}
+                  timerWithdraws={accountTimerWithdraws}
+                  onAddTimerWithdraw={onAddTimerWithdraw}
+                  onRemoveTimerWithdraw={onRemoveTimerWithdraw}
+                  coordinatorState={coordinatorState}
+                />
+              )}
+              {(() => {
+                switch (accountsTask.status) {
+                  case "pending":
+                  case "loading":
+                  case "failed": {
+                    return <Spinner />;
+                  }
+                  case "reloading":
+                  case "successful": {
+                    if (
+                      accountsTask.data.accounts.length === 0 &&
+                      pendingCreateAccountDeposits.length === 0
+                    ) {
+                      return (
+                        <p className={classes.emptyAccounts}>
+                          Deposit tokens from your Ethereum account.
+                        </p>
+                      );
+                    }
+
+                    return (
+                      <>
+                        {pendingCreateAccountDeposits && (
+                          <PendingDepositList
+                            deposits={pendingCreateAccountDeposits}
+                            preferredCurrency={preferredCurrency}
+                            fiatExchangeRates={fiatExchangeRates}
+                            onAccountClick={() =>
+                              onOpenSnackbar("This token account is being created")
+                            }
+                            coordinatorState={coordinatorState}
+                          />
+                        )}
+                        <InfiniteScroll
+                          asyncTaskStatus={accountsTask.status}
+                          paginationData={accountsTask.data.pagination}
+                          onLoadNextPage={(fromItem) => {
+                            onLoadAccounts(
+                              wallet.publicKeyBase64,
+                              poolTransactionsTask.data,
+                              accountPendingDeposits,
+                              fiatExchangeRates,
+                              preferredCurrency,
+                              fromItem
+                            );
+                          }}
+                        >
+                          <AccountList
+                            accounts={accountsTask.data.accounts}
+                            preferredCurrency={preferredCurrency}
+                            pendingDeposits={pendingOnTopDeposits}
+                            coordinatorState={coordinatorState}
+                            onAccountClick={handleAccountClick}
+                          />
+                        </InfiniteScroll>
+                      </>
+                    );
+                  }
+                }
+              })()}
+            </section>
+          </Container>
+          <ReportIssueButton />
+        </div>
+      )}
+      )
+    </>
+  );
+}
+
+const mapStateToProps = (state: AppState): HomeStateProps => ({
+  wallet: state.global.wallet,
+  ethereumNetworkTask: state.global.ethereumNetworkTask,
+  pendingDepositsCheckTask: state.global.pendingDepositsCheckTask,
+  totalBalanceTask: state.home.totalBalanceTask,
+  accountsTask: state.home.accountsTask,
+  fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
+  preferredCurrency: state.myAccount.preferredCurrency,
+  poolTransactionsTask: state.home.poolTransactionsTask,
+  exitsTask: state.home.exitsTask,
+  pendingWithdraws: state.global.pendingWithdraws,
+  pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
+  pendingDeposits: state.global.pendingDeposits,
+  timerWithdraws: state.global.timerWithdraws,
+  coordinatorStateTask: state.global.coordinatorStateTask,
+});
+
+const mapDispatchToProps = (dispatch: AppDispatch): HomeHandlerProps => ({
+  onChangeHeader: () => dispatch(changeHeader({ type: "main" })),
+  onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
+  onLoadTotalBalance: (
+    hermezAddress,
+    poolTransactions,
+    pendingDeposits,
+    fiatExchangeRates,
+    preferredCurrency
+  ) =>
+    dispatch(
+      homeThunks.fetchTotalBalance(
+        hermezAddress,
+        poolTransactions,
+        pendingDeposits,
+        fiatExchangeRates,
+        preferredCurrency
+      )
+    ),
+  onLoadAccounts: (
+    hermezAddress,
+    poolTransactions,
+    pendingDeposits,
+    fiatExchangeRates,
+    preferredCurrency,
+    fromItem
+  ) =>
+    dispatch(
+      homeThunks.fetchAccounts(
+        hermezAddress,
+        poolTransactions,
+        pendingDeposits,
+        fiatExchangeRates,
+        preferredCurrency,
+        fromItem
+      )
+    ),
+  onLoadPoolTransactions: () => dispatch(homeThunks.fetchPoolTransactions()),
+  onLoadExits: () => dispatch(homeThunks.fetchExits()),
+  onCheckPendingWithdrawals: () => dispatch(globalThunks.checkPendingWithdrawals()),
+  onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),
+  onAddTimerWithdraw: (timerWithdraw) => dispatch(globalThunks.addTimerWithdraw(timerWithdraw)),
+  onRemoveTimerWithdraw: (timerWithdrawId) =>
+    dispatch(globalThunks.removeTimerWithdraw(timerWithdrawId)),
+  onNavigateToAccountDetails: (accountIndex) => dispatch(push(`/accounts/${accountIndex}`)),
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
+  onCleanup: () => dispatch(resetState()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

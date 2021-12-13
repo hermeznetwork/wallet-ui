@@ -1,14 +1,31 @@
 import React from "react";
-import PropTypes from "prop-types";
 
-import Transaction from "../transaction/transaction.view";
-import useTransactionListStyles from "./transaction-list.styles";
+import TransactionComponent from "src/views/account-details/components/transaction/transaction.view";
+import useTransactionListStyles from "src/views/account-details/components/transaction-list/transaction-list.styles";
 import {
   getFixedTokenAmount,
   getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency,
-} from "../../../../utils/currencies";
-import { getTransactionAmount } from "../../../../utils/transactions";
+} from "src/utils/currencies";
+import { getTransactionAmount } from "src/utils/transactions";
+// domain
+import {
+  CoordinatorState,
+  FiatExchangeRates,
+  HistoryTransaction,
+  PendingDeposit,
+  PoolTransaction,
+} from "src/domain/hermez";
+
+interface TransactionList {
+  accountIndex: string;
+  transactions: HistoryTransaction[] | PoolTransaction[] | PendingDeposit[];
+  preferredCurrency: string;
+  fiatExchangeRates: FiatExchangeRates;
+  arePending: boolean;
+  coordinatorState: CoordinatorState;
+  onTransactionClick: (transaction: HistoryTransaction) => void;
+}
 
 function TransactionList({
   accountIndex,
@@ -18,14 +35,13 @@ function TransactionList({
   arePending,
   coordinatorState,
   onTransactionClick,
-}) {
+}: TransactionList): JSX.Element {
   const classes = useTransactionListStyles();
 
   /**
    * Bubbles up the onClick event when a transaction is clicked
-   * @param {Object} transaction - The transaction clicked
    */
-  function handleTransactionClick(transaction) {
+  function handleTransactionClick(transaction: HistoryTransaction) {
     onTransactionClick(transaction);
   }
 
@@ -36,8 +52,8 @@ function TransactionList({
         const fixedTokenAmount = getFixedTokenAmount(amount, transaction.token.decimals);
 
         return (
-          <div key={transaction.hash || transaction.id} className={classes.transaction}>
-            <Transaction
+          <div key={transaction.id} className={classes.transaction}>
+            <TransactionComponent
               id={transaction.id}
               type={transaction.type}
               accountIndex={accountIndex}
@@ -71,12 +87,5 @@ function TransactionList({
     </>
   );
 }
-
-TransactionList.propTypes = {
-  transactions: PropTypes.array,
-  preferredCurrency: PropTypes.string.isRequired,
-  fiatExchangeRates: PropTypes.object,
-  onTransactionClick: PropTypes.func.isRequired,
-};
 
 export default TransactionList;

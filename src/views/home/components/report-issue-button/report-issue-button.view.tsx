@@ -1,9 +1,9 @@
 import React from "react";
-import { REPORT_ISSUE_FORM_URL, HERMEZ_HELP_CENTER_URL } from "../../../../constants";
+import { REPORT_ISSUE_FORM_URL, HERMEZ_HELP_CENTER_URL } from "src/constants";
 
-import useReportIssueStyles from "./report-issue-button.styles";
+import useReportIssueStyles from "src/views/home/components/report-issue-button/report-issue-button.styles";
 
-function ReportIssueButton() {
+function ReportIssueButton(): JSX.Element {
   const classes = useReportIssueStyles();
 
   return (

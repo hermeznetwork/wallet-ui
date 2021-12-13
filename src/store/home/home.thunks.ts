@@ -93,11 +93,11 @@ function fetchTotalBalance(
  */
 function fetchAccounts(
   hermezAddress: string,
-  fromItem: number,
   poolTransactions: PoolTransaction[],
   pendingDeposits: PendingDeposit[],
   fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  preferredCurrency: string,
+  fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {

@@ -17,12 +17,12 @@ import {
 interface ExitCardListProps {
   transactions: (Exit | PoolTransaction)[];
   preferredCurrency: string;
-  fiatExchangeRates: FiatExchangeRates;
   babyJubJub: string;
   pendingWithdraws: PendingWithdraw[];
   pendingDelayedWithdraws: PendingDelayedWithdraw[];
   timerWithdraws: TimerWithdraw[];
-  coordinatorState: CoordinatorState;
+  coordinatorState?: CoordinatorState;
+  fiatExchangeRates?: FiatExchangeRates;
   onAddTimerWithdraw: (timer: TimerWithdraw) => void;
   onRemoveTimerWithdraw: (exitId: string) => void;
 }
@@ -30,12 +30,12 @@ interface ExitCardListProps {
 function ExitCardList({
   transactions,
   preferredCurrency,
-  fiatExchangeRates,
   babyJubJub,
   pendingWithdraws,
   pendingDelayedWithdraws,
   timerWithdraws,
   coordinatorState,
+  fiatExchangeRates,
   onAddTimerWithdraw,
   onRemoveTimerWithdraw,
 }: ExitCardListProps): JSX.Element {
@@ -51,12 +51,15 @@ function ExitCardList({
             amount={amount}
             fixedTokenAmount={fixedTokenAmount}
             token={transaction.token}
-            fiatAmount={getTokenAmountInPreferredCurrency(
-              fixedTokenAmount,
-              transaction.token.USD,
-              preferredCurrency,
-              fiatExchangeRates
-            )}
+            fiatAmount={
+              fiatExchangeRates &&
+              getTokenAmountInPreferredCurrency(
+                fixedTokenAmount,
+                transaction.token.USD,
+                preferredCurrency,
+                fiatExchangeRates
+              )
+            }
             preferredCurrency={preferredCurrency}
             batchNum={transaction.batchNum ? transaction.batchNum : undefined}
             exitId={

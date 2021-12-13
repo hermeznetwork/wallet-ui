@@ -116,8 +116,8 @@ declare module "@hermeznetwork/*" {
     token: Token;
     type: TxType;
     batchNum: number | null;
+    id: string;
     // errorType: string | null;
-    // id: string;
     // info: string | null;
     // maxNumBatch: number;
     // nonce: number;

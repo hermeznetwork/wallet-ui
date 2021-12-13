@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useTransactionLabelStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useTransactionLabelStyles = createUseStyles((theme: Theme) => ({
   root: {
     fontWeight: theme.fontWeights.bold,
   },

@@ -4,7 +4,13 @@ import clsx from "clsx";
 import useAccountListStyles from "src/views/shared/account-list/account-list.styles";
 import AccountView from "src/views/shared/account/account.view";
 // domain
-import { Account, PendingDeposit, CoordinatorState, isHermezAccount } from "src/domain/hermez";
+import {
+  Account,
+  PendingDeposit,
+  CoordinatorState,
+  isHermezAccount,
+  HermezAccount,
+} from "src/domain/hermez";
 
 interface AccountListProps {
   accounts: Account[];
@@ -12,7 +18,7 @@ interface AccountListProps {
   pendingDeposits?: PendingDeposit[];
   coordinatorState?: CoordinatorState;
   disabledTokenIds?: number[];
-  onAccountClick: (account: Account) => void;
+  onAccountClick: (account: HermezAccount) => void;
 }
 
 function AccountList({

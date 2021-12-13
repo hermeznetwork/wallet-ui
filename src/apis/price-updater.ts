@@ -38,7 +38,7 @@ const getFiatExchangeRatesResponseParser: z.ZodSchema<ApiExchangeRateResponse> =
   currencies: apiExchangeRateListParser,
 });
 
-const mockedFiatExchangeRates = {
+const mockedFiatExchangeRates: FiatExchangeRates = {
   EUR: 0.837775,
   CNY: 6.446304,
   JPY: 110.253954,
