@@ -55,6 +55,11 @@ interface TransactionDetailsHandlerProps {
 
 type TransactionDetailsProps = TransactionDetailsStateProps & TransactionDetailsHandlerProps;
 
+interface UrlParams {
+  accountIndex?: string;
+  transactionId?: string;
+}
+
 function TransactionDetails({
   transactionTask,
   fiatExchangeRatesTask,
@@ -66,11 +71,6 @@ function TransactionDetails({
 }: TransactionDetailsProps): JSX.Element {
   const theme = useTheme<Theme>();
   const classes = useTransactionDetailsStyles();
-
-  interface UrlParams {
-    accountIndex?: string;
-    transactionId?: string;
-  }
 
   const { accountIndex, transactionId } = useParams<UrlParams>();
   const [, accountTokenSymbol] = accountIndex
