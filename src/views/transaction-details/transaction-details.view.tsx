@@ -290,9 +290,6 @@ function getHeaderTitle(transactionType: TxType) {
     case TxType.Transfer: {
       return "Transfer";
     }
-    default: {
-      return "";
-    }
   }
 }
 
