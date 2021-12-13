@@ -28,10 +28,8 @@ const TxStatus = {
   Invalid: "Invalid",
 };
 
-type Transaction = PendingDeposit | HistoryTransaction | PoolTransaction;
-
 interface TransactionInfoProps {
-  transaction: Transaction;
+  transaction: PendingDeposit | HistoryTransaction | PoolTransaction;
   fee?: BigNumber;
   accountIndex?: string;
   preferredCurrency: string;

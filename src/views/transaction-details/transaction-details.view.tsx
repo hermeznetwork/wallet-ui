@@ -40,10 +40,8 @@ import {
 } from "src/domain/hermez";
 import { Theme } from "src/styles/theme";
 
-type Transaction = PendingDeposit | HistoryTransaction | PoolTransaction;
-
 interface TransactionDetailsStateProps {
-  transactionTask: AsyncTask<Transaction, string>;
+  transactionTask: AsyncTask<PendingDeposit | HistoryTransaction | PoolTransaction, string>;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   preferredCurrency: string;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
