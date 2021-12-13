@@ -5,11 +5,10 @@ import useSidenavStyles from "src/views/shared/sidenav/sidenav.styles";
 import { ReactComponent as AngleDownIcon } from "src/images/icons/angle-down.svg";
 
 interface SidenavProps {
-  children: JSX.Element;
   onClose: () => void;
 }
 
-function Sidenav({ children, onClose }: SidenavProps): JSX.Element {
+const Sidenav: React.FC<SidenavProps> = ({ children, onClose }) => {
   const classes = useSidenavStyles();
   const sidenavContentRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -43,6 +42,6 @@ function Sidenav({ children, onClose }: SidenavProps): JSX.Element {
       </div>
     </Portal>
   );
-}
+};
 
 export default Sidenav;
