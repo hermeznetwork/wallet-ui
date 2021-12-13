@@ -1,8 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { EstimatedWithdrawFee } from "src/domain";
 import { HermezAccount, Exit, PoolTransaction } from "src/domain/hermez";
+import { EstimatedL1Fee } from "src/domain";
 
 export enum WithdrawActionTypes {
   LOAD_ACCOUNT = "[WITHDRAW] LOAD ACCOUNT",
@@ -65,7 +65,7 @@ export interface LoadEstimatedWithdrawFee {
 
 export interface LoadEstimatedWithdrawFeeSuccess {
   type: WithdrawActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS;
-  estimatedFee: EstimatedWithdrawFee;
+  estimatedFee: EstimatedL1Fee;
 }
 
 export interface LoadEstimatedWithdrawFeeFailure {
@@ -183,7 +183,7 @@ function loadEstimatedWithdrawFee(): LoadEstimatedWithdrawFee {
 }
 
 function loadEstimatedWithdrawFeeSuccess(
-  estimatedFee: EstimatedWithdrawFee
+  estimatedFee: EstimatedL1Fee
 ): LoadEstimatedWithdrawFeeSuccess {
   return {
     type: WithdrawActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS,

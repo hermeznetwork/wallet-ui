@@ -15,6 +15,7 @@ export type {
   HistoryTransaction,
   ISOStringDate,
   L1Info,
+  L2Info,
   MerkleProof,
   NextForger,
   PoolTransaction,
@@ -24,6 +25,15 @@ export type {
 } from "@hermeznetwork/hermezjs";
 
 export type HermezAccount = hermezjs.Account & { fiatBalance?: number };
+
+export interface EthereumAccount {
+  balance: string;
+  token: hermezjs.Token;
+  fiatBalance?: number;
+}
+
+export type Account = HermezAccount | EthereumAccount;
+export type Transaction = hermezjs.HistoryTransaction | hermezjs.PoolTransaction;
 
 export interface PendingDeposit {
   accountIndex?: string;
@@ -49,8 +59,63 @@ export type PendingDelayedWithdraw = PendingWithdraw & {
   isInstant: boolean;
 };
 
-export interface EthereumAccount {
-  balance: string;
+export type TimerWithdraw = {
+  id: string;
+  timestamp: hermezjs.ISOStringDate;
   token: hermezjs.Token;
-  fiatBalance?: number;
+};
+
+// Type Guards
+
+export function isHermezAccount(account: Account): account is HermezAccount {
+  return "accountIndex" in account;
+}
+
+export function isEthereumAccount(account: Account): account is EthereumAccount {
+  return !isHermezAccount(account);
+}
+
+export function isPoolTransaction(
+  entity: hermezjs.HistoryTransaction | hermezjs.PoolTransaction | PendingDeposit
+): entity is hermezjs.PoolTransaction {
+  if ("hash" in entity) {
+    // entity // is PendingDeposit
+    return false;
+  } else if ("state" in entity) {
+    // entity // is PoolTransaction
+    return true;
+  } else {
+    // entity // is HistoryTransaction
+    return false;
+  }
+}
+
+export function isHistoryTransaction(
+  entity: hermezjs.HistoryTransaction | hermezjs.PoolTransaction | PendingDeposit
+): entity is hermezjs.HistoryTransaction {
+  if ("state" in entity) {
+    // entity // is PoolTransaction or PendingDeposit
+    return false;
+  } else {
+    // entity // is HistoryTransaction
+    return true;
+  }
+}
+
+export function isPendingDeposit(
+  entity: hermezjs.HistoryTransaction | hermezjs.PoolTransaction | PendingDeposit
+): entity is PendingDeposit {
+  if ("hash" in entity) {
+    // entity // is PendingDeposit
+    return true;
+  } else {
+    // entity // is HistoryTransaction or PoolTransaction
+    return false;
+  }
+}
+
+export function isExit(
+  transaction: hermezjs.Exit | hermezjs.PoolTransaction
+): transaction is hermezjs.Exit {
+  return "balance" in transaction;
 }

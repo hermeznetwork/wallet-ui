@@ -5,7 +5,12 @@ import {
   STORAGE_VERSION_KEY,
 } from "src/constants";
 // domain
-import { PendingWithdraw, PendingDelayedWithdraw, PendingDeposit } from "src/domain/hermez";
+import {
+  PendingWithdraw,
+  PendingDelayedWithdraw,
+  PendingDeposit,
+  TimerWithdraw,
+} from "src/domain/hermez";
 import {
   ChainId,
   HermezEthereumAddress,
@@ -15,6 +20,8 @@ import {
   ChainPendingDelayedWithdraws,
   PendingDeposits,
   ChainPendingDeposits,
+  TimerWithdraws,
+  ChainTimerWithdraws,
 } from "src/domain/local-storage";
 // persistence
 import {
@@ -148,9 +155,20 @@ function getPendingDepositsByHermezAddress(
   return accountDeposits;
 }
 
+function getTimerWithdrawsByHermezAddress(
+  timerWithdrawsStorage: TimerWithdraws,
+  chainId: number,
+  hermezEthereumAddress: string
+): TimerWithdraw[] {
+  const chainTimerWithdraws: ChainTimerWithdraws = timerWithdrawsStorage[chainId] || {};
+  const accountWithdraws: TimerWithdraw[] = chainTimerWithdraws[hermezEthereumAddress] || [];
+  return accountWithdraws;
+}
+
 export {
   checkVersion,
   getPendingWithdrawsByHermezAddress,
   getPendingDelayedWithdrawsByHermezAddress,
   getPendingDepositsByHermezAddress,
+  getTimerWithdrawsByHermezAddress,
 };

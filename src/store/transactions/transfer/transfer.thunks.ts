@@ -2,6 +2,8 @@ import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount, TxUtils } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
@@ -9,8 +11,11 @@ import { openSnackbar } from "src/store/global/global.actions";
 import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
+import { feeBigIntToNumber, getMinimumL2Fee, getTxFee } from "src/utils/fees";
+import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
+import { TransactionReceiver } from "src/domain";
 // persistence
 import * as persistence from "src/persistence";
 
@@ -133,11 +138,82 @@ function fetchFees(): AppThunk {
   };
 }
 
+function checkTxData(txData: TxData) {
+  return (dispatch: AppDispatch): void => {
+    const { amount, from, to, feesTask } = txData;
+
+    if (isHermezBjjAddress(txData.to)) {
+      void CoordinatorAPI.getAccounts(to, [from.token.id]).then(
+        (accounts: persistence.Accounts) => {
+          const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
+          const minimumFee = getMinimumL2Fee({
+            txType: TxType.Transfer,
+            receiverAddress: to,
+            feesTask,
+            token: from.token,
+            doesAccountAlreadyExist,
+          });
+          const fee = getTxFee({
+            txType: TxType.Transfer,
+            amount,
+            token: from.token,
+            minimumFee,
+          });
+
+          dispatch(
+            transferActions.goToReviewTransactionStep({
+              amount: amount,
+              from: txData.from,
+              to: { bjj: txData.to },
+              fee,
+            })
+          );
+        }
+      );
+    } else {
+      void Promise.allSettled([
+        CoordinatorAPI.getAccounts(to, [from.token.id]),
+        CoordinatorAPI.getCreateAccountAuthorization(to),
+      ]).then(([accountsResult, accountAuthorizationResult]) => {
+        const doesAccountAlreadyExist: boolean =
+          accountsResult.status === "fulfilled" && accountsResult.value.accounts[0] !== undefined;
+
+        if (!doesAccountAlreadyExist && accountAuthorizationResult.status === "rejected") {
+          dispatch(transferActions.setReceiverCreateAccountsAuthorizationStatus(false));
+        } else {
+          const minimumFee = getMinimumL2Fee({
+            txType: TxType.Transfer,
+            receiverAddress: to,
+            feesTask,
+            token: from.token,
+            doesAccountAlreadyExist,
+          });
+          const fee = getTxFee({
+            txType: TxType.Transfer,
+            amount,
+            token: from.token,
+            minimumFee,
+          });
+
+          dispatch(
+            transferActions.goToReviewTransactionStep({
+              amount: amount,
+              from,
+              to: { hezEthereumAddress: to },
+              fee: fee,
+            })
+          );
+        }
+      });
+    }
+  };
+}
+
 function transfer(
   amount: BigNumber,
   from: HermezAccount,
-  to: Partial<HermezAccount>,
-  fee: number
+  to: TransactionReceiver,
+  fee: BigNumber
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -151,14 +227,14 @@ function transfer(
       dispatch(transferActions.startTransactionApproval());
 
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
-      const toAddress = to.accountIndex || to.hezEthereumAddress || to.bjj;
+      const toAddress = "bjj" in to ? to.bjj : to.hezEthereumAddress;
       const type = TxUtils.getTransactionType({ to: toAddress });
       const txData = {
         type,
         from: from.accountIndex,
         to: toAddress,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
-        fee,
+        fee: feeBigIntToNumber(fee, from.token),
       };
       return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
@@ -181,4 +257,11 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
-export { fetchHermezAccount, fetchPoolTransactions, fetchAccounts, fetchFees, transfer };
+export {
+  fetchHermezAccount,
+  fetchPoolTransactions,
+  fetchAccounts,
+  fetchFees,
+  checkTxData,
+  transfer,
+};

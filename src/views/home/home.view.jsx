@@ -14,7 +14,7 @@ import Container from "../shared/container/container.view";
 import { copyToClipboard } from "../../utils/browser";
 import { changeHeader, openSnackbar } from "../../store/global/global.actions";
 import TransactionActions from "../shared/transaction-actions/transaction-actions.view";
-import ExitList from "../shared/exit-list/exit-list.view";
+import ExitCardList from "../shared/exit-card-list/exit-card-list.view";
 import { getPartiallyHiddenHermezAddress } from "../../utils/addresses";
 import Button from "../shared/button/button.view";
 import InfiniteScroll from "../shared/infinite-scroll/infinite-scroll.view";
@@ -39,6 +39,7 @@ function Home({
   pendingDeposits,
   pendingWithdraws,
   pendingDelayedWithdraws,
+  timerWithdraws,
   coordinatorStateTask,
   onChangeHeader,
   onCheckPendingDeposits,
@@ -46,10 +47,10 @@ function Home({
   onLoadAccounts,
   onLoadPoolTransactions,
   onLoadExits,
-  onAddPendingDelayedWithdraw,
-  onRemovePendingDelayedWithdraw,
   onCheckPendingDelayedWithdrawals,
   onCheckPendingWithdrawals,
+  onAddTimerWithdraw,
+  onRemoveTimerWithdraw,
   onNavigateToAccountDetails,
   onOpenSnackbar,
   onCleanup,
@@ -68,6 +69,11 @@ function Home({
   );
   const accountPendingDelayedWithdraws = storage.getPendingDelayedWithdrawsByHermezAddress(
     pendingDelayedWithdraws,
+    ethereumNetworkTask.data.chainId,
+    wallet.hermezEthereumAddress
+  );
+  const accountTimerWithdraws = storage.getTimerWithdrawsByHermezAddress(
+    timerWithdraws,
     ethereumNetworkTask.data.chainId,
     wallet.hermezEthereumAddress
   );
@@ -163,7 +169,6 @@ function Home({
     copyToClipboard(hermezEthereumAddress);
     onOpenSnackbar("The Hermez address has been copied to the clipboard!");
   }
-
   return (
     wallet && (
       <div className={classes.root}>
@@ -196,24 +201,23 @@ function Home({
         </Container>
         <Container fullHeight>
           <section className={`${classes.section} ${classes.sectionLast}`}>
-            {poolTransactionsTask.status === "successful" ||
-            poolTransactionsTask.status === "reloading" ? (
-              <ExitList
+            {(poolTransactionsTask.status === "successful" ||
+              poolTransactionsTask.status === "reloading") && (
+              <ExitCardList
                 transactions={getPendingExits()}
                 fiatExchangeRates={fiatExchangeRatesTask.data}
                 preferredCurrency={preferredCurrency}
                 babyJubJub={wallet.publicKeyCompressedHex}
                 pendingWithdraws={accountPendingWithdraws}
                 pendingDelayedWithdraws={accountPendingDelayedWithdraws}
-                onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                timerWithdraws={accountTimerWithdraws}
+                onAddTimerWithdraw={onAddTimerWithdraw}
+                onRemoveTimerWithdraw={onRemoveTimerWithdraw}
                 coordinatorState={coordinatorStateTask?.data}
               />
-            ) : (
-              <></>
             )}
             {(exitsTask.status === "successful" || exitsTask.status === "reloading") && (
-              <ExitList
+              <ExitCardList
                 transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful"
@@ -224,8 +228,9 @@ function Home({
                 babyJubJub={wallet.publicKeyCompressedHex}
                 pendingWithdraws={accountPendingWithdraws}
                 pendingDelayedWithdraws={accountPendingDelayedWithdraws}
-                onAddPendingDelayedWithdraw={onAddPendingDelayedWithdraw}
-                onRemovePendingDelayedWithdraw={onRemovePendingDelayedWithdraw}
+                timerWithdraws={accountTimerWithdraws}
+                onAddTimerWithdraw={onAddTimerWithdraw}
+                onRemoveTimerWithdraw={onRemoveTimerWithdraw}
                 coordinatorState={coordinatorStateTask?.data}
               />
             )}
@@ -280,10 +285,9 @@ function Home({
                         <AccountList
                           accounts={accountsTask.data.accounts}
                           preferredCurrency={preferredCurrency}
-                          fiatExchangeRates={fiatExchangeRatesTask.data}
                           pendingDeposits={pendingOnTopDeposits}
-                          onAccountClick={handleAccountClick}
                           coordinatorState={coordinatorStateTask?.data}
+                          onAccountClick={handleAccountClick}
                         />
                       </InfiniteScroll>
                     </>
@@ -308,12 +312,13 @@ Home.propTypes = {
   exitsTask: PropTypes.object.isRequired,
   pendingWithdraws: PropTypes.object.isRequired,
   pendingDelayedWithdraws: PropTypes.object.isRequired,
+  timerWithdraws: PropTypes.object.isRequired,
   onLoadTotalBalance: PropTypes.func.isRequired,
   onLoadAccounts: PropTypes.func.isRequired,
   onLoadPoolTransactions: PropTypes.func.isRequired,
   onLoadExits: PropTypes.func.isRequired,
-  onAddPendingDelayedWithdraw: PropTypes.func.isRequired,
-  onRemovePendingDelayedWithdraw: PropTypes.func.isRequired,
+  onAddTimerWithdraw: PropTypes.func.isRequired,
+  onRemoveTimerWithdraw: PropTypes.func.isRequired,
   onNavigateToAccountDetails: PropTypes.func.isRequired,
 };
 
@@ -330,6 +335,7 @@ const mapStateToProps = (state) => ({
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
   pendingDeposits: state.global.pendingDeposits,
+  timerWithdraws: state.global.timerWithdraws,
   coordinatorStateTask: state.global.coordinatorStateTask,
 });
 
@@ -371,14 +377,13 @@ const mapDispatchToProps = (dispatch) => ({
       )
     ),
   onLoadPoolTransactions: () => dispatch(homeThunks.fetchPoolTransactions()),
-  onLoadExits: (exitTransactions) => dispatch(homeThunks.fetchExits(exitTransactions)),
+  onLoadExits: () => dispatch(homeThunks.fetchExits()),
   onRefreshAccounts: () => dispatch(homeThunks.refreshAccounts()),
-  onAddPendingDelayedWithdraw: (pendingDelayedWithdraw) =>
-    dispatch(globalThunks.addPendingDelayedWithdraw(pendingDelayedWithdraw)),
-  onRemovePendingDelayedWithdraw: (pendingDelayedWithdrawId) =>
-    dispatch(globalThunks.removePendingDelayedWithdraw(pendingDelayedWithdrawId)),
   onCheckPendingWithdrawals: () => dispatch(globalThunks.checkPendingWithdrawals()),
   onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),
+  onAddTimerWithdraw: (timerWithdraw) => dispatch(globalThunks.addTimerWithdraw(timerWithdraw)),
+  onRemoveTimerWithdraw: (timerWithdrawId) =>
+    dispatch(globalThunks.removeTimerWithdraw(timerWithdrawId)),
   onNavigateToAccountDetails: (accountIndex) => dispatch(push(`/accounts/${accountIndex}`)),
   onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onCleanup: () => dispatch(resetState()),

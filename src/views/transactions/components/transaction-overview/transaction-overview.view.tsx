@@ -1,25 +1,25 @@
-// ToDo: Remove the disable of TS and the linter below once the component are migrated to TS
-/* eslint-disable */
-// @ts-nocheck
 import React from "react";
 import { useTheme } from "react-jss";
 import { BigNumber } from "ethers";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
 import useTransactionOverviewStyles from "src/views/transactions/components/transaction-overview/transaction-overview.styles";
-import { getTokenAmountInPreferredCurrency, getFixedTokenAmount } from "src/utils/currencies";
-import TransactionInfo from "src/views/shared/transaction-info/transaction-info.view";
 import Container from "src/views/shared/container/container.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import TokenBalance from "src/views/shared/token-balance/token-balance.view";
 import Spinner from "src/views/shared/spinner/spinner.view";
 import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
-import { getRealFee } from "src/utils/fees";
 import Alert from "src/views/shared/alert/alert.view";
 import WithdrawInfoSidenav from "src/views/transactions/components/withdraw-info-sidenav/withdraw-info-sidenav.view";
+import TransactionInfoTable from "src/views/shared/transaction-info-table/transaction-info-table.view";
 import { AsyncTask } from "src/utils/types";
+import { getTokenAmountInPreferredCurrency, getFixedTokenAmount } from "src/utils/currencies";
+import {
+  getPartiallyHiddenEthereumAddress,
+  getPartiallyHiddenHermezAddress,
+} from "src/utils/addresses";
 import { Theme } from "src/styles/theme";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-
 // domain
 import {
   HermezWallet,
@@ -27,46 +27,47 @@ import {
   FiatExchangeRates,
   Exit,
   EthereumAccount,
-  PendingDelayedWithdraw,
 } from "src/domain/hermez";
-import { EstimatedWithdrawFee } from "src/domain";
+import { EstimatedL1Fee, TransactionReceiver } from "src/domain";
 
-type Transaction =
+type TransactionOverviewProps = {
+  wallet: HermezWallet.HermezWallet;
+  isTransactionBeingApproved: boolean;
+  preferredCurrency: string;
+  fiatExchangeRates: FiatExchangeRates;
+  amount: BigNumber;
+} & (
   | {
-      type: TxType.Deposit;
-      amount: BigNumber;
+      txType: TxType.Deposit;
       account: EthereumAccount;
       onDeposit: (amount: BigNumber, account: EthereumAccount) => void;
     }
   | {
-      type: TxType.Transfer;
-      amount: BigNumber;
+      txType: TxType.Transfer;
       account: HermezAccount;
-      to: Partial<HermezAccount>;
-      fee: number;
+      to: TransactionReceiver;
+      fee: BigNumber;
       onTransfer: (
         amount: BigNumber,
         account: HermezAccount,
-        to: Partial<HermezAccount>,
-        fee: number
+        to: TransactionReceiver,
+        fee: BigNumber
       ) => void;
     }
   | {
-      type: TxType.Exit;
-      amount: BigNumber;
+      txType: TxType.Exit;
       account: HermezAccount;
-      fee: number;
-      estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
-      onExit: (amount: BigNumber, account: HermezAccount, fee: number) => void;
+      fee: BigNumber;
+      estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+      onExit: (amount: BigNumber, account: HermezAccount, fee: BigNumber) => void;
     }
   | {
-      type: TxType.Withdraw;
-      amount: BigNumber;
+      txType: TxType.Withdraw;
       account: HermezAccount;
       exit: Exit;
       completeDelayedWithdrawal: boolean;
       instantWithdrawal: boolean;
-      estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
+      estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
       onWithdraw: (
         amount: BigNumber,
         account: HermezAccount,
@@ -76,32 +77,24 @@ type Transaction =
       ) => void;
     }
   | {
-      type: TxType.ForceExit;
-      amount: BigNumber;
+      txType: TxType.ForceExit;
       account: HermezAccount;
       onForceExit: (amount: BigNumber, account: HermezAccount) => void;
-    };
-
-interface TransactionOverviewProps {
-  wallet: HermezWallet.HermezWallet;
-  isTransactionBeingApproved: boolean;
-  preferredCurrency: string;
-  fiatExchangeRates: FiatExchangeRates;
-  transaction: Transaction;
-}
+    }
+);
 
 function TransactionOverview({
   wallet,
   isTransactionBeingApproved,
   preferredCurrency,
   fiatExchangeRates,
-  transaction,
+  ...transaction
 }: TransactionOverviewProps): JSX.Element {
   const theme = useTheme<Theme>();
   const classes = useTransactionOverviewStyles();
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [isWithdrawInfoSidenavOpen, setIsWithdrawInfoSidenavOpen] = React.useState(false);
-  const { account, amount, type } = transaction;
+  const { account, amount, txType } = transaction;
 
   React.useEffect(() => {
     if (!isTransactionBeingApproved) {
@@ -141,7 +134,7 @@ function TransactionOverview({
   function handleFormSubmit(): void {
     // We only need to disable the button on L2 txs, as L1 txs are going to display an
     // spinner which will prevent the user from submitting the form twice
-    switch (transaction.type) {
+    switch (transaction.txType) {
       case TxType.Deposit: {
         return transaction.onDeposit(amount, transaction.account);
       }
@@ -192,27 +185,25 @@ function TransactionOverview({
       <PrimaryButton label={buttonLabel} onClick={handleFormSubmit} disabled={isButtonDisabled} />
     );
 
-  switch (type) {
+  const myHermezAddress = {
+    subtitle: "My Hermez address",
+    value: getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress),
+  };
+  transaction;
+
+  const myEthereumAddress = {
+    subtitle: "My Ethereum address",
+    value: getPartiallyHiddenEthereumAddress(getEthereumAddress(wallet.hermezEthereumAddress)),
+  };
+
+  switch (txType) {
     case TxType.Deposit: {
       return (
         <div className={classes.root}>
           {header}
           <Container>
             <section className={classes.section}>
-              <TransactionInfo
-                txData={{
-                  type: TxType.Deposit,
-                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  // ToDo: To be removed
-                  toHezEthereumAddress: undefined,
-                  // ToDo: To be removed
-                  estimatedWithdrawFee: { status: "pending" },
-                  // ToDo: To be removed
-                  fee: undefined,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRates}
-              />
+              <TransactionInfoTable from={myEthereumAddress} to={myHermezAddress} />
               {footer("Deposit")}
             </section>
           </Container>
@@ -225,20 +216,7 @@ function TransactionOverview({
           {header}
           <Container>
             <section className={classes.section}>
-              <TransactionInfo
-                txData={{
-                  type: TxType.ForceExit,
-                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  // ToDo: To be removed
-                  toHezEthereumAddress: undefined,
-                  // ToDo: To be removed
-                  estimatedWithdrawFee: { status: "pending" },
-                  // ToDo: To be removed
-                  fee: undefined,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRates}
-              />
+              <TransactionInfoTable from={myHermezAddress} to={myEthereumAddress} />
               {footer("Force Withdraw")}
             </section>
           </Container>
@@ -251,24 +229,38 @@ function TransactionOverview({
           {header}
           <Container>
             <section className={classes.section}>
-              <TransactionInfo
-                txData={{
-                  type: TxType.Withdraw,
-                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  // ToDo: To be removed
-                  toHezEthereumAddress: undefined,
-                  estimatedWithdrawFee:
-                    transaction.estimatedWithdrawFeeTask.status === "successful" ||
-                    transaction.estimatedWithdrawFeeTask.status === "reloading"
-                      ? transaction.estimatedWithdrawFeeTask.data
-                      : null,
-                  // ToDo: To be removed
-                  fee: undefined,
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRates}
-              />
+              <TransactionInfoTable from={myHermezAddress} to={myEthereumAddress} />
               {footer("Withdraw")}
+            </section>
+          </Container>
+        </div>
+      );
+    }
+    case TxType.Transfer: {
+      const to = "bjj" in transaction.to ? transaction.to.bjj : transaction.to.hezEthereumAddress;
+
+      return (
+        <div className={classes.root}>
+          {header}
+          <Container>
+            <section className={classes.section}>
+              <TransactionInfoTable
+                from={myHermezAddress}
+                to={
+                  to
+                    ? {
+                        subtitle: getPartiallyHiddenHermezAddress(to),
+                      }
+                    : undefined
+                }
+                feeData={{
+                  fee: transaction.fee,
+                  token: account.token,
+                  preferredCurrency: preferredCurrency,
+                  fiatExchangeRates: fiatExchangeRates,
+                }}
+              />
+              <PrimaryButton label="Send" onClick={handleFormSubmit} disabled={isButtonDisabled} />
             </section>
           </Container>
         </div>
@@ -281,26 +273,23 @@ function TransactionOverview({
           <Container>
             <section className={classes.section}>
               <Alert
-                showHelpButton
                 message="Withdrawal of funds has 2 steps. Once initiated it can’t be canceled."
                 onHelpClick={handleOpenWithdrawInfoSidenav}
               />
-              <TransactionInfo
-                txData={{
-                  type: TxType.Exit,
-                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
+              <TransactionInfoTable
+                from={myHermezAddress}
+                to={myEthereumAddress}
+                feeData={{
+                  fee: transaction.fee,
+                  token: account.token,
+                  preferredCurrency: preferredCurrency,
+                  fiatExchangeRates: fiatExchangeRates,
                   estimatedWithdrawFee:
                     transaction.estimatedWithdrawFeeTask.status === "successful" ||
                     transaction.estimatedWithdrawFeeTask.status === "reloading"
                       ? transaction.estimatedWithdrawFeeTask.data
-                      : null,
-                  fee: {
-                    value: Number(getRealFee(amount.toString(), account.token, transaction.fee)),
-                    token: account.token,
-                  },
+                      : undefined,
                 }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRates}
               />
               <PrimaryButton
                 label="Initiate withdraw"
@@ -312,33 +301,6 @@ function TransactionOverview({
           {isWithdrawInfoSidenavOpen && (
             <WithdrawInfoSidenav onClose={handleCloseWithdrawInfoSidenav} />
           )}
-        </div>
-      );
-    }
-    case TxType.Transfer: {
-      return (
-        <div className={classes.root}>
-          {header}
-          <Container>
-            <section className={classes.section}>
-              <TransactionInfo
-                txData={{
-                  type: TxType.Transfer,
-                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                  toHezEthereumAddress: transaction.to.hezEthereumAddress || transaction.to.bjj,
-                  // ToDo: To be removed
-                  estimatedWithdrawFee: { status: "pending" },
-                  fee: {
-                    value: Number(getRealFee(amount.toString(), account.token, transaction.fee)),
-                    token: account.token,
-                  },
-                }}
-                preferredCurrency={preferredCurrency}
-                fiatExchangeRates={fiatExchangeRates}
-              />
-              <PrimaryButton label="Send" onClick={handleFormSubmit} disabled={isButtonDisabled} />
-            </section>
-          </Container>
         </div>
       );
     }

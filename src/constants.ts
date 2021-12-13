@@ -9,8 +9,6 @@ export const MY_CODE = {
   QR_CODE_SIZE: 216,
 };
 
-export const ACCOUNT_INDEX_SEPARATOR = ":";
-
 export const SNACKBAR_AUTO_HIDE_DURATION = 3500;
 
 export const ETHER_TOKEN_ID = 0;
@@ -24,6 +22,8 @@ export const PENDING_WITHDRAWS_KEY = "pendingWithdraws";
 export const PENDING_DELAYED_WITHDRAWS_KEY = "pendingDelayedWithdraws";
 
 export const PENDING_DEPOSITS_KEY = "pendingDeposits";
+
+export const TIMER_WITHDRAWS_KEY = "timerWithdraws";
 
 export const ACCOUNT_AUTH_SIGNATURES_KEY = "accountAuthSignatures";
 

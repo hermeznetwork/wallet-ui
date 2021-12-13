@@ -49,11 +49,11 @@ declare module "@hermeznetwork/*" {
     // userOrigin: boolean;
   }
 
-  // interface L2Info {
-  //   fee: number;
-  //   historicFeeUSD: number;
-  //   nonce: number;
-  // }
+  export interface L2Info {
+    fee: number;
+    historicFeeUSD: number | null;
+    // nonce: number;
+  }
 
   export interface MerkleProof {
     root: string;
@@ -75,7 +75,7 @@ declare module "@hermeznetwork/*" {
     merkleProof: MerkleProof;
     balance: string;
     // bjj: string;
-    // delayedWithdrawRequest: unknown | null;
+    delayedWithdrawRequest: number | null;
     // fee: number;
     // hash: string;
     // hezEthereumAddress: string;
@@ -90,15 +90,15 @@ declare module "@hermeznetwork/*" {
     type: TxType;
     amount: string;
     // fromBJJ: string;
-    // historicUSD: number | null;
+    historicUSD: number | null;
     L1Info: L1Info | null;
     L1orL2: "L1" | "L2";
-    // L2Info: L2Info | null;
+    L2Info: L2Info | null;
     // position: number;
-    // timestamp: ISOStringDate;
+    timestamp: ISOStringDate;
     // toAccountIndex: string;
-    // toBJJ: string | null;
-    // token: Token;
+    toBJJ: string | null;
+    token: Token;
   };
 
   export type PoolTransaction = HermezApiResourceItem & {
@@ -115,9 +115,9 @@ declare module "@hermeznetwork/*" {
     toHezEthereumAddress: string;
     token: Token;
     type: TxType;
-    // batchNum: number | null;
+    batchNum: number | null;
+    id: string;
     // errorType: string | null;
-    // id: string;
     // info: string | null;
     // maxNumBatch: number;
     // nonce: number;
@@ -148,7 +148,7 @@ declare module "@hermeznetwork/*" {
     // metrics: Metrics;
     // rollup: Rollup;
     // auction: Auction;
-    // withdrawalDelayer: WithdrawalDelayer;
+    withdrawalDelayer: WithdrawalDelayer;
     recommendedFee: RecommendedFee;
   }
 
@@ -247,14 +247,14 @@ declare module "@hermeznetwork/*" {
   //   slotDeadline: number;
   // };
 
-  // interface WithdrawalDelayer {
-  //   ethereumBlockNum: number;
-  //   hermezGovernanceAddress: string;
-  //   emergencyCouncilAddress: string;
-  //   withdrawalDelay: number;
-  //   emergencyModeStartingBlock: number;
-  //   emergencyMode: boolean;
-  // };
+  interface WithdrawalDelayer {
+    // ethereumBlockNum: number;
+    // hermezGovernanceAddress: string;
+    // emergencyCouncilAddress: string;
+    withdrawalDelay: number;
+    // emergencyModeStartingBlock: number;
+    emergencyMode: boolean;
+  }
 
   export interface RecommendedFee {
     existingAccount: number;
@@ -349,6 +349,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     Exit,
     Signers,
     HermezCompressedAmount,
+    MerkleProof,
   } from "@hermeznetwork/hermezjs";
   import { TxType } from "@hermeznetwork/hermezjs/src/enums";
   import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
@@ -405,7 +406,14 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   ): Promise<TxData>;
 
   // function withdraw();
-  // function isInstantWithdrawalAllowed();
+  function isInstantWithdrawalAllowed(
+    amount: string,
+    accountIndex: string,
+    token: Token,
+    babyJubJub: string,
+    batchNum?: number,
+    merkleProofSiblings?: MerkleProof["siblings"]
+  ): Promise<unknown[]>;
   // function sendL2Transaction();
 
   function generateAndSendL2Tx(
@@ -688,9 +696,12 @@ declare module "@hermeznetwork/hermezjs/src/addresses" {
 
   function getEthereumAddress(accountIndex: string): string;
 
-  // function isEthereumAddress();
-  // function isHermezEthereumAddress();
-  // function isHermezBjjAddress();
+  function isHermezEthereumAddress(addressToCheck: string): boolean;
+
+  function isHermezBjjAddress(addressToCheck: string): boolean;
+
+  function isEthereumAddress(addressToCheck: string): boolean;
+
   // function isHermezAccountIndex();
   // function getAccountIndex();
   // function hexToBase64BJJ();
@@ -769,7 +780,7 @@ declare module "@hermeznetwork/hermezjs/src/environment" {
 
   function isEnvironmentSupported(chainId: number): boolean;
 
-  // function getBatchExplorerUrl();
+  function getBatchExplorerUrl(): string;
   // function getEtherscanUrl();
 }
 
@@ -793,10 +804,10 @@ declare module "@hermeznetwork/hermezjs/src/enums" {
     Invalid = "invl",
   }
 
-  // declare enum TxLevel {
-  //   L1 = "L1",
-  //   L2 = "L2",
-  // }
+  export enum TxLevel {
+    L1 = "L1",
+    L2 = "L2",
+  }
 }
 
 // AtomicUtils

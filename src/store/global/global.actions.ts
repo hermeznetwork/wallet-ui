@@ -7,6 +7,7 @@ import {
   HermezNetworkStatus,
   PendingWithdraw,
   PendingDelayedWithdraw,
+  TimerWithdraw,
   PendingDeposit,
   CoordinatorState,
   Token,
@@ -37,6 +38,8 @@ export enum GlobalActionTypes {
   UPDATE_PENDING_DELAYED_WITHDRAW_DATE = "[GLOBAL] UPDATE PENDING DELAYED WITHDRAW DATE",
   CHECK_PENDING_DELAYED_WITHDRAWALS = "[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS",
   CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS = "[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS SUCCESS",
+  ADD_TIMER_WITHDRAW = "[GLOBAL] ADD TIMER WITHDRAW",
+  REMOVE_TIMER_WITHDRAW = "[GLOBAL] REMOVE TIMER WITHDRAW",
   CHECK_PENDING_WITHDRAWALS = "[GLOBAL] CHECK PENDING WITHDRAWALS",
   CHECK_PENDING_WITHDRAWALS_SUCCESS = "[GLOBAL] CHECK PENDING WITHDRAWALS SUCCESS",
   ADD_PENDING_DEPOSIT = "[GLOBAL] ADD PENDING DEPOSIT",
@@ -175,6 +178,20 @@ export interface CheckPendingDelayedWithdrawalsSuccess {
   type: GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS;
 }
 
+export interface AddTimerWithdraw {
+  type: GlobalActionTypes.ADD_TIMER_WITHDRAW;
+  chainId: number;
+  hermezEthereumAddress: string;
+  timerWithdraw: TimerWithdraw;
+}
+
+export interface RemoveTimerWithdraw {
+  type: GlobalActionTypes.REMOVE_TIMER_WITHDRAW;
+  chainId: number;
+  hermezEthereumAddress: string;
+  timerWithdrawId: string;
+}
+
 export interface CheckPendingWithdrawals {
   type: GlobalActionTypes.CHECK_PENDING_WITHDRAWALS;
 }
@@ -271,6 +288,8 @@ export type GlobalAction =
   | UpdatePendingDelayedWithdrawDate
   | CheckPendingDelayedWithdrawals
   | CheckPendingDelayedWithdrawalsSuccess
+  | AddTimerWithdraw
+  | RemoveTimerWithdraw
   | CheckPendingWithdrawals
   | CheckPendingWithdrawalsSuccess
   | AddPendingDeposit
@@ -481,6 +500,32 @@ function checkPendingDelayedWithdrawalsSuccess(): CheckPendingDelayedWithdrawals
   };
 }
 
+function addTimerWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  timerWithdraw: TimerWithdraw
+): AddTimerWithdraw {
+  return {
+    type: GlobalActionTypes.ADD_TIMER_WITHDRAW,
+    chainId,
+    hermezEthereumAddress,
+    timerWithdraw,
+  };
+}
+
+function removeTimerWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  timerWithdrawId: string
+): RemoveTimerWithdraw {
+  return {
+    type: GlobalActionTypes.REMOVE_TIMER_WITHDRAW,
+    chainId,
+    hermezEthereumAddress,
+    timerWithdrawId,
+  };
+}
+
 function checkPendingWithdrawals(): CheckPendingWithdrawals {
   return {
     type: GlobalActionTypes.CHECK_PENDING_WITHDRAWALS,
@@ -627,6 +672,8 @@ export {
   checkPendingDelayedWithdrawalsSuccess,
   checkPendingWithdrawals,
   checkPendingWithdrawalsSuccess,
+  addTimerWithdraw,
+  removeTimerWithdraw,
   addPendingDeposit,
   removePendingDepositByHash,
   removePendingDepositByTransactionId,

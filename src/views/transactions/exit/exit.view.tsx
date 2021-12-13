@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { useLocation } from "react-router";
 import { BigNumber } from "@ethersproject/bignumber";
 import { push } from "connected-react-router";
+import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import {
   HermezAccount,
@@ -13,24 +14,24 @@ import {
   Token,
 } from "src/domain/hermez";
 import { AppDispatch, AppState } from "src/store";
-import { AsyncTask } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import useExitStyles from "src/views/transactions/exit/exit.styles";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
 import * as exitThunks from "src/store/transactions/exit/exit.thunks";
-import { EstimatedWithdrawFee, Header } from "src/domain";
+import { EstimatedL1Fee, Header } from "src/domain";
 import { changeHeader } from "src/store/global/global.actions";
 import Spinner from "src/views/shared/spinner/spinner.view";
-import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
+import ExitForm from "src/views/transactions/exit/components/exit-form/exit-form.view";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { getFixedTokenAmount } from "src/utils/currencies";
 
 interface ExitStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   step: exitActions.Step;
   accountTask: AsyncTask<HermezAccount, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
-  accountBalanceTask: AsyncTask<string, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedWithdrawFee, Error>;
+  accountBalanceTask: AsyncTask<BigNumber, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
   isTransactionBeingApproved: boolean;
   transactionToReview: exitActions.TransactionToReview | undefined;
   wallet: HermezWallet.HermezWallet | undefined;
@@ -53,7 +54,7 @@ interface ExitHandlerProps {
   onGoToHome: () => void;
   onGoToBuildTransactionStep: (account: HermezAccount) => void;
   onGoToTransactionOverviewStep: (transactionToReview: exitActions.TransactionToReview) => void;
-  onExit: (amount: BigNumber, account: HermezAccount, fee: number) => void;
+  onExit: (amount: BigNumber, account: HermezAccount, fee: BigNumber) => void;
   onCleanup: () => void;
 }
 
@@ -74,7 +75,6 @@ function Exit({
   onChangeHeader,
   onLoadHermezAccount,
   onLoadFees,
-  onLoadAccountBalance,
   onLoadEstimatedWithdrawFee,
   onLoadPoolTransactions,
   onGoToHome,
@@ -93,7 +93,8 @@ function Exit({
 
   React.useEffect(() => {
     onLoadPoolTransactions();
-  }, [onLoadPoolTransactions]);
+    onLoadFees();
+  }, [onLoadPoolTransactions, onLoadFees, onLoadEstimatedWithdrawFee]);
 
   React.useEffect(() => {
     if (
@@ -128,6 +129,21 @@ function Exit({
 
   React.useEffect(() => onCleanup, [onCleanup]);
 
+  function doesUserHaveEnoughEthForWithdraw(): boolean {
+    if (
+      isAsyncTaskDataAvailable(accountBalanceTask) &&
+      isAsyncTaskDataAvailable(estimatedWithdrawFeeTask)
+    ) {
+      const formattedEstimatedWithdrawFee = getFixedTokenAmount(
+        estimatedWithdrawFeeTask.data.amount.toString()
+      );
+
+      return accountBalanceTask.data.lt(formattedEstimatedWithdrawFee);
+    } else {
+      return true;
+    }
+  }
+
   return (
     <div className={classes.root}>
       {(() => {
@@ -140,29 +156,15 @@ function Exit({
             );
           }
           case "build-transaction": {
-            return accountTask.status === "successful" || accountTask.status === "reloading" ? (
-              <TransactionForm
+            return isAsyncTaskDataAvailable(accountTask) ? (
+              <ExitForm
                 account={accountTask.data}
-                transactionType={TxType.Exit}
                 preferredCurrency={preferredCurrency}
-                fiatExchangeRates={
-                  fiatExchangeRatesTask.status === "successful" ||
-                  fiatExchangeRatesTask.status === "reloading"
-                    ? fiatExchangeRatesTask.data
-                    : {}
-                }
+                fiatExchangeRatesTask={fiatExchangeRatesTask}
                 feesTask={feesTask}
-                accountBalanceTask={accountBalanceTask}
                 estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
-                // ToDo: To be removed START
-                receiverAddress={undefined}
-                estimatedDepositFeeTask={{ status: "pending" }}
-                onLoadEstimatedDepositFee={() => ({})}
-                onGoToChooseAccountStep={() => ({})}
-                // ToDo: To be removed END
-                onLoadAccountBalance={onLoadAccountBalance}
+                doesUserHaveEnoughEthForWithdraw={doesUserHaveEnoughEthForWithdraw()}
                 onLoadEstimatedWithdrawFee={onLoadEstimatedWithdrawFee}
-                onLoadFees={onLoadFees}
                 onSubmit={onGoToTransactionOverviewStep}
               />
             ) : null;
@@ -174,14 +176,12 @@ function Exit({
               <TransactionOverview
                 wallet={wallet}
                 isTransactionBeingApproved={isTransactionBeingApproved}
-                transaction={{
-                  type: TxType.Exit,
-                  amount: transactionToReview.amount,
-                  account: accountTask.data,
-                  fee: transactionToReview.fee,
-                  estimatedWithdrawFeeTask,
-                  onExit,
-                }}
+                txType={TxType.Exit}
+                amount={transactionToReview.amount}
+                account={accountTask.data}
+                fee={transactionToReview.fee}
+                estimatedWithdrawFeeTask={estimatedWithdrawFeeTask}
+                onExit={onExit}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -271,7 +271,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlerProps => ({
     dispatch(exitActions.goToBuildTransactionStep(account)),
   onGoToTransactionOverviewStep: (transactionToReview: exitActions.TransactionToReview) =>
     dispatch(exitActions.goToReviewTransactionStep(transactionToReview)),
-  onExit: (amount: BigNumber, from: HermezAccount, fee: number) =>
+  onExit: (amount: BigNumber, from: HermezAccount, fee: BigNumber) =>
     dispatch(exitThunks.exit(amount, from, fee)),
   onCleanup: () => dispatch(exitActions.resetState()),
 });

@@ -1,24 +1,26 @@
 import { BigNumber } from "ethers";
 import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { parseUnits } from "ethers/lib/utils";
 import { getMaxAmountFromMinimumFee } from "@hermeznetwork/hermezjs/src/tx-utils";
 
-import { getDepositFee } from "src/utils/fees";
 // domain
 import {
   CoordinatorState,
   Exit,
   HistoryTransaction,
+  PoolTransaction,
+  PendingDeposit,
   ISOStringDate,
   PendingDelayedWithdraw,
-  Token,
+  isHistoryTransaction,
 } from "src/domain/hermez";
 
 /**
  * Returns the correct amount for a transaction from the Hermez API depending on its type
  */
-function getTransactionAmount(transaction: HistoryTransaction): string | undefined {
+function getTransactionAmount(
+  transaction: PendingDeposit | HistoryTransaction | PoolTransaction
+): string | undefined {
   // ToDo: This check and the undefined return should be removed once all views are migrated to TS
   if (!transaction) {
     return undefined;
@@ -26,6 +28,7 @@ function getTransactionAmount(transaction: HistoryTransaction): string | undefin
 
   return (transaction.type === TxType.Deposit ||
     transaction.type === TxType.CreateAccountDeposit) &&
+    isHistoryTransaction(transaction) &&
     transaction.L1Info
     ? transaction.L1Info.depositAmount
     : transaction.amount;
@@ -77,20 +80,23 @@ function mergeDelayedWithdraws(
       return existingPendingDelayedWithdrawWithToken === undefined
         ? [...mergedPendingDelayedWithdraws, pendingDelayedWithdraw]
         : mergedPendingDelayedWithdraws.map((mergedPendingDelayedWithdraw) => {
-            return mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken
-              ? {
-                  ...mergedPendingDelayedWithdraw,
-                  // We need to sum up the balances and use the latest timestamp for the timer
-                  balance: BigNumber.from(mergedPendingDelayedWithdraw.balance)
-                    .add(BigNumber.from(pendingDelayedWithdraw.balance))
-                    .toString(),
-                  timestamp:
-                    Date.parse(mergedPendingDelayedWithdraw.timestamp) >
-                    Date.parse(pendingDelayedWithdraw.timestamp)
-                      ? mergedPendingDelayedWithdraw.timestamp
-                      : pendingDelayedWithdraw.timestamp,
-                }
-              : mergedPendingDelayedWithdraw;
+            if (mergedPendingDelayedWithdraw === existingPendingDelayedWithdrawWithToken) {
+              const { timestamp, batchNum } =
+                Date.parse(mergedPendingDelayedWithdraw.timestamp) >
+                Date.parse(pendingDelayedWithdraw.timestamp)
+                  ? mergedPendingDelayedWithdraw
+                  : pendingDelayedWithdraw;
+              return {
+                ...mergedPendingDelayedWithdraw,
+                // We need to sum up the balances and use the latest timestamp for the timer
+                balance: BigNumber.from(mergedPendingDelayedWithdraw.balance)
+                  .add(BigNumber.from(pendingDelayedWithdraw.balance))
+                  .toString(),
+                timestamp,
+                batchNum,
+              };
+            }
+            return mergedPendingDelayedWithdraw;
           });
     },
     []
@@ -143,36 +149,21 @@ function fixTransactionAmount(amount: BigNumber): BigNumber {
 
 /**
  * Calculates the max amoumt that can be sent in a transaction
- * @param {TxType} txType - Transaction type
- * @param {BigNumber} maxAmount - Max amount that can be sent in a transaction (usually it's an account balance)
- * @param {Object} token - Token object
- * @param {Number} l2Fee - Transaction fee
- * @param {BigNumber} gasPrice - Ethereum gas price
- * @returns maxTxAmount
  */
-function getMaxTxAmount(
-  txType: TxType,
-  maxAmount: BigNumber,
-  token: Token,
-  l2Fee: number,
-  gasPrice: BigNumber
-): BigNumber {
+function getMaxTxAmount(txType: TxType, maxAmount: BigNumber, fee: BigNumber): BigNumber {
   const maxTxAmount = (() => {
     switch (txType) {
       case TxType.ForceExit: {
         return maxAmount;
       }
       case TxType.Deposit: {
-        const depositFee = getDepositFee(token, gasPrice);
-        const newMaxAmount = maxAmount.sub(depositFee);
+        const newMaxAmount = maxAmount.sub(fee);
 
         return newMaxAmount.gt(0) ? newMaxAmount : BigNumber.from(0);
       }
       default: {
-        const l2FeeBigInt = parseUnits(l2Fee.toFixed(token.decimals), token.decimals);
-
         return BigNumber.from(
-          getMaxAmountFromMinimumFee(l2FeeBigInt.toString(), maxAmount.toString()).toString()
+          getMaxAmountFromMinimumFee(fee.toString(), maxAmount.toString()).toString()
         );
       }
     }

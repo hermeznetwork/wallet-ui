@@ -2,7 +2,12 @@ import { z } from "zod";
 
 import * as constants from "src/constants";
 // domain
-import { PendingDeposit, PendingWithdraw, PendingDelayedWithdraw } from "src/domain/hermez";
+import {
+  PendingDeposit,
+  PendingWithdraw,
+  PendingDelayedWithdraw,
+  TimerWithdraw,
+} from "src/domain/hermez";
 // persistence
 import * as parsers from "src/persistence/parsers";
 import {
@@ -13,6 +18,8 @@ import {
   ChainPendingDelayedWithdraws,
   PendingDeposits,
   ChainPendingDeposits,
+  TimerWithdraws,
+  ChainTimerWithdraws,
 } from "src/domain/local-storage";
 
 // Storage Helpers
@@ -344,6 +351,60 @@ export function removePendingDepositByHash(
   };
   setStorageByKey(constants.PENDING_DEPOSITS_KEY, newStorage);
   return newStorage;
+}
+
+// Timer Withdraw
+
+const timerWithdrawParser: z.ZodSchema<TimerWithdraws> = z.record(
+  z.record(z.array(parsers.timerWithdraw))
+);
+
+export function getTimerWithdraws(): TimerWithdraws {
+  const timerWithdraws: unknown = getStorageByKey(constants.TIMER_WITHDRAWS_KEY);
+  const parsedTimerWithdraw = timerWithdrawParser.safeParse(timerWithdraws);
+  if (parsedTimerWithdraw.success) {
+    return parsedTimerWithdraw.data;
+  } else {
+    console.error("An error occurred parsing TimerWithdraws");
+    console.error(parsedTimerWithdraw.error);
+    return {};
+  }
+}
+
+export function addTimerWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  timerWithdraw: TimerWithdraw
+): void {
+  const timerWithdraws = getTimerWithdraws();
+  const chainTimerWithdraws: ChainTimerWithdraws = timerWithdraws[chainId] || {};
+  const withdraws: TimerWithdraw[] = chainTimerWithdraws[hermezEthereumAddress] || [];
+  const newStorage: TimerWithdraws = {
+    ...timerWithdraws,
+    [chainId]: {
+      ...chainTimerWithdraws,
+      [hermezEthereumAddress]: [...withdraws, timerWithdraw],
+    },
+  };
+  setStorageByKey(constants.TIMER_WITHDRAWS_KEY, newStorage);
+}
+
+export function removeTimerWithdrawById(
+  chainId: number,
+  hermezEthereumAddress: string,
+  id: string
+): void {
+  const timerWithdraws = getTimerWithdraws();
+  const chainTimerWithdraws: ChainTimerWithdraws = timerWithdraws[chainId] || {};
+  const withdraws: TimerWithdraw[] = chainTimerWithdraws[hermezEthereumAddress] || [];
+  const newStorage: TimerWithdraws = {
+    ...timerWithdraws,
+    [chainId]: {
+      ...chainTimerWithdraws,
+      [hermezEthereumAddress]: withdraws.filter((item) => item.id !== id),
+    },
+  };
+  setStorageByKey(constants.TIMER_WITHDRAWS_KEY, newStorage);
 }
 
 // Storage Version
