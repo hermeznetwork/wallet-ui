@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const usePortalStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const usePortalStyles = createUseStyles((theme: Theme) => ({
   fullScreenModalRoot: {
     position: "fixed",
     top: 0,

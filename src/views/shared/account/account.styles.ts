@@ -1,7 +1,14 @@
 import { createUseStyles } from "react-jss";
 
-const useAccountStyles = createUseStyles((theme) => ({
-  root: ({ hasPendingDeposit, isDisabled }) => ({
+import { Theme } from "src/styles/theme";
+
+interface StyleProps {
+  hasPendingDeposit: boolean;
+  isDisabled: boolean;
+}
+
+const useAccountStyles = createUseStyles((theme: Theme) => ({
+  root: ({ hasPendingDeposit, isDisabled }: StyleProps) => ({
     width: "100%",
     display: "flex",
     flexDirection: "column",
@@ -23,7 +30,7 @@ const useAccountStyles = createUseStyles((theme) => ({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  topRow: ({ hasPendingDeposit }) => ({
+  topRow: ({ hasPendingDeposit }: StyleProps) => ({
     marginBottom: theme.spacing(1.5),
     "& p": {
       color: hasPendingDeposit ? theme.palette.white : theme.palette.black,
@@ -49,7 +56,7 @@ const useAccountStyles = createUseStyles((theme) => ({
     fontWeight: theme.fontWeights.medium,
     color: theme.palette.grey.main,
   },
-  bottomRow: ({ hasPendingDeposit }) => ({
+  bottomRow: ({ hasPendingDeposit }: StyleProps) => ({
     color: hasPendingDeposit ? theme.palette.grey.dark : theme.palette.grey.main,
   }),
   pendingContainer: {

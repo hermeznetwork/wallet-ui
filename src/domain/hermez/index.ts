@@ -15,6 +15,7 @@ export type {
   HistoryTransaction,
   ISOStringDate,
   L1Info,
+  L2Info,
   MerkleProof,
   NextForger,
   PoolTransaction,
@@ -75,15 +76,42 @@ export function isEthereumAccount(account: Account): account is EthereumAccount 
 }
 
 export function isPoolTransaction(
-  transaction: Transaction
-): transaction is hermezjs.PoolTransaction {
-  return "state" in transaction;
+  entity: hermezjs.HistoryTransaction | hermezjs.PoolTransaction | PendingDeposit
+): entity is hermezjs.PoolTransaction {
+  if ("hash" in entity) {
+    // entity // is PendingDeposit
+    return false;
+  } else if ("state" in entity) {
+    // entity // is PoolTransaction
+    return true;
+  } else {
+    // entity // is HistoryTransaction
+    return false;
+  }
 }
 
 export function isHistoryTransaction(
-  transaction: Transaction
-): transaction is hermezjs.HistoryTransaction {
-  return !isPoolTransaction(transaction);
+  entity: hermezjs.HistoryTransaction | hermezjs.PoolTransaction | PendingDeposit
+): entity is hermezjs.HistoryTransaction {
+  if ("state" in entity) {
+    // entity // is PoolTransaction or PendingDeposit
+    return false;
+  } else {
+    // entity // is HistoryTransaction
+    return true;
+  }
+}
+
+export function isPendingDeposit(
+  entity: hermezjs.HistoryTransaction | hermezjs.PoolTransaction | PendingDeposit
+): entity is PendingDeposit {
+  if ("hash" in entity) {
+    // entity // is PendingDeposit
+    return true;
+  } else {
+    // entity // is HistoryTransaction or PoolTransaction
+    return false;
+  }
 }
 
 export function isExit(

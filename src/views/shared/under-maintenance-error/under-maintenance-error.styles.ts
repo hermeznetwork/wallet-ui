@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useUnderMaintenanceErrorStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useUnderMaintenanceErrorStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",

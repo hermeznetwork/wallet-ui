@@ -1,29 +1,31 @@
 import React from "react";
-import Portal, { PortalSelector } from "../portal/portal.view";
 
-import useSidenavStyles from "./sidenav.styles";
-import { ReactComponent as AngleDownIcon } from "../../../images/icons/angle-down.svg";
+import Portal from "src/views/shared/portal/portal.view";
+import useSidenavStyles from "src/views/shared/sidenav/sidenav.styles";
+import { ReactComponent as AngleDownIcon } from "src/images/icons/angle-down.svg";
 
-export const SidenavType = {
-  WithdrawInfo: "WithdrawInfo",
-};
+interface SidenavProps {
+  onClose: () => void;
+}
 
-function Sidenav({ children, onClose }) {
+const Sidenav: React.FC<SidenavProps> = ({ children, onClose }) => {
   const classes = useSidenavStyles();
-  const sidenavContentRef = React.useRef();
+  const sidenavContentRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
-    sidenavContentRef.current.focus();
+    if (sidenavContentRef.current) {
+      sidenavContentRef.current.focus();
+    }
   }, []);
 
-  function handleKeyDown(event) {
+  function handleKeyDown(event: React.KeyboardEvent) {
     if (event.key === "Escape") {
       onClose();
     }
   }
 
   return (
-    <Portal selector={PortalSelector.SIDENAV}>
+    <Portal type="sidenav">
       <div className={classes.root}>
         <div
           ref={sidenavContentRef}
@@ -40,6 +42,6 @@ function Sidenav({ children, onClose }) {
       </div>
     </Portal>
   );
-}
+};
 
 export default Sidenav;

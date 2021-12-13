@@ -1,17 +1,40 @@
-import Home from "../views/home/home.view";
-import Login from "../views/login/login.view";
-import Transfer from "../views/transactions/transfer/transfer.view";
+import React from "react";
+
+import Home from "src/views/home/home.view";
+import Login from "src/views/login/login.view";
+import Transfer from "src/views/transactions/transfer/transfer.view";
 import Deposit from "src/views/transactions/deposit/deposit.view";
 import Exit from "src/views/transactions/exit/exit.view";
 import Withdraw from "src/views/transactions/withdraw/withdraw.view";
 import ForceExit from "src/views/transactions/force-exit/force-exit.view";
-import MyAccount from "../views/my-account/my-account.view";
-import AccountDetails from "../views/account-details/account-details.view";
-import TransactionDetails from "../views/transaction-details/transaction-details.view";
-import MyCode from "../views/my-code/my-code.view";
-import TokenSwap from "../views/token-swap/token-swap.view";
+import MyAccount from "src/views/my-account/my-account.view";
+import AccountDetails from "src/views/account-details/account-details.view";
+import TransactionDetails from "src/views/transaction-details/transaction-details.view";
+import MyCode from "src/views/my-code/my-code.view";
+import TokenSwap from "src/views/token-swap/token-swap.view";
 
-const routes = {
+type RouteKey =
+  | "home"
+  | "login"
+  | "deposit"
+  | "transfer"
+  | "withdraw"
+  | "withdrawComplete"
+  | "forceWithdraw"
+  | "myAccount"
+  | "myCode"
+  | "accountDetails"
+  | "transactionDetails"
+  | "tokenSwap";
+
+export interface Route {
+  path: string;
+  render: () => JSX.Element;
+  isPublic?: boolean;
+  isHidden?: boolean;
+}
+
+const routes: Record<RouteKey, Route> = {
   home: {
     path: "/",
     render: () => <Home />,
