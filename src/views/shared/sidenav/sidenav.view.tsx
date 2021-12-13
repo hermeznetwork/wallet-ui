@@ -26,7 +26,7 @@ function Sidenav({ children, onClose }: SidenavProps): JSX.Element {
   }
 
   return (
-    <Portal selector="#sidenav-root">
+    <Portal target="sidenav">
       <div className={classes.root}>
         <div
           ref={sidenavContentRef}

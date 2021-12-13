@@ -2,16 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import usePortalStyles from "src/views/shared/portal/portal.styles";
-
-export type PortalSelector = "#fullscreen-modal-root" | "#sidenav-root";
-
 interface PortalProps {
-  selector?: PortalSelector;
-  children: JSX.Element;
+  target?: "full-screen" | "sidenav";
 }
 
-function Portal({ selector = "#fullscreen-modal-root", children }: PortalProps): JSX.Element {
+const Portal: React.FC<PortalProps> = ({ target = "full-screen", children }) => {
   const classes = usePortalStyles();
+  const selector = target === "full-screen" ? "#fullscreen-modal-root" : "#sidenav-root";
   const portalRoot = document.querySelector(selector);
   const [divElement] = React.useState(() => {
     const el = document.createElement("div");
@@ -36,6 +33,6 @@ function Portal({ selector = "#fullscreen-modal-root", children }: PortalProps):
   }, [portalRoot, divElement]);
 
   return ReactDOM.createPortal(children, divElement);
-}
+};
 
 export default Portal;
