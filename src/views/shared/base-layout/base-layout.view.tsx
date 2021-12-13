@@ -19,20 +19,19 @@ type SnackbarProps =
 interface BaseLayoutProps {
   header: Header;
   snackbar: SnackbarProps;
-  children: JSX.Element;
   onGoBack: () => void;
   onClose: () => void;
   onCloseSnackbar: () => void;
 }
 
-function BaseLayout({
+const BaseLayout: React.FC<BaseLayoutProps> = ({
   header,
   snackbar,
   children,
   onGoBack,
   onClose,
   onCloseSnackbar,
-}: BaseLayoutProps): JSX.Element {
+}) => {
   return (
     <>
       {header.type === "main" && <MainHeader />}
@@ -56,6 +55,6 @@ function BaseLayout({
       )}
     </>
   );
-}
+};
 
 export default BaseLayout;
