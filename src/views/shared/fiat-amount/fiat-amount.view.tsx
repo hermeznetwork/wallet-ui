@@ -21,7 +21,7 @@ function FiatAmount({
       </span>
     );
   } else {
-    console.error(`Currency symbol not available for the unsuported currency "${currency}"`);
+    console.error(`Currency symbol not available for the unsupported currency "${currency}"`);
     return <span className={className}>{formattedAmount}</span>;
   }
 }

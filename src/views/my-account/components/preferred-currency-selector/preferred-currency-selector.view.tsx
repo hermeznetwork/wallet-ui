@@ -1,18 +1,27 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import usePreferredCurrencySelectorStyles from "./preferred-currency-selector.styles";
 import clsx from "clsx";
 
-function PreferredCurrencySelector({ preferredCurrency, currencies, onChange }) {
+import { Currency } from "src/utils/currencies";
+
+interface PreferredCurrencySelectorProps {
+  preferredCurrency: string;
+  currencies: Currency[];
+  onChange: (selectedTokenId: string) => void;
+}
+
+function PreferredCurrencySelector({
+  preferredCurrency,
+  currencies,
+  onChange,
+}: PreferredCurrencySelectorProps): JSX.Element {
   const classes = usePreferredCurrencySelectorStyles();
 
   /**
    * Bubbles up the preferred currency change event
-   * @param {Event} event - React change event for the input change
-   * @returns {void}
    */
-  function handleOnInputClick(event) {
+  function handleOnInputClick(event: React.ChangeEvent<HTMLInputElement>) {
     onChange(event.currentTarget.value);
   }
 
@@ -37,11 +46,5 @@ function PreferredCurrencySelector({ preferredCurrency, currencies, onChange }) 
     </div>
   );
 }
-
-PreferredCurrencySelector.propTypes = {
-  preferredCurrency: PropTypes.string,
-  currencies: PropTypes.array.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
 
 export default PreferredCurrencySelector;
