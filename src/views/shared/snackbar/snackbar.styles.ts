@@ -1,13 +1,19 @@
 import { createUseStyles } from "react-jss";
 
-const useSnackbarStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+interface StyleProps {
+  backgroundColor?: string;
+}
+
+const useSnackbarStyles = createUseStyles((theme: Theme) => ({
   root: {
     position: "fixed",
     left: 0,
     right: 0,
     bottom: theme.spacing(5),
   },
-  wrapper: ({ backgroundColor }) => ({
+  wrapper: ({ backgroundColor }: StyleProps) => ({
     width: "100%",
     display: "flex",
     alignItems: "center",
@@ -19,7 +25,7 @@ const useSnackbarStyles = createUseStyles((theme) => ({
     border: backgroundColor ? "none" : `solid 1.5px ${theme.palette.grey.veryLight}`,
     boxShadow: "0 7px 22px -2px rgba(136, 139, 170, 0.15)",
   }),
-  message: ({ backgroundColor }) => ({
+  message: ({ backgroundColor }: StyleProps) => ({
     textAlign: "center",
     color: backgroundColor ? theme.palette.white : theme.palette.black,
     fontWeight: theme.fontWeights.bold,

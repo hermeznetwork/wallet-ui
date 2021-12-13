@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useSidenavStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useSidenavStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     minHeight: "100vh",

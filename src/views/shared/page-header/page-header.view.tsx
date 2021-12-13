@@ -2,12 +2,29 @@ import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 
-import Container from "../container/container.view";
-import usePageHeaderStyles from "./page-header.styles";
-import { ReactComponent as ArrowBackIcon } from "../../../images/icons/arrow-back.svg";
-import { ReactComponent as CloseIcon } from "../../../images/icons/close.svg";
+import { AppAction } from "src/store";
+import Container from "src/views/shared/container/container.view";
+import usePageHeaderStyles from "src/views/shared/page-header/page-header.styles";
+import { ReactComponent as ArrowBackIcon } from "src/images/icons/arrow-back.svg";
+import { ReactComponent as CloseIcon } from "src/images/icons/close.svg";
 
-function PageHeader({ title, subtitle, goBackAction, closeAction, onGoBack, onClose }) {
+interface PageHeaderProps {
+  title: string;
+  subtitle?: string;
+  goBackAction?: AppAction;
+  closeAction?: AppAction;
+  onGoBack: (action: AppAction) => void;
+  onClose: (action: AppAction) => void;
+}
+
+function PageHeader({
+  title,
+  subtitle,
+  goBackAction,
+  closeAction,
+  onGoBack,
+  onClose,
+}: PageHeaderProps): JSX.Element {
   const classes = usePageHeaderStyles({ hasSubtitle: subtitle !== undefined });
 
   return (

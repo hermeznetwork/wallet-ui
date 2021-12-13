@@ -1,11 +1,17 @@
 import { createUseStyles } from "react-jss";
 
-const useSpinnerStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+interface StyleProps {
+  size: number;
+}
+
+const useSpinnerStyles = createUseStyles((theme: Theme) => ({
   "@keyframes spin": {
     from: { transform: "rotate(0deg)" },
     to: { transform: "rotate(360deg)" },
   },
-  root: ({ size }) => ({
+  root: ({ size }: StyleProps) => ({
     width: size,
     height: size,
     overflow: "hidden",

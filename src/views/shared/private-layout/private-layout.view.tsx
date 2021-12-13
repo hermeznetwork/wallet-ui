@@ -1,8 +1,8 @@
 import React from "react";
 
-import usePrivateLayoutStyles from "./private-layout.styles";
+import usePrivateLayoutStyles from "src/views/shared/private-layout/private-layout.styles";
 
-function PrivateLayout({ children }) {
+const PrivateLayout: React.FC = ({ children }) => {
   const classes = usePrivateLayoutStyles();
 
   return (
@@ -10,6 +10,6 @@ function PrivateLayout({ children }) {
       <main className={classes.main}>{children}</main>
     </div>
   );
-}
+};
 
 export default PrivateLayout;

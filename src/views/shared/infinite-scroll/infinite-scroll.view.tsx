@@ -10,7 +10,6 @@ const TRESHOLD = 0.9;
 
 interface InfiniteScrollProps {
   asyncTaskStatus: AsyncTask<never, never>["status"];
-  children: JSX.Element;
   onLoadNextPage: (fromItem: number) => void;
   paginationData: Pagination;
 }
@@ -24,12 +23,12 @@ type Pagination =
       fromItem: number;
     };
 
-function InfiniteScroll({
+const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
   asyncTaskStatus,
   children,
   onLoadNextPage,
   paginationData,
-}: InfiniteScrollProps): JSX.Element {
+}) => {
   const theme = useTheme<Theme>();
   const classes = useInfiniteScrollStyles();
   const [shouldLoad, setShouldLoad] = React.useState(false);
@@ -77,6 +76,6 @@ function InfiniteScroll({
       )}
     </div>
   );
-}
+};
 
 export default InfiniteScroll;

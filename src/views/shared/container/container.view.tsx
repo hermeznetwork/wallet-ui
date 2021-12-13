@@ -2,11 +2,7 @@ import React from "react";
 
 import useContainerStyles, { ContainerStyles } from "src/views/shared/container/container.styles";
 
-type ContainerProps = ContainerStyles & {
-  children: JSX.Element;
-};
-
-function Container({
+const Container: React.FC<ContainerStyles> = ({
   backgroundColor,
   addHeaderPadding,
   disableGutters,
@@ -14,7 +10,7 @@ function Container({
   disableTopGutter,
   children,
   fullHeight,
-}: ContainerProps): JSX.Element {
+}) => {
   const classes = useContainerStyles({
     addHeaderPadding,
     disableGutters,
@@ -29,6 +25,6 @@ function Container({
       <div className={classes.wrapper}>{children}</div>
     </div>
   );
-}
+};
 
 export default Container;

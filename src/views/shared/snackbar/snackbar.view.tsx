@@ -1,11 +1,16 @@
 import React from "react";
-import PropTypes from "prop-types";
 
-import Container from "../container/container.view";
-import useSnackbarStyles from "./snackbar.styles";
-import { SNACKBAR_AUTO_HIDE_DURATION } from "../../../constants";
+import Container from "src/views/shared/container/container.view";
+import useSnackbarStyles from "src/views/shared/snackbar/snackbar.styles";
+import { SNACKBAR_AUTO_HIDE_DURATION } from "src/constants";
 
-function Snackbar({ message, backgroundColor, onClose }) {
+interface SnackbarProps {
+  message: string;
+  backgroundColor?: string;
+  onClose: () => void;
+}
+
+function Snackbar({ message, backgroundColor, onClose }: SnackbarProps): JSX.Element {
   const classes = useSnackbarStyles({ backgroundColor });
 
   React.useEffect(() => {
@@ -24,10 +29,5 @@ function Snackbar({ message, backgroundColor, onClose }) {
     </div>
   );
 }
-
-Snackbar.propTypes = {
-  message: PropTypes.string.isRequired,
-  onClose: PropTypes.func,
-};
 
 export default Snackbar;
