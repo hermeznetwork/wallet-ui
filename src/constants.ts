@@ -9,8 +9,6 @@ export const MY_CODE = {
   QR_CODE_SIZE: 216,
 };
 
-export const ACCOUNT_INDEX_SEPARATOR = ":";
-
 export const SNACKBAR_AUTO_HIDE_DURATION = 3500;
 
 export const ETHER_TOKEN_ID = 0;

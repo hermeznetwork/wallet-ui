@@ -16,7 +16,6 @@ import {
   getTokenAmountInPreferredCurrency,
   getFeeInUsd,
 } from "src/utils/currencies";
-import { ACCOUNT_INDEX_SEPARATOR } from "src/constants";
 import { getTransactionAmount, getTxPendingTime } from "src/utils/transactions";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { ReactComponent as InfoIcon } from "src/images/icons/info.svg";
@@ -73,9 +72,6 @@ function TransactionDetails({
   const classes = useTransactionDetailsStyles();
 
   const { accountIndex, transactionId } = useParams<UrlParams>();
-  const [, accountTokenSymbol] = accountIndex
-    ? accountIndex.split(ACCOUNT_INDEX_SEPARATOR)
-    : [undefined];
 
   React.useEffect(() => {
     if (transactionId) {
@@ -181,7 +177,7 @@ function TransactionDetails({
             {isAsyncTaskDataAvailable(transactionTask) && transactionAmount ? (
               <TokenBalance
                 amount={getFixedTokenAmount(transactionAmount, transactionTask.data.token.decimals)}
-                symbol={accountTokenSymbol}
+                symbol={transactionTask.data.token.symbol}
               />
             ) : null}
           </div>
