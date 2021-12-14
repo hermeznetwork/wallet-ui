@@ -38,7 +38,7 @@ const useTransactionAmountInputStyles = createUseStyles((theme: Theme) => ({
     width: "100%",
     border: 0,
     outline: "none",
-    caretColor: theme.palette.orange.main,
+    caretColor: theme.palette.purple.main,
     fontSize: `${theme.spacing(5)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
