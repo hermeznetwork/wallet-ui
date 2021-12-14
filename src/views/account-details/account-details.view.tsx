@@ -190,7 +190,6 @@ function AccountDetails({
     onCheckPendingDelayedWithdrawals,
     fiatExchangeRatesTask,
     preferredCurrency,
-    pendingDeposits,
   ]);
 
   React.useEffect(() => {
