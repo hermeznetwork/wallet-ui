@@ -16,7 +16,7 @@ import {
   getTokenAmountInPreferredCurrency,
   getFeeInUsd,
 } from "src/utils/currencies";
-import { getTransactionAmount, getTxPendingTime } from "src/utils/transactions";
+import { getTransactionAmount, getTxPendingTime, formatMinutes } from "src/utils/transactions";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { ReactComponent as InfoIcon } from "src/images/icons/info.svg";
 import useTransactionDetailsStyles from "src/views/transaction-details/transaction-details.styles";
@@ -214,7 +214,7 @@ function TransactionDetails({
                   transactionTask.data.state !== TxState.Forged &&
                   pendingTime &&
                   pendingTime > 0
-                    ? pendingTime
+                    ? formatMinutes(pendingTime)
                     : undefined;
                 return (
                   <>
@@ -223,7 +223,7 @@ function TransactionDetails({
                         <InfoIcon className={classes.timeEstimateIcon} />
                         <span>
                           The next block will be produced to Layer 2 in an estimated time of{" "}
-                          {poolTransactionForgingPendingTime} minutes.
+                          {poolTransactionForgingPendingTime}.
                         </span>
                       </p>
                     )}

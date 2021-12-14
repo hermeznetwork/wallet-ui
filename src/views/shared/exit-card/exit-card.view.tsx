@@ -4,7 +4,7 @@ import { Redirect } from "react-router-dom";
 import { isInstantWithdrawalAllowed } from "@hermeznetwork/hermezjs/src/tx";
 
 import useExitCardStyles from "src/views/shared/exit-card/exit-card.styles";
-import { getTxPendingTime } from "src/utils/transactions";
+import { getTxPendingTime, formatMinutes } from "src/utils/transactions";
 import { ReactComponent as InfoIcon } from "src/images/icons/info.svg";
 import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
@@ -288,7 +288,7 @@ function ExitCard({
             </span>
           </div>
           {pendingTime > 0 && getStep() === 1 && (
-            <p className={classes.pendingTimer}>{pendingTime} min</p>
+            <p className={classes.pendingTimer}>{formatMinutes(pendingTime)}</p>
           )}
         </div>
         <FiatAmount

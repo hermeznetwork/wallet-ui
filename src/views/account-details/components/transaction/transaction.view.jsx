@@ -6,7 +6,7 @@ import useTransactionStyles from "./transaction.styles";
 import TransactionType from "../transaction-type/transaction-type.view";
 import TransactionLabel from "../transaction-label/transaction-label.view";
 import TransactionAmount from "../transaction-amount/transaction-amount.view";
-import { getTxPendingTime } from "../../../../utils/transactions";
+import { getTxPendingTime, formatMinutes } from "../../../../utils/transactions";
 
 function Transaction({
   accountIndex,
@@ -62,7 +62,7 @@ function Transaction({
                 <div className={classes.pendingLabelContainer}>
                   <p className={classes.pendingLabelText}>Pending</p>
                 </div>
-                {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
+                {pendingTime > 0 && <p className={classes.pendingTimer}>{formatMinutes(pendingTime)}</p>}
               </div>
             ) : (
               <p>{new Date(timestamp).toLocaleDateString()}</p>
