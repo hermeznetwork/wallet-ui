@@ -13,6 +13,9 @@ import {
   CoordinatorState,
   FiatExchangeRates,
   HistoryTransaction,
+  isHistoryTransaction,
+  isPendingDeposit,
+  isPoolTransaction,
   PendingDeposit,
   PoolTransaction,
 } from "src/domain/hermez";
@@ -22,9 +25,9 @@ interface TransactionList {
   transactions: HistoryTransaction[] | PoolTransaction[] | PendingDeposit[];
   preferredCurrency: string;
   fiatExchangeRates: FiatExchangeRates;
-  arePending: boolean;
   coordinatorState: CoordinatorState;
-  onTransactionClick: (transaction: HistoryTransaction) => void;
+  arePending?: boolean;
+  onTransactionClick: (transaction: PendingDeposit | HistoryTransaction | PoolTransaction) => void;
 }
 
 function TransactionList({
@@ -41,7 +44,9 @@ function TransactionList({
   /**
    * Bubbles up the onClick event when a transaction is clicked
    */
-  function handleTransactionClick(transaction: HistoryTransaction) {
+  function handleTransactionClick(
+    transaction: PendingDeposit | HistoryTransaction | PoolTransaction
+  ) {
     onTransactionClick(transaction);
   }
 
@@ -50,18 +55,22 @@ function TransactionList({
       {transactions.map((transaction) => {
         const amount = getTransactionAmount(transaction);
         const fixedTokenAmount = getFixedTokenAmount(amount, transaction.token.decimals);
+        const id = isPendingDeposit(transaction) ? transaction.hash : transaction.id;
 
         return (
-          <div key={transaction.id} className={classes.transaction}>
+          <div key={id} className={classes.transaction}>
             <TransactionComponent
-              id={transaction.id}
               type={transaction.type}
               accountIndex={accountIndex}
-              fromAccountIndex={transaction.fromAccountIndex}
+              fromAccountIndex={
+                isPendingDeposit(transaction)
+                  ? transaction.accountIndex
+                  : transaction.fromAccountIndex
+              }
               amount={fixedTokenAmount}
               tokenSymbol={transaction.token.symbol}
               fiatAmount={
-                transaction.historicUSD
+                isHistoryTransaction(transaction) && transaction.historicUSD
                   ? getAmountInPreferredCurrency(
                       transaction.historicUSD,
                       preferredCurrency,
@@ -78,7 +87,7 @@ function TransactionList({
               timestamp={transaction.timestamp}
               preferredCurrency={preferredCurrency}
               coordinatorState={coordinatorState}
-              invalid={transaction.errorCode}
+              invalid={isPoolTransaction(transaction) && transaction.errorCode !== null}
               onClick={() => handleTransactionClick(transaction)}
             />
           </div>

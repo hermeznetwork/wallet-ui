@@ -1,27 +1,42 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-import useTransactionStyles from "./transaction.styles";
-import TransactionType from "../transaction-type/transaction-type.view";
-import TransactionLabel from "../transaction-label/transaction-label.view";
-import TransactionAmount from "../transaction-amount/transaction-amount.view";
-import { getTxPendingTime } from "../../../../utils/transactions";
+import useTransactionStyles from "src/views/account-details/components/transaction/transaction.styles";
+import TransactionType from "src/views/account-details/components/transaction-type/transaction-type.view";
+import TransactionLabel from "src/views/account-details/components/transaction-label/transaction-label.view";
+import TransactionAmount from "src/views/account-details/components/transaction-amount/transaction-amount.view";
+import { getTxPendingTime } from "src/utils/transactions";
+import { CoordinatorState } from "src/domain/hermez";
+
+interface TransactionProps {
+  accountIndex: string;
+  type: string;
+  amount: string;
+  tokenSymbol: string;
+  timestamp: string;
+  preferredCurrency: string;
+  coordinatorState: CoordinatorState;
+  invalid: boolean;
+  fiatAmount?: number;
+  isPending?: boolean;
+  fromAccountIndex?: string;
+  onClick: () => void;
+}
 
 function Transaction({
   accountIndex,
   type,
-  fromAccountIndex,
   amount,
   tokenSymbol,
-  fiatAmount,
   timestamp,
-  isPending,
   preferredCurrency,
   coordinatorState,
-  onClick,
+  fiatAmount,
   invalid,
-}) {
+  isPending,
+  fromAccountIndex,
+  onClick,
+}: TransactionProps): JSX.Element {
   const classes = useTransactionStyles();
 
   const isL1 =
@@ -33,7 +48,6 @@ function Transaction({
       <div className={classes.type}>
         <TransactionType
           type={type}
-          amount={amount}
           fromAccountIndex={fromAccountIndex}
           accountIndex={accountIndex}
         />
@@ -79,17 +93,5 @@ function Transaction({
     </div>
   );
 }
-
-Transaction.propTypes = {
-  type: PropTypes.string.isRequired,
-  fromAccountIndex: PropTypes.string,
-  amount: PropTypes.string.isRequired,
-  tokenSymbol: PropTypes.string.isRequired,
-  fiatAmount: PropTypes.number.isRequired,
-  timestamp: PropTypes.string,
-  preferredCurrency: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
-  invalid: PropTypes.number,
-};
 
 export default Transaction;

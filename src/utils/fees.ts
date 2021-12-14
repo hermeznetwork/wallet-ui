@@ -115,7 +115,7 @@ function getEstimatedWithdrawFee(
   estimatedWithdrawFee: EstimatedL1Fee,
   preferredCurrency: string,
   fiatExchangeRates: FiatExchangeRates
-): number {
+): number | undefined {
   const formattedExitFee = getFixedTokenAmount(exitFee.toString(), token.decimals);
   const formattedWithdrawFee = getFixedTokenAmount(estimatedWithdrawFee.amount.toString());
   const exitFeeInFiat = getTokenAmountInPreferredCurrency(
@@ -131,7 +131,7 @@ function getEstimatedWithdrawFee(
     fiatExchangeRates
   );
 
-  return exitFeeInFiat + withdrawFeeInFiat;
+  return exitFeeInFiat && withdrawFeeInFiat && exitFeeInFiat + withdrawFeeInFiat;
 }
 
 /**

@@ -8,14 +8,14 @@ import withdrawnIcon from "src/images/icons/withdrawn.svg";
 
 interface TransactionTypeProps {
   type: string;
-  fromAccountIndex: string;
   accountIndex: string;
+  fromAccountIndex?: string;
 }
 
 function TransactionType({
   type,
-  fromAccountIndex,
   accountIndex,
+  fromAccountIndex,
 }: TransactionTypeProps): JSX.Element {
   /**
    * Returns the icon corresponding to the transaction type

@@ -27,6 +27,7 @@ export enum GlobalActionTypes {
   CHANGE_REDIRECT_ROUTE = "[GLOBAL] CHANGE REDIRECT ROUTE",
   LOAD_FIAT_EXCHANGE_RATES = "[GLOBAL] LOAD FIAT EXCHANGE RATES",
   LOAD_FIAT_EXCHANGE_RATES_SUCCESS = "[GLOBAL] LOAD FIAT EXCHANGE RATES SUCCESS",
+  LOAD_FIAT_EXCHANGE_RATES_FAILURE = "[GLOBAL] LOAD FIAT EXCHANGE RATES FAILURE",
   OPEN_SNACKBAR = "[GLOBAL] OPEN SNACKBAR",
   CLOSE_SNACKBAR = "[GLOBAL] CLOSE SNACKBAR",
   CHANGE_NETWORK_STATUS = "[GLOBAL] CHANGE NETWORK STATUS",
@@ -110,6 +111,11 @@ export interface LoadFiatExchangeRates {
 export interface LoadFiatExchangeRatesSuccess {
   type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_SUCCESS;
   fiatExchangeRates: FiatExchangeRates;
+}
+
+export interface LoadFiatExchangeRatesFailure {
+  type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE;
+  error: string;
 }
 
 export interface OpenSnackbar {
@@ -277,6 +283,7 @@ export type GlobalAction =
   | ChangeRedirectRoute
   | LoadFiatExchangeRates
   | LoadFiatExchangeRatesSuccess
+  | LoadFiatExchangeRatesFailure
   | OpenSnackbar
   | CloseSnackbar
   | ChangeNetworkStatus
@@ -384,6 +391,13 @@ function loadFiatExchangeRatesSuccess(
   return {
     type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_SUCCESS,
     fiatExchangeRates,
+  };
+}
+
+function loadFiatExchangeRatesFailure(error: string): LoadFiatExchangeRatesFailure {
+  return {
+    type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE,
+    error,
   };
 }
 
@@ -659,6 +673,7 @@ export {
   changeRedirectRoute,
   loadFiatExchangeRates,
   loadFiatExchangeRatesSuccess,
+  loadFiatExchangeRatesFailure,
   openSnackbar,
   closeSnackbar,
   changeNetworkStatus,

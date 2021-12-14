@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useTransactionStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useTransactionStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     alignItems: "center",

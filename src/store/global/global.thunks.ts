@@ -105,11 +105,8 @@ function fetchFiatExchangeRates(): AppThunk {
       .then((fiatExchangeRates: FiatExchangeRates) =>
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
       )
-      .catch(() => {
-        // ToDo: How are we returning simulated Fiat exchange rates when this request fails???
-        dispatch(
-          globalActions.loadFiatExchangeRatesSuccess(priceUpdaterApi.mockedFiatExchangeRates)
-        );
+      .catch((err: Error) => {
+        dispatch(globalActions.loadFiatExchangeRatesFailure(err.message));
       });
   };
 }

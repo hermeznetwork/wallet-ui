@@ -5,8 +5,8 @@ import useTransactionLabelStyles from "src/views/account-details/components/tran
 
 interface TransactionLabelProps {
   type: string;
-  fromAccountIndex: string;
   accountIndex: string;
+  fromAccountIndex?: string;
 }
 function TransactionLabel({
   type,

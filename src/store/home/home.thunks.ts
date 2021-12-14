@@ -44,8 +44,8 @@ function fetchTotalBalance(
             poolTransactions,
             pendingDeposits,
             tokensPriceTask,
-            fiatExchangeRates,
-            preferredCurrency
+            preferredCurrency,
+            fiatExchangeRates
           )
         );
 
@@ -95,8 +95,8 @@ function fetchAccounts(
   hermezAddress: string,
   poolTransactions: PoolTransaction[],
   pendingDeposits: PendingDeposit[],
-  fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string,
+  fiatExchangeRates?: FiatExchangeRates,
   fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -111,8 +111,8 @@ function fetchAccounts(
           hermezAddress,
           poolTransactions,
           pendingDeposits,
-          fiatExchangeRates,
-          preferredCurrency
+          preferredCurrency,
+          fiatExchangeRates
         )
       );
     }
@@ -131,8 +131,8 @@ function fetchAccounts(
             poolTransactions,
             pendingDeposits,
             tokensPriceTask,
-            fiatExchangeRates,
-            preferredCurrency
+            preferredCurrency,
+            fiatExchangeRates
           )
         );
 
@@ -152,8 +152,8 @@ function refreshAccounts(
   hermezAddress: string,
   poolTransactions: PoolTransaction[],
   pendingDeposits: PendingDeposit[],
-  fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  preferredCurrency: string,
+  fiatExchangeRates?: FiatExchangeRates
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -200,8 +200,8 @@ function refreshAccounts(
                 poolTransactions,
                 pendingDeposits,
                 tokensPriceTask,
-                fiatExchangeRates,
-                preferredCurrency
+                preferredCurrency,
+                fiatExchangeRates
               )
             );
           const pendingItems = results[results.length - 1]

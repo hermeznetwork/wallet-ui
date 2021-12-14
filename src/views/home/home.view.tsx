@@ -25,7 +25,7 @@ import { resetState } from "src/store/home/home.actions";
 import { copyToClipboard } from "src/utils/browser";
 import * as storage from "src/utils/storage";
 import { mergeExits } from "src/utils/transactions";
-import { AsyncTask } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { Theme } from "src/styles/theme";
 import { AUTO_REFRESH_RATE } from "src/constants";
 //domain
@@ -40,7 +40,6 @@ import {
 } from "src/domain/hermez";
 import { EthereumNetwork } from "src/domain/ethereum";
 import { AppDispatch, AppState } from "src/store";
-import { mockedFiatExchangeRates } from "src/apis/price-updater";
 
 type HomeStateProps = HomeState &
   Pick<
@@ -72,8 +71,8 @@ interface HomeHandlerProps {
     hermezAddress: string,
     poolTransactions: PoolTransaction[],
     pendingDeposits: PendingDeposit[],
-    fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string,
+    fiatExchangeRates?: FiatExchangeRates,
     fromItem?: number
   ) => void;
   onLoadPoolTransactions: () => void;
@@ -159,14 +158,12 @@ function Home({
   const pendingCreateAccountDeposits = accountPendingDeposits.filter(
     (deposit) => deposit.type === TxType.CreateAccountDeposit
   );
-  const fiatExchangeRates =
-    fiatExchangeRatesTask.status === "successful" || fiatExchangeRatesTask.status === "reloading"
-      ? fiatExchangeRatesTask.data
-      : mockedFiatExchangeRates;
-  const coordinatorState =
-    coordinatorStateTask.status === "successful" || coordinatorStateTask.status === "reloading"
-      ? coordinatorStateTask.data
-      : undefined;
+  const coordinatorState = isAsyncTaskDataAvailable(coordinatorStateTask)
+    ? coordinatorStateTask.data
+    : undefined;
+  const fiatExchangeRates = isAsyncTaskDataAvailable(fiatExchangeRatesTask)
+    ? fiatExchangeRatesTask.data
+    : undefined;
 
   React.useEffect(() => {
     onChangeHeader();
@@ -224,8 +221,8 @@ function Home({
         wallet.publicKeyBase64,
         poolTransactionsTask.data,
         accountPendingDeposits,
-        fiatExchangeRatesTask.data,
-        preferredCurrency
+        preferredCurrency,
+        fiatExchangeRatesTask.data
       );
     }
   }, [
@@ -245,10 +242,7 @@ function Home({
    * Filters the transactions of type exit from the transaction pool
    */
   function getPendingExits() {
-    if (
-      poolTransactionsTask.status === "successful" ||
-      poolTransactionsTask.status === "reloading"
-    ) {
+    if (isAsyncTaskDataAvailable(poolTransactionsTask)) {
       return poolTransactionsTask.data.filter((transaction) => transaction.type === TxType.Exit);
     }
     return [];
@@ -289,10 +283,7 @@ function Home({
               <div className={classes.accountBalance}>
                 <FiatAmount
                   amount={
-                    totalBalanceTask.status === "successful" ||
-                    totalBalanceTask.status === "reloading"
-                      ? totalBalanceTask.data
-                      : undefined
+                    isAsyncTaskDataAvailable(totalBalanceTask) ? totalBalanceTask.data : undefined
                   }
                   currency={preferredCurrency}
                   className={classes.fiatAmount}
@@ -300,7 +291,7 @@ function Home({
               </div>
               <TransactionActions
                 hideSend={
-                  accountsTask.status === "successful" || accountsTask.status === "reloading"
+                  isAsyncTaskDataAvailable(accountsTask)
                     ? accountsTask.data.accounts.length === 0
                     : true
                 }
@@ -378,10 +369,13 @@ function Home({
                           onLoadNextPage={(fromItem) => {
                             onLoadAccounts(
                               wallet.publicKeyBase64,
-                              poolTransactionsTask.data,
+                              poolTransactionsTask.status === "successful" ||
+                                poolTransactionsTask.status === "reloading"
+                                ? poolTransactionsTask.data
+                                : [],
                               accountPendingDeposits,
-                              fiatExchangeRates,
                               preferredCurrency,
+                              fiatExchangeRates,
                               fromItem
                             );
                           }}
@@ -449,8 +443,8 @@ const mapDispatchToProps = (dispatch: AppDispatch): HomeHandlerProps => ({
     hermezAddress,
     poolTransactions,
     pendingDeposits,
-    fiatExchangeRates,
     preferredCurrency,
+    fiatExchangeRates,
     fromItem
   ) =>
     dispatch(
@@ -458,8 +452,8 @@ const mapDispatchToProps = (dispatch: AppDispatch): HomeHandlerProps => ({
         hermezAddress,
         poolTransactions,
         pendingDeposits,
-        fiatExchangeRates,
         preferredCurrency,
+        fiatExchangeRates,
         fromItem
       )
     ),

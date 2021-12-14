@@ -1,9 +1,15 @@
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-import { CurrencySymbol } from "../../../../utils/currencies";
-import useTransactionAmountStyles from "./transaction-amount.styles";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
+
+interface TransactionAmountProps {
+  type: string;
+  preferredCurrency: string;
+  accountIndex: string;
+  fiatAmount?: number;
+  fromAccountIndex?: string;
+}
 
 function TransactionAmount({
   type,
@@ -11,19 +17,14 @@ function TransactionAmount({
   preferredCurrency,
   fromAccountIndex,
   accountIndex,
-}) {
-  const classes = useTransactionAmountStyles();
-
+}: TransactionAmountProps): JSX.Element {
+  const negativeFiatAmount = fiatAmount && -fiatAmount;
   switch (type) {
     case TxType.CreateAccountDeposit:
     case TxType.Deposit: {
       return (
-        <p className={classes.root}>
-          <FiatAmount
-            currency={preferredCurrency}
-            amount={fiatAmount}
-            className={classes.depositAmount}
-          />
+        <p>
+          <FiatAmount currency={preferredCurrency} amount={fiatAmount} />
         </p>
       );
     }
@@ -31,8 +32,8 @@ function TransactionAmount({
     case TxType.Exit:
     case TxType.ForceExit: {
       return (
-        <p className={classes.root}>
-          <FiatAmount currency={preferredCurrency} amount={-fiatAmount} />
+        <p>
+          <FiatAmount currency={preferredCurrency} amount={negativeFiatAmount} />
         </p>
       );
     }
@@ -40,24 +41,20 @@ function TransactionAmount({
     case TxType.TransferToEthAddr: {
       if (fromAccountIndex === accountIndex) {
         return (
-          <p className={classes.root}>
-            <FiatAmount currency={preferredCurrency} amount={-fiatAmount} />
+          <p>
+            <FiatAmount currency={preferredCurrency} amount={negativeFiatAmount} />
           </p>
         );
       } else {
         return (
-          <p className={classes.root}>
-            <FiatAmount
-              currency={preferredCurrency}
-              amount={fiatAmount}
-              className={classes.depositAmount}
-            />
+          <p>
+            <FiatAmount currency={preferredCurrency} amount={fiatAmount} />
           </p>
         );
       }
     }
     default: {
-      return "";
+      return <></>;
     }
   }
 }

@@ -32,6 +32,8 @@ import {
   FiatExchangeRates,
   HermezAccount,
   HermezWallet,
+  HistoryTransaction,
+  isPendingDeposit,
   PendingDeposit,
   PoolTransaction,
   TimerWithdraw,
@@ -66,22 +68,26 @@ interface AccountDetailsHandlerProps {
   onChangeHeader: (tokenName: string) => void;
   onCheckPendingDeposits: () => void;
   onLoadAccount: (
-    hermezAddress: string,
-    poolTransactions: PoolTransaction[],
-    pendingDeposits: PendingDeposit[],
+    accountIndex: HermezAccount["accountIndex"],
     fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string,
-    fromItem?: number
+    preferredCurrency: string
   ) => void;
   onLoadL1TokenBalance: (token: Token) => void;
-  onLoadHistoryTransactions: (accountIndex: string, exits: Exits, fromItem?: number) => void;
-  onLoadPoolTransactions: (accountIndex: string) => void;
+  onLoadHistoryTransactions: (
+    accountIndex: HermezAccount["accountIndex"],
+    exits: Exits,
+    fromItem?: number
+  ) => void;
+  onLoadPoolTransactions: (accountIndex: HermezAccount["accountIndex"]) => void;
   onLoadExits: (tokenId: number) => void;
   onCheckPendingDelayedWithdrawals: () => void;
   onCheckPendingWithdrawals: () => void;
   onAddTimerWithdraw: (timer: TimerWithdraw) => void;
   onRemoveTimerWithdraw: (message: string) => void;
-  onNavigateToTransactionDetails: (accountIndex: string, transactionId: string) => void;
+  onNavigateToTransactionDetails: (
+    accountIndex: HermezAccount["accountIndex"],
+    transactionId: string
+  ) => void;
   onCleanup: () => void;
 }
 
@@ -166,13 +172,7 @@ function AccountDetails({
     ) {
       const loadInitialData = () => {
         onCheckPendingDeposits();
-        onLoadAccount(
-          accountIndex,
-          poolTransactionsTask.data,
-          pendingDeposits,
-          fiatExchangeRatesTask.data,
-          preferredCurrency
-        );
+        onLoadAccount(accountIndex, fiatExchangeRatesTask.data, preferredCurrency);
         onLoadPoolTransactions(accountIndex);
         onCheckPendingWithdrawals();
         onCheckPendingDelayedWithdrawals();
@@ -263,43 +263,48 @@ function AccountDetails({
   /**
    * Navigates to the TransactionDetails view when a transaction is clicked
    */
-  function handleTransactionClick(transaction: Transaction) {
-    onNavigateToTransactionDetails(accountIndex, transaction.id);
+  function handleTransactionClick(
+    transaction: PendingDeposit | HistoryTransaction | PoolTransaction
+  ) {
+    const transactionId = isPendingDeposit(transaction) ? transaction.hash : transaction.id;
+    onNavigateToTransactionDetails(accountIndex, transactionId);
   }
 
   return (
     <div className={classes.root}>
-      <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
-        <section className={classes.section}>
-          <div className={classes.tokenBalance}>
-            <TokenBalance
-              amount={getAccountTokenBalance(accountTask.data)}
-              symbol={accountTask.data?.token.symbol}
-            />
-          </div>
-          <div className={classes.fiatBalanceWrapper}>
-            <FiatAmount
-              amount={getAccountFiatBalance(accountTask.data)}
-              currency={preferredCurrency}
-              className={classes.fiatBalance}
-            />
-          </div>
-          <TransactionActions
-            accountIndex={accountIndex}
-            tokenId={accountTask.data?.token.id}
-            hideDeposit={
-              l1TokenBalanceTask.status !== "successful" ||
-              accountTask.data?.hezEthereumAddress.toLowerCase() ===
+      {(accountTask.status === "successful" || accountTask.status === "reloading") && (
+        <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
+          <section className={classes.section}>
+            <div className={classes.tokenBalance}>
+              <TokenBalance
+                amount={getAccountTokenBalance(accountTask.data)}
+                symbol={accountTask.data?.token.symbol}
+              />
+            </div>
+            <div className={classes.fiatBalanceWrapper}>
+              <FiatAmount
+                amount={getAccountFiatBalance(accountTask.data)}
+                currency={preferredCurrency}
+                className={classes.fiatBalance}
+              />
+            </div>
+            <TransactionActions
+              accountIndex={accountIndex}
+              tokenId={accountTask.data.token.id}
+              hideDeposit={
+                l1TokenBalanceTask.status !== "successful" ||
+                accountTask.data?.hezEthereumAddress.toLowerCase() ===
+                  INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
+              }
+              hideWithdraw={
+                accountTask.data?.hezEthereumAddress.toLowerCase() ===
                 INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
-            }
-            hideWithdraw={
-              accountTask.data?.hezEthereumAddress.toLowerCase() ===
-              INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
-            }
-            hideSwap
-          />
-        </section>
-      </Container>
+              }
+              hideSwap
+            />
+          </section>
+        </Container>
+      )}
       <Container>
         <section className={classes.section}>
           {(() => {
@@ -376,7 +381,7 @@ function AccountDetails({
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       preferredCurrency={preferredCurrency}
                       onTransactionClick={handleTransactionClick}
-                      coordinatorState={coordinatorStateTask?.data}
+                      coordinatorState={coordinatorStateTask.data}
                     />
                   )}
                   <TransactionList
@@ -386,7 +391,7 @@ function AccountDetails({
                     fiatExchangeRates={fiatExchangeRatesTask.data}
                     preferredCurrency={preferredCurrency}
                     onTransactionClick={handleTransactionClick}
-                    coordinatorState={coordinatorStateTask?.data}
+                    coordinatorState={coordinatorStateTask.data}
                   />
                   <InfiniteScroll
                     asyncTaskStatus={historyTransactionsTask.status}
@@ -401,6 +406,7 @@ function AccountDetails({
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       preferredCurrency={preferredCurrency}
                       onTransactionClick={handleTransactionClick}
+                      coordinatorState={coordinatorStateTask.data}
                     />
                   </InfiniteScroll>
                 </>
