@@ -25,8 +25,9 @@ import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/util
 import { getAccountBalance } from "src/utils/accounts";
 import { mergeExits } from "src/utils/transactions";
 import * as storage from "src/utils/storage";
-import { AsyncTask } from "src/utils/types";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { AUTO_REFRESH_RATE } from "src/constants";
+import { Theme } from "src/styles/theme";
 //domain
 import {
   FiatExchangeRates,
@@ -42,7 +43,6 @@ import {
 import { EthereumNetwork } from "src/domain/ethereum";
 import { AppDispatch, AppState } from "src/store";
 import { Exits } from "src/persistence";
-import { Theme } from "src/styles/theme";
 
 type AccountDetailsStateProps = AccountDetailsState &
   Pick<
@@ -124,7 +124,7 @@ function AccountDetails({
   const theme = useTheme<Theme>();
   const classes = useAccountDetailsStyles();
   const { accountIndex } = useParams<UrlParams>();
-  const ethereumNetworkAndWalletLoaded = ethereumNetworkTask.status === "successful" && wallet;
+  const ethereumNetworkAndWalletLoaded = isAsyncTaskDataAvailable(ethereumNetworkTask) && wallet;
   const accountPendingDeposits = React.useMemo(
     () =>
       ethereumNetworkAndWalletLoaded
@@ -214,7 +214,7 @@ function AccountDetails({
   React.useEffect(() => onCleanup, [onCleanup]);
 
   function getAccountTokenBalance(account: HermezAccount) {
-    if (!account || poolTransactionsTask.status !== "successful") {
+    if (!account || !isAsyncTaskDataAvailable(poolTransactionsTask)) {
       return undefined;
     }
 
@@ -229,7 +229,7 @@ function AccountDetails({
 
   function getAccountFiatBalance(account: HermezAccount) {
     const accountTokenBalance = getAccountTokenBalance(account);
-    if (!accountTokenBalance || fiatExchangeRatesTask.status !== "successful") {
+    if (!accountTokenBalance || !isAsyncTaskDataAvailable(fiatExchangeRatesTask)) {
       return undefined;
     }
 
@@ -267,7 +267,7 @@ function AccountDetails({
 
   return (
     <div className={classes.root}>
-      {(accountTask.status === "successful" || accountTask.status === "reloading") && (
+      {isAsyncTaskDataAvailable(accountTask) && (
         <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
           <section className={classes.section}>
             <div className={classes.tokenBalance}>
@@ -287,12 +287,12 @@ function AccountDetails({
               accountIndex={accountIndex}
               tokenId={accountTask.data.token.id}
               hideDeposit={
-                l1TokenBalanceTask.status !== "successful" ||
-                accountTask.data?.hezEthereumAddress.toLowerCase() ===
+                !isAsyncTaskDataAvailable(l1TokenBalanceTask) ||
+                accountTask.data.hezEthereumAddress.toLowerCase() ===
                   INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
               }
               hideWithdraw={
-                accountTask.data?.hezEthereumAddress.toLowerCase() ===
+                accountTask.data.hezEthereumAddress.toLowerCase() ===
                 INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
               }
               hideSwap
@@ -318,16 +318,12 @@ function AccountDetails({
 
             if (
               wallet &&
-              (accountTask.status === "successful" || accountTask.status === "reloading") &&
-              (fiatExchangeRatesTask.status === "successful" ||
-                fiatExchangeRatesTask.status === "reloading") &&
-              (coordinatorStateTask.status === "successful" ||
-                coordinatorStateTask.status === "reloading") &&
-              (poolTransactionsTask.status === "successful" ||
-                poolTransactionsTask.status === "reloading") &&
-              (historyTransactionsTask.status === "successful" ||
-                historyTransactionsTask.status === "reloading") &&
-              (exitsTask.status === "successful" || exitsTask.status === "reloading")
+              isAsyncTaskDataAvailable(accountTask) &&
+              isAsyncTaskDataAvailable(coordinatorStateTask) &&
+              isAsyncTaskDataAvailable(fiatExchangeRatesTask) &&
+              isAsyncTaskDataAvailable(poolTransactionsTask) &&
+              isAsyncTaskDataAvailable(historyTransactionsTask) &&
+              isAsyncTaskDataAvailable(exitsTask)
             ) {
               const tokenPendingDeposits = accountPendingDeposits
                 .filter((deposit) => deposit.accountIndex === accountTask.data.accountIndex)
@@ -450,8 +446,8 @@ const mapDispatchToProps = (dispatch: AppDispatch): AccountDetailsHandlerProps =
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadPoolTransactions: (accountIndex) =>
     dispatch(accountDetailsThunks.fetchPoolTransactions(accountIndex)),
-  onLoadHistoryTransactions: (accountIndex, fromItem, exits) =>
-    dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem, exits)),
+  onLoadHistoryTransactions: (accountIndex, exits, fromItem) =>
+    dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, exits, fromItem)),
   onLoadExits: (tokenId) => dispatch(accountDetailsThunks.fetchExits(tokenId)),
   onAddTimerWithdraw: (timerWithdraw) => dispatch(globalThunks.addTimerWithdraw(timerWithdraw)),
   onRemoveTimerWithdraw: (timerWithdrawId) =>

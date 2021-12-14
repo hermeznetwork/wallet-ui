@@ -27,7 +27,9 @@ function TransactionActions({
   const classes = useTransactionActionsStyles();
   const baseQueryString = accountIndex !== undefined ? `?accountIndex=${accountIndex}` : "";
   const depositQueryString =
-    tokenId !== undefined && accountIndex ? `?accountIndex=${accountIndex}&tokenId=${tokenId}` : "";
+    tokenId !== undefined && accountIndex !== undefined
+      ? `?accountIndex=${accountIndex}&tokenId=${tokenId}`
+      : "";
 
   return (
     <div className={classes.root}>

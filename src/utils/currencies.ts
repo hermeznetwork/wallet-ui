@@ -57,7 +57,7 @@ function getAmountInPreferredCurrency(
 ): number | undefined {
   if (preferredCurrency === CurrencySymbol.USD.code) {
     return usdAmount;
-  } else if (!fiatExchangeRates) {
+  } else if (fiatExchangeRates === undefined) {
     return undefined;
   }
   return usdAmount * fiatExchangeRates[preferredCurrency];

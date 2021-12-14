@@ -51,15 +51,12 @@ function ExitCardList({
             amount={amount}
             fixedTokenAmount={fixedTokenAmount}
             token={transaction.token}
-            fiatAmount={
-              fiatExchangeRates &&
-              getTokenAmountInPreferredCurrency(
-                fixedTokenAmount,
-                transaction.token.USD,
-                preferredCurrency,
-                fiatExchangeRates
-              )
-            }
+            fiatAmount={getTokenAmountInPreferredCurrency(
+              fixedTokenAmount,
+              transaction.token.USD,
+              preferredCurrency,
+              fiatExchangeRates
+            )}
             preferredCurrency={preferredCurrency}
             batchNum={transaction.batchNum ? transaction.batchNum : undefined}
             exitId={

@@ -27,6 +27,7 @@ import * as storage from "src/utils/storage";
 import { mergeExits } from "src/utils/transactions";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { Theme } from "src/styles/theme";
+import { AppDispatch, AppState } from "src/store";
 import { AUTO_REFRESH_RATE } from "src/constants";
 //domain
 import {
@@ -39,7 +40,6 @@ import {
   TimerWithdraw,
 } from "src/domain/hermez";
 import { EthereumNetwork } from "src/domain/ethereum";
-import { AppDispatch, AppState } from "src/store";
 
 type HomeStateProps = HomeState &
   Pick<
@@ -119,7 +119,7 @@ function Home({
 }: HomeProps): JSX.Element {
   const theme = useTheme<Theme>();
   const classes = useHomeStyles();
-  const ethereumNetworkAndWalletLoaded = ethereumNetworkTask.status === "successful" && wallet;
+  const ethereumNetworkAndWalletLoaded = isAsyncTaskDataAvailable(ethereumNetworkTask) && wallet;
   const accountPendingDeposits = React.useMemo(
     () =>
       ethereumNetworkAndWalletLoaded
@@ -301,8 +301,7 @@ function Home({
           </Container>
           <Container fullHeight>
             <section className={`${classes.section} ${classes.sectionLast}`}>
-              {(poolTransactionsTask.status === "successful" ||
-                poolTransactionsTask.status === "reloading") && (
+              {isAsyncTaskDataAvailable(poolTransactionsTask) && (
                 <ExitCardList
                   transactions={getPendingExits()}
                   fiatExchangeRates={fiatExchangeRates}
@@ -316,7 +315,7 @@ function Home({
                   coordinatorState={coordinatorState}
                 />
               )}
-              {(exitsTask.status === "successful" || exitsTask.status === "reloading") && (
+              {isAsyncTaskDataAvailable(exitsTask) && (
                 <ExitCardList
                   transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}
                   fiatExchangeRates={fiatExchangeRates}
@@ -369,8 +368,7 @@ function Home({
                           onLoadNextPage={(fromItem) => {
                             onLoadAccounts(
                               wallet.publicKeyBase64,
-                              poolTransactionsTask.status === "successful" ||
-                                poolTransactionsTask.status === "reloading"
+                              isAsyncTaskDataAvailable(poolTransactionsTask)
                                 ? poolTransactionsTask.data
                                 : [],
                               accountPendingDeposits,
