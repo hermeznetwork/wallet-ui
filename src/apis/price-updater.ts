@@ -38,13 +38,6 @@ const getFiatExchangeRatesResponseParser: z.ZodSchema<ApiExchangeRateResponse> =
   currencies: apiExchangeRateListParser,
 });
 
-const mockedFiatExchangeRates: FiatExchangeRates = {
-  EUR: 0.837775,
-  CNY: 6.446304,
-  JPY: 110.253954,
-  GBP: 0.716945,
-};
-
 const parsedReactAppPriceUpdaterApiUrl = z
   .string()
   .safeParse(process.env.REACT_APP_PRICE_UPDATER_API_URL);
@@ -115,4 +108,4 @@ function getFiatExchangeRates(symbols: string[]): Promise<FiatExchangeRates> {
   }
 }
 
-export { mockedFiatExchangeRates, getFiatExchangeRates, getTokensPrice };
+export { getFiatExchangeRates, getTokensPrice };

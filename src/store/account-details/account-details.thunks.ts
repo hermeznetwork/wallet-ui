@@ -49,8 +49,8 @@ function fetchAccount(
             undefined,
             undefined,
             tokensPriceTask,
-            fiatExchangeRates,
-            preferredCurrency
+            preferredCurrency,
+            fiatExchangeRates
           );
 
           dispatch(accountDetailsActions.loadAccountSuccess(accountTokenUpdated));
