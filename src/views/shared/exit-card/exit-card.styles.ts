@@ -46,7 +46,7 @@ const useExitCardStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.palette.red.light,
   },
   stepTag: {
-    color: theme.palette.orange.dark,
+    color: theme.palette.orange.main,
     fontSize: theme.spacing(1.75),
     fontWeight: theme.fontWeights.medium,
   },

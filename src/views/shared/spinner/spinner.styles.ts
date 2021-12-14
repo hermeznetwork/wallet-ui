@@ -20,13 +20,13 @@ const useSpinnerStyles = createUseStyles((theme: Theme) => ({
     animation: "$spin 0.8s linear infinite",
   },
   topCircle: {
-    stroke: theme.palette.orange.main,
+    stroke: theme.palette.purple.main,
     strokeLinecap: "round",
     strokeDasharray: "30px 200px",
     strokeDashoffset: "0px",
   },
   bottomCircle: {
-    stroke: theme.palette.orange.main,
+    stroke: theme.palette.purple.main,
     strokeOpacity: 0.2,
   },
 }));

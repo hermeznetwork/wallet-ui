@@ -64,7 +64,7 @@ const useAccountStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
   },
   pendingLabelContainer: {
-    backgroundColor: theme.palette.orange.light,
+    backgroundColor: theme.palette.purple.light,
     padding: theme.spacing(1),
     borderRadius: theme.spacing(1),
     marginTop: -theme.spacing(0.5),
