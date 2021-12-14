@@ -38,7 +38,6 @@ import {
   PoolTransaction,
   TimerWithdraw,
   Token,
-  Transaction,
 } from "src/domain/hermez";
 import { EthereumNetwork } from "src/domain/ethereum";
 import { AppDispatch, AppState } from "src/store";
@@ -166,10 +165,7 @@ function AccountDetails({
   }, [accountTask, onChangeHeader]);
 
   React.useEffect(() => {
-    if (
-      fiatExchangeRatesTask.status === "successful" &&
-      poolTransactionsTask.status === "successful"
-    ) {
+    if (fiatExchangeRatesTask.status === "successful") {
       const loadInitialData = () => {
         onCheckPendingDeposits();
         onLoadAccount(accountIndex, fiatExchangeRatesTask.data, preferredCurrency);
@@ -194,7 +190,6 @@ function AccountDetails({
     onCheckPendingDelayedWithdrawals,
     fiatExchangeRatesTask,
     preferredCurrency,
-    poolTransactionsTask,
     pendingDeposits,
   ]);
 
