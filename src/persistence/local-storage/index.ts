@@ -21,6 +21,7 @@ import {
   TimerWithdraws,
   ChainTimerWithdraws,
 } from "src/domain/local-storage";
+import { EnsureSchema } from "src/utils/type-safety";
 
 // Storage Helpers
 
@@ -55,7 +56,7 @@ export function initStorage(key: string): Record<string, never> {
 
 // Auth Signatures
 
-const authSignaturesParser: z.ZodSchema<AuthSignatures> = z.record(z.record(z.string()));
+const authSignaturesParser = EnsureSchema<AuthSignatures>()(z.record(z.record(z.string())));
 
 export function getAuthSignatures(): AuthSignatures {
   const authSignatures: unknown = getStorageByKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY);
@@ -94,8 +95,8 @@ export function setPreferredCurrency(preferredCurrency: string): void {
 
 // Pending Withdraws
 
-const pendingWithdrawsParser: z.ZodSchema<PendingWithdraws> = z.record(
-  z.record(z.array(parsers.pendingWithdraw))
+const pendingWithdrawsParser = EnsureSchema<PendingWithdraws>()(
+  z.record(z.record(z.array(parsers.pendingWithdraw)))
 );
 
 export function getPendingWithdraws(): PendingWithdraws {
@@ -150,8 +151,8 @@ export function removePendingWithdrawByHash(
 
 // Pending Delayed Withdraws
 
-const pendingDelayedWithdrawsParser: z.ZodSchema<PendingDelayedWithdraws> = z.record(
-  z.record(z.array(parsers.pendingDelayedWithdraw))
+const pendingDelayedWithdrawsParser = EnsureSchema<PendingDelayedWithdraws>()(
+  z.record(z.record(z.array(parsers.pendingDelayedWithdraw)))
 );
 
 export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
@@ -256,8 +257,8 @@ export function removePendingDelayedWithdrawByHash(
 
 // Pending Deposits
 
-const pendingDepositsParser: z.ZodSchema<PendingDeposits> = z.record(
-  z.record(z.array(parsers.pendingDeposit))
+const pendingDepositsParser = EnsureSchema<PendingDeposits>()(
+  z.record(z.record(z.array(parsers.pendingDeposit)))
 );
 
 export function getPendingDeposits(): PendingDeposits {
@@ -355,8 +356,8 @@ export function removePendingDepositByHash(
 
 // Timer Withdraw
 
-const timerWithdrawParser: z.ZodSchema<TimerWithdraws> = z.record(
-  z.record(z.array(parsers.timerWithdraw))
+const timerWithdrawParser = EnsureSchema<TimerWithdraws>()(
+  z.record(z.record(z.array(parsers.timerWithdraw)))
 );
 
 export function getTimerWithdraws(): TimerWithdraws {
