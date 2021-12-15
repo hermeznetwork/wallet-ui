@@ -17,7 +17,6 @@ import InfiniteScroll from "src/views/shared/infinite-scroll/infinite-scroll.vie
 import Button from "src/views/shared/button/button.view";
 import { changeHeader, openSnackbar } from "src/store/global/global.actions";
 import * as globalThunks from "src/store/global/global.thunks";
-import { GlobalState } from "src/store/global/global.reducer";
 import * as homeThunks from "src/store/home/home.thunks";
 import { HomeState } from "src/store/home/home.reducer";
 import { getPartiallyHiddenHermezAddress } from "src/utils/addresses";
@@ -32,6 +31,7 @@ import { AUTO_REFRESH_RATE } from "src/constants";
 //domain
 import {
   Account,
+  CoordinatorState,
   FiatExchangeRates,
   HermezWallet,
   isHermezAccount,
@@ -40,23 +40,20 @@ import {
   TimerWithdraw,
 } from "src/domain/hermez";
 import { EthereumNetwork } from "src/domain/ethereum";
+import * as localStorageDomain from "src/domain/local-storage";
 
-type HomeStateProps = HomeState &
-  Pick<
-    GlobalState,
-    | "pendingDeposits"
-    | "pendingWithdraws"
-    | "pendingDelayedWithdraws"
-    | "timerWithdraws"
-    | "coordinatorStateTask"
-    | "fiatExchangeRatesTask"
-  > & {
-    wallet: HermezWallet.HermezWallet | undefined;
-    ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
-    pendingDepositsCheckTask: AsyncTask<null, string>;
-    preferredCurrency: string;
-  };
-
+type HomeStateProps = HomeState & {
+  wallet: HermezWallet.HermezWallet | undefined;
+  ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
+  pendingDepositsCheckTask: AsyncTask<null, string>;
+  preferredCurrency: string;
+  pendingDeposits: localStorageDomain.PendingDeposits;
+  pendingWithdraws: localStorageDomain.PendingWithdraws;
+  pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
+  timerWithdraws: localStorageDomain.TimerWithdraws;
+  coordinatorStateTask: AsyncTask<CoordinatorState, string>;
+  fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
+};
 interface HomeHandlerProps {
   onChangeHeader: () => void;
   onCheckPendingDeposits: () => void;
@@ -167,7 +164,7 @@ function Home({
 
   React.useEffect(() => {
     onChangeHeader();
-  }, [theme, onChangeHeader]);
+  }, [onChangeHeader]);
 
   React.useEffect(() => {
     onCheckPendingDeposits();
@@ -301,20 +298,18 @@ function Home({
           </Container>
           <Container fullHeight>
             <section className={`${classes.section} ${classes.sectionLast}`}>
-              {isAsyncTaskDataAvailable(poolTransactionsTask) && (
-                <ExitCardList
-                  transactions={getPendingExits()}
-                  fiatExchangeRates={fiatExchangeRates}
-                  preferredCurrency={preferredCurrency}
-                  babyJubJub={wallet.publicKeyCompressedHex}
-                  pendingWithdraws={accountPendingWithdraws}
-                  pendingDelayedWithdraws={accountPendingDelayedWithdraws}
-                  timerWithdraws={accountTimerWithdraws}
-                  onAddTimerWithdraw={onAddTimerWithdraw}
-                  onRemoveTimerWithdraw={onRemoveTimerWithdraw}
-                  coordinatorState={coordinatorState}
-                />
-              )}
+              <ExitCardList
+                transactions={getPendingExits()}
+                fiatExchangeRates={fiatExchangeRates}
+                preferredCurrency={preferredCurrency}
+                babyJubJub={wallet.publicKeyCompressedHex}
+                pendingWithdraws={accountPendingWithdraws}
+                pendingDelayedWithdraws={accountPendingDelayedWithdraws}
+                timerWithdraws={accountTimerWithdraws}
+                onAddTimerWithdraw={onAddTimerWithdraw}
+                onRemoveTimerWithdraw={onRemoveTimerWithdraw}
+                coordinatorState={coordinatorState}
+              />
               {isAsyncTaskDataAvailable(exitsTask) && (
                 <ExitCardList
                   transactions={mergeExits(exitsTask.data.exits, accountPendingDelayedWithdraws)}

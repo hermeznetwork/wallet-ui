@@ -4,7 +4,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 interface TransactionAmountProps {
-  type: string;
+  type: TxType;
   preferredCurrency: string;
   accountIndex: string;
   fiatAmount?: number;
@@ -38,7 +38,8 @@ function TransactionAmount({
       );
     }
     case TxType.Transfer:
-    case TxType.TransferToEthAddr: {
+    case TxType.TransferToEthAddr:
+    case TxType.TransferToBJJ: {
       if (fromAccountIndex === accountIndex) {
         return (
           <p>
@@ -52,9 +53,6 @@ function TransactionAmount({
           </p>
         );
       }
-    }
-    default: {
-      return <></>;
     }
   }
 }

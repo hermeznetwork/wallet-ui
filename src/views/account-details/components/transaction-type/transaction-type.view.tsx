@@ -7,7 +7,7 @@ import sentIcon from "src/images/icons/sent.svg";
 import withdrawnIcon from "src/images/icons/withdrawn.svg";
 
 interface TransactionTypeProps {
-  type: string;
+  type: TxType;
   accountIndex: string;
   fromAccountIndex?: string;
 }
@@ -39,9 +39,6 @@ function TransactionType({
       case TxType.Exit:
       case TxType.ForceExit: {
         return withdrawnIcon;
-      }
-      default: {
-        return undefined;
       }
     }
   }

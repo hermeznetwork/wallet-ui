@@ -20,7 +20,7 @@ import {
   PoolTransaction,
 } from "src/domain/hermez";
 
-interface TransactionList {
+interface TransactionListProps {
   accountIndex: string;
   transactions: HistoryTransaction[] | PoolTransaction[] | PendingDeposit[];
   preferredCurrency: string;
@@ -38,7 +38,7 @@ function TransactionList({
   arePending,
   coordinatorState,
   onTransactionClick,
-}: TransactionList): JSX.Element {
+}: TransactionListProps): JSX.Element {
   const classes = useTransactionListStyles();
 
   /**

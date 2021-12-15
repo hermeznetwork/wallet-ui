@@ -23,7 +23,7 @@ import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 
 export interface Amount {
   tokens: BigNumber;
-  fiat: number | undefined;
+  fiat?: number;
 }
 
 export interface AmountInputChangeEventData {

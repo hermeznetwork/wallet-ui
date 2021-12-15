@@ -37,9 +37,10 @@ import {
   PoolTransaction,
   Token,
 } from "src/domain/hermez";
-import { Exits } from "src/persistence";
 // persistence
+import { Exits } from "src/persistence";
 import * as localStoragePersistence from "src/persistence/local-storage";
+import * as persistence from "src/persistence";
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -105,8 +106,12 @@ function fetchFiatExchangeRates(): AppThunk {
       .then((fiatExchangeRates: FiatExchangeRates) =>
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
       )
-      .catch((err: Error) => {
-        dispatch(globalActions.loadFiatExchangeRatesFailure(err.message));
+      .catch((error) => {
+        const errorMsg = persistence.getErrorMessage(
+          error,
+          "Oops ... There was an error fetching fiat exchange rates"
+        );
+        dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
       });
   };
 }

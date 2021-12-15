@@ -4,7 +4,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import useTransactionLabelStyles from "src/views/account-details/components/transaction-label/transaction-label.styles";
 
 interface TransactionLabelProps {
-  type: string;
+  type: TxType;
   accountIndex: string;
   fromAccountIndex?: string;
 }
@@ -37,9 +37,6 @@ function TransactionLabel({
         } else {
           return "Received";
         }
-      }
-      default: {
-        return "";
       }
     }
   }

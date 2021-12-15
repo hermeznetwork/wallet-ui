@@ -41,7 +41,7 @@ function isValidCurrencySymbolKey(key: string): key is CurrencySymbolKey {
 /**
  * Gets the string representation of a token amount with fixed decimals
  */
-function getFixedTokenAmount(amount: string | undefined, decimals = 18): string {
+function getFixedTokenAmount(amount: string, decimals = 18): string {
   // We can lose precision as there will never be more than MAX_DECIMALS_UNTIL_ZERO_AMOUNT significant digits
   const amountWithDecimals = Number(amount) / Math.pow(10, decimals);
   return trimZeros(amountWithDecimals, MAX_TOKEN_DECIMALS).toString();

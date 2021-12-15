@@ -6,14 +6,15 @@ import TransactionType from "src/views/account-details/components/transaction-ty
 import TransactionLabel from "src/views/account-details/components/transaction-label/transaction-label.view";
 import TransactionAmount from "src/views/account-details/components/transaction-amount/transaction-amount.view";
 import { getTxPendingTime } from "src/utils/transactions";
-import { CoordinatorState } from "src/domain/hermez";
+//domain
+import { CoordinatorState, ISOStringDate } from "src/domain/hermez";
 
 interface TransactionProps {
   accountIndex: string;
-  type: string;
+  type: TxType;
   amount: string;
   tokenSymbol: string;
-  timestamp: string;
+  timestamp: ISOStringDate;
   preferredCurrency: string;
   coordinatorState: CoordinatorState;
   invalid: boolean;

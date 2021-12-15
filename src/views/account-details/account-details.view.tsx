@@ -16,7 +16,6 @@ import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import TokenBalance from "src/views/shared/token-balance/token-balance.view";
 import InfiniteScroll from "src/views/shared/infinite-scroll/infinite-scroll.view";
 import * as globalThunks from "src/store/global/global.thunks";
-import { GlobalState } from "src/store/global/global.reducer";
 import { changeHeader } from "src/store/global/global.actions";
 import * as accountDetailsThunks from "src/store/account-details/account-details.thunks";
 import { AccountDetailsState } from "src/store/account-details/account-details.reducer";
@@ -27,9 +26,11 @@ import { mergeExits } from "src/utils/transactions";
 import * as storage from "src/utils/storage";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { AUTO_REFRESH_RATE } from "src/constants";
+import { AppDispatch, AppState } from "src/store";
 import { Theme } from "src/styles/theme";
 //domain
 import {
+  CoordinatorState,
   FiatExchangeRates,
   HermezAccount,
   HermezWallet,
@@ -41,27 +42,25 @@ import {
   Token,
 } from "src/domain/hermez";
 import { EthereumNetwork } from "src/domain/ethereum";
-import { AppDispatch, AppState } from "src/store";
+import * as localStorageDomain from "src/domain/local-storage";
+// persistence
 import { Exits } from "src/persistence";
 
-type AccountDetailsStateProps = AccountDetailsState &
-  Pick<
-    GlobalState,
-    | "pendingDeposits"
-    | "pendingWithdraws"
-    | "pendingDelayedWithdraws"
-    | "timerWithdraws"
-    | "coordinatorStateTask"
-    | "fiatExchangeRatesTask"
-  > & {
-    wallet: HermezWallet.HermezWallet | undefined;
-    ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
-    preferredCurrency: string;
-  };
-
-type UrlParams = {
-  accountIndex: string;
+type AccountDetailsStateProps = AccountDetailsState & {
+  wallet: HermezWallet.HermezWallet | undefined;
+  ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
+  preferredCurrency: string;
+  pendingDeposits: localStorageDomain.PendingDeposits;
+  pendingWithdraws: localStorageDomain.PendingWithdraws;
+  pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
+  timerWithdraws: localStorageDomain.TimerWithdraws;
+  coordinatorStateTask: AsyncTask<CoordinatorState, string>;
+  fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
 };
+
+interface UrlParams {
+  accountIndex: string;
+}
 
 interface AccountDetailsHandlerProps {
   onChangeHeader: (tokenName: string) => void;
@@ -213,7 +212,7 @@ function AccountDetails({
   React.useEffect(() => onCleanup, [onCleanup]);
 
   function getAccountTokenBalance(account: HermezAccount) {
-    if (!account || !isAsyncTaskDataAvailable(poolTransactionsTask)) {
+    if (!isAsyncTaskDataAvailable(poolTransactionsTask)) {
       return undefined;
     }
 
@@ -272,7 +271,7 @@ function AccountDetails({
             <div className={classes.tokenBalance}>
               <TokenBalance
                 amount={getAccountTokenBalance(accountTask.data)}
-                symbol={accountTask.data?.token.symbol}
+                symbol={accountTask.data.token.symbol}
               />
             </div>
             <div className={classes.fiatBalanceWrapper}>
@@ -303,26 +302,18 @@ function AccountDetails({
         <section className={classes.section}>
           {(() => {
             if (
-              accountTask.status === "loading" ||
-              accountTask.status === "failed" ||
-              poolTransactionsTask.status === "loading" ||
-              poolTransactionsTask.status === "failed" ||
-              historyTransactionsTask.status === "loading" ||
-              historyTransactionsTask.status === "failed" ||
-              exitsTask.status === "loading" ||
-              exitsTask.status === "failed"
+              !isAsyncTaskDataAvailable(accountTask) ||
+              !isAsyncTaskDataAvailable(poolTransactionsTask) ||
+              !isAsyncTaskDataAvailable(historyTransactionsTask) ||
+              !isAsyncTaskDataAvailable(exitsTask)
             ) {
               return <Spinner />;
             }
 
             if (
               wallet &&
-              isAsyncTaskDataAvailable(accountTask) &&
               isAsyncTaskDataAvailable(coordinatorStateTask) &&
-              isAsyncTaskDataAvailable(fiatExchangeRatesTask) &&
-              isAsyncTaskDataAvailable(poolTransactionsTask) &&
-              isAsyncTaskDataAvailable(historyTransactionsTask) &&
-              isAsyncTaskDataAvailable(exitsTask)
+              isAsyncTaskDataAvailable(fiatExchangeRatesTask)
             ) {
               const tokenPendingDeposits = accountPendingDeposits
                 .filter((deposit) => deposit.accountIndex === accountTask.data.accountIndex)
