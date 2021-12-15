@@ -131,7 +131,10 @@ function getEstimatedWithdrawFee(
     fiatExchangeRates
   );
 
-  return exitFeeInFiat && withdrawFeeInFiat && exitFeeInFiat + withdrawFeeInFiat;
+  if (exitFeeInFiat === undefined || withdrawFeeInFiat === undefined) {
+    return undefined;
+  }
+  return exitFeeInFiat + withdrawFeeInFiat;
 }
 
 /**
