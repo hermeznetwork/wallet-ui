@@ -265,8 +265,8 @@ function AccountDetails({
 
   return (
     <div className={classes.root}>
-      {isAsyncTaskDataAvailable(accountTask) && (
-        <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
+      <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
+        {isAsyncTaskDataAvailable(accountTask) && (
           <section className={classes.section}>
             <div className={classes.tokenBalance}>
               <TokenBalance
@@ -296,24 +296,19 @@ function AccountDetails({
               hideSwap
             />
           </section>
-        </Container>
-      )}
+        )}
+      </Container>
       <Container>
         <section className={classes.section}>
           {(() => {
             if (
-              !isAsyncTaskDataAvailable(accountTask) ||
-              !isAsyncTaskDataAvailable(poolTransactionsTask) ||
-              !isAsyncTaskDataAvailable(historyTransactionsTask) ||
-              !isAsyncTaskDataAvailable(exitsTask)
-            ) {
-              return <Spinner />;
-            }
-
-            if (
               wallet &&
               isAsyncTaskDataAvailable(coordinatorStateTask) &&
-              isAsyncTaskDataAvailable(fiatExchangeRatesTask)
+              isAsyncTaskDataAvailable(fiatExchangeRatesTask) &&
+              isAsyncTaskDataAvailable(accountTask) &&
+              isAsyncTaskDataAvailable(poolTransactionsTask) &&
+              isAsyncTaskDataAvailable(historyTransactionsTask) &&
+              isAsyncTaskDataAvailable(exitsTask)
             ) {
               const tokenPendingDeposits = accountPendingDeposits
                 .filter((deposit) => deposit.accountIndex === accountTask.data.accountIndex)
@@ -392,9 +387,9 @@ function AccountDetails({
                   </InfiniteScroll>
                 </>
               );
+            } else {
+              return <Spinner />;
             }
-
-            return <></>;
           })()}
         </section>
       </Container>
