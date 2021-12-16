@@ -82,7 +82,13 @@ function Transaction({
             ) : (
               <p>{new Date(timestamp).toLocaleDateString()}</p>
             ))}
-          <TransactionAmount fiatAmount={fiatAmount} preferredCurrency={preferredCurrency} />
+          <TransactionAmount
+            fiatAmount={fiatAmount}
+            preferredCurrency={preferredCurrency}
+            type={type}
+            fromAccountIndex={fromAccountIndex}
+            accountIndex={accountIndex}
+          />
         </div>
       </div>
     </div>
