@@ -1,8 +1,14 @@
 import { ZodSchema } from "zod";
 
-import { Exactly } from "./types";
+import { Exact } from "./types";
 
 export const EnsureSchema: <T>() => <U>(
-  u: Exactly<ZodSchema<T>, ZodSchema<U>> extends true ? ZodSchema<U> : never
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-) => ZodSchema<T> = () => (u) => u as any;
+  u: Exact<ZodSchema<T>, ZodSchema<U>> extends true
+    ? Exact<Required<T>, Required<U>> extends true
+      ? ZodSchema<U>
+      : never
+    : never
+) => ZodSchema<T> =
+  () =>
+  <T>(u: unknown) =>
+    u as ZodSchema<T>;

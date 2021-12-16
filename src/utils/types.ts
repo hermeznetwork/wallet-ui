@@ -34,4 +34,4 @@ export function isAsyncTaskDataAvailable<D, E>(
   return task.status === "successful" || task.status === "reloading";
 }
 
-export type Exactly<T, U> = [T, U] extends [U, T] ? true : false;
+export type Exact<T, U> = [T, U] extends [U, T] ? true : false;
