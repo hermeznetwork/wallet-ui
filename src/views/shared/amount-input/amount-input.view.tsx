@@ -177,12 +177,12 @@ function AmountInput(
     function handleSendAll() {
       const maxPossibleAmount = BigNumber.from(account.balance);
       const maxAmountWithoutFee = getMaxTxAmount(txType, maxPossibleAmount, fee);
-      const fiatAmount = convertAmountToFiat(maxAmountWithoutFee);
-      const maxAmountWithoutFeeInFiat = fiatAmount ? trimZeros(fiatAmount, 2) : undefined;
+      const maxAmountWithoutFeeInFiat = convertAmountToFiat(maxAmountWithoutFee);
+      const fixedMaxAmountWithoutFeeInFiat = maxAmountWithoutFeeInFiat
+        ? trimZeros(maxAmountWithoutFeeInFiat, 2).toString()
+        : undefined;
       const newValue = showInFiat
-        ? maxAmountWithoutFeeInFiat !== undefined
-          ? maxAmountWithoutFeeInFiat.toString()
-          : undefined
+        ? fixedMaxAmountWithoutFeeInFiat
         : getFixedTokenAmount(maxAmountWithoutFee.toString(), account.token.decimals);
 
       updateAmountState(

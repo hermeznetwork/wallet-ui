@@ -18,7 +18,6 @@ import Button from "src/views/shared/button/button.view";
 import { changeHeader, openSnackbar } from "src/store/global/global.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as homeThunks from "src/store/home/home.thunks";
-import { HomeState } from "src/store/home/home.reducer";
 import { getPartiallyHiddenHermezAddress } from "src/utils/addresses";
 import { resetState } from "src/store/home/home.actions";
 import { copyToClipboard } from "src/utils/browser";
@@ -28,11 +27,13 @@ import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { Theme } from "src/styles/theme";
 import { AppDispatch, AppState } from "src/store";
 import { AUTO_REFRESH_RATE } from "src/constants";
+import { Pagination } from "src/utils/api";
 //domain
 import {
   Account,
   CoordinatorState,
   FiatExchangeRates,
+  HermezAccount,
   HermezWallet,
   isHermezAccount,
   PendingDeposit,
@@ -41,18 +42,30 @@ import {
 } from "src/domain/hermez";
 import { EthereumNetwork } from "src/domain/ethereum";
 import * as localStorageDomain from "src/domain/local-storage";
+//persistence
+import { Exits } from "src/persistence";
 
-type HomeStateProps = HomeState & {
+interface ViewAccounts {
+  accounts: HermezAccount[];
+  fromItemHistory: number[];
+  pagination: Pagination;
+}
+
+type HomeStateProps = {
   wallet: HermezWallet.HermezWallet | undefined;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   pendingDepositsCheckTask: AsyncTask<null, string>;
+  totalBalanceTask: AsyncTask<number, string>;
+  accountsTask: AsyncTask<ViewAccounts, string>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
+  exitsTask: AsyncTask<Exits, Error>;
+  fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   preferredCurrency: string;
   pendingDeposits: localStorageDomain.PendingDeposits;
   pendingWithdraws: localStorageDomain.PendingWithdraws;
   pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
   timerWithdraws: localStorageDomain.TimerWithdraws;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
-  fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
 };
 interface HomeHandlerProps {
   onChangeHeader: () => void;

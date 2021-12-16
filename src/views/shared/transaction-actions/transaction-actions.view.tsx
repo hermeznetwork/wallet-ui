@@ -8,7 +8,7 @@ import { ReactComponent as WithdrawIcon } from "src/images/icons/withdraw.svg";
 import { ReactComponent as TokenSwapIcon } from "src/images/icons/token-swap.svg";
 
 interface TransactionActionsProps {
-  hideWithdraw: boolean;
+  hideWithdraw?: boolean;
   tokenId?: number;
   accountIndex?: string;
   hideSend?: boolean;

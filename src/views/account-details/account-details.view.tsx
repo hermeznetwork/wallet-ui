@@ -18,7 +18,6 @@ import InfiniteScroll from "src/views/shared/infinite-scroll/infinite-scroll.vie
 import * as globalThunks from "src/store/global/global.thunks";
 import { changeHeader } from "src/store/global/global.actions";
 import * as accountDetailsThunks from "src/store/account-details/account-details.thunks";
-import { AccountDetailsState } from "src/store/account-details/account-details.reducer";
 import { resetState } from "src/store/account-details/account-details.actions";
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 import { getAccountBalance } from "src/utils/accounts";
@@ -43,24 +42,35 @@ import {
 } from "src/domain/hermez";
 import { EthereumNetwork } from "src/domain/ethereum";
 import * as localStorageDomain from "src/domain/local-storage";
+import { Pagination } from "src/utils/api";
 // persistence
 import { Exits } from "src/persistence";
-
-type AccountDetailsStateProps = AccountDetailsState & {
-  wallet: HermezWallet.HermezWallet | undefined;
-  ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
-  preferredCurrency: string;
-  pendingDeposits: localStorageDomain.PendingDeposits;
-  pendingWithdraws: localStorageDomain.PendingWithdraws;
-  pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
-  timerWithdraws: localStorageDomain.TimerWithdraws;
-  coordinatorStateTask: AsyncTask<CoordinatorState, string>;
-  fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-};
 
 interface UrlParams {
   accountIndex: string;
 }
+interface ViewHistoryTransactions {
+  transactions: HistoryTransaction[];
+  fromItemHistory: number[];
+  pagination: Pagination;
+}
+
+type AccountDetailsStateProps = {
+  preferredCurrency: string;
+  accountTask: AsyncTask<HermezAccount, string>;
+  l1TokenBalanceTask: AsyncTask<null, string>;
+  ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
+  historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
+  exitsTask: AsyncTask<Exits, Error>;
+  fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
+  wallet: HermezWallet.HermezWallet | undefined;
+  pendingWithdraws: localStorageDomain.PendingWithdraws;
+  pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
+  pendingDeposits: localStorageDomain.PendingDeposits;
+  timerWithdraws: localStorageDomain.TimerWithdraws;
+  coordinatorStateTask: AsyncTask<CoordinatorState, string>;
+};
 
 interface AccountDetailsHandlerProps {
   onChangeHeader: (tokenName: string) => void;

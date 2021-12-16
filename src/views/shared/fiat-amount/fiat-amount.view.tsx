@@ -8,11 +8,7 @@ type FiatAmountProps = {
   className?: string;
 };
 
-function FiatAmount({
-  currency,
-  amount,
-  className,
-}: FiatAmountProps & React.HTMLAttributes<HTMLDivElement>): JSX.Element {
+function FiatAmount({ currency, amount, className }: FiatAmountProps): JSX.Element {
   const formattedAmount = formatFiatAmount(amount);
 
   if (isValidCurrencySymbolKey(currency)) {
