@@ -7,7 +7,7 @@ import { z } from "zod";
 import hermez from "@hermeznetwork/hermezjs";
 
 import { HttpStatusCode } from "src/utils/http";
-import { EnsureSchema } from "src/utils/type-safety";
+import { StrictSchema } from "src/utils/type-safety";
 
 export type { HistoryTransactions, Exits, Accounts } from "@hermeznetwork/hermezjs";
 export interface PostCreateAccountAuthorizationError {
@@ -17,7 +17,7 @@ export interface PostCreateAccountAuthorizationError {
 }
 
 const postCreateAccountAuthorizationErrorParser =
-  EnsureSchema<PostCreateAccountAuthorizationError>()(
+  StrictSchema<PostCreateAccountAuthorizationError>()(
     z.object({
       message: z.string(),
       code: z.number(),
@@ -65,7 +65,7 @@ interface MessageKeyError {
   message: string;
 }
 
-const messageKeyErrorParser = EnsureSchema<MessageKeyError>()(
+const messageKeyErrorParser = StrictSchema<MessageKeyError>()(
   z.object({
     message: z.string(),
   })

@@ -17,15 +17,15 @@ import {
   HermezAccount,
 } from "src/domain/hermez";
 // utils
-import { EnsureSchema } from "src/utils/type-safety";
+import { StrictSchema } from "src/utils/type-safety";
 
-const hermezApiResourceItem = EnsureSchema<HermezApiResourceItem>()(
+const hermezApiResourceItem = StrictSchema<HermezApiResourceItem>()(
   z.object({
     itemId: z.number(),
   })
 );
 
-const token = EnsureSchema<Token>()(
+const token = StrictSchema<Token>()(
   hermezApiResourceItem.and(
     z.object({
       decimals: z.number(),
@@ -39,7 +39,7 @@ const token = EnsureSchema<Token>()(
   )
 );
 
-const hermezAccount = EnsureSchema<HermezAccount>()(
+const hermezAccount = StrictSchema<HermezAccount>()(
   hermezApiResourceItem.and(
     z.object({
       accountIndex: z.string(),
@@ -52,22 +52,22 @@ const hermezAccount = EnsureSchema<HermezAccount>()(
   )
 );
 
-const l1Info = EnsureSchema<L1Info>()(
+const l1Info = StrictSchema<L1Info>()(
   z.object({
     depositAmount: z.string(),
   })
 );
 
-const l2Info = EnsureSchema<L2Info>()(
+const l2Info = StrictSchema<L2Info>()(
   z.object({
     fee: z.number(),
     historicFeeUSD: z.number().nullable(),
   })
 );
 
-const l1orL2 = EnsureSchema<"L1" | "L2">()(z.union([z.literal("L1"), z.literal("L2")]));
+const l1orL2 = StrictSchema<"L1" | "L2">()(z.union([z.literal("L1"), z.literal("L2")]));
 
-const historyTransaction = EnsureSchema<HistoryTransaction>()(
+const historyTransaction = StrictSchema<HistoryTransaction>()(
   hermezApiResourceItem.and(
     z.object({
       amount: z.string(),
@@ -88,7 +88,7 @@ const historyTransaction = EnsureSchema<HistoryTransaction>()(
   )
 );
 
-const pendingDeposit = EnsureSchema<PendingDeposit>()(
+const pendingDeposit = StrictSchema<PendingDeposit>()(
   z.object({
     accountIndex: z.string().optional(),
     amount: z.string(),
@@ -103,14 +103,14 @@ const pendingDeposit = EnsureSchema<PendingDeposit>()(
   })
 );
 
-const merkleProof = EnsureSchema<MerkleProof>()(
+const merkleProof = StrictSchema<MerkleProof>()(
   z.object({
     root: z.string(),
     siblings: z.string().array(),
   })
 );
 
-const exit = EnsureSchema<Exit>()(
+const exit = StrictSchema<Exit>()(
   hermezApiResourceItem.and(
     z.object({
       accountIndex: z.string(),
@@ -125,7 +125,7 @@ const exit = EnsureSchema<Exit>()(
   )
 );
 
-const pendingWithdraw = EnsureSchema<PendingWithdraw>()(
+const pendingWithdraw = StrictSchema<PendingWithdraw>()(
   exit.and(
     z.object({
       hermezEthereumAddress: z.string(),
@@ -136,7 +136,7 @@ const pendingWithdraw = EnsureSchema<PendingWithdraw>()(
   )
 );
 
-const pendingDelayedWithdraw = EnsureSchema<PendingDelayedWithdraw>()(
+const pendingDelayedWithdraw = StrictSchema<PendingDelayedWithdraw>()(
   pendingWithdraw.and(
     z.object({
       isInstant: z.boolean(),
@@ -144,7 +144,7 @@ const pendingDelayedWithdraw = EnsureSchema<PendingDelayedWithdraw>()(
   )
 );
 
-const timerWithdraw = EnsureSchema<TimerWithdraw>()(
+const timerWithdraw = StrictSchema<TimerWithdraw>()(
   z.object({
     id: z.string(),
     timestamp: z.string(),

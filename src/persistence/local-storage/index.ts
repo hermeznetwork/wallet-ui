@@ -21,7 +21,7 @@ import {
   TimerWithdraws,
   ChainTimerWithdraws,
 } from "src/domain/local-storage";
-import { EnsureSchema } from "src/utils/type-safety";
+import { StrictSchema } from "src/utils/type-safety";
 
 // Storage Helpers
 
@@ -56,7 +56,7 @@ export function initStorage(key: string): Record<string, never> {
 
 // Auth Signatures
 
-const authSignaturesParser = EnsureSchema<AuthSignatures>()(z.record(z.record(z.string())));
+const authSignaturesParser = StrictSchema<AuthSignatures>()(z.record(z.record(z.string())));
 
 export function getAuthSignatures(): AuthSignatures {
   const authSignatures: unknown = getStorageByKey(constants.ACCOUNT_AUTH_SIGNATURES_KEY);
@@ -95,7 +95,7 @@ export function setPreferredCurrency(preferredCurrency: string): void {
 
 // Pending Withdraws
 
-const pendingWithdrawsParser = EnsureSchema<PendingWithdraws>()(
+const pendingWithdrawsParser = StrictSchema<PendingWithdraws>()(
   z.record(z.record(z.array(parsers.pendingWithdraw)))
 );
 
@@ -151,7 +151,7 @@ export function removePendingWithdrawByHash(
 
 // Pending Delayed Withdraws
 
-const pendingDelayedWithdrawsParser = EnsureSchema<PendingDelayedWithdraws>()(
+const pendingDelayedWithdrawsParser = StrictSchema<PendingDelayedWithdraws>()(
   z.record(z.record(z.array(parsers.pendingDelayedWithdraw)))
 );
 
@@ -257,7 +257,7 @@ export function removePendingDelayedWithdrawByHash(
 
 // Pending Deposits
 
-const pendingDepositsParser = EnsureSchema<PendingDeposits>()(
+const pendingDepositsParser = StrictSchema<PendingDeposits>()(
   z.record(z.record(z.array(parsers.pendingDeposit)))
 );
 
@@ -356,7 +356,7 @@ export function removePendingDepositByHash(
 
 // Timer Withdraw
 
-const timerWithdrawParser = EnsureSchema<TimerWithdraws>()(
+const timerWithdrawParser = StrictSchema<TimerWithdraws>()(
   z.record(z.record(z.array(parsers.timerWithdraw)))
 );
 

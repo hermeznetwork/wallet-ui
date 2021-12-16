@@ -2,7 +2,7 @@ import axios from "axios";
 import { z } from "zod";
 
 import { HERMEZ_WEB_URL } from "src/constants";
-import { EnsureSchema } from "src/utils/type-safety";
+import { StrictSchema } from "src/utils/type-safety";
 
 const baseApiUrl = HERMEZ_WEB_URL;
 
@@ -10,7 +10,7 @@ interface WalletUnderMaintenanceResponse {
   isWalletUnderMaintenance: number;
 }
 
-const walletUnderMaintenanceResponseParser = EnsureSchema<WalletUnderMaintenanceResponse>()(
+const walletUnderMaintenanceResponseParser = StrictSchema<WalletUnderMaintenanceResponse>()(
   z.object({
     isWalletUnderMaintenance: z.number(),
   })

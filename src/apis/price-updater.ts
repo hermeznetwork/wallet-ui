@@ -7,15 +7,15 @@ import { FiatExchangeRates, Token } from "src/domain/hermez";
 import * as parsers from "src/persistence/parsers";
 // utils
 import { CurrencySymbol } from "src/utils/currencies";
-import { EnsureSchema } from "src/utils/type-safety";
+import { StrictSchema } from "src/utils/type-safety";
 
-const tokenListParser = EnsureSchema<Token[]>()(z.array(parsers.token));
+const tokenListParser = StrictSchema<Token[]>()(z.array(parsers.token));
 
 interface GetTokensPriceResponse {
   tokens: Token[];
 }
 
-const getTokensPriceResponseParser = EnsureSchema<GetTokensPriceResponse>()(
+const getTokensPriceResponseParser = StrictSchema<GetTokensPriceResponse>()(
   z.object({
     tokens: tokenListParser,
   })
@@ -27,20 +27,20 @@ interface ApiExchangeRate {
   price: number;
 }
 
-const apiExchangeRateParser = EnsureSchema<ApiExchangeRate>()(
+const apiExchangeRateParser = StrictSchema<ApiExchangeRate>()(
   z.object({
     currency: z.string(),
     price: z.number(),
   })
 );
 
-const apiExchangeRateListParser = EnsureSchema<ApiExchangeRate[]>()(z.array(apiExchangeRateParser));
+const apiExchangeRateListParser = StrictSchema<ApiExchangeRate[]>()(z.array(apiExchangeRateParser));
 
 interface ApiExchangeRateResponse {
   currencies: ApiExchangeRate[];
 }
 
-const getFiatExchangeRatesResponseParser = EnsureSchema<ApiExchangeRateResponse>()(
+const getFiatExchangeRatesResponseParser = StrictSchema<ApiExchangeRateResponse>()(
   z.object({
     currencies: apiExchangeRateListParser,
   })
