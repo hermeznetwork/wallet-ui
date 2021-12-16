@@ -4,7 +4,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import useTransactionStyles from "src/views/account-details/components/transaction/transaction.styles";
 import TransactionType from "src/views/account-details/components/transaction-type/transaction-type.view";
 import TransactionLabel from "src/views/account-details/components/transaction-label/transaction-label.view";
-import TransactionAmount from "src/views/account-details/components/transaction-amount/transaction-amount.view";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import { getTxPendingTime } from "src/utils/transactions";
 //domain
 import { CoordinatorState, ISOStringDate } from "src/domain/hermez";
@@ -82,7 +82,9 @@ function Transaction({
             ) : (
               <p>{new Date(timestamp).toLocaleDateString()}</p>
             ))}
-          <TransactionAmount fiatAmount={fiatAmount} preferredCurrency={preferredCurrency} />
+          <p>
+            <FiatAmount currency={preferredCurrency} amount={fiatAmount} />
+          </p>
         </div>
       </div>
     </div>
