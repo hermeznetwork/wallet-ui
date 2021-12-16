@@ -24,10 +24,10 @@ import { copyToClipboard } from "src/utils/browser";
 import * as storage from "src/utils/storage";
 import { mergeExits } from "src/utils/transactions";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
+import { Pagination } from "src/utils/api";
 import { Theme } from "src/styles/theme";
 import { AppDispatch, AppState } from "src/store";
 import { AUTO_REFRESH_RATE } from "src/constants";
-import { Pagination } from "src/utils/api";
 //domain
 import {
   Account,
