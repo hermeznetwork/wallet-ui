@@ -26,8 +26,8 @@ const theme = {
       main: "#ff4b40",
     },
     orange: {
-      light: "rgba(242, 153, 74, 0.15)",
-      main: "#ffa600",
+      light: "rgba(252, 197, 90, 0.15)",
+      main: "#ffc55a",
       dark: "#d8853b",
     },
     purple: {
