@@ -3,7 +3,7 @@ const theme = {
     primary: {
       main: "#f6f7fa",
       dark: "#e9ecf4",
-      hover: "#e6e9f2",
+      hover: "#dee2ed",
     },
     secondary: {
       light: "#a783e6",
