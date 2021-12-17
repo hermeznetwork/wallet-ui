@@ -27,7 +27,7 @@ const useSnackbarStyles = createUseStyles((theme: Theme) => ({
   }),
   message: ({ backgroundColor }: StyleProps) => ({
     textAlign: "center",
-    color: backgroundColor ? theme.palette.white : theme.palette.black,
+    color: backgroundColor ? theme.palette.white : theme.palette.black.main,
     fontWeight: theme.fontWeights.bold,
   }),
 }));

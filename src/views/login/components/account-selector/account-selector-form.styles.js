@@ -14,7 +14,7 @@ const accountSelectorFormStyles = createUseStyles((theme) => ({
     padding: `${theme.spacing(3)}px ${theme.spacing(5)}px`,
     borderRadius: 18,
     border: `2px solid ${theme.palette.grey.veryLight}`,
-    color: theme.palette.black,
+    color: theme.palette.black.main,
     outline: "none",
     cursor: "pointer",
     transition: theme.hoverTransition,

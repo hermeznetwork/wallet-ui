@@ -20,7 +20,7 @@ const useQuoteStyles = createUseStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   bestQuoteText: {
-    color: theme.palette.black,
+    color: theme.palette.black.main,
     fontSize: theme.spacing(1.75),
     fontWeight: theme.fontWeights.medium,
   },
@@ -64,7 +64,7 @@ const useQuoteStyles = createUseStyles((theme) => ({
   },
   toTokenAmount: {
     fontWeight: theme.fontWeights.medium,
-    color: theme.palette.black,
+    color: theme.palette.black.main,
   },
   toTokenAmountDiff: {
     fontSize: theme.spacing(1.75),
@@ -82,7 +82,7 @@ const useQuoteStyles = createUseStyles((theme) => ({
   reward: {
     fontWeight: theme.fontWeights.medium,
     marginBottom: theme.spacing(1),
-    color: theme.palette.black,
+    color: theme.palette.black.main,
   },
   rewardHelperText: {
     fontWeight: theme.fontWeights.medium,

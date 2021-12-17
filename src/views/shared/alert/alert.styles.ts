@@ -7,7 +7,7 @@ const useAlertStyles = createUseStyles((theme: Theme) => ({
   root: ({ variant }: { variant: AlertVariant }) => ({
     width: "100%",
     fontSize: theme.spacing(1.75),
-    background: variant === "light" ? theme.palette.white : theme.palette.black,
+    background: variant === "light" ? theme.palette.white : theme.palette.black.main,
     borderRadius: theme.spacing(2),
     padding: theme.spacing(2),
     display: "flex",

@@ -41,7 +41,7 @@ const useSidenavStyles = createUseStyles((theme: Theme) => ({
     marginLeft: theme.spacing(0.5),
     transform: "rotate(-90deg)",
     "& path": {
-      fill: theme.palette.black,
+      fill: theme.palette.black.main,
     },
   },
 }));

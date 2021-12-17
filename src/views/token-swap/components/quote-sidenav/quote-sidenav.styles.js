@@ -8,7 +8,7 @@ const useQuoteSidenavStyles = createUseStyles((theme) => ({
     marginTop: theme.spacing(3.75),
   },
   lpLogo: {
-    color: theme.palette.black,
+    color: theme.palette.black.main,
     textAlign: "center",
     marginBottom: theme.spacing(1.5),
   },
@@ -18,7 +18,7 @@ const useQuoteSidenavStyles = createUseStyles((theme) => ({
     marginBottom: theme.spacing(3),
   },
   lpDescription: {
-    color: theme.palette.black,
+    color: theme.palette.black.main,
     fontWeight: theme.fontWeights.bold,
     lineHeight: 1.5,
     textAlign: "center",

@@ -61,7 +61,7 @@ const useAmountBoxStyles = createUseStyles((theme) => ({
       width: theme.spacing(2),
     },
     "& path": {
-      fill: theme.palette.black,
+      fill: theme.palette.black.main,
     },
   },
   amountInput: {
@@ -87,7 +87,7 @@ const useAmountBoxStyles = createUseStyles((theme) => ({
     color: theme.palette.grey.main,
   },
   maxBtn: {
-    color: theme.palette.black,
+    color: theme.palette.black.main,
     border: "none",
     backgroundColor: "transparent",
     cursor: "pointer",

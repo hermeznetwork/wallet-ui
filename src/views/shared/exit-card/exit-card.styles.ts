@@ -6,7 +6,7 @@ const useExitCardStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
     borderRadius: 18,
-    backgroundColor: theme.palette.black,
+    backgroundColor: theme.palette.black.main,
     padding: `${theme.spacing(2.5)}px ${theme.spacing(5)}px ${theme.spacing(3.5)}px`,
     marginBottom: `${theme.spacing(2.5)}px`,
   },

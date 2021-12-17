@@ -12,7 +12,10 @@ const theme = {
       hover: "#7824EB",
     },
     white: "#ffffff",
-    black: "#081132",
+    black: {
+      main: "#081132",
+      hover: "#000411",
+    },
     grey: {
       veryLight: "#e1e1f1",
       light: "#f3f3f8",

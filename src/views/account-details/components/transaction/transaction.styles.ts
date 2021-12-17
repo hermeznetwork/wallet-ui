@@ -36,14 +36,14 @@ const useTransactionStyles = createUseStyles((theme: Theme) => ({
     display: "flex",
   },
   pendingLabelContainer: {
-    background: theme.palette.secondary.light,
+    background: theme.palette.orange.light,
     padding: theme.spacing(1),
     borderRadius: theme.spacing(1),
     margin: `-${theme.spacing(1)}px 0`,
   },
   pendingLabelText: {
     fontWeight: theme.fontWeights.medium,
-    color: theme.palette.secondary.dark,
+    color: theme.palette.orange.main,
   },
   pendingTimer: {
     marginLeft: theme.spacing(1),

@@ -43,7 +43,7 @@ const useSelectedQuoteStyles = createUseStyles((theme) => ({
     fontWeight: theme.fontWeights.medium,
   },
   quoteRate: {
-    color: theme.palette.black,
+    color: theme.palette.black.main,
     fontWeight: theme.fontWeights.bold,
     margin: `${theme.spacing(1)}px 0`,
   },
