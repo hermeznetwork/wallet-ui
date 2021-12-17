@@ -56,6 +56,15 @@ function getTxPendingTime(
 }
 
 /**
+ * Formats a number of minutes to a string as "2h and 23m" or just "23m"
+ */
+function formatMinutes(minutes: number): string {
+  const remMin = Math.ceil(minutes % 60);
+  const hours = Math.floor(minutes / 60);
+  return hours > 0 ? `${hours}h and ${remMin}m` : `${remMin}m`;
+}
+
+/**
  * Delayed Withdraws, once they are in the WithdrawalDelayer smart contract,
  * are merged by token. We need to manually merge them to show the correct
  * information to the user.
@@ -170,6 +179,7 @@ function getMaxTxAmount(txType: TxType, maxAmount: BigNumber, fee: BigNumber): B
 export {
   getTransactionAmount,
   getTxPendingTime,
+  formatMinutes,
   mergeDelayedWithdraws,
   mergeExits,
   isTransactionAmountCompressedValid,

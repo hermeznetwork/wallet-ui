@@ -2,7 +2,7 @@ import React from "react";
 
 import useAccountStyles from "src/views/shared/account/account.styles";
 import { getFixedTokenAmount } from "src/utils/currencies";
-import { getTxPendingTime } from "src/utils/transactions";
+import { getTxPendingTime, formatMinutes } from "src/utils/transactions";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import { CoordinatorState, ISOStringDate, Token } from "src/domain/hermez";
 
@@ -51,7 +51,9 @@ function Account({
             <div className={classes.pendingLabelContainer}>
               <p className={classes.pendingLabelText}>Pending</p>
             </div>
-            {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
+            {pendingTime > 0 && (
+              <p className={classes.pendingTimer}>{formatMinutes(pendingTime)}</p>
+            )}
           </div>
         ) : (
           <p className={classes.tokenName}>{token.name}</p>

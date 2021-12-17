@@ -5,7 +5,7 @@ import useTransactionStyles from "src/views/account-details/components/transacti
 import TransactionType from "src/views/account-details/components/transaction-type/transaction-type.view";
 import TransactionLabel from "src/views/account-details/components/transaction-label/transaction-label.view";
 import TransactionAmount from "src/views/account-details/components/transaction-amount/transaction-amount.view";
-import { getTxPendingTime } from "src/utils/transactions";
+import { getTxPendingTime, formatMinutes } from "src/utils/transactions";
 //domain
 import { CoordinatorState, ISOStringDate } from "src/domain/hermez";
 
@@ -77,7 +77,9 @@ function Transaction({
                 <div className={classes.pendingLabelContainer}>
                   <p className={classes.pendingLabelText}>Pending</p>
                 </div>
-                {pendingTime > 0 && <p className={classes.pendingTimer}>{pendingTime} min</p>}
+                {pendingTime > 0 && (
+                  <p className={classes.pendingTimer}>{formatMinutes(pendingTime)}</p>
+                )}
               </div>
             ) : (
               <p>{new Date(timestamp).toLocaleDateString()}</p>
