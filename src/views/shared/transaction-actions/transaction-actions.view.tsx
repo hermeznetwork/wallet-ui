@@ -8,12 +8,12 @@ import { ReactComponent as WithdrawIcon } from "src/images/icons/withdraw.svg";
 import { ReactComponent as TokenSwapIcon } from "src/images/icons/token-swap.svg";
 
 interface TransactionActionsProps {
-  hideWithdraw: boolean;
-  hideSend: boolean;
-  hideDeposit: boolean;
-  hideSwap: boolean;
-  accountIndex: string;
-  tokenId: number;
+  hideWithdraw?: boolean;
+  tokenId?: number;
+  accountIndex?: string;
+  hideSend?: boolean;
+  hideDeposit?: boolean;
+  hideSwap?: boolean;
 }
 
 function TransactionActions({
@@ -27,7 +27,9 @@ function TransactionActions({
   const classes = useTransactionActionsStyles();
   const baseQueryString = accountIndex !== undefined ? `?accountIndex=${accountIndex}` : "";
   const depositQueryString =
-    tokenId !== undefined ? `?accountIndex=${accountIndex}&tokenId=${tokenId}` : "";
+    tokenId !== undefined && accountIndex !== undefined
+      ? `?accountIndex=${accountIndex}&tokenId=${tokenId}`
+      : "";
 
   return (
     <div className={classes.root}>

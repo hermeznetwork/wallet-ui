@@ -20,12 +20,7 @@ import {
  */
 function getTransactionAmount(
   transaction: PendingDeposit | HistoryTransaction | PoolTransaction
-): string | undefined {
-  // ToDo: This check and the undefined return should be removed once all views are migrated to TS
-  if (!transaction) {
-    return undefined;
-  }
-
+): string {
   return (transaction.type === TxType.Deposit ||
     transaction.type === TxType.CreateAccountDeposit) &&
     isHistoryTransaction(transaction) &&

@@ -1,11 +1,18 @@
 import React from "react";
 
-import {
-  getFixedTokenAmount,
-  getTokenAmountInPreferredCurrency,
-} from "../../../../utils/currencies";
-import Account from "../../../shared/account/account.view";
-import usePendingDepositListStyles from "./pending-deposit-list.styles";
+import usePendingDepositListStyles from "src/views/home/components/pending-deposit-list/pending-deposit-list.styles";
+import Account from "src/views/shared/account/account.view";
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
+//domain
+import { CoordinatorState, FiatExchangeRates, PendingDeposit } from "src/domain/hermez";
+
+interface PendingDepositListProps {
+  deposits: PendingDeposit[];
+  preferredCurrency: string;
+  coordinatorState?: CoordinatorState;
+  fiatExchangeRates?: FiatExchangeRates;
+  onAccountClick: () => void;
+}
 
 function PendingDepositList({
   deposits,
@@ -13,7 +20,7 @@ function PendingDepositList({
   fiatExchangeRates,
   coordinatorState,
   onAccountClick,
-}) {
+}: PendingDepositListProps): JSX.Element {
   const classes = usePendingDepositListStyles();
 
   return (

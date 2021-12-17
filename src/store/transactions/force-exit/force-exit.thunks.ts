@@ -38,8 +38,8 @@ function fetchAccounts(
               poolTransactions,
               undefined,
               tokensPriceTask,
-              fiatExchangeRates,
-              preferredCurrency
+              preferredCurrency,
+              fiatExchangeRates
             )
           );
 

@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import { connect } from "react-redux";
 import { useTheme } from "react-jss";
@@ -7,24 +6,100 @@ import { push } from "connected-react-router";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { INTERNAL_ACCOUNT_ETH_ADDR } from "@hermeznetwork/hermezjs/src/constants";
 
-import useAccountDetailsStyles from "./account-details.styles";
-import * as globalThunks from "../../store/global/global.thunks";
-import * as accountDetailsThunks from "../../store/account-details/account-details.thunks";
-import Spinner from "../shared/spinner/spinner.view";
-import TransactionList from "./components/transaction-list/transaction-list.view";
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "../../utils/currencies";
-import Container from "../shared/container/container.view";
-import { changeHeader } from "../../store/global/global.actions";
-import TransactionActions from "../shared/transaction-actions/transaction-actions.view";
-import ExitCardList from "../shared/exit-card-list/exit-card-list.view";
-import FiatAmount from "../shared/fiat-amount/fiat-amount.view";
-import TokenBalance from "../shared/token-balance/token-balance.view";
-import InfiniteScroll from "../shared/infinite-scroll/infinite-scroll.view";
-import { resetState } from "../../store/account-details/account-details.actions";
-import { AUTO_REFRESH_RATE } from "../../constants";
-import { getAccountBalance } from "../../utils/accounts";
-import { mergeExits } from "../../utils/transactions";
-import * as storage from "../../utils/storage";
+import useAccountDetailsStyles from "src/views/account-details/account-details.styles";
+import TransactionList from "src/views/account-details/components/transaction-list/transaction-list.view";
+import Container from "src/views/shared/container/container.view";
+import Spinner from "src/views/shared/spinner/spinner.view";
+import TransactionActions from "src/views/shared/transaction-actions/transaction-actions.view";
+import ExitCardList from "src/views/shared/exit-card-list/exit-card-list.view";
+import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
+import TokenBalance from "src/views/shared/token-balance/token-balance.view";
+import InfiniteScroll from "src/views/shared/infinite-scroll/infinite-scroll.view";
+import * as globalThunks from "src/store/global/global.thunks";
+import { changeHeader } from "src/store/global/global.actions";
+import * as accountDetailsThunks from "src/store/account-details/account-details.thunks";
+import { resetState } from "src/store/account-details/account-details.actions";
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
+import { getAccountBalance } from "src/utils/accounts";
+import { mergeExits } from "src/utils/transactions";
+import * as storage from "src/utils/storage";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
+import { AUTO_REFRESH_RATE } from "src/constants";
+import { AppDispatch, AppState } from "src/store";
+import { Theme } from "src/styles/theme";
+//domain
+import {
+  CoordinatorState,
+  FiatExchangeRates,
+  HermezAccount,
+  HermezWallet,
+  HistoryTransaction,
+  isPendingDeposit,
+  PendingDeposit,
+  PoolTransaction,
+  TimerWithdraw,
+  Token,
+} from "src/domain/hermez";
+import { EthereumNetwork } from "src/domain/ethereum";
+import * as localStorageDomain from "src/domain/local-storage";
+import { Pagination } from "src/utils/api";
+// persistence
+import { Exits } from "src/persistence";
+
+interface UrlParams {
+  accountIndex: string;
+}
+interface ViewHistoryTransactions {
+  transactions: HistoryTransaction[];
+  fromItemHistory: number[];
+  pagination: Pagination;
+}
+
+type AccountDetailsStateProps = {
+  preferredCurrency: string;
+  accountTask: AsyncTask<HermezAccount, string>;
+  l1TokenBalanceTask: AsyncTask<null, string>;
+  ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
+  historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
+  exitsTask: AsyncTask<Exits, Error>;
+  fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
+  wallet: HermezWallet.HermezWallet | undefined;
+  pendingWithdraws: localStorageDomain.PendingWithdraws;
+  pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
+  pendingDeposits: localStorageDomain.PendingDeposits;
+  timerWithdraws: localStorageDomain.TimerWithdraws;
+  coordinatorStateTask: AsyncTask<CoordinatorState, string>;
+};
+
+interface AccountDetailsHandlerProps {
+  onChangeHeader: (tokenName: string) => void;
+  onCheckPendingDeposits: () => void;
+  onLoadAccount: (
+    accountIndex: HermezAccount["accountIndex"],
+    fiatExchangeRates: FiatExchangeRates,
+    preferredCurrency: string
+  ) => void;
+  onLoadL1TokenBalance: (token: Token) => void;
+  onLoadHistoryTransactions: (
+    accountIndex: HermezAccount["accountIndex"],
+    exits: Exits,
+    fromItem?: number
+  ) => void;
+  onLoadPoolTransactions: (accountIndex: HermezAccount["accountIndex"]) => void;
+  onLoadExits: (tokenId: number) => void;
+  onCheckPendingDelayedWithdrawals: () => void;
+  onCheckPendingWithdrawals: () => void;
+  onAddTimerWithdraw: (timer: TimerWithdraw) => void;
+  onRemoveTimerWithdraw: (message: string) => void;
+  onNavigateToTransactionDetails: (
+    accountIndex: HermezAccount["accountIndex"],
+    transactionId: string
+  ) => void;
+  onCleanup: () => void;
+}
+
+type AccountDetailsProps = AccountDetailsStateProps & AccountDetailsHandlerProps;
 
 function AccountDetails({
   preferredCurrency,
@@ -54,34 +129,48 @@ function AccountDetails({
   onRemoveTimerWithdraw,
   onNavigateToTransactionDetails,
   onCleanup,
-}) {
-  const theme = useTheme();
+}: AccountDetailsProps): JSX.Element {
+  const theme = useTheme<Theme>();
   const classes = useAccountDetailsStyles();
-  const { accountIndex } = useParams();
-  const accountPendingDeposits = storage.getPendingDepositsByHermezAddress(
-    pendingDeposits,
-    ethereumNetworkTask.data.chainId,
-    wallet.hermezEthereumAddress
+  const { accountIndex } = useParams<UrlParams>();
+  const ethereumNetworkAndWalletLoaded = isAsyncTaskDataAvailable(ethereumNetworkTask) && wallet;
+  const accountPendingDeposits = React.useMemo(
+    () =>
+      ethereumNetworkAndWalletLoaded
+        ? storage.getPendingDepositsByHermezAddress(
+            pendingDeposits,
+            ethereumNetworkTask.data.chainId,
+            wallet.hermezEthereumAddress
+          )
+        : [],
+    [pendingDeposits, ethereumNetworkTask, wallet, ethereumNetworkAndWalletLoaded]
   );
-  const accountPendingWithdraws = storage.getPendingWithdrawsByHermezAddress(
-    pendingWithdraws,
-    ethereumNetworkTask.data.chainId,
-    wallet.hermezEthereumAddress
-  );
-  const accountPendingDelayedWithdraws = storage.getPendingDelayedWithdrawsByHermezAddress(
-    pendingDelayedWithdraws,
-    ethereumNetworkTask.data.chainId,
-    wallet.hermezEthereumAddress
-  );
-
-  const accountTimerWithdraws = storage.getTimerWithdrawsByHermezAddress(
-    timerWithdraws,
-    ethereumNetworkTask.data.chainId,
-    wallet.hermezEthereumAddress
-  );
+  const accountPendingWithdraws = ethereumNetworkAndWalletLoaded
+    ? storage.getPendingWithdrawsByHermezAddress(
+        pendingWithdraws,
+        ethereumNetworkTask.data.chainId,
+        wallet.hermezEthereumAddress
+      )
+    : [];
+  const accountPendingDelayedWithdraws = ethereumNetworkAndWalletLoaded
+    ? storage.getPendingDelayedWithdrawsByHermezAddress(
+        pendingDelayedWithdraws,
+        ethereumNetworkTask.data.chainId,
+        wallet.hermezEthereumAddress
+      )
+    : [];
+  const accountTimerWithdraws = ethereumNetworkAndWalletLoaded
+    ? storage.getTimerWithdrawsByHermezAddress(
+        timerWithdraws,
+        ethereumNetworkTask.data.chainId,
+        wallet.hermezEthereumAddress
+      )
+    : [];
 
   React.useEffect(() => {
-    onChangeHeader(accountTask.data?.token.name);
+    if (accountTask.status === "successful") {
+      onChangeHeader(accountTask.data.token.name);
+    }
   }, [accountTask, onChangeHeader]);
 
   React.useEffect(() => {
@@ -101,7 +190,16 @@ function AccountDetails({
         clearInterval(intervalId);
       };
     }
-  }, [accountIndex, onCheckPendingDeposits, onLoadAccount, onLoadPoolTransactions]);
+  }, [
+    accountIndex,
+    onCheckPendingDeposits,
+    onLoadAccount,
+    onLoadPoolTransactions,
+    onCheckPendingWithdrawals,
+    onCheckPendingDelayedWithdrawals,
+    fiatExchangeRatesTask,
+    preferredCurrency,
+  ]);
 
   React.useEffect(() => {
     if (accountTask.status === "successful") {
@@ -117,14 +215,14 @@ function AccountDetails({
 
   React.useEffect(() => {
     if (exitsTask.status === "successful") {
-      onLoadHistoryTransactions(accountIndex, undefined, exitsTask.data);
+      onLoadHistoryTransactions(accountIndex, exitsTask.data);
     }
   }, [exitsTask, accountIndex, onLoadHistoryTransactions]);
 
   React.useEffect(() => onCleanup, [onCleanup]);
 
-  function getAccountTokenBalance(account) {
-    if (!account) {
+  function getAccountTokenBalance(account: HermezAccount) {
+    if (!isAsyncTaskDataAvailable(poolTransactionsTask)) {
       return undefined;
     }
 
@@ -137,13 +235,14 @@ function AccountDetails({
     return getFixedTokenAmount(accountBalance, account.token.decimals);
   }
 
-  function getAccountFiatBalance(account) {
-    if (!account || fiatExchangeRatesTask.status !== "successful") {
+  function getAccountFiatBalance(account: HermezAccount) {
+    const accountTokenBalance = getAccountTokenBalance(account);
+    if (!accountTokenBalance || !isAsyncTaskDataAvailable(fiatExchangeRatesTask)) {
       return undefined;
     }
 
     return getTokenAmountInPreferredCurrency(
-      getAccountTokenBalance(account),
+      accountTokenBalance,
       account.token.USD,
       preferredCurrency,
       fiatExchangeRatesTask.data
@@ -152,86 +251,74 @@ function AccountDetails({
 
   /**
    * Filters the transactions from the pool which are of type Exit
-   * @param {Object[]} poolTransactions - Transactions from the pool
-   * @returns {Object[]} Transactions from the pool which are of type Exit
    */
-  function getPendingExits(poolTransactions) {
+  function getPendingExits(poolTransactions: PoolTransaction[]) {
     return poolTransactions.filter((transaction) => transaction.type === TxType.Exit);
   }
 
   /**
    * Filters the transactions from the pool which are not of type Exit
-   * @param {Object[]} poolTransactions - Transactions from the pool
-   * @returns {Object[]} Transactions from the pool which are not of type Exit
    */
-  function getPendingTransactions(poolTransactions) {
+  function getPendingTransactions(poolTransactions: PoolTransaction[]) {
     return poolTransactions.filter((transaction) => transaction.type !== TxType.Exit);
   }
 
   /**
    * Navigates to the TransactionDetails view when a transaction is clicked
-   * @param {Object} transaction - Transaction
-   * @returns {void}
    */
-  function handleTransactionClick(transaction) {
-    onNavigateToTransactionDetails(accountIndex, transaction.id || transaction.hash);
+  function handleTransactionClick(
+    transaction: PendingDeposit | HistoryTransaction | PoolTransaction
+  ) {
+    const transactionId = isPendingDeposit(transaction) ? transaction.hash : transaction.id;
+    onNavigateToTransactionDetails(accountIndex, transactionId);
   }
 
   return (
     <div className={classes.root}>
       <Container backgroundColor={theme.palette.primary.main} disableTopGutter addHeaderPadding>
-        <section className={classes.section}>
-          <div className={classes.tokenBalance}>
-            <TokenBalance
-              amount={getAccountTokenBalance(accountTask.data)}
-              symbol={accountTask.data?.token.symbol}
-            />
-          </div>
-          <div className={classes.fiatBalanceWrapper}>
-            <FiatAmount
-              amount={getAccountFiatBalance(accountTask.data)}
-              currency={preferredCurrency}
-              className={classes.fiatBalance}
-            />
-          </div>
-          <TransactionActions
-            accountIndex={accountIndex}
-            tokenId={accountTask.data?.token.id}
-            hideDeposit={
-              l1TokenBalanceTask.status !== "successful" ||
-              accountTask.data?.hezEthereumAddress.toLowerCase() ===
+        {isAsyncTaskDataAvailable(accountTask) && (
+          <section className={classes.section}>
+            <div className={classes.tokenBalance}>
+              <TokenBalance
+                amount={getAccountTokenBalance(accountTask.data)}
+                symbol={accountTask.data.token.symbol}
+              />
+            </div>
+            <div className={classes.fiatBalanceWrapper}>
+              <FiatAmount
+                amount={getAccountFiatBalance(accountTask.data)}
+                currency={preferredCurrency}
+                className={classes.fiatBalance}
+              />
+            </div>
+            <TransactionActions
+              accountIndex={accountIndex}
+              tokenId={accountTask.data.token.id}
+              hideDeposit={
+                !isAsyncTaskDataAvailable(l1TokenBalanceTask) ||
+                accountTask.data.hezEthereumAddress.toLowerCase() ===
+                  INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
+              }
+              hideWithdraw={
+                accountTask.data.hezEthereumAddress.toLowerCase() ===
                 INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
-            }
-            hideWithdraw={
-              accountTask.data?.hezEthereumAddress.toLowerCase() ===
-              INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
-            }
-            hideSwap
-          />
-        </section>
+              }
+              hideSwap
+            />
+          </section>
+        )}
       </Container>
       <Container>
         <section className={classes.section}>
           {(() => {
             if (
-              accountTask.status === "loading" ||
-              accountTask.status === "failed" ||
-              poolTransactionsTask.status === "loading" ||
-              poolTransactionsTask.status === "failed" ||
-              historyTransactionsTask.status === "loading" ||
-              historyTransactionsTask.status === "failed" ||
-              exitsTask.status === "loading" ||
-              exitsTask.status === "failed"
-            ) {
-              return <Spinner />;
-            }
-
-            if (
-              (poolTransactionsTask.status === "successful" ||
-                poolTransactionsTask.status === "reloading") &&
-              (historyTransactionsTask.status === "successful" ||
-                historyTransactionsTask.status === "reloading") &&
-              (exitsTask.status === "successful" || exitsTask.status === "reloading")
+              wallet &&
+              isAsyncTaskDataAvailable(coordinatorStateTask) &&
+              isAsyncTaskDataAvailable(fiatExchangeRatesTask) &&
+              isAsyncTaskDataAvailable(accountTask) &&
+              isAsyncTaskDataAvailable(poolTransactionsTask) &&
+              isAsyncTaskDataAvailable(historyTransactionsTask) &&
+              isAsyncTaskDataAvailable(exitsTask)
             ) {
               const tokenPendingDeposits = accountPendingDeposits
                 .filter((deposit) => deposit.accountIndex === accountTask.data.accountIndex)
@@ -280,7 +367,7 @@ function AccountDetails({
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       preferredCurrency={preferredCurrency}
                       onTransactionClick={handleTransactionClick}
-                      coordinatorState={coordinatorStateTask?.data}
+                      coordinatorState={coordinatorStateTask.data}
                     />
                   )}
                   <TransactionList
@@ -290,13 +377,13 @@ function AccountDetails({
                     fiatExchangeRates={fiatExchangeRatesTask.data}
                     preferredCurrency={preferredCurrency}
                     onTransactionClick={handleTransactionClick}
-                    coordinatorState={coordinatorStateTask?.data}
+                    coordinatorState={coordinatorStateTask.data}
                   />
                   <InfiniteScroll
                     asyncTaskStatus={historyTransactionsTask.status}
                     paginationData={historyTransactionsTask.data.pagination}
                     onLoadNextPage={(fromItem) =>
-                      onLoadHistoryTransactions(accountIndex, fromItem, exitsTask.data)
+                      onLoadHistoryTransactions(accountIndex, exitsTask.data, fromItem)
                     }
                   >
                     <TransactionList
@@ -305,13 +392,14 @@ function AccountDetails({
                       fiatExchangeRates={fiatExchangeRatesTask.data}
                       preferredCurrency={preferredCurrency}
                       onTransactionClick={handleTransactionClick}
+                      coordinatorState={coordinatorStateTask.data}
                     />
                   </InfiniteScroll>
                 </>
               );
+            } else {
+              return <Spinner />;
             }
-
-            return <></>;
           })()}
         </section>
       </Container>
@@ -319,29 +407,7 @@ function AccountDetails({
   );
 }
 
-AccountDetails.propTypes = {
-  preferredCurrency: PropTypes.string.isRequired,
-  accountTask: PropTypes.object.isRequired,
-  poolTransactionsTask: PropTypes.object.isRequired,
-  historyTransactionsTask: PropTypes.object.isRequired,
-  exitsTask: PropTypes.object.isRequired,
-  fiatExchangeRatesTask: PropTypes.object.isRequired,
-  wallet: PropTypes.object.isRequired,
-  pendingWithdraws: PropTypes.object.isRequired,
-  pendingDelayedWithdraws: PropTypes.object.isRequired,
-  timerWithdraws: PropTypes.object.isRequired,
-  coordinatorStateTask: PropTypes.object.isRequired,
-  onLoadAccount: PropTypes.func.isRequired,
-  onChangeHeader: PropTypes.func.isRequired,
-  onLoadPoolTransactions: PropTypes.func.isRequired,
-  onLoadHistoryTransactions: PropTypes.func.isRequired,
-  onLoadExits: PropTypes.func.isRequired,
-  onAddTimerWithdraw: PropTypes.func.isRequired,
-  onRemoveTimerWithdraw: PropTypes.func.isRequired,
-  onNavigateToTransactionDetails: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: AppState): AccountDetailsStateProps => ({
   preferredCurrency: state.myAccount.preferredCurrency,
   accountTask: state.accountDetails.accountTask,
   l1TokenBalanceTask: state.accountDetails.l1TokenBalanceTask,
@@ -358,7 +424,7 @@ const mapStateToProps = (state) => ({
   coordinatorStateTask: state.global.coordinatorStateTask,
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch): AccountDetailsHandlerProps => ({
   onLoadAccount: (accountIndex, fiatExchangeRates, preferredCurrency) =>
     dispatch(accountDetailsThunks.fetchAccount(accountIndex, fiatExchangeRates, preferredCurrency)),
   onLoadL1TokenBalance: (token) => dispatch(accountDetailsThunks.fetchL1TokenBalance(token)),
@@ -375,8 +441,8 @@ const mapDispatchToProps = (dispatch) => ({
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
   onLoadPoolTransactions: (accountIndex) =>
     dispatch(accountDetailsThunks.fetchPoolTransactions(accountIndex)),
-  onLoadHistoryTransactions: (accountIndex, fromItem, exits) =>
-    dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, fromItem, exits)),
+  onLoadHistoryTransactions: (accountIndex, exits, fromItem) =>
+    dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, exits, fromItem)),
   onLoadExits: (tokenId) => dispatch(accountDetailsThunks.fetchExits(tokenId)),
   onAddTimerWithdraw: (timerWithdraw) => dispatch(globalThunks.addTimerWithdraw(timerWithdraw)),
   onRemoveTimerWithdraw: (timerWithdrawId) =>

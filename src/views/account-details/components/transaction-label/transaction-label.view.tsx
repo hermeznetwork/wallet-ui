@@ -1,9 +1,18 @@
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-import useTransactionLabelStyles from "./transaction-label.styles";
+import useTransactionLabelStyles from "src/views/account-details/components/transaction-label/transaction-label.styles";
 
-function TransactionLabel({ type, fromAccountIndex, accountIndex }) {
+interface TransactionLabelProps {
+  type: TxType;
+  accountIndex: string;
+  fromAccountIndex?: string;
+}
+function TransactionLabel({
+  type,
+  fromAccountIndex,
+  accountIndex,
+}: TransactionLabelProps): JSX.Element {
   const classes = useTransactionLabelStyles();
   /**
    * Returns the label corresponding to the transaction type
@@ -28,9 +37,6 @@ function TransactionLabel({ type, fromAccountIndex, accountIndex }) {
         } else {
           return "Received";
         }
-      }
-      default: {
-        return "";
       }
     }
   }

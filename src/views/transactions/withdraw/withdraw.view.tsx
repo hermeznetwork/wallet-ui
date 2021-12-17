@@ -26,7 +26,6 @@ import {
 } from "src/domain/hermez";
 import { PendingDelayedWithdraws } from "src/domain/local-storage";
 import { EthereumNetwork } from "src/domain/ethereum";
-import { account } from "src/persistence/parsers";
 
 interface WithdrawStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
@@ -101,7 +100,7 @@ function Withdraw({
   const completeDelayedWithdrawal = urlSearchParams.get("completeDelayedWithdrawal") === "true";
 
   React.useEffect(() => {
-    if (!account || !batchNum) {
+    if (!accountIndex || !batchNum) {
       onGoToHome();
     }
   }, [accountIndex, batchNum, onGoToHome]);

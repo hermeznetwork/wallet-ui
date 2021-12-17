@@ -65,12 +65,12 @@ function createAccount(
   poolTransactions: PoolTransaction[] | undefined,
   pendingDeposits: PendingDeposit[] | undefined,
   tokensPriceTask: AsyncTask<Token[], string>,
-  fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  preferredCurrency: string,
+  fiatExchangeRates?: FiatExchangeRates
 ): HermezAccount {
   const updatedAccount: HermezAccount = updateAccountToken(tokensPriceTask, account);
   const accountBalance = getAccountBalance(updatedAccount, poolTransactions, pendingDeposits);
-  const fiatBalance: number = convertTokenAmountToFiat(
+  const fiatBalance = convertTokenAmountToFiat(
     accountBalance,
     updatedAccount.token,
     preferredCurrency,

@@ -1,14 +1,34 @@
 import React from "react";
-import PropTypes from "prop-types";
 
-import Transaction from "../transaction/transaction.view";
-import useTransactionListStyles from "./transaction-list.styles";
+import TransactionComponent from "src/views/account-details/components/transaction/transaction.view";
+import useTransactionListStyles from "src/views/account-details/components/transaction-list/transaction-list.styles";
 import {
   getFixedTokenAmount,
   getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency,
-} from "../../../../utils/currencies";
-import { getTransactionAmount } from "../../../../utils/transactions";
+} from "src/utils/currencies";
+import { getTransactionAmount } from "src/utils/transactions";
+// domain
+import {
+  CoordinatorState,
+  FiatExchangeRates,
+  HistoryTransaction,
+  isHistoryTransaction,
+  isPendingDeposit,
+  isPoolTransaction,
+  PendingDeposit,
+  PoolTransaction,
+} from "src/domain/hermez";
+
+interface TransactionListProps {
+  accountIndex: string;
+  transactions: HistoryTransaction[] | PoolTransaction[] | PendingDeposit[];
+  preferredCurrency: string;
+  fiatExchangeRates: FiatExchangeRates;
+  coordinatorState: CoordinatorState;
+  arePending?: boolean;
+  onTransactionClick: (transaction: PendingDeposit | HistoryTransaction | PoolTransaction) => void;
+}
 
 function TransactionList({
   accountIndex,
@@ -18,14 +38,15 @@ function TransactionList({
   arePending,
   coordinatorState,
   onTransactionClick,
-}) {
+}: TransactionListProps): JSX.Element {
   const classes = useTransactionListStyles();
 
   /**
    * Bubbles up the onClick event when a transaction is clicked
-   * @param {Object} transaction - The transaction clicked
    */
-  function handleTransactionClick(transaction) {
+  function handleTransactionClick(
+    transaction: PendingDeposit | HistoryTransaction | PoolTransaction
+  ) {
     onTransactionClick(transaction);
   }
 
@@ -34,18 +55,22 @@ function TransactionList({
       {transactions.map((transaction) => {
         const amount = getTransactionAmount(transaction);
         const fixedTokenAmount = getFixedTokenAmount(amount, transaction.token.decimals);
+        const id = isPendingDeposit(transaction) ? transaction.hash : transaction.id;
 
         return (
-          <div key={transaction.hash || transaction.id} className={classes.transaction}>
-            <Transaction
-              id={transaction.id}
+          <div key={id} className={classes.transaction}>
+            <TransactionComponent
               type={transaction.type}
               accountIndex={accountIndex}
-              fromAccountIndex={transaction.fromAccountIndex}
+              fromAccountIndex={
+                isPendingDeposit(transaction)
+                  ? transaction.accountIndex
+                  : transaction.fromAccountIndex
+              }
               amount={fixedTokenAmount}
               tokenSymbol={transaction.token.symbol}
               fiatAmount={
-                transaction.historicUSD
+                isHistoryTransaction(transaction) && transaction.historicUSD
                   ? getAmountInPreferredCurrency(
                       transaction.historicUSD,
                       preferredCurrency,
@@ -62,7 +87,7 @@ function TransactionList({
               timestamp={transaction.timestamp}
               preferredCurrency={preferredCurrency}
               coordinatorState={coordinatorState}
-              invalid={transaction.errorCode}
+              invalid={isPoolTransaction(transaction) && transaction.errorCode !== null}
               onClick={() => handleTransactionClick(transaction)}
             />
           </div>
@@ -71,12 +96,5 @@ function TransactionList({
     </>
   );
 }
-
-TransactionList.propTypes = {
-  transactions: PropTypes.array,
-  preferredCurrency: PropTypes.string.isRequired,
-  fiatExchangeRates: PropTypes.object,
-  onTransactionClick: PropTypes.func.isRequired,
-};
 
 export default TransactionList;

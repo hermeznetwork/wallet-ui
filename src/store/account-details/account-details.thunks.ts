@@ -49,8 +49,8 @@ function fetchAccount(
             undefined,
             undefined,
             tokensPriceTask,
-            fiatExchangeRates,
-            preferredCurrency
+            preferredCurrency,
+            fiatExchangeRates
           );
 
           dispatch(accountDetailsActions.loadAccountSuccess(accountTokenUpdated));
@@ -142,8 +142,8 @@ function filterExitsFromHistoryTransactions(
 // ToDo: Define fromItem type
 function fetchHistoryTransactions(
   accountIndex: HermezAccount["accountIndex"],
-  fromItem: number,
-  exits: Exits
+  exits: Exits,
+  fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
