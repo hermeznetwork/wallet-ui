@@ -18,6 +18,10 @@ const useSelectedAccountStyles = createUseStyles((theme: Theme) => ({
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
     color: theme.palette.black,
+    transition: theme.hoverTransition,
+    "&:hover": {
+      backgroundColor: theme.palette.primary.hover,
+    },
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(2.5)}px`,
       height: theme.spacing(8),

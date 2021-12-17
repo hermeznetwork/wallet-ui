@@ -18,6 +18,10 @@ const useAccountStyles = createUseStyles((theme: Theme) => ({
     cursor: isDisabled ? "default" : "pointer",
     opacity: isDisabled ? 0.5 : 1,
     pointerEvents: isDisabled ? "none" : "all",
+    transition: theme.hoverTransition,
+    "&:hover": {
+      backgroundColor: theme.palette.primary.hover,
+    },
   }),
   account: {
     padding: theme.spacing(2.5),
