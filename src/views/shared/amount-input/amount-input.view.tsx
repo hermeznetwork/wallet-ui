@@ -23,7 +23,7 @@ import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 
 export interface Amount {
   tokens: BigNumber;
-  fiat: number;
+  fiat?: number;
 }
 
 export interface AmountInputChangeEventData {
@@ -177,9 +177,12 @@ function AmountInput(
     function handleSendAll() {
       const maxPossibleAmount = BigNumber.from(account.balance);
       const maxAmountWithoutFee = getMaxTxAmount(txType, maxPossibleAmount, fee);
-      const maxAmountWithoutFeeInFiat = trimZeros(convertAmountToFiat(maxAmountWithoutFee), 2);
+      const maxAmountWithoutFeeInFiat = convertAmountToFiat(maxAmountWithoutFee);
+      const fixedMaxAmountWithoutFeeInFiat = maxAmountWithoutFeeInFiat
+        ? trimZeros(maxAmountWithoutFeeInFiat, 2).toString()
+        : undefined;
       const newValue = showInFiat
-        ? maxAmountWithoutFeeInFiat.toString()
+        ? fixedMaxAmountWithoutFeeInFiat
         : getFixedTokenAmount(maxAmountWithoutFee.toString(), account.token.decimals);
 
       updateAmountState(

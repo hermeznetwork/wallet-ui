@@ -8,10 +8,10 @@ import { CoordinatorState, ISOStringDate, Token } from "src/domain/hermez";
 
 interface AccountProps {
   balance: string;
-  fiatBalance: number;
   token: Token;
   preferredCurrency: string;
   hasPendingDeposit: boolean;
+  fiatBalance?: number;
   isDisabled?: boolean;
   coordinatorState?: CoordinatorState;
   timestamp?: ISOStringDate;

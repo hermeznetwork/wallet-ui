@@ -25,14 +25,14 @@ interface ExitCardProps {
   amount: string;
   fixedTokenAmount: string;
   token: Token;
-  fiatAmount: number;
   preferredCurrency: string;
   accountIndex: string;
   babyJubJub: string;
   pendingWithdraws: PendingWithdraw[];
   pendingDelayedWithdraws: PendingDelayedWithdraw[];
   timerWithdraws: TimerWithdraw[];
-  coordinatorState: CoordinatorState;
+  coordinatorState?: CoordinatorState;
+  fiatAmount?: number;
   exitId?: string;
   merkleProof?: MerkleProof;
   batchNum?: number;
@@ -44,17 +44,17 @@ function ExitCard({
   amount,
   fixedTokenAmount,
   token,
-  fiatAmount,
   preferredCurrency,
-  exitId,
-  merkleProof,
-  batchNum,
   accountIndex,
   babyJubJub,
   pendingWithdraws,
   pendingDelayedWithdraws,
   timerWithdraws,
   coordinatorState,
+  fiatAmount,
+  exitId,
+  merkleProof,
+  batchNum,
   onAddTimerWithdraw,
   onRemoveTimerWithdraw,
 }: ExitCardProps): JSX.Element {
@@ -86,7 +86,7 @@ function ExitCard({
   }, [exitId, merkleProof, pendingWithdraws]);
 
   React.useEffect(() => {
-    if (typeof coordinatorState !== "undefined" && getStep() <= 2) {
+    if (coordinatorState && getStep() <= 2) {
       isInstantWithdrawalAllowed(
         amount,
         accountIndex,
@@ -151,9 +151,9 @@ function ExitCard({
   /**
    * Converts the withdraw delay from seconds to hours or minutes
    */
-  function getWithdrawalDelayerTime() {
+  function getWithdrawalDelayerTime(cs: CoordinatorState) {
     // Extracts the hours and minutes from the withdrawalDelay time stamp
-    const hours = coordinatorState?.withdrawalDelayer.withdrawalDelay / 60 / 60;
+    const hours = cs.withdrawalDelayer.withdrawalDelay / 60 / 60;
     const hoursFixed = Math.floor(hours);
     // Minutes are in a value between 0-1, so we need to convert to 0-59
     const minutes = Math.round((hours - hoursFixed) * 59);
@@ -170,7 +170,7 @@ function ExitCard({
    * It detects the type and caculates the time accordingly (in hours for instant and days for delayed)
    * If enough time has already passed, it deletes the pendingDelayedWithdraw from LocalStorage
    */
-  function getDateString(timestamp: ISOStringDate, timer: boolean) {
+  function getDateString(timestamp: ISOStringDate, timer: boolean, cs: CoordinatorState) {
     const now = Date.now();
     const difference = now - new Date(timestamp).getTime();
     if (timer) {
@@ -185,7 +185,7 @@ function ExitCard({
         return `${minutes}m`;
       }
     } else {
-      const delayedTime = coordinatorState?.withdrawalDelayer.withdrawalDelay * 1000;
+      const delayedTime = cs.withdrawalDelayer.withdrawalDelay * 1000;
       if (difference > delayedTime) {
         setIsDelayedWithdrawalReady(true);
       } else {
@@ -327,7 +327,9 @@ function ExitCard({
           const withdraw = pendingDelayedWithdrawal || timerWithdraw;
 
           if (withdraw) {
-            const remainingTime = getDateString(withdraw.timestamp, timerWithdraw !== undefined);
+            const remainingTime =
+              coordinatorState &&
+              getDateString(withdraw.timestamp, timerWithdraw !== undefined, coordinatorState);
             return (
               <div className={classes.withdraw}>
                 <div className={`${classes.withdrawInfo} ${classes.withdrawInfoDelayed}`}>
@@ -340,10 +342,12 @@ function ExitCard({
                     <span className={classes.infoText}>You have scheduled your withdrawal.</span>
                   )}
 
-                  <div className={`${classes.withdrawInfo} ${classes.withdrawInfoIcon}`}>
-                    <InfoIcon className={`${classes.infoIcon} ${classes.infoBoxIcon}`} />
-                    <span className={classes.infoText}>Remaining time: {remainingTime}</span>
-                  </div>
+                  {remainingTime && (
+                    <div className={`${classes.withdrawInfo} ${classes.withdrawInfoIcon}`}>
+                      <InfoIcon className={`${classes.infoIcon} ${classes.infoBoxIcon}`} />
+                      <span className={classes.infoText}>Remaining time: {remainingTime}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -367,7 +371,11 @@ function ExitCard({
                   />
                   <PrimaryButton
                     onClick={onWithdrawDelayedClick}
-                    label={`Withdraw in ${getWithdrawalDelayerTime()}`}
+                    label={
+                      coordinatorState
+                        ? `Withdraw in ${getWithdrawalDelayerTime(coordinatorState)}`
+                        : "Withdraw"
+                    }
                     boxed
                     inRow
                     last

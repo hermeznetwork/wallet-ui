@@ -1,16 +1,24 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-import depositedIcon from "../../../../images/icons/deposited.svg";
-import receivedIcon from "../../../../images/icons/received.svg";
-import sentIcon from "../../../../images/icons/sent.svg";
-import withdrawnIcon from "../../../../images/icons/withdrawn.svg";
+import depositedIcon from "src/images/icons/deposited.svg";
+import receivedIcon from "src/images/icons/received.svg";
+import sentIcon from "src/images/icons/sent.svg";
+import withdrawnIcon from "src/images/icons/withdrawn.svg";
 
-function TransactionType({ type, fromAccountIndex, accountIndex }) {
+interface TransactionTypeProps {
+  type: TxType;
+  accountIndex: string;
+  fromAccountIndex?: string;
+}
+
+function TransactionType({
+  type,
+  accountIndex,
+  fromAccountIndex,
+}: TransactionTypeProps): JSX.Element {
   /**
    * Returns the icon corresponding to the transaction type
-   * @returns {string} - Icon content encoded in base64
    */
   function getIcon() {
     switch (type) {
@@ -32,17 +40,10 @@ function TransactionType({ type, fromAccountIndex, accountIndex }) {
       case TxType.ForceExit: {
         return withdrawnIcon;
       }
-      default: {
-        return undefined;
-      }
     }
   }
 
-  return <img src={getIcon(type)} alt="Transaction type" />;
+  return <img src={getIcon()} alt="Transaction type" />;
 }
-
-TxType.propTypes = {
-  type: PropTypes.string.isRequired,
-};
 
 export default TransactionType;

@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useTransactionListStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useTransactionListStyles = createUseStyles((theme: Theme) => ({
   transaction: {
     cursor: "pointer",
     width: "100%",

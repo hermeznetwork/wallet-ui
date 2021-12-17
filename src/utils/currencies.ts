@@ -53,12 +53,13 @@ function getFixedTokenAmount(amount: string, decimals = 18): string {
 function getAmountInPreferredCurrency(
   usdAmount: number,
   preferredCurrency: string,
-  fiatExchangeRates: FiatExchangeRates
-): number {
+  fiatExchangeRates?: FiatExchangeRates
+): number | undefined {
   if (preferredCurrency === CurrencySymbol.USD.code) {
     return usdAmount;
+  } else if (fiatExchangeRates === undefined) {
+    return undefined;
   }
-
   return usdAmount * fiatExchangeRates[preferredCurrency];
 }
 
@@ -69,8 +70,8 @@ function getTokenAmountInPreferredCurrency(
   amount: string,
   usdTokenExchangeRate: number,
   preferredCurrency: string,
-  fiatExchangeRates: FiatExchangeRates
-): number {
+  fiatExchangeRates?: FiatExchangeRates
+): number | undefined {
   const usdAmount = Number(amount) * usdTokenExchangeRate;
   return getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchangeRates);
 }
@@ -91,8 +92,8 @@ function convertTokenAmountToFiat(
   tokenAmount: string,
   token: Token,
   preferredCurrency: string,
-  fiatExchangeRates: FiatExchangeRates
-): number {
+  fiatExchangeRates?: FiatExchangeRates
+): number | undefined {
   const fixedTokenAmount = getFixedTokenAmount(tokenAmount, token.decimals);
   return getTokenAmountInPreferredCurrency(
     fixedTokenAmount,

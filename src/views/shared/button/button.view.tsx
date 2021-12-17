@@ -5,7 +5,7 @@ import clsx from "clsx";
 import useButtonStyles from "./button.styles";
 
 interface ButtonProps {
-  Icon: React.ReactElement<React.SVGProps<SVGSVGElement>>;
+  Icon?: React.ReactElement<React.SVGProps<SVGSVGElement>>;
   text?: string;
   className?: string;
   disabled?: boolean;

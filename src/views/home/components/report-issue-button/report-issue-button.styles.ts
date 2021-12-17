@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const reportIssueButtonStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const reportIssueButtonStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: "100%",
     display: "flex",

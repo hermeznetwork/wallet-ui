@@ -3,15 +3,12 @@ import React from "react";
 import { CurrencySymbol, formatFiatAmount, isValidCurrencySymbolKey } from "src/utils/currencies";
 
 type FiatAmountProps = {
-  amount?: number;
   currency: string;
+  amount?: number;
+  className?: string;
 };
 
-function FiatAmount({
-  amount,
-  currency,
-  className,
-}: FiatAmountProps & React.HTMLAttributes<HTMLDivElement>): JSX.Element {
+function FiatAmount({ currency, amount, className }: FiatAmountProps): JSX.Element {
   const formattedAmount = formatFiatAmount(amount);
 
   if (isValidCurrencySymbolKey(currency)) {
