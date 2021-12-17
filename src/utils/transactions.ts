@@ -59,7 +59,7 @@ function getTxPendingTime(
  * Formats a number of minutes to a string as "2h and 23m" or just "23m"
  */
 function formatMinutes(minutes: number): string {
-  const remMin = Math.round(minutes % 60);
+  const remMin = Math.ceil(minutes % 60);
   const hours = Math.floor(minutes / 60);
   return hours > 0 ? `${hours}h and ${remMin}m` : `${remMin}m`;
 }
