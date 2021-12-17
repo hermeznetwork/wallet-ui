@@ -1,10 +1,18 @@
 import React from "react";
 import hermezjs from "@hermeznetwork/hermezjs";
 
-import useExploreTransactionButtonStyles from "./explore-transaction-button.styles";
-import { ReactComponent as OpenInNewTabIcon } from "../../../images/icons/open-in-new-tab.svg";
+import useExploreTransactionButtonStyles from "src/views/transaction-details/components/explore-transaction-button.styles";
+import { ReactComponent as OpenInNewTabIcon } from "src/images/icons/open-in-new-tab.svg";
 
-function ExploreTransactionButton({ txLevel, transactionIdOrHash }) {
+interface ExploreTransactionButtonProps {
+  txLevel: hermezjs.Enums.TxLevel;
+  transactionIdOrHash: string;
+}
+
+function ExploreTransactionButton({
+  txLevel,
+  transactionIdOrHash,
+}: ExploreTransactionButtonProps): JSX.Element {
   const classes = useExploreTransactionButtonStyles();
   const explorerName = txLevel === hermezjs.Enums.TxLevel.L1 ? "Etherscan" : "Explorer";
   const href =
