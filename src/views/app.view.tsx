@@ -1,29 +1,98 @@
 import React from "react";
 import { Switch, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import { useTheme } from "react-jss";
 
-import useAppStyles from "./app.styles";
-import routes from "../routing/routes";
-import * as globalActions from "../store/global/global.actions";
-import * as globalThunks from "../store/global/global.thunks";
-import Spinner from "./shared/spinner/spinner.view";
-import { COORDINATOR_STATE_REFRESH_RATE, RETRY_POOL_TXS_RATE } from "../constants";
-import Route from "./shared/route/route.view";
-import BaseLayout from "./shared/base-layout/base-layout.view";
-import { closeSnackbar } from "../store/global/global.actions";
-import UnderMaintenanceError from "./shared/under-maintenance-error/under-maintenance-error.view";
+import { AppDispatch, AppState, AppAction } from "src/store";
+import * as globalThunks from "src/store/global/global.thunks";
+import { closeSnackbar } from "src/store/global/global.actions";
+import routes from "src/routing/routes";
+import Spinner from "src/views/shared/spinner/spinner.view";
+import Route from "src/views/shared/route/route.view";
+import BaseLayout from "src/views/shared/base-layout/base-layout.view";
+import UnderMaintenanceError from "src/views/shared/under-maintenance-error/under-maintenance-error.view";
+import useAppStyles from "src/views/app.styles";
+import { COORDINATOR_STATE_REFRESH_RATE, RETRY_POOL_TXS_RATE } from "src/constants";
+import { AsyncTask } from "src/utils/types";
+import { Theme } from "src/styles/theme";
+//domain
+import {
+  FiatExchangeRates,
+  HermezWallet,
+  HermezNetworkStatus,
+  HermezStatus,
+} from "src/domain/hermez";
+import { EthereumNetwork } from "src/domain/ethereum";
+
+declare const window: Window &
+  typeof globalThis & {
+    ethereum?: {
+      on: (event: "accountsChanged" | "chainChanged", callback: () => void) => void;
+    };
+  };
+
+interface PageHeader {
+  type: "page";
+  data: {
+    title: string;
+    subtitle?: string;
+    goBackAction?: AppAction;
+    closeAction?: AppAction;
+  };
+}
+
+export type HeaderState =
+  | {
+      type: undefined;
+    }
+  | {
+      type: "main";
+    }
+  | PageHeader;
+
+export type SnackbarState =
+  | {
+      status: "closed";
+    }
+  | {
+      status: "open";
+      message: string;
+      backgroundColor?: string;
+    };
+
+interface AppStateProps {
+  wallet: HermezWallet.HermezWallet | undefined;
+  header: HeaderState;
+  snackbar: SnackbarState;
+  fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
+  hermezStatusTask: AsyncTask<HermezStatus, string>;
+  ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
+}
+
+interface AppHandlerProps {
+  onChangeRedirectRoute: (redirectRoute: string) => void;
+  onGoBack: (action: AppAction) => void;
+  onClose: (action: AppAction) => void;
+  onCloseSnackbar: () => void;
+  onLoadCoordinatorState: () => void;
+  onLoadFiatExchangeRates: () => void;
+  onCheckHermezStatus: () => void;
+  onChangeNetworkStatus: (hermezNetworkStatus: HermezNetworkStatus, color: string) => void;
+  onDisconnectAccount: () => void;
+  onCheckPendingTransactions: () => void;
+  onReloadApp: () => void;
+  onLoadTokensPrice: () => void;
+}
+
+type AppProps = AppStateProps & AppHandlerProps;
 
 function App({
   wallet,
   header,
   snackbar,
-  preferredCurrency,
   fiatExchangeRatesTask,
   hermezStatusTask,
   ethereumNetworkTask,
-  coordinatorStateTask,
   onChangeRedirectRoute,
   onGoBack,
   onClose,
@@ -36,47 +105,42 @@ function App({
   onCheckPendingTransactions,
   onReloadApp,
   onLoadTokensPrice,
-}) {
-  const theme = useTheme();
+}: AppProps): JSX.Element {
+  const theme = useTheme<Theme>();
   const classes = useAppStyles();
 
   React.useEffect(() => {
     onCheckHermezStatus();
     onLoadFiatExchangeRates();
-  }, [onCheckHermezStatus]);
+  }, [onCheckHermezStatus, onLoadFiatExchangeRates]);
 
   React.useEffect(() => {
-    let intervalId;
-
     if (ethereumNetworkTask.status === "successful") {
-      intervalId = setInterval(onLoadCoordinatorState, COORDINATOR_STATE_REFRESH_RATE);
-
+      const intervalId = setInterval(onLoadCoordinatorState, COORDINATOR_STATE_REFRESH_RATE);
       onLoadCoordinatorState();
+      return () => {
+        clearInterval(intervalId);
+      };
     }
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [ethereumNetworkTask]);
+  }, [ethereumNetworkTask, onLoadCoordinatorState]);
 
   React.useEffect(() => {
-    let intervalId;
-
     if (wallet && ethereumNetworkTask.status === "successful") {
-      intervalId = setInterval(onCheckPendingTransactions, RETRY_POOL_TXS_RATE);
+      const intervalId = setInterval(onCheckPendingTransactions, RETRY_POOL_TXS_RATE);
+      return () => {
+        intervalId && clearInterval(intervalId);
+      };
     }
-
-    return () => {
-      intervalId && clearInterval(intervalId);
-    };
-  }, [ethereumNetworkTask, onCheckPendingTransactions]);
+  }, [wallet, ethereumNetworkTask, onCheckPendingTransactions]);
 
   React.useEffect(() => {
     window.addEventListener("online", () => onChangeNetworkStatus("online", theme.palette.green));
   }, [theme, onChangeNetworkStatus]);
 
   React.useEffect(() => {
-    window.addEventListener("offline", () => onChangeNetworkStatus("offline"));
+    window.addEventListener("offline", () =>
+      onChangeNetworkStatus("offline", theme.palette.red.main)
+    );
   }, [theme, onChangeNetworkStatus]);
 
   React.useEffect(() => {
@@ -92,7 +156,7 @@ function App({
 
   React.useEffect(() => {
     onLoadTokensPrice();
-  }, []);
+  }, [onLoadTokensPrice]);
 
   if (hermezStatusTask.status === "successful" && hermezStatusTask.data.isUnderMaintenance) {
     return <UnderMaintenanceError />;
@@ -111,7 +175,6 @@ function App({
       <BaseLayout
         header={header}
         snackbar={snackbar}
-        preferredCurrency={preferredCurrency}
         onGoBack={onGoBack}
         onClose={onClose}
         onCloseSnackbar={onCloseSnackbar}
@@ -132,26 +195,20 @@ function App({
   );
 }
 
-App.propTypes = {
-  fiatExchangeRatesTask: PropTypes.object,
-};
-
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: AppState): AppStateProps => ({
   wallet: state.global.wallet,
   header: state.global.header,
   snackbar: state.global.snackbar,
-  preferredCurrency: state.global.preferredCurrency,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   hermezStatusTask: state.global.hermezStatusTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
-  coordinatorStateTask: state.global.coordinatorStateTask,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  onChangeRedirectRoute: (redirectRoute) =>
+const mapDispatchToProps = (dispatch: AppDispatch): AppHandlerProps => ({
+  onChangeRedirectRoute: (redirectRoute: string) =>
     dispatch(globalThunks.changeRedirectRoute(redirectRoute)),
-  onGoBack: (action) => dispatch(action),
-  onClose: (action) => dispatch(action),
+  onGoBack: (action: AppAction) => dispatch(action),
+  onClose: (action: AppAction) => dispatch(action),
   onCloseSnackbar: () => dispatch(closeSnackbar()),
   onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),
   onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),

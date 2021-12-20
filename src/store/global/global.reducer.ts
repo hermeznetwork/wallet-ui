@@ -1,7 +1,7 @@
+import { SnackbarState, HeaderState } from "src/views/app.view";
 import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { Header } from "src/domain/";
 import { EthereumNetwork } from "src/domain/ethereum";
 import {
   HermezStatus,
@@ -18,22 +18,12 @@ import * as localStorageDomain from "src/domain/local-storage";
 // persistence
 import * as localStoragePersistence from "src/persistence/local-storage";
 
-type SnackbarState =
-  | {
-      status: "closed";
-    }
-  | {
-      status: "open";
-      message: string;
-      backgroundColor?: string;
-    };
-
 export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   wallet: HermezWallet.HermezWallet | undefined;
   signer: Signers.SignerData | undefined;
-  header: Header;
+  header: HeaderState;
   redirectRoute: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   snackbar: SnackbarState;

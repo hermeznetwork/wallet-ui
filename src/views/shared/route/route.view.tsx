@@ -8,7 +8,7 @@ import { HermezWallet } from "src/domain/hermez";
 interface RouteProps {
   route: routes.Route;
   wallet?: HermezWallet.HermezWallet;
-  onChangeRedirectRoute: () => void;
+  onChangeRedirectRoute: (route: string) => void;
 }
 
 function Route({ route, wallet, onChangeRedirectRoute }: RouteProps): JSX.Element {

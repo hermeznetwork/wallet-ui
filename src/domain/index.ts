@@ -1,6 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
-import { AppAction } from "src/store";
 import { HermezAccount, Token } from "src/domain/hermez";
 
 /**
@@ -11,28 +10,6 @@ import { HermezAccount, Token } from "src/domain/hermez";
  */
 
 export type ISOStringDate = string;
-
-// ToDo: Header
-// The types below are required to keep the state of the headers of the pages. They don't belong to the domain.
-// We'll keep them in here until we migrate the views to typescript.
-interface PageHeader {
-  type: "page";
-  data: {
-    title: string;
-    subtitle?: string;
-    goBackAction?: AppAction;
-    closeAction?: AppAction;
-  };
-}
-
-export type Header =
-  | {
-      type: undefined;
-    }
-  | {
-      type: "main";
-    }
-  | PageHeader;
 
 export interface EstimatedL1Fee {
   amount: BigNumber;

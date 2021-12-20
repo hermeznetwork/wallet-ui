@@ -10,6 +10,7 @@ import * as transferThunks from "src/store/transactions/transfer/transfer.thunks
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import * as transferReducer from "src/store/transactions/transfer/transfer.reducer";
 import { changeHeader } from "src/store/global/global.actions";
+import { HeaderState } from "src/views/app.view";
 import useTransferStyles from "src/views/transactions/transfer/transfer.styles";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
@@ -19,7 +20,7 @@ import TransferForm, {
   TxData,
 } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
-import { Header, TransactionReceiver } from "src/domain/";
+import { TransactionReceiver } from "src/domain/";
 import {
   HermezAccount,
   HermezWallet,
@@ -243,7 +244,7 @@ const getHeaderCloseAction = (accountIndex?: string) => {
   return accountIndex ? push(`/accounts/${accountIndex}`) : push("/");
 };
 
-const getHeader = (step: transferActions.Step, accountIndex?: string): Header => {
+const getHeader = (step: transferActions.Step, accountIndex?: string): HeaderState => {
   switch (step) {
     case "choose-account": {
       return {

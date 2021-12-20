@@ -7,12 +7,12 @@ import * as loginActions from "src/store/login/login.actions";
 import * as loginThunks from "src/store/login/login.thunks";
 import { Step } from "src/store/login/login.reducer";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
+import { HeaderState } from "src/views/app.view";
 import WalletButtonList from "src/views/login/components/wallet-button-list/wallet-button-list.view";
 import WalletLoader from "src/views/login/components/wallet-loader/wallet-loader.view";
 import CreateAccountAuth from "src/views/login/components/create-account-auth/create-account-auth.view";
 import useLoginStyles from "src/views/login/login.styles";
 // domain
-import { Header } from "src/domain/";
 import { HermezWallet } from "src/domain/hermez";
 import { EthereumNetwork } from "src/domain/ethereum";
 import { AuthSignatures } from "src/domain/local-storage";
@@ -102,7 +102,7 @@ const mapStateToProps = (state: AppState): LoginStateProps => ({
   accountAuthSignatures: state.login.accountAuthSignatures,
 });
 
-const getHeader = (currentStep: Step): Header => {
+const getHeader = (currentStep: Step): HeaderState => {
   if (currentStep.type === "wallet-selector") {
     return { type: undefined };
   } else {

@@ -18,10 +18,11 @@ import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import useExitStyles from "src/views/transactions/exit/exit.styles";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
 import * as exitThunks from "src/store/transactions/exit/exit.thunks";
-import { EstimatedL1Fee, Header } from "src/domain";
+import { EstimatedL1Fee } from "src/domain";
 import { changeHeader } from "src/store/global/global.actions";
 import Spinner from "src/views/shared/spinner/spinner.view";
 import ExitForm from "src/views/transactions/exit/components/exit-form/exit-form.view";
+import { HeaderState } from "src/views/app.view";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import { getFixedTokenAmount } from "src/utils/currencies";
 
@@ -216,7 +217,7 @@ const getHeaderCloseAction = (accountIndex: string | null) => {
   return accountIndex === null ? push("/") : push(`/accounts/${accountIndex}`);
 };
 
-const getHeader = (step: exitActions.Step, accountIndex: string | null): Header => {
+const getHeader = (step: exitActions.Step, accountIndex: string | null): HeaderState => {
   switch (step) {
     case "build-transaction": {
       return {
