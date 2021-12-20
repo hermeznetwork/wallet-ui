@@ -1,7 +1,7 @@
 import React from "react";
 
-import useWalletButtonStyles from "./wallet-button.styles";
-import WalletButtonLogo from "../wallet-button-logo/wallet-button-logo.view";
+import useWalletButtonStyles from "src/views/login/components/wallet-button/wallet-button.styles";
+import WalletButtonLogo from "src/views/login/components/wallet-button-logo/wallet-button-logo.view";
 import * as loginActions from "src/store/login/login.actions";
 
 interface WalletButtonProps {

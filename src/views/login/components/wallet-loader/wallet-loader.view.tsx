@@ -1,7 +1,7 @@
 import React from "react";
-import WalletButton from "../wallet-button/wallet-button.view";
+import WalletButton from "src/views/login/components/wallet-button/wallet-button.view";
 
-import useWalletLoaderStyles from "./wallet-loader.styles";
+import useWalletLoaderStyles from "src/views/login/components/wallet-loader/wallet-loader.styles";
 import * as loginActions from "src/store/login/login.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
