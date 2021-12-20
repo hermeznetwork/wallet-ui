@@ -8,8 +8,6 @@ import hermez from "@hermeznetwork/hermezjs";
 import { isEnvironmentSupported } from "@hermeznetwork/hermezjs/src/environment";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
-import { TREZOR_MANIFEST_MAIL } from "src/constants";
-import { buildEthereumBIP44Path } from "src/utils/hw-wallets";
 import { getNextForgerUrls } from "src/utils/coordinator";
 import * as globalActions from "src/store/global/global.actions";
 import * as globalThunks from "src/store/global/global.thunks";
@@ -19,48 +17,6 @@ import { Signers, HermezWallet } from "src/domain/hermez";
 // persistence
 import * as persistence from "src/persistence";
 import { getAuthSignatures, setAuthSignatures } from "src/persistence/local-storage";
-
-async function getSignerData(
-  provider: Web3Provider,
-  walletName: loginActions.WalletName,
-  accountData: loginActions.AccountData
-): Promise<Signers.SignerData> {
-  switch (walletName) {
-    case loginActions.WalletName.METAMASK:
-    case loginActions.WalletName.WALLET_CONNECT: {
-      return {
-        type: "JSON-RPC",
-      };
-    }
-    case loginActions.WalletName.LEDGER: {
-      const chainId = (await provider.getNetwork()).chainId;
-      const { accountType, accountIndex } = accountData;
-      const path = buildEthereumBIP44Path(chainId, accountType, accountIndex);
-
-      return {
-        type: hermez.Signers.SignerType.LEDGER,
-        path,
-      };
-    }
-    case loginActions.WalletName.TREZOR: {
-      const chainId = (await provider.getNetwork()).chainId;
-      const { accountType, accountIndex } = accountData;
-      const path = buildEthereumBIP44Path(chainId, accountType, accountIndex);
-
-      return {
-        type: hermez.Signers.SignerType.TREZOR,
-        path,
-        manifest: {
-          email: TREZOR_MANIFEST_MAIL,
-          appUrl: window.location.origin,
-        },
-      };
-    }
-    default: {
-      throw new Error("Wallet not supported");
-    }
-  }
-}
 
 /**
  * Helper function that signs the authentication message depending on Wallet type
@@ -105,18 +61,10 @@ function signMessageHelper(
  * store
  * @returns {void}
  */
-function fetchWallet(
-  walletName: loginActions.WalletName,
-  accountData: loginActions.AccountData
-): AppThunk {
+function fetchWallet(walletName: loginActions.WalletName): AppThunk {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
     try {
       switch (walletName) {
-        case loginActions.WalletName.LEDGER:
-        case loginActions.WalletName.TREZOR: {
-          hermez.Providers.setProvider(process.env.REACT_APP_HARDWARE_WALLETS_PROVIDER);
-          break;
-        }
         case loginActions.WalletName.WALLET_CONNECT: {
           const walletConnectProvider = new WalletConnectProvider({
             infuraId: process.env.REACT_APP_INFURA_API_KEY,
@@ -143,7 +91,7 @@ function fetchWallet(
         }
       }
 
-      const signerData = await getSignerData(provider, walletName, accountData);
+      const signerData = { type: "JSON-RPC" as const };
       const signer = await hermez.Signers.getSigner(provider, signerData);
 
       if (provider.provider instanceof WalletConnectProvider) {
@@ -187,22 +135,10 @@ function fetchWallet(
 
       if (step.type === "wallet-loader") {
         dispatch(globalActions.loadWallet(wallet));
-        const signerDataWithAddress: Signers.SignerData = ((): Signers.SignerData => {
-          switch (signerData.type) {
-            case "JSON-RPC": {
-              return { ...signerData, addressOrIndex: address };
-            }
-            case "LEDGER": {
-              return signerData;
-            }
-            case "TREZOR": {
-              return { ...signerData, address };
-            }
-            case "WALLET": {
-              return signerData;
-            }
-          }
-        })();
+        const signerDataWithAddress: Signers.SignerData = {
+          ...signerData,
+          addressOrIndex: address,
+        };
         dispatch(globalActions.setSigner(signerDataWithAddress));
         dispatch(loginActions.goToCreateAccountAuthStep(wallet));
       }

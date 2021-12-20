@@ -1,8 +1,21 @@
 import React from "react";
-import useCreateAccountAuthStyles from "./create-account-auth.styles";
-import Spinner from "../../../shared/spinner/spinner.view";
 
-function CreateAccountAuth({ hermezAddressAuthSignature, wallet, onCreateAccountAuthorization }) {
+import useCreateAccountAuthStyles from "src/views/login/components/create-account-auth/create-account-auth.styles";
+import Spinner from "src/views/shared/spinner/spinner.view";
+// domain
+import { HermezWallet } from "src/domain/hermez";
+
+interface CreateAccountAuthProps {
+  hermezAddressAuthSignature?: string;
+  wallet: HermezWallet.HermezWallet;
+  onCreateAccountAuthorization: (wallet: HermezWallet.HermezWallet) => void;
+}
+
+function CreateAccountAuth({
+  hermezAddressAuthSignature,
+  wallet,
+  onCreateAccountAuthorization,
+}: CreateAccountAuthProps): JSX.Element {
   const classes = useCreateAccountAuthStyles();
   React.useEffect(() => {
     onCreateAccountAuthorization(wallet);

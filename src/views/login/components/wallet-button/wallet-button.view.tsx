@@ -2,13 +2,20 @@ import React from "react";
 
 import useWalletButtonStyles from "./wallet-button.styles";
 import WalletButtonLogo from "../wallet-button-logo/wallet-button-logo.view";
+import * as loginActions from "src/store/login/login.actions";
 
-function WalletButton({ walletName, hideName, onClick }) {
+interface WalletButtonProps {
+  walletName: loginActions.WalletName;
+  hideName?: boolean;
+  onClick?: () => void;
+}
+
+function WalletButton({ walletName, hideName = false, onClick }: WalletButtonProps): JSX.Element {
   const classes = useWalletButtonStyles();
   const isClickable = onClick !== undefined;
   const Component = isClickable ? "button" : "div";
 
-  function getButtonLabel(walletName) {
+  function getButtonLabel(walletName: string) {
     return walletName[0].toUpperCase() + walletName.slice(1);
   }
 

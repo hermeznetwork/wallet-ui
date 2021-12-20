@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useWalletButtonListStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useWalletButtonListStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
   },

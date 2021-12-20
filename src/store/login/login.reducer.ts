@@ -1,10 +1,5 @@
 import { AsyncTask } from "src/utils/types";
-import {
-  LoginActionTypes,
-  LoginAction,
-  WalletName,
-  AccountData,
-} from "src/store/login/login.actions";
+import { LoginActionTypes, LoginAction, WalletName } from "src/store/login/login.actions";
 // domain
 import { HermezWallet } from "src/domain/hermez";
 import { AuthSignatures } from "src/domain/local-storage";
@@ -20,7 +15,6 @@ export interface LoginState {
 // ToDo: This should be removed when we migrate login.view.jsx module to TS
 export enum STEP_NAME {
   WALLET_SELECTOR = "wallet-selector",
-  ACCOUNT_SELECTOR = "account-selector",
   WALLET_LOADER = "wallet-loader",
   CREATE_ACCOUNT_AUTH = "create-account-auth",
 }
@@ -30,18 +24,13 @@ export type Step =
       type: "wallet-selector";
     }
   | {
-      // hardware wallets
-      type: "account-selector";
-    }
-  | {
       type: "wallet-loader";
       walletName: WalletName;
-      accountData: AccountData | undefined;
       walletTask: AsyncTask<HermezWallet.HermezWallet, string>;
     }
   | {
       type: "create-account-auth";
-      wallet: HermezWallet.HermezWallet | undefined;
+      wallet: HermezWallet.HermezWallet;
     };
 
 function getInitialLoginState(): LoginState {
@@ -66,21 +55,12 @@ function loginReducer(state: LoginState = getInitialLoginState(), action: LoginA
         ...initialLoginState,
       };
     }
-    case LoginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP: {
-      return {
-        ...state,
-        step: {
-          type: "account-selector",
-        },
-      };
-    }
     case LoginActionTypes.GO_TO_WALLET_LOADER_STEP: {
       return {
         ...state,
         step: {
           type: "wallet-loader",
           walletName: action.walletName,
-          accountData: action.accountData,
           walletTask: {
             status: "pending",
           },
@@ -98,26 +78,12 @@ function loginReducer(state: LoginState = getInitialLoginState(), action: LoginA
     }
     case LoginActionTypes.GO_TO_PREVIOUS_STEP: {
       switch (state.step.type) {
-        case "account-selector": {
+        case "wallet-loader": {
           return {
             ...state,
             step: {
               type: "wallet-selector",
             },
-          };
-        }
-        case "wallet-loader": {
-          return {
-            ...state,
-            step:
-              state.step.walletName === WalletName.METAMASK ||
-              state.step.walletName === WalletName.WALLET_CONNECT
-                ? {
-                    type: "wallet-selector",
-                  }
-                : {
-                    type: "account-selector",
-                  },
           };
         }
         default: {
@@ -133,7 +99,6 @@ function loginReducer(state: LoginState = getInitialLoginState(), action: LoginA
           walletTask: {
             status: "loading",
           },
-          accountData: undefined,
           walletName: action.walletName,
         },
       };

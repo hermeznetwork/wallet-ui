@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useWalletLoaderStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useWalletLoaderStyles = createUseStyles((theme: Theme) => ({
   root: {},
   followInstructionsText: {
     lineHeight: 1.75,
