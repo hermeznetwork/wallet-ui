@@ -3,8 +3,7 @@
 import { BaseProvider } from "@ethersproject/providers";
 
 declare global {
-  type WindowOverride = Window &
-    typeof globalThis & {
-      ethereum?: BaseProvider;
-    };
+  interface Window {
+    ethereum?: BaseProvider;
+  }
 }

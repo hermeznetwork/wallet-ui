@@ -25,8 +25,6 @@ import {
 } from "src/domain/hermez";
 import { EthereumNetwork } from "src/domain/ethereum";
 
-declare const window: WindowOverride;
-
 interface AppStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
   header: HeaderState;

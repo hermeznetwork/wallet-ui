@@ -4,8 +4,6 @@ import useWalletButtonListStyles from "src/views/login/components/wallet-button-
 import WalletButton from "src/views/login/components/wallet-button/wallet-button.view";
 import { WalletName } from "src/store/login/login.actions";
 
-declare const window: WindowOverride;
-
 interface WalletButtonListProps {
   onClick: (walletName: WalletName) => void;
 }
