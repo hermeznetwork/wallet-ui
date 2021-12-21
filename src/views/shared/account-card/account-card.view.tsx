@@ -1,12 +1,12 @@
 import React from "react";
 
-import useAccountStyles from "src/views/shared/account/account.styles";
+import useAccountCardStyles from "src/views/shared/account-card/account-card.styles";
 import { getFixedTokenAmount } from "src/utils/currencies";
 import { getTxPendingTime, formatMinutes } from "src/utils/transactions";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import { CoordinatorState, ISOStringDate, Token } from "src/domain/hermez";
 
-interface AccountProps {
+interface AccountCardProps {
   balance: string;
   token: Token;
   preferredCurrency: string;
@@ -18,7 +18,7 @@ interface AccountProps {
   onClick: () => void;
 }
 
-function Account({
+function AccountCard({
   balance,
   fiatBalance,
   token,
@@ -28,8 +28,8 @@ function Account({
   coordinatorState,
   timestamp,
   onClick,
-}: AccountProps): JSX.Element {
-  const classes = useAccountStyles({
+}: AccountCardProps): JSX.Element {
+  const classes = useAccountCardStyles({
     hasPendingDeposit,
     isDisabled: isDisabled || false,
   });
@@ -70,4 +70,4 @@ function Account({
   );
 }
 
-export default Account;
+export default AccountCard;

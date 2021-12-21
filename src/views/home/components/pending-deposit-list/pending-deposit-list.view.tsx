@@ -1,7 +1,7 @@
 import React from "react";
 
 import usePendingDepositListStyles from "src/views/home/components/pending-deposit-list/pending-deposit-list.styles";
-import Account from "src/views/shared/account/account.view";
+import AccountCard from "src/views/shared/account-card/account-card.view";
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 //domain
 import { CoordinatorState, FiatExchangeRates, PendingDeposit } from "src/domain/hermez";
@@ -28,7 +28,7 @@ function PendingDepositList({
       {deposits.map((deposit) => {
         return (
           <div key={deposit.hash} className={classes.pendingDeposit}>
-            <Account
+            <AccountCard
               hasPendingDeposit
               balance={deposit.amount}
               fiatBalance={getTokenAmountInPreferredCurrency(

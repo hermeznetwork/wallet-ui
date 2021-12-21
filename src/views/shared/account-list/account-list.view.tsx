@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 
 import useAccountListStyles from "src/views/shared/account-list/account-list.styles";
-import AccountView from "src/views/shared/account/account.view";
+import AccountCard from "src/views/shared/account-card/account-card.view";
 // domain
 import { Account, PendingDeposit, CoordinatorState, isHermezAccount } from "src/domain/hermez";
 
@@ -47,7 +47,7 @@ function AccountList({
             key={(isHermezAccount(account) && account.accountIndex) || account.token.id}
             className={clsx({ [classes.accountSpacer]: index > 0 })}
           >
-            <AccountView
+            <AccountCard
               balance={account.balance}
               preferredCurrency={preferredCurrency}
               fiatBalance={account.fiatBalance || 0}

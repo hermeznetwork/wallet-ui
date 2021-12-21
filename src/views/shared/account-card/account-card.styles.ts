@@ -7,7 +7,7 @@ interface StyleProps {
   isDisabled: boolean;
 }
 
-const useAccountStyles = createUseStyles((theme: Theme) => ({
+const useAccountCardStyles = createUseStyles((theme: Theme) => ({
   root: ({ hasPendingDeposit, isDisabled }: StyleProps) => ({
     width: "100%",
     display: "flex",
@@ -80,4 +80,4 @@ const useAccountStyles = createUseStyles((theme: Theme) => ({
   },
 }));
 
-export default useAccountStyles;
+export default useAccountCardStyles;
