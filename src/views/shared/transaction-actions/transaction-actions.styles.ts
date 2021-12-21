@@ -31,6 +31,9 @@ const useTransactionActionsStyles = createUseStyles((theme: Theme) => ({
   buttonIcon: {
     width: 24,
     height: 24,
+    "& path": {
+      fill: theme.palette.orange.main,
+    },
   },
 }));
 

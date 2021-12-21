@@ -22,7 +22,7 @@ const useReceiverInputStyles = createUseStyles((theme: Theme) => ({
       2.5
     )}px`,
     fontSize: `${theme.spacing(2)}px`,
-    color: theme.palette.black,
+    color: theme.palette.black.main,
     fontWeight: theme.fontWeights.medium,
     outline: 0,
     border: "none",
@@ -31,7 +31,7 @@ const useReceiverInputStyles = createUseStyles((theme: Theme) => ({
       opacity: 1,
     },
     "&:disabled": {
-      color: theme.palette.black,
+      color: theme.palette.black.main,
       background: theme.palette.white,
     },
     [theme.breakpoints.upSm]: {
@@ -52,7 +52,7 @@ const useReceiverInputStyles = createUseStyles((theme: Theme) => ({
     padding: theme.spacing(2),
     marginRight: theme.spacing(0.5),
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black,
+    color: theme.palette.black.main,
     [theme.breakpoints.upSm]: {
       fontSize: theme.spacing(2.5),
       marginRight: theme.spacing(3),
@@ -62,7 +62,7 @@ const useReceiverInputStyles = createUseStyles((theme: Theme) => ({
     width: 22,
     height: 22,
     "& path": {
-      fill: theme.palette.black,
+      fill: theme.palette.black.main,
     },
   },
   deleteButtonIcon: {
