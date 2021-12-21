@@ -13,11 +13,15 @@ const useAccountStyles = createUseStyles((theme: Theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    backgroundColor: hasPendingDeposit ? theme.palette.black : theme.palette.grey.light,
+    backgroundColor: hasPendingDeposit ? theme.palette.black.main : theme.palette.grey.light,
     borderRadius: theme.spacing(2),
     cursor: isDisabled ? "default" : "pointer",
     opacity: isDisabled ? 0.5 : 1,
     pointerEvents: isDisabled ? "none" : "all",
+    transition: theme.hoverTransition,
+    "&:hover": {
+      backgroundColor: hasPendingDeposit ? theme.palette.black.hover : theme.palette.primary.hover,
+    },
   }),
   account: {
     padding: theme.spacing(2.5),
@@ -33,7 +37,7 @@ const useAccountStyles = createUseStyles((theme: Theme) => ({
   topRow: ({ hasPendingDeposit }: StyleProps) => ({
     marginBottom: theme.spacing(1.5),
     "& p": {
-      color: hasPendingDeposit ? theme.palette.white : theme.palette.black,
+      color: hasPendingDeposit ? theme.palette.white : theme.palette.black.main,
     },
   }),
   topRowText: {
@@ -64,14 +68,14 @@ const useAccountStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
   },
   pendingLabelContainer: {
-    backgroundColor: theme.palette.purple.light,
+    backgroundColor: theme.palette.orange.light,
     padding: theme.spacing(1),
     borderRadius: theme.spacing(1),
     marginTop: -theme.spacing(0.5),
   },
   pendingLabelText: {
     fontWeight: theme.fontWeights.medium,
-    color: theme.palette.secondary.dark,
+    color: theme.palette.orange.main,
   },
   pendingTimer: {
     marginLeft: theme.spacing(1),

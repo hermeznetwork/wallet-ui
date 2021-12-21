@@ -83,7 +83,7 @@ function MyCode({ wallet, onChangeHeader, onNavigateToTransfer }: MyCodeProps): 
                 value={wallet.hermezEthereumAddress}
                 size={MY_CODE.QR_CODE_SIZE}
                 bgColor="transparent"
-                fgColor={theme.palette.black}
+                fgColor={theme.palette.black.main}
                 className={classes.qrCode}
               />
               <p className={classes.address}>{wallet.hermezEthereumAddress}</p>

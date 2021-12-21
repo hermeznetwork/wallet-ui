@@ -3,7 +3,7 @@ const theme = {
     primary: {
       main: "#f6f7fa",
       dark: "#e9ecf4",
-      hover: "#e6e9f2",
+      hover: "#dee2ed",
     },
     secondary: {
       light: "#a783e6",
@@ -12,7 +12,10 @@ const theme = {
       hover: "#7824EB",
     },
     white: "#ffffff",
-    black: "#081132",
+    black: {
+      main: "#081132",
+      hover: "#000411",
+    },
     grey: {
       veryLight: "#e1e1f1",
       light: "#f3f3f8",
@@ -26,8 +29,8 @@ const theme = {
       main: "#ff4b40",
     },
     orange: {
-      light: "rgba(242, 153, 74, 0.15)",
-      main: "#ffa600",
+      light: "rgba(252, 197, 90, 0.15)",
+      main: "#ffc55a",
       dark: "#d8853b",
     },
     purple: {
