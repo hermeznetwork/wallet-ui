@@ -64,14 +64,14 @@ const useAccountStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
   },
   pendingLabelContainer: {
-    backgroundColor: theme.palette.purple.light,
+    backgroundColor: theme.palette.orange.light,
     padding: theme.spacing(1),
     borderRadius: theme.spacing(1),
     marginTop: -theme.spacing(0.5),
   },
   pendingLabelText: {
     fontWeight: theme.fontWeights.medium,
-    color: theme.palette.secondary.dark,
+    color: theme.palette.orange.main,
   },
   pendingTimer: {
     marginLeft: theme.spacing(1),
