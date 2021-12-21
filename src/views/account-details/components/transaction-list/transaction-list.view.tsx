@@ -1,6 +1,6 @@
 import React from "react";
 
-import TransactionComponent from "src/views/account-details/components/transaction/transaction.view";
+import TransactionCard from "src/views/account-details/components/transaction-card/transaction-card.view";
 import useTransactionListStyles from "src/views/account-details/components/transaction-list/transaction-list.styles";
 import {
   getFixedTokenAmount,
@@ -59,7 +59,7 @@ function TransactionList({
 
         return (
           <div key={id} className={classes.transaction}>
-            <TransactionComponent
+            <TransactionCard
               type={transaction.type}
               accountIndex={accountIndex}
               fromAccountIndex={

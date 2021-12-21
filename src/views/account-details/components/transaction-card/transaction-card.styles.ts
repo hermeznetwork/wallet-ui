@@ -2,7 +2,7 @@ import { createUseStyles } from "react-jss";
 
 import { Theme } from "src/styles/theme";
 
-const useTransactionStyles = createUseStyles((theme: Theme) => ({
+const useTransactionCardStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     alignItems: "center",
@@ -63,4 +63,4 @@ const useTransactionStyles = createUseStyles((theme: Theme) => ({
   },
 }));
 
-export default useTransactionStyles;
+export default useTransactionCardStyles;
