@@ -1,7 +1,7 @@
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-import useTransactionStyles from "src/views/account-details/components/transaction-card/transaction-card.styles";
+import useTransactionCardStyles from "src/views/account-details/components/transaction-card/transaction-card.styles";
 import TransactionType from "src/views/account-details/components/transaction-type/transaction-type.view";
 import TransactionLabel from "src/views/account-details/components/transaction-label/transaction-label.view";
 import TransactionAmount from "src/views/account-details/components/transaction-amount/transaction-amount.view";
@@ -38,7 +38,7 @@ function TransactionCard({
   fromAccountIndex,
   onClick,
 }: TransactionCardProps): JSX.Element {
-  const classes = useTransactionStyles();
+  const classes = useTransactionCardStyles();
 
   const isL1 =
     type === TxType.Deposit || type === TxType.CreateAccountDeposit || type === TxType.ForceExit;
