@@ -1,7 +1,7 @@
 import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
-import useTransactionStyles from "src/views/account-details/components/transaction/transaction.styles";
+import useTransactionStyles from "src/views/account-details/components/transaction-card/transaction-card.styles";
 import TransactionType from "src/views/account-details/components/transaction-type/transaction-type.view";
 import TransactionLabel from "src/views/account-details/components/transaction-label/transaction-label.view";
 import TransactionAmount from "src/views/account-details/components/transaction-amount/transaction-amount.view";
@@ -9,7 +9,7 @@ import { getTxPendingTime, formatMinutes } from "src/utils/transactions";
 //domain
 import { CoordinatorState, ISOStringDate } from "src/domain/hermez";
 
-interface TransactionProps {
+interface TransactionCardProps {
   accountIndex: string;
   type: TxType;
   amount: string;
@@ -24,7 +24,7 @@ interface TransactionProps {
   onClick: () => void;
 }
 
-function Transaction({
+function TransactionCard({
   accountIndex,
   type,
   amount,
@@ -37,7 +37,7 @@ function Transaction({
   isPending,
   fromAccountIndex,
   onClick,
-}: TransactionProps): JSX.Element {
+}: TransactionCardProps): JSX.Element {
   const classes = useTransactionStyles();
 
   const isL1 =
@@ -97,4 +97,4 @@ function Transaction({
   );
 }
 
-export default Transaction;
+export default TransactionCard;
