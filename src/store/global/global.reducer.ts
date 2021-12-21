@@ -1,4 +1,4 @@
-import { SnackbarState, HeaderState } from "src/views/app.view";
+import { AppAction } from "src/store";
 import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
@@ -17,6 +17,35 @@ import {
 import * as localStorageDomain from "src/domain/local-storage";
 // persistence
 import * as localStoragePersistence from "src/persistence/local-storage";
+
+interface PageHeader {
+  type: "page";
+  data: {
+    title: string;
+    subtitle?: string;
+    goBackAction?: AppAction;
+    closeAction?: AppAction;
+  };
+}
+
+export type HeaderState =
+  | {
+      type: undefined;
+    }
+  | {
+      type: "main";
+    }
+  | PageHeader;
+
+export type SnackbarState =
+  | {
+      status: "closed";
+    }
+  | {
+      status: "open";
+      message: string;
+      backgroundColor?: string;
+    };
 
 export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;

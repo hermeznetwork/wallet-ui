@@ -1,7 +1,7 @@
 import React from "react";
 
 import { AppAction } from "src/store";
-import { SnackbarState, HeaderState } from "src/views/app.view";
+import { SnackbarState, HeaderState } from "src/store/global/global.reducer";
 import MainHeader from "src/views/shared/main-header/main-header.view";
 import PageHeader from "src/views/shared/page-header/page-header.view";
 import Snackbar from "src/views/shared/snackbar/snackbar.view";

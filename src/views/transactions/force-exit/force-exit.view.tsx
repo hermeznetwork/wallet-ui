@@ -9,7 +9,7 @@ import * as forceExitThunks from "src/store/transactions/force-exit/force-exit.t
 import * as forceExitActions from "src/store/transactions/force-exit/force-exit.actions";
 import { changeHeader } from "src/store/global/global.actions";
 import { AccountsWithPagination } from "src/store/transactions/force-exit/force-exit.reducer";
-import { HeaderState } from "src/views/app.view";
+import { HeaderState } from "src/store/global/global.reducer";
 import useForceExitStyles from "src/views/transactions/force-exit/force-exit.styles";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";

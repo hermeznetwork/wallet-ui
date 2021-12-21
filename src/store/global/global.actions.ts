@@ -1,4 +1,4 @@
-import { HeaderState } from "src/views/app.view";
+import { HeaderState } from "src/store/global/global.reducer";
 // domain
 import { EthereumNetwork } from "src/domain/ethereum";
 import {

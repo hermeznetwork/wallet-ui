@@ -6,6 +6,7 @@ import { useTheme } from "react-jss";
 import { AppDispatch, AppState, AppAction } from "src/store";
 import * as globalThunks from "src/store/global/global.thunks";
 import { closeSnackbar } from "src/store/global/global.actions";
+import { SnackbarState, HeaderState } from "src/store/global/global.reducer";
 import routes from "src/routing/routes";
 import Spinner from "src/views/shared/spinner/spinner.view";
 import Route from "src/views/shared/route/route.view";
@@ -30,35 +31,6 @@ declare const window: Window &
       on: (event: "accountsChanged" | "chainChanged", callback: () => void) => void;
     };
   };
-
-interface PageHeader {
-  type: "page";
-  data: {
-    title: string;
-    subtitle?: string;
-    goBackAction?: AppAction;
-    closeAction?: AppAction;
-  };
-}
-
-export type HeaderState =
-  | {
-      type: undefined;
-    }
-  | {
-      type: "main";
-    }
-  | PageHeader;
-
-export type SnackbarState =
-  | {
-      status: "closed";
-    }
-  | {
-      status: "open";
-      message: string;
-      backgroundColor?: string;
-    };
 
 interface AppStateProps {
   wallet: HermezWallet.HermezWallet | undefined;

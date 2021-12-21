@@ -10,7 +10,7 @@ import * as transferThunks from "src/store/transactions/transfer/transfer.thunks
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import * as transferReducer from "src/store/transactions/transfer/transfer.reducer";
 import { changeHeader } from "src/store/global/global.actions";
-import { HeaderState } from "src/views/app.view";
+import { HeaderState } from "src/store/global/global.reducer";
 import useTransferStyles from "src/views/transactions/transfer/transfer.styles";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
