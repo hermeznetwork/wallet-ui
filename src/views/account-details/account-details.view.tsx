@@ -303,7 +303,6 @@ function AccountDetails({
                 accountTask.data.hezEthereumAddress.toLowerCase() ===
                 INTERNAL_ACCOUNT_ETH_ADDR.toLowerCase()
               }
-              hideSwap
             />
           </section>
         )}
