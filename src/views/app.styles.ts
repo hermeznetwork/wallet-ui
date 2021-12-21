@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useAppStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useAppStyles = createUseStyles((theme: Theme) => ({
   "@font-face": [
     {
       fontFamily: "Modern Era",

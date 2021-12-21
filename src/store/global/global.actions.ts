@@ -1,3 +1,4 @@
+import { HeaderState } from "src/store/global/global.reducer";
 // domain
 import { EthereumNetwork } from "src/domain/ethereum";
 import {
@@ -12,7 +13,7 @@ import {
   CoordinatorState,
   Token,
 } from "src/domain/hermez";
-import { ISOStringDate, Header } from "src/domain/";
+import { ISOStringDate } from "src/domain/";
 
 export enum GlobalActionTypes {
   LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",
@@ -96,7 +97,7 @@ export interface SetSigner {
 
 export interface ChangeHeader {
   type: GlobalActionTypes.CHANGE_HEADER;
-  header: Header;
+  header: HeaderState;
 }
 
 export interface ChangeRedirectRoute {
@@ -365,7 +366,7 @@ function setSigner(signer: Signers.SignerData): SetSigner {
   };
 }
 
-function changeHeader(header: Header): ChangeHeader {
+function changeHeader(header: HeaderState): ChangeHeader {
   return {
     type: GlobalActionTypes.CHANGE_HEADER,
     header,

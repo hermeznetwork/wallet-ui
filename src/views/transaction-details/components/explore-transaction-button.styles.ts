@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useExploreTransactionButtonStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useExploreTransactionButtonStyles = createUseStyles((theme: Theme) => ({
   link: {
     fontWeight: theme.fontWeights.bold,
     display: "flex",

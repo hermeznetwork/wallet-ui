@@ -1,20 +1,12 @@
 import { HermezWallet } from "src/domain/hermez";
 
-export type AccountData = {
-  accountType: number;
-  accountIndex: number;
-};
-
 export enum WalletName {
   METAMASK = "metaMask",
   WALLET_CONNECT = "walletConnect",
-  LEDGER = "ledger",
-  TREZOR = "trezor",
 }
 
 export enum LoginActionTypes {
   GO_TO_WALLET_SELECTOR_STEP = "[LOGIN] GO TO WALLET SELECTOR STEP",
-  GO_TO_ACCOUNT_SELECTOR_STEP = "[LOGIN] GO TO ACCOUNT SELECTOR STEP",
   GO_TO_WALLET_LOADER_STEP = "[LOGIN] GO TO WALLET LOADER STEP",
   GO_TO_CREATE_ACCOUNT_AUTH_STEP = "[LOGIN] GO TO CREATE ACCOUNT AUTH STEP",
   GO_TO_PREVIOUS_STEP = "[LOGIN] GO TO PREVIOUS STEP",
@@ -31,15 +23,9 @@ export interface GoToWalletSelectorStep {
   type: LoginActionTypes.GO_TO_WALLET_SELECTOR_STEP;
 }
 
-export interface GoToAccountSelectorStep {
-  type: LoginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP;
-  walletName: WalletName;
-}
-
 export interface GoToWalletLoaderStep {
   type: LoginActionTypes.GO_TO_WALLET_LOADER_STEP;
   walletName: WalletName;
-  accountData: AccountData;
 }
 
 export interface GoToCreateAccountAuthStep {
@@ -87,7 +73,6 @@ export interface ResetState {
 
 export type LoginAction =
   | GoToWalletSelectorStep
-  | GoToAccountSelectorStep
   | GoToWalletLoaderStep
   | GoToCreateAccountAuthStep
   | GoToPreviousStep
@@ -105,21 +90,10 @@ function goToWalletSelectorStep(): GoToWalletSelectorStep {
   };
 }
 
-function goToAccountSelectorStep(walletName: WalletName): GoToAccountSelectorStep {
-  return {
-    type: LoginActionTypes.GO_TO_ACCOUNT_SELECTOR_STEP,
-    walletName,
-  };
-}
-
-function goToWalletLoaderStep(
-  walletName: WalletName,
-  accountData: AccountData
-): GoToWalletLoaderStep {
+function goToWalletLoaderStep(walletName: WalletName): GoToWalletLoaderStep {
   return {
     type: LoginActionTypes.GO_TO_WALLET_LOADER_STEP,
     walletName,
-    accountData,
   };
 }
 
@@ -190,7 +164,6 @@ function resetState(): ResetState {
 
 export {
   goToWalletSelectorStep,
-  goToAccountSelectorStep,
   goToWalletLoaderStep,
   goToCreateAccountAuthStep,
   goToPreviousStep,
