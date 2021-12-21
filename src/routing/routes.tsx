@@ -11,7 +11,6 @@ import MyAccount from "src/views/my-account/my-account.view";
 import AccountDetails from "src/views/account-details/account-details.view";
 import TransactionDetails from "src/views/transaction-details/transaction-details.view";
 import MyCode from "src/views/my-code/my-code.view";
-import TokenSwap from "src/views/token-swap/token-swap.view";
 
 type RouteKey =
   | "home"
@@ -24,8 +23,7 @@ type RouteKey =
   | "myAccount"
   | "myCode"
   | "accountDetails"
-  | "transactionDetails"
-  | "tokenSwap";
+  | "transactionDetails";
 
 export interface Route {
   path: string;
@@ -79,11 +77,6 @@ const routes: Record<RouteKey, Route> = {
   transactionDetails: {
     path: "/accounts/:accountIndex/transactions/:transactionId",
     render: () => <TransactionDetails />,
-  },
-  tokenSwap: {
-    path: "/token-swap",
-    render: () => <TokenSwap />,
-    isHidden: process.env.REACT_APP_ENABLE_TOKEN_SWAP !== "true",
   },
 };
 
