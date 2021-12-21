@@ -27,7 +27,7 @@ const useTransactionAmountInputStyles = createUseStyles((theme: Theme) => ({
   amountCurrency: {
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black,
+    color: theme.palette.black.main,
     marginBottom: theme.spacing(0.5),
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(2.5)}px`,
@@ -41,7 +41,7 @@ const useTransactionAmountInputStyles = createUseStyles((theme: Theme) => ({
     caretColor: theme.palette.purple.main,
     fontSize: `${theme.spacing(5)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black,
+    color: theme.palette.black.main,
     textAlign: "center",
     "&::-webkit-outer-spin-button,&::-webkit-inner-spin-button": {
       "-webkit-appearance": "none",
@@ -82,9 +82,9 @@ const useTransactionAmountInputStyles = createUseStyles((theme: Theme) => ({
     cursor: "pointer",
     transition: theme.hoverTransition,
     "&:hover": {
-      color: theme.palette.black,
+      color: theme.palette.black.main,
       "& path": {
-        fill: theme.palette.black,
+        fill: theme.palette.black.main,
       },
     },
   },

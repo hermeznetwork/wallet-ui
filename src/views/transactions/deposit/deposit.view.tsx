@@ -8,17 +8,18 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import * as depositThunks from "src/store/transactions/deposit/deposit.thunks";
 import * as depositActions from "src/store/transactions/deposit/deposit.actions";
 import * as globalThunks from "src/store/global/global.thunks";
+import { changeHeader } from "src/store/global/global.actions";
+import { HeaderState } from "src/store/global/global.reducer";
 import useTransactionStyles from "src/views/transactions/deposit/deposit.styles";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
 import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
-import { changeHeader } from "src/store/global/global.actions";
 import Spinner from "src/views/shared/spinner/spinner.view";
 import DepositForm from "src/views/transactions/deposit/components/deposit-form/deposit-form.view";
 import * as storage from "src/utils/storage";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { AppDispatch, AppState } from "src/store";
 // domain
-import { Header, EstimatedL1Fee } from "src/domain/";
+import { EstimatedL1Fee } from "src/domain/";
 import { HermezWallet, FiatExchangeRates, EthereumAccount } from "src/domain/hermez";
 import { PendingDeposits } from "src/domain/local-storage";
 import { EthereumNetwork } from "src/domain/ethereum";
@@ -209,7 +210,7 @@ const getHeaderCloseAction = (accountIndex: string | null) => {
   return accountIndex === null ? push("/") : push(`/accounts/${accountIndex}`);
 };
 
-const getHeader = (step: depositActions.Step, accountIndex: string | null): Header => {
+const getHeader = (step: depositActions.Step, accountIndex: string | null): HeaderState => {
   switch (step) {
     case "choose-account": {
       return {

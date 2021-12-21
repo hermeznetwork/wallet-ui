@@ -5,6 +5,18 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { push } from "connected-react-router";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
+import { AppDispatch, AppState } from "src/store";
+import * as exitActions from "src/store/transactions/exit/exit.actions";
+import * as exitThunks from "src/store/transactions/exit/exit.thunks";
+import { changeHeader } from "src/store/global/global.actions";
+import { HeaderState } from "src/store/global/global.reducer";
+import Spinner from "src/views/shared/spinner/spinner.view";
+import ExitForm from "src/views/transactions/exit/components/exit-form/exit-form.view";
+import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
+import useExitStyles from "src/views/transactions/exit/exit.styles";
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
+import { getFixedTokenAmount } from "src/utils/currencies";
+// domain
 import {
   HermezAccount,
   FiatExchangeRates,
@@ -13,17 +25,7 @@ import {
   RecommendedFee,
   Token,
 } from "src/domain/hermez";
-import { AppDispatch, AppState } from "src/store";
-import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
-import useExitStyles from "src/views/transactions/exit/exit.styles";
-import * as exitActions from "src/store/transactions/exit/exit.actions";
-import * as exitThunks from "src/store/transactions/exit/exit.thunks";
-import { EstimatedL1Fee, Header } from "src/domain";
-import { changeHeader } from "src/store/global/global.actions";
-import Spinner from "src/views/shared/spinner/spinner.view";
-import ExitForm from "src/views/transactions/exit/components/exit-form/exit-form.view";
-import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
-import { getFixedTokenAmount } from "src/utils/currencies";
+import { EstimatedL1Fee } from "src/domain";
 
 interface ExitStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
@@ -216,7 +218,7 @@ const getHeaderCloseAction = (accountIndex: string | null) => {
   return accountIndex === null ? push("/") : push(`/accounts/${accountIndex}`);
 };
 
-const getHeader = (step: exitActions.Step, accountIndex: string | null): Header => {
+const getHeader = (step: exitActions.Step, accountIndex: string | null): HeaderState => {
   switch (step) {
     case "build-transaction": {
       return {

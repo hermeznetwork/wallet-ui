@@ -132,7 +132,7 @@ function changeNetworkStatus(
     } = getState();
 
     if (previousNetworkStatus === "online" && newNetworkStatus === "offline") {
-      dispatch(globalActions.openSnackbar("Connection lost"));
+      dispatch(globalActions.openSnackbar("Connection lost", backgroundColor));
     }
 
     if (previousNetworkStatus === "offline" && newNetworkStatus === "online") {

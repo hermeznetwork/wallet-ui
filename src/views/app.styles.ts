@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useAppStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useAppStyles = createUseStyles((theme: Theme) => ({
   "@font-face": [
     {
       fontFamily: "Modern Era",
@@ -53,7 +55,7 @@ const useAppStyles = createUseStyles((theme) => ({
       minHeight: "100vh",
       display: "flex",
       flexDirection: "column",
-      color: theme.palette.black,
+      color: theme.palette.black.main,
     },
     "#app-root": {
       zIndex: 0,

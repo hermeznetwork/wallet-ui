@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const useLoginStyles = createUseStyles((theme) => ({
+import { Theme } from "src/styles/theme";
+
+const useLoginStyles = createUseStyles((theme: Theme) => ({
   networkName: {
     marginBottom: theme.spacing(8),
   },

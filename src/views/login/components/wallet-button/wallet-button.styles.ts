@@ -1,6 +1,8 @@
 import { createUseStyles } from "react-jss";
 
-const metaMaskLogoWrapperStyles = (theme) => ({
+import { Theme } from "src/styles/theme";
+
+const metaMaskLogoWrapperStyles = (theme: Theme) => ({
   border: 0,
   borderRadius: theme.spacing(4),
   background: theme.palette.white,
@@ -14,7 +16,7 @@ const metaMaskLogoWrapperStyles = (theme) => ({
   justifyContent: "center",
 });
 
-const WalletButtonStyles = createUseStyles((theme) => ({
+const WalletButtonStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",

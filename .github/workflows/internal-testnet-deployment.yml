@@ -27,7 +27,6 @@ jobs:
       - name: Create .env file
         run: |
           echo 'REACT_APP_ENV=development' >> .env
-          echo 'REACT_APP_ENABLE_HARDWARE_WALLETS=false' >> .env
           echo 'REACT_APP_PRICE_UPDATER_API_URL=${{ secrets.INTERNAL_TESTNET_PRICE_UPDATER_API_URL }}' >> .env
           echo 'REACT_APP_PRICE_UPDATER_API_KEY=${{ secrets.INTERNAL_TESTNET_PRICE_UPDATER_API_KEY }}' >> .env
           echo 'REACT_APP_INFURA_API_KEY=${{ secrets.INFURA_API_KEY }}' >> .env
