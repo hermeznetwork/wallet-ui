@@ -92,7 +92,7 @@ function isTxCanceled(tx: TransactionResponse | null): boolean {
  * @returns {Boolean}
  */
 function isTxMined(tx: TransactionResponse): boolean {
-  // ToDo: When can tx.blockNumber be null? I'm adding the undefined case for now.
+  // According to ethers types tx?.blockNumber is an optional number but it can also be null
   return tx !== null && tx.blockNumber !== null && tx.blockNumber !== undefined;
 }
 
@@ -110,7 +110,7 @@ function isTxExpectedToFail(
   date: ISOStringDate,
   accountEthBalance: BigNumber
 ): boolean {
-  // According to ethers types tx?.blockNumber is a number but it can also be null
+  // According to ethers types tx?.blockNumber is an optional number but it can also be null
   if (tx.blockNumber === null && tx.gasPrice) {
     const maxTxFee = tx.gasLimit.mul(tx.gasPrice);
 
