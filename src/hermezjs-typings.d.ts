@@ -616,14 +616,19 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     axiosConfig?: Record<string, unknown>
   ): Promise<AccountAuthorization>;
 
-  // ToDo: The app does not uses the response but it would be nice to type it at some point
+  type PostCreateAccountAuthorizationResponse =
+    | {
+        success: "OK";
+      }
+    | { message: string; code: number; type: string };
+
   function postCreateAccountAuthorization(
     hezEthereumAddress: string,
     bJJ: string,
     signature: string,
     nextForgerUrls?: string[],
     axiosConfig?: Record<string, unknown>
-  ): Promise<unknown>;
+  ): Promise<PostCreateAccountAuthorizationResponse>;
   // function getCreateAccountAuthorization();
   // function getConfig();
 
