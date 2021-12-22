@@ -16,3 +16,6 @@ build/
 
 # linting and formatting
 .eslintcache
+
+# Hermez contract types
+src/contract-types/
