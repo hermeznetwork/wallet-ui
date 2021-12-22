@@ -7,6 +7,9 @@
     "format": "prettier --write .",
     "lint": "eslint --cache --fix --ext .ts,.tsx .",
     "prepare": "husky install",
+    "generate-hermez-contracts-types": "typechain --target ethers-v5 --out-dir src/contract-types/hermez 'contracts/hermez/compiled-contracts/*.json'",
+    "generate-erc20-contract-types": "typechain --target ethers-v5 --out-dir src/contract-types/erc20 'contracts/erc20/erc20.json'",
+    "postinstall": "npm run generate-hermez-contracts-types && npm run generate-erc20-contract-types",
     "start:dev": "react-scripts start",
     "start:prod": "serve -s -C -p 80 build"
   },
