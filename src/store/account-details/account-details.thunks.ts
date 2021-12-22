@@ -139,7 +139,6 @@ function filterExitsFromHistoryTransactions(
  * @param {string} accountIndex - Account index
  * @returns {void}
  */
-// ToDo: Define fromItem type
 function fetchHistoryTransactions(
   accountIndex: HermezAccount["accountIndex"],
   exits: Exits,
