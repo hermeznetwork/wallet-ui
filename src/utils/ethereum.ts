@@ -1,8 +1,9 @@
-import { ethers, BigNumber } from "ethers";
+import { BigNumber } from "ethers";
 import { TransactionResponse, TransactionReceipt } from "@ethersproject/abstract-provider";
 import hermezjs from "@hermeznetwork/hermezjs";
 
 import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "src/constants";
+import { Erc20__factory } from "src/contract-types/erc20/factories/Erc20__factory";
 // domain
 import { HermezWallet, Token, ISOStringDate, EthereumAccount } from "src/domain/hermez";
 
@@ -19,37 +20,15 @@ function getTokens(
 ): Promise<EthereumAccount[]> {
   const provider = hermezjs.Providers.getProvider();
   const ethereumAddress = hermezjs.Addresses.getEthereumAddress(wallet.hermezEthereumAddress);
-  const partialERC20ABI = [
-    {
-      constant: true,
-      inputs: [
-        {
-          name: "_owner",
-          type: "address",
-        },
-      ],
-      name: "balanceOf",
-      outputs: [
-        {
-          name: "balance",
-          type: "uint256",
-        },
-      ],
-      payable: false,
-      type: "function",
-    },
-  ];
   const balancePromises: Promise<BigNumber>[] = hermezTokens.map((token) => {
     if (token.id === ETHER_TOKEN_ID) {
       // tokenID 0 is for Ether
       return provider.getBalance(ethereumAddress);
     } else {
       // For ERC 20 tokens, check the balance from the smart contract
-      const contract = new ethers.Contract(token.ethereumAddress, partialERC20ABI, provider);
+      const contract = Erc20__factory.connect(token.ethereumAddress, provider);
 
       // We can ignore if a call to the contract of a specific token fails.
-      // ToDo: Find a way to properly type the functions of the contract declared through the ABI.
-      // eslint-disable-next-line
       const balance: Promise<BigNumber> = contract
         .balanceOf(ethereumAddress)
         .catch(() => BigNumber.from(0));
