@@ -259,7 +259,10 @@ function ExitCard({
     );
   }
 
-  const pendingTime = getTxPendingTime(coordinatorState, false, new Date().toISOString());
+  const pendingTime =
+    coordinatorState !== undefined
+      ? getTxPendingTime(coordinatorState, false, new Date().toISOString())
+      : 0;
 
   return (
     <div className={classes.root}>

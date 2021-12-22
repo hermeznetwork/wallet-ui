@@ -34,14 +34,10 @@ function getTransactionAmount(
  * If it's an L1 transaction, it adds the forgeDelay again
  */
 function getTxPendingTime(
-  // ToDo: This undefined and the check below can be removed once the views are migrated to TS
-  coordinatorState: CoordinatorState | undefined,
+  coordinatorState: CoordinatorState,
   isL1: boolean,
   timestamp: ISOStringDate
 ): number {
-  if (!coordinatorState) {
-    return 0;
-  }
   const timeToForge = coordinatorState.node.forgeDelay;
   const lastBatchForgedInSeconds = Date.parse(coordinatorState.network.lastBatch.timestamp) / 1000;
   const whenToForgeInSeconds = timeToForge + lastBatchForgedInSeconds;
