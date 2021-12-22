@@ -12,13 +12,6 @@ export interface LoginState {
   accountAuthSignatures: AuthSignatures;
 }
 
-// ToDo: This should be removed when we migrate login.view.jsx module to TS
-export enum STEP_NAME {
-  WALLET_SELECTOR = "wallet-selector",
-  WALLET_LOADER = "wallet-loader",
-  CREATE_ACCOUNT_AUTH = "create-account-auth",
-}
-
 export type Step =
   | {
       type: "wallet-selector";
