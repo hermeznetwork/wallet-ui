@@ -18,4 +18,4 @@ build/
 .eslintcache
 
 # Hermez contract types
-src/contract-types/
+src/contract-typings/
