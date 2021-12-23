@@ -10,9 +10,6 @@ import { HermezWallet, Token, ISOStringDate, EthereumAccount } from "src/domain/
 /**
  * Fetches token balances in the user's Ethereum account. Only for those tokens registered in Hermez and Ether.
  * Throws an error if the user has no balances for any registered token in Hermez or an error comes up from fetching the balances on-chain.
- *
- * @param {Token[]} hermezTokens - List of registered tokens in Hermez
- * @returns {Promise} - Array of { balance, token } where balance is a Number and token is the Token schema returned from the API.
  */
 function getTokens(
   wallet: HermezWallet.HermezWallet,
@@ -58,8 +55,6 @@ function getTokens(
 
 /**
  * Checks if an Ethereum transaction has been canceled by the user
- * @param {TransactionResponse} tx - Ethereum transaction
- * @returns {Boolean}
  */
 function isTxCanceled(tx: TransactionResponse | null): boolean {
   return tx === null;
@@ -67,8 +62,6 @@ function isTxCanceled(tx: TransactionResponse | null): boolean {
 
 /**
  * Checks if an Ethereum transaction has been mined
- * @param {TransactionResponse} tx - Ethereum transaction
- * @returns {Boolean}
  */
 function isTxMined(tx: TransactionResponse): boolean {
   // According to ethers types tx?.blockNumber is an optional number but it can also be null
@@ -79,10 +72,6 @@ function isTxMined(tx: TransactionResponse): boolean {
  * Checks if an Ethereum transaction is expected to fail. We expect a transaction to fail
  * if it exceeds a timeout (24h by default) or if the user doesn't have enough ETH in his
  * account to pay the maximum fee estimated for the tx.
- * @param {TransactionResponse} tx - Ethereum transaction
- * @param {ISOStringDate} date - ISO string date the transaction was sent
- * @param {BigNumber} accountEthBalance - ETH balance of the account which the transaction has been sent from
- * @returns {Boolean}
  */
 function isTxExpectedToFail(
   tx: TransactionResponse,
@@ -106,8 +95,6 @@ function isTxExpectedToFail(
 
 /**
  * Checks if an Ethereum transaction has been reverted
- * @param {TransactionReceipt} txReceipt - Ethereum transaction receipt
- * @returns {Boolean}
  */
 function hasTxBeenReverted(txReceipt: TransactionReceipt): boolean {
   return txReceipt.status === 0;

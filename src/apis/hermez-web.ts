@@ -18,7 +18,6 @@ const walletUnderMaintenanceResponseParser = StrictSchema<WalletUnderMaintenance
 
 /**
  * Fetches the status of the Hermez network
- * @returns {Promise<Number>} - Network status of the Hermez Network
  */
 function getNetworkStatus(): Promise<number> {
   return axios.get(`${baseApiUrl}/network-status.json`).then((res) => {

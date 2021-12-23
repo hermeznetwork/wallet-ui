@@ -22,8 +22,6 @@ import * as persistence from "src/persistence";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
- * @param {string} accountIndex - accountIndex of the account
- * @returns {void}
  */
 function fetchHermezAccount(
   accountIndex: string,
@@ -56,7 +54,6 @@ function fetchHermezAccount(
 
 /**
  * Fetches the transactions which are in the transactions pool
- * @returns {void}
  */
 function fetchPoolTransactions(): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -76,7 +73,6 @@ function fetchPoolTransactions(): AppThunk {
 
 /**
  * Fetches the recommended fees from the Coordinator
- * @returns {void}
  */
 function fetchFees(): AppThunk {
   return function (dispatch: AppDispatch, getState: () => AppState) {

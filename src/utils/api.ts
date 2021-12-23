@@ -14,10 +14,6 @@ export type Pagination =
 
 /**
  * Checks if a request to a paginated API endpoint has more items pending to retrieve
- * @param {Number} pendingItems - Pending items to retrieve from a paginated API endpoint
- * @param {Array} items - List of HermezApiResourceItem
- * @param {PaginationOrder} order - hermezJS PaginationOrder options
- * @returns {Pagination} - Pagination information for the next request
  */
 function getPaginationData(
   pendingItems: number,

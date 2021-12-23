@@ -67,8 +67,6 @@ export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unkn
 
 /**
  * Creates the Redux store root reducer combining all the reducers used in the app
- * @param {History} history - Browser history
- * @returns {Object} - Root reducer
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function createAppReducer(history: History) {
@@ -91,8 +89,6 @@ export function createAppReducer(history: History) {
 /**
  * Configures the Redux store and all of its tools: Redux Thunk, Connected React Router
  * and Redux Dev Tools
- * @param {History} history - Browser history
- * @returns {Object} - Redux store
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function configureStore(history: History) {

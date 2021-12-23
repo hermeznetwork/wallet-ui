@@ -79,8 +79,6 @@ function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
 /**
  * Changes the route to which the user is going to be redirected to after a successful
  * login
- * @param {string} redirectRoute - Route to be redirected to
- * @returns {void}
  */
 function changeRedirectRoute(redirectRoute: string): AppThunk {
   return (dispatch: AppDispatch) => {
@@ -90,8 +88,6 @@ function changeRedirectRoute(redirectRoute: string): AppThunk {
 
 /**
  * Fetches the USD exchange rates for the requested currency symbols
- * @param {string[]} symbols - ISO 4217 currency codes
- * @returns {void}
  */
 function fetchFiatExchangeRates(): AppThunk {
   return (dispatch: AppDispatch) => {
@@ -118,9 +114,6 @@ function fetchFiatExchangeRates(): AppThunk {
 
 /**
  * Changes the current network status of the application
- * @param {HermezNetworkStatus} newNetworkStatus - Network status
- * @param {string} backgroundColor - Background color of the snackbar
- * @returns {void}
  */
 function changeNetworkStatus(
   newNetworkStatus: HermezNetworkStatus,
@@ -158,8 +151,6 @@ function checkHermezStatus(): AppThunk {
 
 /**
  * Adds a pendingWithdraw to the pendingWithdraw pool
- * @param {string} pendingWithdraw - The pendingWithdraw to add to the pool
- * @returns {void}
  */
 function addPendingWithdraw(pendingWithdraw: PendingWithdraw): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -181,8 +172,6 @@ function addPendingWithdraw(pendingWithdraw: PendingWithdraw): AppThunk {
 
 /**
  * Removes a pendingWithdraw from the pendingWithdraw pool
- * @param {string} hash - The transaction hash used to remove a pendingWithdraw from the store
- * @returns {void}
  */
 function removePendingWithdraw(hash: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -204,8 +193,6 @@ function removePendingWithdraw(hash: string): AppThunk {
 
 /**
  * Adds a pendingWithdraw to the pendingDelayedWithdraw store
- * @param {PendingDelayedWithdraw} pendingDelayedWithdraw - The pendingDelayedWithdraw to add to the store
- * @returns {void}
  */
 function addPendingDelayedWithdraw(pendingDelayedWithdraw: PendingDelayedWithdraw): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -237,8 +224,6 @@ function addPendingDelayedWithdraw(pendingDelayedWithdraw: PendingDelayedWithdra
 
 /**
  * Removes a pendingWithdraw from the pendingDelayedWithdraw store
- * @param {string} pendingDelayedWithdrawId - The pendingDelayedWithdraw identifier to remove from the store
- * @returns {void}
  */
 function removePendingDelayedWithdraw(pendingDelayedWithdrawId: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -270,8 +255,6 @@ function removePendingDelayedWithdraw(pendingDelayedWithdrawId: string): AppThun
 
 /**
  * Removes a pendingWithdraw from the pendingDelayedWithdraws store by hash
- * @param {string} pendingDelayedWithdrawHash - The pendingDelayedWithdraw hash to remove from the store
- * @returns {void}
  */
 function removePendingDelayedWithdrawByHash(pendingDelayedWithdrawHash: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -304,8 +287,6 @@ function removePendingDelayedWithdrawByHash(pendingDelayedWithdrawHash: string):
 /**
  * Updates the date in a delayed withdraw transaction
  * to the time when the transaction was mined
- * @param {String} transactionHash - The L1 transaction hash for a non-instant withdraw
- * @param {ISOStringDate} pendingDelayedWithdrawDate - The date when the L1 transaction was mined
  */
 function updatePendingDelayedWithdrawDate(
   transactionHash: string,
@@ -344,7 +325,6 @@ function updatePendingDelayedWithdrawDate(
  * Checks L1 transactions for pending delayed withdrawals.
  * If they have failed, clear from storage.
  * Updates the date the transaction happened if necessary.
- * @returns {void}
  */
 function checkPendingDelayedWithdrawals(): AppThunk {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
@@ -546,7 +526,6 @@ function recoverPendingDelayedWithdrawals(exits: Exits): AppThunk {
 /**
  * Checks pending exits to see if they have been completed
  * and delete them from storage
- * @returns {void}
  */
 function checkPendingWithdrawals(): AppThunk {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
@@ -632,8 +611,6 @@ function checkPendingWithdrawals(): AppThunk {
 
 /**
  * Adds a pendingDeposit to the pendingDeposits store
- * @param {PendingDeposit} pendingDeposit - The pendingDeposit to add to the store
- * @returns {void}
  */
 function addPendingDeposit(pendingDeposit: PendingDeposit): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -655,8 +632,6 @@ function addPendingDeposit(pendingDeposit: PendingDeposit): AppThunk {
 
 /**
  * Removes a pendingDeposit from the pendingDeposit store by id
- * @param {string} transactionId - The transaction identifier used to remove a pendingDeposit from the store
- * @returns {void}
  */
 function removePendingDepositByTransactionId(transactionId: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -688,8 +663,6 @@ function removePendingDepositByTransactionId(transactionId: string): AppThunk {
 
 /**
  * Removes a pendingDeposit from the pendingDeposit store by hash
- * @param {string} hash - The transaction hash used to remove a pendingDeposit from the store
- * @returns {void}
  */
 function removePendingDepositByHash(hash: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -906,7 +879,6 @@ function checkPendingTransactions(): AppThunk {
 
 /**
  * Fetches the state of the coordinator
- * @returns {void}
  */
 function fetchCoordinatorState(): AppThunk {
   return (dispatch: AppDispatch) => {
@@ -922,7 +894,6 @@ function fetchCoordinatorState(): AppThunk {
 
 /**
  * Removes the MetaMask wallet data from the Redux store and the localStorage
- * @returns {void}
  */
 function disconnectWallet(): AppThunk {
   return (dispatch: AppDispatch) => {
@@ -940,7 +911,6 @@ function disconnectWallet(): AppThunk {
 
 /**
  * Reloads the webapp
- * @returns {void}
  */
 function reloadApp(): AppThunk {
   return () => {
@@ -950,7 +920,6 @@ function reloadApp(): AppThunk {
 
 /**
  * Fetch tokens price
- * @returns {Array} Response data with an array of tokens
  */
 function fetchTokensPrice(): AppThunk {
   return (dispatch: AppDispatch) => {

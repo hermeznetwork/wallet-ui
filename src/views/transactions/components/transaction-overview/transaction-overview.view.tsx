@@ -104,8 +104,6 @@ function TransactionOverview({
 
   /**
    * Converts the transaction amount to fiat in the preferred currency
-   *
-   * @returns {Number} - Token amount in the user's preferred currency
    */
   function getAmountInFiat(value: string) {
     const token = account.token;
@@ -129,7 +127,6 @@ function TransactionOverview({
 
   /**
    * Bubbles up an event to send the transaction accordingly
-   * @returns {void}
    */
   function handleFormSubmit(): void {
     // We only need to disable the button on L2 txs, as L1 txs are going to display an

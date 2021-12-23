@@ -16,7 +16,6 @@ function TransactionLabel({
   const classes = useTransactionLabelStyles();
   /**
    * Returns the label corresponding to the transaction type
-   * @returns {string} - Transaction label
    */
   function getLabel() {
     switch (type) {

@@ -20,10 +20,6 @@ import { getAuthSignatures, setAuthSignatures } from "src/persistence/local-stor
 
 /**
  * Helper function that signs the authentication message depending on Wallet type
- * @param {Web3Provider | Signer} providerOrSigner
- * @param {String} message
- * @param {String} address
- * @returns {Promise<unknown>} A promise that resolves to the signature
  */
 function signMessageHelper(
   providerOrSigner: Web3Provider | Signer,
@@ -59,7 +55,6 @@ function signMessageHelper(
 /**
  * Asks the user to login using a compatible wallet and stores its data in the Redux
  * store
- * @returns {void}
  */
 function fetchWallet(walletName: loginActions.WalletName): AppThunk {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
@@ -244,8 +239,6 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
 
 /**
  * Saves already created Create Account Authorization signatures in LocalStorage
- * @param {String} hermezEthereumAddress
- * @param {String} signature
  */
 function setAccountAuthSignature(hermezEthereumAddress: string, signature: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {

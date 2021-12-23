@@ -11,7 +11,6 @@ import { AxiosError } from "axios";
 
 /**
  * Fetches the details of a transaction
- * @param {string} transactionIdOrHash - HistoryTransaction id or hash
  */
 function fetchTransaction(transactionIdOrHash: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {

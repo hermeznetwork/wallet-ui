@@ -260,8 +260,6 @@ function Home({
 
   /**
    * Navigates to the AccountDetails view when an account is clicked
-   * @param {Object} account - Account
-   * @returns {void}
    */
   function handleAccountClick(account: Account) {
     isHermezAccount(account) && onNavigateToAccountDetails(account.accountIndex);
@@ -269,8 +267,6 @@ function Home({
 
   /**
    * Copies the Hermez Ethereum address to the clipboard when it's clicked
-   * @param {string} hermezEthereumAddress - Hermez Ethereum address
-   * @returns {void}
    */
   function handleEthereumAddressClick(hermezEthereumAddress: string) {
     copyToClipboard(hermezEthereumAddress);
