@@ -81,7 +81,6 @@ function getTokensPrice(): Promise<Token[]> {
 /**
  * Fetches the USD exchange rates for the requested currency symbols
  */
-// eslint-disable-next-line no-unused-vars
 function getFiatExchangeRates(symbols: string[]): Promise<FiatExchangeRates> {
   if (parsedReactAppPriceUpdaterApiUrl.success === false) {
     return Promise.reject(parsedReactAppPriceUpdaterApiUrl.error.message);

@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, combineReducers } from "redux";
+import { createStore, applyMiddleware, combineReducers, Reducer, Store } from "redux";
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { connectRouter, routerMiddleware, RouterState, RouterAction } from "connected-react-router";
@@ -68,8 +68,7 @@ export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unkn
 /**
  * Creates the Redux store root reducer combining all the reducers used in the app
  */
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function createAppReducer(history: History) {
+export function createAppReducer(history: History): Reducer<AppState> {
   return combineReducers({
     router: connectRouter(history),
     global: globalReducer,
@@ -90,8 +89,7 @@ export function createAppReducer(history: History) {
  * Configures the Redux store and all of its tools: Redux Thunk, Connected React Router
  * and Redux Dev Tools
  */
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function configureStore(history: History) {
+export function configureStore(history: History): Store<AppState, AppAction> {
   const middlewares = [thunk, routerMiddleware(history)];
   const middlewareEnhancer = applyMiddleware(...middlewares);
   const enhancers = [middlewareEnhancer];
