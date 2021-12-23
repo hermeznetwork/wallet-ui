@@ -1,3 +1,0 @@
-[submodule "contracts/hermez"]
-	path = contracts/hermez
-	url = https://github.com/hermeznetwork/contracts.git
