@@ -1,8 +1,7 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx, TxFees } from "@hermeznetwork/hermezjs";
+import { CoordinatorAPI, Tx } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
-import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as withdrawActions from "src/store/transactions/withdraw/withdraw.actions";
@@ -10,7 +9,7 @@ import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import theme from "src/styles/theme";
 import { mergeDelayedWithdraws } from "src/utils/transactions";
-import { ETHER_TOKEN_ID, WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
+import { WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
 import { createAccount } from "src/utils/accounts";
 // domain
 import {
@@ -19,7 +18,6 @@ import {
   FiatExchangeRates,
   PendingDelayedWithdraw,
   PoolTransaction,
-  Token,
 } from "src/domain/hermez";
 // persistence
 import * as persistence from "src/persistence";
@@ -117,52 +115,6 @@ function fetchPoolTransactions(): AppThunk {
       getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(withdrawActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(withdrawActions.loadPoolTransactionsFailure(err)));
-    }
-  };
-}
-
-/**
- * Fetches the estimated L1 fee for the withdraw
- */
-function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
-  return async (dispatch: AppDispatch, getState: () => AppState): Promise<void> => {
-    dispatch(withdrawActions.loadEstimatedWithdrawFee());
-
-    try {
-      const {
-        global: { signer, tokensPriceTask },
-      } = getState();
-      const provider = getProvider();
-      const gasPrice = await provider.getGasPrice();
-      const estimatedMerkleSiblingsLength = 4;
-      const overrides = { gasPrice };
-      const gasLimit = await TxFees.estimateWithdrawGasLimit(
-        token,
-        estimatedMerkleSiblingsLength,
-        amount,
-        overrides,
-        signer
-      );
-      const feeBigNumber = BigNumber.from(gasLimit).mul(gasPrice);
-
-      if (tokensPriceTask.status === "successful" || tokensPriceTask.status === "reloading") {
-        const ethToken = tokensPriceTask.data.find((token) => token.id === ETHER_TOKEN_ID);
-
-        if (ethToken) {
-          dispatch(
-            withdrawActions.loadEstimatedWithdrawFeeSuccess({
-              amount: feeBigNumber,
-              token: ethToken,
-            })
-          );
-        }
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        dispatch(withdrawActions.loadEstimatedWithdrawFeeFailure(err));
-      } else {
-        dispatch(withdrawActions.loadEstimatedWithdrawFeeFailure(new Error("Unexpected error")));
-      }
     }
   };
 }
@@ -267,10 +219,4 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(openSnackbar(`Transaction failed - ${snackbarMsg}`, theme.palette.red.main));
 }
 
-export {
-  fetchHermezAccount,
-  fetchExit,
-  fetchPoolTransactions,
-  fetchEstimatedWithdrawFee,
-  withdraw,
-};
+export { fetchHermezAccount, fetchExit, fetchPoolTransactions, withdraw };

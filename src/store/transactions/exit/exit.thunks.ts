@@ -131,13 +131,12 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
       } = getState();
       const provider = getProvider();
       const { maxFeePerGas } = await provider.getFeeData();
-      const estimatedMerkleSiblingsLength = 4;
       const overrides = maxFeePerGas ? { maxFeePerGas } : {};
-      const gasLimit = await TxFees.estimateWithdrawGasLimit(
+      const gasLimit = await TxFees.estimateWithdrawCircuitGasLimit(
         token,
-        estimatedMerkleSiblingsLength,
         amount,
         overrides,
+        true,
         signer
       );
       const feeBigNumber = maxFeePerGas

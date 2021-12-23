@@ -484,15 +484,15 @@ declare module "@hermeznetwork/hermezjs/src/tx-fees" {
   import { CallOverrides, BigNumber } from "ethers";
 
   // function estimateDepositGasLimit();
+  // function estimateWithdrawGasLimit();
 
-  function estimateWithdrawGasLimit(
+  function estimateWithdrawCircuitGasLimit(
     token: Token,
-    estimatedMerkleSiblingsLength: number,
     amount: BigNumber,
     overrides: CallOverrides,
+    isInstant: boolean,
     signerData?: Signers.SignerData,
-    providerUrl?: string,
-    isInstant?: boolean
+    providerUrl?: string
   ): Promise<number>;
 }
 
