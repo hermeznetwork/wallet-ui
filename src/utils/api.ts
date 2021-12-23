@@ -1,7 +1,7 @@
 import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 
 // domain
-import { HermezApiResourceItem } from "src/domain/hermez";
+import { HermezApiResourceItem } from "src/domain";
 
 export type Pagination =
   | {

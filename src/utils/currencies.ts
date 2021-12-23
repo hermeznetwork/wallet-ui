@@ -2,7 +2,7 @@ import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
 import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
 
 import { MAX_TOKEN_DECIMALS } from "src/constants";
-import { FiatExchangeRates, Token } from "src/domain/hermez";
+import { FiatExchangeRates, Token } from "src/domain";
 
 export type Currency = {
   code: string;

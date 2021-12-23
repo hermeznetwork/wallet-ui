@@ -13,7 +13,7 @@ import * as globalActions from "src/store/global/global.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as loginActions from "src/store/login/login.actions";
 // domain
-import { Signers, HermezWallet } from "src/domain/hermez";
+import { Signers, HermezWallet } from "src/domain";
 // persistence
 import * as persistence from "src/persistence";
 import { getAuthSignatures, setAuthSignatures } from "src/persistence/local-storage";

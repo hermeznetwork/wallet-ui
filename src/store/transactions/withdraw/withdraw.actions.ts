@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { HermezAccount, Exit, PoolTransaction } from "src/domain/hermez";
-import { EstimatedL1Fee } from "src/domain";
+import { HermezAccount, Exit, PoolTransaction, EstimatedL1Fee } from "src/domain";
 
 export enum WithdrawActionTypes {
   LOAD_ACCOUNT = "[WITHDRAW] LOAD ACCOUNT",

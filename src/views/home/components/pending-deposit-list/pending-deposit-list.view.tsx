@@ -4,7 +4,7 @@ import usePendingDepositListStyles from "src/views/home/components/pending-depos
 import AccountCard from "src/views/shared/account-card/account-card.view";
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 //domain
-import { CoordinatorState, FiatExchangeRates, PendingDeposit } from "src/domain/hermez";
+import { CoordinatorState, FiatExchangeRates, PendingDeposit } from "src/domain";
 
 interface PendingDepositListProps {
   deposits: PendingDeposit[];

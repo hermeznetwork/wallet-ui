@@ -1,5 +1,5 @@
 // domain
-import { PoolTransaction } from "src/domain/hermez";
+import { PoolTransaction } from "src/domain";
 // persistence
 import { Accounts, Exits } from "src/persistence";
 

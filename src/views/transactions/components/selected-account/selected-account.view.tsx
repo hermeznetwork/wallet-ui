@@ -2,7 +2,7 @@ import React from "react";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import useSelectedAccountStyles from "src/views/transactions/components/selected-account/selected-account.styles";
-import { Account, EthereumAccount, FiatExchangeRates } from "src/domain/hermez";
+import { Account, EthereumAccount, FiatExchangeRates } from "src/domain";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";

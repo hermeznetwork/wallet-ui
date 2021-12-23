@@ -8,8 +8,7 @@ import { ReactComponent as AngleDownIcon } from "src/images/icons/angle-down.svg
 import FeesTable from "src/views/shared/fees-table/fees-table.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 // domain
-import { FiatExchangeRates, Token } from "src/domain/hermez";
-import { EstimatedL1Fee } from "src/domain";
+import { FiatExchangeRates, Token, EstimatedL1Fee } from "src/domain";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { getEstimatedWithdrawFee } from "src/utils/fees";
 

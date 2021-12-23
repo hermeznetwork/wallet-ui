@@ -7,7 +7,7 @@ import {
 import { getPaginationData, Pagination } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PoolTransaction, HermezAccount, RecommendedFee } from "src/domain/hermez";
+import { PoolTransaction, HermezAccount, RecommendedFee } from "src/domain";
 
 export interface AccountsWithPagination {
   accounts: HermezAccount[];

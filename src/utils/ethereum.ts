@@ -5,7 +5,7 @@ import hermezjs from "@hermeznetwork/hermezjs";
 import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "src/constants";
 import { Erc20__factory } from "src/contract-typings/erc20/factories/Erc20__factory";
 // domain
-import { HermezWallet, Token, ISOStringDate, EthereumAccount } from "src/domain/hermez";
+import { HermezWallet, Token, ISOStringDate, EthereumAccount } from "src/domain";
 
 /**
  * Fetches token balances in the user's Ethereum account. Only for those tokens registered in Hermez and Ether.

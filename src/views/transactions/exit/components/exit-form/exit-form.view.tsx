@@ -7,14 +7,19 @@ import FormContainer from "src/views/transactions/components/form-container/form
 import ExitAlert from "../exit-alert/exit-alert.view";
 import { getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import Fee from "src/views/transactions/components/fee/fee.view";
-import { HermezAccount, FiatExchangeRates, RecommendedFee, Token } from "src/domain/hermez";
 import { AsyncTask } from "src/utils/types";
-import { EstimatedL1Fee } from "src/domain";
 import { AmountInputChangeEventData } from "src/views/shared/amount-input/amount-input.view";
 import SelectedAccount from "src/views/transactions/components/selected-account/selected-account.view";
 import TransactionAmountInput from "src/views/transactions/components/transaction-amount-input/transaction-amount-input.view";
 import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
-
+// domain
+import {
+  EstimatedL1Fee,
+  FiatExchangeRates,
+  HermezAccount,
+  RecommendedFee,
+  Token,
+} from "src/domain";
 export interface TxData {
   amount: BigNumber;
   from: HermezAccount;

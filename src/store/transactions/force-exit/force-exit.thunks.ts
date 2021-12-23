@@ -8,7 +8,7 @@ import * as forceExitActions from "src/store/transactions/force-exit/force-exit.
 import { openSnackbar } from "src/store/global/global.actions";
 import theme from "src/styles/theme";
 // domain
-import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
+import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain";
 import { createAccount } from "src/utils/accounts";
 // persistence
 import * as persistence from "src/persistence";

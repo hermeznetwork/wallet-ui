@@ -4,15 +4,15 @@ import ExitCard from "src/views/shared/exit-card/exit-card.view";
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 // domain
 import {
+  CoordinatorState,
   Exit,
+  FiatExchangeRates,
+  isExit,
   PendingDelayedWithdraw,
   PendingWithdraw,
-  TimerWithdraw,
-  CoordinatorState,
-  FiatExchangeRates,
   PoolTransaction,
-  isExit,
-} from "src/domain/hermez";
+  TimerWithdraw,
+} from "src/domain";
 
 interface ExitCardListProps {
   transactions: (Exit | PoolTransaction)[];

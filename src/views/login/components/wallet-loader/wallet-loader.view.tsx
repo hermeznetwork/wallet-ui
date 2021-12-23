@@ -5,7 +5,7 @@ import useWalletLoaderStyles from "src/views/login/components/wallet-loader/wall
 import * as loginActions from "src/store/login/login.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { HermezWallet } from "src/domain/hermez";
+import { HermezWallet } from "src/domain";
 
 interface WalletLoaderProps {
   walletName: loginActions.WalletName;

@@ -8,12 +8,12 @@ import {
   CoordinatorState,
   Exit,
   HistoryTransaction,
-  PoolTransaction,
-  PendingDeposit,
+  isHistoryTransaction,
   ISOStringDate,
   PendingDelayedWithdraw,
-  isHistoryTransaction,
-} from "src/domain/hermez";
+  PendingDeposit,
+  PoolTransaction,
+} from "src/domain";
 
 /**
  * Returns the correct amount for a transaction from the Hermez API depending on its type

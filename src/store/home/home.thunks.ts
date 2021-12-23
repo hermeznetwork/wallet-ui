@@ -9,12 +9,7 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as homeActions from "src/store/home/home.actions";
 // domain
-import {
-  PoolTransaction,
-  PendingDeposit,
-  FiatExchangeRates,
-  HermezAccount,
-} from "src/domain/hermez";
+import { FiatExchangeRates, HermezAccount, PendingDeposit, PoolTransaction } from "src/domain";
 import { Accounts } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();

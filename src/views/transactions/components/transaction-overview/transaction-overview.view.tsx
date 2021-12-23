@@ -22,13 +22,14 @@ import {
 import { Theme } from "src/styles/theme";
 // domain
 import {
-  HermezWallet,
-  HermezAccount,
-  FiatExchangeRates,
-  Exit,
+  EstimatedL1Fee,
   EthereumAccount,
-} from "src/domain/hermez";
-import { EstimatedL1Fee, TransactionReceiver } from "src/domain";
+  Exit,
+  FiatExchangeRates,
+  HermezAccount,
+  HermezWallet,
+  TransactionReceiver,
+} from "src/domain";
 
 type TransactionOverviewProps = {
   wallet: HermezWallet.HermezWallet;

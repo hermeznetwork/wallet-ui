@@ -6,7 +6,7 @@ import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transactionDetailsActionTypes from "./transaction-details.actions";
 import * as storage from "../../utils/storage";
 // domain
-import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain/hermez";
+import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain";
 import { AxiosError } from "axios";
 
 /**

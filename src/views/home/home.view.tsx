@@ -32,16 +32,19 @@ import { AUTO_REFRESH_RATE } from "src/constants";
 import {
   Account,
   CoordinatorState,
+  EthereumNetwork,
   FiatExchangeRates,
   HermezAccount,
   HermezWallet,
   isHermezAccount,
+  PendingDelayedWithdraws,
   PendingDeposit,
+  PendingDeposits,
+  PendingWithdraws,
   PoolTransaction,
   TimerWithdraw,
-} from "src/domain/hermez";
-import { EthereumNetwork } from "src/domain/ethereum";
-import * as localStorageDomain from "src/domain/local-storage";
+  TimerWithdraws,
+} from "src/domain";
 //persistence
 import { Exits } from "src/persistence";
 
@@ -61,10 +64,10 @@ type HomeStateProps = {
   exitsTask: AsyncTask<Exits, Error>;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   preferredCurrency: string;
-  pendingDeposits: localStorageDomain.PendingDeposits;
-  pendingWithdraws: localStorageDomain.PendingWithdraws;
-  pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
-  timerWithdraws: localStorageDomain.TimerWithdraws;
+  pendingDeposits: PendingDeposits;
+  pendingWithdraws: PendingWithdraws;
+  pendingDelayedWithdraws: PendingDelayedWithdraws;
+  timerWithdraws: TimerWithdraws;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
 };
 interface HomeHandlerProps {

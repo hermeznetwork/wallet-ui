@@ -3,10 +3,8 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import useDepositFormStyles from "src/views/transactions/deposit/components/deposit-form/deposit-form.styles";
-import { EthereumAccount, FiatExchangeRates } from "src/domain/hermez";
 import FormContainer from "src/views/transactions/components/form-container/form.container.view";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
-import { EstimatedL1Fee } from "src/domain";
 import SelectedAccount from "src/views/transactions/components/selected-account/selected-account.view";
 import DepositAlert from "src/views/transactions/deposit/components/deposit-alert/deposit-alert.view";
 import Fee from "src/views/transactions/components/fee/fee.view";
@@ -14,6 +12,8 @@ import { AmountInputChangeEventData } from "src/views/shared/amount-input/amount
 import TransactionAmountInput from "src/views/transactions/components/transaction-amount-input/transaction-amount-input.view";
 import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
 import { ETHER_TOKEN_ID } from "src/constants";
+// domain
+import { EthereumAccount, FiatExchangeRates, EstimatedL1Fee } from "src/domain";
 
 export interface TxData {
   amount: BigNumber;

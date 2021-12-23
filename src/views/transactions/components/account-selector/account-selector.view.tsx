@@ -10,14 +10,14 @@ import { AsyncTask } from "src/utils/types";
 import { Pagination } from "src/utils/api";
 // domain
 import {
-  HermezAccount,
   EthereumAccount,
   FiatExchangeRates,
-  PoolTransaction,
-  PendingDeposit,
-  isHermezAccount,
+  HermezAccount,
   isEthereumAccount,
-} from "src/domain/hermez";
+  isHermezAccount,
+  PendingDeposit,
+  PoolTransaction,
+} from "src/domain";
 
 export interface AccountsWithPagination {
   accounts: HermezAccount[];

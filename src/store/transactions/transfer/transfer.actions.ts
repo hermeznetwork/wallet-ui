@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { HermezAccount, PoolTransaction, RecommendedFee } from "src/domain/hermez";
-import { TransactionReceiver } from "src/domain";
+import { HermezAccount, PoolTransaction, RecommendedFee, TransactionReceiver } from "src/domain";
 // persistence
 import { Accounts } from "src/persistence";
 

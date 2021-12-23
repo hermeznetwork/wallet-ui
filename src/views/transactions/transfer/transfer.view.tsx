@@ -20,14 +20,14 @@ import TransferForm, {
   TxData,
 } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
-import { TransactionReceiver } from "src/domain/";
 import {
+  FiatExchangeRates,
   HermezAccount,
   HermezWallet,
-  FiatExchangeRates,
   PoolTransaction,
   RecommendedFee,
-} from "src/domain/hermez";
+  TransactionReceiver,
+} from "src/domain";
 
 interface TransferStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;

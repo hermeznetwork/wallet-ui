@@ -3,7 +3,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import useTransferFormStyles from "src/views/transactions/transfer/components/transfer-form/transfer-form.styles";
-import { FiatExchangeRates, HermezAccount, RecommendedFee } from "src/domain/hermez";
+import { FiatExchangeRates, HermezAccount, RecommendedFee } from "src/domain";
 import FormContainer from "src/views/transactions/components/form-container/form.container.view";
 import { AsyncTask } from "src/utils/types";
 import ReceiverInput, {

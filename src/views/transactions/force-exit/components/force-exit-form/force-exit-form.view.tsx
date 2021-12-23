@@ -3,7 +3,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import useForceExitFormStyles from "src/views/transactions/force-exit/components/force-exit-form/force-exit-form.styles";
-import { FiatExchangeRates, HermezAccount } from "src/domain/hermez";
+import { FiatExchangeRates, HermezAccount } from "src/domain";
 import { AsyncTask } from "src/utils/types";
 import FormContainer from "src/views/transactions/components/form-container/form.container.view";
 import SelectedAccount from "src/views/transactions/components/selected-account/selected-account.view";

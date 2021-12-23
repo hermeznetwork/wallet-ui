@@ -11,13 +11,13 @@ import * as accountDetailsActions from "src/store/account-details/account-detail
 import * as globalThunks from "src/store/global/global.thunks";
 // domain
 import {
-  HermezAccount,
-  Token,
-  HistoryTransaction,
-  PoolTransaction,
   Exit,
   FiatExchangeRates,
-} from "src/domain/hermez";
+  HermezAccount,
+  HistoryTransaction,
+  PoolTransaction,
+  Token,
+} from "src/domain";
 // persistence
 import { HistoryTransactions, Exits } from "src/persistence";
 

@@ -23,20 +23,20 @@ import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
 
 // domain
-import { ISOStringDate } from "src/domain/";
 import {
   CoordinatorState,
-  PendingWithdraw,
-  PendingDelayedWithdraw,
+  Exit,
   FiatExchangeRates,
   HermezNetworkStatus,
-  Exit,
-  PendingDeposit,
-  TimerWithdraw,
   HistoryTransaction,
+  ISOStringDate,
+  PendingDelayedWithdraw,
+  PendingDeposit,
+  PendingWithdraw,
   PoolTransaction,
+  TimerWithdraw,
   Token,
-} from "src/domain/hermez";
+} from "src/domain";
 // persistence
 import { Exits } from "src/persistence";
 import * as localStoragePersistence from "src/persistence/local-storage";

@@ -14,7 +14,7 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { getTxFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
-import { FiatExchangeRates, EthereumAccount, HermezAccount } from "src/domain/hermez";
+import { FiatExchangeRates, EthereumAccount, HermezAccount } from "src/domain";
 // persistence
 import * as persistence from "src/persistence";
 

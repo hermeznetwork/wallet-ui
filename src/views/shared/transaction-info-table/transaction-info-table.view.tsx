@@ -5,8 +5,7 @@ import useTransactionInfoTableStyles from "src/views/shared/transaction-info-tab
 import TransactionInfoTableRow from "src/views/shared/transaction-info-table-row/transaction-info-table-row.view";
 import FeesTable from "src/views/shared/fees-table/fees-table.view";
 // domain
-import { FiatExchangeRates, Token } from "src/domain/hermez";
-import { EstimatedL1Fee } from "src/domain";
+import { FiatExchangeRates, Token, EstimatedL1Fee } from "src/domain";
 
 interface TransactionInfoTableProps {
   status?: Row;

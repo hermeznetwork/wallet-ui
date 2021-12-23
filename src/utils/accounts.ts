@@ -5,12 +5,12 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { AsyncTask } from "src/utils/types";
 // domain
 import {
-  HermezAccount,
-  PoolTransaction,
-  PendingDeposit,
-  Token,
   FiatExchangeRates,
-} from "src/domain/hermez";
+  HermezAccount,
+  PendingDeposit,
+  PoolTransaction,
+  Token,
+} from "src/domain";
 
 function getAccountBalance(
   account: HermezAccount,

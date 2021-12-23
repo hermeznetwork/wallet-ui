@@ -2,7 +2,7 @@ import axios from "axios";
 import { z } from "zod";
 
 // domain
-import { FiatExchangeRates, Token } from "src/domain/hermez";
+import { FiatExchangeRates, Token } from "src/domain";
 // persistence
 import * as parsers from "src/persistence/parsers";
 // utils

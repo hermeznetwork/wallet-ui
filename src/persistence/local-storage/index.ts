@@ -3,24 +3,22 @@ import { z } from "zod";
 import * as constants from "src/constants";
 // domain
 import {
-  PendingDeposit,
-  PendingWithdraw,
+  AuthSignatures,
+  ChainPendingDelayedWithdraws,
+  ChainPendingDeposits,
+  ChainPendingWithdraws,
+  ChainTimerWithdraws,
   PendingDelayedWithdraw,
+  PendingDelayedWithdraws,
+  PendingDeposit,
+  PendingDeposits,
+  PendingWithdraw,
+  PendingWithdraws,
   TimerWithdraw,
-} from "src/domain/hermez";
+  TimerWithdraws,
+} from "src/domain";
 // persistence
 import * as parsers from "src/persistence/parsers";
-import {
-  AuthSignatures,
-  PendingWithdraws,
-  ChainPendingWithdraws,
-  PendingDelayedWithdraws,
-  ChainPendingDelayedWithdraws,
-  PendingDeposits,
-  ChainPendingDeposits,
-  TimerWithdraws,
-  ChainTimerWithdraws,
-} from "src/domain/local-storage";
 import { StrictSchema } from "src/utils/type-safety";
 
 // Storage Helpers

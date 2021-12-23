@@ -31,12 +31,12 @@ import {
   CoordinatorState,
   FiatExchangeRates,
   HistoryTransaction,
+  isHistoryTransaction,
+  isPendingDeposit,
+  isPoolTransaction,
   PendingDeposit,
   PoolTransaction,
-  isHistoryTransaction,
-  isPoolTransaction,
-  isPendingDeposit,
-} from "src/domain/hermez";
+} from "src/domain";
 import { Theme } from "src/styles/theme";
 
 interface TransactionDetailsStateProps {

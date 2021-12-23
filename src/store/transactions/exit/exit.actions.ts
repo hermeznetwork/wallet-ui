@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { HermezAccount, PoolTransaction, RecommendedFee } from "src/domain/hermez";
-import { EstimatedL1Fee } from "src/domain";
+import { HermezAccount, PoolTransaction, RecommendedFee, EstimatedL1Fee } from "src/domain";
 
 export enum ExitActionTypes {
   GO_TO_BUILD_TRANSACTION_STEP = "[EXIT] GO TO BUILD TRANSACTION STEP",

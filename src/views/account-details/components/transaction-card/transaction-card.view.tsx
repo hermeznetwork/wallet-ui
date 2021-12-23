@@ -7,7 +7,7 @@ import TransactionLabel from "src/views/account-details/components/transaction-l
 import TransactionAmount from "src/views/account-details/components/transaction-amount/transaction-amount.view";
 import { getTxPendingTime, formatMinutes } from "src/utils/transactions";
 //domain
-import { CoordinatorState, ISOStringDate } from "src/domain/hermez";
+import { CoordinatorState, ISOStringDate } from "src/domain";
 
 interface TransactionCardProps {
   accountIndex: string;

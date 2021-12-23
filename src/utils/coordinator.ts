@@ -1,6 +1,6 @@
 import { DELAY_TO_NEXT_FORGER } from "src/constants";
 // domain
-import { CoordinatorState, NextForger } from "src/domain/hermez";
+import { CoordinatorState, NextForger } from "src/domain";
 
 /**
  * Extracts the next forgers without duplicates from the coordinator state returned by

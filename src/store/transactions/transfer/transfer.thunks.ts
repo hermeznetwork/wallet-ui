@@ -14,8 +14,7 @@ import theme from "src/styles/theme";
 import { feeBigIntToNumber, getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
-import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
-import { TransactionReceiver } from "src/domain";
+import { HermezAccount, FiatExchangeRates, PoolTransaction, TransactionReceiver } from "src/domain";
 // persistence
 import * as persistence from "src/persistence";
 

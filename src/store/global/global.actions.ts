@@ -1,19 +1,19 @@
 import { HeaderState } from "src/store/global/global.reducer";
 // domain
-import { EthereumNetwork } from "src/domain/ethereum";
 import {
-  HermezWallet,
-  Signers,
+  CoordinatorState,
+  EthereumNetwork,
   FiatExchangeRates,
   HermezNetworkStatus,
-  PendingWithdraw,
+  HermezWallet,
+  ISOStringDate,
   PendingDelayedWithdraw,
-  TimerWithdraw,
   PendingDeposit,
-  CoordinatorState,
+  PendingWithdraw,
+  Signers,
+  TimerWithdraw,
   Token,
-} from "src/domain/hermez";
-import { ISOStringDate } from "src/domain/";
+} from "src/domain";
 
 export enum GlobalActionTypes {
   LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",

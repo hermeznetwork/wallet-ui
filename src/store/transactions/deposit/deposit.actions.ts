@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { EstimatedL1Fee } from "src/domain";
-import { EthereumAccount } from "src/domain/hermez";
+import { EstimatedL1Fee, EthereumAccount } from "src/domain";
 
 export enum DepositActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[DEPOSIT] GO TO CHOOSE ACCOUNT STEP",

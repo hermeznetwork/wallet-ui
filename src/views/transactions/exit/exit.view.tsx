@@ -18,14 +18,14 @@ import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { getFixedTokenAmount } from "src/utils/currencies";
 // domain
 import {
-  HermezAccount,
+  EstimatedL1Fee,
   FiatExchangeRates,
+  HermezAccount,
   HermezWallet,
   PoolTransaction,
   RecommendedFee,
   Token,
-} from "src/domain/hermez";
-import { EstimatedL1Fee } from "src/domain";
+} from "src/domain";
 
 interface ExitStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;

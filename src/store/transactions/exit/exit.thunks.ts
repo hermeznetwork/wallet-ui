@@ -15,7 +15,7 @@ import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import { createAccount } from "src/utils/accounts";
 import { feeBigIntToNumber } from "src/utils/fees";
 // domain
-import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain/hermez";
+import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain";
 import { ETHER_TOKEN_ID } from "src/constants";
 // persistence
 import * as persistence from "src/persistence";
