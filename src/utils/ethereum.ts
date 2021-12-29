@@ -3,7 +3,7 @@ import { TransactionResponse, TransactionReceipt } from "@ethersproject/abstract
 import hermezjs from "@hermeznetwork/hermezjs";
 
 import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "src/constants";
-import { Erc20__factory } from "src/contract-typings/erc20/factories/Erc20__factory";
+import { Erc20__factory } from "src/types/contracts/erc-20/factories/Erc20__factory";
 // domain
 import { HermezWallet, Token, ISOStringDate, EthereumAccount } from "src/domain";
 

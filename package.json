@@ -7,8 +7,8 @@
     "format": "prettier --write .",
     "lint": "eslint --cache --fix --ext .ts,.tsx .",
     "prepare": "husky install",
-    "generate-contract-typings": "./generate-contract-typings.sh",
-    "postinstall": "npm run generate-contract-typings",
+    "generate-contract-types": "./generate-contract-types.sh",
+    "postinstall": "npm run generate-contract-types",
     "start:dev": "react-scripts start",
     "start:prod": "serve -s -C -p 80 build"
   },
