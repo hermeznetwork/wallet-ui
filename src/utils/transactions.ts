@@ -34,10 +34,13 @@ function getTransactionAmount(
  * If it's an L1 transaction, it adds the forgeDelay again
  */
 function getTxPendingTime(
-  coordinatorState: CoordinatorState,
   isL1: boolean,
-  timestamp: ISOStringDate
+  timestamp: ISOStringDate,
+  coordinatorState?: CoordinatorState
 ): number {
+  if (!coordinatorState) {
+    return 0;
+  }
   const timeToForge = coordinatorState.node.forgeDelay;
   const lastBatchForgedInSeconds = Date.parse(coordinatorState.network.lastBatch.timestamp) / 1000;
   const whenToForgeInSeconds = timeToForge + lastBatchForgedInSeconds;

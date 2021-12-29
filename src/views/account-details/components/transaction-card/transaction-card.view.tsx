@@ -42,7 +42,7 @@ function TransactionCard({
 
   const isL1 =
     type === TxType.Deposit || type === TxType.CreateAccountDeposit || type === TxType.ForceExit;
-  const pendingTime = getTxPendingTime(coordinatorState, isL1, timestamp);
+  const pendingTime = getTxPendingTime(isL1, timestamp, coordinatorState);
 
   return (
     <div className={classes.root} onClick={onClick}>

@@ -35,9 +35,7 @@ function AccountCard({
   });
 
   const pendingTime =
-    timestamp !== undefined && coordinatorState !== undefined
-      ? getTxPendingTime(coordinatorState, true, timestamp)
-      : 0;
+    timestamp !== undefined ? getTxPendingTime(true, timestamp, coordinatorState) : 0;
 
   return (
     <div className={`${classes.root} ${classes.account}`} onClick={onClick}>

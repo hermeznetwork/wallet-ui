@@ -203,9 +203,9 @@ function TransactionDetails({
                   type === TxType.ForceExit;
                 const pendingTime = isAsyncTaskDataAvailable(coordinatorStateTask)
                   ? getTxPendingTime(
-                      coordinatorStateTask.data,
                       isL1,
-                      transactionTask.data.timestamp
+                      transactionTask.data.timestamp,
+                      coordinatorStateTask.data
                     )
                   : undefined;
                 const poolTransactionForgingPendingTime =
