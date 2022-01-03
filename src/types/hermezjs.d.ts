@@ -34,8 +34,8 @@ declare module "@hermeznetwork/*" {
     id: number;
     name: string;
     symbol: string;
-    USD: number;
-    // fiatUpdate: ISOStringDate;
+    USD: number | null;
+    // fiatUpdate: ISOStringDate | null;
   };
 
   export interface L1Info {

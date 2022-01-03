@@ -68,11 +68,14 @@ function getAmountInPreferredCurrency(
  */
 function getTokenAmountInPreferredCurrency(
   amount: string,
-  usdTokenExchangeRate: number,
+  token: Token,
   preferredCurrency: string,
   fiatExchangeRates?: FiatExchangeRates
 ): number | undefined {
-  const usdAmount = Number(amount) * usdTokenExchangeRate;
+  if (!token.USD) {
+    return undefined;
+  }
+  const usdAmount = Number(amount) * token.USD;
   return getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchangeRates);
 }
 
@@ -80,6 +83,9 @@ function getTokenAmountInPreferredCurrency(
  * Converts a fee index to USD
  */
 function getFeeInUsd(feeIndex: number, amount: string, token: Token): number {
+  if (!token.USD) {
+    return 0;
+  }
   const feeInToken = Number(getTokenAmountString(getFeeValue(feeIndex, amount), token.decimals));
   const feeInFiat = feeInToken * token.USD;
   return feeInFiat;
@@ -97,7 +103,7 @@ function convertTokenAmountToFiat(
   const fixedTokenAmount = getFixedTokenAmount(tokenAmount, token.decimals);
   return getTokenAmountInPreferredCurrency(
     fixedTokenAmount,
-    token.USD,
+    token,
     preferredCurrency,
     fiatExchangeRates
   );

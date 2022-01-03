@@ -34,7 +34,7 @@ const token = StrictSchema<Token>()(
       id: z.number(),
       name: z.string(),
       symbol: z.string(),
-      USD: z.number(),
+      USD: z.number().nullable(),
     })
   )
 );

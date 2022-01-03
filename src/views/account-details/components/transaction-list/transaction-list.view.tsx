@@ -78,7 +78,7 @@ function TransactionList({
                     )
                   : getTokenAmountInPreferredCurrency(
                       fixedTokenAmount,
-                      transaction.token.USD,
+                      transaction.token,
                       preferredCurrency,
                       fiatExchangeRates
                     )

@@ -57,7 +57,7 @@ function Fee(props: FeeProps): JSX.Element {
       const depositFeeInFiat = isAsyncTaskDataAvailable(estimatedDepositFeeTask)
         ? getTokenAmountInPreferredCurrency(
             formattedDepositFee,
-            estimatedDepositFeeTask.data.token.USD,
+            estimatedDepositFeeTask.data.token,
             preferredCurrency,
             isAsyncTaskDataAvailable(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
           )
@@ -79,7 +79,7 @@ function Fee(props: FeeProps): JSX.Element {
       const formattedFee = getFixedTokenAmount(fee.toString(), token.decimals);
       const feeInFiat = getTokenAmountInPreferredCurrency(
         formattedFee,
-        token.USD,
+        token,
         preferredCurrency,
         isAsyncTaskDataAvailable(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
       );
