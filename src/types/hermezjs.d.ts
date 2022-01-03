@@ -43,8 +43,8 @@ declare module "@hermeznetwork/*" {
     depositAmount: string;
     // depositAmountSuccess: boolean;
     // ethereumBlockNum: number;
-    // historicDepositAmountUSD: number;
-    // toForgeL1TransactionsNum: number;
+    // historicDepositAmountUSD: number | null;
+    // toForgeL1TransactionsNum: number | null;
     // userOrigin: boolean;
   }
 
@@ -81,14 +81,14 @@ declare module "@hermeznetwork/*" {
   };
 
   export type HistoryTransaction = HermezApiResourceItem & {
-    batchNum: number;
-    fromAccountIndex: string;
-    fromHezEthereumAddress: string;
+    batchNum: number | null;
+    fromAccountIndex: string | null;
+    fromHezEthereumAddress: string | null;
     id: string;
     toHezEthereumAddress: string | null;
     type: TxType;
     amount: string;
-    // fromBJJ: string;
+    // fromBJJ: string | null;
     historicUSD: number | null;
     L1Info: L1Info | null;
     L1orL2: "L1" | "L2";
