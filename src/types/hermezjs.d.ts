@@ -2,10 +2,9 @@
  * HermezJS Type Definitions
  *
  * Some types and props are currently commented because are not used by this app.
- * As we proceed with the migration of the application to typescript, more
- * properties and types will likely be required. We can uncomment them as
- * required and finally remove all those not required.
- */
+ * They are kept in case we eventually decide to move this typings file to the
+ * HermezJS library to enable it with TypeScript support.
+ * */
 declare module "@hermeznetwork/*" {
   import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
@@ -14,12 +13,6 @@ declare module "@hermeznetwork/*" {
   export type ScalarValue = string | number | bigint;
 
   export type ISOStringDate = string;
-
-  export interface HermezStatus {
-    isUnderMaintenance: boolean;
-  }
-
-  export type HermezNetworkStatus = "online" | "offline";
 
   export type FiatExchangeRates = Record<string, number>;
 

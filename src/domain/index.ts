@@ -13,8 +13,6 @@ export type {
   Exit,
   FiatExchangeRates,
   HermezApiResourceItem,
-  HermezNetworkStatus,
-  HermezStatus,
   HermezWallet,
   HistoryTransaction,
   ISOStringDate,
@@ -27,6 +25,12 @@ export type {
   Signers,
   Token,
 } from "@hermeznetwork/hermezjs";
+
+export type HermezNetworkStatus = "online" | "offline";
+
+export interface HermezStatus {
+  isUnderMaintenance: boolean;
+}
 
 export interface EthereumNetwork {
   chainId: number;
