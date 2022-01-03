@@ -55,7 +55,9 @@ function TransactionInfo({
   };
   const myHermezAddress: Row = {
     subtitle: "My Hermez address",
-    value: getPartiallyHiddenHermezAddress(transaction.fromHezEthereumAddress),
+    value: transaction.fromHezEthereumAddress
+      ? getPartiallyHiddenHermezAddress(transaction.fromHezEthereumAddress)
+      : "Not available",
   };
 
   function getTransactionStatus(): Row | undefined {
@@ -91,8 +93,10 @@ function TransactionInfo({
   }
 
   function handleCopyFromAddress() {
-    copyToClipboard(transaction.fromHezEthereumAddress);
-    onFromCopyClick();
+    if (transaction.fromHezEthereumAddress) {
+      copyToClipboard(transaction.fromHezEthereumAddress);
+      onFromCopyClick();
+    }
   }
 
   function getTransferRecipientRow(): Row | undefined {
@@ -126,9 +130,11 @@ function TransactionInfo({
           status={getTransactionStatus()}
           from={{
             subtitle: "My Ethereum address",
-            value: getPartiallyHiddenEthereumAddress(
-              getEthereumAddress(transaction.fromHezEthereumAddress)
-            ),
+            value: transaction.fromHezEthereumAddress
+              ? getPartiallyHiddenEthereumAddress(
+                  getEthereumAddress(transaction.fromHezEthereumAddress)
+                )
+              : "Not available",
           }}
           to={myHermezAddress}
           date={date}
@@ -151,10 +157,12 @@ function TransactionInfo({
           <TransactionInfoTable status={status} from={from} to={to} date={date} feeData={feeData} />
         );
       } else {
-        const from = {
-          subtitle: getPartiallyHiddenHermezAddress(transaction.fromHezEthereumAddress),
-          onCopyFromAddress: handleCopyFromAddress,
-        };
+        const from = transaction.fromHezEthereumAddress
+          ? {
+              subtitle: getPartiallyHiddenHermezAddress(transaction.fromHezEthereumAddress),
+              onCopyFromAddress: handleCopyFromAddress,
+            }
+          : undefined;
         const to = {
           subtitle: "My Hermez address",
           value: transaction.toHezEthereumAddress
@@ -174,9 +182,11 @@ function TransactionInfo({
           from={myHermezAddress}
           to={{
             subtitle: "My Ethereum address",
-            value: getPartiallyHiddenEthereumAddress(
-              getEthereumAddress(transaction.fromHezEthereumAddress)
-            ),
+            value: transaction.fromHezEthereumAddress
+              ? getPartiallyHiddenEthereumAddress(
+                  getEthereumAddress(transaction.fromHezEthereumAddress)
+                )
+              : "Not available",
           }}
           date={date}
           feeData={feeData}
@@ -191,9 +201,11 @@ function TransactionInfo({
           from={myHermezAddress}
           to={{
             subtitle: "My Ethereum address",
-            value: getPartiallyHiddenEthereumAddress(
-              getEthereumAddress(transaction.fromHezEthereumAddress)
-            ),
+            value: transaction.fromHezEthereumAddress
+              ? getPartiallyHiddenEthereumAddress(
+                  getEthereumAddress(transaction.fromHezEthereumAddress)
+                )
+              : "Not available",
           }}
           date={date}
         />

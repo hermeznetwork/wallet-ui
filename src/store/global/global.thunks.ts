@@ -857,7 +857,7 @@ function checkPendingTransactions(): AppThunk {
                   ? { to: transaction.toHezEthereumAddress }
                   : transaction.type === TxType.Transfer
                   ? { to: transaction.toAccountIndex }
-                  : {}),
+                  : { to: null }),
                 fee: transaction.fee,
               };
 
