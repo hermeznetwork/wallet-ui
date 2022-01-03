@@ -95,9 +95,6 @@ function TransactionDetails({
       return undefined;
     } else if (isAsyncTaskDataAvailable(transactionTask)) {
       const { token } = transactionTask.data;
-      if (!token.USD) {
-        return undefined;
-      }
 
       const historicUSD = isHistoryTransaction(transactionTask.data)
         ? transactionTask.data.historicUSD
