@@ -8,7 +8,6 @@ import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import { openSnackbar } from "src/store/global/global.actions";
-import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
 import { feeBigIntToNumber, getMinimumL2Fee, getTxFee } from "src/utils/fees";
@@ -34,16 +33,13 @@ function fetchHermezAccount(
 
     dispatch(transferActions.loadAccount());
 
-    return CoordinatorAPI.getAccount(accountIndex)
-      .then((account) =>
-        createAccount(
-          account,
-          poolTransactions,
-          undefined,
-          tokensPriceTask,
-          preferredCurrency,
-          fiatExchangeRates
-        )
+    return persistence
+      .fetchHermezAccount(
+        tokensPriceTask,
+        accountIndex,
+        poolTransactions,
+        fiatExchangeRates,
+        preferredCurrency
       )
       .then((res) => dispatch(transferActions.loadAccountSuccess(res)))
       .catch((error: Error) => dispatch(transferActions.loadAccountFailure(error.message)));

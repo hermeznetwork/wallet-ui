@@ -12,7 +12,6 @@ import { openSnackbar } from "src/store/global/global.actions";
 import theme from "src/styles/theme";
 // utils
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
-import { createAccount } from "src/utils/accounts";
 import { feeBigIntToNumber } from "src/utils/fees";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain";
@@ -36,16 +35,13 @@ function fetchHermezAccount(
 
     dispatch(exitActions.loadAccount());
 
-    return CoordinatorAPI.getAccount(accountIndex)
-      .then((account) =>
-        createAccount(
-          account,
-          poolTransactions,
-          undefined,
-          tokensPriceTask,
-          preferredCurrency,
-          fiatExchangeRates
-        )
+    return persistence
+      .fetchHermezAccount(
+        tokensPriceTask,
+        accountIndex,
+        poolTransactions,
+        fiatExchangeRates,
+        preferredCurrency
       )
       .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
       .catch((error: Error) => dispatch(exitActions.loadAccountFailure(error.message)));

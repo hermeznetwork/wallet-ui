@@ -12,7 +12,14 @@ import { StrictSchema } from "src/utils/type-safety";
 import { createAccount } from "src/utils/accounts";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { Accounts, Token, FiatExchangeRates, PoolTransaction, HermezWallet } from "src/domain";
+import {
+  Accounts,
+  HermezAccount,
+  Token,
+  FiatExchangeRates,
+  PoolTransaction,
+  HermezWallet,
+} from "src/domain";
 
 export type { HistoryTransactions, Exits, Accounts } from "@hermeznetwork/hermezjs";
 export interface PostCreateAccountAuthorizationError {
@@ -90,6 +97,28 @@ export function fetchAccounts(
         )
       ),
     })
+  );
+}
+
+/**
+ * Fetches the account details for an accountIndex in the Hermez API.
+ */
+export function fetchHermezAccount(
+  tokensPriceTask: AsyncTask<Token[], string>,
+  accountIndex: string,
+  poolTransactions: PoolTransaction[],
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
+): Promise<HermezAccount> {
+  return CoordinatorAPI.getAccount(accountIndex).then((account) =>
+    createAccount(
+      account,
+      poolTransactions,
+      undefined,
+      tokensPriceTask,
+      preferredCurrency,
+      fiatExchangeRates
+    )
   );
 }
 

@@ -10,7 +10,6 @@ import { openSnackbar } from "src/store/global/global.actions";
 import theme from "src/styles/theme";
 import { mergeDelayedWithdraws } from "src/utils/transactions";
 import { WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
-import { createAccount } from "src/utils/accounts";
 // domain
 import {
   Exit,
@@ -38,16 +37,13 @@ function fetchHermezAccount(
 
     dispatch(withdrawActions.loadAccount());
 
-    return CoordinatorAPI.getAccount(accountIndex)
-      .then((account) =>
-        createAccount(
-          account,
-          poolTransactions,
-          undefined,
-          tokensPriceTask,
-          preferredCurrency,
-          fiatExchangeRates
-        )
+    return persistence
+      .fetchHermezAccount(
+        tokensPriceTask,
+        accountIndex,
+        poolTransactions,
+        fiatExchangeRates,
+        preferredCurrency
       )
       .then((res) => dispatch(withdrawActions.loadAccountSuccess(res)))
       .catch((error: Error) => dispatch(withdrawActions.loadAccountFailure(error.message)));
