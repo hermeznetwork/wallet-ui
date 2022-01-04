@@ -38,10 +38,10 @@ interface ForxeExitHandlerProps {
     transactionToReview: forceExitActions.TransactionToReview
   ) => void;
   onLoadAccounts: (
-    fromItem: number | undefined,
     poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string
+    preferredCurrency: string,
+    fromItem?: number
   ) => void;
   onLoadPoolTransactions: () => void;
   onForceExit: (amount: BigNumber, account: HermezAccount) => void;
@@ -199,17 +199,17 @@ const mapDispatchToProps = (dispatch: AppDispatch): ForxeExitHandlerProps => ({
   onGoToTransactionOverviewStep: (transactionToReview: forceExitActions.TransactionToReview) =>
     dispatch(forceExitActions.goToReviewTransactionStep(transactionToReview)),
   onLoadAccounts: (
-    fromItem: number | undefined,
     poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string
+    preferredCurrency: string,
+    fromItem?: number
   ) =>
     dispatch(
       forceExitThunks.fetchAccounts(
-        fromItem,
         poolTransactions,
         fiatExchangeRates,
-        preferredCurrency
+        preferredCurrency,
+        fromItem
       )
     ),
   onLoadPoolTransactions: () => dispatch(forceExitThunks.fetchPoolTransactions()),

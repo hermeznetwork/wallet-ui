@@ -1,6 +1,6 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
+import { Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
@@ -9,7 +9,6 @@ import { openSnackbar } from "src/store/global/global.actions";
 import theme from "src/styles/theme";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain";
-import { createAccount } from "src/utils/accounts";
 // persistence
 import * as persistence from "src/persistence";
 
@@ -17,10 +16,10 @@ import * as persistence from "src/persistence";
  * Fetches the accounts to use in the transaction in the rollup api.
  */
 function fetchAccounts(
-  fromItem: number | undefined,
   poolTransactions: PoolTransaction[],
   fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  preferredCurrency: string,
+  fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -30,22 +29,16 @@ function fetchAccounts(
     if (wallet !== undefined) {
       dispatch(forceExitActions.loadAccounts());
 
-      return CoordinatorAPI.getAccounts(wallet.publicKeyBase64, undefined, fromItem)
-        .then((res) => {
-          const accounts = res.accounts.map((account) =>
-            createAccount(
-              account,
-              poolTransactions,
-              undefined,
-              tokensPriceTask,
-              preferredCurrency,
-              fiatExchangeRates
-            )
-          );
-
-          return { ...res, accounts };
-        })
-        .then((res) => dispatch(forceExitActions.loadAccountsSuccess(res)))
+      return persistence
+        .fetchAccounts(
+          wallet,
+          tokensPriceTask,
+          poolTransactions,
+          fiatExchangeRates,
+          preferredCurrency,
+          fromItem
+        )
+        .then((accounts) => dispatch(forceExitActions.loadAccountsSuccess(accounts)))
         .catch((err) => dispatch(forceExitActions.loadAccountsFailure(err)));
     }
   };

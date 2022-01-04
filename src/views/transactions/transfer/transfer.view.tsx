@@ -54,10 +54,10 @@ interface TransferHandlerProps {
   onLoadFees: () => void;
   onLoadPoolTransactions: () => void;
   onLoadAccounts: (
-    fromItem: number | undefined,
     poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string
+    preferredCurrency: string,
+    fromItem?: number
   ) => void;
   onGoToChooseAccountStep: () => void;
   onGoToBuildTransactionStep: (account: HermezAccount) => void;
@@ -303,13 +303,13 @@ const mapDispatchToProps = (dispatch: AppDispatch): TransferHandlerProps => ({
   onLoadFees: () => dispatch(transferThunks.fetchFees()),
   onLoadPoolTransactions: () => dispatch(transferThunks.fetchPoolTransactions()),
   onLoadAccounts: (
-    fromItem: number | undefined,
     poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string
+    preferredCurrency: string,
+    fromItem?: number
   ) =>
     dispatch(
-      transferThunks.fetchAccounts(fromItem, poolTransactions, fiatExchangeRates, preferredCurrency)
+      transferThunks.fetchAccounts(poolTransactions, fiatExchangeRates, preferredCurrency, fromItem)
     ),
   onGoToChooseAccountStep: () => dispatch(transferActions.goToChooseAccountStep()),
   onGoToBuildTransactionStep: (account: HermezAccount) =>

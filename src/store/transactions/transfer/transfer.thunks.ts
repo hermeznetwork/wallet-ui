@@ -73,10 +73,10 @@ function fetchPoolTransactions(): AppThunk {
  * Fetches the accounts to use in the transaction in the rollup api.
  */
 function fetchAccounts(
-  fromItem: number | undefined,
   poolTransactions: PoolTransaction[],
   fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  preferredCurrency: string,
+  fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -86,22 +86,16 @@ function fetchAccounts(
     if (wallet !== undefined) {
       dispatch(transferActions.loadAccounts());
 
-      return CoordinatorAPI.getAccounts(wallet.publicKeyBase64, undefined, fromItem)
-        .then((res) => {
-          const accounts = res.accounts.map((account) =>
-            createAccount(
-              account,
-              poolTransactions,
-              undefined,
-              tokensPriceTask,
-              preferredCurrency,
-              fiatExchangeRates
-            )
-          );
-
-          return { ...res, accounts };
-        })
-        .then((res) => dispatch(transferActions.loadAccountsSuccess(res)))
+      return persistence
+        .fetchAccounts(
+          wallet,
+          tokensPriceTask,
+          poolTransactions,
+          fiatExchangeRates,
+          preferredCurrency,
+          fromItem
+        )
+        .then((accounts) => dispatch(transferActions.loadAccountsSuccess(accounts)))
         .catch((err) => dispatch(transferActions.loadAccountsFailure(err)));
     }
   };

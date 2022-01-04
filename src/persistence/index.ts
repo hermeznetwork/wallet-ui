@@ -5,9 +5,14 @@
 import { AxiosError } from "axios";
 import { z } from "zod";
 import hermez from "@hermeznetwork/hermezjs";
+import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 
 import { HttpStatusCode } from "src/utils/http";
 import { StrictSchema } from "src/utils/type-safety";
+import { createAccount } from "src/utils/accounts";
+import { AsyncTask } from "src/utils/types";
+// domain
+import { Accounts, Token, FiatExchangeRates, PoolTransaction, HermezWallet } from "src/domain";
 
 export type { HistoryTransactions, Exits, Accounts } from "@hermeznetwork/hermezjs";
 export interface PostCreateAccountAuthorizationError {
@@ -58,6 +63,34 @@ export function postCreateAccountAuthorization(
       }
     }
   });
+}
+
+/**
+ * Fetches the accounts to use in a transaction.
+ */
+export function fetchAccounts(
+  wallet: HermezWallet.HermezWallet,
+  tokensPriceTask: AsyncTask<Token[], string>,
+  poolTransactions: PoolTransaction[],
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string,
+  fromItem?: number
+): Promise<Accounts> {
+  return CoordinatorAPI.getAccounts(wallet.publicKeyBase64, undefined, fromItem).then(
+    (accountsResponse) => ({
+      pendingItems: accountsResponse.pendingItems,
+      accounts: accountsResponse.accounts.map((account) =>
+        createAccount(
+          account,
+          poolTransactions,
+          undefined,
+          tokensPriceTask,
+          preferredCurrency,
+          fiatExchangeRates
+        )
+      ),
+    })
+  );
 }
 
 // Error decoding and message extraction

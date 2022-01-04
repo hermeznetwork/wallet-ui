@@ -24,6 +24,7 @@ export type {
   RecommendedFee,
   Signers,
   Token,
+  Accounts,
 } from "@hermeznetwork/hermezjs";
 
 export type HermezNetworkStatus = "online" | "offline";
