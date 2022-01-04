@@ -1,13 +1,14 @@
 import axios from "axios";
 import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as homeActions from "src/store/home/home.actions";
+// persistence
+import * as persistence from "src/persistence";
 // domain
 import { FiatExchangeRates, HermezAccount, PendingDeposit, PoolTransaction } from "src/domain";
 import { Accounts } from "src/persistence";
@@ -219,7 +220,8 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+      persistence
+        .fetchPoolTransactions(wallet)
         .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(homeActions.loadPoolTransactionsFailure(err)));
     }

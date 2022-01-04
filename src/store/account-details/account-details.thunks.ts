@@ -1,7 +1,6 @@
 import axios from "axios";
 import { push } from "connected-react-router";
 import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
@@ -19,7 +18,7 @@ import {
   Token,
 } from "src/domain";
 // persistence
-import { HistoryTransactions, Exits } from "src/persistence";
+import * as persistence from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 
@@ -97,7 +96,8 @@ function fetchPoolTransactions(accountIndex: HermezAccount["accountIndex"]): App
       global: { wallet },
     } = getState();
     if (wallet !== undefined) {
-      getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
+      persistence
+        .fetchPoolTransactions(wallet, accountIndex)
         // We need to reverse the txs to match the order of the txs from the history (DESC)
         .then((transactions: PoolTransaction[]) => transactions.reverse())
         .then((transactions: PoolTransaction[]) =>
@@ -133,7 +133,7 @@ function filterExitsFromHistoryTransactions(
  */
 function fetchHistoryTransactions(
   accountIndex: HermezAccount["accountIndex"],
-  exits: Exits,
+  exits: persistence.Exits,
   fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -163,7 +163,7 @@ function fetchHistoryTransactions(
       fromItem,
       "DESC"
     )
-      .then((historyTransactions: HistoryTransactions) => {
+      .then((historyTransactions: persistence.HistoryTransactions) => {
         const filteredTransactions = filterExitsFromHistoryTransactions(
           historyTransactions.transactions,
           exits.exits
@@ -171,7 +171,7 @@ function fetchHistoryTransactions(
 
         return { ...historyTransactions, transactions: filteredTransactions };
       })
-      .then((historyTransactions: HistoryTransactions) =>
+      .then((historyTransactions: persistence.HistoryTransactions) =>
         dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
       )
       .catch((err: Error) => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)));
@@ -184,7 +184,7 @@ function fetchHistoryTransactions(
  */
 function refreshHistoryTransactions(
   accountIndex: HermezAccount["accountIndex"],
-  exits: Exits
+  exits: persistence.Exits
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -227,7 +227,7 @@ function refreshHistoryTransactions(
       Promise.all(requests)
         .then((results) => {
           const transactions = results.reduce(
-            (acc: HistoryTransaction[], result: HistoryTransactions) => [
+            (acc: HistoryTransaction[], result: persistence.HistoryTransactions) => [
               ...acc,
               ...result.transactions,
             ],
@@ -241,7 +241,7 @@ function refreshHistoryTransactions(
 
           return { transactions: filteredTransactions, pendingItems };
         })
-        .then((historyTransactions: HistoryTransactions) =>
+        .then((historyTransactions: persistence.HistoryTransactions) =>
           dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
         )
         .catch(() => ({}));
@@ -261,7 +261,7 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
     } = getState();
     if (wallet !== undefined) {
       return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
-        .then((exits: Exits) => {
+        .then((exits: persistence.Exits) => {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(accountDetailsActions.loadExitsSuccess(exits));
         })

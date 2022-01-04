@@ -1,7 +1,6 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount, TxUtils } from "@hermeznetwork/hermezjs";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
@@ -58,7 +57,8 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+      persistence
+        .fetchPoolTransactions(wallet)
         .then((transactions) => dispatch(transferActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(transferActions.loadPoolTransactionsFailure(err)));
     }

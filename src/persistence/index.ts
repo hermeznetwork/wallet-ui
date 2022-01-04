@@ -6,6 +6,7 @@ import { AxiosError } from "axios";
 import { z } from "zod";
 import hermez from "@hermeznetwork/hermezjs";
 import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
+import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
 import { HttpStatusCode } from "src/utils/http";
 import { StrictSchema } from "src/utils/type-safety";
@@ -120,6 +121,16 @@ export function fetchHermezAccount(
       fiatExchangeRates
     )
   );
+}
+
+/**
+ * Fetches the transactions which are in the transactions pool
+ */
+export function fetchPoolTransactions(
+  wallet: HermezWallet.HermezWallet,
+  address?: string
+): Promise<PoolTransaction[]> {
+  return getPoolTransactions(address, wallet.publicKeyCompressedHex);
 }
 
 // Error decoding and message extraction
