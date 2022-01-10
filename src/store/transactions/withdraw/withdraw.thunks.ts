@@ -1,6 +1,6 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx } from "@hermeznetwork/hermezjs";
+import { Tx } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as withdrawActions from "src/store/transactions/withdraw/withdraw.actions";
@@ -65,7 +65,8 @@ function fetchExit(
     dispatch(withdrawActions.loadExit());
 
     if (wallet) {
-      CoordinatorAPI.getExit(batchNum, accountIndex)
+      persistence
+        .getExit(batchNum, accountIndex)
         .then((exit: Exit) => {
           // If we are completing a delayed withdrawal, we need to merge all delayed withdrawals
           // of the same token to show the correct amount in Transaction Overview

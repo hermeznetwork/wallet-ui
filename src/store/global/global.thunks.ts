@@ -401,15 +401,14 @@ function checkPendingDelayedWithdrawals(): AppThunk {
                 // Checks with Coordinator API if exit has been withdrawn
                 const exitsApiPromises = accountPendingDelayedWithdraws.map(
                   (pendingDelayedWithdraw) => {
-                    return CoordinatorAPI.getExit(
-                      pendingDelayedWithdraw.batchNum,
-                      pendingDelayedWithdraw.accountIndex
-                    ).then((exitTx: Exit) => {
-                      // Checks here to have access to pendingDelayedWithdraw.id
-                      if (exitTx.delayedWithdraw) {
-                        dispatch(removePendingDelayedWithdraw(pendingDelayedWithdraw.id));
-                      }
-                    });
+                    return persistence
+                      .getExit(pendingDelayedWithdraw.batchNum, pendingDelayedWithdraw.accountIndex)
+                      .then((exitTx: Exit) => {
+                        // Checks here to have access to pendingDelayedWithdraw.id
+                        if (exitTx.delayedWithdraw) {
+                          dispatch(removePendingDelayedWithdraw(pendingDelayedWithdraw.id));
+                        }
+                      });
                   }
                 );
                 Promise.all(exitsApiPromises).finally(() =>
@@ -585,16 +584,15 @@ function checkPendingWithdrawals(): AppThunk {
 
                 // Checks with Coordinator API if exit has been withdrawn
                 const exitsApiPromises = accountPendingWithdraws.map((pendingWithdraw) => {
-                  return CoordinatorAPI.getExit(
-                    pendingWithdraw.batchNum,
-                    pendingWithdraw.accountIndex
-                  ).then((exitTx: Exit) => {
-                    // Checks here to have access to pendingWithdraw.hash
-                    if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
-                      dispatch(removePendingWithdraw(pendingWithdraw.hash));
-                      dispatch(removePendingDelayedWithdraw(pendingWithdraw.id));
-                    }
-                  });
+                  return persistence
+                    .getExit(pendingWithdraw.batchNum, pendingWithdraw.accountIndex)
+                    .then((exitTx: Exit) => {
+                      // Checks here to have access to pendingWithdraw.hash
+                      if (exitTx.instantWithdraw || exitTx.delayedWithdraw) {
+                        dispatch(removePendingWithdraw(pendingWithdraw.hash));
+                        dispatch(removePendingDelayedWithdraw(pendingWithdraw.id));
+                      }
+                    });
                 });
 
                 Promise.all(exitsApiPromises).finally(() =>

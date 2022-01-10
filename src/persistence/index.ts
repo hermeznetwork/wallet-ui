@@ -15,6 +15,7 @@ import { AsyncTask } from "src/utils/types";
 // domain
 import {
   Accounts,
+  Exit,
   Exits,
   FiatExchangeRates,
   HermezAccount,
@@ -155,6 +156,14 @@ export function getHistoryTransactions(
     limit,
     axiosConfig
   );
+}
+
+export function getExit(
+  batchNum: number,
+  accountIndex: string,
+  axiosConfig?: Record<string, unknown>
+): Promise<Exit> {
+  return CoordinatorAPI.getExit(batchNum, accountIndex, axiosConfig);
 }
 
 export function getExits(
