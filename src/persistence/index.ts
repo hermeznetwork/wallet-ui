@@ -20,6 +20,7 @@ import {
   FiatExchangeRates,
   HermezAccount,
   HermezWallet,
+  HistoryTransaction,
   HistoryTransactions,
   PaginationOrder,
   PoolTransaction,
@@ -134,6 +135,13 @@ export function fetchPoolTransactions(
   address?: string
 ): Promise<PoolTransaction[]> {
   return getPoolTransactions(address, wallet.publicKeyCompressedHex);
+}
+
+export function getHistoryTransaction(
+  transactionId: string,
+  axiosConfig?: Record<string, unknown>
+): Promise<HistoryTransaction> {
+  return CoordinatorAPI.getHistoryTransaction(transactionId, axiosConfig);
 }
 
 export function getHistoryTransactions(

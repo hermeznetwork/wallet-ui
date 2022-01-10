@@ -8,6 +8,8 @@ import * as storage from "../../utils/storage";
 // domain
 import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain";
 import { AxiosError } from "axios";
+// persistence
+import * as persistence from "src/persistence";
 
 /**
  * Fetches the details of a transaction
@@ -44,9 +46,7 @@ function fetchTransaction(transactionIdOrHash: string): AppThunk {
             .then(resolve)
             .catch((err: AxiosError) => {
               if (err.response?.status === HttpStatusCode.NOT_FOUND) {
-                CoordinatorAPI.getHistoryTransaction(transactionIdOrHash)
-                  .then(resolve)
-                  .catch(reject);
+                persistence.getHistoryTransaction(transactionIdOrHash).then(resolve).catch(reject);
               } else {
                 reject(err);
               }

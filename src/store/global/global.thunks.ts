@@ -3,7 +3,6 @@ import { ethers } from "ethers";
 import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import Connector from "@walletconnect/web3-provider";
 import hermezjs, {
-  CoordinatorAPI,
   Providers,
   Tx,
   TxUtils,
@@ -793,7 +792,7 @@ function checkPendingDeposits(): AppThunk {
                       dispatch(updatePendingDepositId(txReceipt.transactionHash, txId));
                     }
 
-                    return [...accL2Transactions, CoordinatorAPI.getHistoryTransaction(txId)];
+                    return [...accL2Transactions, persistence.getHistoryTransaction(txId)];
                   },
                   []
                 );
