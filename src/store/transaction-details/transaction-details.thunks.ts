@@ -1,10 +1,9 @@
-import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { HttpStatusCode } from "@hermeznetwork/hermezjs/src/http";
 import { push } from "connected-react-router";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
-import * as transactionDetailsActionTypes from "./transaction-details.actions";
-import * as storage from "../../utils/storage";
+import * as transactionDetailsActionTypes from "src/store/transaction-details/transaction-details.actions";
+import * as storage from "src/utils/storage";
 // domain
 import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain";
 import { AxiosError } from "axios";

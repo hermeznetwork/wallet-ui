@@ -30,28 +30,26 @@ function fetchEthereumAccount(tokenId: number): AppThunk {
     dispatch(depositActions.loadEthereumAccount());
 
     if (wallet !== undefined) {
-      return CoordinatorAPI.getTokens(undefined, undefined, undefined, undefined, 2049).then(
-        (res) => {
-          ethereum
-            .getTokens(wallet, res.tokens)
-            .then((ethereumAccounts) => {
-              const ethereumAccount = ethereumAccounts.find((token) => token.token.id === tokenId);
+      return persistence.getTokens(undefined, undefined, undefined, undefined, 2049).then((res) => {
+        ethereum
+          .getTokens(wallet, res.tokens)
+          .then((ethereumAccounts) => {
+            const ethereumAccount = ethereumAccounts.find((token) => token.token.id === tokenId);
 
-              if (ethereumAccount) {
-                dispatch(depositActions.loadEthereumAccountSuccess(ethereumAccount));
-              } else {
-                dispatch(depositActions.loadEthereumAccountFailure("Ethereum account not found"));
-              }
-            })
-            .catch((error) => {
-              const errorMsg = persistence.getErrorMessage(
-                error,
-                "Oops ... There was an error fetching the ethereum account"
-              );
-              dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
-            });
-        }
-      );
+            if (ethereumAccount) {
+              dispatch(depositActions.loadEthereumAccountSuccess(ethereumAccount));
+            } else {
+              dispatch(depositActions.loadEthereumAccountFailure("Ethereum account not found"));
+            }
+          })
+          .catch((error) => {
+            const errorMsg = persistence.getErrorMessage(
+              error,
+              "Oops ... There was an error fetching the ethereum account"
+            );
+            dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
+          });
+      });
     }
   };
 }
@@ -68,33 +66,31 @@ function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: 
     dispatch(depositActions.loadEthereumAccounts());
 
     if (wallet !== undefined) {
-      return CoordinatorAPI.getTokens(undefined, undefined, undefined, undefined, 2049).then(
-        (res) => {
-          ethereum
-            .getTokens(wallet, res.tokens)
-            .then((ethereumAccounts): EthereumAccount[] => {
-              return ethereumAccounts.map((ethereumAccount) => {
-                const tokenFromTokensPrice =
-                  tokensPriceTask.status === "successful" &&
-                  tokensPriceTask.data[ethereumAccount.token.id];
-                const token = tokenFromTokensPrice ? tokenFromTokensPrice : ethereumAccount.token;
+      return persistence.getTokens(undefined, undefined, undefined, undefined, 2049).then((res) => {
+        ethereum
+          .getTokens(wallet, res.tokens)
+          .then((ethereumAccounts): EthereumAccount[] => {
+            return ethereumAccounts.map((ethereumAccount) => {
+              const tokenFromTokensPrice =
+                tokensPriceTask.status === "successful" &&
+                tokensPriceTask.data[ethereumAccount.token.id];
+              const token = tokenFromTokensPrice ? tokenFromTokensPrice : ethereumAccount.token;
 
-                const fiatBalance = convertTokenAmountToFiat(
-                  ethereumAccount.balance,
-                  token,
-                  preferredCurrency,
-                  fiatExchangeRates
-                );
+              const fiatBalance = convertTokenAmountToFiat(
+                ethereumAccount.balance,
+                token,
+                preferredCurrency,
+                fiatExchangeRates
+              );
 
-                return { ...ethereumAccount, balance: ethereumAccount.balance, fiatBalance };
-              });
-            })
-            .then((metaMaskTokens) =>
-              dispatch(depositActions.loadEthereumAccountsSuccess(metaMaskTokens))
-            )
-            .catch((err) => dispatch(depositActions.loadEthereumAccountsFailure(err)));
-        }
-      );
+              return { ...ethereumAccount, balance: ethereumAccount.balance, fiatBalance };
+            });
+          })
+          .then((metaMaskTokens) =>
+            dispatch(depositActions.loadEthereumAccountsSuccess(metaMaskTokens))
+          )
+          .catch((err) => dispatch(depositActions.loadEthereumAccountsFailure(err)));
+      });
     }
   };
 }

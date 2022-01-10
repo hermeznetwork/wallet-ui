@@ -27,6 +27,7 @@ import {
   PaginationOrder,
   PoolTransaction,
   Token,
+  Tokens,
 } from "src/domain";
 
 export type { HistoryTransactions, Exits, Accounts } from "@hermeznetwork/hermezjs";
@@ -204,6 +205,17 @@ export function getExits(
   fromItem?: number
 ): Promise<Exits> {
   return CoordinatorAPI.getExits(address, onlyPendingWithdraws, tokenId, fromItem);
+}
+
+export function getTokens(
+  tokenIds?: number[],
+  tokenSymbols?: string[],
+  fromItem?: number,
+  order?: PaginationOrder,
+  limit?: number,
+  axiosConfig?: Record<string, unknown>
+): Promise<Tokens> {
+  return CoordinatorAPI.getTokens(tokenIds, tokenSymbols, fromItem, order, limit, axiosConfig);
 }
 
 // Error decoding and message extraction
