@@ -881,7 +881,8 @@ function fetchCoordinatorState(): AppThunk {
   return (dispatch: AppDispatch) => {
     dispatch(globalActions.loadCoordinatorState());
 
-    return hermezjs.CoordinatorAPI.getState()
+    return persistence
+      .getState()
       .then((coordinatorState: CoordinatorState) =>
         dispatch(globalActions.loadCoordinatorStateSuccess(coordinatorState))
       )

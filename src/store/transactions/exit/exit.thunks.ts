@@ -1,6 +1,6 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx, HermezCompressedAmount, TxFees } from "@hermeznetwork/hermezjs";
+import { Tx, HermezCompressedAmount, TxFees } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
@@ -85,7 +85,8 @@ function fetchFees(): AppThunk {
       if (nextForger !== undefined) {
         dispatch(exitActions.loadFees());
 
-        return CoordinatorAPI.getState({}, nextForger.coordinator.URL)
+        return persistence
+          .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(exitActions.loadFeesSuccess(res.recommendedFee)))
           .catch((err) => dispatch(exitActions.loadFeesFailure(err)));
       }

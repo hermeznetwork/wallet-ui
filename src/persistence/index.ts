@@ -15,6 +15,7 @@ import { AsyncTask } from "src/utils/types";
 // domain
 import {
   Accounts,
+  CoordinatorState,
   Exit,
   Exits,
   FiatExchangeRates,
@@ -76,6 +77,13 @@ export function postCreateAccountAuthorization(
       }
     }
   });
+}
+
+export function getState(
+  axiosConfig?: Record<string, unknown>,
+  apiUrl?: string
+): Promise<CoordinatorState> {
+  return CoordinatorAPI.getState(axiosConfig, apiUrl);
 }
 
 /**

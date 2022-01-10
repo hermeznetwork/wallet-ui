@@ -115,7 +115,8 @@ function fetchFees(): AppThunk {
       if (nextForger !== undefined) {
         dispatch(transferActions.loadFees());
 
-        return CoordinatorAPI.getState({}, nextForger.coordinator.URL)
+        return persistence
+          .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(transferActions.loadFeesSuccess(res.recommendedFee)))
           .catch((err) => dispatch(transferActions.loadFeesFailure(err)));
       }
