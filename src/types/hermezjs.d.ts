@@ -8,6 +8,8 @@
 declare module "@hermeznetwork/*" {
   import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
+  export { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
+
   // We expose the inputs supported by both, the native BigInt constructor (scalar_native)
   // and the BigNumber.js lib (scalar_bigint case) used by ffjavascript.
   export type ScalarValue = string | number | bigint;

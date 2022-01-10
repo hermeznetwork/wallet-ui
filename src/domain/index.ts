@@ -9,22 +9,24 @@ import { BigNumber } from "@ethersproject/bignumber";
 import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
+  Accounts,
   CoordinatorState,
   Exit,
   FiatExchangeRates,
   HermezApiResourceItem,
   HermezWallet,
   HistoryTransaction,
+  HistoryTransactions,
   ISOStringDate,
   L1Info,
   L2Info,
   MerkleProof,
   NextForger,
+  PaginationOrder,
   PoolTransaction,
   RecommendedFee,
   Signers,
   Token,
-  Accounts,
 } from "@hermeznetwork/hermezjs";
 
 export type HermezNetworkStatus = "online" | "offline";

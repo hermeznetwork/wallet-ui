@@ -146,14 +146,8 @@ function fetchHistoryTransactions(
       refreshCancelTokenSource.cancel();
     }
 
-    return CoordinatorAPI.getTransactions(
-      undefined,
-      undefined,
-      undefined,
-      accountIndex,
-      fromItem,
-      "DESC"
-    )
+    return persistence
+      .getHistoryTransactions(undefined, undefined, undefined, accountIndex, fromItem, "DESC")
       .then((historyTransactions: persistence.HistoryTransactions) => {
         const filteredTransactions = filterExitsFromHistoryTransactions(
           historyTransactions.transactions,
@@ -188,7 +182,7 @@ function refreshHistoryTransactions(
       refreshCancelTokenSource = axios.CancelToken.source();
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token };
-      const initialReq = CoordinatorAPI.getTransactions(
+      const initialReq = persistence.getHistoryTransactions(
         undefined,
         undefined,
         undefined,
@@ -201,7 +195,7 @@ function refreshHistoryTransactions(
       const requests = historyTransactionsTask.data.fromItemHistory.reduce(
         (requests, fromItem) => [
           ...requests,
-          CoordinatorAPI.getTransactions(
+          persistence.getHistoryTransactions(
             undefined,
             undefined,
             undefined,

@@ -15,11 +15,13 @@ import { AsyncTask } from "src/utils/types";
 // domain
 import {
   Accounts,
-  HermezAccount,
-  Token,
   FiatExchangeRates,
-  PoolTransaction,
+  HermezAccount,
   HermezWallet,
+  HistoryTransactions,
+  PaginationOrder,
+  PoolTransaction,
+  Token,
 } from "src/domain";
 
 export type { HistoryTransactions, Exits, Accounts } from "@hermeznetwork/hermezjs";
@@ -130,6 +132,28 @@ export function fetchPoolTransactions(
   address?: string
 ): Promise<PoolTransaction[]> {
   return getPoolTransactions(address, wallet.publicKeyCompressedHex);
+}
+
+export function getHistoryTransactions(
+  address?: string,
+  tokenId?: number,
+  batchNum?: number,
+  accountIndex?: string,
+  fromItem?: number,
+  order?: PaginationOrder,
+  limit?: number,
+  axiosConfig?: Record<string, unknown>
+): Promise<HistoryTransactions> {
+  return CoordinatorAPI.getTransactions(
+    address,
+    tokenId,
+    batchNum,
+    accountIndex,
+    fromItem,
+    order,
+    limit,
+    axiosConfig
+  );
 }
 
 // Error decoding and message extraction
