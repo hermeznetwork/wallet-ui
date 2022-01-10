@@ -15,8 +15,8 @@ import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
-import * as priceUpdaterApi from "src/apis/price-updater";
-import * as hermezWebApi from "src/apis/hermez-web";
+import * as priceUpdaterApi from "src/persistence/apis/price-updater";
+import * as hermezWebApi from "src/persistence/apis/hermez-web";
 import * as storage from "src/utils/storage";
 import { isTxMined, hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from "src/utils/ethereum";
 import { CurrencySymbol } from "src/utils/currencies";
