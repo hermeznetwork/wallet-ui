@@ -159,9 +159,7 @@ async function getCreateAccountAuthorization(
   hermezEthereumAddress: string
 ): Promise<string | null> {
   try {
-    const { signature } = await hermez.CoordinatorAPI.getCreateAccountAuthorization(
-      hermezEthereumAddress
-    );
+    const { signature } = await persistence.getCreateAccountAuthorization(hermezEthereumAddress);
     return signature;
   } catch {
     return null;

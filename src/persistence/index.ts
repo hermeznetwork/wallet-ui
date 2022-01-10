@@ -14,6 +14,7 @@ import { createAccount } from "src/utils/accounts";
 import { AsyncTask } from "src/utils/types";
 // domain
 import {
+  AccountAuthorization,
   Accounts,
   CoordinatorState,
   Exit,
@@ -77,6 +78,13 @@ export function postCreateAccountAuthorization(
       }
     }
   });
+}
+
+export function getCreateAccountAuthorization(
+  hezEthereumAddress: string,
+  axiosConfig?: Record<string, unknown>
+): Promise<AccountAuthorization> {
+  return CoordinatorAPI.getCreateAccountAuthorization(hezEthereumAddress, axiosConfig);
 }
 
 export function getState(

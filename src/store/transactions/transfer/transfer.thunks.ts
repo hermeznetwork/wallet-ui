@@ -159,7 +159,7 @@ function checkTxData(txData: TxData) {
     } else {
       void Promise.allSettled([
         CoordinatorAPI.getAccounts(to, [from.token.id]),
-        CoordinatorAPI.getCreateAccountAuthorization(to),
+        persistence.getCreateAccountAuthorization(to),
       ]).then(([accountsResult, accountAuthorizationResult]) => {
         const doesAccountAlreadyExist: boolean =
           accountsResult.status === "fulfilled" && accountsResult.value.accounts[0] !== undefined;
