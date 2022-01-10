@@ -90,10 +90,9 @@ export function fetchAccounts(
       accounts: accountsResponse.accounts.map((account) =>
         createAccount(
           account,
-          poolTransactions,
-          undefined,
           tokensPriceTask,
           preferredCurrency,
+          poolTransactions,
           fiatExchangeRates
         )
       ),
@@ -102,24 +101,24 @@ export function fetchAccounts(
 }
 
 /**
- * Fetches the account details for an accountIndex in the Hermez API.
+ * Fetches the raw hermez.Account for an accountIndex from the Hermez API.
+ */
+export function fetchRawHermezAccount(accountIndex: string): Promise<hermez.Account> {
+  return CoordinatorAPI.getAccount(accountIndex);
+}
+
+/**
+ * Fetches the HermezAccount for an accountIndex (createAccount helper included).
  */
 export function fetchHermezAccount(
-  tokensPriceTask: AsyncTask<Token[], string>,
   accountIndex: string,
+  tokensPriceTask: AsyncTask<Token[], string>,
+  preferredCurrency: string,
   poolTransactions: PoolTransaction[],
-  fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  fiatExchangeRates: FiatExchangeRates
 ): Promise<HermezAccount> {
-  return CoordinatorAPI.getAccount(accountIndex).then((account) =>
-    createAccount(
-      account,
-      poolTransactions,
-      undefined,
-      tokensPriceTask,
-      preferredCurrency,
-      fiatExchangeRates
-    )
+  return fetchRawHermezAccount(accountIndex).then((account) =>
+    createAccount(account, tokensPriceTask, preferredCurrency, poolTransactions, fiatExchangeRates)
   );
 }
 

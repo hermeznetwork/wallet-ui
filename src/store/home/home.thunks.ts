@@ -36,11 +36,11 @@ function fetchTotalBalance(
         const accounts = res.accounts.map((account) =>
           createAccount(
             account,
-            poolTransactions,
-            pendingDeposits,
             tokensPriceTask,
             preferredCurrency,
-            fiatExchangeRates
+            poolTransactions,
+            fiatExchangeRates,
+            pendingDeposits
           )
         );
 
@@ -121,11 +121,11 @@ function fetchAccounts(
         const accounts = res.accounts.map((account) =>
           createAccount(
             account,
-            poolTransactions,
-            pendingDeposits,
             tokensPriceTask,
             preferredCurrency,
-            fiatExchangeRates
+            poolTransactions,
+            fiatExchangeRates,
+            pendingDeposits
           )
         );
 
@@ -189,11 +189,11 @@ function refreshAccounts(
             .map((account) =>
               createAccount(
                 account,
-                poolTransactions,
-                pendingDeposits,
                 tokensPriceTask,
                 preferredCurrency,
-                fiatExchangeRates
+                poolTransactions,
+                fiatExchangeRates,
+                pendingDeposits
               )
             );
           const pendingItems = results[results.length - 1]

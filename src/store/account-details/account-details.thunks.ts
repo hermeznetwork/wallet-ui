@@ -43,10 +43,9 @@ function fetchAccount(
         } else {
           const accountTokenUpdated = createAccount(
             account,
-            undefined,
-            undefined,
             tokensPriceTask,
             preferredCurrency,
+            undefined,
             fiatExchangeRates
           );
 

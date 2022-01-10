@@ -34,11 +34,11 @@ function fetchHermezAccount(
 
     return persistence
       .fetchHermezAccount(
-        tokensPriceTask,
         accountIndex,
+        tokensPriceTask,
+        preferredCurrency,
         poolTransactions,
-        fiatExchangeRates,
-        preferredCurrency
+        fiatExchangeRates
       )
       .then((res) => dispatch(transferActions.loadAccountSuccess(res)))
       .catch((error: Error) => dispatch(transferActions.loadAccountFailure(error.message)));

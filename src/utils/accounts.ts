@@ -62,11 +62,11 @@ function updateAccountToken(
 // ToDo: This helper should be moved to persistence when we move to persistence and abstract the calls to CoordinatorAPI.getAccounts
 function createAccount(
   account: HermezAccount,
-  poolTransactions: PoolTransaction[] | undefined,
-  pendingDeposits: PendingDeposit[] | undefined,
   tokensPriceTask: AsyncTask<Token[], string>,
   preferredCurrency: string,
-  fiatExchangeRates?: FiatExchangeRates
+  poolTransactions?: PoolTransaction[],
+  fiatExchangeRates?: FiatExchangeRates,
+  pendingDeposits?: PendingDeposit[]
 ): HermezAccount {
   const updatedAccount: HermezAccount = updateAccountToken(tokensPriceTask, account);
   const accountBalance = getAccountBalance(updatedAccount, poolTransactions, pendingDeposits);
