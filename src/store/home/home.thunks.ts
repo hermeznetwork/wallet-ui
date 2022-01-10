@@ -1,5 +1,4 @@
 import axios from "axios";
-import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
@@ -31,7 +30,8 @@ function fetchTotalBalance(
     } = getState();
     dispatch(homeActions.loadTotalBalance());
 
-    return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
+    return persistence
+      .getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
       .then((res) => {
         const accounts = res.accounts.map((account) =>
           createAccount(
@@ -116,7 +116,8 @@ function fetchAccounts(
       refreshCancelTokenSource.cancel();
     }
 
-    return CoordinatorAPI.getAccounts(hermezAddress, undefined, fromItem, undefined)
+    return persistence
+      .getAccounts(hermezAddress, undefined, fromItem, undefined)
       .then((res) => {
         const accounts = res.accounts.map((account) =>
           createAccount(
@@ -159,7 +160,7 @@ function refreshAccounts(
       refreshCancelTokenSource = axios.CancelToken.source();
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token };
-      const initialReq = CoordinatorAPI.getAccounts(
+      const initialReq = persistence.getAccounts(
         hermezAddress,
         undefined,
         undefined,
@@ -170,7 +171,7 @@ function refreshAccounts(
       const requests = accountsTask.data.fromItemHistory.reduce(
         (requests, fromItem) => [
           ...requests,
-          CoordinatorAPI.getAccounts(
+          persistence.getAccounts(
             hermezAddress,
             undefined,
             fromItem,

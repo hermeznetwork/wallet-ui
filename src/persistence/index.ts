@@ -4,8 +4,7 @@
  */
 import { AxiosError } from "axios";
 import { z } from "zod";
-import hermez from "@hermeznetwork/hermezjs";
-import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
+import { CoordinatorAPI, Account } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
 import { HttpStatusCode } from "src/utils/http";
@@ -52,7 +51,7 @@ export function postCreateAccountAuthorization(
   signature: string,
   nextForgerUrls: string[]
 ): Promise<unknown> {
-  return hermez.CoordinatorAPI.postCreateAccountAuthorization(
+  return CoordinatorAPI.postCreateAccountAuthorization(
     hermezEthereumAddress,
     publicKeyBase64,
     signature,
@@ -106,26 +105,35 @@ export function fetchAccounts(
   preferredCurrency: string,
   fromItem?: number
 ): Promise<Accounts> {
-  return CoordinatorAPI.getAccounts(wallet.publicKeyBase64, undefined, fromItem).then(
-    (accountsResponse) => ({
-      pendingItems: accountsResponse.pendingItems,
-      accounts: accountsResponse.accounts.map((account) =>
-        createAccount(
-          account,
-          tokensPriceTask,
-          preferredCurrency,
-          poolTransactions,
-          fiatExchangeRates
-        )
-      ),
-    })
-  );
+  return getAccounts(wallet.publicKeyBase64, undefined, fromItem).then((accountsResponse) => ({
+    pendingItems: accountsResponse.pendingItems,
+    accounts: accountsResponse.accounts.map((account) =>
+      createAccount(
+        account,
+        tokensPriceTask,
+        preferredCurrency,
+        poolTransactions,
+        fiatExchangeRates
+      )
+    ),
+  }));
+}
+
+export function getAccounts(
+  address: string,
+  tokenIds?: number[],
+  fromItem?: number,
+  order?: PaginationOrder,
+  limit?: number,
+  axiosConfig?: Record<string, unknown>
+): Promise<Accounts> {
+  return CoordinatorAPI.getAccounts(address, tokenIds, fromItem, order, limit, axiosConfig);
 }
 
 /**
  * Fetches the raw hermez.Account for an accountIndex from the Hermez API.
  */
-export function fetchRawHermezAccount(accountIndex: string): Promise<hermez.Account> {
+export function getAccount(accountIndex: string): Promise<Account> {
   return CoordinatorAPI.getAccount(accountIndex);
 }
 
@@ -139,7 +147,7 @@ export function fetchHermezAccount(
   fiatExchangeRates: FiatExchangeRates,
   poolTransactions?: PoolTransaction[]
 ): Promise<HermezAccount> {
-  return fetchRawHermezAccount(accountIndex).then((account) =>
+  return getAccount(accountIndex).then((account) =>
     createAccount(account, tokensPriceTask, preferredCurrency, poolTransactions, fiatExchangeRates)
   );
 }

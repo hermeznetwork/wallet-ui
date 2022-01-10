@@ -1,6 +1,6 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx, HermezCompressedAmount, TxUtils } from "@hermeznetwork/hermezjs";
+import { Tx, HermezCompressedAmount, TxUtils } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
@@ -129,36 +129,34 @@ function checkTxData(txData: TxData) {
     const { amount, from, to, feesTask } = txData;
 
     if (isHermezBjjAddress(txData.to)) {
-      void CoordinatorAPI.getAccounts(to, [from.token.id]).then(
-        (accounts: persistence.Accounts) => {
-          const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
-          const minimumFee = getMinimumL2Fee({
-            txType: TxType.Transfer,
-            receiverAddress: to,
-            feesTask,
-            token: from.token,
-            doesAccountAlreadyExist,
-          });
-          const fee = getTxFee({
-            txType: TxType.Transfer,
-            amount,
-            token: from.token,
-            minimumFee,
-          });
+      void persistence.getAccounts(to, [from.token.id]).then((accounts: persistence.Accounts) => {
+        const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
+        const minimumFee = getMinimumL2Fee({
+          txType: TxType.Transfer,
+          receiverAddress: to,
+          feesTask,
+          token: from.token,
+          doesAccountAlreadyExist,
+        });
+        const fee = getTxFee({
+          txType: TxType.Transfer,
+          amount,
+          token: from.token,
+          minimumFee,
+        });
 
-          dispatch(
-            transferActions.goToReviewTransactionStep({
-              amount: amount,
-              from: txData.from,
-              to: { bjj: txData.to },
-              fee,
-            })
-          );
-        }
-      );
+        dispatch(
+          transferActions.goToReviewTransactionStep({
+            amount: amount,
+            from: txData.from,
+            to: { bjj: txData.to },
+            fee,
+          })
+        );
+      });
     } else {
       void Promise.allSettled([
-        CoordinatorAPI.getAccounts(to, [from.token.id]),
+        persistence.getAccounts(to, [from.token.id]),
         persistence.getCreateAccountAuthorization(to),
       ]).then(([accountsResult, accountAuthorizationResult]) => {
         const doesAccountAlreadyExist: boolean =

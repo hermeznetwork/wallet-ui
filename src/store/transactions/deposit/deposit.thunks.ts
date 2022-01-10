@@ -1,4 +1,4 @@
-import { CoordinatorAPI, Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
+import { Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { ETHER_TOKEN_ID } from "@hermeznetwork/hermezjs/src/constants";
@@ -150,25 +150,25 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
         signer
       )
         .then((txData) => {
-          void CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [
-            ethereumAccount.token.id,
-          ]).then((res) => {
-            const account: HermezAccount | undefined = res.accounts[0];
-            dispatch(
-              globalThunks.addPendingDeposit({
-                hash: txData.hash,
-                fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                toHezEthereumAddress: wallet.hermezEthereumAddress,
-                token: ethereumAccount.token,
-                amount: amount.toString(),
-                state: TxState.Pending,
-                accountIndex: account?.accountIndex,
-                timestamp: new Date().toISOString(),
-                type: account ? TxType.Deposit : TxType.CreateAccountDeposit,
-              })
-            );
-            handleTransactionSuccess(dispatch, account?.accountIndex);
-          });
+          void persistence
+            .getAccounts(wallet.hermezEthereumAddress, [ethereumAccount.token.id])
+            .then((res) => {
+              const account: HermezAccount | undefined = res.accounts[0];
+              dispatch(
+                globalThunks.addPendingDeposit({
+                  hash: txData.hash,
+                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
+                  toHezEthereumAddress: wallet.hermezEthereumAddress,
+                  token: ethereumAccount.token,
+                  amount: amount.toString(),
+                  state: TxState.Pending,
+                  accountIndex: account?.accountIndex,
+                  timestamp: new Date().toISOString(),
+                  type: account ? TxType.Deposit : TxType.CreateAccountDeposit,
+                })
+              );
+              handleTransactionSuccess(dispatch, account?.accountIndex);
+            });
         })
         .catch((error) => {
           dispatch(depositActions.stopTransactionApproval());
