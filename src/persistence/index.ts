@@ -15,6 +15,7 @@ import { AsyncTask } from "src/utils/types";
 // domain
 import {
   Accounts,
+  Exits,
   FiatExchangeRates,
   HermezAccount,
   HermezWallet,
@@ -154,6 +155,15 @@ export function getHistoryTransactions(
     limit,
     axiosConfig
   );
+}
+
+export function getExits(
+  address: string,
+  onlyPendingWithdraws: boolean,
+  tokenId?: number,
+  fromItem?: number
+): Promise<Exits> {
+  return CoordinatorAPI.getExits(address, onlyPendingWithdraws, tokenId, fromItem);
 }
 
 // Error decoding and message extraction

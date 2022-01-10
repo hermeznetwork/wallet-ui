@@ -240,7 +240,8 @@ function fetchExits(): AppThunk {
     if (wallet !== undefined) {
       dispatch(homeActions.loadExits());
 
-      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
+      return persistence
+        .getExits(wallet.hermezEthereumAddress, true)
         .then((exits) => {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(homeActions.loadExitsSuccess(exits));

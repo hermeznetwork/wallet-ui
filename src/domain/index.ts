@@ -12,6 +12,7 @@ export type {
   Accounts,
   CoordinatorState,
   Exit,
+  Exits,
   FiatExchangeRates,
   HermezApiResourceItem,
   HermezWallet,

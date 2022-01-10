@@ -1,6 +1,5 @@
 import axios from "axios";
 import { push } from "connected-react-router";
-import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
@@ -245,7 +244,8 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
       global: { wallet },
     } = getState();
     if (wallet !== undefined) {
-      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
+      return persistence
+        .getExits(wallet.hermezEthereumAddress, true, tokenId)
         .then((exits: persistence.Exits) => {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(accountDetailsActions.loadExitsSuccess(exits));
