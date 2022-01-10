@@ -74,7 +74,7 @@ export function postCreateAccountAuthorization(
 }
 
 /**
- * Fetches the accounts to use in a transaction.
+ * Fetches the HermezAccounts to use in a transaction.
  */
 export function fetchAccounts(
   wallet: HermezWallet.HermezWallet,
@@ -108,14 +108,14 @@ export function fetchRawHermezAccount(accountIndex: string): Promise<hermez.Acco
 }
 
 /**
- * Fetches the HermezAccount for an accountIndex (createAccount helper included).
+ * Fetches the HermezAccount for an accountIndex.
  */
 export function fetchHermezAccount(
   accountIndex: string,
   tokensPriceTask: AsyncTask<Token[], string>,
   preferredCurrency: string,
-  poolTransactions: PoolTransaction[],
-  fiatExchangeRates: FiatExchangeRates
+  fiatExchangeRates: FiatExchangeRates,
+  poolTransactions?: PoolTransaction[]
 ): Promise<HermezAccount> {
   return fetchRawHermezAccount(accountIndex).then((account) =>
     createAccount(account, tokensPriceTask, preferredCurrency, poolTransactions, fiatExchangeRates)

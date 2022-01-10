@@ -41,8 +41,8 @@ function fetchHermezAccount(
         accountIndex,
         tokensPriceTask,
         preferredCurrency,
-        poolTransactions,
-        fiatExchangeRates
+        fiatExchangeRates,
+        poolTransactions
       )
       .then((res) => dispatch(withdrawActions.loadAccountSuccess(res)))
       .catch((error: Error) => dispatch(withdrawActions.loadAccountFailure(error.message)));

@@ -39,8 +39,8 @@ function fetchHermezAccount(
         accountIndex,
         tokensPriceTask,
         preferredCurrency,
-        poolTransactions,
-        fiatExchangeRates
+        fiatExchangeRates,
+        poolTransactions
       )
       .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
       .catch((error: Error) => dispatch(exitActions.loadAccountFailure(error.message)));

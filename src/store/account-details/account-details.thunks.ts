@@ -5,7 +5,6 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as ethereum from "src/utils/ethereum";
-import { createAccount } from "src/utils/accounts";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 // domain
@@ -36,20 +35,13 @@ function fetchAccount(
     } = getState();
     dispatch(accountDetailsActions.loadAccount());
 
-    return CoordinatorAPI.getAccount(accountIndex)
+    return persistence
+      .fetchHermezAccount(accountIndex, tokensPriceTask, preferredCurrency, fiatExchangeRates)
       .then((account: HermezAccount) => {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push("/"));
         } else {
-          const accountTokenUpdated = createAccount(
-            account,
-            tokensPriceTask,
-            preferredCurrency,
-            undefined,
-            fiatExchangeRates
-          );
-
-          dispatch(accountDetailsActions.loadAccountSuccess(accountTokenUpdated));
+          dispatch(accountDetailsActions.loadAccountSuccess(account));
         }
       })
       .catch((err: Error) => dispatch(accountDetailsActions.loadAccountFailure(err)));
