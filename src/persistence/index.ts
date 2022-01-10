@@ -182,6 +182,13 @@ export function getHistoryTransactions(
   );
 }
 
+export function getPoolTransaction(
+  transactionId: string,
+  axiosConfig?: Record<string, unknown>
+): Promise<PoolTransaction> {
+  return CoordinatorAPI.getPoolTransaction(transactionId, axiosConfig);
+}
+
 export function getExit(
   batchNum: number,
   accountIndex: string,

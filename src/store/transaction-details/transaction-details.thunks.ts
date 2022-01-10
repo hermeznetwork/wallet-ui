@@ -42,7 +42,8 @@ function fetchTransaction(transactionIdOrHash: string): AppThunk {
             }
           }
 
-          CoordinatorAPI.getPoolTransaction(transactionIdOrHash)
+          persistence
+            .getPoolTransaction(transactionIdOrHash)
             .then(resolve)
             .catch((err: AxiosError) => {
               if (err.response?.status === HttpStatusCode.NOT_FOUND) {
