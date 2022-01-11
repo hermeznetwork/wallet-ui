@@ -4,7 +4,6 @@ import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/p
 import Connector from "@walletconnect/web3-provider";
 import hermezjs, {
   Providers,
-  Tx,
   TxUtils,
   HermezCompressedAmount,
   Addresses,
