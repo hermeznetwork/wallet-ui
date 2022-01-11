@@ -20,7 +20,6 @@ import { changeHeader } from "src/store/global/global.actions";
 import * as accountDetailsThunks from "src/store/account-details/account-details.thunks";
 import { resetState } from "src/store/account-details/account-details.actions";
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
-import { getAccountBalance } from "src/utils/accounts";
 import { mergeExits } from "src/utils/transactions";
 import * as storage from "src/utils/storage";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
@@ -47,7 +46,7 @@ import {
 } from "src/domain";
 import { Pagination } from "src/utils/api";
 // persistence
-import { Exits } from "src/persistence";
+import { Exits, getAccountBalance } from "src/persistence";
 
 interface UrlParams {
   accountIndex: string;

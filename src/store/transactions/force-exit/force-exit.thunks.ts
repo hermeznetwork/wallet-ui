@@ -28,15 +28,16 @@ function fetchAccounts(
     if (wallet !== undefined) {
       dispatch(forceExitActions.loadAccounts());
 
+      const hermezEthereumAddress = wallet.publicKeyBase64;
       return persistence
-        .fetchAccounts(
-          wallet,
+        .getHermezAccounts({
+          hermezEthereumAddress,
           tokensPriceTask,
           poolTransactions,
           fiatExchangeRates,
           preferredCurrency,
-          fromItem
-        )
+          fromItem,
+        })
         .then((accounts) => dispatch(forceExitActions.loadAccountsSuccess(accounts)))
         .catch((err) => dispatch(forceExitActions.loadAccountsFailure(err)));
     }

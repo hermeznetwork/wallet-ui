@@ -45,6 +45,11 @@ export interface EthereumNetwork {
 
 export type HermezAccount = hermezjs.Account & { fiatBalance?: number };
 
+export interface HermezAccounts {
+  accounts: HermezAccount[];
+  pendingItems: number;
+}
+
 export interface EthereumAccount {
   balance: string;
   token: hermezjs.Token;

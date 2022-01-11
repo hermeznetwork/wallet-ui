@@ -81,16 +81,16 @@ function fetchAccounts(
 
     if (wallet !== undefined) {
       dispatch(transferActions.loadAccounts());
-
+      const hermezEthereumAddress = wallet.publicKeyBase64;
       return persistence
-        .fetchAccounts(
-          wallet,
+        .getHermezAccounts({
+          hermezEthereumAddress,
           tokensPriceTask,
           poolTransactions,
           fiatExchangeRates,
           preferredCurrency,
-          fromItem
-        )
+          fromItem,
+        })
         .then((accounts) => dispatch(transferActions.loadAccountsSuccess(accounts)))
         .catch((err) => dispatch(transferActions.loadAccountsFailure(err)));
     }

@@ -85,7 +85,7 @@ interface HomeHandlerProps {
     poolTransactions: PoolTransaction[],
     pendingDeposits: PendingDeposit[],
     preferredCurrency: string,
-    fiatExchangeRates?: FiatExchangeRates,
+    fiatExchangeRates: FiatExchangeRates,
     fromItem?: number
   ) => void;
   onLoadPoolTransactions: () => void;
@@ -373,16 +373,18 @@ function Home({
                           asyncTaskStatus={accountsTask.status}
                           paginationData={accountsTask.data.pagination}
                           onLoadNextPage={(fromItem) => {
-                            onLoadAccounts(
-                              wallet.publicKeyBase64,
-                              isAsyncTaskDataAvailable(poolTransactionsTask)
-                                ? poolTransactionsTask.data
-                                : [],
-                              accountPendingDeposits,
-                              preferredCurrency,
-                              fiatExchangeRates,
-                              fromItem
-                            );
+                            if (fiatExchangeRates) {
+                              onLoadAccounts(
+                                wallet.publicKeyBase64,
+                                isAsyncTaskDataAvailable(poolTransactionsTask)
+                                  ? poolTransactionsTask.data
+                                  : [],
+                                accountPendingDeposits,
+                                preferredCurrency,
+                                fiatExchangeRates,
+                                fromItem
+                              );
+                            }
                           }}
                         >
                           <AccountList

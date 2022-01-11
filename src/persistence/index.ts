@@ -1,20 +1,19 @@
-/**
- * HermezJS type definitions have been moved to the dedicated definitions file hermezjs-typings.d.ts
- * We may decide not to export them from the persistence and let other layers import them from the lib.
- */
 import { AxiosError } from "axios";
 import { z } from "zod";
 import { CoordinatorAPI, Account } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
+import { BigNumber } from "ethers";
+import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
 
+import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { HttpStatusCode } from "src/utils/http";
 import { StrictSchema } from "src/utils/type-safety";
-import { createAccount } from "src/utils/accounts";
 import { AsyncTask } from "src/utils/types";
 // domain
 import {
   AccountAuthorization,
   Accounts,
+  HermezAccounts,
   CoordinatorState,
   Exit,
   Exits,
@@ -24,12 +23,14 @@ import {
   HistoryTransaction,
   HistoryTransactions,
   PaginationOrder,
+  PendingDeposit,
   PoolTransaction,
   Token,
   Tokens,
 } from "src/domain";
 
 export type { HistoryTransactions, Exits, Accounts } from "@hermeznetwork/hermezjs";
+
 export interface PostCreateAccountAuthorizationError {
   message: string;
   code: number;
@@ -94,18 +95,108 @@ export function getState(
   return CoordinatorAPI.getState(axiosConfig, apiUrl);
 }
 
-/**
- * Fetches the HermezAccounts to use in a transaction.
- */
-export function fetchAccounts(
-  wallet: HermezWallet.HermezWallet,
+// Accounts
+
+export function getAccountBalance(
+  account: HermezAccount,
+  poolTransactions?: PoolTransaction[],
+  pendingDeposits?: PendingDeposit[]
+): string {
+  let totalBalance = BigNumber.from(account.balance);
+
+  if (pendingDeposits !== undefined && pendingDeposits.length) {
+    const pendingAccountDeposits = pendingDeposits.filter(
+      (deposit) => deposit.accountIndex === account.accountIndex
+    );
+    pendingAccountDeposits.forEach((pendingDeposit) => {
+      totalBalance = totalBalance.add(BigNumber.from(pendingDeposit.amount));
+    });
+  }
+
+  if (poolTransactions !== undefined && poolTransactions.length) {
+    const accountPoolTransactions = poolTransactions.filter(
+      (transaction) =>
+        transaction.fromAccountIndex === account.accountIndex && !transaction.errorCode
+    );
+
+    accountPoolTransactions.forEach((pendingTransaction) => {
+      totalBalance = totalBalance.sub(BigNumber.from(pendingTransaction.amount));
+      totalBalance = totalBalance.sub(
+        BigNumber.from(getFeeValue(Number(pendingTransaction.fee), pendingTransaction.amount))
+      );
+    });
+  }
+
+  return totalBalance.toString();
+}
+
+function updateAccountToken(
+  tokensPrice: AsyncTask<Token[], string>,
+  account: HermezAccount
+): HermezAccount {
+  if (tokensPrice.status === "successful" || tokensPrice.status === "reloading") {
+    const token: Token | undefined = tokensPrice.data.find(
+      (token) => token.id === account.token.id
+    );
+    return token === undefined ? account : { ...account, token };
+  } else {
+    return account;
+  }
+}
+
+function createAccount(
+  account: HermezAccount,
   tokensPriceTask: AsyncTask<Token[], string>,
-  poolTransactions: PoolTransaction[],
-  fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string,
-  fromItem?: number
-): Promise<Accounts> {
-  return getAccounts(wallet.publicKeyBase64, undefined, fromItem).then((accountsResponse) => ({
+  poolTransactions?: PoolTransaction[],
+  fiatExchangeRates?: FiatExchangeRates,
+  pendingDeposits?: PendingDeposit[]
+): HermezAccount {
+  const updatedAccount: HermezAccount = updateAccountToken(tokensPriceTask, account);
+  const accountBalance = getAccountBalance(updatedAccount, poolTransactions, pendingDeposits);
+  const fiatBalance = convertTokenAmountToFiat(
+    accountBalance,
+    updatedAccount.token,
+    preferredCurrency,
+    fiatExchangeRates
+  );
+
+  return {
+    ...updatedAccount,
+    balance: accountBalance,
+    fiatBalance,
+  };
+}
+
+export function getHermezAccounts({
+  hermezEthereumAddress,
+  tokensPriceTask,
+  poolTransactions,
+  fiatExchangeRates,
+  preferredCurrency,
+  pendingDeposits,
+  fromItem,
+  limit,
+  axiosConfig,
+}: {
+  hermezEthereumAddress: string;
+  tokensPriceTask: AsyncTask<Token[], string>;
+  poolTransactions: PoolTransaction[];
+  fiatExchangeRates: FiatExchangeRates;
+  preferredCurrency: string;
+  pendingDeposits?: PendingDeposit[];
+  fromItem?: number;
+  limit?: number;
+  axiosConfig?: Record<string, unknown>;
+}): Promise<HermezAccounts> {
+  return getAccounts(
+    hermezEthereumAddress,
+    undefined,
+    fromItem,
+    undefined,
+    limit,
+    axiosConfig
+  ).then((accountsResponse) => ({
     pendingItems: accountsResponse.pendingItems,
     accounts: accountsResponse.accounts.map((account) =>
       createAccount(
@@ -113,7 +204,8 @@ export function fetchAccounts(
         tokensPriceTask,
         preferredCurrency,
         poolTransactions,
-        fiatExchangeRates
+        fiatExchangeRates,
+        pendingDeposits
       )
     ),
   }));

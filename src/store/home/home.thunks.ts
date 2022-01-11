@@ -2,7 +2,6 @@ import axios from "axios";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
-import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as homeActions from "src/store/home/home.actions";
@@ -30,23 +29,17 @@ function fetchTotalBalance(
     } = getState();
     dispatch(homeActions.loadTotalBalance());
 
+    const limit = 2049;
     return persistence
-      .getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
-      .then((res) => {
-        const accounts = res.accounts.map((account) =>
-          createAccount(
-            account,
-            tokensPriceTask,
-            preferredCurrency,
-            poolTransactions,
-            fiatExchangeRates,
-            pendingDeposits
-          )
-        );
-
-        return { ...res, accounts };
+      .getHermezAccounts({
+        hermezEthereumAddress,
+        tokensPriceTask,
+        poolTransactions,
+        fiatExchangeRates,
+        preferredCurrency,
+        limit,
       })
-      .then((res) => {
+      .then((accounts) => {
         const pendingCreateAccountDeposits = pendingDeposits.filter(
           (deposit) => deposit.type === TxType.CreateAccountDeposit
         );
@@ -68,7 +61,7 @@ function fetchTotalBalance(
           },
           0
         );
-        const totalAccountsBalance = res.accounts.reduce((totalBalance, account) => {
+        const totalAccountsBalance = accounts.accounts.reduce((totalBalance, account) => {
           return account.fiatBalance !== undefined
             ? totalBalance + Number(account.fiatBalance)
             : totalBalance;
@@ -85,11 +78,11 @@ function fetchTotalBalance(
  * Fetches the accounts for a Hermez address
  */
 function fetchAccounts(
-  hermezAddress: string,
+  hermezEthereumAddress: string,
   poolTransactions: PoolTransaction[],
   pendingDeposits: PendingDeposit[],
   preferredCurrency: string,
-  fiatExchangeRates?: FiatExchangeRates,
+  fiatExchangeRates: FiatExchangeRates,
   fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -101,7 +94,7 @@ function fetchAccounts(
     if (fromItem === undefined && accountsTask.status === "successful") {
       return dispatch(
         refreshAccounts(
-          hermezAddress,
+          hermezEthereumAddress,
           poolTransactions,
           pendingDeposits,
           preferredCurrency,
@@ -117,20 +110,13 @@ function fetchAccounts(
     }
 
     return persistence
-      .getAccounts(hermezAddress, undefined, fromItem, undefined)
-      .then((res) => {
-        const accounts = res.accounts.map((account) =>
-          createAccount(
-            account,
-            tokensPriceTask,
-            preferredCurrency,
-            poolTransactions,
-            fiatExchangeRates,
-            pendingDeposits
-          )
-        );
-
-        return { ...res, accounts };
+      .getHermezAccounts({
+        hermezEthereumAddress,
+        tokensPriceTask,
+        poolTransactions,
+        fiatExchangeRates,
+        preferredCurrency,
+        fromItem,
       })
       .then((res) => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch((err) => dispatch(homeActions.loadAccountsFailure(err)));
@@ -142,11 +128,11 @@ function fetchAccounts(
  * loaded
  */
 function refreshAccounts(
-  hermezAddress: string,
+  hermezEthereumAddress: string,
   poolTransactions: PoolTransaction[],
   pendingDeposits: PendingDeposit[],
   preferredCurrency: string,
-  fiatExchangeRates?: FiatExchangeRates
+  fiatExchangeRates: FiatExchangeRates
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -161,7 +147,7 @@ function refreshAccounts(
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token };
       const initialReq = persistence.getAccounts(
-        hermezAddress,
+        hermezEthereumAddress,
         undefined,
         undefined,
         undefined,
@@ -171,32 +157,26 @@ function refreshAccounts(
       const requests = accountsTask.data.fromItemHistory.reduce(
         (requests, fromItem) => [
           ...requests,
-          persistence.getAccounts(
-            hermezAddress,
-            undefined,
+          persistence.getHermezAccounts({
+            hermezEthereumAddress,
+            tokensPriceTask,
+            poolTransactions,
+            fiatExchangeRates,
+            preferredCurrency,
+            pendingDeposits,
             fromItem,
-            undefined,
-            undefined,
-            axiosConfig
-          ),
+            axiosConfig,
+          }),
         ],
         [initialReq]
       );
 
       Promise.all(requests)
         .then((results) => {
-          const accounts = results
-            .reduce((acc: HermezAccount[], result: Accounts) => [...acc, ...result.accounts], [])
-            .map((account) =>
-              createAccount(
-                account,
-                tokensPriceTask,
-                preferredCurrency,
-                poolTransactions,
-                fiatExchangeRates,
-                pendingDeposits
-              )
-            );
+          const accounts = results.reduce(
+            (acc: HermezAccount[], result: Accounts) => [...acc, ...result.accounts],
+            []
+          );
           const pendingItems = results[results.length - 1]
             ? results[results.length - 1].pendingItems
             : 0;
