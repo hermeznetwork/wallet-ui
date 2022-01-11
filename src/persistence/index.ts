@@ -376,6 +376,14 @@ export function withdrawCircuit(
   return Tx.withdrawCircuit(exit, isInstant, wasmFilePath, zkeyFilePath, signerData);
 }
 
+export function delayedWithdraw(
+  hezEthereumAddress: string,
+  token: Token,
+  signerData: Signers.SignerData
+): Promise<Tx.TxData> {
+  return Tx.delayedWithdraw(hezEthereumAddress, token, signerData);
+}
+
 // Error decoding and message extraction
 interface MessageKeyError {
   message: string;

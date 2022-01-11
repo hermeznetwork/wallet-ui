@@ -1,6 +1,5 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { Tx } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as withdrawActions from "src/store/transactions/withdraw/withdraw.actions";
@@ -175,7 +174,8 @@ function withdraw(
             handleTransactionFailure(dispatch, error);
           });
       } else {
-        Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
+        persistence
+          .delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
           .then((txData) => {
             dispatch(
               globalThunks.addPendingWithdraw({
