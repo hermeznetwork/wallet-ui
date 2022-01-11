@@ -26,7 +26,7 @@ import {
   CoordinatorState,
   Exit,
   FiatExchangeRates,
-  HermezNetworkStatus,
+  NetworkStatus,
   HistoryTransaction,
   ISOStringDate,
   PendingDelayedWithdraw,
@@ -114,10 +114,7 @@ function fetchFiatExchangeRates(): AppThunk {
 /**
  * Changes the current network status of the application
  */
-function changeNetworkStatus(
-  newNetworkStatus: HermezNetworkStatus,
-  backgroundColor: string
-): AppThunk {
+function changeNetworkStatus(newNetworkStatus: NetworkStatus, backgroundColor: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { networkStatus: previousNetworkStatus },

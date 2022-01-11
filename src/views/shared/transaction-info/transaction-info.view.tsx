@@ -55,9 +55,7 @@ function TransactionInfo({
   };
   const myHermezAddress: Row = {
     subtitle: "My Hermez address",
-    value: transaction.fromHezEthereumAddress
-      ? getPartiallyHiddenHermezAddress(transaction.fromHezEthereumAddress)
-      : "Not available",
+    value: partiallyHiddenHermezAddressOrNotAvailable(transaction.fromHezEthereumAddress),
   };
 
   function getTransactionStatus(): Row | undefined {
@@ -130,11 +128,7 @@ function TransactionInfo({
           status={getTransactionStatus()}
           from={{
             subtitle: "My Ethereum address",
-            value: transaction.fromHezEthereumAddress
-              ? getPartiallyHiddenEthereumAddress(
-                  getEthereumAddress(transaction.fromHezEthereumAddress)
-                )
-              : "Not available",
+            value: partiallyHiddenEthereumAddressOrNotAvailable(transaction.fromHezEthereumAddress),
           }}
           to={myHermezAddress}
           date={date}
@@ -182,11 +176,7 @@ function TransactionInfo({
           from={myHermezAddress}
           to={{
             subtitle: "My Ethereum address",
-            value: transaction.fromHezEthereumAddress
-              ? getPartiallyHiddenEthereumAddress(
-                  getEthereumAddress(transaction.fromHezEthereumAddress)
-                )
-              : "Not available",
+            value: partiallyHiddenEthereumAddressOrNotAvailable(transaction.fromHezEthereumAddress),
           }}
           date={date}
           feeData={feeData}
@@ -201,11 +191,7 @@ function TransactionInfo({
           from={myHermezAddress}
           to={{
             subtitle: "My Ethereum address",
-            value: transaction.fromHezEthereumAddress
-              ? getPartiallyHiddenEthereumAddress(
-                  getEthereumAddress(transaction.fromHezEthereumAddress)
-                )
-              : "Not available",
+            value: partiallyHiddenEthereumAddressOrNotAvailable(transaction.fromHezEthereumAddress),
           }}
           date={date}
         />
@@ -215,6 +201,16 @@ function TransactionInfo({
       return <></>;
     }
   }
+}
+
+function partiallyHiddenHermezAddressOrNotAvailable(hezEthereumAddress: string | null): string {
+  return hezEthereumAddress ? getPartiallyHiddenHermezAddress(hezEthereumAddress) : "Not available";
+}
+
+function partiallyHiddenEthereumAddressOrNotAvailable(hezEthereumAddress: string | null): string {
+  return hezEthereumAddress
+    ? getPartiallyHiddenEthereumAddress(getEthereumAddress(hezEthereumAddress))
+    : "Not available";
 }
 
 export default TransactionInfo;
