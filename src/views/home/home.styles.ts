@@ -22,7 +22,6 @@ const useHomeStyles = createUseStyles((theme: Theme) => ({
     color: theme.palette.grey.dark,
     fontSize: theme.spacing(1.75),
     fontWeight: theme.fontWeights.medium,
-    marginTop: -theme.spacing(2.5),
     marginBottom: 0,
   },
   walletAddress: {
