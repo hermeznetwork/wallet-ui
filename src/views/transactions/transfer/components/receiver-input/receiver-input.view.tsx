@@ -49,10 +49,10 @@ function ReceiverInput({
 
   function getErrorMessage() {
     if (isReceiverValid === false) {
-      return "Please, enter a valid Hermez or Ethereum Address";
+      return "Please, enter a valid Polygon Hermez or Ethereum Address";
     }
     if (hasReceiverApprovedAccountsCreation === false) {
-      return "Please, enter an existing address. Receiver needs to have signed in to Hermez Wallet at least once.";
+      return "Please, enter an existing address. Receiver needs to have signed in to Polygon Hermez Wallet at least once.";
     }
 
     return "";

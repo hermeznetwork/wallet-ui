@@ -23,7 +23,7 @@ function ReportIssueButton(): JSX.Element {
         target="_blank"
         rel="noopener noreferrer"
       >
-        Hermez help center
+        Polygon Hermez help center
       </a>
     </footer>
   );

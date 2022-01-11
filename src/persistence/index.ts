@@ -48,7 +48,7 @@ export function postCreateAccountAuthorization(
       if (parsedErrorResponse.success) {
         const errorMessage =
           parsedErrorResponse.data.code === -32603
-            ? "Sorry, hardware wallets are not supported in Hermez yet"
+            ? "Sorry, hardware wallets are not supported in Polygon Hermez yet"
             : error.message;
         throw new Error(errorMessage);
       } else {

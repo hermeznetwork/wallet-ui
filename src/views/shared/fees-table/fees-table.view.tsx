@@ -35,7 +35,7 @@ function FeesTable({
   return (
     <div className={classes.feesTable}>
       <TransactionInfoTableRow
-        title={estimatedWithdrawFee ? "Hermez fee" : "Fee"}
+        title={estimatedWithdrawFee ? "Polygon Hermez fee" : "Fee"}
         hint={estimatedWithdrawFee && "Step 1"}
         subtitle={<FiatAmount amount={l2FeeInFiat} currency={preferredCurrency} />}
         value={`${formattedL2Fee} ${token.symbol}`}

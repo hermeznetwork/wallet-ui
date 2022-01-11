@@ -21,7 +21,9 @@ function WithdrawInfoSidenav({ onClose }: WithdrawInfoSidenavProps): JSX.Element
           <div className={classes.step}>
             <p className={classes.stepName}>Step 1</p>
           </div>
-          <p className={classes.stepDescription}>You will pay for a fixed amount of Hermez fees.</p>
+          <p className={classes.stepDescription}>
+            You will pay for a fixed amount of Polygon Hermez fees.
+          </p>
         </div>
         <div className={classes.stepCard}>
           <div className={classes.step}>

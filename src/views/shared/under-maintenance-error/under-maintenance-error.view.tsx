@@ -12,7 +12,7 @@ function UnderMaintenanceError(): JSX.Element {
       <div className={classes.root}>
         <UnderMaintenanceIcon className={classes.icon} />
         <h1 className={classes.message}>
-          Hermez is currently under maintenance. Please, try to access it again later.
+          Polygon Hermez is currently under maintenance. Please, try to access it again later.
         </h1>
       </div>
     </PublicLayout>

@@ -34,7 +34,7 @@ function TransactionAmountInput({
       return "You don't have enough funds";
     }
     if (isAmountCompressedInvalid) {
-      return "The amount introduced is not supported by Hermez's compression algorithm. It needs to have a maximum of 10 significant digits";
+      return "The amount introduced is not supported by Polygon Hermez's compression algorithm. It needs to have a maximum of 10 significant digits";
     }
     return "";
   }
