@@ -1,9 +1,10 @@
 import { AxiosError } from "axios";
 import { z } from "zod";
+import { BigNumber } from "ethers";
 import { CoordinatorAPI, Account } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
-import { BigNumber } from "ethers";
 import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
+import { Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { HttpStatusCode } from "src/utils/http";
@@ -13,18 +14,19 @@ import { AsyncTask } from "src/utils/types";
 import {
   AccountAuthorization,
   Accounts,
-  HermezAccounts,
   CoordinatorState,
   Exit,
   Exits,
   FiatExchangeRates,
   HermezAccount,
+  HermezAccounts,
   HermezWallet,
   HistoryTransaction,
   HistoryTransactions,
   PaginationOrder,
   PendingDeposit,
   PoolTransaction,
+  Signers,
   Token,
   Tokens,
 } from "src/domain";
@@ -315,6 +317,30 @@ export function getTokens(
   axiosConfig?: Record<string, unknown>
 ): Promise<Tokens> {
   return CoordinatorAPI.getTokens(tokenIds, tokenSymbols, fromItem, order, limit, axiosConfig);
+}
+
+// Deposit
+
+export function deposit(
+  amount: HermezCompressedAmount,
+  hezEthereumAddress: string,
+  token: Token,
+  babyJubJub: string,
+  signerData: Signers.SignerData,
+  providerUrl?: string,
+  gasLimit?: number,
+  gasMultiplier?: number
+): Promise<Tx.TxData> {
+  return Tx.deposit(
+    HermezCompressedAmount.compressAmount(amount.toString()),
+    hezEthereumAddress,
+    token,
+    babyJubJub,
+    signerData,
+    providerUrl,
+    gasLimit,
+    gasMultiplier
+  );
 }
 
 // Error decoding and message extraction

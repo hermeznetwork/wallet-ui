@@ -1,4 +1,4 @@
-import { Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
+import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { ETHER_TOKEN_ID } from "@hermeznetwork/hermezjs/src/constants";
@@ -142,13 +142,14 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
     dispatch(depositActions.startTransactionApproval());
 
     if (wallet !== undefined && signer !== undefined) {
-      return Tx.deposit(
-        HermezCompressedAmount.compressAmount(amount.toString()),
-        wallet.hermezEthereumAddress,
-        ethereumAccount.token,
-        wallet.publicKeyCompressedHex,
-        signer
-      )
+      return persistence
+        .deposit(
+          HermezCompressedAmount.compressAmount(amount.toString()),
+          wallet.hermezEthereumAddress,
+          ethereumAccount.token,
+          wallet.publicKeyCompressedHex,
+          signer
+        )
         .then((txData) => {
           void persistence
             .getAccounts(wallet.hermezEthereumAddress, [ethereumAccount.token.id])
