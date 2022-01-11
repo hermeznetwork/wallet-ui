@@ -1,11 +1,12 @@
 import { AxiosError } from "axios";
 import { z } from "zod";
-import { BigNumber } from "ethers";
+import { CallOverrides, BigNumber } from "ethers";
 import {
   Account,
   CoordinatorAPI,
   HermezCompressedAmount,
   Tx,
+  TxFees,
   TxPool,
   TxUtils,
 } from "@hermeznetwork/hermezjs";
@@ -390,6 +391,26 @@ export function delayedWithdraw(
   signerData: Signers.SignerData
 ): Promise<Tx.TxData> {
   return Tx.delayedWithdraw(hezEthereumAddress, token, signerData);
+}
+
+// TxFees
+
+export function estimateWithdrawCircuitGasLimit(
+  token: Token,
+  amount: BigNumber,
+  overrides: CallOverrides,
+  isInstant: boolean,
+  signerData?: Signers.SignerData,
+  providerUrl?: string
+): Promise<number> {
+  return TxFees.estimateWithdrawCircuitGasLimit(
+    token,
+    amount,
+    overrides,
+    isInstant,
+    signerData,
+    providerUrl
+  );
 }
 
 // Error decoding and message extraction

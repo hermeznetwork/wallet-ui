@@ -1,6 +1,6 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { HermezCompressedAmount, TxFees } from "@hermeznetwork/hermezjs";
+import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
@@ -125,7 +125,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
       const provider = getProvider();
       const { maxFeePerGas } = await provider.getFeeData();
       const overrides = maxFeePerGas ? { maxFeePerGas } : {};
-      const gasLimit = await TxFees.estimateWithdrawCircuitGasLimit(
+      const gasLimit = await persistence.estimateWithdrawCircuitGasLimit(
         token,
         amount,
         overrides,
