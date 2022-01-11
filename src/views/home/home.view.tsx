@@ -405,7 +405,6 @@ function Home({
           <ReportIssueButton />
         </div>
       )}
-      )
     </>
   );
 }
