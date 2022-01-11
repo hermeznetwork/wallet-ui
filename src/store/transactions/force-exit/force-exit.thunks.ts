@@ -1,6 +1,6 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
+import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as forceExitActions from "src/store/transactions/force-exit/force-exit.actions";
@@ -75,12 +75,13 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
     dispatch(forceExitActions.startTransactionApproval());
 
     if (signer) {
-      Tx.forceExit(
-        HermezCompressedAmount.compressAmount(amount.toString()),
-        account.accountIndex,
-        account.token,
-        signer
-      )
+      persistence
+        .forceExit(
+          HermezCompressedAmount.compressAmount(amount.toString()),
+          account.accountIndex,
+          account.token,
+          signer
+        )
         .then(() => handleTransactionSuccess(dispatch))
         .catch((error) => {
           console.error(error);

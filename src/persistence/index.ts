@@ -352,6 +352,20 @@ export function generateAndSendL2Tx(
   return Tx.generateAndSendL2Tx(tx, wallet, token, nextForgers, addToTxPool);
 }
 
+export function forceExit(
+  amount: HermezCompressedAmount,
+  accountIndex: string,
+  token: Token,
+  signerData: Signers.SignerData
+): Promise<Tx.TxData> {
+  return Tx.forceExit(
+    HermezCompressedAmount.compressAmount(amount.toString()),
+    accountIndex,
+    token,
+    signerData
+  );
+}
+
 // Error decoding and message extraction
 interface MessageKeyError {
   message: string;
