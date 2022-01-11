@@ -366,6 +366,16 @@ export function forceExit(
   );
 }
 
+export function withdrawCircuit(
+  exit: Exit,
+  isInstant: boolean,
+  wasmFilePath: string,
+  zkeyFilePath: string,
+  signerData: Signers.SignerData
+): Promise<Tx.TxData> {
+  return Tx.withdrawCircuit(exit, isInstant, wasmFilePath, zkeyFilePath, signerData);
+}
+
 // Error decoding and message extraction
 interface MessageKeyError {
   message: string;

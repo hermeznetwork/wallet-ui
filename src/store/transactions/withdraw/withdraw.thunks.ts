@@ -136,13 +136,14 @@ function withdraw(
 
     if (wallet && signer) {
       if (!completeDelayedWithdrawal) {
-        Tx.withdrawCircuit(
-          exit,
-          instantWithdrawal,
-          WITHDRAWAL_WASM_URL,
-          WITHDRAWAL_ZKEY_URL,
-          signer
-        )
+        persistence
+          .withdrawCircuit(
+            exit,
+            instantWithdrawal,
+            WITHDRAWAL_WASM_URL,
+            WITHDRAWAL_ZKEY_URL,
+            signer
+          )
           .then((txData) => {
             if (instantWithdrawal) {
               dispatch(
