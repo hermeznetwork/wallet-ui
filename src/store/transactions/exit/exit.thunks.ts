@@ -60,7 +60,7 @@ function fetchPoolTransactions(): AppThunk {
 
     if (wallet !== undefined) {
       persistence
-        .fetchPoolTransactions(wallet)
+        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(exitActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(exitActions.loadPoolTransactionsFailure(err)));
     }

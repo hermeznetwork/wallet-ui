@@ -1,10 +1,14 @@
 import { AxiosError } from "axios";
 import { z } from "zod";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Account } from "@hermeznetwork/hermezjs";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
-import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
-import { Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
+import {
+  Account,
+  CoordinatorAPI,
+  HermezCompressedAmount,
+  Tx,
+  TxPool,
+  TxUtils,
+} from "@hermeznetwork/hermezjs";
 
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { HttpStatusCode } from "src/utils/http";
@@ -124,7 +128,9 @@ export function getAccountBalance(
     accountPoolTransactions.forEach((pendingTransaction) => {
       totalBalance = totalBalance.sub(BigNumber.from(pendingTransaction.amount));
       totalBalance = totalBalance.sub(
-        BigNumber.from(getFeeValue(Number(pendingTransaction.fee), pendingTransaction.amount))
+        BigNumber.from(
+          TxUtils.getFeeValue(Number(pendingTransaction.fee), pendingTransaction.amount)
+        )
       );
     });
   }
@@ -245,14 +251,16 @@ export function fetchHermezAccount(
   );
 }
 
-// CoordinatorAPI
+// TxPool
 
-export function fetchPoolTransactions(
-  wallet: HermezWallet.HermezWallet,
-  address?: string
+export function getPoolTransactions(
+  accountIndex: string | undefined,
+  publicKeyCompressedHex: string
 ): Promise<PoolTransaction[]> {
-  return getPoolTransactions(address, wallet.publicKeyCompressedHex);
+  return TxPool.getPoolTransactions(accountIndex, publicKeyCompressedHex);
 }
+
+// CoordinatorAPI
 
 export function getHistoryTransaction(
   transactionId: string,

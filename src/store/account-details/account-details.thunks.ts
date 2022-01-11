@@ -87,7 +87,7 @@ function fetchPoolTransactions(accountIndex: HermezAccount["accountIndex"]): App
     } = getState();
     if (wallet !== undefined) {
       persistence
-        .fetchPoolTransactions(wallet, accountIndex)
+        .getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
         // We need to reverse the txs to match the order of the txs from the history (DESC)
         .then((transactions: PoolTransaction[]) => transactions.reverse())
         .then((transactions: PoolTransaction[]) =>

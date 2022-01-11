@@ -825,7 +825,8 @@ function checkPendingTransactions(): AppThunk {
     if (wallet !== undefined && coordinatorStateTask.status === "successful") {
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
 
-      hermezjs.TxPool.getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+      persistence
+        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((poolTransactions: PoolTransaction[]) => {
           const tenMinutesInMs = 10 * 60 * 1000;
           const oneDayInMs = 24 * 60 * 60 * 1000;
