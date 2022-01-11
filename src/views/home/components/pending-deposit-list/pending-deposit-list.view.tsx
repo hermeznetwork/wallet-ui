@@ -33,7 +33,7 @@ function PendingDepositList({
               balance={deposit.amount}
               fiatBalance={getTokenAmountInPreferredCurrency(
                 getFixedTokenAmount(deposit.amount, deposit.token.decimals),
-                deposit.token.USD,
+                deposit.token,
                 preferredCurrency,
                 fiatExchangeRates
               )}

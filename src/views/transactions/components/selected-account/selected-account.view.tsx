@@ -54,7 +54,7 @@ function SelectedAccount(props: SelectedAccountProps): JSX.Element {
             currency={preferredCurrency}
             amount={getTokenAmountInPreferredCurrency(
               getFixedTokenAmount(account.balance, account.token.decimals),
-              account.token.USD,
+              account.token,
               preferredCurrency,
               isAsyncTaskDataAvailable(fiatExchangeRatesTask) ? fiatExchangeRatesTask.data : {}
             )}

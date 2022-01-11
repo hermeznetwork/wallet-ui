@@ -38,7 +38,7 @@ function DepositAlert({
           <FiatAmount
             amount={getTokenAmountInPreferredCurrency(
               fixedTokenAmount,
-              estimatedDepositFeeTask.data.token.USD,
+              estimatedDepositFeeTask.data.token,
               preferredCurrency,
               fiatExchangeRatesTask.data
             )}

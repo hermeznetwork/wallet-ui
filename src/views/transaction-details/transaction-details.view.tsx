@@ -113,7 +113,7 @@ function TransactionDetails({
 
         return getTokenAmountInPreferredCurrency(
           fixedAccountBalance,
-          token.USD,
+          token,
           preferredCurrency,
           fiatExchangeRatesTask.data
         );
@@ -127,7 +127,7 @@ function TransactionDetails({
 
   function getHistoryTransactionFee(historyTransaction: HistoryTransaction): BigNumber | undefined {
     const { L2Info, token, amount } = historyTransaction;
-    if (!L2Info) {
+    if (!L2Info || !token.USD) {
       return undefined;
     } else if (L2Info.historicFeeUSD) {
       const feeUsd = L2Info.historicFeeUSD;
@@ -142,6 +142,9 @@ function TransactionDetails({
 
   function getPoolTransactionFee(poolTransaction: PoolTransaction): BigNumber | undefined {
     const { fee, token, amount } = poolTransaction;
+    if (!token.USD) {
+      return undefined;
+    }
     const feeUsd = getFeeInUsd(fee, amount, token);
     const feeToken = feeUsd / token.USD;
     return parseUnits(feeToken.toFixed(token.decimals), token.decimals);

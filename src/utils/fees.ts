@@ -36,7 +36,7 @@ type GetMinimumL2FeeParams = GetMinimumTransferFee | GetMinimumExitFee;
 function getMinimumL2Fee(params: GetMinimumL2FeeParams): BigNumber {
   const { txType, token, feesTask } = params;
 
-  if (!isAsyncTaskDataAvailable(feesTask) || token.USD === 0) {
+  if (!isAsyncTaskDataAvailable(feesTask) || !token.USD || token.USD === 0) {
     return BigNumber.from(0);
   }
 
@@ -120,13 +120,13 @@ function getEstimatedWithdrawFee(
   const formattedWithdrawFee = getFixedTokenAmount(estimatedWithdrawFee.amount.toString());
   const exitFeeInFiat = getTokenAmountInPreferredCurrency(
     formattedExitFee,
-    token.USD,
+    token,
     preferredCurrency,
     fiatExchangeRates
   );
   const withdrawFeeInFiat = getTokenAmountInPreferredCurrency(
     formattedWithdrawFee,
-    estimatedWithdrawFee.token.USD,
+    estimatedWithdrawFee.token,
     preferredCurrency,
     fiatExchangeRates
   );

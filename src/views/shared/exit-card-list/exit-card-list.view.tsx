@@ -53,7 +53,7 @@ function ExitCardList({
             token={transaction.token}
             fiatAmount={getTokenAmountInPreferredCurrency(
               fixedTokenAmount,
-              transaction.token.USD,
+              transaction.token,
               preferredCurrency,
               fiatExchangeRates
             )}

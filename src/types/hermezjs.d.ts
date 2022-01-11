@@ -2,10 +2,9 @@
  * HermezJS Type Definitions
  *
  * Some types and props are currently commented because are not used by this app.
- * As we proceed with the migration of the application to typescript, more
- * properties and types will likely be required. We can uncomment them as
- * required and finally remove all those not required.
- */
+ * They are kept in case we eventually decide to move this typings file to the
+ * HermezJS library to enable it with TypeScript support.
+ * */
 declare module "@hermeznetwork/*" {
   import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
@@ -14,12 +13,6 @@ declare module "@hermeznetwork/*" {
   export type ScalarValue = string | number | bigint;
 
   export type ISOStringDate = string;
-
-  export interface HermezStatus {
-    isUnderMaintenance: boolean;
-  }
-
-  export type HermezNetworkStatus = "online" | "offline";
 
   export type FiatExchangeRates = Record<string, number>;
 
@@ -34,8 +27,8 @@ declare module "@hermeznetwork/*" {
     id: number;
     name: string;
     symbol: string;
-    USD: number;
-    // fiatUpdate: ISOStringDate;
+    USD: number | null;
+    // fiatUpdate: ISOStringDate | null;
   };
 
   export interface L1Info {
@@ -43,8 +36,8 @@ declare module "@hermeznetwork/*" {
     depositAmount: string;
     // depositAmountSuccess: boolean;
     // ethereumBlockNum: number;
-    // historicDepositAmountUSD: number;
-    // toForgeL1TransactionsNum: number;
+    // historicDepositAmountUSD: number | null;
+    // toForgeL1TransactionsNum: number | null;
     // userOrigin: boolean;
   }
 
@@ -81,14 +74,14 @@ declare module "@hermeznetwork/*" {
   };
 
   export type HistoryTransaction = HermezApiResourceItem & {
-    batchNum: number;
-    fromAccountIndex: string;
-    fromHezEthereumAddress: string;
+    batchNum: number | null;
+    fromAccountIndex: string | null;
+    fromHezEthereumAddress: string | null;
     id: string;
     toHezEthereumAddress: string | null;
     type: TxType;
     amount: string;
-    // fromBJJ: string;
+    // fromBJJ: string | null;
     historicUSD: number | null;
     L1Info: L1Info | null;
     L1orL2: "L1" | "L2";
@@ -102,32 +95,32 @@ declare module "@hermeznetwork/*" {
 
   export type PoolTransaction = HermezApiResourceItem & {
     amount: string;
-    errorCode: number | null;
+    errorCode?: number | null;
     fee: number;
     fromAccountIndex: string;
-    fromBJJ: string;
-    fromHezEthereumAddress: string;
+    fromBJJ: string | null;
+    fromHezEthereumAddress: string | null;
     state: TxState;
     timestamp: ISOStringDate;
-    toAccountIndex: string;
+    toAccountIndex: string | null;
     toBJJ: string | null;
-    toHezEthereumAddress: string;
+    toHezEthereumAddress: string | null;
     token: Token;
     type: TxType;
-    batchNum: number | null;
+    batchNum?: number | null;
     id: string;
-    // errorType: string | null;
+    // errorType?: string | null;
     // info: string | null;
-    // maxNumBatch: number;
+    // maxNumBatch?: number;
     // nonce: number;
-    // requestAmount: unknown | null;
-    // requestFee: unknown | null;
-    // requestFromAccountIndex: unknown | null;
-    // requestNonce: unknown | null;
-    // requestToAccountIndex: unknown | null;
-    // requestToBJJ: unknown | null;
-    // requestToHezEthereumAddress: unknown | null;
-    // requestTokenId: unknown | null;
+    // requestAmount: string | null;
+    // requestFee: number | null;
+    // requestFromAccountIndex: string | null;
+    // requestNonce: number | null;
+    // requestToAccountIndex: string | null;
+    // requestToBJJ: string | null;
+    // requestToHezEthereumAddress: string | null;
+    // requestTokenId: number | null;
     // signature: string;
   };
 
@@ -158,7 +151,7 @@ declare module "@hermeznetwork/*" {
 
   // interface CollectedFees;
 
-  type LastBatch = HermezApiResourceItem & {
+  type Batch = HermezApiResourceItem & {
     //   batchNum: number;
     //   ethereumTxHash: string;
     //   ethereumBlockNum: number;
@@ -186,8 +179,8 @@ declare module "@hermeznetwork/*" {
     // slotNum: number;
     // fromBlock: number;
     // toBlock: number;
-    // fromTimestamp: string;
-    toTimestamp: string;
+    // fromTimestamp: ISOStringDate;
+    toTimestamp: ISOStringDate;
   }
 
   export interface NextForger {
@@ -198,10 +191,10 @@ declare module "@hermeznetwork/*" {
   interface Network {
     // lastEthereumBlock: number;
     // lastSynchedBlock: number;
-    lastBatch: LastBatch;
+    lastBatch: Batch;
     // currentSlot: number;
     nextForgers: NextForger[];
-    // pendingL1Transactions: number;
+    // pendingL1Transactions?: number;
   }
 
   // interface Metrics {
@@ -238,7 +231,7 @@ declare module "@hermeznetwork/*" {
   //   bootCoordinator: string;
   //   bootCoordinatorUrl: string;
   //   defaultSlotSetBid: string[];
-  //   defaultSlotSetBidSlotNum: number;
+  //   defaultSlotSetBidSlotNum?: number;
   //   closedAuctionSlots: number;
   //   openAuctionSlots: number;
   //   allocationRatio: number[];
@@ -380,7 +373,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   interface Tx {
     type: TxType;
     from: string;
-    to?: string;
+    to: string | null;
     amount: HermezCompressedAmount;
     fee: number;
     nonce?: number;

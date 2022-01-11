@@ -82,7 +82,7 @@ function AmountInput(
 
       return getTokenAmountInPreferredCurrency(
         fixedTokenAmount,
-        account.token.USD,
+        account.token,
         preferredCurrency,
         fiatExchangeRatesTask.data
       );
@@ -91,7 +91,10 @@ function AmountInput(
     /**
      * Converts an amount in fiat to tokens.
      */
-    function convertAmountToTokens(fiatAmount: number) {
+    function convertAmountToTokens(fiatAmount: number): BigNumber {
+      if (!account.token.USD || account.token.USD === 0) {
+        return BigNumber.from(0);
+      }
       const tokenAmount = fiatAmount / account.token.USD;
 
       return parseUnits(tokenAmount.toFixed(account.token.decimals), account.token.decimals);

@@ -65,7 +65,7 @@ function TransactionList({
               fromAccountIndex={
                 isPendingDeposit(transaction)
                   ? transaction.accountIndex
-                  : transaction.fromAccountIndex
+                  : transaction.fromAccountIndex || undefined
               }
               amount={fixedTokenAmount}
               tokenSymbol={transaction.token.symbol}
@@ -78,7 +78,7 @@ function TransactionList({
                     )
                   : getTokenAmountInPreferredCurrency(
                       fixedTokenAmount,
-                      transaction.token.USD,
+                      transaction.token,
                       preferredCurrency,
                       fiatExchangeRates
                     )

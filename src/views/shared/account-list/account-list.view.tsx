@@ -50,7 +50,7 @@ function AccountList({
             <AccountCard
               balance={account.balance}
               preferredCurrency={preferredCurrency}
-              fiatBalance={account.fiatBalance || 0}
+              fiatBalance={account.fiatBalance}
               token={account.token}
               hasPendingDeposit={hasAccountPendingDeposit(account)}
               isDisabled={isAccountDisabled(account)}

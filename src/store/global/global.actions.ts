@@ -4,7 +4,7 @@ import {
   CoordinatorState,
   EthereumNetwork,
   FiatExchangeRates,
-  HermezNetworkStatus,
+  NetworkStatus,
   HermezWallet,
   ISOStringDate,
   PendingDelayedWithdraw,
@@ -131,7 +131,7 @@ export interface CloseSnackbar {
 
 export interface ChangeNetworkStatus {
   type: GlobalActionTypes.CHANGE_NETWORK_STATUS;
-  networkStatus: HermezNetworkStatus;
+  networkStatus: NetworkStatus;
 }
 
 export interface AddPendingWithdraw {
@@ -416,7 +416,7 @@ function closeSnackbar(): CloseSnackbar {
   };
 }
 
-function changeNetworkStatus(networkStatus: HermezNetworkStatus): ChangeNetworkStatus {
+function changeNetworkStatus(networkStatus: NetworkStatus): ChangeNetworkStatus {
   return {
     type: GlobalActionTypes.CHANGE_NETWORK_STATUS,
     networkStatus,

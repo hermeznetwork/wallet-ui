@@ -112,7 +112,7 @@ function TransactionOverview({
 
     return getTokenAmountInPreferredCurrency(
       fixedAccountBalance,
-      token.USD,
+      token,
       preferredCurrency,
       fiatExchangeRates
     );

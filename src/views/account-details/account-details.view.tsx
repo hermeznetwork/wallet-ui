@@ -246,7 +246,7 @@ function AccountDetails({
 
     return getTokenAmountInPreferredCurrency(
       accountTokenBalance,
-      account.token.USD,
+      account.token,
       preferredCurrency,
       fiatExchangeRatesTask.data
     );

@@ -27,7 +27,7 @@ function FeesTable({
   const formattedL2Fee = getFixedTokenAmount(l2Fee.toString(), token.decimals);
   const l2FeeInFiat = getTokenAmountInPreferredCurrency(
     formattedL2Fee,
-    token.USD,
+    token,
     preferredCurrency,
     fiatExchangeRates
   );
@@ -47,7 +47,7 @@ function FeesTable({
           );
           const estimatedWithdrawFeeInFiat = getTokenAmountInPreferredCurrency(
             formattedEstimatedWithdrawFee,
-            estimatedWithdrawFee.token.USD,
+            estimatedWithdrawFee.token,
             preferredCurrency,
             fiatExchangeRates
           );

@@ -177,6 +177,7 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
       const txData = {
         type: TxType.Exit,
         from: account.accountIndex,
+        to: null,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
         fee: feeBigIntToNumber(fee, account.token),
       };

@@ -34,7 +34,7 @@ const token = StrictSchema<Token>()(
       id: z.number(),
       name: z.string(),
       symbol: z.string(),
-      USD: z.number(),
+      USD: z.number().nullable(),
     })
   )
 );
@@ -71,9 +71,9 @@ const historyTransaction = StrictSchema<HistoryTransaction>()(
   hermezApiResourceItem.and(
     z.object({
       amount: z.string(),
-      batchNum: z.number(),
-      fromAccountIndex: z.string(),
-      fromHezEthereumAddress: z.string(),
+      batchNum: z.number().nullable(),
+      fromAccountIndex: z.string().nullable(),
+      fromHezEthereumAddress: z.string().nullable(),
       historicUSD: z.number().nullable(),
       id: z.string(),
       L1Info: l1Info.nullable(),

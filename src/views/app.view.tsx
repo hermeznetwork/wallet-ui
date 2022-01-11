@@ -20,7 +20,7 @@ import { Theme } from "src/styles/theme";
 import {
   EthereumNetwork,
   FiatExchangeRates,
-  HermezNetworkStatus,
+  NetworkStatus,
   HermezStatus,
   HermezWallet,
 } from "src/domain";
@@ -42,7 +42,7 @@ interface AppHandlerProps {
   onLoadCoordinatorState: () => void;
   onLoadFiatExchangeRates: () => void;
   onCheckHermezStatus: () => void;
-  onChangeNetworkStatus: (hermezNetworkStatus: HermezNetworkStatus, color: string) => void;
+  onChangeNetworkStatus: (networkStatus: NetworkStatus, color: string) => void;
   onDisconnectAccount: () => void;
   onCheckPendingTransactions: () => void;
   onReloadApp: () => void;
