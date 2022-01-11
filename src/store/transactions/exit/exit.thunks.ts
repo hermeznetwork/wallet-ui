@@ -1,6 +1,6 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { Tx, HermezCompressedAmount, TxFees } from "@hermeznetwork/hermezjs";
+import { HermezCompressedAmount, TxFees } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
@@ -179,7 +179,8 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
         fee: feeBigIntToNumber(fee, account.token),
       };
 
-      return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
+      return persistence
+        .generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
         .catch((error) => handleTransactionFailure(dispatch, error));
     }

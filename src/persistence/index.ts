@@ -245,9 +245,8 @@ export function fetchHermezAccount(
   );
 }
 
-/**
- * Fetches the transactions which are in the transactions pool
- */
+// CoordinatorAPI
+
 export function fetchPoolTransactions(
   wallet: HermezWallet.HermezWallet,
   address?: string
@@ -319,7 +318,7 @@ export function getTokens(
   return CoordinatorAPI.getTokens(tokenIds, tokenSymbols, fromItem, order, limit, axiosConfig);
 }
 
-// Deposit
+// Tx
 
 export function deposit(
   amount: HermezCompressedAmount,
@@ -341,6 +340,16 @@ export function deposit(
     gasLimit,
     gasMultiplier
   );
+}
+
+export function generateAndSendL2Tx(
+  tx: Tx.Tx,
+  wallet: HermezWallet.HermezWallet,
+  token: Token,
+  nextForgers: string[],
+  addToTxPool?: boolean
+): Promise<Tx.SendL2TransactionResponse> {
+  return Tx.generateAndSendL2Tx(tx, wallet, token, nextForgers, addToTxPool);
 }
 
 // Error decoding and message extraction
