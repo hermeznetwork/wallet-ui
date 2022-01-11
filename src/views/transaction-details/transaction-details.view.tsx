@@ -31,12 +31,12 @@ import {
   CoordinatorState,
   FiatExchangeRates,
   HistoryTransaction,
+  isHistoryTransaction,
+  isPendingDeposit,
+  isPoolTransaction,
   PendingDeposit,
   PoolTransaction,
-  isHistoryTransaction,
-  isPoolTransaction,
-  isPendingDeposit,
-} from "src/domain/hermez";
+} from "src/domain";
 import { Theme } from "src/styles/theme";
 
 interface TransactionDetailsStateProps {
@@ -203,9 +203,9 @@ function TransactionDetails({
                   type === TxType.ForceExit;
                 const pendingTime = isAsyncTaskDataAvailable(coordinatorStateTask)
                   ? getTxPendingTime(
-                      coordinatorStateTask.data,
                       isL1,
-                      transactionTask.data.timestamp
+                      transactionTask.data.timestamp,
+                      coordinatorStateTask.data
                     )
                   : undefined;
                 const poolTransactionForgingPendingTime =

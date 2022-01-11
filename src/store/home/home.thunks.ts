@@ -9,19 +9,13 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as homeActions from "src/store/home/home.actions";
 // domain
-import {
-  PoolTransaction,
-  PendingDeposit,
-  FiatExchangeRates,
-  HermezAccount,
-} from "src/domain/hermez";
+import { FiatExchangeRates, HermezAccount, PendingDeposit, PoolTransaction } from "src/domain";
 import { Accounts } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 
 /**
  * Fetches the accounts for a Hermez Ethereum address and calculates the total balance.
- * @returns {void}
  */
 function fetchTotalBalance(
   hermezEthereumAddress: string,
@@ -88,8 +82,6 @@ function fetchTotalBalance(
 
 /**
  * Fetches the accounts for a Hermez address
- * @param {Number} fromItem - id of the first account to be returned from the API
- * @returns {void}
  */
 function fetchAccounts(
   hermezAddress: string,
@@ -146,7 +138,6 @@ function fetchAccounts(
 /**
  * Refreshes the accounts information for the accounts that have already been
  * loaded
- * @param {string} accountIndex - Account index
  */
 function refreshAccounts(
   hermezAddress: string,
@@ -218,7 +209,6 @@ function refreshAccounts(
 
 /**
  * Fetches the transactions which are in the transactions pool
- * @returns {void}
  */
 function fetchPoolTransactions(): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -238,7 +228,6 @@ function fetchPoolTransactions(): AppThunk {
 
 /**
  * Fetches the exit data for transactions of type Exit
- * @returns {void}
  */
 function fetchExits(): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {

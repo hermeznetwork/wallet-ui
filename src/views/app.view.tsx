@@ -18,12 +18,12 @@ import { AsyncTask } from "src/utils/types";
 import { Theme } from "src/styles/theme";
 //domain
 import {
+  EthereumNetwork,
   FiatExchangeRates,
-  HermezWallet,
   HermezNetworkStatus,
   HermezStatus,
-} from "src/domain/hermez";
-import { EthereumNetwork } from "src/domain/ethereum";
+  HermezWallet,
+} from "src/domain";
 
 interface AppStateProps {
   wallet: HermezWallet.HermezWallet | undefined;

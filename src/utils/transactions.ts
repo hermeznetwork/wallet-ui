@@ -8,12 +8,12 @@ import {
   CoordinatorState,
   Exit,
   HistoryTransaction,
-  PoolTransaction,
-  PendingDeposit,
+  isHistoryTransaction,
   ISOStringDate,
   PendingDelayedWithdraw,
-  isHistoryTransaction,
-} from "src/domain/hermez";
+  PendingDeposit,
+  PoolTransaction,
+} from "src/domain";
 
 /**
  * Returns the correct amount for a transaction from the Hermez API depending on its type
@@ -34,10 +34,9 @@ function getTransactionAmount(
  * If it's an L1 transaction, it adds the forgeDelay again
  */
 function getTxPendingTime(
-  // ToDo: This undefined and the check below can be removed once the views are migrated to TS
-  coordinatorState: CoordinatorState | undefined,
   isL1: boolean,
-  timestamp: ISOStringDate
+  timestamp: ISOStringDate,
+  coordinatorState?: CoordinatorState
 ): number {
   if (!coordinatorState) {
     return 0;

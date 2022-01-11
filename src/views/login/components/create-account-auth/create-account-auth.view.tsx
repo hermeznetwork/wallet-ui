@@ -3,7 +3,7 @@ import React from "react";
 import useCreateAccountAuthStyles from "src/views/login/components/create-account-auth/create-account-auth.styles";
 import Spinner from "src/views/shared/spinner/spinner.view";
 // domain
-import { HermezWallet } from "src/domain/hermez";
+import { HermezWallet } from "src/domain";
 
 interface CreateAccountAuthProps {
   hermezAddressAuthSignature?: string;

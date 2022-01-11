@@ -14,15 +14,12 @@ import theme from "src/styles/theme";
 import { feeBigIntToNumber, getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
-import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
-import { TransactionReceiver } from "src/domain";
+import { HermezAccount, FiatExchangeRates, PoolTransaction, TransactionReceiver } from "src/domain";
 // persistence
 import * as persistence from "src/persistence";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
- * @param {string} accountIndex - accountIndex of the account
- * @returns {void}
  */
 function fetchHermezAccount(
   accountIndex: string,
@@ -55,7 +52,6 @@ function fetchHermezAccount(
 
 /**
  * Fetches the transactions which are in the transactions pool
- * @returns {void}
  */
 function fetchPoolTransactions(): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -113,7 +109,6 @@ function fetchAccounts(
 
 /**
  * Fetches the recommended fees from the Coordinator
- * @returns {void}
  */
 function fetchFees(): AppThunk {
   return function (dispatch: AppDispatch, getState: () => AppState) {

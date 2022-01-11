@@ -18,7 +18,7 @@ import {
   isPoolTransaction,
   PendingDeposit,
   PoolTransaction,
-} from "src/domain/hermez";
+} from "src/domain";
 
 interface TransactionListProps {
   accountIndex: string;

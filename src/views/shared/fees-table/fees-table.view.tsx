@@ -6,8 +6,7 @@ import TransactionInfoTableRow from "src/views/shared/transaction-info-table-row
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 // domain
-import { FiatExchangeRates, Token } from "src/domain/hermez";
-import { EstimatedL1Fee } from "src/domain";
+import { FiatExchangeRates, Token, EstimatedL1Fee } from "src/domain";
 
 interface FeesTableProps {
   l2Fee: BigNumber;

@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import clsx from "clsx";
 
 import { AppAction } from "src/store";
@@ -62,14 +61,5 @@ function PageHeader({
     </header>
   );
 }
-
-PageHeader.propTypes = {
-  title: PropTypes.string,
-  subtitle: PropTypes.string,
-  goBackAction: PropTypes.object,
-  closeAction: PropTypes.object,
-  onGoBack: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
-};
 
 export default PageHeader;

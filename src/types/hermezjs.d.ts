@@ -21,7 +21,6 @@ declare module "@hermeznetwork/*" {
 
   export type HermezNetworkStatus = "online" | "offline";
 
-  // ToDo: Consider explicitly setting the supported FIAT
   export type FiatExchangeRates = Record<string, number>;
 
   export interface HermezApiResourceItem {
@@ -616,14 +615,19 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     axiosConfig?: Record<string, unknown>
   ): Promise<AccountAuthorization>;
 
-  // ToDo: The app does not uses the response but it would be nice to type it at some point
+  type PostCreateAccountAuthorizationResponse =
+    | {
+        success: "OK";
+      }
+    | { message: string; code: number; type: string };
+
   function postCreateAccountAuthorization(
     hezEthereumAddress: string,
     bJJ: string,
     signature: string,
     nextForgerUrls?: string[],
     axiosConfig?: Record<string, unknown>
-  ): Promise<unknown>;
+  ): Promise<PostCreateAccountAuthorizationResponse>;
   // function getCreateAccountAuthorization();
   // function getConfig();
 
@@ -731,12 +735,9 @@ declare module "@hermeznetwork/hermezjs/src/providers" {
 declare module "@hermeznetwork/hermezjs/src/signers" {
   import { Web3Provider } from "@ethersproject/providers";
   import { Signer } from "@ethersproject/abstract-signer";
-  import { Manifest } from "trezor-connect";
 
   export enum SignerType {
     JSON_RPC = "JSON-RPC",
-    LEDGER = "LEDGER",
-    TREZOR = "TREZOR",
     WALLET = "WALLET",
   }
 
@@ -745,28 +746,12 @@ declare module "@hermeznetwork/hermezjs/src/signers" {
     addressOrIndex?: null | string | number;
   }
 
-  export interface LedgerSignerData {
-    type: "LEDGER";
-    path?: string;
-  }
-
-  export interface TrezorSignerData {
-    type: "TREZOR";
-    path?: string;
-    manifest: Manifest;
-    address?: string;
-  }
-
   export interface WalletSignerData {
     type: "WALLET";
     privateKey: string;
   }
 
-  export type SignerData =
-    | JsonRpcSignerData
-    | LedgerSignerData
-    | TrezorSignerData
-    | WalletSignerData;
+  export type SignerData = JsonRpcSignerData | WalletSignerData;
 
   function getSigner(provider: Web3Provider, signerData: SignerData): Promise<Signer>;
 }

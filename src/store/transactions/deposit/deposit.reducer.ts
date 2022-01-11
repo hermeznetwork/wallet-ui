@@ -6,8 +6,7 @@ import {
 } from "src/store/transactions/deposit/deposit.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { EthereumAccount } from "src/domain/hermez";
-import { EstimatedL1Fee } from "src/domain";
+import { EthereumAccount, EstimatedL1Fee } from "src/domain";
 
 export interface DepositState {
   step: Step;

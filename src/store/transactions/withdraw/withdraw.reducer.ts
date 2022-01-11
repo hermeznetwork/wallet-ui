@@ -5,8 +5,7 @@ import {
 } from "src/store/transactions/withdraw/withdraw.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PoolTransaction, Exit, HermezAccount } from "src/domain/hermez";
-import { EstimatedL1Fee } from "src/domain";
+import { PoolTransaction, Exit, HermezAccount, EstimatedL1Fee } from "src/domain";
 
 export interface WithdrawState {
   step: Step;

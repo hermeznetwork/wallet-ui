@@ -2,7 +2,7 @@ import axios from "axios";
 import { z } from "zod";
 
 // domain
-import { FiatExchangeRates, Token } from "src/domain/hermez";
+import { FiatExchangeRates, Token } from "src/domain";
 // persistence
 import * as parsers from "src/persistence/parsers";
 // utils
@@ -55,8 +55,7 @@ const parsedReactAppPriceUpdaterApiKey = z
   .safeParse(process.env.REACT_APP_PRICE_UPDATER_API_KEY);
 
 /**
- * Returns a list of tokens with usd price.>
- * @returns {Promise<Token[]>} - List of tokens
+ * Returns a list of tokens with usd price.
  */
 function getTokensPrice(): Promise<Token[]> {
   if (parsedReactAppPriceUpdaterApiUrl.success === false) {
@@ -81,10 +80,7 @@ function getTokensPrice(): Promise<Token[]> {
 
 /**
  * Fetches the USD exchange rates for the requested currency symbols
- * @param {string[]} symbols - ISO 4217 currency codes
- * @returns {Promise<FiatExchangeRates>} - USD exchange rates for the requested symbols
  */
-// eslint-disable-next-line no-unused-vars
 function getFiatExchangeRates(symbols: string[]): Promise<FiatExchangeRates> {
   if (parsedReactAppPriceUpdaterApiUrl.success === false) {
     return Promise.reject(parsedReactAppPriceUpdaterApiUrl.error.message);

@@ -15,17 +15,17 @@ import Spinner from "src/views/shared/spinner/spinner.view";
 import { AsyncTask } from "src/utils/types";
 import * as storage from "src/utils/storage";
 // domain
-import { EstimatedL1Fee } from "src/domain/";
 import {
+  EstimatedL1Fee,
+  EthereumNetwork,
+  Exit,
+  FiatExchangeRates,
   HermezAccount,
   HermezWallet,
-  FiatExchangeRates,
-  PoolTransaction,
-  Exit,
   PendingDelayedWithdraw,
-} from "src/domain/hermez";
-import { PendingDelayedWithdraws } from "src/domain/local-storage";
-import { EthereumNetwork } from "src/domain/ethereum";
+  PendingDelayedWithdraws,
+  PoolTransaction,
+} from "src/domain";
 
 interface WithdrawStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;

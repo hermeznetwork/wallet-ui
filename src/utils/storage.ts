@@ -6,23 +6,21 @@ import {
 } from "src/constants";
 // domain
 import {
-  PendingWithdraw,
-  PendingDelayedWithdraw,
-  PendingDeposit,
-  TimerWithdraw,
-} from "src/domain/hermez";
-import {
   ChainId,
-  HermezEthereumAddress,
-  PendingWithdraws,
-  ChainPendingWithdraws,
-  PendingDelayedWithdraws,
   ChainPendingDelayedWithdraws,
-  PendingDeposits,
   ChainPendingDeposits,
-  TimerWithdraws,
+  ChainPendingWithdraws,
   ChainTimerWithdraws,
-} from "src/domain/local-storage";
+  HermezEthereumAddress,
+  PendingDelayedWithdraw,
+  PendingDelayedWithdraws,
+  PendingDeposit,
+  PendingDeposits,
+  PendingWithdraw,
+  PendingWithdraws,
+  TimerWithdraw,
+  TimerWithdraws,
+} from "src/domain";
 // persistence
 import {
   getPendingWithdraws,

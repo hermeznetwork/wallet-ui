@@ -4,7 +4,7 @@ import useAccountCardStyles from "src/views/shared/account-card/account-card.sty
 import { getFixedTokenAmount } from "src/utils/currencies";
 import { getTxPendingTime, formatMinutes } from "src/utils/transactions";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
-import { CoordinatorState, ISOStringDate, Token } from "src/domain/hermez";
+import { CoordinatorState, ISOStringDate, Token } from "src/domain";
 
 interface AccountCardProps {
   balance: string;
@@ -35,7 +35,7 @@ function AccountCard({
   });
 
   const pendingTime =
-    timestamp !== undefined ? getTxPendingTime(coordinatorState, true, timestamp) : 0;
+    timestamp !== undefined ? getTxPendingTime(true, timestamp, coordinatorState) : 0;
 
   return (
     <div className={`${classes.root} ${classes.account}`} onClick={onClick}>

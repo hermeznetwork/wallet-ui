@@ -10,14 +10,14 @@ import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 // domain
 import {
-  Token,
+  CoordinatorState,
+  ISOStringDate,
   MerkleProof,
   PendingDelayedWithdraw,
   PendingWithdraw,
   TimerWithdraw,
-  CoordinatorState,
-  ISOStringDate,
-} from "src/domain/hermez";
+  Token,
+} from "src/domain";
 
 type Step = 1 | 2 | 3;
 
@@ -259,7 +259,7 @@ function ExitCard({
     );
   }
 
-  const pendingTime = getTxPendingTime(coordinatorState, false, new Date().toISOString());
+  const pendingTime = getTxPendingTime(false, new Date().toISOString(), coordinatorState);
 
   return (
     <div className={classes.root}>

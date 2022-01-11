@@ -30,18 +30,21 @@ import { Theme } from "src/styles/theme";
 //domain
 import {
   CoordinatorState,
+  EthereumNetwork,
   FiatExchangeRates,
   HermezAccount,
   HermezWallet,
   HistoryTransaction,
   isPendingDeposit,
+  PendingDelayedWithdraws,
   PendingDeposit,
+  PendingDeposits,
+  PendingWithdraws,
   PoolTransaction,
   TimerWithdraw,
+  TimerWithdraws,
   Token,
-} from "src/domain/hermez";
-import { EthereumNetwork } from "src/domain/ethereum";
-import * as localStorageDomain from "src/domain/local-storage";
+} from "src/domain";
 import { Pagination } from "src/utils/api";
 // persistence
 import { Exits } from "src/persistence";
@@ -65,10 +68,10 @@ type AccountDetailsStateProps = {
   exitsTask: AsyncTask<Exits, Error>;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   wallet: HermezWallet.HermezWallet | undefined;
-  pendingWithdraws: localStorageDomain.PendingWithdraws;
-  pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
-  pendingDeposits: localStorageDomain.PendingDeposits;
-  timerWithdraws: localStorageDomain.TimerWithdraws;
+  pendingWithdraws: PendingWithdraws;
+  pendingDelayedWithdraws: PendingDelayedWithdraws;
+  pendingDeposits: PendingDeposits;
+  timerWithdraws: TimerWithdraws;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
 };
 

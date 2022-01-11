@@ -1,5 +1,5 @@
 // domain
-import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain/hermez";
+import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain";
 
 export enum TransactionDetailsActionTypes {
   LOAD_TRANSACTION = "[TRANSACTION DETAILS] LOAD TRANSACTION",

@@ -4,7 +4,7 @@ import clsx from "clsx";
 import useAccountListStyles from "src/views/shared/account-list/account-list.styles";
 import AccountCard from "src/views/shared/account-card/account-card.view";
 // domain
-import { Account, PendingDeposit, CoordinatorState, isHermezAccount } from "src/domain/hermez";
+import { Account, PendingDeposit, CoordinatorState, isHermezAccount } from "src/domain";
 
 interface AccountListProps {
   accounts: Account[];

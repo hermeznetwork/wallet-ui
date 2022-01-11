@@ -5,13 +5,13 @@ import { getFeeIndex, getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
 import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
+
+import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
+import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 // constants
 import { MAX_FEE_USD, MAX_TOKEN_DECIMALS } from "src/constants";
-import { EstimatedL1Fee } from "src/domain";
 // domain
-import { FiatExchangeRates, RecommendedFee, Token } from "src/domain/hermez";
-import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
-import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "./currencies";
+import { FiatExchangeRates, RecommendedFee, Token, EstimatedL1Fee } from "src/domain";
 
 interface GetMinimumTransferFee {
   txType: TxType.Transfer;

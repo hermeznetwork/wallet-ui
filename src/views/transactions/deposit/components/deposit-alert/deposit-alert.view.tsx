@@ -1,8 +1,7 @@
 import React from "react";
 
 // domain
-import { FiatExchangeRates } from "src/domain/hermez";
-import { EstimatedL1Fee } from "src/domain";
+import { FiatExchangeRates, EstimatedL1Fee } from "src/domain";
 // utils
 import { getFixedTokenAmount, getTokenAmountInPreferredCurrency } from "src/utils/currencies";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";

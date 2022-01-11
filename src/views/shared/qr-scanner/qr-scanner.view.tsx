@@ -27,7 +27,6 @@ function QRScanner({ hideMyCode, onSuccess, onClose }: QRScannerProps): JSX.Elem
   /**
    * Handles the onLoad event from the QrReader component. It sets the isQRScannerLoaded
    * to true when the QR Scanner has been loaded in the DOM
-   * @returns {void}
    */
   function handleQRScanLoad() {
     setIsQRScannerLoaded(true);
@@ -36,7 +35,6 @@ function QRScanner({ hideMyCode, onSuccess, onClose }: QRScannerProps): JSX.Elem
   /**
    * Handles the onScan event from the QrReader component. If the result is a valid
    * hermez address it bubbles up the read value to the parent component
-   * @returns {void}
    */
   function handleQRScan(result: string | null) {
     if (
@@ -49,7 +47,6 @@ function QRScanner({ hideMyCode, onSuccess, onClose }: QRScannerProps): JSX.Elem
 
   /**
    * Handles the onError event from the QrReader component. Logs the error to the console
-   * @returns {void}
    */
   function handleQRScanError(error: unknown) {
     console.error(error);

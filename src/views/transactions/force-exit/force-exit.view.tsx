@@ -16,7 +16,7 @@ import AccountSelector from "src/views/transactions/components/account-selector/
 import ForceExitForm from "src/views/transactions/force-exit/components/force-exit-form/force-exit-form.view";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { HermezAccount, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
+import { HermezAccount, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain";
 
 interface ForceExitStateProps {
   step: forceExitActions.Step;

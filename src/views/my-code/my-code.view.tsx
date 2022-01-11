@@ -16,7 +16,7 @@ import Button from "src/views/shared/button/button.view";
 import { Theme } from "src/styles/theme";
 import { AppDispatch, AppState } from "src/store";
 //domain
-import { HermezWallet } from "src/domain/hermez";
+import { HermezWallet } from "src/domain";
 
 interface MyCodeStateProps {
   wallet: HermezWallet.HermezWallet | undefined;

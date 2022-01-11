@@ -24,7 +24,7 @@ import { version as packagejsonVersion } from "src/../package.json";
 import { AppDispatch, AppState } from "src/store";
 import { Theme } from "src/styles/theme";
 //domain
-import { HermezWallet } from "src/domain/hermez";
+import { HermezWallet } from "src/domain";
 
 interface MyAccountStateProps {
   wallet: HermezWallet.HermezWallet | undefined;

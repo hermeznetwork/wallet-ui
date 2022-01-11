@@ -36,6 +36,21 @@ Create the required `.env` file from the example provided in the repo:
 cp .env.example .env
 ```
 
+## Contract interaction from Typescript
+
+The installation process of this application takes care of creating the static typing files and factory required for Typescript to interact with the ERC-20 ABI.
+The types are created using [TypeChain](https://github.com/dethcrypto/TypeChain) in the `postinstallation` step, from the JSON ABI file, and the output
+files are stored in the path `src/types/contracts`.
+
+> :warning: The typing files and factory required to interact with the Hermez contracts ABIs may be created by uncommenting the related section in the script `src/generate-contract-types.sh` and running `npm run generate-contract-types` or `npm i`.
+
+Once the typing files are built, you can instantiate a typed contract using its factory as follows:
+
+```typescript
+import { Erc20__factory } from "src/types/contracts/erc-20/factories/Erc20__factory";
+const contract = Erc20__factory.connect(ethereumAddress, provider);
+```
+
 ## License
 
 `wallet-ui` is part of the Hermez project copyright 2021 HermezDAO and published with AGPL-3 license. Please check the LICENSE file for more details.

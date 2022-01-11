@@ -8,8 +8,7 @@ import {
 } from "src/store/transactions/exit/exit.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PoolTransaction, HermezAccount, RecommendedFee } from "src/domain/hermez";
-import { EstimatedL1Fee } from "src/domain";
+import { PoolTransaction, HermezAccount, RecommendedFee, EstimatedL1Fee } from "src/domain";
 
 export interface ExitState {
   step: Step;

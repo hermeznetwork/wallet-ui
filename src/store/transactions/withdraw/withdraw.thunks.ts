@@ -13,12 +13,12 @@ import { WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
 import { createAccount } from "src/utils/accounts";
 // domain
 import {
-  HermezAccount,
   Exit,
   FiatExchangeRates,
+  HermezAccount,
   PendingDelayedWithdraw,
   PoolTransaction,
-} from "src/domain/hermez";
+} from "src/domain";
 // persistence
 import * as persistence from "src/persistence";
 

@@ -1,8 +1,7 @@
 import { AsyncTask } from "src/utils/types";
 import { LoginActionTypes, LoginAction, WalletName } from "src/store/login/login.actions";
 // domain
-import { HermezWallet } from "src/domain/hermez";
-import { AuthSignatures } from "src/domain/local-storage";
+import { HermezWallet, AuthSignatures } from "src/domain";
 // persistence
 import { getAuthSignatures } from "src/persistence/local-storage";
 
@@ -10,13 +9,6 @@ export interface LoginState {
   step: Step;
   addAccountAuthTask: AsyncTask<null, string>;
   accountAuthSignatures: AuthSignatures;
-}
-
-// ToDo: This should be removed when we migrate login.view.jsx module to TS
-export enum STEP_NAME {
-  WALLET_SELECTOR = "wallet-selector",
-  WALLET_LOADER = "wallet-loader",
-  CREATE_ACCOUNT_AUTH = "create-account-auth",
 }
 
 export type Step =

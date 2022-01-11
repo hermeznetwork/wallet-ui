@@ -2,7 +2,7 @@ import { HomeActionTypes, HomeAction } from "src/store/home/home.actions";
 import { getPaginationData } from "src/utils/api";
 import { Pagination } from "src/utils/api";
 // domain
-import { HermezAccount, PoolTransaction } from "src/domain/hermez";
+import { HermezAccount, PoolTransaction } from "src/domain";
 // persistence
 import { Exits } from "src/persistence";
 import { AsyncTask } from "src/utils/types";

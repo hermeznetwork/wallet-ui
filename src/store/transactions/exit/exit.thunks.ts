@@ -15,15 +15,13 @@ import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import { createAccount } from "src/utils/accounts";
 import { feeBigIntToNumber } from "src/utils/fees";
 // domain
-import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain/hermez";
+import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain";
 import { ETHER_TOKEN_ID } from "src/constants";
 // persistence
 import * as persistence from "src/persistence";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
- * @param {string} accountIndex - accountIndex of the account
- * @returns {void}
  */
 function fetchHermezAccount(
   accountIndex: string,
@@ -56,7 +54,6 @@ function fetchHermezAccount(
 
 /**
  * Fetches the transactions which are in the transactions pool
- * @returns {void}
  */
 function fetchPoolTransactions(): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -76,7 +73,6 @@ function fetchPoolTransactions(): AppThunk {
 
 /**
  * Fetches the recommended fees from the Coordinator
- * @returns {void}
  */
 function fetchFees(): AppThunk {
   return function (dispatch: AppDispatch, getState: () => AppState) {

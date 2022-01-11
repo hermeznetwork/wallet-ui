@@ -7,7 +7,7 @@ import TransactionLabel from "src/views/account-details/components/transaction-l
 import TransactionAmount from "src/views/account-details/components/transaction-amount/transaction-amount.view";
 import { getTxPendingTime, formatMinutes } from "src/utils/transactions";
 //domain
-import { CoordinatorState, ISOStringDate } from "src/domain/hermez";
+import { CoordinatorState, ISOStringDate } from "src/domain";
 
 interface TransactionCardProps {
   accountIndex: string;
@@ -42,7 +42,7 @@ function TransactionCard({
 
   const isL1 =
     type === TxType.Deposit || type === TxType.CreateAccountDeposit || type === TxType.ForceExit;
-  const pendingTime = getTxPendingTime(coordinatorState, isL1, timestamp);
+  const pendingTime = getTxPendingTime(isL1, timestamp, coordinatorState);
 
   return (
     <div className={classes.root} onClick={onClick}>

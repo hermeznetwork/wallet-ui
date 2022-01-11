@@ -2,19 +2,22 @@ import { AppAction } from "src/store";
 import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { EthereumNetwork } from "src/domain/ethereum";
 import {
-  HermezStatus,
-  HermezNetworkStatus,
-  PendingWithdraw,
-  TimerWithdraw,
-  HermezWallet,
-  Signers,
-  FiatExchangeRates,
   CoordinatorState,
+  EthereumNetwork,
+  FiatExchangeRates,
+  HermezNetworkStatus,
+  HermezStatus,
+  HermezWallet,
+  PendingDelayedWithdraws,
+  PendingDeposits,
+  PendingWithdraw,
+  PendingWithdraws,
+  Signers,
+  TimerWithdraw,
+  TimerWithdraws,
   Token,
-} from "src/domain/hermez";
-import * as localStorageDomain from "src/domain/local-storage";
+} from "src/domain";
 // persistence
 import * as localStoragePersistence from "src/persistence/local-storage";
 
@@ -57,12 +60,12 @@ export interface GlobalState {
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   snackbar: SnackbarState;
   networkStatus: HermezNetworkStatus;
-  pendingWithdraws: localStorageDomain.PendingWithdraws;
-  pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
-  timerWithdraws: localStorageDomain.TimerWithdraws;
+  pendingWithdraws: PendingWithdraws;
+  pendingDelayedWithdraws: PendingDelayedWithdraws;
+  timerWithdraws: TimerWithdraws;
   pendingDelayedWithdrawCheckTask: AsyncTask<null, string>;
   pendingWithdrawalsCheckTask: AsyncTask<null, string>;
-  pendingDeposits: localStorageDomain.PendingDeposits;
+  pendingDeposits: PendingDeposits;
   pendingDepositsCheckTask: AsyncTask<null, string>;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
   tokensPriceTask: AsyncTask<Token[], string>;

@@ -14,13 +14,13 @@ import {
 import { copyToClipboard } from "src/utils/browser";
 // domain
 import {
-  PendingDeposit,
-  HistoryTransaction,
-  PoolTransaction,
   FiatExchangeRates,
-  isPoolTransaction,
+  HistoryTransaction,
   isHistoryTransaction,
-} from "src/domain/hermez";
+  isPoolTransaction,
+  PendingDeposit,
+  PoolTransaction,
+} from "src/domain";
 
 const TxStatus = {
   Confirmed: "Confirmed",

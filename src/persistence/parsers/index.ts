@@ -3,19 +3,19 @@ import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 // domain
 import {
+  Exit,
+  HermezAccount,
   HermezApiResourceItem,
   HistoryTransaction,
+  L1Info,
+  L2Info,
   MerkleProof,
   PendingDelayedWithdraw,
   PendingDeposit,
   PendingWithdraw,
   TimerWithdraw,
   Token,
-  L1Info,
-  L2Info,
-  Exit,
-  HermezAccount,
-} from "src/domain/hermez";
+} from "src/domain";
 // utils
 import { StrictSchema } from "src/utils/type-safety";
 

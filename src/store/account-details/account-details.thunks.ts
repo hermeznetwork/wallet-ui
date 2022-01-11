@@ -11,13 +11,13 @@ import * as accountDetailsActions from "src/store/account-details/account-detail
 import * as globalThunks from "src/store/global/global.thunks";
 // domain
 import {
-  HermezAccount,
-  Token,
-  HistoryTransaction,
-  PoolTransaction,
   Exit,
   FiatExchangeRates,
-} from "src/domain/hermez";
+  HermezAccount,
+  HistoryTransaction,
+  PoolTransaction,
+  Token,
+} from "src/domain";
 // persistence
 import { HistoryTransactions, Exits } from "src/persistence";
 
@@ -25,8 +25,6 @@ let refreshCancelTokenSource = axios.CancelToken.source();
 
 /**
  * Fetches the account details for the specified account index
- * @param {string} accountIndex - Account index
- * @returns {void}
  */
 function fetchAccount(
   accountIndex: HermezAccount["accountIndex"],
@@ -62,8 +60,6 @@ function fetchAccount(
 
 /**
  * Checks whether the Ethereum account has >0 balance for the token
- * @param {Object} token - Hermez token object for the loaded account
- * @returns {void}
  */
 function fetchL1TokenBalance(token: Token): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -92,8 +88,6 @@ function fetchL1TokenBalance(token: Token): AppThunk {
 
 /**
  * Fetches the transaction details for each transaction in the pool for the specified account index
- * @param {string} accountIndex - Account index
- * @returns {void}
  */
 function fetchPoolTransactions(accountIndex: HermezAccount["accountIndex"]): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -136,10 +130,7 @@ function filterExitsFromHistoryTransactions(
 
 /**
  * Fetches the transactions details for the specified account index
- * @param {string} accountIndex - Account index
- * @returns {void}
  */
-// ToDo: Define fromItem type
 function fetchHistoryTransactions(
   accountIndex: HermezAccount["accountIndex"],
   exits: Exits,
@@ -190,7 +181,6 @@ function fetchHistoryTransactions(
 /**
  * Refreshes the transactions information for the transactions that have already been
  * loaded
- * @param {string} accountIndex - Account index
  */
 function refreshHistoryTransactions(
   accountIndex: HermezAccount["accountIndex"],
@@ -261,8 +251,6 @@ function refreshHistoryTransactions(
 
 /**
  * Fetches the exit data for transactions of type Exit that are still pending a withdraw
- * @param {Number} tokenId - The token ID for the current account
- * @returns {void}
  */
 function fetchExits(tokenId: Token["id"]): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {

@@ -6,7 +6,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 // constants
 import { MAX_TOKEN_DECIMALS } from "src/constants";
 // domain
-import { Account, FiatExchangeRates } from "src/domain/hermez";
+import { Account, FiatExchangeRates } from "src/domain";
 // utils
 import {
   formatFiatAmount,

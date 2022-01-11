@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import clsx from "clsx";
 
 import useButtonStyles from "./button.styles";
@@ -29,11 +28,5 @@ function Button({ Icon, text, className, disabled, onClick }: ButtonProps): JSX.
     </button>
   );
 }
-
-Button.propTypes = {
-  Icon: PropTypes.element,
-  text: PropTypes.string,
-  onClick: PropTypes.func,
-};
 
 export default Button;

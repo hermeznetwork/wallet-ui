@@ -5,12 +5,12 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { AsyncTask } from "src/utils/types";
 // domain
 import {
-  HermezAccount,
-  PoolTransaction,
-  PendingDeposit,
-  Token,
   FiatExchangeRates,
-} from "src/domain/hermez";
+  HermezAccount,
+  PendingDeposit,
+  PoolTransaction,
+  Token,
+} from "src/domain";
 
 function getAccountBalance(
   account: HermezAccount,
@@ -59,7 +59,7 @@ function updateAccountToken(
   }
 }
 
-// TODO Study if this belongs to the domain model, as it's the function who creates a domain entity Account and move it there
+// ToDo: This helper should be moved to persistence when we move to persistence and abstract the calls to CoordinatorAPI.getAccounts
 function createAccount(
   account: HermezAccount,
   poolTransactions: PoolTransaction[] | undefined,

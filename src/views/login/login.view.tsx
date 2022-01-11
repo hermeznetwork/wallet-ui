@@ -13,9 +13,7 @@ import WalletLoader from "src/views/login/components/wallet-loader/wallet-loader
 import CreateAccountAuth from "src/views/login/components/create-account-auth/create-account-auth.view";
 import useLoginStyles from "src/views/login/login.styles";
 // domain
-import { HermezWallet } from "src/domain/hermez";
-import { EthereumNetwork } from "src/domain/ethereum";
-import { AuthSignatures } from "src/domain/local-storage";
+import { EthereumNetwork, HermezWallet, AuthSignatures } from "src/domain";
 
 interface LoginStateProps {
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;

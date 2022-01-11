@@ -19,10 +19,14 @@ import * as storage from "src/utils/storage";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { AppDispatch, AppState } from "src/store";
 // domain
-import { EstimatedL1Fee } from "src/domain/";
-import { HermezWallet, FiatExchangeRates, EthereumAccount } from "src/domain/hermez";
-import { PendingDeposits } from "src/domain/local-storage";
-import { EthereumNetwork } from "src/domain/ethereum";
+import {
+  EstimatedL1Fee,
+  EthereumAccount,
+  EthereumNetwork,
+  FiatExchangeRates,
+  HermezWallet,
+  PendingDeposits,
+} from "src/domain";
 
 interface DepositStateProps {
   ethereumAccountsTask: AsyncTask<EthereumAccount[], Error>;
