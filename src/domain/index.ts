@@ -26,7 +26,7 @@ export type {
   Token,
 } from "@hermeznetwork/hermezjs";
 
-export type HermezNetworkStatus = "online" | "offline";
+export type NetworkStatus = "online" | "offline";
 
 export interface HermezStatus {
   isUnderMaintenance: boolean;

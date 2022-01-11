@@ -6,7 +6,7 @@ import {
   CoordinatorState,
   EthereumNetwork,
   FiatExchangeRates,
-  HermezNetworkStatus,
+  NetworkStatus,
   HermezStatus,
   HermezWallet,
   PendingDelayedWithdraws,
@@ -59,7 +59,7 @@ export interface GlobalState {
   redirectRoute: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   snackbar: SnackbarState;
-  networkStatus: HermezNetworkStatus;
+  networkStatus: NetworkStatus;
   pendingWithdraws: PendingWithdraws;
   pendingDelayedWithdraws: PendingDelayedWithdraws;
   timerWithdraws: TimerWithdraws;
