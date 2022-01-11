@@ -24,6 +24,7 @@ import { getNextForgerUrls } from "src/utils/coordinator";
 import {
   CoordinatorState,
   Exit,
+  Exits,
   FiatExchangeRates,
   NetworkStatus,
   HistoryTransaction,
@@ -36,7 +37,6 @@ import {
   Token,
 } from "src/domain";
 // persistence
-import { Exits } from "src/persistence";
 import * as localStoragePersistence from "src/persistence/local-storage";
 import * as persistence from "src/persistence";
 

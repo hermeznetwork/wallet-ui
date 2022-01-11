@@ -30,6 +30,7 @@ import { Theme } from "src/styles/theme";
 import {
   CoordinatorState,
   EthereumNetwork,
+  Exits,
   FiatExchangeRates,
   HermezAccount,
   HermezWallet,
@@ -46,7 +47,7 @@ import {
 } from "src/domain";
 import { Pagination } from "src/utils/api";
 // persistence
-import { Exits, getAccountBalance } from "src/persistence";
+import { getAccountBalance } from "src/persistence";
 
 interface UrlParams {
   accountIndex: string;

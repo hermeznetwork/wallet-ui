@@ -1,7 +1,5 @@
 // domain
-import { PoolTransaction } from "src/domain";
-// persistence
-import { Accounts, Exits } from "src/persistence";
+import { Accounts, Exits, PoolTransaction } from "src/domain";
 
 export enum HomeActionTypes {
   LOAD_TOTAL_BALANCE = "[HOME] LOAD TOTAL BALANCE",

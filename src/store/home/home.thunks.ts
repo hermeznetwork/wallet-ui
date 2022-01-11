@@ -8,8 +8,13 @@ import * as homeActions from "src/store/home/home.actions";
 // persistence
 import * as persistence from "src/persistence";
 // domain
-import { FiatExchangeRates, HermezAccount, PendingDeposit, PoolTransaction } from "src/domain";
-import { Accounts } from "src/persistence";
+import {
+  Accounts,
+  FiatExchangeRates,
+  HermezAccount,
+  PendingDeposit,
+  PoolTransaction,
+} from "src/domain";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 

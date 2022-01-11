@@ -9,9 +9,11 @@ import * as globalThunks from "src/store/global/global.thunks";
 // domain
 import {
   Exit,
+  Exits,
   FiatExchangeRates,
   HermezAccount,
   HistoryTransaction,
+  HistoryTransactions,
   PoolTransaction,
   Token,
 } from "src/domain";
@@ -123,7 +125,7 @@ function filterExitsFromHistoryTransactions(
  */
 function fetchHistoryTransactions(
   accountIndex: HermezAccount["accountIndex"],
-  exits: persistence.Exits,
+  exits: Exits,
   fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -147,7 +149,7 @@ function fetchHistoryTransactions(
 
     return persistence
       .getHistoryTransactions(undefined, undefined, undefined, accountIndex, fromItem, "DESC")
-      .then((historyTransactions: persistence.HistoryTransactions) => {
+      .then((historyTransactions: HistoryTransactions) => {
         const filteredTransactions = filterExitsFromHistoryTransactions(
           historyTransactions.transactions,
           exits.exits
@@ -155,7 +157,7 @@ function fetchHistoryTransactions(
 
         return { ...historyTransactions, transactions: filteredTransactions };
       })
-      .then((historyTransactions: persistence.HistoryTransactions) =>
+      .then((historyTransactions: HistoryTransactions) =>
         dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
       )
       .catch((err: Error) => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)));
@@ -168,7 +170,7 @@ function fetchHistoryTransactions(
  */
 function refreshHistoryTransactions(
   accountIndex: HermezAccount["accountIndex"],
-  exits: persistence.Exits
+  exits: Exits
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -211,7 +213,7 @@ function refreshHistoryTransactions(
       Promise.all(requests)
         .then((results) => {
           const transactions = results.reduce(
-            (acc: HistoryTransaction[], result: persistence.HistoryTransactions) => [
+            (acc: HistoryTransaction[], result: HistoryTransactions) => [
               ...acc,
               ...result.transactions,
             ],
@@ -225,7 +227,7 @@ function refreshHistoryTransactions(
 
           return { transactions: filteredTransactions, pendingItems };
         })
-        .then((historyTransactions: persistence.HistoryTransactions) =>
+        .then((historyTransactions: HistoryTransactions) =>
           dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
         )
         .catch(() => ({}));
@@ -246,7 +248,7 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
     if (wallet !== undefined) {
       return persistence
         .getExits(wallet.hermezEthereumAddress, true, tokenId)
-        .then((exits: persistence.Exits) => {
+        .then((exits: Exits) => {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(accountDetailsActions.loadExitsSuccess(exits));
         })

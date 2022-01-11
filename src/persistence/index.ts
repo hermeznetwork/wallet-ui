@@ -36,8 +36,6 @@ import {
   Tokens,
 } from "src/domain";
 
-export type { HistoryTransactions, Exits, Accounts } from "@hermeznetwork/hermezjs";
-
 export interface PostCreateAccountAuthorizationError {
   message: string;
   code: number;

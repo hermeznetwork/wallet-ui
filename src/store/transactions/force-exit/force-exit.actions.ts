@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { HermezAccount, PoolTransaction } from "src/domain";
-import { Accounts } from "src/persistence";
+import { Accounts, HermezAccount, PoolTransaction } from "src/domain";
 
 export enum ForceExitActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[FORCE EXIT] GO TO CHOOSE ACCOUNT STEP",

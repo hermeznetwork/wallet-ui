@@ -33,6 +33,7 @@ import {
   Account,
   CoordinatorState,
   EthereumNetwork,
+  Exits,
   FiatExchangeRates,
   HermezAccount,
   HermezWallet,
@@ -45,8 +46,6 @@ import {
   TimerWithdraw,
   TimerWithdraws,
 } from "src/domain";
-//persistence
-import { Exits } from "src/persistence";
 
 interface ViewAccounts {
   accounts: HermezAccount[];
