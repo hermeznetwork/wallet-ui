@@ -855,13 +855,9 @@ function checkPendingTransactions(): AppThunk {
                 fee: transaction.fee,
               };
 
-              return Tx.generateAndSendL2Tx(
-                txData,
-                wallet,
-                transaction.token,
-                nextForgerUrls,
-                false
-              ).catch(() => ({}));
+              return persistence
+                .generateAndSendL2Tx(txData, wallet, transaction.token, nextForgerUrls, false)
+                .catch(() => ({}));
             });
 
           Promise.all(resendTransactionsRequests).catch(() => ({}));
