@@ -403,7 +403,6 @@ function Home({
           <ReportIssueButton />
         </div>
       )}
-      )
     </>
   );
 }
