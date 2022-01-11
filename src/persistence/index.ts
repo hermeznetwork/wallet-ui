@@ -170,45 +170,44 @@ function createAccount(
 
 export function getHermezAccounts({
   hermezEthereumAddress,
+  tokenIds,
+  fromItem,
+  order,
+  limit,
+  axiosConfig,
   tokensPriceTask,
   poolTransactions,
   fiatExchangeRates,
   preferredCurrency,
   pendingDeposits,
-  fromItem,
-  limit,
-  axiosConfig,
 }: {
   hermezEthereumAddress: string;
-  tokensPriceTask: AsyncTask<Token[], string>;
-  poolTransactions: PoolTransaction[];
-  fiatExchangeRates: FiatExchangeRates;
-  preferredCurrency: string;
-  pendingDeposits?: PendingDeposit[];
+  tokenIds?: number[];
   fromItem?: number;
+  order?: CoordinatorAPI.PaginationOrder;
   limit?: number;
   axiosConfig?: Record<string, unknown>;
+  tokensPriceTask: AsyncTask<Token[], string>;
+  preferredCurrency: string;
+  poolTransactions: PoolTransaction[];
+  fiatExchangeRates: FiatExchangeRates;
+  pendingDeposits?: PendingDeposit[];
 }): Promise<HermezAccounts> {
-  return getAccounts(
-    hermezEthereumAddress,
-    undefined,
-    fromItem,
-    undefined,
-    limit,
-    axiosConfig
-  ).then((accountsResponse) => ({
-    pendingItems: accountsResponse.pendingItems,
-    accounts: accountsResponse.accounts.map((account) =>
-      createAccount(
-        account,
-        tokensPriceTask,
-        preferredCurrency,
-        poolTransactions,
-        fiatExchangeRates,
-        pendingDeposits
-      )
-    ),
-  }));
+  return getAccounts(hermezEthereumAddress, tokenIds, fromItem, order, limit, axiosConfig).then(
+    (accountsResponse) => ({
+      pendingItems: accountsResponse.pendingItems,
+      accounts: accountsResponse.accounts.map((account) =>
+        createAccount(
+          account,
+          tokensPriceTask,
+          preferredCurrency,
+          poolTransactions,
+          fiatExchangeRates,
+          pendingDeposits
+        )
+      ),
+    })
+  );
 }
 
 export function getAccounts(
