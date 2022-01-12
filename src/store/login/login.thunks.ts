@@ -16,7 +16,6 @@ import * as loginActions from "src/store/login/login.actions";
 import { Signers, HermezWallet } from "src/domain";
 // persistence
 import * as persistence from "src/persistence";
-import { getAuthSignatures, setAuthSignatures } from "src/persistence/local-storage";
 
 /**
  * Helper function that signs the authentication message depending on Wallet type
@@ -159,7 +158,9 @@ async function getCreateAccountAuthorization(
   hermezEthereumAddress: string
 ): Promise<string | null> {
   try {
-    const { signature } = await persistence.getCreateAccountAuthorization(hermezEthereumAddress);
+    const { signature } = await persistence.hermezApi.getCreateAccountAuthorization(
+      hermezEthereumAddress
+    );
     return signature;
   } catch {
     return null;
@@ -214,7 +215,7 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
         dispatch(setAccountAuthSignature(wallet.hermezEthereumAddress, signature));
 
         if (sendSignature) {
-          await persistence.postCreateAccountAuthorization(
+          await persistence.hermezApi.postCreateAccountAuthorization(
             wallet.hermezEthereumAddress,
             wallet.publicKeyBase64,
             signature,
@@ -248,7 +249,7 @@ function setAccountAuthSignature(hermezEthereumAddress: string, signature: strin
         data: { chainId },
       } = ethereumNetworkTask;
 
-      const authSignatures = getAuthSignatures();
+      const authSignatures = persistence.localStorage.getAuthSignatures();
       const chainAuthSignatures = authSignatures[chainId] || {};
       const newAccountAuthSignature = {
         ...authSignatures,
@@ -257,7 +258,7 @@ function setAccountAuthSignature(hermezEthereumAddress: string, signature: strin
           [hermezEthereumAddress]: signature,
         },
       };
-      setAuthSignatures(newAccountAuthSignature);
+      persistence.localStorage.setAuthSignatures(newAccountAuthSignature);
       dispatch(loginActions.setAccountAuthSignature(chainId, hermezEthereumAddress, signature));
     }
   };

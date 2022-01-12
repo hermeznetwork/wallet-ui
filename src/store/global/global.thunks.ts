@@ -13,13 +13,10 @@ import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
-import * as priceUpdaterApi from "src/persistence/apis/price-updater";
-import * as hermezWebApi from "src/persistence/apis/hermez-web";
 import * as storage from "src/utils/storage";
 import { isTxMined, hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from "src/utils/ethereum";
 import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
-
 // domain
 import {
   CoordinatorState,
@@ -37,7 +34,6 @@ import {
   Token,
 } from "src/domain";
 // persistence
-import * as localStoragePersistence from "src/persistence/local-storage";
 import * as persistence from "src/persistence";
 
 /**
@@ -95,7 +91,7 @@ function fetchFiatExchangeRates(): AppThunk {
 
     dispatch(globalActions.loadFiatExchangeRates());
 
-    return priceUpdaterApi
+    return persistence.priceUpdater
       .getFiatExchangeRates(symbols)
       .then((fiatExchangeRates: FiatExchangeRates) =>
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
@@ -135,7 +131,7 @@ function checkHermezStatus(): AppThunk {
   return (dispatch: AppDispatch) => {
     dispatch(globalActions.loadHermezStatus());
 
-    return hermezWebApi
+    return persistence.hermezWeb
       .getNetworkStatus()
       .then((status: number) => dispatch(globalActions.loadHermezStatusSuccess(status)))
       .catch(() =>
@@ -160,7 +156,11 @@ function addPendingWithdraw(pendingWithdraw: PendingWithdraw): AppThunk {
       } = ethereumNetworkTask;
       const { hermezEthereumAddress } = wallet;
       if (chainId !== undefined) {
-        localStoragePersistence.addPendingWithdraw(chainId, hermezEthereumAddress, pendingWithdraw);
+        persistence.localStorage.addPendingWithdraw(
+          chainId,
+          hermezEthereumAddress,
+          pendingWithdraw
+        );
         dispatch(globalActions.addPendingWithdraw(chainId, hermezEthereumAddress, pendingWithdraw));
       }
     }
@@ -181,7 +181,7 @@ function removePendingWithdraw(hash: string): AppThunk {
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
-        localStoragePersistence.removePendingWithdrawByHash(chainId, hermezEthereumAddress, hash);
+        persistence.localStorage.removePendingWithdrawByHash(chainId, hermezEthereumAddress, hash);
         dispatch(globalActions.removePendingWithdraw(chainId, hermezEthereumAddress, hash));
       }
     }
@@ -202,7 +202,7 @@ function addPendingDelayedWithdraw(pendingDelayedWithdraw: PendingDelayedWithdra
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
-        localStoragePersistence.addPendingDelayedWithdraw(
+        persistence.localStorage.addPendingDelayedWithdraw(
           chainId,
           hermezEthereumAddress,
           pendingDelayedWithdraw
@@ -233,7 +233,7 @@ function removePendingDelayedWithdraw(pendingDelayedWithdrawId: string): AppThun
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
-        localStoragePersistence.removePendingDelayedWithdrawById(
+        persistence.localStorage.removePendingDelayedWithdrawById(
           chainId,
           hermezEthereumAddress,
           pendingDelayedWithdrawId
@@ -264,7 +264,7 @@ function removePendingDelayedWithdrawByHash(pendingDelayedWithdrawHash: string):
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
-        localStoragePersistence.removePendingDelayedWithdrawByHash(
+        persistence.localStorage.removePendingDelayedWithdrawByHash(
           chainId,
           hermezEthereumAddress,
           pendingDelayedWithdrawHash
@@ -299,7 +299,7 @@ function updatePendingDelayedWithdrawDate(
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
-        localStoragePersistence.updatePendingDelayedWithdrawByHash(
+        persistence.localStorage.updatePendingDelayedWithdrawByHash(
           chainId,
           hermezEthereumAddress,
           transactionHash,
@@ -398,7 +398,7 @@ function checkPendingDelayedWithdrawals(): AppThunk {
                 // Checks with Coordinator API if exit has been withdrawn
                 const exitsApiPromises = accountPendingDelayedWithdraws.map(
                   (pendingDelayedWithdraw) => {
-                    return persistence
+                    return persistence.hermezApi
                       .getExit(pendingDelayedWithdraw.batchNum, pendingDelayedWithdraw.accountIndex)
                       .then((exitTx: Exit) => {
                         // Checks here to have access to pendingDelayedWithdraw.id
@@ -431,7 +431,7 @@ function addTimerWithdraw(timerWithdraw: TimerWithdraw): AppThunk {
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
-        localStoragePersistence.addTimerWithdraw(chainId, hermezEthereumAddress, timerWithdraw);
+        persistence.localStorage.addTimerWithdraw(chainId, hermezEthereumAddress, timerWithdraw);
         dispatch(globalActions.addTimerWithdraw(chainId, hermezEthereumAddress, timerWithdraw));
       }
     }
@@ -449,7 +449,7 @@ function removeTimerWithdraw(timerWithdrawId: string): AppThunk {
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
         const { hermezEthereumAddress } = wallet;
-        localStoragePersistence.removeTimerWithdrawById(
+        persistence.localStorage.removeTimerWithdrawById(
           chainId,
           hermezEthereumAddress,
           timerWithdrawId
@@ -581,7 +581,7 @@ function checkPendingWithdrawals(): AppThunk {
 
                 // Checks with Coordinator API if exit has been withdrawn
                 const exitsApiPromises = accountPendingWithdraws.map((pendingWithdraw) => {
-                  return persistence
+                  return persistence.hermezApi
                     .getExit(pendingWithdraw.batchNum, pendingWithdraw.accountIndex)
                     .then((exitTx: Exit) => {
                       // Checks here to have access to pendingWithdraw.hash
@@ -618,7 +618,7 @@ function addPendingDeposit(pendingDeposit: PendingDeposit): AppThunk {
         data: { chainId },
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
-        localStoragePersistence.addPendingDeposit(chainId, hermezEthereumAddress, pendingDeposit);
+        persistence.localStorage.addPendingDeposit(chainId, hermezEthereumAddress, pendingDeposit);
         dispatch(globalActions.addPendingDeposit(chainId, hermezEthereumAddress, pendingDeposit));
       }
     }
@@ -639,7 +639,7 @@ function removePendingDepositByTransactionId(transactionId: string): AppThunk {
         data: { chainId },
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
-        localStoragePersistence.removePendingDepositByTransactionId(
+        persistence.localStorage.removePendingDepositByTransactionId(
           chainId,
           hermezEthereumAddress,
           transactionId
@@ -670,7 +670,7 @@ function removePendingDepositByHash(hash: string): AppThunk {
         data: { chainId },
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
-        localStoragePersistence.removePendingDepositByHash(chainId, hermezEthereumAddress, hash);
+        persistence.localStorage.removePendingDepositByHash(chainId, hermezEthereumAddress, hash);
         dispatch(globalActions.removePendingDepositByHash(chainId, hermezEthereumAddress, hash));
       }
     }
@@ -688,7 +688,7 @@ function updatePendingDepositId(transactionHash: string, transactionId: string):
         data: { chainId },
       } = ethereumNetworkTask;
       if (chainId !== undefined) {
-        localStoragePersistence.updatePendingDepositByHash(
+        persistence.localStorage.updatePendingDepositByHash(
           chainId,
           hermezEthereumAddress,
           transactionHash,
@@ -790,7 +790,10 @@ function checkPendingDeposits(): AppThunk {
                       dispatch(updatePendingDepositId(txReceipt.transactionHash, txId));
                     }
 
-                    return [...accL2Transactions, persistence.getHistoryTransaction(txId)];
+                    return [
+                      ...accL2Transactions,
+                      persistence.hermezApi.getHistoryTransaction(txId),
+                    ];
                   },
                   []
                 );
@@ -827,7 +830,7 @@ function checkPendingTransactions(): AppThunk {
     if (wallet !== undefined && coordinatorStateTask.status === "successful") {
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
 
-      persistence
+      persistence.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((poolTransactions: PoolTransaction[]) => {
           const tenMinutesInMs = 10 * 60 * 1000;
@@ -857,7 +860,7 @@ function checkPendingTransactions(): AppThunk {
                 fee: transaction.fee,
               };
 
-              return persistence
+              return persistence.hermezApi
                 .generateAndSendL2Tx(txData, wallet, transaction.token, nextForgerUrls, false)
                 .catch(() => ({}));
             });
@@ -876,7 +879,7 @@ function fetchCoordinatorState(): AppThunk {
   return (dispatch: AppDispatch) => {
     dispatch(globalActions.loadCoordinatorState());
 
-    return persistence
+    return persistence.hermezApi
       .getState()
       .then((coordinatorState: CoordinatorState) =>
         dispatch(globalActions.loadCoordinatorStateSuccess(coordinatorState))
@@ -918,7 +921,7 @@ function fetchTokensPrice(): AppThunk {
   return (dispatch: AppDispatch) => {
     dispatch(globalActions.loadTokensPrice());
 
-    return priceUpdaterApi
+    return persistence.priceUpdater
       .getTokensPrice()
       .then((res: Token[]) => dispatch(globalActions.loadTokensPriceSuccess(res)))
       .catch(() => globalActions.loadTokensPriceFailure("An error occured loading token."));

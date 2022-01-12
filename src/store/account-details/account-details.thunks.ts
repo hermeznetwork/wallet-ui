@@ -36,7 +36,7 @@ function fetchAccount(
     } = getState();
     dispatch(accountDetailsActions.loadAccount());
 
-    return persistence
+    return persistence.hermezApi
       .fetchHermezAccount(accountIndex, tokensPriceTask, preferredCurrency, fiatExchangeRates)
       .then((account: HermezAccount) => {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
@@ -88,7 +88,7 @@ function fetchPoolTransactions(accountIndex: HermezAccount["accountIndex"]): App
       global: { wallet },
     } = getState();
     if (wallet !== undefined) {
-      persistence
+      persistence.hermezApi
         .getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
         // We need to reverse the txs to match the order of the txs from the history (DESC)
         .then((transactions: PoolTransaction[]) => transactions.reverse())
@@ -147,7 +147,7 @@ function fetchHistoryTransactions(
       refreshCancelTokenSource.cancel();
     }
 
-    return persistence
+    return persistence.hermezApi
       .getHistoryTransactions(undefined, undefined, undefined, accountIndex, fromItem, "DESC")
       .then((historyTransactions: HistoryTransactions) => {
         const filteredTransactions = filterExitsFromHistoryTransactions(
@@ -183,7 +183,7 @@ function refreshHistoryTransactions(
       refreshCancelTokenSource = axios.CancelToken.source();
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token };
-      const initialReq = persistence.getHistoryTransactions(
+      const initialReq = persistence.hermezApi.getHistoryTransactions(
         undefined,
         undefined,
         undefined,
@@ -196,7 +196,7 @@ function refreshHistoryTransactions(
       const requests = historyTransactionsTask.data.fromItemHistory.reduce(
         (requests, fromItem) => [
           ...requests,
-          persistence.getHistoryTransactions(
+          persistence.hermezApi.getHistoryTransactions(
             undefined,
             undefined,
             undefined,
@@ -246,7 +246,7 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
       global: { wallet },
     } = getState();
     if (wallet !== undefined) {
-      return persistence
+      return persistence.hermezApi
         .getExits(wallet.hermezEthereumAddress, true, tokenId)
         .then((exits: Exits) => {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));

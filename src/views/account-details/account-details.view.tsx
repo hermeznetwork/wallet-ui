@@ -47,7 +47,7 @@ import {
 } from "src/domain";
 import { Pagination } from "src/utils/api";
 // persistence
-import { getAccountBalance } from "src/persistence";
+import { getAccountBalance } from "src/persistence/hermez-api";
 
 interface UrlParams {
   accountIndex: string;

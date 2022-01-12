@@ -35,7 +35,7 @@ function fetchHermezAccount(
 
     dispatch(withdrawActions.loadAccount());
 
-    return persistence
+    return persistence.hermezApi
       .fetchHermezAccount(
         accountIndex,
         tokensPriceTask,
@@ -64,7 +64,7 @@ function fetchExit(
     dispatch(withdrawActions.loadExit());
 
     if (wallet) {
-      persistence
+      persistence.hermezApi
         .getExit(batchNum, accountIndex)
         .then((exit: Exit) => {
           // If we are completing a delayed withdrawal, we need to merge all delayed withdrawals
@@ -107,7 +107,7 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      persistence
+      persistence.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(withdrawActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(withdrawActions.loadPoolTransactionsFailure(err)));
@@ -135,7 +135,7 @@ function withdraw(
 
     if (wallet && signer) {
       if (!completeDelayedWithdrawal) {
-        persistence
+        persistence.hermezApi
           .withdrawCircuit(
             exit,
             instantWithdrawal,
@@ -174,7 +174,7 @@ function withdraw(
             handleTransactionFailure(dispatch, error);
           });
       } else {
-        persistence
+        persistence.hermezApi
           .delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
           .then((txData) => {
             dispatch(

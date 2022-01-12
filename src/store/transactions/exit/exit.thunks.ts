@@ -34,7 +34,7 @@ function fetchHermezAccount(
 
     dispatch(exitActions.loadAccount());
 
-    return persistence
+    return persistence.hermezApi
       .fetchHermezAccount(
         accountIndex,
         tokensPriceTask,
@@ -59,7 +59,7 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      persistence
+      persistence.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(exitActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(exitActions.loadPoolTransactionsFailure(err)));
@@ -85,7 +85,7 @@ function fetchFees(): AppThunk {
       if (nextForger !== undefined) {
         dispatch(exitActions.loadFees());
 
-        return persistence
+        return persistence.hermezApi
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(exitActions.loadFeesSuccess(res.recommendedFee)))
           .catch((err) => dispatch(exitActions.loadFeesFailure(err)));
@@ -125,7 +125,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
       const provider = getProvider();
       const { maxFeePerGas } = await provider.getFeeData();
       const overrides = maxFeePerGas ? { maxFeePerGas } : {};
-      const gasLimit = await persistence.estimateWithdrawCircuitGasLimit(
+      const gasLimit = await persistence.hermezApi.estimateWithdrawCircuitGasLimit(
         token,
         amount,
         overrides,
@@ -179,7 +179,7 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
         fee: feeBigIntToNumber(fee, account.token),
       };
 
-      return persistence
+      return persistence.hermezApi
         .generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
         .catch((error) => handleTransactionFailure(dispatch, error));

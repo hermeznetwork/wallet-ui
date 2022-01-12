@@ -29,7 +29,7 @@ function fetchAccounts(
       dispatch(forceExitActions.loadAccounts());
 
       const hermezEthereumAddress = wallet.publicKeyBase64;
-      return persistence
+      return persistence.hermezApi
         .getHermezAccounts({
           hermezEthereumAddress,
           tokensPriceTask,
@@ -56,7 +56,7 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      persistence
+      persistence.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) =>
           dispatch(forceExitActions.loadPoolTransactionsSuccess(transactions))
@@ -75,7 +75,7 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
     dispatch(forceExitActions.startTransactionApproval());
 
     if (signer) {
-      persistence
+      persistence.hermezApi
         .forceExit(
           HermezCompressedAmount.compressAmount(amount.toString()),
           account.accountIndex,

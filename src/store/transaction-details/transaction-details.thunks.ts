@@ -41,12 +41,15 @@ function fetchTransaction(transactionIdOrHash: string): AppThunk {
             }
           }
 
-          persistence
+          persistence.hermezApi
             .getPoolTransaction(transactionIdOrHash)
             .then(resolve)
             .catch((err: AxiosError) => {
               if (err.response?.status === HttpStatusCode.NOT_FOUND) {
-                persistence.getHistoryTransaction(transactionIdOrHash).then(resolve).catch(reject);
+                persistence.hermezApi
+                  .getHistoryTransaction(transactionIdOrHash)
+                  .then(resolve)
+                  .catch(reject);
               } else {
                 reject(err);
               }
