@@ -54,7 +54,7 @@ function TransactionInfo({
     subtitle: new Date(transaction.timestamp).toLocaleString(),
   };
   const myHermezAddress: Row = {
-    subtitle: "My Hermez address",
+    subtitle: "My Polygon Hermez address",
     value: partiallyHiddenHermezAddressOrNotAvailable(transaction.fromHezEthereumAddress),
   };
 
@@ -158,7 +158,7 @@ function TransactionInfo({
             }
           : undefined;
         const to = {
-          subtitle: "My Hermez address",
+          subtitle: "My Polygon Hermez address",
           value: transaction.toHezEthereumAddress
             ? getPartiallyHiddenHermezAddress(transaction.toHezEthereumAddress)
             : undefined,

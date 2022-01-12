@@ -116,8 +116,8 @@ const mapDispatchToProps = (dispatch: AppDispatch): MyCodeHandlerProps => ({
       changeHeader({
         type: "page",
         data: {
-          title: "Hermez Internal Address",
-          subtitle: "Read this code from another Hermez account",
+          title: "Polygon Hermez Internal Address",
+          subtitle: "Read this code from another Polygon Hermez account",
           goBackAction: from === "my-account" ? push("/my-account") : push("/"),
         },
       })
