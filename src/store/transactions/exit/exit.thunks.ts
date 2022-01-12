@@ -15,8 +15,8 @@ import { feeBigIntToNumber } from "src/utils/fees";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain";
 import { ETHER_TOKEN_ID } from "src/constants";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -34,7 +34,7 @@ function fetchHermezAccount(
 
     dispatch(exitActions.loadAccount());
 
-    return persistence.hermezApi
+    return adapters.hermezApi
       .fetchHermezAccount(
         accountIndex,
         tokensPriceTask,
@@ -59,7 +59,7 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      persistence.hermezApi
+      adapters.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(exitActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(exitActions.loadPoolTransactionsFailure(err)));
@@ -85,7 +85,7 @@ function fetchFees(): AppThunk {
       if (nextForger !== undefined) {
         dispatch(exitActions.loadFees());
 
-        return persistence.hermezApi
+        return adapters.hermezApi
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(exitActions.loadFeesSuccess(res.recommendedFee)))
           .catch((err) => dispatch(exitActions.loadFeesFailure(err)));
@@ -125,7 +125,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
       const provider = getProvider();
       const { maxFeePerGas } = await provider.getFeeData();
       const overrides = maxFeePerGas ? { maxFeePerGas } : {};
-      const gasLimit = await persistence.hermezApi.estimateWithdrawCircuitGasLimit(
+      const gasLimit = await adapters.hermezApi.estimateWithdrawCircuitGasLimit(
         token,
         amount,
         overrides,
@@ -179,7 +179,7 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
         fee: feeBigIntToNumber(fee, account.token),
       };
 
-      return persistence.hermezApi
+      return adapters.hermezApi
         .generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
         .catch((error) => handleTransactionFailure(dispatch, error));
@@ -193,7 +193,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = persistence.getErrorMessage(error);
+  const errorMsg = adapters.getErrorMessage(error);
   console.error(error);
   dispatch(exitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));

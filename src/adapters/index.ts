@@ -2,10 +2,10 @@ import { z } from "zod";
 
 import { StrictSchema } from "src/utils/type-safety";
 
-export * as hermezApi from "src/persistence/hermez-api";
-export * as hermezWeb from "src/persistence/hermez-web";
-export * as localStorage from "src/persistence/local-storage";
-export * as priceUpdater from "src/persistence/price-updater";
+export * as hermezApi from "src/adapters/hermez-api";
+export * as hermezWeb from "src/adapters/hermez-web";
+export * as localStorage from "src/adapters/local-storage";
+export * as priceUpdater from "src/adapters/price-updater";
 
 // Error decoding and message extraction helper
 interface MessageKeyError {

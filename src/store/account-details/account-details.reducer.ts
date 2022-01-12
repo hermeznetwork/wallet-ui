@@ -1,7 +1,6 @@
 import { Pagination } from "src/utils/api";
 // domain
 import { Exits, HermezAccount, HistoryTransaction, PoolTransaction } from "src/domain";
-// persistence
 import {
   AccountDetailsActionTypes,
   AccountDetailsAction,

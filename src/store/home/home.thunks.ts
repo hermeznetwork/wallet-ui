@@ -5,8 +5,8 @@ import { AppState, AppDispatch, AppThunk } from "src/store";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as homeActions from "src/store/home/home.actions";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 // domain
 import {
   Accounts,
@@ -35,7 +35,7 @@ function fetchTotalBalance(
     dispatch(homeActions.loadTotalBalance());
 
     const limit = 2049;
-    return persistence.hermezApi
+    return adapters.hermezApi
       .getHermezAccounts({
         hermezEthereumAddress,
         tokensPriceTask,
@@ -114,7 +114,7 @@ function fetchAccounts(
       refreshCancelTokenSource.cancel();
     }
 
-    return persistence.hermezApi
+    return adapters.hermezApi
       .getHermezAccounts({
         hermezEthereumAddress,
         tokensPriceTask,
@@ -151,7 +151,7 @@ function refreshAccounts(
       refreshCancelTokenSource = axios.CancelToken.source();
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token };
-      const initialReq = persistence.hermezApi.getAccounts(
+      const initialReq = adapters.hermezApi.getAccounts(
         hermezEthereumAddress,
         undefined,
         undefined,
@@ -162,7 +162,7 @@ function refreshAccounts(
       const requests = accountsTask.data.fromItemHistory.reduce(
         (requests, fromItem) => [
           ...requests,
-          persistence.hermezApi.getHermezAccounts({
+          adapters.hermezApi.getHermezAccounts({
             hermezEthereumAddress,
             tokensPriceTask,
             poolTransactions,
@@ -206,7 +206,7 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      persistence.hermezApi
+      adapters.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(homeActions.loadPoolTransactionsFailure(err)));
@@ -226,7 +226,7 @@ function fetchExits(): AppThunk {
     if (wallet !== undefined) {
       dispatch(homeActions.loadExits());
 
-      return persistence.hermezApi
+      return adapters.hermezApi
         .getExits(wallet.hermezEthereumAddress, true)
         .then((exits) => {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));

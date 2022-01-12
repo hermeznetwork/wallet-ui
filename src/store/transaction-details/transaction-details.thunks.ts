@@ -7,8 +7,8 @@ import * as storage from "src/utils/storage";
 // domain
 import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain";
 import { AxiosError } from "axios";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the details of a transaction
@@ -41,12 +41,12 @@ function fetchTransaction(transactionIdOrHash: string): AppThunk {
             }
           }
 
-          persistence.hermezApi
+          adapters.hermezApi
             .getPoolTransaction(transactionIdOrHash)
             .then(resolve)
             .catch((err: AxiosError) => {
               if (err.response?.status === HttpStatusCode.NOT_FOUND) {
-                persistence.hermezApi
+                adapters.hermezApi
                   .getHistoryTransaction(transactionIdOrHash)
                   .then(resolve)
                   .catch(reject);

@@ -19,8 +19,8 @@ import {
   PoolTransaction,
   TransactionReceiver,
 } from "src/domain";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -38,7 +38,7 @@ function fetchHermezAccount(
 
     dispatch(transferActions.loadAccount());
 
-    return persistence.hermezApi
+    return adapters.hermezApi
       .fetchHermezAccount(
         accountIndex,
         tokensPriceTask,
@@ -63,7 +63,7 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      persistence.hermezApi
+      adapters.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(transferActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(transferActions.loadPoolTransactionsFailure(err)));
@@ -88,7 +88,7 @@ function fetchAccounts(
     if (wallet !== undefined) {
       dispatch(transferActions.loadAccounts());
       const hermezEthereumAddress = wallet.publicKeyBase64;
-      return persistence.hermezApi
+      return adapters.hermezApi
         .getHermezAccounts({
           hermezEthereumAddress,
           tokensPriceTask,
@@ -121,7 +121,7 @@ function fetchFees(): AppThunk {
       if (nextForger !== undefined) {
         dispatch(transferActions.loadFees());
 
-        return persistence.hermezApi
+        return adapters.hermezApi
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(transferActions.loadFeesSuccess(res.recommendedFee)))
           .catch((err) => dispatch(transferActions.loadFeesFailure(err)));
@@ -135,7 +135,7 @@ function checkTxData(txData: TxData) {
     const { amount, from, to, feesTask } = txData;
 
     if (isHermezBjjAddress(txData.to)) {
-      void persistence.hermezApi.getAccounts(to, [from.token.id]).then((accounts: Accounts) => {
+      void adapters.hermezApi.getAccounts(to, [from.token.id]).then((accounts: Accounts) => {
         const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
         const minimumFee = getMinimumL2Fee({
           txType: TxType.Transfer,
@@ -162,8 +162,8 @@ function checkTxData(txData: TxData) {
       });
     } else {
       void Promise.allSettled([
-        persistence.hermezApi.getAccounts(to, [from.token.id]),
-        persistence.hermezApi.getCreateAccountAuthorization(to),
+        adapters.hermezApi.getAccounts(to, [from.token.id]),
+        adapters.hermezApi.getCreateAccountAuthorization(to),
       ]).then(([accountsResult, accountAuthorizationResult]) => {
         const doesAccountAlreadyExist: boolean =
           accountsResult.status === "fulfilled" && accountsResult.value.accounts[0] !== undefined;
@@ -226,7 +226,7 @@ function transfer(
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
         fee: feeBigIntToNumber(fee, from.token),
       };
-      return persistence.hermezApi
+      return adapters.hermezApi
         .generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
         .catch((error) => {
@@ -244,7 +244,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = persistence.getErrorMessage(error);
+  const errorMsg = adapters.getErrorMessage(error);
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 

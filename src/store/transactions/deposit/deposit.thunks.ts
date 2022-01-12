@@ -15,8 +15,8 @@ import { getTxFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
 import { FiatExchangeRates, EthereumAccount, HermezAccount } from "src/domain";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
@@ -30,7 +30,7 @@ function fetchEthereumAccount(tokenId: number): AppThunk {
     dispatch(depositActions.loadEthereumAccount());
 
     if (wallet !== undefined) {
-      return persistence.hermezApi
+      return adapters.hermezApi
         .getTokens(undefined, undefined, undefined, undefined, 2049)
         .then((res) => {
           ethereum
@@ -45,7 +45,7 @@ function fetchEthereumAccount(tokenId: number): AppThunk {
               }
             })
             .catch((error) => {
-              const errorMsg = persistence.getErrorMessage(
+              const errorMsg = adapters.getErrorMessage(
                 error,
                 "Oops ... There was an error fetching the ethereum account"
               );
@@ -68,7 +68,7 @@ function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: 
     dispatch(depositActions.loadEthereumAccounts());
 
     if (wallet !== undefined) {
-      return persistence.hermezApi
+      return adapters.hermezApi
         .getTokens(undefined, undefined, undefined, undefined, 2049)
         .then((res) => {
           ethereum
@@ -146,7 +146,7 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
     dispatch(depositActions.startTransactionApproval());
 
     if (wallet !== undefined && signer !== undefined) {
-      return persistence.hermezApi
+      return adapters.hermezApi
         .deposit(
           HermezCompressedAmount.compressAmount(amount.toString()),
           wallet.hermezEthereumAddress,
@@ -155,7 +155,7 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
           signer
         )
         .then((txData) => {
-          void persistence.hermezApi
+          void adapters.hermezApi
             .getAccounts(wallet.hermezEthereumAddress, [ethereumAccount.token.id])
             .then((res) => {
               const account: HermezAccount | undefined = res.accounts[0];
@@ -193,7 +193,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) 
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = persistence.getErrorMessage(error);
+  const errorMsg = adapters.getErrorMessage(error);
   dispatch(depositActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }

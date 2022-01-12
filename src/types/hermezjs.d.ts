@@ -256,7 +256,7 @@ declare module "@hermeznetwork/*" {
     createAccountInternal: number;
   }
 
-  // persistence
+  // adapters
   export interface HistoryTransactions {
     transactions: HistoryTransaction[];
     pendingItems: number;

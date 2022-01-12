@@ -8,8 +8,8 @@ import { openSnackbar } from "src/store/global/global.actions";
 import theme from "src/styles/theme";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the accounts to use in the transaction in the rollup api.
@@ -29,7 +29,7 @@ function fetchAccounts(
       dispatch(forceExitActions.loadAccounts());
 
       const hermezEthereumAddress = wallet.publicKeyBase64;
-      return persistence.hermezApi
+      return adapters.hermezApi
         .getHermezAccounts({
           hermezEthereumAddress,
           tokensPriceTask,
@@ -56,7 +56,7 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      persistence.hermezApi
+      adapters.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) =>
           dispatch(forceExitActions.loadPoolTransactionsSuccess(transactions))
@@ -75,7 +75,7 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
     dispatch(forceExitActions.startTransactionApproval());
 
     if (signer) {
-      persistence.hermezApi
+      adapters.hermezApi
         .forceExit(
           HermezCompressedAmount.compressAmount(amount.toString()),
           account.accountIndex,
@@ -98,7 +98,7 @@ function handleTransactionSuccess(dispatch: AppDispatch) {
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = persistence.getErrorMessage(error);
+  const errorMsg = adapters.getErrorMessage(error);
   dispatch(forceExitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }

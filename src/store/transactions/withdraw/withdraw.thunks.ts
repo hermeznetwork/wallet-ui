@@ -16,8 +16,8 @@ import {
   PendingDelayedWithdraw,
   PoolTransaction,
 } from "src/domain";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -35,7 +35,7 @@ function fetchHermezAccount(
 
     dispatch(withdrawActions.loadAccount());
 
-    return persistence.hermezApi
+    return adapters.hermezApi
       .fetchHermezAccount(
         accountIndex,
         tokensPriceTask,
@@ -64,7 +64,7 @@ function fetchExit(
     dispatch(withdrawActions.loadExit());
 
     if (wallet) {
-      persistence.hermezApi
+      adapters.hermezApi
         .getExit(batchNum, accountIndex)
         .then((exit: Exit) => {
           // If we are completing a delayed withdrawal, we need to merge all delayed withdrawals
@@ -107,7 +107,7 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      persistence.hermezApi
+      adapters.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(withdrawActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(withdrawActions.loadPoolTransactionsFailure(err)));
@@ -135,7 +135,7 @@ function withdraw(
 
     if (wallet && signer) {
       if (!completeDelayedWithdrawal) {
-        persistence.hermezApi
+        adapters.hermezApi
           .withdrawCircuit(
             exit,
             instantWithdrawal,
@@ -174,7 +174,7 @@ function withdraw(
             handleTransactionFailure(dispatch, error);
           });
       } else {
-        persistence.hermezApi
+        adapters.hermezApi
           .delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
           .then((txData) => {
             dispatch(
@@ -209,7 +209,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
-  const errorMsg = persistence.getErrorMessage(error);
+  const errorMsg = adapters.getErrorMessage(error);
   const snackbarMsg = errorMsg.includes(withdrawAlreadyDoneErrorCode)
     ? "The withdraw has already been done"
     : errorMsg;

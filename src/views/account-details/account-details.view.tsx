@@ -46,8 +46,8 @@ import {
   Token,
 } from "src/domain";
 import { Pagination } from "src/utils/api";
-// persistence
-import { getAccountBalance } from "src/persistence/hermez-api";
+// adapters
+import { getAccountBalance } from "src/adapters/hermez-api";
 
 interface UrlParams {
   accountIndex: string;

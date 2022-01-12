@@ -1,6 +1,6 @@
 import { MyAccountActionTypes, MyAccountAction } from "src/store/my-account/my-account.actions";
-// persistence
-import * as localStorage from "src/persistence/local-storage";
+// adapters
+import * as localStorage from "src/adapters/local-storage";
 
 export interface MyAccountState {
   preferredCurrency: string;

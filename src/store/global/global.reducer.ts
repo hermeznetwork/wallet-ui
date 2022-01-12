@@ -18,8 +18,8 @@ import {
   TimerWithdraws,
   Token,
 } from "src/domain";
-// persistence
-import * as localStoragePersistence from "src/persistence/local-storage";
+// adapters
+import * as localStoragePersistence from "src/adapters/local-storage";
 
 interface PageHeader {
   type: "page";
