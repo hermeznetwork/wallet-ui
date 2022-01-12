@@ -36,6 +36,10 @@ import {
   Tokens,
 } from "src/domain";
 
+////////////////////
+// CoordinatorAPI //
+////////////////////
+
 export interface PostCreateAccountAuthorizationError {
   message: string;
   code: number;
@@ -100,7 +104,82 @@ export function getState(
   return CoordinatorAPI.getState(axiosConfig, apiUrl);
 }
 
-// Accounts
+export function getHistoryTransaction(
+  transactionId: string,
+  axiosConfig?: Record<string, unknown>
+): Promise<HistoryTransaction> {
+  return CoordinatorAPI.getHistoryTransaction(transactionId, axiosConfig);
+}
+
+export function getHistoryTransactions(
+  address?: string,
+  tokenId?: number,
+  batchNum?: number,
+  accountIndex?: string,
+  fromItem?: number,
+  order?: PaginationOrder,
+  limit?: number,
+  axiosConfig?: Record<string, unknown>
+): Promise<HistoryTransactions> {
+  return CoordinatorAPI.getTransactions(
+    address,
+    tokenId,
+    batchNum,
+    accountIndex,
+    fromItem,
+    order,
+    limit,
+    axiosConfig
+  );
+}
+
+export function getPoolTransaction(
+  transactionId: string,
+  axiosConfig?: Record<string, unknown>
+): Promise<PoolTransaction> {
+  return CoordinatorAPI.getPoolTransaction(transactionId, axiosConfig);
+}
+
+export function getExit(
+  batchNum: number,
+  accountIndex: string,
+  axiosConfig?: Record<string, unknown>
+): Promise<Exit> {
+  return CoordinatorAPI.getExit(batchNum, accountIndex, axiosConfig);
+}
+
+export function getExits(
+  address: string,
+  onlyPendingWithdraws: boolean,
+  tokenId?: number,
+  fromItem?: number
+): Promise<Exits> {
+  return CoordinatorAPI.getExits(address, onlyPendingWithdraws, tokenId, fromItem);
+}
+
+export function getTokens(
+  tokenIds?: number[],
+  tokenSymbols?: string[],
+  fromItem?: number,
+  order?: PaginationOrder,
+  limit?: number,
+  axiosConfig?: Record<string, unknown>
+): Promise<Tokens> {
+  return CoordinatorAPI.getTokens(tokenIds, tokenSymbols, fromItem, order, limit, axiosConfig);
+}
+
+export function getAccounts(
+  address: string,
+  tokenIds?: number[],
+  fromItem?: number,
+  order?: PaginationOrder,
+  limit?: number,
+  axiosConfig?: Record<string, unknown>
+): Promise<Accounts> {
+  return CoordinatorAPI.getAccounts(address, tokenIds, fromItem, order, limit, axiosConfig);
+}
+
+// Account helpers
 
 export function getAccountBalance(
   account: HermezAccount,
@@ -217,19 +296,8 @@ export function getHermezAccounts({
   );
 }
 
-export function getAccounts(
-  address: string,
-  tokenIds?: number[],
-  fromItem?: number,
-  order?: PaginationOrder,
-  limit?: number,
-  axiosConfig?: Record<string, unknown>
-): Promise<Accounts> {
-  return CoordinatorAPI.getAccounts(address, tokenIds, fromItem, order, limit, axiosConfig);
-}
-
 /**
- * Fetches the raw hermez.Account for an accountIndex from the Hermez API.
+ * Fetches a raw hermez Account for an accountIndex.
  */
 export function getAccount(accountIndex: string): Promise<Account> {
   return CoordinatorAPI.getAccount(accountIndex);
@@ -250,7 +318,9 @@ export function fetchHermezAccount(
   );
 }
 
-// TxPool
+////////////
+// TxPool //
+////////////
 
 export function getPoolTransactions(
   accountIndex: string | undefined,
@@ -259,73 +329,9 @@ export function getPoolTransactions(
   return TxPool.getPoolTransactions(accountIndex, publicKeyCompressedHex);
 }
 
-// CoordinatorAPI
-
-export function getHistoryTransaction(
-  transactionId: string,
-  axiosConfig?: Record<string, unknown>
-): Promise<HistoryTransaction> {
-  return CoordinatorAPI.getHistoryTransaction(transactionId, axiosConfig);
-}
-
-export function getHistoryTransactions(
-  address?: string,
-  tokenId?: number,
-  batchNum?: number,
-  accountIndex?: string,
-  fromItem?: number,
-  order?: PaginationOrder,
-  limit?: number,
-  axiosConfig?: Record<string, unknown>
-): Promise<HistoryTransactions> {
-  return CoordinatorAPI.getTransactions(
-    address,
-    tokenId,
-    batchNum,
-    accountIndex,
-    fromItem,
-    order,
-    limit,
-    axiosConfig
-  );
-}
-
-export function getPoolTransaction(
-  transactionId: string,
-  axiosConfig?: Record<string, unknown>
-): Promise<PoolTransaction> {
-  return CoordinatorAPI.getPoolTransaction(transactionId, axiosConfig);
-}
-
-export function getExit(
-  batchNum: number,
-  accountIndex: string,
-  axiosConfig?: Record<string, unknown>
-): Promise<Exit> {
-  return CoordinatorAPI.getExit(batchNum, accountIndex, axiosConfig);
-}
-
-export function getExits(
-  address: string,
-  onlyPendingWithdraws: boolean,
-  tokenId?: number,
-  fromItem?: number
-): Promise<Exits> {
-  return CoordinatorAPI.getExits(address, onlyPendingWithdraws, tokenId, fromItem);
-}
-
-export function getTokens(
-  tokenIds?: number[],
-  tokenSymbols?: string[],
-  fromItem?: number,
-  order?: PaginationOrder,
-  limit?: number,
-  axiosConfig?: Record<string, unknown>
-): Promise<Tokens> {
-  return CoordinatorAPI.getTokens(tokenIds, tokenSymbols, fromItem, order, limit, axiosConfig);
-}
-
-// Tx
+////////
+// Tx //
+////////
 
 export function deposit(
   amount: HermezCompressedAmount,
@@ -391,7 +397,9 @@ export function delayedWithdraw(
   return Tx.delayedWithdraw(hezEthereumAddress, token, signerData);
 }
 
-// TxFees
+////////////
+// TxFees //
+////////////
 
 export function estimateWithdrawCircuitGasLimit(
   token: Token,
@@ -411,7 +419,7 @@ export function estimateWithdrawCircuitGasLimit(
   );
 }
 
-// Error decoding and message extraction
+// Error decoding and message extraction helper
 interface MessageKeyError {
   message: string;
 }
