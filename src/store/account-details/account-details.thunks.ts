@@ -52,17 +52,21 @@ function fetchAccount(
 /**
  * Checks whether the Ethereum account has >0 balance for the token
  */
-function fetchL1TokenBalance(token: Token): AppThunk {
+function fetchL1TokenBalance(
+  token: Token,
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
-      global: { wallet },
+      global: { wallet, tokensPriceTask },
     } = getState();
 
     if (wallet !== undefined) {
       dispatch(accountDetailsActions.loadL1TokenBalance());
 
       return ethereum
-        .getTokens(wallet, [token])
+        .getEthereumAccounts(wallet, [token], tokensPriceTask, fiatExchangeRates, preferredCurrency)
         .then((metamaskTokens) => {
           if (metamaskTokens[0]) {
             // We need this to check if the user has balance of a specific token in his ethereum address.

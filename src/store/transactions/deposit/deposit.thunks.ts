@@ -10,7 +10,6 @@ import * as depositActions from "src/store/transactions/deposit/deposit.actions"
 import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import * as ethereum from "src/utils/ethereum";
-import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { getTxFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
@@ -21,10 +20,14 @@ import * as adapters from "src/adapters";
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
  */
-function fetchEthereumAccount(tokenId: number): AppThunk {
+function fetchEthereumAccount(
+  tokenId: number,
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
-      global: { wallet },
+      global: { wallet, tokensPriceTask },
     } = getState();
 
     dispatch(depositActions.loadEthereumAccount());
@@ -32,9 +35,15 @@ function fetchEthereumAccount(tokenId: number): AppThunk {
     if (wallet !== undefined) {
       return adapters.hermezApi
         .getTokens(undefined, undefined, undefined, undefined, 2049)
-        .then((res) => {
+        .then((getTokensResponse) => {
           ethereum
-            .getTokens(wallet, res.tokens)
+            .getEthereumAccounts(
+              wallet,
+              getTokensResponse.tokens,
+              tokensPriceTask,
+              fiatExchangeRates,
+              preferredCurrency
+            )
             .then((ethereumAccounts) => {
               const ethereumAccount = ethereumAccounts.find((token) => token.token.id === tokenId);
 
@@ -59,7 +68,10 @@ function fetchEthereumAccount(tokenId: number): AppThunk {
 /**
  * Fetches the accounts to use in the transaction on Ethereum
  */
-function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: string): AppThunk {
+function fetchEthereumAccounts(
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, tokensPriceTask },
@@ -70,28 +82,17 @@ function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: 
     if (wallet !== undefined) {
       return adapters.hermezApi
         .getTokens(undefined, undefined, undefined, undefined, 2049)
-        .then((res) => {
+        .then((getTokensResponse) => {
           ethereum
-            .getTokens(wallet, res.tokens)
-            .then((ethereumAccounts): EthereumAccount[] => {
-              return ethereumAccounts.map((ethereumAccount) => {
-                const tokenFromTokensPrice =
-                  tokensPriceTask.status === "successful" &&
-                  tokensPriceTask.data[ethereumAccount.token.id];
-                const token = tokenFromTokensPrice ? tokenFromTokensPrice : ethereumAccount.token;
-
-                const fiatBalance = convertTokenAmountToFiat(
-                  ethereumAccount.balance,
-                  token,
-                  preferredCurrency,
-                  fiatExchangeRates
-                );
-
-                return { ...ethereumAccount, balance: ethereumAccount.balance, fiatBalance };
-              });
-            })
-            .then((metaMaskTokens) =>
-              dispatch(depositActions.loadEthereumAccountsSuccess(metaMaskTokens))
+            .getEthereumAccounts(
+              wallet,
+              getTokensResponse.tokens,
+              tokensPriceTask,
+              fiatExchangeRates,
+              preferredCurrency
+            )
+            .then((ethereumAccounts) =>
+              dispatch(depositActions.loadEthereumAccountsSuccess(ethereumAccounts))
             )
             .catch((err) => dispatch(depositActions.loadEthereumAccountsFailure(err)));
         });
@@ -198,4 +199,4 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
-export { fetchEthereumAccount, fetchAccounts, fetchEstimatedDepositFee, deposit };
+export { fetchEthereumAccount, fetchEthereumAccounts, fetchEstimatedDepositFee, deposit };

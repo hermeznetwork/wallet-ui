@@ -52,7 +52,11 @@ interface DepositHandlerProps {
   onGoToChooseAccountStep: () => void;
   onGoToTransactionOverviewStep: (transactionToReview: depositActions.TransactionToReview) => void;
   onLoadEstimatedDepositFee: () => void;
-  onLoadEthereumAccount: (tokenId: number) => void;
+  onLoadEthereumAccount: (
+    tokenId: number,
+    fiatExchangeRates: FiatExchangeRates,
+    preferredCurrency: string
+  ) => void;
   onLoadEthereumAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) => void;
 }
 
@@ -106,14 +110,24 @@ function Deposit({
   }, [onCheckPendingDeposits, onLoadEstimatedDepositFee]);
 
   React.useEffect(() => {
-    if (pendingDepositsCheckTask.status === "successful") {
+    if (
+      pendingDepositsCheckTask.status === "successful" &&
+      fiatExchangeRatesTask.status === "successful"
+    ) {
       if (tokenId) {
-        onLoadEthereumAccount(Number(tokenId));
+        onLoadEthereumAccount(Number(tokenId), fiatExchangeRatesTask.data, preferredCurrency);
       } else {
         onGoToChooseAccountStep();
       }
     }
-  }, [pendingDepositsCheckTask, tokenId, onLoadEthereumAccount, onGoToChooseAccountStep]);
+  }, [
+    pendingDepositsCheckTask,
+    tokenId,
+    onLoadEthereumAccount,
+    onGoToChooseAccountStep,
+    fiatExchangeRatesTask,
+    preferredCurrency,
+  ]);
 
   React.useEffect(() => {
     if (ethereumAccountTask.status === "failed") {
@@ -257,9 +271,13 @@ const mapDispatchToProps = (dispatch: AppDispatch): DepositHandlerProps => ({
   onChangeHeader: (step: depositActions.Step, accountIndex: string | null) =>
     dispatch(changeHeader(getHeader(step, accountIndex))),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
-  onLoadEthereumAccount: (tokenId: number) => dispatch(depositThunks.fetchEthereumAccount(tokenId)),
+  onLoadEthereumAccount: (
+    tokenId: number,
+    fiatExchangeRates: FiatExchangeRates,
+    preferredCurrency: string
+  ) => dispatch(depositThunks.fetchEthereumAccount(tokenId, fiatExchangeRates, preferredCurrency)),
   onLoadEthereumAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) =>
-    dispatch(depositThunks.fetchAccounts(fiatExchangeRates, preferredCurrency)),
+    dispatch(depositThunks.fetchEthereumAccounts(fiatExchangeRates, preferredCurrency)),
   onGoToChooseAccountStep: () => dispatch(depositActions.goToChooseAccountStep()),
   onGoToBuildTransactionStep: (ethereumAccount: EthereumAccount) =>
     dispatch(depositActions.goToBuildTransactionStep(ethereumAccount)),

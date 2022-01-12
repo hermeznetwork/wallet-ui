@@ -83,7 +83,11 @@ interface AccountDetailsHandlerProps {
     fiatExchangeRates: FiatExchangeRates,
     preferredCurrency: string
   ) => void;
-  onLoadL1TokenBalance: (token: Token) => void;
+  onLoadL1TokenBalance: (
+    token: Token,
+    fiatExchangeRates: FiatExchangeRates,
+    preferredCurrency: string
+  ) => void;
   onLoadHistoryTransactions: (
     accountIndex: HermezAccount["accountIndex"],
     exits: Exits,
@@ -205,10 +209,10 @@ function AccountDetails({
   ]);
 
   React.useEffect(() => {
-    if (accountTask.status === "successful") {
-      onLoadL1TokenBalance(accountTask.data.token);
+    if (accountTask.status === "successful" && fiatExchangeRatesTask.status === "successful") {
+      onLoadL1TokenBalance(accountTask.data.token, fiatExchangeRatesTask.data, preferredCurrency);
     }
-  }, [accountTask, onLoadL1TokenBalance]);
+  }, [accountTask, fiatExchangeRatesTask, onLoadL1TokenBalance, preferredCurrency]);
 
   React.useEffect(() => {
     if (accountTask.status === "successful") {
@@ -429,7 +433,8 @@ const mapStateToProps = (state: AppState): AccountDetailsStateProps => ({
 const mapDispatchToProps = (dispatch: AppDispatch): AccountDetailsHandlerProps => ({
   onLoadAccount: (accountIndex, fiatExchangeRates, preferredCurrency) =>
     dispatch(accountDetailsThunks.fetchAccount(accountIndex, fiatExchangeRates, preferredCurrency)),
-  onLoadL1TokenBalance: (token) => dispatch(accountDetailsThunks.fetchL1TokenBalance(token)),
+  onLoadL1TokenBalance: (token, fiatExchangeRates, preferredCurrency) =>
+    dispatch(accountDetailsThunks.fetchL1TokenBalance(token, fiatExchangeRates, preferredCurrency)),
   onChangeHeader: (tokenName) =>
     dispatch(
       changeHeader({
