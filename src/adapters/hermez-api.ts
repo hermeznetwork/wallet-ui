@@ -216,7 +216,7 @@ export function getAccountBalance(
   return totalBalance.toString();
 }
 
-function updateAccountToken(
+function setAccountToken(
   tokensPrice: AsyncTask<Token[], string>,
   account: HermezAccount
 ): HermezAccount {
@@ -238,7 +238,7 @@ function createAccount(
   fiatExchangeRates?: FiatExchangeRates,
   pendingDeposits?: PendingDeposit[]
 ): HermezAccount {
-  const updatedAccount: HermezAccount = updateAccountToken(tokensPriceTask, account);
+  const updatedAccount: HermezAccount = setAccountToken(tokensPriceTask, account);
   const accountBalance = getAccountBalance(updatedAccount, poolTransactions, pendingDeposits);
   const fiatBalance = convertTokenAmountToFiat(
     accountBalance,
