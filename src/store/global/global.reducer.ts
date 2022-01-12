@@ -1,23 +1,46 @@
+import { AppAction } from "src/store";
 import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { Header } from "src/domain/";
-import { EthereumNetwork } from "src/domain/ethereum";
 import {
-  HermezStatus,
-  HermezNetworkStatus,
-  PendingWithdraw,
-  HermezWallet,
-  Signers,
-  FiatExchangeRates,
   CoordinatorState,
+  EthereumNetwork,
+  FiatExchangeRates,
+  NetworkStatus,
+  HermezStatus,
+  HermezWallet,
+  PendingDelayedWithdraws,
+  PendingDeposits,
+  PendingWithdraw,
+  PendingWithdraws,
+  Signers,
+  TimerWithdraw,
+  TimerWithdraws,
   Token,
-} from "src/domain/hermez";
-import * as localStorageDomain from "src/domain/local-storage";
+} from "src/domain";
 // persistence
 import * as localStoragePersistence from "src/persistence/local-storage";
 
-type SnackbarState =
+interface PageHeader {
+  type: "page";
+  data: {
+    title: string;
+    subtitle?: string;
+    goBackAction?: AppAction;
+    closeAction?: AppAction;
+  };
+}
+
+export type HeaderState =
+  | {
+      type: undefined;
+    }
+  | {
+      type: "main";
+    }
+  | PageHeader;
+
+export type SnackbarState =
   | {
       status: "closed";
     }
@@ -32,16 +55,17 @@ export interface GlobalState {
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   wallet: HermezWallet.HermezWallet | undefined;
   signer: Signers.SignerData | undefined;
-  header: Header;
+  header: HeaderState;
   redirectRoute: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   snackbar: SnackbarState;
-  networkStatus: HermezNetworkStatus;
-  pendingWithdraws: localStorageDomain.PendingWithdraws;
-  pendingDelayedWithdraws: localStorageDomain.PendingDelayedWithdraws;
+  networkStatus: NetworkStatus;
+  pendingWithdraws: PendingWithdraws;
+  pendingDelayedWithdraws: PendingDelayedWithdraws;
+  timerWithdraws: TimerWithdraws;
   pendingDelayedWithdrawCheckTask: AsyncTask<null, string>;
   pendingWithdrawalsCheckTask: AsyncTask<null, string>;
-  pendingDeposits: localStorageDomain.PendingDeposits;
+  pendingDeposits: PendingDeposits;
   pendingDepositsCheckTask: AsyncTask<null, string>;
   coordinatorStateTask: AsyncTask<CoordinatorState, string>;
   tokensPriceTask: AsyncTask<Token[], string>;
@@ -70,6 +94,7 @@ function getInitialGlobalState(): GlobalState {
     networkStatus: "online",
     pendingWithdraws: localStoragePersistence.getPendingWithdraws(),
     pendingDelayedWithdraws: localStoragePersistence.getPendingDelayedWithdraws(),
+    timerWithdraws: localStoragePersistence.getTimerWithdraws(),
     pendingDelayedWithdrawCheckTask: {
       status: "pending",
     },
@@ -331,6 +356,37 @@ function globalReducer(
         pendingDelayedWithdrawCheckTask: {
           status: "successful",
           data: null,
+        },
+      };
+    }
+    case GlobalActionTypes.ADD_TIMER_WITHDRAW: {
+      const chainIdTimerWithdraws = state.timerWithdraws[action.chainId] || {};
+      const accountTimerWithdraws = chainIdTimerWithdraws[action.hermezEthereumAddress] || [];
+
+      return {
+        ...state,
+        timerWithdraws: {
+          ...state.timerWithdraws,
+          [action.chainId]: {
+            ...chainIdTimerWithdraws,
+            [action.hermezEthereumAddress]: [...accountTimerWithdraws, action.timerWithdraw],
+          },
+        },
+      };
+    }
+    case GlobalActionTypes.REMOVE_TIMER_WITHDRAW: {
+      const chainIdTimerWithdraws = state.timerWithdraws[action.chainId] || {};
+      const accountTimerWithdraws = chainIdTimerWithdraws[action.hermezEthereumAddress] || [];
+      return {
+        ...state,
+        timerWithdraws: {
+          ...state.timerWithdraws,
+          [action.chainId]: {
+            ...chainIdTimerWithdraws,
+            [action.hermezEthereumAddress]: accountTimerWithdraws.filter(
+              (withdraw: TimerWithdraw) => withdraw.id !== action.timerWithdrawId
+            ),
+          },
         },
       };
     }

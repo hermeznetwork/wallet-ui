@@ -8,15 +8,15 @@ import { AppState, AppDispatch } from "src/store";
 import * as forceExitThunks from "src/store/transactions/force-exit/force-exit.thunks";
 import * as forceExitActions from "src/store/transactions/force-exit/force-exit.actions";
 import { changeHeader } from "src/store/global/global.actions";
+import { AccountsWithPagination } from "src/store/transactions/force-exit/force-exit.reducer";
+import { HeaderState } from "src/store/global/global.reducer";
 import useForceExitStyles from "src/views/transactions/force-exit/force-exit.styles";
 import TransactionOverview from "src/views/transactions/components/transaction-overview/transaction-overview.view";
+import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
+import ForceExitForm from "src/views/transactions/force-exit/components/force-exit-form/force-exit-form.view";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { HermezAccount, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain/hermez";
-import AccountSelector from "src/views/transactions/components/account-selector/account-selector.view";
-import TransactionForm from "src/views/transactions/components/transaction-form/transaction-form.view";
-import { AccountsWithPagination } from "src/store/transactions/force-exit/force-exit.reducer";
-import { Header } from "src/domain/";
+import { HermezAccount, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain";
 
 interface ForceExitStateProps {
   step: forceExitActions.Step;
@@ -88,9 +88,11 @@ function ForceExit({
           case "choose-account": {
             return (
               <AccountSelector
-                transactionType={TxType.ForceExit}
+                type={TxType.ForceExit}
                 accountsTask={accountsTask}
                 poolTransactionsTask={poolTransactionsTask}
+                onLoadAccounts={onLoadAccounts}
+                onAccountClick={onGoToBuildTransactionStep}
                 preferredCurrency={preferredCurrency}
                 fiatExchangeRates={
                   fiatExchangeRatesTask.status === "successful" ||
@@ -98,36 +100,16 @@ function ForceExit({
                     ? fiatExchangeRatesTask.data
                     : {}
                 }
-                pendingDeposits={[]}
-                onLoadAccounts={onLoadAccounts}
-                onAccountClick={(account: HermezAccount) => onGoToBuildTransactionStep(account)}
               />
             );
           }
           case "build-transaction": {
             return (
               account && (
-                <TransactionForm
-                  transactionType={TxType.ForceExit}
+                <ForceExitForm
                   account={account}
                   preferredCurrency={preferredCurrency}
-                  fiatExchangeRates={
-                    fiatExchangeRatesTask.status === "successful" ||
-                    fiatExchangeRatesTask.status === "reloading"
-                      ? fiatExchangeRatesTask.data
-                      : {}
-                  }
-                  // ToDo: To be removed START
-                  receiverAddress={undefined}
-                  feesTask={{ status: "successful", data: null }}
-                  accountBalanceTask={{ status: "pending" }}
-                  estimatedWithdrawFeeTask={{ status: "pending" }}
-                  estimatedDepositFeeTask={{ status: "pending" }}
-                  onLoadAccountBalance={() => ({})}
-                  onLoadEstimatedWithdrawFee={() => ({})}
-                  onLoadEstimatedDepositFee={() => ({})}
-                  onLoadFees={() => ({})}
-                  // ToDo: To be removed END
+                  fiatExchangeRatesTask={fiatExchangeRatesTask}
                   onSubmit={onGoToTransactionOverviewStep}
                   onGoToChooseAccountStep={onGoToChooseAccountStep}
                 />
@@ -142,12 +124,10 @@ function ForceExit({
                 <TransactionOverview
                   wallet={wallet}
                   isTransactionBeingApproved={isTransactionBeingApproved}
-                  transaction={{
-                    type: TxType.ForceExit,
-                    amount: transaction.amount,
-                    account: account,
-                    onForceExit,
-                  }}
+                  txType={TxType.ForceExit}
+                  amount={transaction.amount}
+                  account={account}
+                  onForceExit={onForceExit}
                   preferredCurrency={preferredCurrency}
                   fiatExchangeRates={
                     fiatExchangeRatesTask.status === "successful" ||
@@ -177,7 +157,7 @@ const mapStateToProps = (state: AppState): ForceExitStateProps => ({
   preferredCurrency: state.myAccount.preferredCurrency,
 });
 
-const getHeader = (step: forceExitActions.Step, account?: HermezAccount): Header => {
+const getHeader = (step: forceExitActions.Step, account?: HermezAccount): HeaderState => {
   switch (step) {
     case "choose-account": {
       return {

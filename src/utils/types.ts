@@ -27,3 +27,11 @@ export type AsyncTask<D, E> =
   | SuccessfulAsyncTask<D>
   | ReloadingAsyncTask<D>
   | FailedAsyncTask<E>;
+
+export function isAsyncTaskDataAvailable<D, E>(
+  task: AsyncTask<D, E>
+): task is SuccessfulAsyncTask<D> | ReloadingAsyncTask<D> {
+  return task.status === "successful" || task.status === "reloading";
+}
+
+export type Exact<T, U> = [T, U] extends [U, T] ? true : false;

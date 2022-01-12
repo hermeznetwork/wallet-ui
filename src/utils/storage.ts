@@ -5,17 +5,22 @@ import {
   STORAGE_VERSION_KEY,
 } from "src/constants";
 // domain
-import { PendingWithdraw, PendingDelayedWithdraw, PendingDeposit } from "src/domain/hermez";
 import {
   ChainId,
-  HermezEthereumAddress,
-  PendingWithdraws,
-  ChainPendingWithdraws,
-  PendingDelayedWithdraws,
   ChainPendingDelayedWithdraws,
-  PendingDeposits,
   ChainPendingDeposits,
-} from "src/domain/local-storage";
+  ChainPendingWithdraws,
+  ChainTimerWithdraws,
+  HermezEthereumAddress,
+  PendingDelayedWithdraw,
+  PendingDelayedWithdraws,
+  PendingDeposit,
+  PendingDeposits,
+  PendingWithdraw,
+  PendingWithdraws,
+  TimerWithdraw,
+  TimerWithdraws,
+} from "src/domain";
 // persistence
 import {
   getPendingWithdraws,
@@ -29,7 +34,7 @@ function runV2Migration() {
   const pendingWithdraws = getPendingWithdraws();
   const newPendingWithdraws: PendingWithdraws = Object.keys(pendingWithdraws).reduce(
     (currentChainPendingWithdraws: PendingWithdraws, chainId: ChainId): PendingWithdraws => {
-      const chainPendingWithdraws: ChainPendingWithdraws = pendingWithdraws[chainId];
+      const chainPendingWithdraws: ChainPendingWithdraws = pendingWithdraws[chainId] || {};
       const newChainPendingWithdraws: ChainPendingWithdraws = Object.keys(
         chainPendingWithdraws
       ).reduce(
@@ -38,7 +43,7 @@ function runV2Migration() {
           hezEthereumAddress: HermezEthereumAddress
         ): ChainPendingWithdraws => {
           const accountPendingWithdraws: PendingWithdraw[] =
-            chainPendingWithdraws[hezEthereumAddress];
+            chainPendingWithdraws[hezEthereumAddress] || [];
           const newAccountPendingWithdraws = accountPendingWithdraws.filter(
             (pendingWithdraw) => pendingWithdraw.hash !== undefined
           );
@@ -66,7 +71,7 @@ function runV2Migration() {
     pendingDelayedWithdraws
   ).reduce((currentChainPendingDelayedWithdraws: PendingDelayedWithdraws, chainId: ChainId) => {
     const chainPendingDelayedWithdraws: ChainPendingDelayedWithdraws =
-      pendingDelayedWithdraws[chainId];
+      pendingDelayedWithdraws[chainId] || {};
     const newChainPendingDelayedWithdraws: ChainPendingDelayedWithdraws = Object.keys(
       chainPendingDelayedWithdraws
     ).reduce(
@@ -75,7 +80,7 @@ function runV2Migration() {
         hezEthereumAddress: HermezEthereumAddress
       ) => {
         const accountPendingDelayedWithdraws: PendingDelayedWithdraw[] =
-          chainPendingDelayedWithdraws[hezEthereumAddress];
+          chainPendingDelayedWithdraws[hezEthereumAddress] || [];
         const newAccountPendingDelayedWithdraws: PendingDelayedWithdraw[] =
           accountPendingDelayedWithdraws.filter(
             (pendingDelayedWithdraw) => pendingDelayedWithdraw.hash !== undefined
@@ -148,9 +153,20 @@ function getPendingDepositsByHermezAddress(
   return accountDeposits;
 }
 
+function getTimerWithdrawsByHermezAddress(
+  timerWithdrawsStorage: TimerWithdraws,
+  chainId: number,
+  hermezEthereumAddress: string
+): TimerWithdraw[] {
+  const chainTimerWithdraws: ChainTimerWithdraws = timerWithdrawsStorage[chainId] || {};
+  const accountWithdraws: TimerWithdraw[] = chainTimerWithdraws[hermezEthereumAddress] || [];
+  return accountWithdraws;
+}
+
 export {
   checkVersion,
   getPendingWithdrawsByHermezAddress,
   getPendingDelayedWithdrawsByHermezAddress,
   getPendingDepositsByHermezAddress,
+  getTimerWithdrawsByHermezAddress,
 };

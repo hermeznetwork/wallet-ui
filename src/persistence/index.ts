@@ -7,6 +7,7 @@ import { z } from "zod";
 import hermez from "@hermeznetwork/hermezjs";
 
 import { HttpStatusCode } from "src/utils/http";
+import { StrictSchema } from "src/utils/type-safety";
 
 export type { HistoryTransactions, Exits, Accounts } from "@hermeznetwork/hermezjs";
 export interface PostCreateAccountAuthorizationError {
@@ -15,12 +16,14 @@ export interface PostCreateAccountAuthorizationError {
   type: string;
 }
 
-const postCreateAccountAuthorizationErrorParser: z.ZodSchema<PostCreateAccountAuthorizationError> =
-  z.object({
-    message: z.string(),
-    code: z.number(),
-    type: z.string(),
-  });
+const postCreateAccountAuthorizationErrorParser =
+  StrictSchema<PostCreateAccountAuthorizationError>()(
+    z.object({
+      message: z.string(),
+      code: z.number(),
+      type: z.string(),
+    })
+  );
 
 export function postCreateAccountAuthorization(
   hermezEthereumAddress: string,
@@ -45,7 +48,7 @@ export function postCreateAccountAuthorization(
       if (parsedErrorResponse.success) {
         const errorMessage =
           parsedErrorResponse.data.code === -32603
-            ? "Sorry, hardware wallets are not supported in Hermez yet"
+            ? "Sorry, hardware wallets are not supported in Polygon Hermez yet"
             : error.message;
         throw new Error(errorMessage);
       } else {
@@ -62,9 +65,11 @@ interface MessageKeyError {
   message: string;
 }
 
-const messageKeyErrorParser: z.ZodSchema<MessageKeyError> = z.object({
-  message: z.string(),
-});
+const messageKeyErrorParser = StrictSchema<MessageKeyError>()(
+  z.object({
+    message: z.string(),
+  })
+);
 
 export function getErrorMessage(error: unknown, defaultMsg?: string): string {
   if (typeof error === "string") {

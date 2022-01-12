@@ -23,21 +23,24 @@ import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
 
 // domain
-import { ISOStringDate } from "src/domain/";
 import {
   CoordinatorState,
-  PendingWithdraw,
-  PendingDelayedWithdraw,
-  FiatExchangeRates,
-  HermezNetworkStatus,
   Exit,
-  PendingDeposit,
+  FiatExchangeRates,
+  NetworkStatus,
   HistoryTransaction,
+  ISOStringDate,
+  PendingDelayedWithdraw,
+  PendingDeposit,
+  PendingWithdraw,
   PoolTransaction,
+  TimerWithdraw,
   Token,
-} from "src/domain/hermez";
+} from "src/domain";
 // persistence
+import { Exits } from "src/persistence";
 import * as localStoragePersistence from "src/persistence/local-storage";
+import * as persistence from "src/persistence";
 
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
@@ -76,8 +79,6 @@ function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
 /**
  * Changes the route to which the user is going to be redirected to after a successful
  * login
- * @param {string} redirectRoute - Route to be redirected to
- * @returns {void}
  */
 function changeRedirectRoute(redirectRoute: string): AppThunk {
   return (dispatch: AppDispatch) => {
@@ -87,8 +88,6 @@ function changeRedirectRoute(redirectRoute: string): AppThunk {
 
 /**
  * Fetches the USD exchange rates for the requested currency symbols
- * @param {string[]} symbols - ISO 4217 currency codes
- * @returns {void}
  */
 function fetchFiatExchangeRates(): AppThunk {
   return (dispatch: AppDispatch) => {
@@ -103,32 +102,27 @@ function fetchFiatExchangeRates(): AppThunk {
       .then((fiatExchangeRates: FiatExchangeRates) =>
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
       )
-      .catch(() => {
-        // ToDo: How are we returning simulated Fiat exchange rates when this request fails???
-        dispatch(
-          globalActions.loadFiatExchangeRatesSuccess(priceUpdaterApi.mockedFiatExchangeRates)
+      .catch((error) => {
+        const errorMsg = persistence.getErrorMessage(
+          error,
+          "Oops ... There was an error fetching fiat exchange rates"
         );
+        dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
       });
   };
 }
 
 /**
  * Changes the current network status of the application
- * @param {HermezNetworkStatus} newNetworkStatus - Network status
- * @param {string} backgroundColor - Background color of the snackbar
- * @returns {void}
  */
-function changeNetworkStatus(
-  newNetworkStatus: HermezNetworkStatus,
-  backgroundColor: string
-): AppThunk {
+function changeNetworkStatus(newNetworkStatus: NetworkStatus, backgroundColor: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { networkStatus: previousNetworkStatus },
     } = getState();
 
     if (previousNetworkStatus === "online" && newNetworkStatus === "offline") {
-      dispatch(globalActions.openSnackbar("Connection lost"));
+      dispatch(globalActions.openSnackbar("Connection lost", backgroundColor));
     }
 
     if (previousNetworkStatus === "offline" && newNetworkStatus === "online") {
@@ -147,15 +141,15 @@ function checkHermezStatus(): AppThunk {
       .getNetworkStatus()
       .then((status: number) => dispatch(globalActions.loadHermezStatusSuccess(status)))
       .catch(() =>
-        dispatch(globalActions.loadHermezStatusFailure("An error occurred loading Hermez status"))
+        dispatch(
+          globalActions.loadHermezStatusFailure("An error occurred loading Polygon Hermez status")
+        )
       );
   };
 }
 
 /**
  * Adds a pendingWithdraw to the pendingWithdraw pool
- * @param {string} pendingWithdraw - The pendingWithdraw to add to the pool
- * @returns {void}
  */
 function addPendingWithdraw(pendingWithdraw: PendingWithdraw): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -177,8 +171,6 @@ function addPendingWithdraw(pendingWithdraw: PendingWithdraw): AppThunk {
 
 /**
  * Removes a pendingWithdraw from the pendingWithdraw pool
- * @param {string} hash - The transaction hash used to remove a pendingWithdraw from the store
- * @returns {void}
  */
 function removePendingWithdraw(hash: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -200,8 +192,6 @@ function removePendingWithdraw(hash: string): AppThunk {
 
 /**
  * Adds a pendingWithdraw to the pendingDelayedWithdraw store
- * @param {PendingDelayedWithdraw} pendingDelayedWithdraw - The pendingDelayedWithdraw to add to the store
- * @returns {void}
  */
 function addPendingDelayedWithdraw(pendingDelayedWithdraw: PendingDelayedWithdraw): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -233,8 +223,6 @@ function addPendingDelayedWithdraw(pendingDelayedWithdraw: PendingDelayedWithdra
 
 /**
  * Removes a pendingWithdraw from the pendingDelayedWithdraw store
- * @param {string} pendingDelayedWithdrawId - The pendingDelayedWithdraw identifier to remove from the store
- * @returns {void}
  */
 function removePendingDelayedWithdraw(pendingDelayedWithdrawId: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -266,8 +254,6 @@ function removePendingDelayedWithdraw(pendingDelayedWithdrawId: string): AppThun
 
 /**
  * Removes a pendingWithdraw from the pendingDelayedWithdraws store by hash
- * @param {string} pendingDelayedWithdrawHash - The pendingDelayedWithdraw hash to remove from the store
- * @returns {void}
  */
 function removePendingDelayedWithdrawByHash(pendingDelayedWithdrawHash: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -300,8 +286,6 @@ function removePendingDelayedWithdrawByHash(pendingDelayedWithdrawHash: string):
 /**
  * Updates the date in a delayed withdraw transaction
  * to the time when the transaction was mined
- * @param {String} transactionHash - The L1 transaction hash for a non-instant withdraw
- * @param {ISOStringDate} pendingDelayedWithdrawDate - The date when the L1 transaction was mined
  */
 function updatePendingDelayedWithdrawDate(
   transactionHash: string,
@@ -340,7 +324,6 @@ function updatePendingDelayedWithdrawDate(
  * Checks L1 transactions for pending delayed withdrawals.
  * If they have failed, clear from storage.
  * Updates the date the transaction happened if necessary.
- * @returns {void}
  */
 function checkPendingDelayedWithdrawals(): AppThunk {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
@@ -440,10 +423,108 @@ function checkPendingDelayedWithdrawals(): AppThunk {
   };
 }
 
+function addTimerWithdraw(timerWithdraw: TimerWithdraw): AppThunk {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { wallet, ethereumNetworkTask },
+    } = getState();
+    if (wallet !== undefined && ethereumNetworkTask.status === "successful") {
+      const {
+        data: { chainId },
+      } = ethereumNetworkTask;
+      if (chainId !== undefined) {
+        const { hermezEthereumAddress } = wallet;
+        localStoragePersistence.addTimerWithdraw(chainId, hermezEthereumAddress, timerWithdraw);
+        dispatch(globalActions.addTimerWithdraw(chainId, hermezEthereumAddress, timerWithdraw));
+      }
+    }
+  };
+}
+
+function removeTimerWithdraw(timerWithdrawId: string): AppThunk {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { wallet, ethereumNetworkTask },
+    } = getState();
+    if (wallet !== undefined && ethereumNetworkTask.status === "successful") {
+      const {
+        data: { chainId },
+      } = ethereumNetworkTask;
+      if (chainId !== undefined) {
+        const { hermezEthereumAddress } = wallet;
+        localStoragePersistence.removeTimerWithdrawById(
+          chainId,
+          hermezEthereumAddress,
+          timerWithdrawId
+        );
+        dispatch(
+          globalActions.removeTimerWithdraw(chainId, hermezEthereumAddress, timerWithdrawId)
+        );
+      }
+    }
+  };
+}
+
+/**
+ * Checks if we have some exit that is not saved in localStorage
+ */
+function recoverPendingDelayedWithdrawals(exits: Exits): AppThunk {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { wallet, pendingDelayedWithdraws, ethereumNetworkTask },
+    } = getState();
+    if (wallet !== undefined && ethereumNetworkTask.status === "successful") {
+      const {
+        data: { chainId },
+      } = ethereumNetworkTask;
+      if (chainId !== undefined) {
+        const { hermezEthereumAddress } = wallet;
+        const provider = Providers.getProvider();
+        const accountPendingDelayedWithdraws: PendingDelayedWithdraw[] =
+          storage.getPendingDelayedWithdrawsByHermezAddress(
+            pendingDelayedWithdraws,
+            chainId,
+            hermezEthereumAddress
+          );
+        const batchNumPendingDelayedWithdraws = accountPendingDelayedWithdraws.map(
+          (account) => account.batchNum
+        );
+
+        exits.exits.forEach((exit) => {
+          if (
+            !batchNumPendingDelayedWithdraws.includes(exit.batchNum) &&
+            exit.delayedWithdrawRequest
+          ) {
+            void provider
+              .getBlockWithTransactions(exit.delayedWithdrawRequest)
+              .then((blockWithTransactions) => {
+                const pendingDelayedWithdraw = blockWithTransactions.transactions.find(
+                  (tx) => Addresses.getEthereumAddress(hermezEthereumAddress) === tx.from
+                );
+                if (pendingDelayedWithdraw) {
+                  dispatch(
+                    addPendingDelayedWithdraw({
+                      ...exit,
+                      hash: pendingDelayedWithdraw.hash,
+                      id: `${exit.accountIndex}${exit.batchNum}`,
+                      hermezEthereumAddress: wallet.hermezEthereumAddress,
+                      isInstant: false, // TODO I'll remove this key that it's unused with the ExitCard refactor
+                      timestamp: new Date(blockWithTransactions.timestamp * 1000).toISOString(),
+                    })
+                  );
+                }
+              })
+              .catch(() => ({}));
+          }
+        });
+      }
+    }
+  };
+}
+
 /**
  * Checks pending exits to see if they have been completed
  * and delete them from storage
- * @returns {void}
  */
 function checkPendingWithdrawals(): AppThunk {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
@@ -529,8 +610,6 @@ function checkPendingWithdrawals(): AppThunk {
 
 /**
  * Adds a pendingDeposit to the pendingDeposits store
- * @param {PendingDeposit} pendingDeposit - The pendingDeposit to add to the store
- * @returns {void}
  */
 function addPendingDeposit(pendingDeposit: PendingDeposit): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -552,8 +631,6 @@ function addPendingDeposit(pendingDeposit: PendingDeposit): AppThunk {
 
 /**
  * Removes a pendingDeposit from the pendingDeposit store by id
- * @param {string} transactionId - The transaction identifier used to remove a pendingDeposit from the store
- * @returns {void}
  */
 function removePendingDepositByTransactionId(transactionId: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -585,8 +662,6 @@ function removePendingDepositByTransactionId(transactionId: string): AppThunk {
 
 /**
  * Removes a pendingDeposit from the pendingDeposit store by hash
- * @param {string} hash - The transaction hash used to remove a pendingDeposit from the store
- * @returns {void}
  */
 function removePendingDepositByHash(hash: string): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -781,7 +856,7 @@ function checkPendingTransactions(): AppThunk {
                   ? { to: transaction.toHezEthereumAddress }
                   : transaction.type === TxType.Transfer
                   ? { to: transaction.toAccountIndex }
-                  : {}),
+                  : { to: null }),
                 fee: transaction.fee,
               };
 
@@ -803,7 +878,6 @@ function checkPendingTransactions(): AppThunk {
 
 /**
  * Fetches the state of the coordinator
- * @returns {void}
  */
 function fetchCoordinatorState(): AppThunk {
   return (dispatch: AppDispatch) => {
@@ -819,7 +893,6 @@ function fetchCoordinatorState(): AppThunk {
 
 /**
  * Removes the MetaMask wallet data from the Redux store and the localStorage
- * @returns {void}
  */
 function disconnectWallet(): AppThunk {
   return (dispatch: AppDispatch) => {
@@ -837,7 +910,6 @@ function disconnectWallet(): AppThunk {
 
 /**
  * Reloads the webapp
- * @returns {void}
  */
 function reloadApp(): AppThunk {
   return () => {
@@ -847,7 +919,6 @@ function reloadApp(): AppThunk {
 
 /**
  * Fetch tokens price
- * @returns {Array} Response data with an array of tokens
  */
 function fetchTokensPrice(): AppThunk {
   return (dispatch: AppDispatch) => {
@@ -873,6 +944,8 @@ export {
   updatePendingDelayedWithdrawDate,
   checkPendingDelayedWithdrawals,
   checkPendingWithdrawals,
+  addTimerWithdraw,
+  removeTimerWithdraw,
   addPendingDeposit,
   removePendingDepositByTransactionId,
   removePendingDepositByHash,
@@ -883,4 +956,5 @@ export {
   disconnectWallet,
   reloadApp,
   fetchTokensPrice,
+  recoverPendingDelayedWithdrawals,
 };

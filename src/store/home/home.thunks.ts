@@ -6,21 +6,16 @@ import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
+import * as globalThunks from "src/store/global/global.thunks";
 import * as homeActions from "src/store/home/home.actions";
 // domain
-import {
-  PoolTransaction,
-  PendingDeposit,
-  FiatExchangeRates,
-  HermezAccount,
-} from "src/domain/hermez";
+import { FiatExchangeRates, HermezAccount, PendingDeposit, PoolTransaction } from "src/domain";
 import { Accounts } from "src/persistence";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 
 /**
  * Fetches the accounts for a Hermez Ethereum address and calculates the total balance.
- * @returns {void}
  */
 function fetchTotalBalance(
   hermezEthereumAddress: string,
@@ -43,8 +38,8 @@ function fetchTotalBalance(
             poolTransactions,
             pendingDeposits,
             tokensPriceTask,
-            fiatExchangeRates,
-            preferredCurrency
+            preferredCurrency,
+            fiatExchangeRates
           )
         );
 
@@ -87,16 +82,14 @@ function fetchTotalBalance(
 
 /**
  * Fetches the accounts for a Hermez address
- * @param {Number} fromItem - id of the first account to be returned from the API
- * @returns {void}
  */
 function fetchAccounts(
   hermezAddress: string,
-  fromItem: number,
   poolTransactions: PoolTransaction[],
   pendingDeposits: PendingDeposit[],
-  fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  preferredCurrency: string,
+  fiatExchangeRates?: FiatExchangeRates,
+  fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -110,8 +103,8 @@ function fetchAccounts(
           hermezAddress,
           poolTransactions,
           pendingDeposits,
-          fiatExchangeRates,
-          preferredCurrency
+          preferredCurrency,
+          fiatExchangeRates
         )
       );
     }
@@ -130,8 +123,8 @@ function fetchAccounts(
             poolTransactions,
             pendingDeposits,
             tokensPriceTask,
-            fiatExchangeRates,
-            preferredCurrency
+            preferredCurrency,
+            fiatExchangeRates
           )
         );
 
@@ -145,14 +138,13 @@ function fetchAccounts(
 /**
  * Refreshes the accounts information for the accounts that have already been
  * loaded
- * @param {string} accountIndex - Account index
  */
 function refreshAccounts(
   hermezAddress: string,
   poolTransactions: PoolTransaction[],
   pendingDeposits: PendingDeposit[],
-  fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  preferredCurrency: string,
+  fiatExchangeRates?: FiatExchangeRates
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -199,8 +191,8 @@ function refreshAccounts(
                 poolTransactions,
                 pendingDeposits,
                 tokensPriceTask,
-                fiatExchangeRates,
-                preferredCurrency
+                preferredCurrency,
+                fiatExchangeRates
               )
             );
           const pendingItems = results[results.length - 1]
@@ -217,7 +209,6 @@ function refreshAccounts(
 
 /**
  * Fetches the transactions which are in the transactions pool
- * @returns {void}
  */
 function fetchPoolTransactions(): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -237,7 +228,6 @@ function fetchPoolTransactions(): AppThunk {
 
 /**
  * Fetches the exit data for transactions of type Exit
- * @returns {void}
  */
 function fetchExits(): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -249,7 +239,10 @@ function fetchExits(): AppThunk {
       dispatch(homeActions.loadExits());
 
       return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
-        .then((exits) => dispatch(homeActions.loadExitsSuccess(exits)))
+        .then((exits) => {
+          dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
+          dispatch(homeActions.loadExitsSuccess(exits));
+        })
         .catch((err) => dispatch(homeActions.loadExitsFailure(err)));
     }
   };

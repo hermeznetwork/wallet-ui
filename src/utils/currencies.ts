@@ -2,7 +2,12 @@ import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
 import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
 
 import { MAX_TOKEN_DECIMALS } from "src/constants";
-import { FiatExchangeRates, Token } from "src/domain/hermez";
+import { FiatExchangeRates, Token } from "src/domain";
+
+export type Currency = {
+  code: string;
+  symbol: string;
+};
 
 const CurrencySymbol = {
   USD: {
@@ -25,16 +30,21 @@ const CurrencySymbol = {
     symbol: "£",
     code: "GBP",
   },
-};
+} as const;
+
+type CurrencySymbolKey = keyof typeof CurrencySymbol;
+
+function isValidCurrencySymbolKey(key: string): key is CurrencySymbolKey {
+  return key === "USD" || key === "EUR" || key === "CNY" || key === "JPY" || key === "GBP";
+}
 
 /**
  * Gets the string representation of a token amount with fixed decimals
  */
-function getFixedTokenAmount(amount: string, decimals: number): string {
+function getFixedTokenAmount(amount: string, decimals = 18): string {
   // We can lose precision as there will never be more than MAX_DECIMALS_UNTIL_ZERO_AMOUNT significant digits
-  const balanceWithDecimals = Number(amount) / Math.pow(10, decimals);
-
-  return trimZeros(balanceWithDecimals, MAX_TOKEN_DECIMALS).toString();
+  const amountWithDecimals = Number(amount) / Math.pow(10, decimals);
+  return trimZeros(amountWithDecimals, MAX_TOKEN_DECIMALS).toString();
 }
 
 /**
@@ -43,12 +53,13 @@ function getFixedTokenAmount(amount: string, decimals: number): string {
 function getAmountInPreferredCurrency(
   usdAmount: number,
   preferredCurrency: string,
-  fiatExchangeRates: FiatExchangeRates
-): number {
+  fiatExchangeRates?: FiatExchangeRates
+): number | undefined {
   if (preferredCurrency === CurrencySymbol.USD.code) {
     return usdAmount;
+  } else if (fiatExchangeRates === undefined) {
+    return undefined;
   }
-
   return usdAmount * fiatExchangeRates[preferredCurrency];
 }
 
@@ -57,11 +68,14 @@ function getAmountInPreferredCurrency(
  */
 function getTokenAmountInPreferredCurrency(
   amount: string,
-  usdTokenExchangeRate: number,
+  token: Token,
   preferredCurrency: string,
-  fiatExchangeRates: FiatExchangeRates
-): number {
-  const usdAmount = Number(amount) * usdTokenExchangeRate;
+  fiatExchangeRates?: FiatExchangeRates
+): number | undefined {
+  if (!token.USD) {
+    return undefined;
+  }
+  const usdAmount = Number(amount) * token.USD;
   return getAmountInPreferredCurrency(usdAmount, preferredCurrency, fiatExchangeRates);
 }
 
@@ -69,6 +83,9 @@ function getTokenAmountInPreferredCurrency(
  * Converts a fee index to USD
  */
 function getFeeInUsd(feeIndex: number, amount: string, token: Token): number {
+  if (!token.USD) {
+    return 0;
+  }
   const feeInToken = Number(getTokenAmountString(getFeeValue(feeIndex, amount), token.decimals));
   const feeInFiat = feeInToken * token.USD;
   return feeInFiat;
@@ -81,12 +98,12 @@ function convertTokenAmountToFiat(
   tokenAmount: string,
   token: Token,
   preferredCurrency: string,
-  fiatExchangeRates: FiatExchangeRates
-): number {
+  fiatExchangeRates?: FiatExchangeRates
+): number | undefined {
   const fixedTokenAmount = getFixedTokenAmount(tokenAmount, token.decimals);
   return getTokenAmountInPreferredCurrency(
     fixedTokenAmount,
-    token.USD,
+    token,
     preferredCurrency,
     fiatExchangeRates
   );
@@ -99,12 +116,21 @@ function trimZeros(amount: number, decimals: number): number {
   return Number(amount.toFixed(decimals));
 }
 
+/**
+ * Formats a fiat amount to be displayed properly
+ */
+function formatFiatAmount(amount?: number): string {
+  return amount !== undefined && !isNaN(amount) ? amount.toFixed(2) : "--";
+}
+
 export {
   CurrencySymbol,
+  isValidCurrencySymbolKey,
   getFixedTokenAmount,
   getAmountInPreferredCurrency,
   getTokenAmountInPreferredCurrency,
   getFeeInUsd,
   convertTokenAmountToFiat,
   trimZeros,
+  formatFiatAmount,
 };

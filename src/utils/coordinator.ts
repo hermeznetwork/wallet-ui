@@ -1,12 +1,10 @@
 import { DELAY_TO_NEXT_FORGER } from "src/constants";
 // domain
-import { CoordinatorState, NextForger } from "src/domain/hermez";
+import { CoordinatorState, NextForger } from "src/domain";
 
 /**
  * Extracts the next forgers without duplicates from the coordinator state returned by
  * the Hermez API
- * @param {CoordinatorState} coordinatorState - Coordinator state returned by the Hermez API
- * @returns Next forgers
  */
 function getNextForgers(coordinatorState: CoordinatorState): NextForger[] {
   return coordinatorState.network.nextForgers.reduce((acc: NextForger[], curr: NextForger) => {
@@ -21,8 +19,6 @@ function getNextForgers(coordinatorState: CoordinatorState): NextForger[] {
 /**
  * Extracts the nextForgerUrls without duplicates from the coordinator state returned by
  * the Hermez API
- * @param {Object} coordinatorState - Coordinator state returned by the Hermez API
- * @returns URL's of the next forgers
  */
 function getNextForgerUrls(coordinatorState: CoordinatorState): string[] {
   const nextForgerUrls = getNextForgers(coordinatorState).map(
@@ -37,8 +33,6 @@ function getNextForgerUrls(coordinatorState: CoordinatorState): string[] {
  * be forging for at least enough time to pick the transaction that we are going to send
  * afterwards. If it's about to finish forging, the next forger matching this criteria
  * will be picked up
- * @param {Object} coordinatorState - Coordinator state returned by the Hermez API
- * @returns Next best forger
  */
 function getNextBestForger(coordinatorState: CoordinatorState): NextForger | undefined {
   const nextForgers = getNextForgers(coordinatorState);

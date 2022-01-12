@@ -5,12 +5,12 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { AsyncTask } from "src/utils/types";
 // domain
 import {
-  HermezAccount,
-  PoolTransaction,
-  PendingDeposit,
-  Token,
   FiatExchangeRates,
-} from "src/domain/hermez";
+  HermezAccount,
+  PendingDeposit,
+  PoolTransaction,
+  Token,
+} from "src/domain";
 
 function getAccountBalance(
   account: HermezAccount,
@@ -37,7 +37,7 @@ function getAccountBalance(
     accountPoolTransactions.forEach((pendingTransaction) => {
       totalBalance = totalBalance.sub(BigNumber.from(pendingTransaction.amount));
       totalBalance = totalBalance.sub(
-        BigNumber.from(getFeeValue(pendingTransaction.fee, pendingTransaction.amount))
+        BigNumber.from(getFeeValue(Number(pendingTransaction.fee), pendingTransaction.amount))
       );
     });
   }
@@ -59,18 +59,18 @@ function updateAccountToken(
   }
 }
 
-// TODO Study if this belongs to the domain model, as it's the function who creates a domain entity Account and move it there
+// ToDo: This helper should be moved to persistence when we move to persistence and abstract the calls to CoordinatorAPI.getAccounts
 function createAccount(
   account: HermezAccount,
   poolTransactions: PoolTransaction[] | undefined,
   pendingDeposits: PendingDeposit[] | undefined,
   tokensPriceTask: AsyncTask<Token[], string>,
-  fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  preferredCurrency: string,
+  fiatExchangeRates?: FiatExchangeRates
 ): HermezAccount {
   const updatedAccount: HermezAccount = updateAccountToken(tokensPriceTask, account);
   const accountBalance = getAccountBalance(updatedAccount, poolTransactions, pendingDeposits);
-  const fiatBalance: number = convertTokenAmountToFiat(
+  const fiatBalance = convertTokenAmountToFiat(
     accountBalance,
     updatedAccount.token,
     preferredCurrency,

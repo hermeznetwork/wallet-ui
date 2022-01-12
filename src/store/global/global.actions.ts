@@ -1,17 +1,19 @@
+import { HeaderState } from "src/store/global/global.reducer";
 // domain
-import { EthereumNetwork } from "src/domain/ethereum";
 import {
-  HermezWallet,
-  Signers,
+  CoordinatorState,
+  EthereumNetwork,
   FiatExchangeRates,
-  HermezNetworkStatus,
-  PendingWithdraw,
+  NetworkStatus,
+  HermezWallet,
+  ISOStringDate,
   PendingDelayedWithdraw,
   PendingDeposit,
-  CoordinatorState,
+  PendingWithdraw,
+  Signers,
+  TimerWithdraw,
   Token,
-} from "src/domain/hermez";
-import { ISOStringDate, Header } from "src/domain/";
+} from "src/domain";
 
 export enum GlobalActionTypes {
   LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",
@@ -26,6 +28,7 @@ export enum GlobalActionTypes {
   CHANGE_REDIRECT_ROUTE = "[GLOBAL] CHANGE REDIRECT ROUTE",
   LOAD_FIAT_EXCHANGE_RATES = "[GLOBAL] LOAD FIAT EXCHANGE RATES",
   LOAD_FIAT_EXCHANGE_RATES_SUCCESS = "[GLOBAL] LOAD FIAT EXCHANGE RATES SUCCESS",
+  LOAD_FIAT_EXCHANGE_RATES_FAILURE = "[GLOBAL] LOAD FIAT EXCHANGE RATES FAILURE",
   OPEN_SNACKBAR = "[GLOBAL] OPEN SNACKBAR",
   CLOSE_SNACKBAR = "[GLOBAL] CLOSE SNACKBAR",
   CHANGE_NETWORK_STATUS = "[GLOBAL] CHANGE NETWORK STATUS",
@@ -37,6 +40,8 @@ export enum GlobalActionTypes {
   UPDATE_PENDING_DELAYED_WITHDRAW_DATE = "[GLOBAL] UPDATE PENDING DELAYED WITHDRAW DATE",
   CHECK_PENDING_DELAYED_WITHDRAWALS = "[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS",
   CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS = "[GLOBAL] CHECK PENDING DELAYED WITHDRAWALS SUCCESS",
+  ADD_TIMER_WITHDRAW = "[GLOBAL] ADD TIMER WITHDRAW",
+  REMOVE_TIMER_WITHDRAW = "[GLOBAL] REMOVE TIMER WITHDRAW",
   CHECK_PENDING_WITHDRAWALS = "[GLOBAL] CHECK PENDING WITHDRAWALS",
   CHECK_PENDING_WITHDRAWALS_SUCCESS = "[GLOBAL] CHECK PENDING WITHDRAWALS SUCCESS",
   ADD_PENDING_DEPOSIT = "[GLOBAL] ADD PENDING DEPOSIT",
@@ -92,7 +97,7 @@ export interface SetSigner {
 
 export interface ChangeHeader {
   type: GlobalActionTypes.CHANGE_HEADER;
-  header: Header;
+  header: HeaderState;
 }
 
 export interface ChangeRedirectRoute {
@@ -109,6 +114,11 @@ export interface LoadFiatExchangeRatesSuccess {
   fiatExchangeRates: FiatExchangeRates;
 }
 
+export interface LoadFiatExchangeRatesFailure {
+  type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE;
+  error: string;
+}
+
 export interface OpenSnackbar {
   type: GlobalActionTypes.OPEN_SNACKBAR;
   message: string;
@@ -121,7 +131,7 @@ export interface CloseSnackbar {
 
 export interface ChangeNetworkStatus {
   type: GlobalActionTypes.CHANGE_NETWORK_STATUS;
-  networkStatus: HermezNetworkStatus;
+  networkStatus: NetworkStatus;
 }
 
 export interface AddPendingWithdraw {
@@ -173,6 +183,20 @@ export interface CheckPendingDelayedWithdrawals {
 
 export interface CheckPendingDelayedWithdrawalsSuccess {
   type: GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS;
+}
+
+export interface AddTimerWithdraw {
+  type: GlobalActionTypes.ADD_TIMER_WITHDRAW;
+  chainId: number;
+  hermezEthereumAddress: string;
+  timerWithdraw: TimerWithdraw;
+}
+
+export interface RemoveTimerWithdraw {
+  type: GlobalActionTypes.REMOVE_TIMER_WITHDRAW;
+  chainId: number;
+  hermezEthereumAddress: string;
+  timerWithdrawId: string;
 }
 
 export interface CheckPendingWithdrawals {
@@ -260,6 +284,7 @@ export type GlobalAction =
   | ChangeRedirectRoute
   | LoadFiatExchangeRates
   | LoadFiatExchangeRatesSuccess
+  | LoadFiatExchangeRatesFailure
   | OpenSnackbar
   | CloseSnackbar
   | ChangeNetworkStatus
@@ -271,6 +296,8 @@ export type GlobalAction =
   | UpdatePendingDelayedWithdrawDate
   | CheckPendingDelayedWithdrawals
   | CheckPendingDelayedWithdrawalsSuccess
+  | AddTimerWithdraw
+  | RemoveTimerWithdraw
   | CheckPendingWithdrawals
   | CheckPendingWithdrawalsSuccess
   | AddPendingDeposit
@@ -339,7 +366,7 @@ function setSigner(signer: Signers.SignerData): SetSigner {
   };
 }
 
-function changeHeader(header: Header): ChangeHeader {
+function changeHeader(header: HeaderState): ChangeHeader {
   return {
     type: GlobalActionTypes.CHANGE_HEADER,
     header,
@@ -368,6 +395,13 @@ function loadFiatExchangeRatesSuccess(
   };
 }
 
+function loadFiatExchangeRatesFailure(error: string): LoadFiatExchangeRatesFailure {
+  return {
+    type: GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE,
+    error,
+  };
+}
+
 function openSnackbar(message: string, backgroundColor?: string): OpenSnackbar {
   return {
     type: GlobalActionTypes.OPEN_SNACKBAR,
@@ -382,7 +416,7 @@ function closeSnackbar(): CloseSnackbar {
   };
 }
 
-function changeNetworkStatus(networkStatus: HermezNetworkStatus): ChangeNetworkStatus {
+function changeNetworkStatus(networkStatus: NetworkStatus): ChangeNetworkStatus {
   return {
     type: GlobalActionTypes.CHANGE_NETWORK_STATUS,
     networkStatus,
@@ -478,6 +512,32 @@ function checkPendingDelayedWithdrawals(): CheckPendingDelayedWithdrawals {
 function checkPendingDelayedWithdrawalsSuccess(): CheckPendingDelayedWithdrawalsSuccess {
   return {
     type: GlobalActionTypes.CHECK_PENDING_DELAYED_WITHDRAWALS_SUCCESS,
+  };
+}
+
+function addTimerWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  timerWithdraw: TimerWithdraw
+): AddTimerWithdraw {
+  return {
+    type: GlobalActionTypes.ADD_TIMER_WITHDRAW,
+    chainId,
+    hermezEthereumAddress,
+    timerWithdraw,
+  };
+}
+
+function removeTimerWithdraw(
+  chainId: number,
+  hermezEthereumAddress: string,
+  timerWithdrawId: string
+): RemoveTimerWithdraw {
+  return {
+    type: GlobalActionTypes.REMOVE_TIMER_WITHDRAW,
+    chainId,
+    hermezEthereumAddress,
+    timerWithdrawId,
   };
 }
 
@@ -614,6 +674,7 @@ export {
   changeRedirectRoute,
   loadFiatExchangeRates,
   loadFiatExchangeRatesSuccess,
+  loadFiatExchangeRatesFailure,
   openSnackbar,
   closeSnackbar,
   changeNetworkStatus,
@@ -627,6 +688,8 @@ export {
   checkPendingDelayedWithdrawalsSuccess,
   checkPendingWithdrawals,
   checkPendingWithdrawalsSuccess,
+  addTimerWithdraw,
+  removeTimerWithdraw,
   addPendingDeposit,
   removePendingDepositByHash,
   removePendingDepositByTransactionId,

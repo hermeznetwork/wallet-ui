@@ -1,5 +1,6 @@
-import { Theme } from "src/styles/theme";
 import { createUseStyles } from "react-jss";
+
+import { Theme } from "src/styles/theme";
 
 const useTransferStyles = createUseStyles((theme: Theme) => ({
   root: {

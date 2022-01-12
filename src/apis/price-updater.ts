@@ -1,21 +1,25 @@
 import axios from "axios";
 import { z } from "zod";
 
-import { CurrencySymbol } from "src/utils/currencies";
 // domain
-import { FiatExchangeRates, Token } from "src/domain/hermez";
+import { FiatExchangeRates, Token } from "src/domain";
 // persistence
 import * as parsers from "src/persistence/parsers";
+// utils
+import { CurrencySymbol } from "src/utils/currencies";
+import { StrictSchema } from "src/utils/type-safety";
 
-const tokenListParser: z.ZodSchema<Token[]> = z.array(parsers.token);
+const tokenListParser = StrictSchema<Token[]>()(z.array(parsers.token));
 
 interface GetTokensPriceResponse {
   tokens: Token[];
 }
 
-const getTokensPriceResponseParser: z.ZodSchema<GetTokensPriceResponse> = z.object({
-  tokens: tokenListParser,
-});
+const getTokensPriceResponseParser = StrictSchema<GetTokensPriceResponse>()(
+  z.object({
+    tokens: tokenListParser,
+  })
+);
 
 // api exchange rates validation
 interface ApiExchangeRate {
@@ -23,27 +27,24 @@ interface ApiExchangeRate {
   price: number;
 }
 
-const apiExchangeRateParser: z.ZodSchema<ApiExchangeRate> = z.object({
-  currency: z.string(),
-  price: z.number(),
-});
+const apiExchangeRateParser = StrictSchema<ApiExchangeRate>()(
+  z.object({
+    currency: z.string(),
+    price: z.number(),
+  })
+);
 
-const apiExchangeRateListParser: z.ZodSchema<ApiExchangeRate[]> = z.array(apiExchangeRateParser);
+const apiExchangeRateListParser = StrictSchema<ApiExchangeRate[]>()(z.array(apiExchangeRateParser));
 
 interface ApiExchangeRateResponse {
   currencies: ApiExchangeRate[];
 }
 
-const getFiatExchangeRatesResponseParser: z.ZodSchema<ApiExchangeRateResponse> = z.object({
-  currencies: apiExchangeRateListParser,
-});
-
-const mockedFiatExchangeRates = {
-  EUR: 0.837775,
-  CNY: 6.446304,
-  JPY: 110.253954,
-  GBP: 0.716945,
-};
+const getFiatExchangeRatesResponseParser = StrictSchema<ApiExchangeRateResponse>()(
+  z.object({
+    currencies: apiExchangeRateListParser,
+  })
+);
 
 const parsedReactAppPriceUpdaterApiUrl = z
   .string()
@@ -54,8 +55,7 @@ const parsedReactAppPriceUpdaterApiKey = z
   .safeParse(process.env.REACT_APP_PRICE_UPDATER_API_KEY);
 
 /**
- * Returns a list of tokens with usd price.>
- * @returns {Promise<Token[]>} - List of tokens
+ * Returns a list of tokens with usd price.
  */
 function getTokensPrice(): Promise<Token[]> {
   if (parsedReactAppPriceUpdaterApiUrl.success === false) {
@@ -80,10 +80,7 @@ function getTokensPrice(): Promise<Token[]> {
 
 /**
  * Fetches the USD exchange rates for the requested currency symbols
- * @param {string[]} symbols - ISO 4217 currency codes
- * @returns {Promise<FiatExchangeRates>} - USD exchange rates for the requested symbols
  */
-// eslint-disable-next-line no-unused-vars
 function getFiatExchangeRates(symbols: string[]): Promise<FiatExchangeRates> {
   if (parsedReactAppPriceUpdaterApiUrl.success === false) {
     return Promise.reject(parsedReactAppPriceUpdaterApiUrl.error.message);
@@ -115,4 +112,4 @@ function getFiatExchangeRates(symbols: string[]): Promise<FiatExchangeRates> {
   }
 }
 
-export { mockedFiatExchangeRates, getFiatExchangeRates, getTokensPrice };
+export { getFiatExchangeRates, getTokensPrice };

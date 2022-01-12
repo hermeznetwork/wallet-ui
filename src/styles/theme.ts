@@ -3,16 +3,19 @@ const theme = {
     primary: {
       main: "#f6f7fa",
       dark: "#e9ecf4",
-      hover: "#ebdbc1",
+      hover: "#dee2ed",
     },
     secondary: {
-      light: "#fef5ed",
+      light: "#a783e6",
       main: "#8248e5",
-      dark: "#d8853b",
-      hover: "#d44d20",
+      dark: "#6d00f1",
+      hover: "#7824EB",
     },
     white: "#ffffff",
-    black: "#2b2b2b",
+    black: {
+      main: "#081132",
+      hover: "#000411",
+    },
     grey: {
       veryLight: "#e1e1f1",
       light: "#f3f3f8",
@@ -26,9 +29,14 @@ const theme = {
       main: "#ff4b40",
     },
     orange: {
-      light: "rgba(242, 153, 74, 0.1)",
-      main: "#ffa600",
+      light: "rgba(252, 197, 90, 0.15)",
+      main: "#ffc55a",
       dark: "#d8853b",
+    },
+    purple: {
+      light: "rgba(130, 72, 229, 0.15)",
+      main: "#8248e5",
+      dark: "#6d00f1",
     },
     green: "#219653",
   },

@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { HermezAccount, PoolTransaction, RecommendedFee } from "src/domain/hermez";
+import { HermezAccount, PoolTransaction, RecommendedFee, TransactionReceiver } from "src/domain";
 // persistence
 import { Accounts } from "src/persistence";
 
@@ -22,9 +22,17 @@ export enum TransferActionTypes {
   LOAD_ACCOUNTS = "[TRANSFER] LOAD ACCOUNTS",
   LOAD_ACCOUNTS_SUCCESS = "[TRANSFER] LOAD ACCOUNTS SUCCESS",
   LOAD_ACCOUNTS_FAILURE = "[TRANSFER] LOAD ACCOUNTS FAILURE",
+  SET_RECEIVER_ACCOUNTS_CREATION_AUTHORIZATION = "[TRANSFER] SET RECEIVER ACCOUNTS CREATION AUTHORIZATION",
   START_TRANSACTION_APPROVAL = "[TRANSFER] START TRANSACTION APPROVAL",
   STOP_TRANSACTION_APPROVAL = "[TRANSFER] STOP TRANSACTION APPROVAL",
   RESET_STATE = "[TRANSFER] RESET STATE",
+}
+
+export interface TransactionToReview {
+  amount: BigNumber;
+  from: HermezAccount;
+  fee: BigNumber;
+  to: TransactionReceiver;
 }
 
 export type Step = "load-account" | "choose-account" | "build-transaction" | "review-transaction";
@@ -36,13 +44,6 @@ export interface GoToChooseAccountStep {
 export interface GoToBuildTransactionStep {
   type: TransferActionTypes.GO_TO_BUILD_TRANSACTION_STEP;
   account: HermezAccount;
-}
-
-export interface TransactionToReview {
-  amount: BigNumber;
-  fee: number;
-  from: HermezAccount;
-  to: Partial<HermezAccount>;
 }
 
 export interface GoToReviewTransactionStep {
@@ -111,6 +112,11 @@ export interface LoadAccountsFailure {
   error: Error;
 }
 
+export interface SetReceiverCreateAccountsAuthorizationStatus {
+  type: TransferActionTypes.SET_RECEIVER_ACCOUNTS_CREATION_AUTHORIZATION;
+  approval?: boolean;
+}
+
 export interface StartTransactionApproval {
   type: TransferActionTypes.START_TRANSACTION_APPROVAL;
 }
@@ -140,6 +146,7 @@ export type TransferAction =
   | LoadAccounts
   | LoadAccountsSuccess
   | LoadAccountsFailure
+  | SetReceiverCreateAccountsAuthorizationStatus
   | StartTransactionApproval
   | StopTransactionApproval
   | ResetState;
@@ -251,6 +258,15 @@ function loadAccountsFailure(error: Error): LoadAccountsFailure {
   };
 }
 
+function setReceiverCreateAccountsAuthorizationStatus(
+  approval?: boolean
+): SetReceiverCreateAccountsAuthorizationStatus {
+  return {
+    type: TransferActionTypes.SET_RECEIVER_ACCOUNTS_CREATION_AUTHORIZATION,
+    approval,
+  };
+}
+
 function startTransactionApproval(): StartTransactionApproval {
   return {
     type: TransferActionTypes.START_TRANSACTION_APPROVAL,
@@ -286,6 +302,7 @@ export {
   loadFees,
   loadFeesSuccess,
   loadFeesFailure,
+  setReceiverCreateAccountsAuthorizationStatus,
   startTransactionApproval,
   stopTransactionApproval,
   resetState,

@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { EstimatedDepositFee } from "src/domain";
-import { HermezAccount, EthereumAccount } from "src/domain/hermez";
+import { EstimatedL1Fee, EthereumAccount } from "src/domain";
 
 export enum DepositActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[DEPOSIT] GO TO CHOOSE ACCOUNT STEP",
@@ -36,9 +35,7 @@ export interface GoToBuildTransactionStep {
 
 export interface TransactionToReview {
   amount: BigNumber;
-  fee: number;
-  from: HermezAccount;
-  to: Partial<HermezAccount>;
+  from: EthereumAccount;
 }
 
 export interface GoToReviewTransactionStep {
@@ -85,7 +82,7 @@ export interface LoadEstimatedDepositFee {
 
 export interface LoadEstimatedDepositFeeSuccess {
   type: DepositActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE_SUCCESS;
-  estimatedFee: EstimatedDepositFee;
+  estimatedFee: EstimatedL1Fee;
 }
 
 export interface LoadEstimatedDepositFeeFailure {
@@ -199,7 +196,7 @@ function loadEstimatedDepositFee(): LoadEstimatedDepositFee {
 }
 
 function loadEstimatedDepositFeeSuccess(
-  estimatedFee: EstimatedDepositFee
+  estimatedFee: EstimatedL1Fee
 ): LoadEstimatedDepositFeeSuccess {
   return {
     type: DepositActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE_SUCCESS,

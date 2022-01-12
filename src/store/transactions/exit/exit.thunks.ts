@@ -1,28 +1,27 @@
 import { push } from "connected-react-router";
-import { BigNumber, utils } from "ethers";
+import { BigNumber } from "ethers";
 import { CoordinatorAPI, Tx, HermezCompressedAmount, TxFees } from "@hermeznetwork/hermezjs";
 import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { formatEther } from "@ethersproject/units";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
+import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
 import { openSnackbar } from "src/store/global/global.actions";
-import { createAccount } from "src/utils/accounts";
-import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import theme from "src/styles/theme";
+// utils
+import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
+import { createAccount } from "src/utils/accounts";
+import { feeBigIntToNumber } from "src/utils/fees";
 // domain
-import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain/hermez";
+import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain";
 import { ETHER_TOKEN_ID } from "src/constants";
-import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 // persistence
 import * as persistence from "src/persistence";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
- * @param {string} accountIndex - accountIndex of the account
- * @returns {void}
  */
 function fetchHermezAccount(
   accountIndex: string,
@@ -44,8 +43,8 @@ function fetchHermezAccount(
           poolTransactions,
           undefined,
           tokensPriceTask,
-          fiatExchangeRates,
-          preferredCurrency
+          preferredCurrency,
+          fiatExchangeRates
         )
       )
       .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
@@ -55,7 +54,6 @@ function fetchHermezAccount(
 
 /**
  * Fetches the transactions which are in the transactions pool
- * @returns {void}
  */
 function fetchPoolTransactions(): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -75,7 +73,6 @@ function fetchPoolTransactions(): AppThunk {
 
 /**
  * Fetches the recommended fees from the Coordinator
- * @returns {void}
  */
 function fetchFees(): AppThunk {
   return function (dispatch: AppDispatch, getState: () => AppState) {
@@ -114,9 +111,7 @@ function fetchAccountBalance() {
 
       provider
         .getBalance(ethereumAddress)
-        .then((balance) =>
-          dispatch(exitActions.loadAccountBalanceSuccess(utils.formatUnits(balance)))
-        )
+        .then((balance) => dispatch(exitActions.loadAccountBalanceSuccess(balance)))
         .catch((err) => dispatch(exitActions.loadAccountBalanceFailure(err)));
     }
   };
@@ -132,13 +127,12 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
       } = getState();
       const provider = getProvider();
       const { maxFeePerGas } = await provider.getFeeData();
-      const estimatedMerkleSiblingsLength = 4;
       const overrides = maxFeePerGas ? { maxFeePerGas } : {};
-      const gasLimit = await TxFees.estimateWithdrawGasLimit(
+      const gasLimit = await TxFees.estimateWithdrawCircuitGasLimit(
         token,
-        estimatedMerkleSiblingsLength,
         amount,
         overrides,
+        true,
         signer
       );
       const feeBigNumber = maxFeePerGas
@@ -146,15 +140,16 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         : BigNumber.from(gasLimit);
 
       if (tokensPriceTask.status === "successful" || tokensPriceTask.status === "reloading") {
-        const tokenUSD = tokensPriceTask.data[ETHER_TOKEN_ID].USD;
-        const feeUSD = Number(formatEther(feeBigNumber)) * tokenUSD;
+        const ethToken = tokensPriceTask.data.find((token) => token.id === ETHER_TOKEN_ID);
 
-        dispatch(
-          exitActions.loadEstimatedWithdrawFeeSuccess({
-            amount: feeBigNumber,
-            USD: feeUSD,
-          })
-        );
+        if (ethToken) {
+          dispatch(
+            exitActions.loadEstimatedWithdrawFeeSuccess({
+              amount: feeBigNumber,
+              token: ethToken,
+            })
+          );
+        }
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -166,7 +161,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
   };
 }
 
-function exit(amount: BigNumber, account: HermezAccount, fee: number) {
+function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
   return (dispatch: AppDispatch, getState: () => AppState): void | Promise<void> => {
     const {
       global: { wallet, coordinatorStateTask },
@@ -182,8 +177,9 @@ function exit(amount: BigNumber, account: HermezAccount, fee: number) {
       const txData = {
         type: TxType.Exit,
         from: account.accountIndex,
+        to: null,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
-        fee,
+        fee: feeBigIntToNumber(fee, account.token),
       };
 
       return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
@@ -200,6 +196,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   const errorMsg = persistence.getErrorMessage(error);
+  console.error(error);
   dispatch(exitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }

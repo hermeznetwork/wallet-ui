@@ -4,7 +4,7 @@ import {
 } from "src/store/transaction-details/transaction-details.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain/hermez";
+import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain";
 
 export interface TransactionDetailsState {
   transactionTask: AsyncTask<PendingDeposit | HistoryTransaction | PoolTransaction, string>;
