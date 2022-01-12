@@ -141,7 +141,9 @@ function checkHermezStatus(): AppThunk {
       .getNetworkStatus()
       .then((status: number) => dispatch(globalActions.loadHermezStatusSuccess(status)))
       .catch(() =>
-        dispatch(globalActions.loadHermezStatusFailure("An error occurred loading Hermez status"))
+        dispatch(
+          globalActions.loadHermezStatusFailure("An error occurred loading Polygon Hermez status")
+        )
       );
   };
 }

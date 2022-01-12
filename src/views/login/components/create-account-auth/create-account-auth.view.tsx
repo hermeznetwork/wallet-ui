@@ -26,8 +26,8 @@ function CreateAccountAuth({
       <div className={classes.accountAuth}>
         <h2 className={classes.accountAuthTitle}>Create accounts for new tokens</h2>
         <p className={classes.accountAuthText}>
-          Confirm with your signature in your connected wallet that Hermez will automatically create
-          accounts for your new tokens.
+          Confirm with your signature in your connected wallet that Polygon Hermez will
+          automatically create accounts for your new tokens.
         </p>
         <Spinner />
       </div>

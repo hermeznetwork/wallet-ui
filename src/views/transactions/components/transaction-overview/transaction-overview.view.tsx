@@ -184,7 +184,7 @@ function TransactionOverview({
     );
 
   const myHermezAddress = {
-    subtitle: "My Hermez address",
+    subtitle: "My Polygon Hermez address",
     value: getPartiallyHiddenHermezAddress(wallet.hermezEthereumAddress),
   };
   transaction;

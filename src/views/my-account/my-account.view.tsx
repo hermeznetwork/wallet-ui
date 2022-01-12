@@ -64,7 +64,7 @@ function MyAccount({
    */
   function handleEthereumAddressClick(hermezEthereumAddress: string) {
     copyToClipboard(hermezEthereumAddress);
-    onOpenSnackbar("The Hermez address has been copied to the clipboard!");
+    onOpenSnackbar("The Polygon Hermez address has been copied to the clipboard!");
   }
 
   /**
