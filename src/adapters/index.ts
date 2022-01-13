@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z, ZodError } from "zod";
 
 import { StrictSchema } from "src/utils/type-safety";
 
@@ -34,4 +34,15 @@ export function getErrorMessage(error: unknown, defaultMsg?: string): string {
     return defaultMsg;
   }
   return "An unknown error occurred";
+}
+
+export function logDecodingError<T>(error: ZodError<T>, type: string): void {
+  const message =
+    error.issues.length > 1
+      ? `Some errors occurred while decoding ${type}`
+      : `An error occurred while decoding ${type}`;
+  console.error(message);
+  error.issues.forEach((issue) => {
+    console.error(JSON.stringify(issue, null, 4));
+  });
 }
