@@ -696,5 +696,18 @@ export function estimateWithdrawCircuitGasLimit(
     isInstant,
     signerData,
     providerUrl
-  );
+  ).then((estimateWithdrawCircuitGasLimit: unknown) => {
+    const parsedEstimateWithdrawCircuitGasLimit = z
+      .number()
+      .safeParse(estimateWithdrawCircuitGasLimit);
+    if (parsedEstimateWithdrawCircuitGasLimit.success) {
+      return parsedEstimateWithdrawCircuitGasLimit.data;
+    } else {
+      logDecodingError(
+        parsedEstimateWithdrawCircuitGasLimit.error,
+        "Could not decode the number from the function estimateWithdrawCircuitGasLimit."
+      );
+      throw parsedEstimateWithdrawCircuitGasLimit.error;
+    }
+  });
 }
