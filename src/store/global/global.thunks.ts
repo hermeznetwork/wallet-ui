@@ -14,7 +14,6 @@ import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
 import * as storage from "src/utils/storage";
-import { isTxMined, hasTxBeenReverted, isTxCanceled, isTxExpectedToFail } from "src/utils/ethereum";
 import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
 // domain
@@ -366,8 +365,12 @@ function checkPendingDelayedWithdrawals(): AppThunk {
               }
               // Checks here to have access to pendingDelayedWithdraw.timestamp
               if (
-                isTxCanceled(tx) ||
-                isTxExpectedToFail(tx, pendingDelayedWithdraw.timestamp, accountEthBalance)
+                adapters.ethereum.isTxCanceled(tx) ||
+                adapters.ethereum.isTxExpectedToFail(
+                  tx,
+                  pendingDelayedWithdraw.timestamp,
+                  accountEthBalance
+                )
               ) {
                 dispatch(removePendingDelayedWithdrawByHash(pendingDelayedWithdraw.hash));
               }
@@ -377,7 +380,7 @@ function checkPendingDelayedWithdrawals(): AppThunk {
 
         Promise.all(pendingDelayedWithdrawsTxs)
           .then((txs) => {
-            const minedTxs = txs.filter(isTxMined);
+            const minedTxs = txs.filter(adapters.ethereum.isTxMined);
             const pendingDelayedWithdrawsTxReceipts = minedTxs.map((tx) =>
               provider.getTransactionReceipt(tx.hash)
             );
@@ -385,7 +388,7 @@ function checkPendingDelayedWithdrawals(): AppThunk {
             // Checks receipts to see if transactions have been reverted
             Promise.all(pendingDelayedWithdrawsTxReceipts)
               .then((txReceipts) => {
-                const revertedTxReceipts = txReceipts.filter(hasTxBeenReverted);
+                const revertedTxReceipts = txReceipts.filter(adapters.ethereum.hasTxBeenReverted);
 
                 revertedTxReceipts.forEach((tx) => {
                   dispatch(removePendingDelayedWithdrawByHash(tx.transactionHash));
@@ -549,8 +552,12 @@ function checkPendingWithdrawals(): AppThunk {
             return provider.getTransaction(pendingWithdraw.hash).then((tx: TransactionResponse) => {
               // Checks here to have access to pendingWithdraw.timestamp
               if (
-                isTxCanceled(tx) ||
-                isTxExpectedToFail(tx, pendingWithdraw.timestamp, accountEthBalance)
+                adapters.ethereum.isTxCanceled(tx) ||
+                adapters.ethereum.isTxExpectedToFail(
+                  tx,
+                  pendingWithdraw.timestamp,
+                  accountEthBalance
+                )
               ) {
                 dispatch(removePendingWithdraw(pendingWithdraw.hash));
               }
@@ -561,7 +568,7 @@ function checkPendingWithdrawals(): AppThunk {
 
         Promise.all(pendingWithdrawsTxs)
           .then((txs) => {
-            const minedTxs = txs.filter(isTxMined);
+            const minedTxs = txs.filter(adapters.ethereum.isTxMined);
             const pendingWithdrawsTxReceipts: Promise<TransactionReceipt>[] = minedTxs.map((tx) =>
               provider.getTransactionReceipt(tx.hash)
             );
@@ -569,7 +576,7 @@ function checkPendingWithdrawals(): AppThunk {
             // Checks receipts to see if transactions have been reverted
             Promise.all(pendingWithdrawsTxReceipts)
               .then((txReceipts) => {
-                const revertedTxReceipts = txReceipts.filter(hasTxBeenReverted);
+                const revertedTxReceipts = txReceipts.filter(adapters.ethereum.hasTxBeenReverted);
 
                 revertedTxReceipts.forEach((tx) => {
                   dispatch(removePendingWithdraw(tx.transactionHash));
@@ -729,8 +736,12 @@ function checkPendingDeposits(): AppThunk {
           (pendingDeposit) => {
             return provider.getTransaction(pendingDeposit.hash).then((tx: TransactionResponse) => {
               if (
-                isTxCanceled(tx) ||
-                isTxExpectedToFail(tx, pendingDeposit.timestamp, accountEthBalance)
+                adapters.ethereum.isTxCanceled(tx) ||
+                adapters.ethereum.isTxExpectedToFail(
+                  tx,
+                  pendingDeposit.timestamp,
+                  accountEthBalance
+                )
               ) {
                 dispatch(removePendingDepositByHash(pendingDeposit.hash));
               }
@@ -750,7 +761,7 @@ function checkPendingDeposits(): AppThunk {
             Promise.all(pendingDepositsTxReceipts)
               .then((txReceipts) => {
                 const hermezContractInterface = new ethers.utils.Interface(HermezABI);
-                const revertedTxReceipts = txReceipts.filter(hasTxBeenReverted);
+                const revertedTxReceipts = txReceipts.filter(adapters.ethereum.hasTxBeenReverted);
                 const successfulTxReceipts = txReceipts.filter(
                   (txReceipt) =>
                     txReceipt.status === 1 && txReceipt.logs && txReceipt.logs.length > 0

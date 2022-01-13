@@ -9,7 +9,6 @@ import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as depositActions from "src/store/transactions/deposit/deposit.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
-import * as ethereum from "src/utils/ethereum";
 import { getTxFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
@@ -36,7 +35,7 @@ function fetchEthereumAccount(
       return adapters.hermezApi
         .getTokens(undefined, undefined, undefined, undefined, 2049)
         .then((getTokensResponse) => {
-          ethereum
+          adapters.ethereum
             .getEthereumAccounts(
               wallet,
               getTokensResponse.tokens,
@@ -83,7 +82,7 @@ function fetchEthereumAccounts(
       return adapters.hermezApi
         .getTokens(undefined, undefined, undefined, undefined, 2049)
         .then((getTokensResponse) => {
-          ethereum
+          adapters.ethereum
             .getEthereumAccounts(
               wallet,
               getTokensResponse.tokens,

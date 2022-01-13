@@ -3,7 +3,6 @@ import { push } from "connected-react-router";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
-import * as ethereum from "src/utils/ethereum";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 // domain
@@ -65,7 +64,7 @@ function fetchL1TokenBalance(
     if (wallet !== undefined) {
       dispatch(accountDetailsActions.loadL1TokenBalance());
 
-      return ethereum
+      return adapters.ethereum
         .getEthereumAccounts(wallet, [token], tokensPriceTask, fiatExchangeRates, preferredCurrency)
         .then((ethereumAccounts) => {
           if (ethereumAccounts[0]) {
