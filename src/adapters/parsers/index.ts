@@ -270,6 +270,7 @@ const timerWithdraw = StrictSchema<TimerWithdraw>()(
 export {
   accountAuthorization,
   coordinatorState,
+  exit,
   hermezAccount,
   historyTransaction,
   pendingDelayedWithdraw,

@@ -222,7 +222,15 @@ export function getExit(
   accountIndex: string,
   axiosConfig?: Record<string, unknown>
 ): Promise<Exit> {
-  return CoordinatorAPI.getExit(batchNum, accountIndex, axiosConfig);
+  return CoordinatorAPI.getExit(batchNum, accountIndex, axiosConfig).then((exit: unknown) => {
+    const parsedExit = parsers.exit.safeParse(exit);
+    if (parsedExit.success) {
+      return parsedExit.data;
+    } else {
+      logDecodingError(parsedExit.error, "Could not decode the Exit from the function getExit.");
+      throw parsedExit.error;
+    }
+  });
 }
 
 export function getExits(
