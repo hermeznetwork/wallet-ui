@@ -7,6 +7,7 @@ import {
   CoordinatorState,
   Exit,
   HermezAccount,
+  HermezRawAccount,
   HermezApiResourceItem,
   HistoryTransaction,
   L1Info,
@@ -23,6 +24,18 @@ import {
 } from "src/domain";
 // utils
 import { StrictSchema } from "src/utils/type-safety";
+
+interface UnknownHermezRawAccounts {
+  accounts: unknown[];
+  pendingItems: number;
+}
+
+const unknownHermezRawAccounts = StrictSchema<UnknownHermezRawAccounts>()(
+  z.object({
+    accounts: z.array(z.unknown()),
+    pendingItems: z.number(),
+  })
+);
 
 interface UnknownExits {
   exits: unknown[];
@@ -152,6 +165,18 @@ const token = StrictSchema<Token>()(
       name: z.string(),
       symbol: z.string(),
       USD: z.number().nullable(),
+    })
+  )
+);
+
+const hermezRawAccount = StrictSchema<HermezRawAccount>()(
+  hermezApiResourceItem.and(
+    z.object({
+      accountIndex: z.string(),
+      balance: z.string(),
+      bjj: z.string(),
+      hezEthereumAddress: z.string(),
+      token: token,
     })
   )
 );
@@ -296,6 +321,7 @@ export {
   coordinatorState,
   exit,
   hermezAccount,
+  hermezRawAccount,
   historyTransaction,
   pendingDelayedWithdraw,
   pendingDeposit,
@@ -304,6 +330,7 @@ export {
   timerWithdraw,
   token,
   unknownExits,
+  unknownHermezRawAccounts,
   unknownHistoryTransactions,
   unknownTokens,
 };

@@ -2,7 +2,6 @@ import { AxiosError } from "axios";
 import { z } from "zod";
 import { CallOverrides, BigNumber } from "ethers";
 import {
-  Account,
   CoordinatorAPI,
   HermezCompressedAmount,
   Tx,
@@ -20,13 +19,14 @@ import * as parsers from "src/adapters/parsers";
 // domain
 import {
   AccountAuthorization,
-  Accounts,
   CoordinatorState,
   Exit,
   Exits,
   FiatExchangeRates,
   HermezAccount,
   HermezAccounts,
+  HermezRawAccount,
+  HermezRawAccounts,
   HermezWallet,
   HistoryTransaction,
   HistoryTransactions,
@@ -172,7 +172,7 @@ export function getHistoryTransactions(
       return {
         pendingItems: parsedUnknownHistoryTransactions.data.pendingItems,
         transactions: parsedUnknownHistoryTransactions.data.transactions.reduce(
-          (acc: HistoryTransaction[], curr: unknown, index: number) => {
+          (acc: HistoryTransaction[], curr: unknown, index: number): HistoryTransaction[] => {
             const parsedHistoryTransaction = parsers.historyTransaction.safeParse(curr);
             if (parsedHistoryTransaction.success) {
               return [...acc, parsedHistoryTransaction.data];
@@ -246,7 +246,7 @@ export function getExits(
         return {
           pendingItems: parsedUnknownExits.data.pendingItems,
           exits: parsedUnknownExits.data.exits.reduce(
-            (acc: Exit[], curr: unknown, index: number) => {
+            (acc: Exit[], curr: unknown, index: number): Exit[] => {
               const parsedExit = parsers.exit.safeParse(curr);
               if (parsedExit.success) {
                 return [...acc, parsedExit.data];
@@ -287,7 +287,7 @@ export function getTokens(
         return {
           pendingItems: parsedUnknownTokens.data.pendingItems,
           tokens: parsedUnknownTokens.data.tokens.reduce(
-            (acc: Token[], curr: unknown, index: number) => {
+            (acc: Token[], curr: unknown, index: number): Token[] => {
               const parsedToken = parsers.token.safeParse(curr);
               if (parsedToken.success) {
                 return [...acc, parsedToken.data];
@@ -320,8 +320,39 @@ export function getAccounts(
   order?: PaginationOrder,
   limit?: number,
   axiosConfig?: Record<string, unknown>
-): Promise<Accounts> {
-  return CoordinatorAPI.getAccounts(address, tokenIds, fromItem, order, limit, axiosConfig);
+): Promise<HermezRawAccounts> {
+  return CoordinatorAPI.getAccounts(address, tokenIds, fromItem, order, limit, axiosConfig).then(
+    (hermezRawAccounts: unknown) => {
+      const parsedUnknownHermezRawAccounts =
+        parsers.unknownHermezRawAccounts.safeParse(hermezRawAccounts);
+      if (parsedUnknownHermezRawAccounts.success) {
+        return {
+          pendingItems: parsedUnknownHermezRawAccounts.data.pendingItems,
+          accounts: parsedUnknownHermezRawAccounts.data.accounts.reduce(
+            (acc: HermezRawAccount[], curr: unknown, index: number): HermezRawAccount[] => {
+              const parsedHermezRawAccount = parsers.hermezRawAccount.safeParse(curr);
+              if (parsedHermezRawAccount.success) {
+                return [...acc, parsedHermezRawAccount.data];
+              } else {
+                logDecodingError(
+                  parsedHermezRawAccount.error,
+                  `Could not decode the Account at index ${index} from the function getAccounts. It has been ignored.`
+                );
+                return acc;
+              }
+            },
+            []
+          ),
+        };
+      } else {
+        logDecodingError(
+          parsedUnknownHermezRawAccounts.error,
+          "Could not decode the resource Accounts from the function getAccounts. Can't show any data."
+        );
+        throw parsedUnknownHermezRawAccounts.error;
+      }
+    }
+  );
 }
 
 // Account helpers
@@ -444,7 +475,7 @@ export function getHermezAccounts({
 /**
  * Fetches a raw hermez Account for an accountIndex.
  */
-export function getAccount(accountIndex: string): Promise<Account> {
+export function getAccount(accountIndex: string): Promise<HermezRawAccount> {
   return CoordinatorAPI.getAccount(accountIndex);
 }
 

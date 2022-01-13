@@ -43,6 +43,9 @@ export interface EthereumNetwork {
   name: string;
 }
 
+export type HermezRawAccount = hermezjs.Account;
+export type HermezRawAccounts = hermezjs.Accounts;
+
 export type HermezAccount = hermezjs.Account & { fiatBalance?: number };
 
 export interface HermezAccounts {
