@@ -277,7 +277,7 @@ const timerWithdraw = StrictSchema<TimerWithdraw>()(
   })
 );
 
-// the response from a Deposit call
+// The response from a Tx.deposit, Tx.forceExit, Tx.withdrawCircuit and Tx.delayedWithdraw calls
 const txData = StrictSchema<Tx.TxData>()(
   z.object({
     hash: z.string(),

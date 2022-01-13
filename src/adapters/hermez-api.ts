@@ -553,6 +553,30 @@ export function getPoolTransactions(
 // Tx //
 ////////
 
+export function generateAndSendL2Tx(
+  tx: Tx.Tx,
+  wallet: HermezWallet.HermezWallet,
+  token: Token,
+  nextForgers: string[],
+  addToTxPool?: boolean
+): Promise<Tx.SendL2TransactionResponse> {
+  return Tx.generateAndSendL2Tx(tx, wallet, token, nextForgers, addToTxPool).then(
+    (sendL2TransactionResponse: unknown) => {
+      const parsedSendL2TransactionResponse =
+        parsers.sendL2TransactionResponse.safeParse(sendL2TransactionResponse);
+      if (parsedSendL2TransactionResponse.success) {
+        return parsedSendL2TransactionResponse.data;
+      } else {
+        logDecodingError(
+          parsedSendL2TransactionResponse.error,
+          "Could not decode the SendL2TransactionResponse from the function generateAndSendL2Tx."
+        );
+        throw parsedSendL2TransactionResponse.error;
+      }
+    }
+  );
+}
+
 export function deposit(
   amount: HermezCompressedAmount,
   hezEthereumAddress: string,
@@ -586,30 +610,6 @@ export function deposit(
   });
 }
 
-export function generateAndSendL2Tx(
-  tx: Tx.Tx,
-  wallet: HermezWallet.HermezWallet,
-  token: Token,
-  nextForgers: string[],
-  addToTxPool?: boolean
-): Promise<Tx.SendL2TransactionResponse> {
-  return Tx.generateAndSendL2Tx(tx, wallet, token, nextForgers, addToTxPool).then(
-    (sendL2TransactionResponse: unknown) => {
-      const parsedSendL2TransactionResponse =
-        parsers.sendL2TransactionResponse.safeParse(sendL2TransactionResponse);
-      if (parsedSendL2TransactionResponse.success) {
-        return parsedSendL2TransactionResponse.data;
-      } else {
-        logDecodingError(
-          parsedSendL2TransactionResponse.error,
-          "Could not decode the SendL2TransactionResponse from the function generateAndSendL2Tx."
-        );
-        throw parsedSendL2TransactionResponse.error;
-      }
-    }
-  );
-}
-
 export function forceExit(
   amount: HermezCompressedAmount,
   accountIndex: string,
@@ -621,7 +621,18 @@ export function forceExit(
     accountIndex,
     token,
     signerData
-  );
+  ).then((txData: unknown) => {
+    const parsedTxData = parsers.txData.safeParse(txData);
+    if (parsedTxData.success) {
+      return parsedTxData.data;
+    } else {
+      logDecodingError(
+        parsedTxData.error,
+        "Could not decode the TxData from the function forceExit."
+      );
+      throw parsedTxData.error;
+    }
+  });
 }
 
 export function withdrawCircuit(
