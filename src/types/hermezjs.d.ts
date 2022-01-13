@@ -8,6 +8,8 @@
 declare module "@hermeznetwork/*" {
   import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
+  export { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
+
   // We expose the inputs supported by both, the native BigInt constructor (scalar_native)
   // and the BigNumber.js lib (scalar_bigint case) used by ffjavascript.
   export type ScalarValue = string | number | bigint;
@@ -254,7 +256,7 @@ declare module "@hermeznetwork/*" {
     createAccountInternal: number;
   }
 
-  // persistence
+  // adapters
   export interface HistoryTransactions {
     transactions: HistoryTransaction[];
     pendingItems: number;
@@ -491,20 +493,12 @@ declare module "@hermeznetwork/hermezjs/src/tx-fees" {
 // TxPool
 declare module "@hermeznetwork/hermezjs/src/tx-pool" {
   import { PoolTransaction } from "@hermeznetwork/hermezjs";
-  import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
 
   function initializeTransactionPool(): void;
 
   function getPoolTransactions(
-    address: string | undefined,
-    state: string,
-    type?: string,
-    tokenId?: number,
-    accountIndex?: string,
-    fromItem?: number,
-    order?: PaginationOrder,
-    limit?: number,
-    axiosConfig?: Record<string, unknown>
+    accountIndex: string | undefined,
+    bJJ: string
   ): Promise<PoolTransaction[]>;
 
   // function addPoolTransaction();
@@ -624,10 +618,17 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   // function getCreateAccountAuthorization();
   // function getConfig();
 
-  function getPoolTransactions(
-    accountIndex: string,
-    publicKeyCompressedHex: string
-  ): Promise<HistoryTransaction[]>;
+  // function getPoolTransactions(
+  //   address: string | undefined,
+  //   state: string,
+  //   type?: string,
+  //   tokenId?: number,
+  //   accountIndex?: string,
+  //   fromItem?: number,
+  //   order?: PaginationOrder,
+  //   limit?: number,
+  //   axiosConfig?: Record<string, unknown>
+  // ): Promise<PoolTransaction[]>;
 
   // function getHealth();
 }

@@ -17,8 +17,8 @@ import {
   TimerWithdraw,
   TimerWithdraws,
 } from "src/domain";
-// persistence
-import * as parsers from "src/persistence/parsers";
+// adapters
+import * as parsers from "src/adapters/parsers";
 import { StrictSchema } from "src/utils/type-safety";
 
 // Storage Helpers

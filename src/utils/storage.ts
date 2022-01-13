@@ -21,13 +21,13 @@ import {
   TimerWithdraw,
   TimerWithdraws,
 } from "src/domain";
-// persistence
+// adapters
 import {
   getPendingWithdraws,
   getPendingDelayedWithdraws,
   getCurrentStorageVersion,
   setStorageByKey,
-} from "src/persistence/local-storage";
+} from "src/adapters/local-storage";
 
 // MIGRATIONS
 function runV2Migration() {

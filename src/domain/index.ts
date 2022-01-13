@@ -9,21 +9,27 @@ import { BigNumber } from "@ethersproject/bignumber";
 import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
+  AccountAuthorization,
+  Accounts,
   CoordinatorState,
   Exit,
+  Exits,
   FiatExchangeRates,
   HermezApiResourceItem,
   HermezWallet,
   HistoryTransaction,
+  HistoryTransactions,
   ISOStringDate,
   L1Info,
   L2Info,
   MerkleProof,
   NextForger,
+  PaginationOrder,
   PoolTransaction,
   RecommendedFee,
   Signers,
   Token,
+  Tokens,
 } from "@hermeznetwork/hermezjs";
 
 export type NetworkStatus = "online" | "offline";
@@ -38,6 +44,11 @@ export interface EthereumNetwork {
 }
 
 export type HermezAccount = hermezjs.Account & { fiatBalance?: number };
+
+export interface HermezAccounts {
+  accounts: HermezAccount[];
+  pendingItems: number;
+}
 
 export interface EthereumAccount {
   balance: string;

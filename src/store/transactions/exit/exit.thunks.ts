@@ -1,7 +1,6 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx, HermezCompressedAmount, TxFees } from "@hermeznetwork/hermezjs";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
+import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
@@ -12,13 +11,12 @@ import { openSnackbar } from "src/store/global/global.actions";
 import theme from "src/styles/theme";
 // utils
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
-import { createAccount } from "src/utils/accounts";
 import { feeBigIntToNumber } from "src/utils/fees";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/domain";
 import { ETHER_TOKEN_ID } from "src/constants";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -36,16 +34,13 @@ function fetchHermezAccount(
 
     dispatch(exitActions.loadAccount());
 
-    return CoordinatorAPI.getAccount(accountIndex)
-      .then((account) =>
-        createAccount(
-          account,
-          poolTransactions,
-          undefined,
-          tokensPriceTask,
-          preferredCurrency,
-          fiatExchangeRates
-        )
+    return adapters.hermezApi
+      .fetchHermezAccount(
+        accountIndex,
+        tokensPriceTask,
+        preferredCurrency,
+        fiatExchangeRates,
+        poolTransactions
       )
       .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
       .catch((error: Error) => dispatch(exitActions.loadAccountFailure(error.message)));
@@ -64,7 +59,8 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+      adapters.hermezApi
+        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(exitActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(exitActions.loadPoolTransactionsFailure(err)));
     }
@@ -89,7 +85,8 @@ function fetchFees(): AppThunk {
       if (nextForger !== undefined) {
         dispatch(exitActions.loadFees());
 
-        return CoordinatorAPI.getState({}, nextForger.coordinator.URL)
+        return adapters.hermezApi
+          .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(exitActions.loadFeesSuccess(res.recommendedFee)))
           .catch((err) => dispatch(exitActions.loadFeesFailure(err)));
       }
@@ -128,7 +125,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
       const provider = getProvider();
       const { maxFeePerGas } = await provider.getFeeData();
       const overrides = maxFeePerGas ? { maxFeePerGas } : {};
-      const gasLimit = await TxFees.estimateWithdrawCircuitGasLimit(
+      const gasLimit = await adapters.hermezApi.estimateWithdrawCircuitGasLimit(
         token,
         amount,
         overrides,
@@ -182,7 +179,8 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
         fee: feeBigIntToNumber(fee, account.token),
       };
 
-      return Tx.generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
+      return adapters.hermezApi
+        .generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
         .catch((error) => handleTransactionFailure(dispatch, error));
     }
@@ -195,7 +193,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = persistence.getErrorMessage(error);
+  const errorMsg = adapters.getErrorMessage(error);
   console.error(error);
   dispatch(exitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));

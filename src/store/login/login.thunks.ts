@@ -14,9 +14,8 @@ import * as globalThunks from "src/store/global/global.thunks";
 import * as loginActions from "src/store/login/login.actions";
 // domain
 import { Signers, HermezWallet } from "src/domain";
-// persistence
-import * as persistence from "src/persistence";
-import { getAuthSignatures, setAuthSignatures } from "src/persistence/local-storage";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Helper function that signs the authentication message depending on Wallet type
@@ -142,7 +141,7 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
         login: { step },
       } = getState();
       if (step.type === "wallet-loader") {
-        const stringError = persistence.getErrorMessage(error);
+        const stringError = adapters.getErrorMessage(error);
         dispatch(loginActions.loadWalletFailure(stringError));
         dispatch(globalActions.openSnackbar(stringError));
         dispatch(loginActions.goToPreviousStep());
@@ -159,7 +158,7 @@ async function getCreateAccountAuthorization(
   hermezEthereumAddress: string
 ): Promise<string | null> {
   try {
-    const { signature } = await hermez.CoordinatorAPI.getCreateAccountAuthorization(
+    const { signature } = await adapters.hermezApi.getCreateAccountAuthorization(
       hermezEthereumAddress
     );
     return signature;
@@ -216,7 +215,7 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
         dispatch(setAccountAuthSignature(wallet.hermezEthereumAddress, signature));
 
         if (sendSignature) {
-          await persistence.postCreateAccountAuthorization(
+          await adapters.hermezApi.postCreateAccountAuthorization(
             wallet.hermezEthereumAddress,
             wallet.publicKeyBase64,
             signature,
@@ -228,7 +227,7 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
         dispatch(push(redirectRoute));
       } catch (error) {
         console.error(error);
-        const stringError = persistence.getErrorMessage(error);
+        const stringError = adapters.getErrorMessage(error);
         dispatch(loginActions.addAccountAuthFailure(stringError));
         dispatch(globalActions.openSnackbar(stringError));
         dispatch(loginActions.goToWalletSelectorStep());
@@ -250,7 +249,7 @@ function setAccountAuthSignature(hermezEthereumAddress: string, signature: strin
         data: { chainId },
       } = ethereumNetworkTask;
 
-      const authSignatures = getAuthSignatures();
+      const authSignatures = adapters.localStorage.getAuthSignatures();
       const chainAuthSignatures = authSignatures[chainId] || {};
       const newAccountAuthSignature = {
         ...authSignatures,
@@ -259,7 +258,7 @@ function setAccountAuthSignature(hermezEthereumAddress: string, signature: strin
           [hermezEthereumAddress]: signature,
         },
       };
-      setAuthSignatures(newAccountAuthSignature);
+      adapters.localStorage.setAuthSignatures(newAccountAuthSignature);
       dispatch(loginActions.setAccountAuthSignature(chainId, hermezEthereumAddress, signature));
     }
   };

@@ -3,8 +3,8 @@ import { z } from "zod";
 
 // domain
 import { FiatExchangeRates, Token } from "src/domain";
-// persistence
-import * as parsers from "src/persistence/parsers";
+// adapters
+import * as parsers from "src/adapters/parsers";
 // utils
 import { CurrencySymbol } from "src/utils/currencies";
 import { StrictSchema } from "src/utils/type-safety";

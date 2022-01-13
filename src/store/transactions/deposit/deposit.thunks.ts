@@ -1,4 +1,4 @@
-import { CoordinatorAPI, Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
+import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { ETHER_TOKEN_ID } from "@hermeznetwork/hermezjs/src/constants";
@@ -9,31 +9,40 @@ import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as depositActions from "src/store/transactions/deposit/deposit.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
-import * as ethereum from "src/utils/ethereum";
-import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { getTxFee } from "src/utils/fees";
 import theme from "src/styles/theme";
 // domain
 import { FiatExchangeRates, EthereumAccount, HermezAccount } from "src/domain";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.
  */
-function fetchEthereumAccount(tokenId: number): AppThunk {
+function fetchEthereumAccount(
+  tokenId: number,
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
-      global: { wallet },
+      global: { wallet, tokensPriceTask },
     } = getState();
 
     dispatch(depositActions.loadEthereumAccount());
 
     if (wallet !== undefined) {
-      return CoordinatorAPI.getTokens(undefined, undefined, undefined, undefined, 2049).then(
-        (res) => {
-          ethereum
-            .getTokens(wallet, res.tokens)
+      return adapters.hermezApi
+        .getTokens(undefined, undefined, undefined, undefined, 2049)
+        .then((getTokensResponse) => {
+          adapters.ethereum
+            .getEthereumAccounts(
+              wallet,
+              getTokensResponse.tokens,
+              tokensPriceTask,
+              fiatExchangeRates,
+              preferredCurrency
+            )
             .then((ethereumAccounts) => {
               const ethereumAccount = ethereumAccounts.find((token) => token.token.id === tokenId);
 
@@ -44,14 +53,13 @@ function fetchEthereumAccount(tokenId: number): AppThunk {
               }
             })
             .catch((error) => {
-              const errorMsg = persistence.getErrorMessage(
+              const errorMsg = adapters.getErrorMessage(
                 error,
                 "Oops ... There was an error fetching the ethereum account"
               );
               dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
             });
-        }
-      );
+        });
     }
   };
 }
@@ -59,7 +67,10 @@ function fetchEthereumAccount(tokenId: number): AppThunk {
 /**
  * Fetches the accounts to use in the transaction on Ethereum
  */
-function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: string): AppThunk {
+function fetchEthereumAccounts(
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { wallet, tokensPriceTask },
@@ -68,33 +79,22 @@ function fetchAccounts(fiatExchangeRates: FiatExchangeRates, preferredCurrency: 
     dispatch(depositActions.loadEthereumAccounts());
 
     if (wallet !== undefined) {
-      return CoordinatorAPI.getTokens(undefined, undefined, undefined, undefined, 2049).then(
-        (res) => {
-          ethereum
-            .getTokens(wallet, res.tokens)
-            .then((ethereumAccounts): EthereumAccount[] => {
-              return ethereumAccounts.map((ethereumAccount) => {
-                const tokenFromTokensPrice =
-                  tokensPriceTask.status === "successful" &&
-                  tokensPriceTask.data[ethereumAccount.token.id];
-                const token = tokenFromTokensPrice ? tokenFromTokensPrice : ethereumAccount.token;
-
-                const fiatBalance = convertTokenAmountToFiat(
-                  ethereumAccount.balance,
-                  token,
-                  preferredCurrency,
-                  fiatExchangeRates
-                );
-
-                return { ...ethereumAccount, balance: ethereumAccount.balance, fiatBalance };
-              });
-            })
-            .then((metaMaskTokens) =>
-              dispatch(depositActions.loadEthereumAccountsSuccess(metaMaskTokens))
+      return adapters.hermezApi
+        .getTokens(undefined, undefined, undefined, undefined, 2049)
+        .then((getTokensResponse) => {
+          adapters.ethereum
+            .getEthereumAccounts(
+              wallet,
+              getTokensResponse.tokens,
+              tokensPriceTask,
+              fiatExchangeRates,
+              preferredCurrency
+            )
+            .then((ethereumAccounts) =>
+              dispatch(depositActions.loadEthereumAccountsSuccess(ethereumAccounts))
             )
             .catch((err) => dispatch(depositActions.loadEthereumAccountsFailure(err)));
-        }
-      );
+        });
     }
   };
 }
@@ -146,33 +146,34 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
     dispatch(depositActions.startTransactionApproval());
 
     if (wallet !== undefined && signer !== undefined) {
-      return Tx.deposit(
-        HermezCompressedAmount.compressAmount(amount.toString()),
-        wallet.hermezEthereumAddress,
-        ethereumAccount.token,
-        wallet.publicKeyCompressedHex,
-        signer
-      )
+      return adapters.hermezApi
+        .deposit(
+          HermezCompressedAmount.compressAmount(amount.toString()),
+          wallet.hermezEthereumAddress,
+          ethereumAccount.token,
+          wallet.publicKeyCompressedHex,
+          signer
+        )
         .then((txData) => {
-          void CoordinatorAPI.getAccounts(wallet.hermezEthereumAddress, [
-            ethereumAccount.token.id,
-          ]).then((res) => {
-            const account: HermezAccount | undefined = res.accounts[0];
-            dispatch(
-              globalThunks.addPendingDeposit({
-                hash: txData.hash,
-                fromHezEthereumAddress: wallet.hermezEthereumAddress,
-                toHezEthereumAddress: wallet.hermezEthereumAddress,
-                token: ethereumAccount.token,
-                amount: amount.toString(),
-                state: TxState.Pending,
-                accountIndex: account?.accountIndex,
-                timestamp: new Date().toISOString(),
-                type: account ? TxType.Deposit : TxType.CreateAccountDeposit,
-              })
-            );
-            handleTransactionSuccess(dispatch, account?.accountIndex);
-          });
+          void adapters.hermezApi
+            .getAccounts(wallet.hermezEthereumAddress, [ethereumAccount.token.id])
+            .then((res) => {
+              const account: HermezAccount | undefined = res.accounts[0];
+              dispatch(
+                globalThunks.addPendingDeposit({
+                  hash: txData.hash,
+                  fromHezEthereumAddress: wallet.hermezEthereumAddress,
+                  toHezEthereumAddress: wallet.hermezEthereumAddress,
+                  token: ethereumAccount.token,
+                  amount: amount.toString(),
+                  state: TxState.Pending,
+                  accountIndex: account?.accountIndex,
+                  timestamp: new Date().toISOString(),
+                  type: account ? TxType.Deposit : TxType.CreateAccountDeposit,
+                })
+              );
+              handleTransactionSuccess(dispatch, account?.accountIndex);
+            });
         })
         .catch((error) => {
           dispatch(depositActions.stopTransactionApproval());
@@ -192,9 +193,9 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) 
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = persistence.getErrorMessage(error);
+  const errorMsg = adapters.getErrorMessage(error);
   dispatch(depositActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
-export { fetchEthereumAccount, fetchAccounts, fetchEstimatedDepositFee, deposit };
+export { fetchEthereumAccount, fetchEthereumAccounts, fetchEstimatedDepositFee, deposit };

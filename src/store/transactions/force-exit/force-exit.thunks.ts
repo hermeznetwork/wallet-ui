@@ -1,7 +1,6 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
+import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as forceExitActions from "src/store/transactions/force-exit/force-exit.actions";
@@ -9,18 +8,17 @@ import { openSnackbar } from "src/store/global/global.actions";
 import theme from "src/styles/theme";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain";
-import { createAccount } from "src/utils/accounts";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the accounts to use in the transaction in the rollup api.
  */
 function fetchAccounts(
-  fromItem: number | undefined,
   poolTransactions: PoolTransaction[],
   fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  preferredCurrency: string,
+  fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -30,22 +28,17 @@ function fetchAccounts(
     if (wallet !== undefined) {
       dispatch(forceExitActions.loadAccounts());
 
-      return CoordinatorAPI.getAccounts(wallet.publicKeyBase64, undefined, fromItem)
-        .then((res) => {
-          const accounts = res.accounts.map((account) =>
-            createAccount(
-              account,
-              poolTransactions,
-              undefined,
-              tokensPriceTask,
-              preferredCurrency,
-              fiatExchangeRates
-            )
-          );
-
-          return { ...res, accounts };
+      const hermezEthereumAddress = wallet.publicKeyBase64;
+      return adapters.hermezApi
+        .getHermezAccounts({
+          hermezEthereumAddress,
+          tokensPriceTask,
+          poolTransactions,
+          fiatExchangeRates,
+          preferredCurrency,
+          fromItem,
         })
-        .then((res) => dispatch(forceExitActions.loadAccountsSuccess(res)))
+        .then((accounts) => dispatch(forceExitActions.loadAccountsSuccess(accounts)))
         .catch((err) => dispatch(forceExitActions.loadAccountsFailure(err)));
     }
   };
@@ -63,7 +56,8 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+      adapters.hermezApi
+        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) =>
           dispatch(forceExitActions.loadPoolTransactionsSuccess(transactions))
         )
@@ -81,12 +75,13 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
     dispatch(forceExitActions.startTransactionApproval());
 
     if (signer) {
-      Tx.forceExit(
-        HermezCompressedAmount.compressAmount(amount.toString()),
-        account.accountIndex,
-        account.token,
-        signer
-      )
+      adapters.hermezApi
+        .forceExit(
+          HermezCompressedAmount.compressAmount(amount.toString()),
+          account.accountIndex,
+          account.token,
+          signer
+        )
         .then(() => handleTransactionSuccess(dispatch))
         .catch((error) => {
           console.error(error);
@@ -103,7 +98,7 @@ function handleTransactionSuccess(dispatch: AppDispatch) {
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = persistence.getErrorMessage(error);
+  const errorMsg = adapters.getErrorMessage(error);
   dispatch(forceExitActions.stopTransactionApproval());
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }

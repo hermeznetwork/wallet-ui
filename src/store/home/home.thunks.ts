@@ -1,16 +1,20 @@
 import axios from "axios";
-import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
-import { createAccount } from "src/utils/accounts";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import * as globalThunks from "src/store/global/global.thunks";
 import * as homeActions from "src/store/home/home.actions";
+// adapters
+import * as adapters from "src/adapters";
 // domain
-import { FiatExchangeRates, HermezAccount, PendingDeposit, PoolTransaction } from "src/domain";
-import { Accounts } from "src/persistence";
+import {
+  Accounts,
+  FiatExchangeRates,
+  HermezAccount,
+  PendingDeposit,
+  PoolTransaction,
+} from "src/domain";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 
@@ -30,22 +34,17 @@ function fetchTotalBalance(
     } = getState();
     dispatch(homeActions.loadTotalBalance());
 
-    return CoordinatorAPI.getAccounts(hermezEthereumAddress, undefined, undefined, undefined, 2049)
-      .then((res) => {
-        const accounts = res.accounts.map((account) =>
-          createAccount(
-            account,
-            poolTransactions,
-            pendingDeposits,
-            tokensPriceTask,
-            preferredCurrency,
-            fiatExchangeRates
-          )
-        );
-
-        return { ...res, accounts };
+    const limit = 2049;
+    return adapters.hermezApi
+      .getHermezAccounts({
+        hermezEthereumAddress,
+        tokensPriceTask,
+        poolTransactions,
+        fiatExchangeRates,
+        preferredCurrency,
+        limit,
       })
-      .then((res) => {
+      .then((accounts) => {
         const pendingCreateAccountDeposits = pendingDeposits.filter(
           (deposit) => deposit.type === TxType.CreateAccountDeposit
         );
@@ -67,7 +66,7 @@ function fetchTotalBalance(
           },
           0
         );
-        const totalAccountsBalance = res.accounts.reduce((totalBalance, account) => {
+        const totalAccountsBalance = accounts.accounts.reduce((totalBalance, account) => {
           return account.fiatBalance !== undefined
             ? totalBalance + Number(account.fiatBalance)
             : totalBalance;
@@ -84,11 +83,11 @@ function fetchTotalBalance(
  * Fetches the accounts for a Hermez address
  */
 function fetchAccounts(
-  hermezAddress: string,
+  hermezEthereumAddress: string,
   poolTransactions: PoolTransaction[],
   pendingDeposits: PendingDeposit[],
   preferredCurrency: string,
-  fiatExchangeRates?: FiatExchangeRates,
+  fiatExchangeRates: FiatExchangeRates,
   fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
@@ -100,7 +99,7 @@ function fetchAccounts(
     if (fromItem === undefined && accountsTask.status === "successful") {
       return dispatch(
         refreshAccounts(
-          hermezAddress,
+          hermezEthereumAddress,
           poolTransactions,
           pendingDeposits,
           preferredCurrency,
@@ -115,20 +114,14 @@ function fetchAccounts(
       refreshCancelTokenSource.cancel();
     }
 
-    return CoordinatorAPI.getAccounts(hermezAddress, undefined, fromItem, undefined)
-      .then((res) => {
-        const accounts = res.accounts.map((account) =>
-          createAccount(
-            account,
-            poolTransactions,
-            pendingDeposits,
-            tokensPriceTask,
-            preferredCurrency,
-            fiatExchangeRates
-          )
-        );
-
-        return { ...res, accounts };
+    return adapters.hermezApi
+      .getHermezAccounts({
+        hermezEthereumAddress,
+        tokensPriceTask,
+        poolTransactions,
+        fiatExchangeRates,
+        preferredCurrency,
+        fromItem,
       })
       .then((res) => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch((err) => dispatch(homeActions.loadAccountsFailure(err)));
@@ -140,11 +133,11 @@ function fetchAccounts(
  * loaded
  */
 function refreshAccounts(
-  hermezAddress: string,
+  hermezEthereumAddress: string,
   poolTransactions: PoolTransaction[],
   pendingDeposits: PendingDeposit[],
   preferredCurrency: string,
-  fiatExchangeRates?: FiatExchangeRates
+  fiatExchangeRates: FiatExchangeRates
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -158,8 +151,8 @@ function refreshAccounts(
       refreshCancelTokenSource = axios.CancelToken.source();
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token };
-      const initialReq = CoordinatorAPI.getAccounts(
-        hermezAddress,
+      const initialReq = adapters.hermezApi.getAccounts(
+        hermezEthereumAddress,
         undefined,
         undefined,
         undefined,
@@ -169,32 +162,26 @@ function refreshAccounts(
       const requests = accountsTask.data.fromItemHistory.reduce(
         (requests, fromItem) => [
           ...requests,
-          CoordinatorAPI.getAccounts(
-            hermezAddress,
-            undefined,
+          adapters.hermezApi.getHermezAccounts({
+            hermezEthereumAddress,
+            tokensPriceTask,
+            poolTransactions,
+            fiatExchangeRates,
+            preferredCurrency,
+            pendingDeposits,
             fromItem,
-            undefined,
-            undefined,
-            axiosConfig
-          ),
+            axiosConfig,
+          }),
         ],
         [initialReq]
       );
 
       Promise.all(requests)
         .then((results) => {
-          const accounts = results
-            .reduce((acc: HermezAccount[], result: Accounts) => [...acc, ...result.accounts], [])
-            .map((account) =>
-              createAccount(
-                account,
-                poolTransactions,
-                pendingDeposits,
-                tokensPriceTask,
-                preferredCurrency,
-                fiatExchangeRates
-              )
-            );
+          const accounts = results.reduce(
+            (acc: HermezAccount[], result: Accounts) => [...acc, ...result.accounts],
+            []
+          );
           const pendingItems = results[results.length - 1]
             ? results[results.length - 1].pendingItems
             : 0;
@@ -219,7 +206,8 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+      adapters.hermezApi
+        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(homeActions.loadPoolTransactionsFailure(err)));
     }
@@ -238,7 +226,8 @@ function fetchExits(): AppThunk {
     if (wallet !== undefined) {
       dispatch(homeActions.loadExits());
 
-      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true)
+      return adapters.hermezApi
+        .getExits(wallet.hermezEthereumAddress, true)
         .then((exits) => {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(homeActions.loadExitsSuccess(exits));

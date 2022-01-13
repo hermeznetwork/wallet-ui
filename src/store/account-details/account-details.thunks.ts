@@ -1,25 +1,23 @@
 import axios from "axios";
 import { push } from "connected-react-router";
-import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
-import * as ethereum from "src/utils/ethereum";
-import { createAccount } from "src/utils/accounts";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 // domain
 import {
   Exit,
+  Exits,
   FiatExchangeRates,
   HermezAccount,
   HistoryTransaction,
+  HistoryTransactions,
   PoolTransaction,
   Token,
 } from "src/domain";
-// persistence
-import { HistoryTransactions, Exits } from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 
@@ -37,21 +35,13 @@ function fetchAccount(
     } = getState();
     dispatch(accountDetailsActions.loadAccount());
 
-    return CoordinatorAPI.getAccount(accountIndex)
+    return adapters.hermezApi
+      .fetchHermezAccount(accountIndex, tokensPriceTask, preferredCurrency, fiatExchangeRates)
       .then((account: HermezAccount) => {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push("/"));
         } else {
-          const accountTokenUpdated = createAccount(
-            account,
-            undefined,
-            undefined,
-            tokensPriceTask,
-            preferredCurrency,
-            fiatExchangeRates
-          );
-
-          dispatch(accountDetailsActions.loadAccountSuccess(accountTokenUpdated));
+          dispatch(accountDetailsActions.loadAccountSuccess(account));
         }
       })
       .catch((err: Error) => dispatch(accountDetailsActions.loadAccountFailure(err)));
@@ -61,21 +51,25 @@ function fetchAccount(
 /**
  * Checks whether the Ethereum account has >0 balance for the token
  */
-function fetchL1TokenBalance(token: Token): AppThunk {
+function fetchL1TokenBalance(
+  token: Token,
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
-      global: { wallet },
+      global: { wallet, tokensPriceTask },
     } = getState();
 
     if (wallet !== undefined) {
       dispatch(accountDetailsActions.loadL1TokenBalance());
 
-      return ethereum
-        .getTokens(wallet, [token])
-        .then((metamaskTokens) => {
-          if (metamaskTokens[0]) {
+      return adapters.ethereum
+        .getEthereumAccounts(wallet, [token], tokensPriceTask, fiatExchangeRates, preferredCurrency)
+        .then((ethereumAccounts) => {
+          if (ethereumAccounts[0]) {
             // We need this to check if the user has balance of a specific token in his ethereum address.
-            // If getTokens returns one element when asking for the token it means that the user has balance.
+            // If getEthereumAccounts returns one element when asking for the token it means that the user has balance.
             dispatch(accountDetailsActions.loadL1TokenBalanceSuccess());
           } else {
             dispatch(accountDetailsActions.loadL1TokenBalanceFailure());
@@ -97,7 +91,8 @@ function fetchPoolTransactions(accountIndex: HermezAccount["accountIndex"]): App
       global: { wallet },
     } = getState();
     if (wallet !== undefined) {
-      getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
+      adapters.hermezApi
+        .getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
         // We need to reverse the txs to match the order of the txs from the history (DESC)
         .then((transactions: PoolTransaction[]) => transactions.reverse())
         .then((transactions: PoolTransaction[]) =>
@@ -155,14 +150,8 @@ function fetchHistoryTransactions(
       refreshCancelTokenSource.cancel();
     }
 
-    return CoordinatorAPI.getTransactions(
-      undefined,
-      undefined,
-      undefined,
-      accountIndex,
-      fromItem,
-      "DESC"
-    )
+    return adapters.hermezApi
+      .getHistoryTransactions(undefined, undefined, undefined, accountIndex, fromItem, "DESC")
       .then((historyTransactions: HistoryTransactions) => {
         const filteredTransactions = filterExitsFromHistoryTransactions(
           historyTransactions.transactions,
@@ -197,7 +186,7 @@ function refreshHistoryTransactions(
       refreshCancelTokenSource = axios.CancelToken.source();
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token };
-      const initialReq = CoordinatorAPI.getTransactions(
+      const initialReq = adapters.hermezApi.getHistoryTransactions(
         undefined,
         undefined,
         undefined,
@@ -210,7 +199,7 @@ function refreshHistoryTransactions(
       const requests = historyTransactionsTask.data.fromItemHistory.reduce(
         (requests, fromItem) => [
           ...requests,
-          CoordinatorAPI.getTransactions(
+          adapters.hermezApi.getHistoryTransactions(
             undefined,
             undefined,
             undefined,
@@ -260,7 +249,8 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
       global: { wallet },
     } = getState();
     if (wallet !== undefined) {
-      return CoordinatorAPI.getExits(wallet.hermezEthereumAddress, true, tokenId)
+      return adapters.hermezApi
+        .getExits(wallet.hermezEthereumAddress, true, tokenId)
         .then((exits: Exits) => {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(accountDetailsActions.loadExitsSuccess(exits));

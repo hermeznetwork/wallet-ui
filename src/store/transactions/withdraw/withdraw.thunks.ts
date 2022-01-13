@@ -1,7 +1,5 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx } from "@hermeznetwork/hermezjs";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as withdrawActions from "src/store/transactions/withdraw/withdraw.actions";
@@ -10,7 +8,6 @@ import { openSnackbar } from "src/store/global/global.actions";
 import theme from "src/styles/theme";
 import { mergeDelayedWithdraws } from "src/utils/transactions";
 import { WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
-import { createAccount } from "src/utils/accounts";
 // domain
 import {
   Exit,
@@ -19,8 +16,8 @@ import {
   PendingDelayedWithdraw,
   PoolTransaction,
 } from "src/domain";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -38,16 +35,13 @@ function fetchHermezAccount(
 
     dispatch(withdrawActions.loadAccount());
 
-    return CoordinatorAPI.getAccount(accountIndex)
-      .then((account) =>
-        createAccount(
-          account,
-          poolTransactions,
-          undefined,
-          tokensPriceTask,
-          preferredCurrency,
-          fiatExchangeRates
-        )
+    return adapters.hermezApi
+      .fetchHermezAccount(
+        accountIndex,
+        tokensPriceTask,
+        preferredCurrency,
+        fiatExchangeRates,
+        poolTransactions
       )
       .then((res) => dispatch(withdrawActions.loadAccountSuccess(res)))
       .catch((error: Error) => dispatch(withdrawActions.loadAccountFailure(error.message)));
@@ -70,7 +64,8 @@ function fetchExit(
     dispatch(withdrawActions.loadExit());
 
     if (wallet) {
-      CoordinatorAPI.getExit(batchNum, accountIndex)
+      adapters.hermezApi
+        .getExit(batchNum, accountIndex)
         .then((exit: Exit) => {
           // If we are completing a delayed withdrawal, we need to merge all delayed withdrawals
           // of the same token to show the correct amount in Transaction Overview
@@ -112,7 +107,8 @@ function fetchPoolTransactions(): AppThunk {
     } = getState();
 
     if (wallet !== undefined) {
-      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+      adapters.hermezApi
+        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(withdrawActions.loadPoolTransactionsSuccess(transactions)))
         .catch((err) => dispatch(withdrawActions.loadPoolTransactionsFailure(err)));
     }
@@ -139,13 +135,14 @@ function withdraw(
 
     if (wallet && signer) {
       if (!completeDelayedWithdrawal) {
-        Tx.withdrawCircuit(
-          exit,
-          instantWithdrawal,
-          WITHDRAWAL_WASM_URL,
-          WITHDRAWAL_ZKEY_URL,
-          signer
-        )
+        adapters.hermezApi
+          .withdrawCircuit(
+            exit,
+            instantWithdrawal,
+            WITHDRAWAL_WASM_URL,
+            WITHDRAWAL_ZKEY_URL,
+            signer
+          )
           .then((txData) => {
             if (instantWithdrawal) {
               dispatch(
@@ -177,7 +174,8 @@ function withdraw(
             handleTransactionFailure(dispatch, error);
           });
       } else {
-        Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
+        adapters.hermezApi
+          .delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
           .then((txData) => {
             dispatch(
               globalThunks.addPendingWithdraw({
@@ -211,7 +209,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
-  const errorMsg = persistence.getErrorMessage(error);
+  const errorMsg = adapters.getErrorMessage(error);
   const snackbarMsg = errorMsg.includes(withdrawAlreadyDoneErrorCode)
     ? "The withdraw has already been done"
     : errorMsg;

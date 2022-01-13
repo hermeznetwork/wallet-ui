@@ -40,10 +40,10 @@ type AccountSelectorProps = {
       accountsTask: AsyncTask<AccountsWithPagination, Error>;
       poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
       onLoadAccounts: (
-        fromItem: number | undefined,
         poolTransactions: PoolTransaction[],
         fiatExchangeRates: FiatExchangeRates,
-        preferredCurrency: string
+        preferredCurrency: string,
+        fromItem?: number
       ) => void;
       onAccountClick: (account: HermezAccount) => void;
     }
@@ -52,10 +52,10 @@ type AccountSelectorProps = {
       accountsTask: AsyncTask<AccountsWithPagination, Error>;
       poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
       onLoadAccounts: (
-        fromItem: number | undefined,
         poolTransactions: PoolTransaction[],
         fiatExchangeRates: FiatExchangeRates,
-        preferredCurrency: string
+        preferredCurrency: string,
+        fromItem?: number
       ) => void;
       onAccountClick: (account: HermezAccount) => void;
     }
@@ -75,7 +75,6 @@ function AccountSelector({
         transaction.onLoadAccounts(fiatExchangeRates, preferredCurrency);
       } else if (transaction.poolTransactionsTask.status === "successful") {
         transaction.onLoadAccounts(
-          undefined,
           transaction.poolTransactionsTask.data,
           fiatExchangeRates,
           preferredCurrency
@@ -163,13 +162,13 @@ function AccountSelector({
                           paginationData={accountsTask.data.pagination}
                           onLoadNextPage={(fromItem: number) => {
                             onLoadAccounts(
-                              fromItem,
                               poolTransactionsTask.status === "successful" ||
                                 poolTransactionsTask.status === "reloading"
                                 ? poolTransactionsTask.data
                                 : [],
                               fiatExchangeRates,
-                              preferredCurrency
+                              preferredCurrency,
+                              fromItem
                             );
                           }}
                         >
