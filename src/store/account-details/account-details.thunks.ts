@@ -67,8 +67,8 @@ function fetchL1TokenBalance(
 
       return ethereum
         .getEthereumAccounts(wallet, [token], tokensPriceTask, fiatExchangeRates, preferredCurrency)
-        .then((metamaskTokens) => {
-          if (metamaskTokens[0]) {
+        .then((ethereumAccounts) => {
+          if (ethereumAccounts[0]) {
             // We need this to check if the user has balance of a specific token in his ethereum address.
             // If getEthereumAccounts returns one element when asking for the token it means that the user has balance.
             dispatch(accountDetailsActions.loadL1TokenBalanceSuccess());
