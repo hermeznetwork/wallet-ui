@@ -642,7 +642,20 @@ export function withdrawCircuit(
   zkeyFilePath: string,
   signerData: Signers.SignerData
 ): Promise<Tx.TxData> {
-  return Tx.withdrawCircuit(exit, isInstant, wasmFilePath, zkeyFilePath, signerData);
+  return Tx.withdrawCircuit(exit, isInstant, wasmFilePath, zkeyFilePath, signerData).then(
+    (txData: unknown) => {
+      const parsedTxData = parsers.txData.safeParse(txData);
+      if (parsedTxData.success) {
+        return parsedTxData.data;
+      } else {
+        logDecodingError(
+          parsedTxData.error,
+          "Could not decode the TxData from the function withdrawCircuit."
+        );
+        throw parsedTxData.error;
+      }
+    }
+  );
 }
 
 export function delayedWithdraw(
