@@ -473,10 +473,21 @@ export function getHermezAccounts({
 }
 
 /**
- * Fetches a raw hermez Account for an accountIndex.
+ * Fetches the HermezRawAccount for an accountIndex.
  */
 export function getAccount(accountIndex: string): Promise<HermezRawAccount> {
-  return CoordinatorAPI.getAccount(accountIndex);
+  return CoordinatorAPI.getAccount(accountIndex).then((hermezRawAccount: unknown) => {
+    const parsedHermezRawAccount = parsers.hermezRawAccount.safeParse(hermezRawAccount);
+    if (parsedHermezRawAccount.success) {
+      return parsedHermezRawAccount.data;
+    } else {
+      logDecodingError(
+        parsedHermezRawAccount.error,
+        "Could not decode the Account from the function getAccount."
+      );
+      throw parsedHermezRawAccount.error;
+    }
+  });
 }
 
 /**
