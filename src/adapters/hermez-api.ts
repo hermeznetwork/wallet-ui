@@ -15,6 +15,7 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { HttpStatusCode } from "src/utils/http";
 import { StrictSchema } from "src/utils/type-safety";
 import { AsyncTask } from "src/utils/types";
+import { logDecodingError } from "src/adapters";
 import * as parsers from "src/adapters/parsers";
 // domain
 import {
@@ -111,7 +112,15 @@ export function getState(
   axiosConfig?: Record<string, unknown>,
   apiUrl?: string
 ): Promise<CoordinatorState> {
-  return CoordinatorAPI.getState(axiosConfig, apiUrl);
+  return CoordinatorAPI.getState(axiosConfig, apiUrl).then((coordinatorState: unknown) => {
+    const parsedCoordinatorState = parsers.coordinatorState.safeParse(coordinatorState);
+    if (parsedCoordinatorState.success) {
+      return parsedCoordinatorState.data;
+    } else {
+      logDecodingError(parsedCoordinatorState.error, "CoordinatorState");
+      throw parsedCoordinatorState.error;
+    }
+  });
 }
 
 export function getHistoryTransaction(

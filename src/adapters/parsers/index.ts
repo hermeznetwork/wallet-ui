@@ -4,6 +4,7 @@ import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 // domain
 import {
   AccountAuthorization,
+  CoordinatorState,
   Exit,
   HermezAccount,
   HermezApiResourceItem,
@@ -11,14 +12,22 @@ import {
   L1Info,
   L2Info,
   MerkleProof,
+  NextForger,
   PendingDelayedWithdraw,
   PendingDeposit,
   PendingWithdraw,
+  RecommendedFee,
   TimerWithdraw,
   Token,
 } from "src/domain";
 // utils
 import { StrictSchema } from "src/utils/type-safety";
+
+const hermezApiResourceItem = StrictSchema<HermezApiResourceItem>()(
+  z.object({
+    itemId: z.number(),
+  })
+);
 
 const accountAuthorization = StrictSchema<AccountAuthorization>()(
   z.object({
@@ -26,9 +35,73 @@ const accountAuthorization = StrictSchema<AccountAuthorization>()(
   })
 );
 
-const hermezApiResourceItem = StrictSchema<HermezApiResourceItem>()(
+// CoordinatorState
+
+const coordinator = StrictSchema<NextForger["coordinator"]>()(
+  hermezApiResourceItem.and(
+    z.object({
+      forgerAddr: z.string(),
+      URL: z.string(),
+    })
+  )
+);
+
+const period = StrictSchema<NextForger["period"]>()(
   z.object({
-    itemId: z.number(),
+    toTimestamp: z.string(),
+  })
+);
+
+const nextForger = StrictSchema<NextForger>()(
+  z.object({
+    coordinator: coordinator,
+    period: period,
+  })
+);
+
+const batch = StrictSchema<CoordinatorState["network"]["lastBatch"]>()(
+  hermezApiResourceItem.and(
+    z.object({
+      timestamp: z.string(),
+    })
+  )
+);
+
+const network = StrictSchema<CoordinatorState["network"]>()(
+  z.object({
+    lastBatch: batch,
+    nextForgers: z.array(nextForger),
+  })
+);
+
+const node = StrictSchema<CoordinatorState["node"]>()(
+  z.object({
+    forgeDelay: z.number(),
+    poolLoad: z.number(),
+  })
+);
+
+const withdrawalDelayer = StrictSchema<CoordinatorState["withdrawalDelayer"]>()(
+  z.object({
+    withdrawalDelay: z.number(),
+    emergencyMode: z.boolean(),
+  })
+);
+
+const recommendedFee = StrictSchema<RecommendedFee>()(
+  z.object({
+    existingAccount: z.number(),
+    createAccount: z.number(),
+    createAccountInternal: z.number(),
+  })
+);
+
+const coordinatorState = StrictSchema<CoordinatorState>()(
+  z.object({
+    node: node,
+    network: network,
+    withdrawalDelayer: withdrawalDelayer,
+    recommendedFee: recommendedFee,
   })
 );
 
@@ -161,6 +234,7 @@ const timerWithdraw = StrictSchema<TimerWithdraw>()(
 
 export {
   accountAuthorization,
+  coordinatorState,
   hermezAccount,
   historyTransaction,
   pendingDelayedWithdraw,
