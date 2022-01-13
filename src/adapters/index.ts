@@ -36,11 +36,11 @@ export function getErrorMessage(error: unknown, defaultMsg?: string): string {
   return "An unknown error occurred";
 }
 
-export function logDecodingError<T>(error: ZodError<T>, type: string): void {
+export function logDecodingError<T>(error: ZodError<T>, details: string): void {
   const message =
     error.issues.length > 1
-      ? `Some errors occurred while decoding ${type}`
-      : `An error occurred while decoding ${type}`;
+      ? `Some errors occurred while decoding. ${details}`
+      : `An error occurred while decoding. ${details}`;
   console.error(message);
   error.issues.forEach((issue) => {
     console.error(JSON.stringify(issue, null, 4));
