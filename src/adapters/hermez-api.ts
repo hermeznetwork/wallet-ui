@@ -406,7 +406,7 @@ function setAccountToken(
   }
 }
 
-function createAccount(
+function createHermezAccount(
   account: HermezAccount,
   tokensPriceTask: AsyncTask<Token[], string>,
   preferredCurrency: string,
@@ -459,7 +459,7 @@ export function getHermezAccounts({
     (accountsResponse) => ({
       pendingItems: accountsResponse.pendingItems,
       accounts: accountsResponse.accounts.map((account) =>
-        createAccount(
+        createHermezAccount(
           account,
           tokensPriceTask,
           preferredCurrency,
@@ -501,7 +501,13 @@ export function fetchHermezAccount(
   poolTransactions?: PoolTransaction[]
 ): Promise<HermezAccount> {
   return getAccount(accountIndex).then((account) =>
-    createAccount(account, tokensPriceTask, preferredCurrency, poolTransactions, fiatExchangeRates)
+    createHermezAccount(
+      account,
+      tokensPriceTask,
+      preferredCurrency,
+      poolTransactions,
+      fiatExchangeRates
+    )
   );
 }
 
