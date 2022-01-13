@@ -519,7 +519,34 @@ export function getPoolTransactions(
   accountIndex: string | undefined,
   publicKeyCompressedHex: string
 ): Promise<PoolTransaction[]> {
-  return TxPool.getPoolTransactions(accountIndex, publicKeyCompressedHex);
+  return TxPool.getPoolTransactions(accountIndex, publicKeyCompressedHex).then(
+    (poolTransactions: unknown) => {
+      const parsedUnknownPoolTransactions = z.array(z.unknown()).safeParse(poolTransactions);
+      if (parsedUnknownPoolTransactions.success) {
+        return parsedUnknownPoolTransactions.data.reduce(
+          (acc: PoolTransaction[], curr: unknown, index: number): PoolTransaction[] => {
+            const parsedPoolTransaction = parsers.poolTransaction.safeParse(curr);
+            if (parsedPoolTransaction.success) {
+              return [...acc, parsedPoolTransaction.data];
+            } else {
+              logDecodingError(
+                parsedPoolTransaction.error,
+                `Could not decode the PoolTransaction at index ${index} from the function getPoolTransactions. It has been ignored.`
+              );
+              return acc;
+            }
+          },
+          []
+        );
+      } else {
+        logDecodingError(
+          parsedUnknownPoolTransactions.error,
+          "Could not decode the list of PoolTransaction from the function getPoolTransactions. Can't show any data."
+        );
+        throw parsedUnknownPoolTransactions.error;
+      }
+    }
+  );
 }
 
 ////////
