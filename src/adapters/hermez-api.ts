@@ -572,7 +572,18 @@ export function deposit(
     providerUrl,
     gasLimit,
     gasMultiplier
-  );
+  ).then((txData: unknown) => {
+    const parsedTxData = parsers.txData.safeParse(txData);
+    if (parsedTxData.success) {
+      return parsedTxData.data;
+    } else {
+      logDecodingError(
+        parsedTxData.error,
+        "Could not decode the TxData from the function deposit."
+      );
+      throw parsedTxData.error;
+    }
+  });
 }
 
 export function generateAndSendL2Tx(

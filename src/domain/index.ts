@@ -28,6 +28,7 @@ export type {
   PoolTransaction,
   RecommendedFee,
   Signers,
+  Tx,
   Token,
   Tokens,
 } from "@hermeznetwork/hermezjs";

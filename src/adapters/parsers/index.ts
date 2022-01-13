@@ -20,58 +20,11 @@ import {
   PoolTransaction,
   RecommendedFee,
   TimerWithdraw,
+  Tx,
   Token,
 } from "src/domain";
 // utils
 import { StrictSchema } from "src/utils/type-safety";
-
-interface UnknownHermezRawAccounts {
-  accounts: unknown[];
-  pendingItems: number;
-}
-
-const unknownHermezRawAccounts = StrictSchema<UnknownHermezRawAccounts>()(
-  z.object({
-    accounts: z.array(z.unknown()),
-    pendingItems: z.number(),
-  })
-);
-
-interface UnknownExits {
-  exits: unknown[];
-  pendingItems: number;
-}
-
-const unknownExits = StrictSchema<UnknownExits>()(
-  z.object({
-    exits: z.array(z.unknown()),
-    pendingItems: z.number(),
-  })
-);
-
-interface UnknownHistoryTransactions {
-  transactions: unknown[];
-  pendingItems: number;
-}
-
-const unknownHistoryTransactions = StrictSchema<UnknownHistoryTransactions>()(
-  z.object({
-    transactions: z.array(z.unknown()),
-    pendingItems: z.number(),
-  })
-);
-
-interface UnknownTokens {
-  tokens: unknown[];
-  pendingItems: number;
-}
-
-const unknownTokens = StrictSchema<UnknownTokens>()(
-  z.object({
-    tokens: z.array(z.unknown()),
-    pendingItems: z.number(),
-  })
-);
 
 const hermezApiResourceItem = StrictSchema<HermezApiResourceItem>()(
   z.object({
@@ -316,6 +269,61 @@ const timerWithdraw = StrictSchema<TimerWithdraw>()(
   })
 );
 
+// the response from a Deposit call
+const txData = StrictSchema<Tx.TxData>()(
+  z.object({
+    hash: z.string(),
+  })
+);
+
+interface UnknownHermezRawAccounts {
+  accounts: unknown[];
+  pendingItems: number;
+}
+
+const unknownHermezRawAccounts = StrictSchema<UnknownHermezRawAccounts>()(
+  z.object({
+    accounts: z.array(z.unknown()),
+    pendingItems: z.number(),
+  })
+);
+
+interface UnknownExits {
+  exits: unknown[];
+  pendingItems: number;
+}
+
+const unknownExits = StrictSchema<UnknownExits>()(
+  z.object({
+    exits: z.array(z.unknown()),
+    pendingItems: z.number(),
+  })
+);
+
+interface UnknownHistoryTransactions {
+  transactions: unknown[];
+  pendingItems: number;
+}
+
+const unknownHistoryTransactions = StrictSchema<UnknownHistoryTransactions>()(
+  z.object({
+    transactions: z.array(z.unknown()),
+    pendingItems: z.number(),
+  })
+);
+
+interface UnknownTokens {
+  tokens: unknown[];
+  pendingItems: number;
+}
+
+const unknownTokens = StrictSchema<UnknownTokens>()(
+  z.object({
+    tokens: z.array(z.unknown()),
+    pendingItems: z.number(),
+  })
+);
+
 export {
   accountAuthorization,
   coordinatorState,
@@ -329,6 +337,7 @@ export {
   poolTransaction,
   timerWithdraw,
   token,
+  txData,
   unknownExits,
   unknownHermezRawAccounts,
   unknownHistoryTransactions,
