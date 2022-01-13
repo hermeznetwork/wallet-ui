@@ -348,7 +348,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   import { TxType } from "@hermeznetwork/hermezjs/src/enums";
   import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
 
-  export interface TxData {
+  interface TxData {
     hash: string;
     // type: number;
     // accessList: unknown;

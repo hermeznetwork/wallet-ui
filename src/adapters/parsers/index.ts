@@ -261,6 +261,14 @@ const pendingDelayedWithdraw = StrictSchema<PendingDelayedWithdraw>()(
   )
 );
 
+const sendL2TransactionResponse = StrictSchema<Tx.SendL2TransactionResponse>()(
+  z.object({
+    status: z.number(),
+    id: z.string(),
+    nonce: z.number(),
+  })
+);
+
 const timerWithdraw = StrictSchema<TimerWithdraw>()(
   z.object({
     id: z.string(),
@@ -335,6 +343,7 @@ export {
   pendingDeposit,
   pendingWithdraw,
   poolTransaction,
+  sendL2TransactionResponse,
   timerWithdraw,
   token,
   txData,
