@@ -127,7 +127,17 @@ export function getHistoryTransaction(
   transactionId: string,
   axiosConfig?: Record<string, unknown>
 ): Promise<HistoryTransaction> {
-  return CoordinatorAPI.getHistoryTransaction(transactionId, axiosConfig);
+  return CoordinatorAPI.getHistoryTransaction(transactionId, axiosConfig).then(
+    (historyTransaction: unknown) => {
+      const parsedHistoryTransaction = parsers.historyTransaction.safeParse(historyTransaction);
+      if (parsedHistoryTransaction.success) {
+        return parsedHistoryTransaction.data;
+      } else {
+        logDecodingError(parsedHistoryTransaction.error, "HistoryTransaction");
+        throw parsedHistoryTransaction.error;
+      }
+    }
+  );
 }
 
 export function getHistoryTransactions(
