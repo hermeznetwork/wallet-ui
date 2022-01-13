@@ -63,7 +63,10 @@ export function getAuthSignatures(): AuthSignatures {
   if (parsedAuthSignatures.success) {
     return parsedAuthSignatures.data;
   } else {
-    adapters.logDecodingError(parsedAuthSignatures.error, "AuthSignatures");
+    adapters.logDecodingError(
+      parsedAuthSignatures.error,
+      "Could not decode AuthSignatures from the function getAuthSignatures."
+    );
     return {};
   }
 }
@@ -81,7 +84,10 @@ export function getPreferredCurrency(): string {
     return parsedPreferredCurrency.data;
   } else {
     setPreferredCurrency(constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY);
-    adapters.logDecodingError(parsedPreferredCurrency.error, "PreferredCurrency");
+    adapters.logDecodingError(
+      parsedPreferredCurrency.error,
+      "Could not decode PreferredCurrency from the function getPreferredCurrency."
+    );
     return constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY;
   }
 }
@@ -102,7 +108,10 @@ export function getPendingWithdraws(): PendingWithdraws {
   if (parsedPendingWithdraws.success) {
     return parsedPendingWithdraws.data;
   } else {
-    adapters.logDecodingError(parsedPendingWithdraws.error, "PendingWithdraws");
+    adapters.logDecodingError(
+      parsedPendingWithdraws.error,
+      "Could not decode PendingWithdraws from the function getPendingWithdraws."
+    );
     return {};
   }
 }
@@ -158,7 +167,10 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
   if (parsedPendingDelayedWithdraws.success) {
     return parsedPendingDelayedWithdraws.data;
   } else {
-    adapters.logDecodingError(parsedPendingDelayedWithdraws.error, "PendingDelayedWithdraws");
+    adapters.logDecodingError(
+      parsedPendingDelayedWithdraws.error,
+      "Could not decode PendingDelayedWithdraws from the function getPendingDelayedWithdraws."
+    );
     return {};
   }
 }
@@ -262,7 +274,10 @@ export function getPendingDeposits(): PendingDeposits {
   if (parsedPendingDeposits.success) {
     return parsedPendingDeposits.data;
   } else {
-    adapters.logDecodingError(parsedPendingDeposits.error, "PendingDeposits");
+    adapters.logDecodingError(
+      parsedPendingDeposits.error,
+      "Could not decode PendingDeposits from the function getPendingDeposits."
+    );
     return {};
   }
 }
@@ -360,7 +375,10 @@ export function getTimerWithdraws(): TimerWithdraws {
   if (parsedTimerWithdraw.success) {
     return parsedTimerWithdraw.data;
   } else {
-    adapters.logDecodingError(parsedTimerWithdraw.error, "TimerWithdraws");
+    adapters.logDecodingError(
+      parsedTimerWithdraw.error,
+      "Could not decode TimerWithdraws from the function getTimerWithdraws."
+    );
     return {};
   }
 }
@@ -409,7 +427,10 @@ export function getCurrentStorageVersion(): number | undefined {
   if (parsedCurrentStorageVersion.success) {
     return parsedCurrentStorageVersion.data;
   } else {
-    adapters.logDecodingError(parsedCurrentStorageVersion.error, "CurrentStorageVersion");
+    adapters.logDecodingError(
+      parsedCurrentStorageVersion.error,
+      "Could not decode CurrentStorageVersion from the function getCurrentStorageVersion."
+    );
     return undefined;
   }
 }
