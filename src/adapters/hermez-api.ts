@@ -663,7 +663,18 @@ export function delayedWithdraw(
   token: Token,
   signerData: Signers.SignerData
 ): Promise<Tx.TxData> {
-  return Tx.delayedWithdraw(hezEthereumAddress, token, signerData);
+  return Tx.delayedWithdraw(hezEthereumAddress, token, signerData).then((txData: unknown) => {
+    const parsedTxData = parsers.txData.safeParse(txData);
+    if (parsedTxData.success) {
+      return parsedTxData.data;
+    } else {
+      logDecodingError(
+        parsedTxData.error,
+        "Could not decode the TxData from the function delayedWithdraw."
+      );
+      throw parsedTxData.error;
+    }
+  });
 }
 
 ////////////
