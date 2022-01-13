@@ -48,6 +48,18 @@ const unknownHistoryTransactions = StrictSchema<UnknownHistoryTransactions>()(
   })
 );
 
+interface UnknownTokens {
+  tokens: unknown[];
+  pendingItems: number;
+}
+
+const unknownTokens = StrictSchema<UnknownTokens>()(
+  z.object({
+    tokens: z.array(z.unknown()),
+    pendingItems: z.number(),
+  })
+);
+
 const hermezApiResourceItem = StrictSchema<HermezApiResourceItem>()(
   z.object({
     itemId: z.number(),
@@ -293,4 +305,5 @@ export {
   token,
   unknownExits,
   unknownHistoryTransactions,
+  unknownTokens,
 };

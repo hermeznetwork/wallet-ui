@@ -280,7 +280,37 @@ export function getTokens(
   limit?: number,
   axiosConfig?: Record<string, unknown>
 ): Promise<Tokens> {
-  return CoordinatorAPI.getTokens(tokenIds, tokenSymbols, fromItem, order, limit, axiosConfig);
+  return CoordinatorAPI.getTokens(tokenIds, tokenSymbols, fromItem, order, limit, axiosConfig).then(
+    (tokens: unknown) => {
+      const parsedUnknownTokens = parsers.unknownTokens.safeParse(tokens);
+      if (parsedUnknownTokens.success) {
+        return {
+          pendingItems: parsedUnknownTokens.data.pendingItems,
+          tokens: parsedUnknownTokens.data.tokens.reduce(
+            (acc: Token[], curr: unknown, index: number) => {
+              const parsedToken = parsers.token.safeParse(curr);
+              if (parsedToken.success) {
+                return [...acc, parsedToken.data];
+              } else {
+                logDecodingError(
+                  parsedToken.error,
+                  `Could not decode the Token at index ${index} from the function getTokens. It has been ignored.`
+                );
+                return acc;
+              }
+            },
+            []
+          ),
+        };
+      } else {
+        logDecodingError(
+          parsedUnknownTokens.error,
+          "Could not decode the resource Tokens from the function getTokens. Can't show any data."
+        );
+        throw parsedUnknownTokens.error;
+      }
+    }
+  );
 }
 
 export function getAccounts(
