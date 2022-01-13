@@ -119,7 +119,7 @@ export function getState(
     } else {
       logDecodingError(
         parsedCoordinatorState.error,
-        "Could not decode CoordinatorState from getState function."
+        "Could not decode the CoordinatorState from the function getState."
       );
       throw parsedCoordinatorState.error;
     }
@@ -138,7 +138,7 @@ export function getHistoryTransaction(
       } else {
         logDecodingError(
           parsedHistoryTransaction.error,
-          "Could not decode HistoryTransaction from getHistoryTransaction function."
+          "Could not decode the HistoryTransaction from the function getHistoryTransaction."
         );
         throw parsedHistoryTransaction.error;
       }
@@ -201,7 +201,20 @@ export function getPoolTransaction(
   transactionId: string,
   axiosConfig?: Record<string, unknown>
 ): Promise<PoolTransaction> {
-  return CoordinatorAPI.getPoolTransaction(transactionId, axiosConfig);
+  return CoordinatorAPI.getPoolTransaction(transactionId, axiosConfig).then(
+    (poolTransaction: unknown) => {
+      const parsedPoolTransaction = parsers.poolTransaction.safeParse(poolTransaction);
+      if (parsedPoolTransaction.success) {
+        return parsedPoolTransaction.data;
+      } else {
+        logDecodingError(
+          parsedPoolTransaction.error,
+          "Could not decode the PoolTransaction from the function getPoolTransaction."
+        );
+        throw parsedPoolTransaction.error;
+      }
+    }
+  );
 }
 
 export function getExit(

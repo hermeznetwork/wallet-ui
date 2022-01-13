@@ -97,11 +97,13 @@ declare module "@hermeznetwork/*" {
 
   export type PoolTransaction = HermezApiResourceItem & {
     amount: string;
+    batchNum?: number | null;
     errorCode?: number | null;
     fee: number;
     fromAccountIndex: string;
     fromBJJ: string | null;
     fromHezEthereumAddress: string | null;
+    id: string;
     state: TxState;
     timestamp: ISOStringDate;
     toAccountIndex: string | null;
@@ -109,8 +111,6 @@ declare module "@hermeznetwork/*" {
     toHezEthereumAddress: string | null;
     token: Token;
     type: TxType;
-    batchNum?: number | null;
-    id: string;
     // errorType?: string | null;
     // info: string | null;
     // maxNumBatch?: number;

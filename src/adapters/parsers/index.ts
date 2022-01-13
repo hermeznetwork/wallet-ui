@@ -16,6 +16,7 @@ import {
   PendingDelayedWithdraw,
   PendingDeposit,
   PendingWithdraw,
+  PoolTransaction,
   RecommendedFee,
   TimerWithdraw,
   Token,
@@ -23,7 +24,7 @@ import {
 // utils
 import { StrictSchema } from "src/utils/type-safety";
 
-export interface UnknownHistoryTransactions {
+interface UnknownHistoryTransactions {
   transactions: unknown[];
   pendingItems: number;
 }
@@ -180,6 +181,28 @@ const historyTransaction = StrictSchema<HistoryTransaction>()(
   )
 );
 
+const poolTransaction = StrictSchema<PoolTransaction>()(
+  hermezApiResourceItem.and(
+    z.object({
+      amount: z.string(),
+      batchNum: z.number().nullable().optional(),
+      errorCode: z.number().nullable().optional(),
+      fee: z.number(),
+      fromAccountIndex: z.string(),
+      fromBJJ: z.string().nullable(),
+      fromHezEthereumAddress: z.string().nullable(),
+      id: z.string(),
+      state: z.nativeEnum(TxState),
+      timestamp: z.string(),
+      toAccountIndex: z.string().nullable(),
+      toBJJ: z.string().nullable(),
+      toHezEthereumAddress: z.string().nullable(),
+      token: token,
+      type: z.nativeEnum(TxType),
+    })
+  )
+);
+
 const pendingDeposit = StrictSchema<PendingDeposit>()(
   z.object({
     accountIndex: z.string().optional(),
@@ -252,7 +275,8 @@ export {
   pendingDelayedWithdraw,
   pendingDeposit,
   pendingWithdraw,
-  unknownHistoryTransactions,
+  poolTransaction,
   timerWithdraw,
   token,
+  unknownHistoryTransactions,
 };
