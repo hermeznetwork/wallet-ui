@@ -117,7 +117,10 @@ export function getState(
     if (parsedCoordinatorState.success) {
       return parsedCoordinatorState.data;
     } else {
-      logDecodingError(parsedCoordinatorState.error, "CoordinatorState");
+      logDecodingError(
+        parsedCoordinatorState.error,
+        "Could not decode CoordinatorState from getState function."
+      );
       throw parsedCoordinatorState.error;
     }
   });
@@ -133,7 +136,10 @@ export function getHistoryTransaction(
       if (parsedHistoryTransaction.success) {
         return parsedHistoryTransaction.data;
       } else {
-        logDecodingError(parsedHistoryTransaction.error, "HistoryTransaction");
+        logDecodingError(
+          parsedHistoryTransaction.error,
+          "Could not decode HistoryTransaction from getHistoryTransaction function."
+        );
         throw parsedHistoryTransaction.error;
       }
     }
@@ -159,7 +165,36 @@ export function getHistoryTransactions(
     order,
     limit,
     axiosConfig
-  );
+  ).then((historyTransactions: unknown) => {
+    const parsedUnknownHistoryTransactions =
+      parsers.unknownHistoryTransactions.safeParse(historyTransactions);
+    if (parsedUnknownHistoryTransactions.success) {
+      return {
+        pendingItems: parsedUnknownHistoryTransactions.data.pendingItems,
+        transactions: parsedUnknownHistoryTransactions.data.transactions.reduce(
+          (acc: HistoryTransaction[], curr: unknown) => {
+            const parsedHistoryTransaction = parsers.historyTransaction.safeParse(curr);
+            if (parsedHistoryTransaction.success) {
+              return [...acc, parsedHistoryTransaction.data];
+            } else {
+              logDecodingError(
+                parsedHistoryTransaction.error,
+                "Could not decode one HistoryTransaction from the function getHistoryTransactions. It has been ignored."
+              );
+              return acc;
+            }
+          },
+          []
+        ),
+      };
+    } else {
+      logDecodingError(
+        parsedUnknownHistoryTransactions.error,
+        "Could not decode the resource HistoryTransactions from the function getHistoryTransactions. Can't show any data."
+      );
+      throw parsedUnknownHistoryTransactions.error;
+    }
+  });
 }
 
 export function getPoolTransaction(

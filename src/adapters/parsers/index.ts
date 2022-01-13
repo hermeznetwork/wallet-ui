@@ -23,6 +23,18 @@ import {
 // utils
 import { StrictSchema } from "src/utils/type-safety";
 
+export interface UnknownHistoryTransactions {
+  transactions: unknown[];
+  pendingItems: number;
+}
+
+const unknownHistoryTransactions = StrictSchema<UnknownHistoryTransactions>()(
+  z.object({
+    pendingItems: z.number(),
+    transactions: z.array(z.unknown()),
+  })
+);
+
 const hermezApiResourceItem = StrictSchema<HermezApiResourceItem>()(
   z.object({
     itemId: z.number(),
@@ -240,6 +252,7 @@ export {
   pendingDelayedWithdraw,
   pendingDeposit,
   pendingWithdraw,
+  unknownHistoryTransactions,
   timerWithdraw,
   token,
 };
