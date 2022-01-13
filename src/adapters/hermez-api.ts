@@ -15,6 +15,7 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { HttpStatusCode } from "src/utils/http";
 import { StrictSchema } from "src/utils/type-safety";
 import { AsyncTask } from "src/utils/types";
+import * as parsers from "src/adapters/parsers";
 // domain
 import {
   AccountAuthorization,
@@ -66,7 +67,7 @@ export function postCreateAccountAuthorization(
     publicKeyBase64,
     signature,
     nextForgerUrls
-  ).catch((error: AxiosError<PostCreateAccountAuthorizationError>) => {
+  ).catch((error: AxiosError) => {
     // If the coordinators already have the CreateAccountsAuth signature,
     // we ignore the error
     const isDuplicationError = error.response?.status === HttpStatusCode.DUPLICATED;
@@ -94,7 +95,16 @@ export function getCreateAccountAuthorization(
   hezEthereumAddress: string,
   axiosConfig?: Record<string, unknown>
 ): Promise<AccountAuthorization> {
-  return CoordinatorAPI.getCreateAccountAuthorization(hezEthereumAddress, axiosConfig);
+  return CoordinatorAPI.getCreateAccountAuthorization(hezEthereumAddress, axiosConfig).then(
+    (accountAuthorization: unknown) => {
+      const parsedAuthSignatures = parsers.accountAuthorization.safeParse(accountAuthorization);
+      if (parsedAuthSignatures.success) {
+        return parsedAuthSignatures.data;
+      } else {
+        throw parsedAuthSignatures.error;
+      }
+    }
+  );
 }
 
 export function getState(

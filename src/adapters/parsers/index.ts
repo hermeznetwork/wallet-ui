@@ -3,6 +3,7 @@ import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 // domain
 import {
+  AccountAuthorization,
   Exit,
   HermezAccount,
   HermezApiResourceItem,
@@ -18,6 +19,12 @@ import {
 } from "src/domain";
 // utils
 import { StrictSchema } from "src/utils/type-safety";
+
+const accountAuthorization = StrictSchema<AccountAuthorization>()(
+  z.object({
+    signature: z.string(),
+  })
+);
 
 const hermezApiResourceItem = StrictSchema<HermezApiResourceItem>()(
   z.object({
@@ -153,11 +160,12 @@ const timerWithdraw = StrictSchema<TimerWithdraw>()(
 );
 
 export {
-  token,
+  accountAuthorization,
   hermezAccount,
   historyTransaction,
+  pendingDelayedWithdraw,
   pendingDeposit,
   pendingWithdraw,
-  pendingDelayedWithdraw,
   timerWithdraw,
+  token,
 };

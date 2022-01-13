@@ -615,7 +615,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     nextForgerUrls?: string[],
     axiosConfig?: Record<string, unknown>
   ): Promise<PostCreateAccountAuthorizationResponse>;
-  // function getCreateAccountAuthorization();
+
   // function getConfig();
 
   // function getPoolTransactions(
