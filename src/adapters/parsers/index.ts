@@ -24,6 +24,18 @@ import {
 // utils
 import { StrictSchema } from "src/utils/type-safety";
 
+interface UnknownExits {
+  exits: unknown[];
+  pendingItems: number;
+}
+
+const unknownExits = StrictSchema<UnknownExits>()(
+  z.object({
+    exits: z.array(z.unknown()),
+    pendingItems: z.number(),
+  })
+);
+
 interface UnknownHistoryTransactions {
   transactions: unknown[];
   pendingItems: number;
@@ -31,8 +43,8 @@ interface UnknownHistoryTransactions {
 
 const unknownHistoryTransactions = StrictSchema<UnknownHistoryTransactions>()(
   z.object({
-    pendingItems: z.number(),
     transactions: z.array(z.unknown()),
+    pendingItems: z.number(),
   })
 );
 
@@ -279,5 +291,6 @@ export {
   poolTransaction,
   timerWithdraw,
   token,
+  unknownExits,
   unknownHistoryTransactions,
 };

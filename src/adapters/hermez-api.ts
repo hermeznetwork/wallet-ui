@@ -172,14 +172,14 @@ export function getHistoryTransactions(
       return {
         pendingItems: parsedUnknownHistoryTransactions.data.pendingItems,
         transactions: parsedUnknownHistoryTransactions.data.transactions.reduce(
-          (acc: HistoryTransaction[], curr: unknown) => {
+          (acc: HistoryTransaction[], curr: unknown, index: number) => {
             const parsedHistoryTransaction = parsers.historyTransaction.safeParse(curr);
             if (parsedHistoryTransaction.success) {
               return [...acc, parsedHistoryTransaction.data];
             } else {
               logDecodingError(
                 parsedHistoryTransaction.error,
-                "Could not decode one HistoryTransaction from the function getHistoryTransactions. It has been ignored."
+                `Could not decode the HistoryTransaction at index ${index} from the function getHistoryTransactions. It has been ignored.`
               );
               return acc;
             }
@@ -239,7 +239,37 @@ export function getExits(
   tokenId?: number,
   fromItem?: number
 ): Promise<Exits> {
-  return CoordinatorAPI.getExits(address, onlyPendingWithdraws, tokenId, fromItem);
+  return CoordinatorAPI.getExits(address, onlyPendingWithdraws, tokenId, fromItem).then(
+    (exits: unknown) => {
+      const parsedUnknownExits = parsers.unknownExits.safeParse(exits);
+      if (parsedUnknownExits.success) {
+        return {
+          pendingItems: parsedUnknownExits.data.pendingItems,
+          exits: parsedUnknownExits.data.exits.reduce(
+            (acc: Exit[], curr: unknown, index: number) => {
+              const parsedExit = parsers.exit.safeParse(curr);
+              if (parsedExit.success) {
+                return [...acc, parsedExit.data];
+              } else {
+                logDecodingError(
+                  parsedExit.error,
+                  `Could not decode the Exit at index ${index} from the function getExits. It has been ignored.`
+                );
+                return acc;
+              }
+            },
+            []
+          ),
+        };
+      } else {
+        logDecodingError(
+          parsedUnknownExits.error,
+          "Could not decode the resource Exits from the function getExits. Can't show any data."
+        );
+        throw parsedUnknownExits.error;
+      }
+    }
+  );
 }
 
 export function getTokens(
