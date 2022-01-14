@@ -9,7 +9,7 @@ import { getFixedTokenAmount } from "src/utils/currencies";
 import Alert from "src/views/shared/alert/alert.view";
 
 interface ExitAlertProps {
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
 }
 
 function ExitAlert({ estimatedWithdrawFeeTask }: ExitAlertProps): JSX.Element {

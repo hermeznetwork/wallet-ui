@@ -47,7 +47,13 @@ function fetchHermezAccount(
         poolTransactions
       )
       .then((res) => dispatch(transferActions.loadAccountSuccess(res)))
-      .catch((error: Error) => dispatch(transferActions.loadAccountFailure(error.message)));
+      .catch((err: unknown) =>
+        dispatch(
+          transferActions.loadAccountFailure(
+            adapters.getErrorMessage(err, "Oops... an error occurred on fetchHermezAccount")
+          )
+        )
+      );
   };
 }
 
@@ -66,7 +72,13 @@ function fetchPoolTransactions(): AppThunk {
       adapters.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(transferActions.loadPoolTransactionsSuccess(transactions)))
-        .catch((err) => dispatch(transferActions.loadPoolTransactionsFailure(err)));
+        .catch((err: unknown) =>
+          dispatch(
+            transferActions.loadPoolTransactionsFailure(
+              adapters.getErrorMessage(err, "Oops... an error occurred on fetchPoolTransactions")
+            )
+          )
+        );
     }
   };
 }
@@ -98,7 +110,13 @@ function fetchAccounts(
           fromItem,
         })
         .then((accounts) => dispatch(transferActions.loadAccountsSuccess(accounts)))
-        .catch((err) => dispatch(transferActions.loadAccountsFailure(err)));
+        .catch((err: unknown) =>
+          dispatch(
+            transferActions.loadAccountsFailure(
+              adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccounts")
+            )
+          )
+        );
     }
   };
 }
@@ -124,7 +142,13 @@ function fetchFees(): AppThunk {
         return adapters.hermezApi
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(transferActions.loadFeesSuccess(res.recommendedFee)))
-          .catch((err) => dispatch(transferActions.loadFeesFailure(err)));
+          .catch((err: unknown) =>
+            dispatch(
+              transferActions.loadFeesFailure(
+                adapters.getErrorMessage(err, "Oops... an error occurred on fetchFees")
+              )
+            )
+          );
       }
     }
   };
@@ -229,7 +253,7 @@ function transfer(
       return adapters.hermezApi
         .generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
-        .catch((error) => {
+        .catch((error: unknown) => {
           dispatch(transferActions.stopTransactionApproval());
           handleTransactionFailure(dispatch, error);
         });

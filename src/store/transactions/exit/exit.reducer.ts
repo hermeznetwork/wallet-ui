@@ -12,11 +12,11 @@ import { PoolTransaction, HermezAccount, RecommendedFee, EstimatedL1Fee } from "
 
 export interface ExitState {
   step: Step;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   accountTask: AsyncTask<HermezAccount, string>;
-  feesTask: AsyncTask<RecommendedFee, Error>;
-  accountBalanceTask: AsyncTask<BigNumber, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
+  accountBalanceTask: AsyncTask<BigNumber, string>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;
 }

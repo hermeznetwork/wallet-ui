@@ -28,12 +28,12 @@ import {
 } from "src/domain";
 
 interface ExitStateProps {
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   step: exitActions.Step;
   accountTask: AsyncTask<HermezAccount, string>;
-  feesTask: AsyncTask<RecommendedFee, Error>;
-  accountBalanceTask: AsyncTask<BigNumber, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
+  accountBalanceTask: AsyncTask<BigNumber, string>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   isTransactionBeingApproved: boolean;
   transactionToReview: exitActions.TransactionToReview | undefined;
   wallet: HermezWallet.HermezWallet | undefined;

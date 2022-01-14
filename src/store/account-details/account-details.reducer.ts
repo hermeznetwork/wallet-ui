@@ -16,7 +16,7 @@ interface ViewHistoryTransactions {
 
 export interface AccountDetailsState {
   accountTask: AsyncTask<HermezAccount, string>;
-  exitsTask: AsyncTask<Exits, Error>;
+  exitsTask: AsyncTask<Exits, string>;
   historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
   l1TokenBalanceTask: AsyncTask<null, string>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;

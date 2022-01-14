@@ -15,7 +15,7 @@ export interface HomeState {
   totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
-  exitsTask: AsyncTask<Exits, Error>;
+  exitsTask: AsyncTask<Exits, string>;
 }
 
 const initialHomeState: HomeState = {

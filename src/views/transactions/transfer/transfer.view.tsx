@@ -30,11 +30,11 @@ import {
 } from "src/domain";
 
 interface TransferStateProps {
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   step: transferActions.Step;
   accountTask: AsyncTask<HermezAccount, string>;
-  accountsTask: AsyncTask<transferReducer.AccountsWithPagination, Error>;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  accountsTask: AsyncTask<transferReducer.AccountsWithPagination, string>;
+  feesTask: AsyncTask<RecommendedFee, string>;
   hasReceiverApprovedAccountsCreation?: boolean;
   isTransactionBeingApproved: boolean;
   transactionToReview: transferActions.TransactionToReview | undefined;

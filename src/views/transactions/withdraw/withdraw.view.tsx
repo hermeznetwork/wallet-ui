@@ -28,11 +28,11 @@ import {
 } from "src/domain";
 
 interface WithdrawStateProps {
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   step: withdrawActions.Step;
-  exitTask: AsyncTask<Exit, Error>;
+  exitTask: AsyncTask<Exit, string>;
   accountTask: AsyncTask<HermezAccount, string>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   isTransactionBeingApproved: boolean;
   pendingDelayedWithdraws: PendingDelayedWithdraws;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;

@@ -50,7 +50,7 @@ export interface LoadAccountsSuccess {
 
 export interface LoadAccountsFailure {
   type: ForceExitActionTypes.LOAD_ACCOUNTS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadPoolTransactions {
@@ -64,7 +64,7 @@ export interface LoadPoolTransactionsSuccess {
 
 export interface LoadPoolTransactionsFailure {
   type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface StartTransactionApproval {
@@ -126,7 +126,7 @@ function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
   };
 }
 
-function loadAccountsFailure(error: Error): LoadAccountsFailure {
+function loadAccountsFailure(error: string): LoadAccountsFailure {
   return {
     type: ForceExitActionTypes.LOAD_ACCOUNTS_FAILURE,
     error,
@@ -146,7 +146,7 @@ function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolT
   };
 }
 
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
+function loadPoolTransactionsFailure(error: string): LoadPoolTransactionsFailure {
   return {
     type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,

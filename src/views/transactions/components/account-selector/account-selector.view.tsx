@@ -30,15 +30,15 @@ type AccountSelectorProps = {
 } & (
   | {
       type: TxType.Deposit;
-      accountsTask: AsyncTask<EthereumAccount[], Error>;
+      accountsTask: AsyncTask<EthereumAccount[], string>;
       pendingDeposits: PendingDeposit[];
       onLoadAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) => void;
       onAccountClick: (ethereumAccount: EthereumAccount) => void;
     }
   | {
       type: TxType.Transfer;
-      accountsTask: AsyncTask<AccountsWithPagination, Error>;
-      poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+      accountsTask: AsyncTask<AccountsWithPagination, string>;
+      poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
       onLoadAccounts: (
         poolTransactions: PoolTransaction[],
         fiatExchangeRates: FiatExchangeRates,
@@ -49,8 +49,8 @@ type AccountSelectorProps = {
     }
   | {
       type: TxType.ForceExit;
-      accountsTask: AsyncTask<AccountsWithPagination, Error>;
-      poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+      accountsTask: AsyncTask<AccountsWithPagination, string>;
+      poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
       onLoadAccounts: (
         poolTransactions: PoolTransaction[],
         fiatExchangeRates: FiatExchangeRates,

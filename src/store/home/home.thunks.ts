@@ -75,7 +75,13 @@ function fetchTotalBalance(
 
         dispatch(homeActions.loadTotalBalanceSuccess(totalBalance));
       })
-      .catch((err) => dispatch(homeActions.loadTotalBalanceFailure(err)));
+      .catch((err: unknown) =>
+        dispatch(
+          homeActions.loadTotalBalanceFailure(
+            adapters.getErrorMessage(err, "Oops... an error occurred on fetchTotalBalance")
+          )
+        )
+      );
   };
 }
 
@@ -124,7 +130,13 @@ function fetchAccounts(
         fromItem,
       })
       .then((res) => dispatch(homeActions.loadAccountsSuccess(res)))
-      .catch((err) => dispatch(homeActions.loadAccountsFailure(err)));
+      .catch((err: unknown) =>
+        dispatch(
+          homeActions.loadAccountsFailure(
+            adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccounts")
+          )
+        )
+      );
   };
 }
 
@@ -209,7 +221,13 @@ function fetchPoolTransactions(): AppThunk {
       adapters.hermezApi
         .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
         .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
-        .catch((err) => dispatch(homeActions.loadPoolTransactionsFailure(err)));
+        .catch((err: unknown) =>
+          dispatch(
+            homeActions.loadPoolTransactionsFailure(
+              adapters.getErrorMessage(err, "Oops... an error occurred on fetchPoolTransactions")
+            )
+          )
+        );
     }
   };
 }
@@ -232,7 +250,13 @@ function fetchExits(): AppThunk {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(homeActions.loadExitsSuccess(exits));
         })
-        .catch((err) => dispatch(homeActions.loadExitsFailure(err)));
+        .catch((err: unknown) =>
+          dispatch(
+            homeActions.loadExitsFailure(
+              adapters.getErrorMessage(err, "Oops... an error occurred on fetchExits")
+            )
+          )
+        );
     }
   };
 }

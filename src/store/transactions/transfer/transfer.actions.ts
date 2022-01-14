@@ -85,7 +85,7 @@ export interface LoadFeesSuccess {
 
 export interface LoadFeesFailure {
   type: TransferActionTypes.LOAD_FEES_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadPoolTransactions {
@@ -99,7 +99,7 @@ export interface LoadPoolTransactionsSuccess {
 
 export interface LoadPoolTransactionsFailure {
   type: TransferActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadAccounts {
@@ -113,7 +113,7 @@ export interface LoadAccountsSuccess {
 
 export interface LoadAccountsFailure {
   type: TransferActionTypes.LOAD_ACCOUNTS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface SetReceiverCreateAccountsAuthorizationStatus {
@@ -215,7 +215,7 @@ function loadFeesSuccess(fees: RecommendedFee): LoadFeesSuccess {
   };
 }
 
-function loadFeesFailure(error: Error): LoadFeesFailure {
+function loadFeesFailure(error: string): LoadFeesFailure {
   return {
     type: TransferActionTypes.LOAD_FEES_FAILURE,
     error,
@@ -235,7 +235,7 @@ function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolT
   };
 }
 
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
+function loadPoolTransactionsFailure(error: string): LoadPoolTransactionsFailure {
   return {
     type: TransferActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
@@ -255,7 +255,7 @@ function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
   };
 }
 
-function loadAccountsFailure(error: Error): LoadAccountsFailure {
+function loadAccountsFailure(error: string): LoadAccountsFailure {
   return {
     type: TransferActionTypes.LOAD_ACCOUNTS_FAILURE,
     error,

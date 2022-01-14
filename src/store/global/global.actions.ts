@@ -634,10 +634,10 @@ function loadCoordinatorStateSuccess(
   };
 }
 
-function loadCoordinatorStateFailure(error: Error): LoadCoordinatorStateFailure {
+function loadCoordinatorStateFailure(error: string): LoadCoordinatorStateFailure {
   return {
     type: GlobalActionTypes.LOAD_COORDINATOR_STATE_FAILURE,
-    error: error.message,
+    error,
   };
 }
 

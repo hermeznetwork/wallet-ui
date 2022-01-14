@@ -28,8 +28,8 @@ export interface TxData {
 
 interface ExitFormStateProps {
   account: HermezAccount;
-  feesTask: AsyncTask<RecommendedFee, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   doesUserHaveEnoughEthForWithdraw: boolean;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;

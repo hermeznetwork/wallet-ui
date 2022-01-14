@@ -18,13 +18,13 @@ interface GetMinimumTransferFee {
   receiverAddress: string;
   doesAccountAlreadyExist: boolean;
   token: Token;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
 }
 
 interface GetMinimumExitFee {
   txType: TxType.Exit;
   token: Token;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
 }
 
 type GetMinimumL2FeeParams = GetMinimumTransferFee | GetMinimumExitFee;

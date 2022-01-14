@@ -16,10 +16,10 @@ export interface AccountsWithPagination {
 
 export interface TransferState {
   step: Step;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   accountTask: AsyncTask<HermezAccount, string>;
-  accountsTask: AsyncTask<AccountsWithPagination, Error>;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  accountsTask: AsyncTask<AccountsWithPagination, string>;
+  feesTask: AsyncTask<RecommendedFee, string>;
   hasReceiverApprovedAccountsCreation: undefined | boolean;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;

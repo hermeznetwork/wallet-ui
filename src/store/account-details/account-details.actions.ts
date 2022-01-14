@@ -33,7 +33,7 @@ export interface LoadAccountSuccessAction {
 
 export interface LoadAccountFailureAction {
   type: AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadL1TokenBalanceAction {
@@ -59,7 +59,7 @@ export interface LoadPoolTransactionsSuccessAction {
 
 export interface LoadPoolTransactionsFailureAction {
   type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadHistoryTransactionsAction {
@@ -73,7 +73,7 @@ export interface LoadHistoryTransactionsSuccessAction {
 
 export interface LoadHistoryTransactionsFailureAction {
   type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadExitsAction {
@@ -87,7 +87,7 @@ export interface LoadExitsSuccessAction {
 
 export interface LoadExitsFailureAction {
   type: AccountDetailsActionTypes.LOAD_EXITS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface RefreshHistoryTransactionsAction {
@@ -136,7 +136,7 @@ function loadAccountSuccess(account: HermezAccount): LoadAccountSuccessAction {
   };
 }
 
-function loadAccountFailure(error: Error): LoadAccountFailureAction {
+function loadAccountFailure(error: string): LoadAccountFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE,
     error,
@@ -176,7 +176,7 @@ function loadPoolTransactionsSuccess(
   };
 }
 
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailureAction {
+function loadPoolTransactionsFailure(error: string): LoadPoolTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
@@ -198,7 +198,7 @@ function loadHistoryTransactionsSuccess(
   };
 }
 
-function loadHistoryTransactionsFailure(error: Error): LoadHistoryTransactionsFailureAction {
+function loadHistoryTransactionsFailure(error: string): LoadHistoryTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE,
     error,
@@ -218,7 +218,7 @@ function loadExitsSuccess(exits: Exits): LoadExitsSuccessAction {
   };
 }
 
-function loadExitsFailure(error: Error): LoadExitsFailureAction {
+function loadExitsFailure(error: string): LoadExitsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_EXITS_FAILURE,
     error,
