@@ -19,21 +19,28 @@ const messageKeyErrorParser = StrictSchema<MessageKeyError>()(
   })
 );
 
-export function getErrorMessage(error: unknown, defaultMsg?: string): string {
+export function getErrorMessage(error: unknown, prefixMsg?: string): string {
   if (typeof error === "string") {
-    return error;
+    return prefixMsg ? `${prefixMsg}. ${error}` : error;
+  } else if (error instanceof ZodError) {
+    const decodingIssues = error.errors
+      .map((issue) => `${issue.message} at path ${issue.path.join(".")}`)
+      .join(" | ");
+    return prefixMsg
+      ? `${prefixMsg}. Decoding issues: ${decodingIssues}`
+      : `Decoding issues: ${decodingIssues}`;
+  } else if (error instanceof Error) {
+    return prefixMsg ? `${prefixMsg}. ${error.message}` : error.message;
+  } else {
+    const parsedMessageKeyError = messageKeyErrorParser.safeParse(error);
+    if (parsedMessageKeyError.success) {
+      return prefixMsg
+        ? `${prefixMsg}. ${parsedMessageKeyError.data.message}`
+        : parsedMessageKeyError.data.message;
+    } else {
+      return prefixMsg ? prefixMsg : "Oops... an unknown error occurred";
+    }
   }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  const parsedMessageKeyError = messageKeyErrorParser.safeParse(error);
-  if (parsedMessageKeyError.success) {
-    return parsedMessageKeyError.data.message;
-  }
-  if (defaultMsg !== undefined) {
-    return defaultMsg;
-  }
-  return "An unknown error occurred";
 }
 
 export function logDecodingError<T>(error: ZodError<T>, details: string): void {
