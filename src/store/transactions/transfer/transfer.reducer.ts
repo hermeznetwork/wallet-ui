@@ -7,7 +7,7 @@ import {
 import { getPaginationData, Pagination } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PoolTransaction, HermezAccount, RecommendedFee } from "src/domain";
+import { HermezAccount, RecommendedFee } from "src/domain";
 
 export interface AccountsWithPagination {
   accounts: HermezAccount[];
@@ -16,7 +16,6 @@ export interface AccountsWithPagination {
 
 export interface TransferState {
   step: Step;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   accountTask: AsyncTask<HermezAccount, string>;
   accountsTask: AsyncTask<AccountsWithPagination, Error>;
   feesTask: AsyncTask<RecommendedFee, Error>;
@@ -27,9 +26,6 @@ export interface TransferState {
 
 const initialTransferState: TransferState = {
   step: "load-account",
-  poolTransactionsTask: {
-    status: "pending",
-  },
   accountTask: {
     status: "pending",
   },
@@ -76,38 +72,6 @@ function transferReducer(
       return {
         ...state,
         step: action.nextStep,
-      };
-    }
-    case TransferActionTypes.LOAD_POOL_TRANSACTIONS: {
-      return {
-        ...state,
-        poolTransactionsTask:
-          state.poolTransactionsTask.status === "successful"
-            ? {
-                status: "reloading",
-                data: state.poolTransactionsTask.data,
-              }
-            : {
-                status: "loading",
-              },
-      };
-    }
-    case TransferActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "successful",
-          data: action.transactions,
-        },
-      };
-    }
-    case TransferActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "failed",
-          error: action.error,
-        },
       };
     }
     case TransferActionTypes.LOAD_ACCOUNTS: {

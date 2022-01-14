@@ -1,5 +1,5 @@
 // domain
-import { Exits, HermezAccount, HistoryTransactions, PoolTransaction } from "src/domain";
+import { Exits, HermezAccount, HistoryTransactions } from "src/domain";
 
 export enum AccountDetailsActionTypes {
   LOAD_ACCOUNT = "[ACCOUNT DETAILS] LOAD ACCOUNT",
@@ -8,9 +8,6 @@ export enum AccountDetailsActionTypes {
   LOAD_L1_TOKEN_BALANCE = "[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE",
   LOAD_L1_TOKEN_BALANCE_SUCCESS = "[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE SUCCESS",
   LOAD_L1_TOKEN_BALANCE_FAILURE = "[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS FAILURE",
   LOAD_HISTORY_TRANSACTIONS = "[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS",
   LOAD_HISTORY_TRANSACTIONS_SUCCESS = "[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS SUCCESS",
   LOAD_HISTORY_TRANSACTIONS_FAILURE = "[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS FAILURE",
@@ -46,20 +43,6 @@ export interface LoadL1TokenBalanceSuccessAction {
 
 export interface LoadL1TokenBalanceFailureAction {
   type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE;
-}
-
-export interface LoadPoolTransactionsAction {
-  type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
-export interface LoadPoolTransactionsSuccessAction {
-  type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailureAction {
-  type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
 }
 
 export interface LoadHistoryTransactionsAction {
@@ -110,9 +93,6 @@ export type AccountDetailsAction =
   | LoadL1TokenBalanceAction
   | LoadL1TokenBalanceSuccessAction
   | LoadL1TokenBalanceFailureAction
-  | LoadPoolTransactionsAction
-  | LoadPoolTransactionsSuccessAction
-  | LoadPoolTransactionsFailureAction
   | LoadHistoryTransactionsAction
   | LoadHistoryTransactionsSuccessAction
   | LoadHistoryTransactionsFailureAction
@@ -158,28 +138,6 @@ function loadL1TokenBalanceSuccess(): LoadL1TokenBalanceSuccessAction {
 function loadL1TokenBalanceFailure(): LoadL1TokenBalanceFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE,
-  };
-}
-
-function loadPoolTransactions(): LoadPoolTransactionsAction {
-  return {
-    type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(
-  transactions: PoolTransaction[]
-): LoadPoolTransactionsSuccessAction {
-  return {
-    type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailureAction {
-  return {
-    type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
-    error,
   };
 }
 
@@ -253,9 +211,6 @@ export {
   loadL1TokenBalance,
   loadL1TokenBalanceSuccess,
   loadL1TokenBalanceFailure,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   loadHistoryTransactions,
   loadHistoryTransactionsSuccess,
   loadHistoryTransactionsFailure,

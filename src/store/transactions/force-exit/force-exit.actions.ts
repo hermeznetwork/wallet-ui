@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { Accounts, HermezAccount, PoolTransaction } from "src/domain";
+import { Accounts, HermezAccount } from "src/domain";
 
 export enum ForceExitActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[FORCE EXIT] GO TO CHOOSE ACCOUNT STEP",
@@ -10,9 +10,6 @@ export enum ForceExitActionTypes {
   LOAD_ACCOUNTS = "[FORCE EXIT] LOAD ACCOUNTS",
   LOAD_ACCOUNTS_SUCCESS = "[FORCE EXIT] LOAD ACCOUNTS SUCCESS",
   LOAD_ACCOUNTS_FAILURE = "[FORCE EXIT] LOAD ACCOUNTS FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[FORCE EXIT] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[FORCE EXIT] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[FORCE EXIT] LOAD POOL TRANSACTIONS FAILURE",
   START_TRANSACTION_APPROVAL = "[FORCE EXIT] START TRANSACTION APPROVAL",
   STOP_TRANSACTION_APPROVAL = "[FORCE EXIT] STOP TRANSACTION APPROVAL",
   RESET_STATE = "[FORCE EXIT] RESET STATE",
@@ -53,20 +50,6 @@ export interface LoadAccountsFailure {
   error: Error;
 }
 
-export interface LoadPoolTransactions {
-  type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
-export interface LoadPoolTransactionsSuccess {
-  type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailure {
-  type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
-}
-
 export interface StartTransactionApproval {
   type: ForceExitActionTypes.START_TRANSACTION_APPROVAL;
 }
@@ -86,9 +69,6 @@ export type ForceExitAction =
   | LoadAccounts
   | LoadAccountsSuccess
   | LoadAccountsFailure
-  | LoadPoolTransactions
-  | LoadPoolTransactionsSuccess
-  | LoadPoolTransactionsFailure
   | StartTransactionApproval
   | StopTransactionApproval
   | ResetState;
@@ -133,26 +113,6 @@ function loadAccountsFailure(error: Error): LoadAccountsFailure {
   };
 }
 
-function loadPoolTransactions(): LoadPoolTransactions {
-  return {
-    type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
-  return {
-    type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
-  return {
-    type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
-    error,
-  };
-}
-
 function startTransactionApproval(): StartTransactionApproval {
   return {
     type: ForceExitActionTypes.START_TRANSACTION_APPROVAL,
@@ -178,9 +138,6 @@ export {
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   startTransactionApproval,
   stopTransactionApproval,
   resetState,

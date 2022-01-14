@@ -48,26 +48,6 @@ function fetchHermezAccount(
 }
 
 /**
- * Fetches the transactions which are in the transactions pool
- */
-function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(exitActions.loadPoolTransactions());
-
-    const {
-      global: { wallet },
-    } = getState();
-
-    if (wallet !== undefined) {
-      adapters.hermezApi
-        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(exitActions.loadPoolTransactionsSuccess(transactions)))
-        .catch((err) => dispatch(exitActions.loadPoolTransactionsFailure(err)));
-    }
-  };
-}
-
-/**
  * Fetches the recommended fees from the Coordinator
  */
 function fetchFees(): AppThunk {
@@ -199,11 +179,4 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
-export {
-  fetchHermezAccount,
-  fetchPoolTransactions,
-  fetchFees,
-  fetchAccountBalance,
-  fetchEstimatedWithdrawFee,
-  exit,
-};
+export { fetchHermezAccount, fetchFees, fetchAccountBalance, fetchEstimatedWithdrawFee, exit };

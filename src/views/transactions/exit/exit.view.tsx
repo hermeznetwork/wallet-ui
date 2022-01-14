@@ -8,6 +8,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { AppDispatch, AppState } from "src/store";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
 import * as exitThunks from "src/store/transactions/exit/exit.thunks";
+import * as globalThunks from "src/store/global/global.thunks";
 import { changeHeader } from "src/store/global/global.actions";
 import { HeaderState } from "src/store/global/global.reducer";
 import Spinner from "src/views/shared/spinner/spinner.view";
@@ -28,7 +29,7 @@ import {
 } from "src/domain";
 
 interface ExitStateProps {
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   step: exitActions.Step;
   accountTask: AsyncTask<HermezAccount, string>;
   feesTask: AsyncTask<RecommendedFee, Error>;
@@ -201,7 +202,7 @@ function Exit({
 }
 
 const mapStateToProps = (state: AppState): ExitStateProps => ({
-  poolTransactionsTask: state.exit.poolTransactionsTask,
+  poolTransactionsTask: state.global.poolTransactionsTask,
   step: state.exit.step,
   wallet: state.global.wallet,
   accountTask: state.exit.accountTask,
@@ -267,7 +268,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlerProps => ({
   onLoadEstimatedWithdrawFee: (token: Token, amount: BigNumber) => {
     void dispatch(exitThunks.fetchEstimatedWithdrawFee(token, amount));
   },
-  onLoadPoolTransactions: () => dispatch(exitThunks.fetchPoolTransactions()),
+  onLoadPoolTransactions: () => dispatch(globalThunks.fetchPoolTransactions()),
   onGoToHome: () => dispatch(push("/")),
   onGoToBuildTransactionStep: (account: HermezAccount) =>
     dispatch(exitActions.goToBuildTransactionStep(account)),

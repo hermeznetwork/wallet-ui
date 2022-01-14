@@ -43,8 +43,6 @@ function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
   return (dispatch: AppDispatch) => {
     dispatch(globalActions.loadEthereumNetwork());
 
-    hermezjs.TxPool.initializeTransactionPool();
-
     if (
       process.env.REACT_APP_ENV === "production" &&
       hermezjs.Environment.isEnvironmentSupported(chainId)
@@ -138,6 +136,28 @@ function checkHermezStatus(): AppThunk {
           globalActions.loadHermezStatusFailure("An error occurred loading Polygon Hermez status")
         )
       );
+  };
+}
+
+/**
+ * Fetches the transactions which are in the transactions pool
+ */
+function fetchPoolTransactions(): AppThunk {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const limit = 2049;
+
+    dispatch(globalActions.loadPoolTransactions());
+
+    const {
+      global: { wallet },
+    } = getState();
+
+    if (wallet !== undefined) {
+      adapters.hermezApi
+        .getPoolTransactions(wallet.hermezEthereumAddress, limit)
+        .then((transactions) => dispatch(globalActions.loadPoolTransactionsSuccess(transactions)))
+        .catch((err) => dispatch(globalActions.loadPoolTransactionsFailure(err)));
+    }
   };
 }
 
@@ -827,6 +847,7 @@ function checkPendingDeposits(): AppThunk {
 
 function checkPendingTransactions(): AppThunk {
   return (_: AppDispatch, getState: () => AppState) => {
+    const poolTxsLimit = 2049;
     const {
       global: { wallet, coordinatorStateTask },
     } = getState();
@@ -835,7 +856,7 @@ function checkPendingTransactions(): AppThunk {
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
 
       adapters.hermezApi
-        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
+        .getPoolTransactions(wallet.hermezEthereumAddress, poolTxsLimit)
         .then((poolTransactions: PoolTransaction[]) => {
           const tenMinutesInMs = 10 * 60 * 1000;
           const oneDayInMs = 24 * 60 * 60 * 1000;
@@ -865,7 +886,7 @@ function checkPendingTransactions(): AppThunk {
               };
 
               return adapters.hermezApi
-                .generateAndSendL2Tx(txData, wallet, transaction.token, nextForgerUrls, false)
+                .generateAndSendL2Tx(txData, wallet, transaction.token, nextForgerUrls)
                 .catch(() => ({}));
             });
 
@@ -938,6 +959,7 @@ export {
   fetchFiatExchangeRates,
   changeNetworkStatus,
   checkHermezStatus,
+  fetchPoolTransactions,
   addPendingWithdraw,
   removePendingWithdraw,
   addPendingDelayedWithdraw,

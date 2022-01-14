@@ -44,28 +44,6 @@ function fetchAccounts(
   };
 }
 
-/**
- * Fetches the transactions which are in the transactions pool
- */
-function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(forceExitActions.loadPoolTransactions());
-
-    const {
-      global: { wallet },
-    } = getState();
-
-    if (wallet !== undefined) {
-      adapters.hermezApi
-        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) =>
-          dispatch(forceExitActions.loadPoolTransactionsSuccess(transactions))
-        )
-        .catch((err) => dispatch(forceExitActions.loadPoolTransactionsFailure(err)));
-    }
-  };
-}
-
 function forceExit(amount: BigNumber, account: HermezAccount) {
   return (dispatch: AppDispatch, getState: () => AppState): void => {
     const {
@@ -103,4 +81,4 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
-export { fetchAccounts, fetchPoolTransactions, forceExit };
+export { fetchAccounts, forceExit };
