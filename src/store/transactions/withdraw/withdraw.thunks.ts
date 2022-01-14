@@ -213,7 +213,7 @@ function withdraw(
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ message: "Transaction submitted" }));
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
@@ -224,7 +224,12 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
     ? "The withdraw has already been done"
     : errorMsg;
 
-  dispatch(openSnackbar(`Transaction failed - ${snackbarMsg}`, theme.palette.red.main));
+  dispatch(
+    openSnackbar({
+      message: `Transaction failed - ${snackbarMsg}`,
+      backgroundColor: theme.palette.red.main,
+    })
+  );
 }
 
 export { fetchHermezAccount, fetchExit, fetchPoolTransactions, withdraw };

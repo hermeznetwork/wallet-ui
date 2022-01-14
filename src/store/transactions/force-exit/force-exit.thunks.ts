@@ -105,14 +105,19 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch) {
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ message: "Transaction submitted" }));
   dispatch(push("/"));
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   const errorMsg = adapters.getErrorMessage(error);
   dispatch(forceExitActions.stopTransactionApproval());
-  dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
+  dispatch(
+    openSnackbar({
+      message: `Transaction failed - ${errorMsg}`,
+      backgroundColor: theme.palette.red.main,
+    })
+  );
 }
 
 export { fetchAccounts, fetchPoolTransactions, forceExit };

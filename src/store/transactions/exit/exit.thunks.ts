@@ -212,7 +212,7 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ message: "Transaction submitted" }));
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
@@ -220,7 +220,12 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   const errorMsg = adapters.getErrorMessage(error);
   console.error(error);
   dispatch(exitActions.stopTransactionApproval());
-  dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
+  dispatch(
+    openSnackbar({
+      message: `Transaction failed - ${errorMsg}`,
+      backgroundColor: theme.palette.red.main,
+    })
+  );
 }
 
 export {

@@ -295,7 +295,7 @@ function getHeaderTitle(transactionType: TxType) {
 const mapDispatchToProps = (dispatch: AppDispatch): TransactionDetailsHandlerProps => ({
   onLoadTransaction: (transactionIdOrHash: string) =>
     dispatch(transactionDetailsThunks.fetchTransaction(transactionIdOrHash)),
-  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
+  onOpenSnackbar: (message) => dispatch(openSnackbar({ message })),
   onChangeHeader: (transactionType, accountIndex) =>
     dispatch(
       changeHeader({

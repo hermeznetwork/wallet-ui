@@ -263,13 +263,18 @@ function transfer(
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   const route = accountIndex ? `/accounts/${accountIndex}` : "/";
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ message: "Transaction submitted" }));
   dispatch(push(route));
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   const errorMsg = adapters.getErrorMessage(error);
-  dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
+  dispatch(
+    openSnackbar({
+      message: `Transaction failed - ${errorMsg}`,
+      backgroundColor: theme.palette.red.main,
+    })
+  );
 }
 
 export {

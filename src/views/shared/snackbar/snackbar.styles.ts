@@ -29,7 +29,14 @@ const useSnackbarStyles = createUseStyles((theme: Theme) => ({
     textAlign: "center",
     color: backgroundColor ? theme.palette.white : theme.palette.black.main,
     fontWeight: theme.fontWeights.bold,
+    flex: 1,
   }),
+  button: {
+    border: "none",
+    backgroundColor: "transparent",
+    padding: theme.spacing(1),
+    cursor: "pointer",
+  },
 }));
 
 export default useSnackbarStyles;

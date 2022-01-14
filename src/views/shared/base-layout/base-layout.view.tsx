@@ -40,6 +40,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         <Snackbar
           message={snackbar.message}
           backgroundColor={snackbar.backgroundColor}
+          autoClose={snackbar.autoClose}
           onClose={onCloseSnackbar}
         />
       )}

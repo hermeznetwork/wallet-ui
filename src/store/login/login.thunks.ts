@@ -97,7 +97,9 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
 
       if (process.env.REACT_APP_ENV === "production" && !isEnvironmentSupported(chainId)) {
         dispatch(
-          globalActions.openSnackbar("Please, switch your network to Mainnet or Rinkeby to login")
+          globalActions.openSnackbar({
+            message: "Please, switch your network to Mainnet or Rinkeby to login",
+          })
         );
         dispatch(loginActions.goToWalletSelectorStep());
 
@@ -141,9 +143,9 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
         login: { step },
       } = getState();
       if (step.type === "wallet-loader") {
-        const stringError = adapters.getErrorMessage(error);
-        dispatch(loginActions.loadWalletFailure(stringError));
-        dispatch(globalActions.openSnackbar(stringError));
+        const message = adapters.getErrorMessage(error);
+        dispatch(loginActions.loadWalletFailure(message));
+        dispatch(globalActions.openSnackbar({ message }));
         dispatch(loginActions.goToPreviousStep());
       }
     }
@@ -227,9 +229,9 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
         dispatch(push(redirectRoute));
       } catch (error) {
         console.error(error);
-        const stringError = adapters.getErrorMessage(error);
-        dispatch(loginActions.addAccountAuthFailure(stringError));
-        dispatch(globalActions.openSnackbar(stringError));
+        const message = adapters.getErrorMessage(error);
+        dispatch(loginActions.addAccountAuthFailure(message));
+        dispatch(globalActions.openSnackbar({ message }));
         dispatch(loginActions.goToWalletSelectorStep());
       }
     }

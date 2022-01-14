@@ -193,7 +193,7 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) {
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ message: "Transaction submitted" }));
   if (accountIndex) {
     dispatch(push(`/accounts/${accountIndex}`));
   } else {
@@ -204,7 +204,12 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   const errorMsg = adapters.getErrorMessage(error);
   dispatch(depositActions.stopTransactionApproval());
-  dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
+  dispatch(
+    openSnackbar({
+      message: `Transaction failed - ${errorMsg}`,
+      backgroundColor: theme.palette.red.main,
+    })
+  );
 }
 
 export { fetchEthereumAccount, fetchEthereumAccounts, fetchEstimatedDepositFee, deposit };
