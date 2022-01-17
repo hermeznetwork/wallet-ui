@@ -11,6 +11,7 @@ import hermezjs, {
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 
+import { REPORT_ISSUE_FORM_URL } from "src/constants";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
 import * as storage from "src/utils/storage";
@@ -115,11 +116,27 @@ function changeNetworkStatus(newNetworkStatus: NetworkStatus, backgroundColor: s
     } = getState();
 
     if (previousNetworkStatus === "online" && newNetworkStatus === "offline") {
-      dispatch(globalActions.openSnackbar({ message: "Connection lost", backgroundColor }));
+      dispatch(
+        globalActions.openSnackbar({
+          message: {
+            type: "info",
+            text: "Connection lost",
+          },
+          backgroundColor,
+        })
+      );
     }
 
     if (previousNetworkStatus === "offline" && newNetworkStatus === "online") {
-      dispatch(globalActions.openSnackbar({ message: "Connection restored", backgroundColor }));
+      dispatch(
+        globalActions.openSnackbar({
+          message: {
+            type: "info",
+            text: "Connection restored",
+          },
+          backgroundColor,
+        })
+      );
     }
 
     dispatch(globalActions.changeNetworkStatus(newNetworkStatus));
@@ -938,6 +955,16 @@ function fetchTokensPrice(): AppThunk {
   };
 }
 
+/**
+ * Report an error using the report issue form
+ */
+function reportError(error: string): AppThunk {
+  console.log(error);
+  return () => {
+    window.open(REPORT_ISSUE_FORM_URL, "_blank");
+  };
+}
+
 export {
   setHermezEnvironment,
   changeRedirectRoute,
@@ -953,6 +980,7 @@ export {
   checkPendingWithdrawals,
   addTimerWithdraw,
   removeTimerWithdraw,
+  recoverPendingDelayedWithdrawals,
   addPendingDeposit,
   removePendingDepositByTransactionId,
   removePendingDepositByHash,
@@ -963,5 +991,5 @@ export {
   disconnectWallet,
   reloadApp,
   fetchTokensPrice,
-  recoverPendingDelayedWithdrawals,
+  reportError,
 };

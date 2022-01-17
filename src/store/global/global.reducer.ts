@@ -46,9 +46,17 @@ export type SnackbarState =
     }
   | {
       status: "open";
-      message: string;
+      message:
+        | {
+            type: "info";
+            text: string;
+          }
+        | {
+            type: "error";
+            text?: string;
+            error: string;
+          };
       backgroundColor?: string;
-      autoClose?: boolean;
     };
 
 export interface GlobalState {
@@ -215,7 +223,6 @@ function globalReducer(
         snackbar: {
           status: "open",
           message: action.message,
-          autoClose: action.autoClose,
           backgroundColor: action.backgroundColor,
         },
       };

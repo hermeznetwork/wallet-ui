@@ -121,9 +121,17 @@ export interface LoadFiatExchangeRatesFailure {
 
 export interface OpenSnackbar {
   type: GlobalActionTypes.OPEN_SNACKBAR;
-  message: string;
+  message:
+    | {
+        type: "info";
+        text: string;
+      }
+    | {
+        type: "error";
+        text?: string;
+        error: string;
+      };
   backgroundColor?: string;
-  autoClose?: boolean;
 }
 
 export interface CloseSnackbar {
@@ -405,18 +413,24 @@ function loadFiatExchangeRatesFailure(error: string): LoadFiatExchangeRatesFailu
 
 function openSnackbar({
   message,
-  autoClose,
   backgroundColor,
 }: {
-  message: string;
-  autoClose?: boolean;
+  message:
+    | {
+        type: "info";
+        text: string;
+      }
+    | {
+        type: "error";
+        text?: string;
+        error: string;
+      };
   backgroundColor?: string;
 }): OpenSnackbar {
   return {
     type: GlobalActionTypes.OPEN_SNACKBAR,
     message,
     backgroundColor,
-    autoClose,
   };
 }
 

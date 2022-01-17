@@ -35,7 +35,18 @@ interface MyAccountHandlerProps {
   onChangeHeader: () => void;
   onChangePreferredCurrency: (selectedTokenId: string) => void;
   onDisconnectWallet: () => void;
-  onOpenSnackbar: (message: string) => void;
+  onOpenSnackbar: (
+    message:
+      | {
+          type: "info";
+          text: string;
+        }
+      | {
+          type: "error";
+          text?: string;
+          error: string;
+        }
+  ) => void;
   onNavigateToForceExit: () => void;
   onNavigateToMyCode: () => void;
 }
@@ -64,7 +75,10 @@ function MyAccount({
    */
   function handleEthereumAddressClick(hermezEthereumAddress: string) {
     copyToClipboard(hermezEthereumAddress);
-    onOpenSnackbar("The Polygon Hermez address has been copied to the clipboard!");
+    onOpenSnackbar({
+      type: "info",
+      text: "The Polygon Hermez address has been copied to the clipboard!",
+    });
   }
 
   /**

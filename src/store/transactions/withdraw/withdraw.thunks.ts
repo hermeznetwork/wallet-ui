@@ -213,20 +213,25 @@ function withdraw(
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar({ message: "Transaction submitted" }));
+  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
   const errorMsg = adapters.getErrorMessage(error);
-  const snackbarMsg = errorMsg.includes(withdrawAlreadyDoneErrorCode)
-    ? "The withdraw has already been done"
-    : errorMsg;
-
   dispatch(
     openSnackbar({
-      message: `Transaction failed - ${snackbarMsg}`,
+      message: errorMsg.includes(withdrawAlreadyDoneErrorCode)
+        ? {
+            type: "info",
+            text: "The withdraw has already been done",
+          }
+        : {
+            type: "error",
+            text: "Oops, an error occurred processing the transaction.",
+            error: errorMsg,
+          },
       backgroundColor: theme.palette.red.main,
     })
   );

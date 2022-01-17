@@ -31,11 +31,24 @@ const useSnackbarStyles = createUseStyles((theme: Theme) => ({
     fontWeight: theme.fontWeights.bold,
     flex: 1,
   }),
-  button: {
+  closeButton: {
     border: "none",
     backgroundColor: "transparent",
     padding: theme.spacing(1),
     cursor: "pointer",
+  },
+  reportButton: {
+    textTransform: "uppercase",
+    color: theme.palette.red.main,
+    border: "2px solid",
+    backgroundColor: "transparent",
+    margin: `0 ${theme.spacing(1)}px`,
+    lineHeight: "14px",
+    padding: theme.spacing(1),
+    cursor: "pointer",
+    "&:hover:not(:disabled)": {
+      background: theme.palette.red.light,
+    },
   },
 }));
 

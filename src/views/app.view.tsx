@@ -39,6 +39,7 @@ interface AppHandlerProps {
   onGoBack: (action: AppAction) => void;
   onClose: (action: AppAction) => void;
   onCloseSnackbar: () => void;
+  onReportFromSnackbar: (error: string) => void;
   onLoadCoordinatorState: () => void;
   onLoadFiatExchangeRates: () => void;
   onCheckHermezStatus: () => void;
@@ -62,6 +63,7 @@ function App({
   onGoBack,
   onClose,
   onCloseSnackbar,
+  onReportFromSnackbar,
   onLoadCoordinatorState,
   onLoadFiatExchangeRates,
   onCheckHermezStatus,
@@ -143,6 +145,7 @@ function App({
         onGoBack={onGoBack}
         onClose={onClose}
         onCloseSnackbar={onCloseSnackbar}
+        onReportFromSnackbar={onReportFromSnackbar}
       >
         {Object.values(routes)
           .filter((route) => !route.isHidden)
@@ -173,6 +176,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): AppHandlerProps => ({
   onChangeRedirectRoute: (redirectRoute: string) =>
     dispatch(globalThunks.changeRedirectRoute(redirectRoute)),
   onGoBack: (action: AppAction) => dispatch(action),
+  onReportFromSnackbar: (error: string) => dispatch(globalThunks.reportError(error)),
   onClose: (action: AppAction) => dispatch(action),
   onCloseSnackbar: () => dispatch(closeSnackbar()),
   onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),

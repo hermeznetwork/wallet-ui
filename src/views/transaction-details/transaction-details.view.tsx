@@ -49,7 +49,18 @@ interface TransactionDetailsStateProps {
 interface TransactionDetailsHandlerProps {
   onLoadTransaction: (transactionId: string) => void;
   onChangeHeader: (type: TxType, accountIndex: string) => void;
-  onOpenSnackbar: (message: string) => void;
+  onOpenSnackbar: (
+    message:
+      | {
+          type: "info";
+          text: string;
+        }
+      | {
+          type: "error";
+          text?: string;
+          error: string;
+        }
+  ) => void;
 }
 
 type TransactionDetailsProps = TransactionDetailsStateProps & TransactionDetailsHandlerProps;
@@ -241,8 +252,8 @@ function TransactionDetails({
                           : undefined
                       }
                       showStatus
-                      onToCopyClick={() => onOpenSnackbar("Copied")}
-                      onFromCopyClick={() => onOpenSnackbar("Copied")}
+                      onToCopyClick={() => onOpenSnackbar({ type: "info", text: "Copied" })}
+                      onFromCopyClick={() => onOpenSnackbar({ type: "info", text: "Copied" })}
                     />
                     <ExploreTransactionButton
                       txLevel={isPendingDeposit(transactionTask.data) ? TxLevel.L1 : TxLevel.L2}

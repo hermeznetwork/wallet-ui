@@ -12,6 +12,7 @@ interface BaseLayoutProps {
   onGoBack: (action: AppAction) => void;
   onClose: (action: AppAction) => void;
   onCloseSnackbar: () => void;
+  onReportFromSnackbar: (error: string) => void;
 }
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({
@@ -21,6 +22,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   onGoBack,
   onClose,
   onCloseSnackbar,
+  onReportFromSnackbar,
 }) => {
   return (
     <>
@@ -40,8 +42,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         <Snackbar
           message={snackbar.message}
           backgroundColor={snackbar.backgroundColor}
-          autoClose={snackbar.autoClose}
           onClose={onCloseSnackbar}
+          onReport={onReportFromSnackbar}
         />
       )}
     </>

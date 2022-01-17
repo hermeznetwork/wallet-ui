@@ -105,7 +105,7 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch) {
-  dispatch(openSnackbar({ message: "Transaction submitted" }));
+  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
   dispatch(push("/"));
 }
 
@@ -114,7 +114,11 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(forceExitActions.stopTransactionApproval());
   dispatch(
     openSnackbar({
-      message: `Transaction failed - ${errorMsg}`,
+      message: {
+        type: "error",
+        text: "Oops, an error occurred processing the transaction",
+        error: errorMsg,
+      },
       backgroundColor: theme.palette.red.main,
     })
   );

@@ -1,48 +1,71 @@
 import React from "react";
 
 import Container from "src/views/shared/container/container.view";
+import Button from "src/views/shared/button/button.view";
 import { ReactComponent as CloseIconDark } from "src/images/icons/close.svg";
 import { ReactComponent as CloseIconLight } from "src/images/icons/close-white.svg";
 import useSnackbarStyles from "src/views/shared/snackbar/snackbar.styles";
 import { SNACKBAR_AUTO_HIDE_DURATION } from "src/constants";
 
 interface SnackbarProps {
-  message: string;
-  autoClose?: boolean;
+  message:
+    | {
+        type: "info";
+        text: string;
+      }
+    | {
+        type: "error";
+        text?: string;
+        error: string;
+      };
   backgroundColor?: string;
   onClose: () => void;
+  onReport: (error: string) => void;
 }
 
-function Snackbar({
-  message,
-  autoClose = true,
-  backgroundColor,
-  onClose,
-}: SnackbarProps): JSX.Element {
+function Snackbar({ message, backgroundColor, onClose, onReport }: SnackbarProps): JSX.Element {
   const classes = useSnackbarStyles({ backgroundColor });
 
   React.useEffect(() => {
-    if (autoClose) {
+    if (message.type === "info") {
       const closingTimeoutId = setTimeout(onClose, SNACKBAR_AUTO_HIDE_DURATION);
 
       return () => clearTimeout(closingTimeoutId);
     }
-  }, [autoClose, onClose]);
+  }, [message.type, onClose]);
 
-  return (
-    <div className={classes.root}>
-      <Container disableVerticalGutters>
-        <div className={classes.wrapper}>
-          <p className={classes.message}>{message}</p>
-          {!autoClose ? (
-            <button className={classes.button} onClick={onClose}>
+  if (message.type === "info") {
+    return (
+      <div className={classes.root}>
+        <Container disableVerticalGutters>
+          <div className={classes.wrapper}>
+            <p className={classes.message}>{message.text}</p>
+          </div>
+        </Container>
+      </div>
+    );
+  } else {
+    const { text = "Oops, an error occurred. Please report it to let us know.", error } = message;
+    return (
+      <div className={classes.root}>
+        <Container disableVerticalGutters>
+          <div className={classes.wrapper}>
+            <p className={classes.message}>{text}</p>
+            <Button
+              className={classes.reportButton}
+              text="Report"
+              onClick={() => {
+                onReport(error);
+              }}
+            />
+            <button className={classes.closeButton} onClick={onClose}>
               {backgroundColor ? <CloseIconLight /> : <CloseIconDark />}
             </button>
-          ) : null}
-        </div>
-      </Container>
-    </div>
-  );
+          </div>
+        </Container>
+      </div>
+    );
+  }
 }
 
 export default Snackbar;
