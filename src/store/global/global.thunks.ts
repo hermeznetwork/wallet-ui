@@ -11,9 +11,10 @@ import hermezjs, {
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 
-import { REPORT_ISSUE_FORM_URL } from "src/constants";
+import { REPORT_ERROR_FORM_URL } from "src/constants";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
+import { openSnackbar } from "src/store/global/global.actions";
 import * as storage from "src/utils/storage";
 import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
@@ -96,11 +97,17 @@ function fetchFiatExchangeRates(): AppThunk {
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
       )
       .catch((error: unknown) => {
-        const errorMsg = adapters.getErrorMessage(
+        const errorMsg = adapters.parseError(
           error,
-          "Oops... an error occurred on fetchFiatExchangeRates"
+          "An error occurred on src/store/global/global.thunks.ts:fetchFiatExchangeRates"
         );
         dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
+        openSnackbar({
+          message: {
+            type: "error",
+            error: errorMsg,
+          },
+        });
       });
   };
 }
@@ -177,11 +184,17 @@ function fetchPoolTransactions(): AppThunk {
           dispatch(globalActions.loadPoolTransactionsSuccess(poolTransactions.transactions))
         )
         .catch((error: unknown) => {
-          const errorMsg = adapters.getErrorMessage(
+          const errorMsg = adapters.parseError(
             error,
-            "Oops... an error occurred on fetchPoolTransactions"
+            "An error occurred on src/store/global/global.thunks.ts:fetchPoolTransactions"
           );
           dispatch(globalActions.loadPoolTransactionsFailure(errorMsg));
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          });
         });
     }
   };
@@ -935,13 +948,19 @@ function fetchCoordinatorState(): AppThunk {
       .then((coordinatorState: CoordinatorState) =>
         dispatch(globalActions.loadCoordinatorStateSuccess(coordinatorState))
       )
-      .catch((err: unknown) =>
-        dispatch(
-          globalActions.loadCoordinatorStateFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchCoordinatorState")
-          )
-        )
-      );
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(
+          error,
+          "An error occurred on src/store/global/global.thunks.ts:fetchCoordinatorState"
+        );
+        dispatch(globalActions.loadCoordinatorStateFailure(errorMsg));
+        openSnackbar({
+          message: {
+            type: "error",
+            error: errorMsg,
+          },
+        });
+      });
   };
 }
 
@@ -991,7 +1010,7 @@ function fetchTokensPrice(): AppThunk {
 function reportError(error: string): AppThunk {
   console.log(error);
   return () => {
-    window.open(REPORT_ISSUE_FORM_URL, "_blank");
+    window.open(REPORT_ERROR_FORM_URL, "_blank");
   };
 }
 

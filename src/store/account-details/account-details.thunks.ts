@@ -5,6 +5,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
 import * as globalThunks from "src/store/global/global.thunks";
+import { openSnackbar } from "src/store/global/global.actions";
 // domain
 import {
   Exit,
@@ -43,13 +44,21 @@ function fetchAccount(
           dispatch(accountDetailsActions.loadAccountSuccess(account));
         }
       })
-      .catch((err: unknown) =>
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(
+          error,
+          "An error occurred on src/store/account-details/account-details.thunks.ts:fetchAccount"
+        );
+        dispatch(accountDetailsActions.loadAccountFailure(errorMsg));
         dispatch(
-          accountDetailsActions.loadAccountFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccount")
-          )
-        )
-      );
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          })
+        );
+      });
   };
 }
 
@@ -145,13 +154,19 @@ function fetchHistoryTransactions(
       .then((historyTransactions: HistoryTransactions) =>
         dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
       )
-      .catch((err: unknown) =>
-        dispatch(
-          accountDetailsActions.loadHistoryTransactionsFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchHistoryTransactions")
-          )
-        )
-      );
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(
+          error,
+          "An error occurred on src/store/account-details/account-details.thunks.ts:fetchHistoryTransactions"
+        );
+        dispatch(accountDetailsActions.loadHistoryTransactionsFailure(errorMsg));
+        openSnackbar({
+          message: {
+            type: "error",
+            error: errorMsg,
+          },
+        });
+      });
   };
 }
 
@@ -243,13 +258,19 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(accountDetailsActions.loadExitsSuccess(exits));
         })
-        .catch((err: unknown) =>
-          dispatch(
-            accountDetailsActions.loadExitsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchExits")
-            )
-          )
-        );
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(
+            error,
+            "An error occurred on src/store/account-details/account-details.thunks.ts:fetchExits"
+          );
+          dispatch(accountDetailsActions.loadExitsFailure(errorMsg));
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          });
+        });
     }
   };
 }

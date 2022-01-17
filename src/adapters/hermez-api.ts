@@ -85,7 +85,9 @@ export function postCreateAccountAuthorization(
         throw new Error(errorMessage);
       } else {
         throw new Error(
-          "Oops... An error occurred while creating the account authorization but I could not decode the error response from the server."
+          `An error occurred on postCreateAccountAuthorization but the server response could not be decoded: ${JSON.stringify(
+            error.response
+          )}`
         );
       }
     }

@@ -4,6 +4,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import * as globalThunks from "src/store/global/global.thunks";
+import { openSnackbar } from "src/store/global/global.actions";
 import * as homeActions from "src/store/home/home.actions";
 // adapters
 import * as adapters from "src/adapters";
@@ -75,13 +76,19 @@ function fetchTotalBalance(
 
         dispatch(homeActions.loadTotalBalanceSuccess(totalBalance));
       })
-      .catch((err: unknown) =>
-        dispatch(
-          homeActions.loadTotalBalanceFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchTotalBalance")
-          )
-        )
-      );
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(
+          error,
+          "An error occurred on src/store/home/home.thunks.ts:fetchTotalBalance"
+        );
+        dispatch(homeActions.loadTotalBalanceFailure(errorMsg));
+        openSnackbar({
+          message: {
+            type: "error",
+            error: errorMsg,
+          },
+        });
+      });
   };
 }
 
@@ -130,13 +137,19 @@ function fetchAccounts(
         fromItem,
       })
       .then((res) => dispatch(homeActions.loadAccountsSuccess(res)))
-      .catch((err: unknown) =>
-        dispatch(
-          homeActions.loadAccountsFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccounts")
-          )
-        )
-      );
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(
+          error,
+          "An error occurred on src/store/home/home.thunks.ts:fetchAccounts"
+        );
+        dispatch(homeActions.loadAccountsFailure(errorMsg));
+        openSnackbar({
+          message: {
+            type: "error",
+            error: errorMsg,
+          },
+        });
+      });
   };
 }
 
@@ -224,13 +237,19 @@ function fetchExits(): AppThunk {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(homeActions.loadExitsSuccess(exits));
         })
-        .catch((err: unknown) =>
-          dispatch(
-            homeActions.loadExitsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchExits")
-            )
-          )
-        );
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(
+            error,
+            "An error occurred on src/store/home/home.thunks.ts:fetchExits"
+          );
+          dispatch(homeActions.loadExitsFailure(errorMsg));
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          });
+        });
     }
   };
 }

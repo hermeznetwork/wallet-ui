@@ -10,7 +10,6 @@ import * as depositActions from "src/store/transactions/deposit/deposit.actions"
 import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import { getTxFee } from "src/utils/fees";
-import theme from "src/styles/theme";
 // domain
 import { FiatExchangeRates, EthereumAccount, HermezAccount } from "src/domain";
 // adapters
@@ -53,11 +52,17 @@ function fetchEthereumAccount(
               }
             })
             .catch((error: unknown) => {
-              const errorMsg = adapters.getErrorMessage(
+              const errorMsg = adapters.parseError(
                 error,
-                "Oops... an error occurred on fetchEthereumAccount"
+                "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEthereumAccount"
               );
               dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
+              openSnackbar({
+                message: {
+                  type: "error",
+                  error: errorMsg,
+                },
+              });
             });
         });
     }
@@ -93,16 +98,19 @@ function fetchEthereumAccounts(
             .then((ethereumAccounts) =>
               dispatch(depositActions.loadEthereumAccountsSuccess(ethereumAccounts))
             )
-            .catch((err: unknown) =>
-              dispatch(
-                depositActions.loadEthereumAccountsFailure(
-                  adapters.getErrorMessage(
-                    err,
-                    "Oops... an error occurred on fetchEthereumAccounts"
-                  )
-                )
-              )
-            );
+            .catch((error: unknown) => {
+              const errorMsg = adapters.parseError(
+                error,
+                "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEthereumAccounts"
+              );
+              dispatch(depositActions.loadEthereumAccountsFailure(errorMsg));
+              openSnackbar({
+                message: {
+                  type: "error",
+                  error: errorMsg,
+                },
+              });
+            });
         });
     }
   };
@@ -136,12 +144,18 @@ function fetchEstimatedDepositFee(): AppThunk {
           );
         }
       }
-    } catch (err) {
-      dispatch(
-        depositActions.loadEstimatedDepositFeeFailure(
-          adapters.getErrorMessage(err, "Oops... an error occurred on fetchEstimatedDepositFee")
-        )
+    } catch (error: unknown) {
+      const errorMsg = adapters.parseError(
+        error,
+        "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEstimatedDepositFee"
       );
+      dispatch(depositActions.loadEstimatedDepositFeeFailure(errorMsg));
+      openSnackbar({
+        message: {
+          type: "error",
+          error: errorMsg,
+        },
+      });
     }
   };
 }
@@ -185,8 +199,17 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
             });
         })
         .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(
+            error,
+            "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:deposit"
+          );
           dispatch(depositActions.stopTransactionApproval());
-          handleTransactionFailure(dispatch, error);
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          });
         });
     }
   };
@@ -199,21 +222,6 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) 
   } else {
     dispatch(push("/"));
   }
-}
-
-function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = adapters.getErrorMessage(error);
-  dispatch(depositActions.stopTransactionApproval());
-  dispatch(
-    openSnackbar({
-      message: {
-        type: "error",
-        text: "Oops, an error occurred processing the transaction",
-        error: errorMsg,
-      },
-      backgroundColor: theme.palette.red.main,
-    })
-  );
 }
 
 export { fetchEthereumAccount, fetchEthereumAccounts, fetchEstimatedDepositFee, deposit };

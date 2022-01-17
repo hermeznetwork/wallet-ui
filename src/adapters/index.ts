@@ -19,7 +19,7 @@ const messageKeyErrorParser = StrictSchema<MessageKeyError>()(
   })
 );
 
-export function getErrorMessage(error: unknown, prefixMsg?: string): string {
+export function parseError(error: unknown, prefixMsg?: string): string {
   if (typeof error === "string") {
     return prefixMsg ? `${prefixMsg}. ${error}` : error;
   } else if (error instanceof ZodError) {
@@ -38,7 +38,7 @@ export function getErrorMessage(error: unknown, prefixMsg?: string): string {
         ? `${prefixMsg}. ${parsedMessageKeyError.data.message}`
         : parsedMessageKeyError.data.message;
     } else {
-      return prefixMsg ? prefixMsg : "Oops... an unknown error occurred";
+      return prefixMsg ? prefixMsg : `An unknown error has occurred: ${JSON.stringify(error)}`;
     }
   }
 }

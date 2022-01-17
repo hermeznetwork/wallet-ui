@@ -6,6 +6,7 @@ import { ReactComponent as CloseIconDark } from "src/images/icons/close.svg";
 import { ReactComponent as CloseIconLight } from "src/images/icons/close-white.svg";
 import useSnackbarStyles from "src/views/shared/snackbar/snackbar.styles";
 import { SNACKBAR_AUTO_HIDE_DURATION } from "src/constants";
+import theme from "src/styles/theme";
 
 interface SnackbarProps {
   message:
@@ -24,7 +25,13 @@ interface SnackbarProps {
 }
 
 function Snackbar({ message, backgroundColor, onClose, onReport }: SnackbarProps): JSX.Element {
-  const classes = useSnackbarStyles({ backgroundColor });
+  const bkgColor = backgroundColor
+    ? backgroundColor
+    : message.type === "error"
+    ? theme.palette.red.main
+    : undefined;
+
+  const classes = useSnackbarStyles({ backgroundColor: bkgColor });
 
   React.useEffect(() => {
     if (message.type === "info") {
@@ -45,7 +52,7 @@ function Snackbar({ message, backgroundColor, onClose, onReport }: SnackbarProps
       </div>
     );
   } else {
-    const { text = "Oops, an error occurred. Please report it to let us know.", error } = message;
+    const { text = "Oops, an error occurred. Would you mind reporting it?", error } = message;
     return (
       <div className={classes.root}>
         <Container disableVerticalGutters>
@@ -59,7 +66,7 @@ function Snackbar({ message, backgroundColor, onClose, onReport }: SnackbarProps
               }}
             />
             <button className={classes.closeButton} onClick={onClose}>
-              {backgroundColor ? <CloseIconLight /> : <CloseIconDark />}
+              {bkgColor ? <CloseIconLight /> : <CloseIconDark />}
             </button>
           </div>
         </Container>

@@ -37,13 +37,13 @@ function signMessageHelper(
           return Promise.resolve(signature);
         } else {
           return Promise.reject(
-            "Oops... The function signMessage() from the WalletConnectProvider's connector did not return a valid string signature"
+            "The function signMessage() from the WalletConnectProvider's connector did not return a valid string signature"
           );
         }
       });
     } else {
       return Promise.reject(
-        "Oops... The Web3Provider passed as providerOrSigner to the function signMessageHelper is not a valid WalletConnectProvider"
+        "The Web3Provider passed as providerOrSigner to the function signMessageHelper is not a valid WalletConnectProvider"
       );
     }
   } else {
@@ -80,8 +80,8 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
       if (walletName === loginActions.WalletName.METAMASK) {
         try {
           await provider.send("eth_requestAccounts", []);
-        } catch (err) {
-          console.error(err);
+        } catch (error: unknown) {
+          console.error(error);
         }
       }
 
@@ -141,12 +141,12 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
         dispatch(globalActions.setSigner(signerDataWithAddress));
         dispatch(loginActions.goToCreateAccountAuthStep(wallet));
       }
-    } catch (error) {
+    } catch (error: unknown) {
       const {
         login: { step },
       } = getState();
       if (step.type === "wallet-loader") {
-        const text = adapters.getErrorMessage(error);
+        const text = adapters.parseError(error);
         dispatch(loginActions.loadWalletFailure(text));
         dispatch(globalActions.openSnackbar({ message: { type: "info", text } }));
         dispatch(loginActions.goToPreviousStep());
@@ -230,9 +230,9 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
 
         dispatch(loginActions.addAccountAuthSuccess());
         dispatch(push(redirectRoute));
-      } catch (error) {
+      } catch (error: unknown) {
         console.error(error);
-        const text = adapters.getErrorMessage(error);
+        const text = adapters.parseError(error);
         dispatch(loginActions.addAccountAuthFailure(text));
         dispatch(globalActions.openSnackbar({ message: { type: "info", text } }));
         dispatch(loginActions.goToWalletSelectorStep());

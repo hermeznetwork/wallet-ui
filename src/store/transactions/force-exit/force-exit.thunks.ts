@@ -5,7 +5,6 @@ import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as forceExitActions from "src/store/transactions/force-exit/force-exit.actions";
 import { openSnackbar } from "src/store/global/global.actions";
-import theme from "src/styles/theme";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain";
 // adapters
@@ -39,13 +38,21 @@ function fetchAccounts(
           fromItem,
         })
         .then((accounts) => dispatch(forceExitActions.loadAccountsSuccess(accounts)))
-        .catch((err: unknown) =>
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(
+            error,
+            "An error occurred on src/store/transactions/force-exit/force-exit.thunks.ts:fetchAccounts"
+          );
+          dispatch(forceExitActions.loadAccountsFailure(errorMsg));
           dispatch(
-            forceExitActions.loadAccountsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccounts")
-            )
-          )
-        );
+            openSnackbar({
+              message: {
+                type: "error",
+                error: errorMsg,
+              },
+            })
+          );
+        });
     }
   };
 }
@@ -68,9 +75,19 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
         )
         .then(() => handleTransactionSuccess(dispatch))
         .catch((error: unknown) => {
-          console.error(error);
+          const errorMsg = adapters.parseError(
+            error,
+            "An error occurred on src/store/transactions/force-exit/force-exit.thunks.ts:forceExit"
+          );
           dispatch(forceExitActions.stopTransactionApproval());
-          handleTransactionFailure(dispatch, error);
+          dispatch(
+            openSnackbar({
+              message: {
+                type: "error",
+                error: errorMsg,
+              },
+            })
+          );
         });
     }
   };
@@ -79,21 +96,6 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
 function handleTransactionSuccess(dispatch: AppDispatch) {
   dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
   dispatch(push("/"));
-}
-
-function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = adapters.getErrorMessage(error);
-  dispatch(forceExitActions.stopTransactionApproval());
-  dispatch(
-    openSnackbar({
-      message: {
-        type: "error",
-        text: "Oops, an error occurred processing the transaction",
-        error: errorMsg,
-      },
-      backgroundColor: theme.palette.red.main,
-    })
-  );
 }
 
 export { fetchAccounts, forceExit };

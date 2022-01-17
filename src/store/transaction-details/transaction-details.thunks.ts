@@ -44,14 +44,14 @@ function fetchTransaction(transactionIdOrHash: string): AppThunk {
           adapters.hermezApi
             .getPoolTransaction(transactionIdOrHash)
             .then(resolve)
-            .catch((err: AxiosError) => {
-              if (err.response?.status === HttpStatusCode.NOT_FOUND) {
+            .catch((error: AxiosError) => {
+              if (error.response?.status === HttpStatusCode.NOT_FOUND) {
                 adapters.hermezApi
                   .getHistoryTransaction(transactionIdOrHash)
                   .then(resolve)
                   .catch(reject);
               } else {
-                reject(err);
+                reject(error);
               }
             });
         });

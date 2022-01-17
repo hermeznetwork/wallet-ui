@@ -8,7 +8,6 @@ import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import { openSnackbar } from "src/store/global/global.actions";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
-import theme from "src/styles/theme";
 import { feeBigIntToNumber, getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
@@ -47,13 +46,21 @@ function fetchHermezAccount(
         poolTransactions
       )
       .then((res) => dispatch(transferActions.loadAccountSuccess(res)))
-      .catch((err: unknown) =>
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(
+          error,
+          "An error occurred on src/store/transactions/transfer/transfer.thunks.ts:fetchHermezAccount"
+        );
+        dispatch(transferActions.loadAccountFailure(errorMsg));
         dispatch(
-          transferActions.loadAccountFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchHermezAccount")
-          )
-        )
-      );
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          })
+        );
+      });
   };
 }
 
@@ -84,13 +91,21 @@ function fetchAccounts(
           fromItem,
         })
         .then((accounts) => dispatch(transferActions.loadAccountsSuccess(accounts)))
-        .catch((err: unknown) =>
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(
+            error,
+            "An error occurred on src/store/transactions/transfer/transfer.thunks.ts:fetchAccounts"
+          );
+          dispatch(transferActions.loadAccountsFailure(errorMsg));
           dispatch(
-            transferActions.loadAccountsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccounts")
-            )
-          )
-        );
+            openSnackbar({
+              message: {
+                type: "error",
+                error: errorMsg,
+              },
+            })
+          );
+        });
     }
   };
 }
@@ -116,13 +131,21 @@ function fetchFees(): AppThunk {
         return adapters.hermezApi
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(transferActions.loadFeesSuccess(res.recommendedFee)))
-          .catch((err: unknown) =>
+          .catch((error: unknown) => {
+            const errorMsg = adapters.parseError(
+              error,
+              "An error occurred on src/store/transactions/transfer/transfer.thunks.ts:fetchFees"
+            );
+            dispatch(transferActions.loadFeesFailure(errorMsg));
             dispatch(
-              transferActions.loadFeesFailure(
-                adapters.getErrorMessage(err, "Oops... an error occurred on fetchFees")
-              )
-            )
-          );
+              openSnackbar({
+                message: {
+                  type: "error",
+                  error: errorMsg,
+                },
+              })
+            );
+          });
       }
     }
   };
@@ -228,8 +251,19 @@ function transfer(
         .generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
         .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(
+            error,
+            "An error occurred on src/store/transactions/transfer/transfer.thunks.ts:transfer"
+          );
           dispatch(transferActions.stopTransactionApproval());
-          handleTransactionFailure(dispatch, error);
+          dispatch(
+            openSnackbar({
+              message: {
+                type: "error",
+                error: errorMsg,
+              },
+            })
+          );
         });
     }
   };
@@ -239,20 +273,6 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   const route = accountIndex ? `/accounts/${accountIndex}` : "/";
   dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
   dispatch(push(route));
-}
-
-function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = adapters.getErrorMessage(error);
-  dispatch(
-    openSnackbar({
-      message: {
-        type: "error",
-        text: "Oops, an error occurred processing the transaction",
-        error: errorMsg,
-      },
-      backgroundColor: theme.palette.red.main,
-    })
-  );
 }
 
 export { fetchHermezAccount, fetchAccounts, fetchFees, checkTxData, transfer };

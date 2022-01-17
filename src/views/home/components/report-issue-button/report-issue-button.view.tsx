@@ -1,7 +1,7 @@
 import React from "react";
 
 import useReportIssueStyles from "src/views/home/components/report-issue-button/report-issue-button.styles";
-import { REPORT_ISSUE_FORM_URL, HERMEZ_HELP_CENTER_URL } from "src/constants";
+import { REPORT_FEEDBACK_FORM_URL, HERMEZ_HELP_CENTER_URL } from "src/constants";
 
 function ReportIssueButton(): JSX.Element {
   const classes = useReportIssueStyles();
@@ -10,7 +10,7 @@ function ReportIssueButton(): JSX.Element {
     <footer className={classes.root}>
       <a
         className={classes.text}
-        href={REPORT_ISSUE_FORM_URL}
+        href={REPORT_FEEDBACK_FORM_URL}
         target="_blank"
         rel="noopener noreferrer"
       >
