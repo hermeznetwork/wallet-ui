@@ -48,12 +48,14 @@ function fetchHermezAccount(
           "An error occurred on src/store/transactions/exit/exit.thunks.ts:fetchHermezAccount"
         );
         dispatch(exitActions.loadAccountFailure(errorMsg));
-        openSnackbar({
-          message: {
-            type: "error",
-            error: errorMsg,
-          },
-        });
+        dispatch(
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          })
+        );
       });
   };
 }
@@ -85,12 +87,14 @@ function fetchFees(): AppThunk {
               "An error occurred on src/store/transactions/exit/exit.thunks.ts:fetchFees"
             );
             dispatch(exitActions.loadFeesFailure(errorMsg));
-            openSnackbar({
-              message: {
-                type: "error",
-                error: errorMsg,
-              },
-            });
+            dispatch(
+              openSnackbar({
+                message: {
+                  type: "error",
+                  error: errorMsg,
+                },
+              })
+            );
           });
       }
     }
@@ -118,12 +122,14 @@ function fetchAccountBalance() {
             "An error occurred on src/store/transactions/exit/exit.thunks.ts:fetchAccountBalance"
           );
           dispatch(exitActions.loadAccountBalanceFailure(errorMsg));
-          openSnackbar({
-            message: {
-              type: "error",
-              error: errorMsg,
-            },
-          });
+          dispatch(
+            openSnackbar({
+              message: {
+                type: "error",
+                error: errorMsg,
+              },
+            })
+          );
         });
     }
   };
@@ -169,12 +175,14 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         "An error occurred on src/store/transactions/exit/exit.thunks.ts:fetchEstimatedWithdrawFee"
       );
       dispatch(exitActions.loadEstimatedWithdrawFeeFailure(errorMsg));
-      openSnackbar({
-        message: {
-          type: "error",
-          error: errorMsg,
-        },
-      });
+      dispatch(
+        openSnackbar({
+          message: {
+            type: "error",
+            error: errorMsg,
+          },
+        })
+      );
     }
   };
 }

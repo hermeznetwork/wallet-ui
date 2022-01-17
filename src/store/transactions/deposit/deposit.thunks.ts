@@ -57,12 +57,14 @@ function fetchEthereumAccount(
                 "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEthereumAccount"
               );
               dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
-              openSnackbar({
-                message: {
-                  type: "error",
-                  error: errorMsg,
-                },
-              });
+              dispatch(
+                openSnackbar({
+                  message: {
+                    type: "error",
+                    error: errorMsg,
+                  },
+                })
+              );
             });
         });
     }
@@ -104,12 +106,14 @@ function fetchEthereumAccounts(
                 "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEthereumAccounts"
               );
               dispatch(depositActions.loadEthereumAccountsFailure(errorMsg));
-              openSnackbar({
-                message: {
-                  type: "error",
-                  error: errorMsg,
-                },
-              });
+              dispatch(
+                openSnackbar({
+                  message: {
+                    type: "error",
+                    error: errorMsg,
+                  },
+                })
+              );
             });
         });
     }
@@ -150,12 +154,14 @@ function fetchEstimatedDepositFee(): AppThunk {
         "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEstimatedDepositFee"
       );
       dispatch(depositActions.loadEstimatedDepositFeeFailure(errorMsg));
-      openSnackbar({
-        message: {
-          type: "error",
-          error: errorMsg,
-        },
-      });
+      dispatch(
+        openSnackbar({
+          message: {
+            type: "error",
+            error: errorMsg,
+          },
+        })
+      );
     }
   };
 }
@@ -204,12 +210,14 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
             "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:deposit"
           );
           dispatch(depositActions.stopTransactionApproval());
-          openSnackbar({
-            message: {
-              type: "error",
-              error: errorMsg,
-            },
-          });
+          dispatch(
+            openSnackbar({
+              message: {
+                type: "error",
+                error: errorMsg,
+              },
+            })
+          );
         });
     }
   };

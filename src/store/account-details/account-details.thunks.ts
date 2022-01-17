@@ -160,12 +160,14 @@ function fetchHistoryTransactions(
           "An error occurred on src/store/account-details/account-details.thunks.ts:fetchHistoryTransactions"
         );
         dispatch(accountDetailsActions.loadHistoryTransactionsFailure(errorMsg));
-        openSnackbar({
-          message: {
-            type: "error",
-            error: errorMsg,
-          },
-        });
+        dispatch(
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          })
+        );
       });
   };
 }
@@ -264,12 +266,14 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
             "An error occurred on src/store/account-details/account-details.thunks.ts:fetchExits"
           );
           dispatch(accountDetailsActions.loadExitsFailure(errorMsg));
-          openSnackbar({
-            message: {
-              type: "error",
-              error: errorMsg,
-            },
-          });
+          dispatch(
+            openSnackbar({
+              message: {
+                type: "error",
+                error: errorMsg,
+              },
+            })
+          );
         });
     }
   };

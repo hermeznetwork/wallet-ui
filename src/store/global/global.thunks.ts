@@ -102,12 +102,14 @@ function fetchFiatExchangeRates(): AppThunk {
           "An error occurred on src/store/global/global.thunks.ts:fetchFiatExchangeRates"
         );
         dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
-        openSnackbar({
-          message: {
-            type: "error",
-            error: errorMsg,
-          },
-        });
+        dispatch(
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          })
+        );
       });
   };
 }
@@ -189,12 +191,14 @@ function fetchPoolTransactions(): AppThunk {
             "An error occurred on src/store/global/global.thunks.ts:fetchPoolTransactions"
           );
           dispatch(globalActions.loadPoolTransactionsFailure(errorMsg));
-          openSnackbar({
-            message: {
-              type: "error",
-              error: errorMsg,
-            },
-          });
+          dispatch(
+            openSnackbar({
+              message: {
+                type: "error",
+                error: errorMsg,
+              },
+            })
+          );
         });
     }
   };
@@ -954,12 +958,14 @@ function fetchCoordinatorState(): AppThunk {
           "An error occurred on src/store/global/global.thunks.ts:fetchCoordinatorState"
         );
         dispatch(globalActions.loadCoordinatorStateFailure(errorMsg));
-        openSnackbar({
-          message: {
-            type: "error",
-            error: errorMsg,
-          },
-        });
+        dispatch(
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          })
+        );
       });
   };
 }

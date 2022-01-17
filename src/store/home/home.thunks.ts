@@ -82,12 +82,14 @@ function fetchTotalBalance(
           "An error occurred on src/store/home/home.thunks.ts:fetchTotalBalance"
         );
         dispatch(homeActions.loadTotalBalanceFailure(errorMsg));
-        openSnackbar({
-          message: {
-            type: "error",
-            error: errorMsg,
-          },
-        });
+        dispatch(
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          })
+        );
       });
   };
 }
@@ -143,12 +145,14 @@ function fetchAccounts(
           "An error occurred on src/store/home/home.thunks.ts:fetchAccounts"
         );
         dispatch(homeActions.loadAccountsFailure(errorMsg));
-        openSnackbar({
-          message: {
-            type: "error",
-            error: errorMsg,
-          },
-        });
+        dispatch(
+          openSnackbar({
+            message: {
+              type: "error",
+              error: errorMsg,
+            },
+          })
+        );
       });
   };
 }
@@ -243,12 +247,14 @@ function fetchExits(): AppThunk {
             "An error occurred on src/store/home/home.thunks.ts:fetchExits"
           );
           dispatch(homeActions.loadExitsFailure(errorMsg));
-          openSnackbar({
-            message: {
-              type: "error",
-              error: errorMsg,
-            },
-          });
+          dispatch(
+            openSnackbar({
+              message: {
+                type: "error",
+                error: errorMsg,
+              },
+            })
+          );
         });
     }
   };
