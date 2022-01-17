@@ -30,6 +30,7 @@ import {
   PaginationOrder,
   PendingDeposit,
   PoolTransaction,
+  PoolTransactions,
   Signers,
   Token,
   Tokens,
@@ -323,7 +324,7 @@ export function fetchHermezAccount(
 export function getPoolTransactions(
   hermezEthereumAddress: string,
   limit?: number
-): Promise<PoolTransaction[]> {
+): Promise<PoolTransactions> {
   return CoordinatorAPI.getPoolTransactions(
     hermezEthereumAddress,
     undefined,
@@ -333,7 +334,7 @@ export function getPoolTransactions(
     undefined,
     undefined,
     limit
-  ).then((poolTxs) => poolTxs.transactions);
+  );
 }
 
 ////////

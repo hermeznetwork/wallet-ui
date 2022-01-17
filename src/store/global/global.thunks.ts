@@ -29,6 +29,7 @@ import {
   PendingDeposit,
   PendingWithdraw,
   PoolTransaction,
+  PoolTransactions,
   TimerWithdraw,
   Token,
 } from "src/domain";
@@ -155,7 +156,9 @@ function fetchPoolTransactions(): AppThunk {
     if (wallet !== undefined) {
       adapters.hermezApi
         .getPoolTransactions(wallet.hermezEthereumAddress, limit)
-        .then((transactions) => dispatch(globalActions.loadPoolTransactionsSuccess(transactions)))
+        .then((poolTransactions) =>
+          dispatch(globalActions.loadPoolTransactionsSuccess(poolTransactions.transactions))
+        )
         .catch((err) => dispatch(globalActions.loadPoolTransactionsFailure(err)));
     }
   };
@@ -857,10 +860,10 @@ function checkPendingTransactions(): AppThunk {
 
       adapters.hermezApi
         .getPoolTransactions(wallet.hermezEthereumAddress, poolTxsLimit)
-        .then((poolTransactions: PoolTransaction[]) => {
+        .then((poolTransactions: PoolTransactions) => {
           const tenMinutesInMs = 10 * 60 * 1000;
           const oneDayInMs = 24 * 60 * 60 * 1000;
-          const resendTransactionsRequests = poolTransactions
+          const resendTransactionsRequests = poolTransactions.transactions
             .filter((transaction) => {
               const txTimestampInMs = new Date(transaction.timestamp).getTime();
               const nowInMs = new Date().getTime();
