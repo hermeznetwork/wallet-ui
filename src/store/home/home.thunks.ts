@@ -207,32 +207,6 @@ function refreshAccounts(
 }
 
 /**
- * Fetches the transactions which are in the transactions pool
- */
-function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(homeActions.loadPoolTransactions());
-
-    const {
-      global: { wallet },
-    } = getState();
-
-    if (wallet !== undefined) {
-      adapters.hermezApi
-        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(homeActions.loadPoolTransactionsSuccess(transactions)))
-        .catch((err: unknown) =>
-          dispatch(
-            homeActions.loadPoolTransactionsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchPoolTransactions")
-            )
-          )
-        );
-    }
-  };
-}
-
-/**
  * Fetches the exit data for transactions of type Exit
  */
 function fetchExits(): AppThunk {
@@ -261,4 +235,4 @@ function fetchExits(): AppThunk {
   };
 }
 
-export { fetchTotalBalance, fetchAccounts, refreshAccounts, fetchPoolTransactions, fetchExits };
+export { fetchTotalBalance, fetchAccounts, refreshAccounts, fetchExits };

@@ -6,7 +6,6 @@ import {
   HermezCompressedAmount,
   Tx,
   TxFees,
-  TxPool,
   TxUtils,
 } from "@hermeznetwork/hermezjs";
 
@@ -33,6 +32,7 @@ import {
   PaginationOrder,
   PendingDeposit,
   PoolTransaction,
+  PoolTransactions,
   Signers,
   Token,
   Tokens,
@@ -355,6 +355,55 @@ export function getAccounts(
   );
 }
 
+/**
+ * Fetches the transactions in the pool for a Hermez address
+ */
+export function getPoolTransactions(
+  hermezEthereumAddress: string,
+  order?: PaginationOrder,
+  limit?: number
+): Promise<PoolTransactions> {
+  return CoordinatorAPI.getPoolTransactions(
+    hermezEthereumAddress,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    order,
+    limit
+  ).then((poolTransactions: unknown) => {
+    const parsedUnknownPoolTransactions =
+      parsers.unknownPoolTransactions.safeParse(poolTransactions);
+    if (parsedUnknownPoolTransactions.success) {
+      return {
+        pendingItems: parsedUnknownPoolTransactions.data.pendingItems,
+        transactions: parsedUnknownPoolTransactions.data.transactions.reduce(
+          (acc: PoolTransaction[], curr: unknown, index: number): PoolTransaction[] => {
+            const parsedPoolTransaction = parsers.poolTransaction.safeParse(curr);
+            if (parsedPoolTransaction.success) {
+              return [...acc, parsedPoolTransaction.data];
+            } else {
+              logDecodingError(
+                parsedPoolTransaction.error,
+                `Could not decode the PoolTransaction at index ${index} from the function getPoolTransactions. It has been ignored.`
+              );
+              return acc;
+            }
+          },
+          []
+        ),
+      };
+    } else {
+      logDecodingError(
+        parsedUnknownPoolTransactions.error,
+        "Could not decode the list of PoolTransaction from the function getPoolTransactions. Can't show any data."
+      );
+      throw parsedUnknownPoolTransactions.error;
+    }
+  });
+}
+
 // Account helpers
 
 export function getAccountBalance(
@@ -511,44 +560,6 @@ export function fetchHermezAccount(
   );
 }
 
-////////////
-// TxPool //
-////////////
-
-export function getPoolTransactions(
-  accountIndex: string | undefined,
-  publicKeyCompressedHex: string
-): Promise<PoolTransaction[]> {
-  return TxPool.getPoolTransactions(accountIndex, publicKeyCompressedHex).then(
-    (poolTransactions: unknown) => {
-      const parsedUnknownPoolTransactions = z.array(z.unknown()).safeParse(poolTransactions);
-      if (parsedUnknownPoolTransactions.success) {
-        return parsedUnknownPoolTransactions.data.reduce(
-          (acc: PoolTransaction[], curr: unknown, index: number): PoolTransaction[] => {
-            const parsedPoolTransaction = parsers.poolTransaction.safeParse(curr);
-            if (parsedPoolTransaction.success) {
-              return [...acc, parsedPoolTransaction.data];
-            } else {
-              logDecodingError(
-                parsedPoolTransaction.error,
-                `Could not decode the PoolTransaction at index ${index} from the function getPoolTransactions. It has been ignored.`
-              );
-              return acc;
-            }
-          },
-          []
-        );
-      } else {
-        logDecodingError(
-          parsedUnknownPoolTransactions.error,
-          "Could not decode the list of PoolTransaction from the function getPoolTransactions. Can't show any data."
-        );
-        throw parsedUnknownPoolTransactions.error;
-      }
-    }
-  );
-}
-
 ////////
 // Tx //
 ////////
@@ -557,10 +568,9 @@ export function generateAndSendL2Tx(
   tx: Tx.Tx,
   wallet: HermezWallet.HermezWallet,
   token: Token,
-  nextForgers: string[],
-  addToTxPool?: boolean
+  nextForgers: string[]
 ): Promise<Tx.SendL2TransactionResponse> {
-  return Tx.generateAndSendL2Tx(tx, wallet, token, nextForgers, addToTxPool).then(
+  return Tx.generateAndSendL2Tx(tx, wallet, token, nextForgers).then(
     (sendL2TransactionResponse: unknown) => {
       const parsedSendL2TransactionResponse =
         parsers.sendL2TransactionResponse.safeParse(sendL2TransactionResponse);

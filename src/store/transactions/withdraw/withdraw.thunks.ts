@@ -100,32 +100,6 @@ function fetchExit(
 }
 
 /**
- * Fetches the transactions which are in the transactions pool
- */
-function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(withdrawActions.loadPoolTransactions());
-
-    const {
-      global: { wallet },
-    } = getState();
-
-    if (wallet !== undefined) {
-      adapters.hermezApi
-        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(withdrawActions.loadPoolTransactionsSuccess(transactions)))
-        .catch((err: unknown) =>
-          dispatch(
-            withdrawActions.loadPoolTransactionsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchPoolTransactions")
-            )
-          )
-        );
-    }
-  };
-}
-
-/**
  * Executes the withdraw operation
  */
 function withdraw(
@@ -227,4 +201,4 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(openSnackbar(`Transaction failed - ${snackbarMsg}`, theme.palette.red.main));
 }
 
-export { fetchHermezAccount, fetchExit, fetchPoolTransactions, withdraw };
+export { fetchHermezAccount, fetchExit, withdraw };

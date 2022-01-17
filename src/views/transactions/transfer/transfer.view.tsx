@@ -7,6 +7,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch } from "src/store";
 import * as transferThunks from "src/store/transactions/transfer/transfer.thunks";
+import * as globalThunks from "src/store/global/global.thunks";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import * as transferReducer from "src/store/transactions/transfer/transfer.reducer";
 import { changeHeader } from "src/store/global/global.actions";
@@ -227,7 +228,7 @@ function Transfer({
 }
 
 const mapStateToProps = (state: AppState): TransferStateProps => ({
-  poolTransactionsTask: state.transfer.poolTransactionsTask,
+  poolTransactionsTask: state.global.poolTransactionsTask,
   step: state.transfer.step,
   wallet: state.global.wallet,
   accountTask: state.transfer.accountTask,
@@ -301,7 +302,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): TransferHandlerProps => ({
       )
     ),
   onLoadFees: () => dispatch(transferThunks.fetchFees()),
-  onLoadPoolTransactions: () => dispatch(transferThunks.fetchPoolTransactions()),
+  onLoadPoolTransactions: () => dispatch(globalThunks.fetchPoolTransactions()),
   onLoadAccounts: (
     poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
