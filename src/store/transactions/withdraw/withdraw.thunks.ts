@@ -44,7 +44,13 @@ function fetchHermezAccount(
         poolTransactions
       )
       .then((res) => dispatch(withdrawActions.loadAccountSuccess(res)))
-      .catch((error: Error) => dispatch(withdrawActions.loadAccountFailure(error.message)));
+      .catch((error: unknown) => {
+        const errorMsg = adapters.getErrorMessage(
+          error,
+          "Oops... an error occurred on fetchHermezAccount"
+        );
+        dispatch(withdrawActions.loadAccountFailure(errorMsg));
+      });
   };
 }
 /**

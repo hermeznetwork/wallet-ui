@@ -96,7 +96,7 @@ export interface LoadPoolTransactionsSuccess {
 
 export interface LoadPoolTransactionsFailure {
   type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadWallet {
@@ -380,7 +380,7 @@ function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolT
   };
 }
 
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
+function loadPoolTransactionsFailure(error: string): LoadPoolTransactionsFailure {
   return {
     type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,

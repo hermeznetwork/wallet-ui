@@ -159,7 +159,13 @@ function fetchPoolTransactions(): AppThunk {
         .then((poolTransactions) =>
           dispatch(globalActions.loadPoolTransactionsSuccess(poolTransactions.transactions))
         )
-        .catch((err) => dispatch(globalActions.loadPoolTransactionsFailure(err)));
+        .catch((error: unknown) => {
+          const errorMsg = adapters.getErrorMessage(
+            error,
+            "Oops... an error occurred on fetchPoolTransactions"
+          );
+          dispatch(globalActions.loadPoolTransactionsFailure(errorMsg));
+        });
     }
   };
 }
