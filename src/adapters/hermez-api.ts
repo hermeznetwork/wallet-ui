@@ -323,6 +323,7 @@ export function fetchHermezAccount(
  */
 export function getPoolTransactions(
   hermezEthereumAddress: string,
+  order?: PaginationOrder,
   limit?: number
 ): Promise<PoolTransactions> {
   return CoordinatorAPI.getPoolTransactions(
@@ -332,7 +333,7 @@ export function getPoolTransactions(
     undefined,
     undefined,
     undefined,
-    undefined,
+    order,
     limit
   );
 }

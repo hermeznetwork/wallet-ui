@@ -155,7 +155,7 @@ function fetchPoolTransactions(): AppThunk {
 
     if (wallet !== undefined) {
       adapters.hermezApi
-        .getPoolTransactions(wallet.hermezEthereumAddress, limit)
+        .getPoolTransactions(wallet.hermezEthereumAddress, "DESC", limit)
         .then((poolTransactions) =>
           dispatch(globalActions.loadPoolTransactionsSuccess(poolTransactions.transactions))
         )
@@ -859,7 +859,7 @@ function checkPendingTransactions(): AppThunk {
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
 
       adapters.hermezApi
-        .getPoolTransactions(wallet.hermezEthereumAddress, poolTxsLimit)
+        .getPoolTransactions(wallet.hermezEthereumAddress, undefined, poolTxsLimit)
         .then((poolTransactions: PoolTransactions) => {
           const tenMinutesInMs = 10 * 60 * 1000;
           const oneDayInMs = 24 * 60 * 60 * 1000;
