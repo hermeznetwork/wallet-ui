@@ -30,6 +30,7 @@ import {
   PendingDeposit,
   PendingWithdraw,
   PoolTransaction,
+  PoolTransactions,
   TimerWithdraw,
   Token,
 } from "src/domain";
@@ -43,8 +44,6 @@ import * as adapters from "src/adapters";
 function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
   return (dispatch: AppDispatch) => {
     dispatch(globalActions.loadEthereumNetwork());
-
-    hermezjs.TxPool.initializeTransactionPool();
 
     if (
       process.env.REACT_APP_ENV === "production" &&
@@ -155,6 +154,30 @@ function checkHermezStatus(): AppThunk {
           globalActions.loadHermezStatusFailure("An error occurred loading Polygon Hermez status")
         )
       );
+  };
+}
+
+/**
+ * Fetches the transactions which are in the transactions pool
+ */
+function fetchPoolTransactions(): AppThunk {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const limit = 2049;
+
+    dispatch(globalActions.loadPoolTransactions());
+
+    const {
+      global: { wallet },
+    } = getState();
+
+    if (wallet !== undefined) {
+      adapters.hermezApi
+        .getPoolTransactions(wallet.hermezEthereumAddress, "DESC", limit)
+        .then((poolTransactions) =>
+          dispatch(globalActions.loadPoolTransactionsSuccess(poolTransactions.transactions))
+        )
+        .catch((err) => dispatch(globalActions.loadPoolTransactionsFailure(err)));
+    }
   };
 }
 
@@ -844,6 +867,7 @@ function checkPendingDeposits(): AppThunk {
 
 function checkPendingTransactions(): AppThunk {
   return (_: AppDispatch, getState: () => AppState) => {
+    const poolTxsLimit = 2049;
     const {
       global: { wallet, coordinatorStateTask },
     } = getState();
@@ -852,11 +876,11 @@ function checkPendingTransactions(): AppThunk {
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
 
       adapters.hermezApi
-        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((poolTransactions: PoolTransaction[]) => {
+        .getPoolTransactions(wallet.hermezEthereumAddress, undefined, poolTxsLimit)
+        .then((poolTransactions: PoolTransactions) => {
           const tenMinutesInMs = 10 * 60 * 1000;
           const oneDayInMs = 24 * 60 * 60 * 1000;
-          const resendTransactionsRequests = poolTransactions
+          const resendTransactionsRequests = poolTransactions.transactions
             .filter((transaction) => {
               const txTimestampInMs = new Date(transaction.timestamp).getTime();
               const nowInMs = new Date().getTime();
@@ -882,7 +906,7 @@ function checkPendingTransactions(): AppThunk {
               };
 
               return adapters.hermezApi
-                .generateAndSendL2Tx(txData, wallet, transaction.token, nextForgerUrls, false)
+                .generateAndSendL2Tx(txData, wallet, transaction.token, nextForgerUrls)
                 .catch(() => ({}));
             });
 
@@ -971,6 +995,7 @@ export {
   fetchFiatExchangeRates,
   changeNetworkStatus,
   checkHermezStatus,
+  fetchPoolTransactions,
   addPendingWithdraw,
   removePendingWithdraw,
   addPendingDelayedWithdraw,

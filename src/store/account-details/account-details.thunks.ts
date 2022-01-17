@@ -13,7 +13,6 @@ import {
   HermezAccount,
   HistoryTransaction,
   HistoryTransactions,
-  PoolTransaction,
   Token,
 } from "src/domain";
 // adapters
@@ -82,35 +81,6 @@ function fetchL1TokenBalance(
           }
         })
         .catch(() => dispatch(accountDetailsActions.loadL1TokenBalanceFailure()));
-    }
-  };
-}
-
-/**
- * Fetches the transaction details for each transaction in the pool for the specified account index
- */
-function fetchPoolTransactions(accountIndex: HermezAccount["accountIndex"]): AppThunk {
-  return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(accountDetailsActions.loadPoolTransactions());
-
-    const {
-      global: { wallet },
-    } = getState();
-    if (wallet !== undefined) {
-      adapters.hermezApi
-        .getPoolTransactions(accountIndex, wallet.publicKeyCompressedHex)
-        // We need to reverse the txs to match the order of the txs from the history (DESC)
-        .then((transactions: PoolTransaction[]) => transactions.reverse())
-        .then((transactions: PoolTransaction[]) =>
-          dispatch(accountDetailsActions.loadPoolTransactionsSuccess(transactions))
-        )
-        .catch((err: unknown) =>
-          dispatch(
-            accountDetailsActions.loadPoolTransactionsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchPoolTransactions")
-            )
-          )
-        );
     }
   };
 }
@@ -287,7 +257,6 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
 export {
   fetchAccount,
   fetchL1TokenBalance,
-  fetchPoolTransactions,
   fetchHistoryTransactions,
   refreshHistoryTransactions,
   fetchExits,

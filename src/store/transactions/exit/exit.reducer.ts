@@ -8,11 +8,10 @@ import {
 } from "src/store/transactions/exit/exit.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PoolTransaction, HermezAccount, RecommendedFee, EstimatedL1Fee } from "src/domain";
+import { HermezAccount, RecommendedFee, EstimatedL1Fee } from "src/domain";
 
 export interface ExitState {
   step: Step;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   accountTask: AsyncTask<HermezAccount, string>;
   feesTask: AsyncTask<RecommendedFee, string>;
   accountBalanceTask: AsyncTask<BigNumber, string>;
@@ -23,9 +22,6 @@ export interface ExitState {
 
 const initialExitState: ExitState = {
   step: "load-account",
-  poolTransactionsTask: {
-    status: "pending",
-  },
   accountTask: {
     status: "pending",
   },
@@ -65,38 +61,6 @@ function exitReducer(state: ExitState = initialExitState, action: ExitAction): E
       return {
         ...state,
         step: action.nextStep,
-      };
-    }
-    case ExitActionTypes.LOAD_POOL_TRANSACTIONS: {
-      return {
-        ...state,
-        poolTransactionsTask:
-          state.poolTransactionsTask.status === "successful"
-            ? {
-                status: "reloading",
-                data: state.poolTransactionsTask.data,
-              }
-            : {
-                status: "loading",
-              },
-      };
-    }
-    case ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "successful",
-          data: action.transactions,
-        },
-      };
-    }
-    case ExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "failed",
-          error: action.error,
-        },
       };
     }
     case ExitActionTypes.LOAD_ACCOUNT: {

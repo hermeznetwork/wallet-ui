@@ -320,6 +320,18 @@ const unknownHistoryTransactions = StrictSchema<UnknownHistoryTransactions>()(
   })
 );
 
+interface UnknownPoolTransactions {
+  transactions: unknown[];
+  pendingItems: number;
+}
+
+const unknownPoolTransactions = StrictSchema<UnknownPoolTransactions>()(
+  z.object({
+    transactions: z.array(z.unknown()),
+    pendingItems: z.number(),
+  })
+);
+
 interface UnknownTokens {
   tokens: unknown[];
   pendingItems: number;
@@ -350,5 +362,6 @@ export {
   unknownExits,
   unknownHermezRawAccounts,
   unknownHistoryTransactions,
+  unknownPoolTransactions,
   unknownTokens,
 };

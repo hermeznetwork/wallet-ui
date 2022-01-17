@@ -1,5 +1,5 @@
 // domain
-import { Accounts, Exits, PoolTransaction } from "src/domain";
+import { Accounts, Exits } from "src/domain";
 
 export enum HomeActionTypes {
   LOAD_TOTAL_BALANCE = "[HOME] LOAD TOTAL BALANCE",
@@ -8,9 +8,6 @@ export enum HomeActionTypes {
   LOAD_ACCOUNTS = "[HOME] LOAD ACCOUNTS",
   LOAD_ACCOUNTS_SUCCESS = "[HOME] LOAD ACCOUNTS SUCCESS",
   LOAD_ACCOUNTS_FAILURE = "[HOME] LOAD ACCOUNTS FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[HOME] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[HOME] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[HOME] LOAD POOL TRANSACTIONS FAILURE",
   LOAD_EXITS = "[HOME] LOAD EXITS",
   LOAD_EXITS_SUCCESS = "[HOME] LOAD EXITS SUCCESS",
   LOAD_EXITS_FAILURE = "[HOME] LOAD EXITS FAILURE",
@@ -44,20 +41,6 @@ export interface LoadAccountsSuccess {
 
 export interface LoadAccountsFailure {
   type: HomeActionTypes.LOAD_ACCOUNTS_FAILURE;
-  error: string;
-}
-
-export interface LoadPoolTransactions {
-  type: HomeActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
-export interface LoadPoolTransactionsSuccess {
-  type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailure {
-  type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
   error: string;
 }
 
@@ -95,9 +78,6 @@ export type HomeAction =
   | LoadAccounts
   | LoadAccountsSuccess
   | LoadAccountsFailure
-  | LoadPoolTransactions
-  | LoadPoolTransactionsSuccess
-  | LoadPoolTransactionsFailure
   | LoadExits
   | LoadExitsSuccess
   | LoadExitsFailure
@@ -141,26 +121,6 @@ function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
 function loadAccountsFailure(error: string): LoadAccountsFailure {
   return {
     type: HomeActionTypes.LOAD_ACCOUNTS_FAILURE,
-    error,
-  };
-}
-
-function loadPoolTransactions(): LoadPoolTransactions {
-  return {
-    type: HomeActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
-  return {
-    type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: string): LoadPoolTransactionsFailure {
-  return {
-    type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
   };
 }
@@ -211,9 +171,6 @@ export {
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   loadExits,
   loadExitsSuccess,
   loadExitsFailure,

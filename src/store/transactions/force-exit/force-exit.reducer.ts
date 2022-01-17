@@ -7,7 +7,7 @@ import {
 import { AsyncTask } from "src/utils/types";
 import { getPaginationData, Pagination } from "src/utils/api";
 // domain
-import { HermezAccount, PoolTransaction, EstimatedL1Fee } from "src/domain";
+import { HermezAccount, EstimatedL1Fee } from "src/domain";
 
 export interface AccountsWithPagination {
   accounts: HermezAccount[];
@@ -17,7 +17,6 @@ export interface AccountsWithPagination {
 export interface ForceExitState {
   step: Step;
   accountsTask: AsyncTask<AccountsWithPagination, string>;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   account?: HermezAccount;
   transaction?: TransactionToReview;
@@ -26,9 +25,6 @@ export interface ForceExitState {
 
 const initialForceExitState: ForceExitState = {
   step: "choose-account",
-  poolTransactionsTask: {
-    status: "pending",
-  },
   accountsTask: {
     status: "pending",
   },
@@ -96,38 +92,6 @@ function forceExitReducer(
       return {
         ...state,
         accountsTask: {
-          status: "failed",
-          error: action.error,
-        },
-      };
-    }
-    case ForceExitActionTypes.LOAD_POOL_TRANSACTIONS: {
-      return {
-        ...state,
-        poolTransactionsTask:
-          state.poolTransactionsTask.status === "successful"
-            ? {
-                status: "reloading",
-                data: state.poolTransactionsTask.data,
-              }
-            : {
-                status: "loading",
-              },
-      };
-    }
-    case ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "successful",
-          data: action.transactions,
-        },
-      };
-    }
-    case ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
-      return {
-        ...state,
-        poolTransactionsTask: {
           status: "failed",
           error: action.error,
         },

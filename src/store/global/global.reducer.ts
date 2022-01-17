@@ -17,6 +17,7 @@ import {
   TimerWithdraw,
   TimerWithdraws,
   Token,
+  PoolTransaction,
 } from "src/domain";
 // adapters
 import * as localStoragePersistence from "src/adapters/local-storage";
@@ -62,6 +63,7 @@ export type SnackbarState =
 export interface GlobalState {
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   wallet: HermezWallet.HermezWallet | undefined;
   signer: Signers.SignerData | undefined;
   header: HeaderState;
@@ -86,6 +88,9 @@ function getInitialGlobalState(): GlobalState {
       status: "pending",
     },
     ethereumNetworkTask: {
+      status: "pending",
+    },
+    poolTransactionsTask: {
       status: "pending",
     },
     wallet: undefined,
@@ -168,6 +173,33 @@ function globalReducer(
         ethereumNetworkTask: {
           status: "successful",
           data: action.ethereumNetwork,
+        },
+      };
+    }
+    case GlobalActionTypes.LOAD_POOL_TRANSACTIONS: {
+      return {
+        ...state,
+        poolTransactionsTask:
+          state.poolTransactionsTask.status === "successful"
+            ? { status: "reloading", data: state.poolTransactionsTask.data }
+            : { status: "loading" },
+      };
+    }
+    case GlobalActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: "successful",
+          data: action.transactions,
+        },
+      };
+    }
+    case GlobalActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: "failed",
+          error: "An error ocurred loading the transactions from the pool",
         },
       };
     }

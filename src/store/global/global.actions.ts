@@ -13,6 +13,7 @@ import {
   Signers,
   TimerWithdraw,
   Token,
+  PoolTransaction,
 } from "src/domain";
 
 export enum GlobalActionTypes {
@@ -21,6 +22,9 @@ export enum GlobalActionTypes {
   LOAD_HERMEZ_STATUS_FAILURE = "[GLOBAL] LOAD HERMEZ STATUS FAILURE",
   LOAD_ETHEREUM_NETWORK = "[GLOBAL] LOAD ETHEREUM NETWORK",
   LOAD_ETHEREUM_NETWORK_SUCCESS = "[GLOBAL] LOAD ETHEREUM NETWORK SUCCESS",
+  LOAD_POOL_TRANSACTIONS = "[HOME] LOAD POOL TRANSACTIONS",
+  LOAD_POOL_TRANSACTIONS_SUCCESS = "[HOME] LOAD POOL TRANSACTIONS SUCCESS",
+  LOAD_POOL_TRANSACTIONS_FAILURE = "[HOME] LOAD POOL TRANSACTIONS FAILURE",
   LOAD_WALLET = "[GLOBAL] LOAD WALLET",
   UNLOAD_WALLET = "[GLOBAL] UNLOAD WALLET",
   SET_SIGNER = "[GLOBAL] SET SIGNER",
@@ -79,6 +83,20 @@ export interface LoadEthereumNetwork {
 export interface LoadEthereumNetworkSuccess {
   type: GlobalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS;
   ethereumNetwork: EthereumNetwork;
+}
+
+export interface LoadPoolTransactions {
+  type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS;
+}
+
+export interface LoadPoolTransactionsSuccess {
+  type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
+  transactions: PoolTransaction[];
+}
+
+export interface LoadPoolTransactionsFailure {
+  type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
+  error: Error;
 }
 
 export interface LoadWallet {
@@ -286,6 +304,9 @@ export type GlobalAction =
   | LoadHermezStatusFailure
   | LoadEthereumNetwork
   | LoadEthereumNetworkSuccess
+  | LoadPoolTransactions
+  | LoadPoolTransactionsSuccess
+  | LoadPoolTransactionsFailure
   | LoadWallet
   | UnloadWallet
   | SetSigner
@@ -352,6 +373,26 @@ function loadEthereumNetworkSuccess(ethereumNetwork: EthereumNetwork): LoadEther
   return {
     type: GlobalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS,
     ethereumNetwork,
+  };
+}
+
+function loadPoolTransactions(): LoadPoolTransactions {
+  return {
+    type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS,
+  };
+}
+
+function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
+  return {
+    type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
+    transactions,
+  };
+}
+
+function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
+  return {
+    type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
+    error,
   };
 }
 
@@ -691,6 +732,9 @@ export {
   loadHermezStatusFailure,
   loadEthereumNetwork,
   loadEthereumNetworkSuccess,
+  loadPoolTransactions,
+  loadPoolTransactionsSuccess,
+  loadPoolTransactionsFailure,
   loadWallet,
   unloadWallet,
   setSigner,

@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { HermezAccount, PoolTransaction, RecommendedFee, EstimatedL1Fee } from "src/domain";
+import { HermezAccount, RecommendedFee, EstimatedL1Fee } from "src/domain";
 
 export enum ExitActionTypes {
   GO_TO_BUILD_TRANSACTION_STEP = "[EXIT] GO TO BUILD TRANSACTION STEP",
@@ -19,9 +19,6 @@ export enum ExitActionTypes {
   LOAD_ESTIMATED_WITHDRAW_FEE = "[EXIT] LOAD ESTIMATED WITHDRAW FEE",
   LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS = "[EXIT] LOAD ESTIMATED WITHDRAW FEE SUCCESS",
   LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE = "[EXIT] LOAD ESTIMATED WITHDRAW FEE FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[EXIT] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[EXIT] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[EXIT] LOAD POOL TRANSACTIONS FAILURE",
   START_TRANSACTION_APPROVAL = "[EXIT] START TRANSACTION APPROVAL",
   STOP_TRANSACTION_APPROVAL = "[EXIT] STOP TRANSACTION APPROVAL",
   RESET_STATE = "[EXIT] RESET STATE",
@@ -106,20 +103,6 @@ export interface LoadEstimatedWithdrawFeeFailure {
   error: string;
 }
 
-export interface LoadPoolTransactions {
-  type: ExitActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
-export interface LoadPoolTransactionsSuccess {
-  type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailure {
-  type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: string;
-}
-
 export interface StartTransactionApproval {
   type: ExitActionTypes.START_TRANSACTION_APPROVAL;
 }
@@ -148,9 +131,6 @@ export type ExitAction =
   | LoadEstimatedWithdrawFee
   | LoadEstimatedWithdrawFeeSuccess
   | LoadEstimatedWithdrawFeeFailure
-  | LoadPoolTransactions
-  | LoadPoolTransactionsSuccess
-  | LoadPoolTransactionsFailure
   | StartTransactionApproval
   | StopTransactionApproval
   | ResetState;
@@ -258,26 +238,6 @@ function loadEstimatedWithdrawFeeFailure(error: string): LoadEstimatedWithdrawFe
   };
 }
 
-function loadPoolTransactions(): LoadPoolTransactions {
-  return {
-    type: ExitActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
-  return {
-    type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: string): LoadPoolTransactionsFailure {
-  return {
-    type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
-    error,
-  };
-}
-
 function startTransactionApproval(): StartTransactionApproval {
   return {
     type: ExitActionTypes.START_TRANSACTION_APPROVAL,
@@ -300,9 +260,6 @@ export {
   goToBuildTransactionStep,
   goToReviewTransactionStep,
   changeCurrentStep,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,

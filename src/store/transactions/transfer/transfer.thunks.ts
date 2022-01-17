@@ -58,32 +58,6 @@ function fetchHermezAccount(
 }
 
 /**
- * Fetches the transactions which are in the transactions pool
- */
-function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(transferActions.loadPoolTransactions());
-
-    const {
-      global: { wallet },
-    } = getState();
-
-    if (wallet !== undefined) {
-      adapters.hermezApi
-        .getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(transferActions.loadPoolTransactionsSuccess(transactions)))
-        .catch((err: unknown) =>
-          dispatch(
-            transferActions.loadPoolTransactionsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchPoolTransactions")
-            )
-          )
-        );
-    }
-  };
-}
-
-/**
  * Fetches the accounts to use in the transaction in the rollup api.
  */
 function fetchAccounts(
@@ -281,11 +255,4 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   );
 }
 
-export {
-  fetchHermezAccount,
-  fetchPoolTransactions,
-  fetchAccounts,
-  fetchFees,
-  checkTxData,
-  transfer,
-};
+export { fetchHermezAccount, fetchAccounts, fetchFees, checkTxData, transfer };

@@ -338,11 +338,14 @@ function AccountDetails({
               const tokenTimerWithdraws = accountTimerWithdraws.filter(
                 (withdraw) => withdraw.token.id === accountTask.data.token.id
               );
+              const accountPoolTransactions = poolTransactionsTask.data.filter(
+                (tx) => tx.fromAccountIndex === accountIndex
+              );
 
               return (
                 <>
                   <ExitCardList
-                    transactions={getPendingExits(poolTransactionsTask.data)}
+                    transactions={getPendingExits(accountPoolTransactions)}
                     fiatExchangeRates={fiatExchangeRatesTask.data}
                     preferredCurrency={preferredCurrency}
                     babyJubJub={wallet.publicKeyCompressedHex}
@@ -379,7 +382,7 @@ function AccountDetails({
                   <TransactionList
                     arePending
                     accountIndex={accountIndex}
-                    transactions={getPendingTransactions(poolTransactionsTask.data)}
+                    transactions={getPendingTransactions(accountPoolTransactions)}
                     fiatExchangeRates={fiatExchangeRatesTask.data}
                     preferredCurrency={preferredCurrency}
                     onTransactionClick={handleTransactionClick}
@@ -418,7 +421,7 @@ const mapStateToProps = (state: AppState): AccountDetailsStateProps => ({
   accountTask: state.accountDetails.accountTask,
   l1TokenBalanceTask: state.accountDetails.l1TokenBalanceTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
-  poolTransactionsTask: state.accountDetails.poolTransactionsTask,
+  poolTransactionsTask: state.global.poolTransactionsTask,
   historyTransactionsTask: state.accountDetails.historyTransactionsTask,
   exitsTask: state.accountDetails.exitsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
@@ -446,8 +449,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): AccountDetailsHandlerProps =
       })
     ),
   onCheckPendingDeposits: () => dispatch(globalThunks.checkPendingDeposits()),
-  onLoadPoolTransactions: (accountIndex) =>
-    dispatch(accountDetailsThunks.fetchPoolTransactions(accountIndex)),
+  onLoadPoolTransactions: () => dispatch(globalThunks.fetchPoolTransactions()),
   onLoadHistoryTransactions: (accountIndex, exits, fromItem) =>
     dispatch(accountDetailsThunks.fetchHistoryTransactions(accountIndex, exits, fromItem)),
   onLoadExits: (tokenId) => dispatch(accountDetailsThunks.fetchExits(tokenId)),
