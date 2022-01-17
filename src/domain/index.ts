@@ -26,6 +26,7 @@ export type {
   NextForger,
   PaginationOrder,
   PoolTransaction,
+  PoolTransactions,
   RecommendedFee,
   Signers,
   Token,

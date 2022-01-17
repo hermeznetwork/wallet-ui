@@ -1,13 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import {
-  Accounts,
-  HermezAccount,
-  PoolTransaction,
-  RecommendedFee,
-  TransactionReceiver,
-} from "src/domain";
+import { Accounts, HermezAccount, RecommendedFee, TransactionReceiver } from "src/domain";
 
 export enum TransferActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[TRANSFER] GO TO CHOOSE ACCOUNT STEP",
@@ -20,9 +14,6 @@ export enum TransferActionTypes {
   LOAD_FEES = "[TRANSFER] LOAD FEES",
   LOAD_FEES_SUCCESS = "[TRANSFER] LOAD FEES SUCCESS",
   LOAD_FEES_FAILURE = "[TRANSFER] LOAD FEES FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[TRANSFER] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[TRANSFER] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[TRANSFER] LOAD POOL TRANSACTIONS FAILURE",
   LOAD_ACCOUNTS = "[TRANSFER] LOAD ACCOUNTS",
   LOAD_ACCOUNTS_SUCCESS = "[TRANSFER] LOAD ACCOUNTS SUCCESS",
   LOAD_ACCOUNTS_FAILURE = "[TRANSFER] LOAD ACCOUNTS FAILURE",
@@ -88,20 +79,6 @@ export interface LoadFeesFailure {
   error: Error;
 }
 
-export interface LoadPoolTransactions {
-  type: TransferActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
-export interface LoadPoolTransactionsSuccess {
-  type: TransferActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailure {
-  type: TransferActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
-}
-
 export interface LoadAccounts {
   type: TransferActionTypes.LOAD_ACCOUNTS;
 }
@@ -144,9 +121,6 @@ export type TransferAction =
   | LoadFees
   | LoadFeesSuccess
   | LoadFeesFailure
-  | LoadPoolTransactions
-  | LoadPoolTransactionsSuccess
-  | LoadPoolTransactionsFailure
   | LoadAccounts
   | LoadAccountsSuccess
   | LoadAccountsFailure
@@ -222,26 +196,6 @@ function loadFeesFailure(error: Error): LoadFeesFailure {
   };
 }
 
-function loadPoolTransactions(): LoadPoolTransactions {
-  return {
-    type: TransferActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
-  return {
-    type: TransferActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
-  return {
-    type: TransferActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
-    error,
-  };
-}
-
 function loadAccounts(): LoadAccounts {
   return {
     type: TransferActionTypes.LOAD_ACCOUNTS,
@@ -297,9 +251,6 @@ export {
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,

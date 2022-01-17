@@ -7,7 +7,6 @@ import {
   HermezCompressedAmount,
   Tx,
   TxFees,
-  TxPool,
   TxUtils,
 } from "@hermeznetwork/hermezjs";
 
@@ -31,6 +30,7 @@ import {
   PaginationOrder,
   PendingDeposit,
   PoolTransaction,
+  PoolTransactions,
   Signers,
   Token,
   Tokens,
@@ -318,15 +318,24 @@ export function fetchHermezAccount(
   );
 }
 
-////////////
-// TxPool //
-////////////
-
+/**
+ * Fetches the transactions in the pool for a Hermez address
+ */
 export function getPoolTransactions(
-  accountIndex: string | undefined,
-  publicKeyCompressedHex: string
-): Promise<PoolTransaction[]> {
-  return TxPool.getPoolTransactions(accountIndex, publicKeyCompressedHex);
+  hermezEthereumAddress: string,
+  order?: PaginationOrder,
+  limit?: number
+): Promise<PoolTransactions> {
+  return CoordinatorAPI.getPoolTransactions(
+    hermezEthereumAddress,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    order,
+    limit
+  );
 }
 
 ////////
@@ -359,10 +368,9 @@ export function generateAndSendL2Tx(
   tx: Tx.Tx,
   wallet: HermezWallet.HermezWallet,
   token: Token,
-  nextForgers: string[],
-  addToTxPool?: boolean
+  nextForgers: string[]
 ): Promise<Tx.SendL2TransactionResponse> {
-  return Tx.generateAndSendL2Tx(tx, wallet, token, nextForgers, addToTxPool);
+  return Tx.generateAndSendL2Tx(tx, wallet, token, nextForgers);
 }
 
 export function forceExit(

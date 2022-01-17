@@ -38,7 +38,7 @@ type AccountSelectorProps = {
   | {
       type: TxType.Transfer;
       accountsTask: AsyncTask<AccountsWithPagination, Error>;
-      poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+      poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
       onLoadAccounts: (
         poolTransactions: PoolTransaction[],
         fiatExchangeRates: FiatExchangeRates,
@@ -50,7 +50,7 @@ type AccountSelectorProps = {
   | {
       type: TxType.ForceExit;
       accountsTask: AsyncTask<AccountsWithPagination, Error>;
-      poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+      poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
       onLoadAccounts: (
         poolTransactions: PoolTransaction[],
         fiatExchangeRates: FiatExchangeRates,

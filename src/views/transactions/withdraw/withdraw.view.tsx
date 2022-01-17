@@ -7,6 +7,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch } from "src/store";
 import * as withdrawThunks from "src/store/transactions/withdraw/withdraw.thunks";
+import * as globalThunks from "src/store/global/global.thunks";
 import * as withdrawActions from "src/store/transactions/withdraw/withdraw.actions";
 import { changeHeader } from "src/store/global/global.actions";
 import useWithdrawStyles from "src/views/transactions/transfer/transfer.styles";
@@ -28,7 +29,7 @@ import {
 } from "src/domain";
 
 interface WithdrawStateProps {
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   step: withdrawActions.Step;
   exitTask: AsyncTask<Exit, Error>;
   accountTask: AsyncTask<HermezAccount, string>;
@@ -210,7 +211,7 @@ function Withdraw({
 }
 
 const mapStateToProps = (state: AppState): WithdrawStateProps => ({
-  poolTransactionsTask: state.withdraw.poolTransactionsTask,
+  poolTransactionsTask: state.global.poolTransactionsTask,
   step: state.withdraw.step,
   wallet: state.global.wallet,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
@@ -235,7 +236,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): WithdrawHandlerProps => ({
       })
     ),
   onGoToHome: () => dispatch(push("/")),
-  onLoadPoolTransactions: () => dispatch(withdrawThunks.fetchPoolTransactions()),
+  onLoadPoolTransactions: () => dispatch(globalThunks.fetchPoolTransactions()),
   onLoadHermezAccount: (
     accountIndex: string,
     poolTransactions: PoolTransaction[],

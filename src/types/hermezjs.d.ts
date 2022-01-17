@@ -262,6 +262,11 @@ declare module "@hermeznetwork/*" {
     pendingItems: number;
   }
 
+  export interface PoolTransactions {
+    transactions: PoolTransaction[];
+    pendingItems: number;
+  }
+
   export interface Exits {
     exits: Exit[];
     pendingItems: number;
@@ -290,7 +295,6 @@ declare module "@hermeznetwork/*" {
   export { default as Tx } from "@hermeznetwork/hermezjs/src/tx";
   export { default as TxUtils } from "@hermeznetwork/hermezjs/src/tx-utils";
   export { default as TxFees } from "@hermeznetwork/hermezjs/src/tx-fees";
-  export { default as TxPool } from "@hermeznetwork/hermezjs/src/tx-pool";
   export { default as CoordinatorAPI } from "@hermeznetwork/hermezjs/src/api";
   export { default as Constants } from "@hermeznetwork/hermezjs/src/constants";
   export { default as HermezCompressedAmount } from "@hermeznetwork/hermezjs/src/hermez-compressed-amount";
@@ -414,8 +418,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
     tx: Tx,
     wallet: HermezWallet.HermezWallet,
     token: Token,
-    nextForgers: string[],
-    addToTxPool?: boolean
+    nextForgers: string[]
   ): Promise<SendL2TransactionResponse>;
 
   function withdrawCircuit(
@@ -490,21 +493,6 @@ declare module "@hermeznetwork/hermezjs/src/tx-fees" {
   ): Promise<number>;
 }
 
-// TxPool
-declare module "@hermeznetwork/hermezjs/src/tx-pool" {
-  import { PoolTransaction } from "@hermeznetwork/hermezjs";
-
-  function initializeTransactionPool(): void;
-
-  function getPoolTransactions(
-    accountIndex: string | undefined,
-    bJJ: string
-  ): Promise<PoolTransaction[]>;
-
-  // function addPoolTransaction();
-  // function removePoolTransaction();
-}
-
 // CoordinatorAPI
 declare module "@hermeznetwork/hermezjs/src/api" {
   import {
@@ -518,6 +506,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     Token,
     Tokens,
     PoolTransaction,
+    PoolTransactions,
     AccountAuthorization,
   } from "@hermeznetwork/hermezjs";
 
@@ -618,17 +607,17 @@ declare module "@hermeznetwork/hermezjs/src/api" {
   // function getCreateAccountAuthorization();
   // function getConfig();
 
-  // function getPoolTransactions(
-  //   address: string | undefined,
-  //   state: string,
-  //   type?: string,
-  //   tokenId?: number,
-  //   accountIndex?: string,
-  //   fromItem?: number,
-  //   order?: PaginationOrder,
-  //   limit?: number,
-  //   axiosConfig?: Record<string, unknown>
-  // ): Promise<PoolTransaction[]>;
+  function getPoolTransactions(
+    address?: string,
+    state?: string,
+    type?: string,
+    tokenId?: number,
+    accountIndex?: string,
+    fromItem?: number,
+    order?: PaginationOrder,
+    limit?: number,
+    axiosConfig?: Record<string, unknown>
+  ): Promise<PoolTransactions>;
 
   // function getHealth();
 }

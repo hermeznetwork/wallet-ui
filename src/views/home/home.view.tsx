@@ -416,7 +416,7 @@ const mapStateToProps = (state: AppState): HomeStateProps => ({
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
-  poolTransactionsTask: state.home.poolTransactionsTask,
+  poolTransactionsTask: state.global.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
@@ -462,7 +462,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): HomeHandlerProps => ({
         fromItem
       )
     ),
-  onLoadPoolTransactions: () => dispatch(homeThunks.fetchPoolTransactions()),
+  onLoadPoolTransactions: () => dispatch(globalThunks.fetchPoolTransactions()),
   onLoadExits: () => dispatch(homeThunks.fetchExits()),
   onCheckPendingWithdrawals: () => dispatch(globalThunks.checkPendingWithdrawals()),
   onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),

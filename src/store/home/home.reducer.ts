@@ -3,7 +3,7 @@ import { getPaginationData } from "src/utils/api";
 import { Pagination } from "src/utils/api";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { Exits, HermezAccount, PoolTransaction } from "src/domain";
+import { Exits, HermezAccount } from "src/domain";
 
 interface ViewAccounts {
   accounts: HermezAccount[];
@@ -14,7 +14,6 @@ interface ViewAccounts {
 export interface HomeState {
   totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   exitsTask: AsyncTask<Exits, Error>;
 }
 
@@ -23,9 +22,6 @@ const initialHomeState: HomeState = {
     status: "pending",
   },
   accountsTask: {
-    status: "pending",
-  },
-  poolTransactionsTask: {
     status: "pending",
   },
   exitsTask: {
@@ -136,33 +132,6 @@ function homeReducer(state: HomeState = initialHomeState, action: HomeAction): H
             pagination,
             fromItemHistory: [],
           },
-        },
-      };
-    }
-    case HomeActionTypes.LOAD_POOL_TRANSACTIONS: {
-      return {
-        ...state,
-        poolTransactionsTask:
-          state.poolTransactionsTask.status === "successful"
-            ? { status: "reloading", data: state.poolTransactionsTask.data }
-            : { status: "loading" },
-      };
-    }
-    case HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "successful",
-          data: action.transactions,
-        },
-      };
-    }
-    case HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "failed",
-          error: "An error ocurred loading the transactions from the pool",
         },
       };
     }
