@@ -24,7 +24,7 @@ import { version as packagejsonVersion } from "src/../package.json";
 import { AppDispatch, AppState } from "src/store";
 import { Theme } from "src/styles/theme";
 //domain
-import { HermezWallet } from "src/domain";
+import { HermezWallet, Message } from "src/domain";
 
 interface MyAccountStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
@@ -35,19 +35,7 @@ interface MyAccountHandlerProps {
   onChangeHeader: () => void;
   onChangePreferredCurrency: (selectedTokenId: string) => void;
   onDisconnectWallet: () => void;
-  onOpenSnackbar: (
-    message:
-      | {
-          type: "info";
-          text: string;
-        }
-      | {
-          type: "error";
-          text?: string;
-          raw: unknown;
-          parsed: string;
-        }
-  ) => void;
+  onOpenSnackbar: (message: Message) => void;
   onNavigateToForceExit: () => void;
   onNavigateToMyCode: () => void;
 }

@@ -7,19 +7,11 @@ import { ReactComponent as CloseIconLight } from "src/images/icons/close-white.s
 import useSnackbarStyles from "src/views/shared/snackbar/snackbar.styles";
 import { SNACKBAR_AUTO_HIDE_DURATION } from "src/constants";
 import theme from "src/styles/theme";
+//domain
+import { Message } from "src/domain";
 
 interface SnackbarProps {
-  message:
-    | {
-        type: "info";
-        text: string;
-      }
-    | {
-        type: "error";
-        text?: string;
-        raw: unknown;
-        parsed: string;
-      };
+  message: Message;
   backgroundColor?: string;
   onClose: () => void;
   onReport: (raw: unknown, parsed: string) => void;

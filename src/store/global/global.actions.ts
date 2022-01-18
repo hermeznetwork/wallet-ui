@@ -14,19 +14,8 @@ import {
   TimerWithdraw,
   Token,
   PoolTransaction,
+  Message,
 } from "src/domain";
-
-export type SnackbarMessage =
-  | {
-      type: "info";
-      text: string;
-    }
-  | {
-      type: "error";
-      text?: string;
-      raw: unknown;
-      parsed: string;
-    };
 
 export enum GlobalActionTypes {
   LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",
@@ -151,7 +140,7 @@ export interface LoadFiatExchangeRatesFailure {
 
 export interface OpenSnackbar {
   type: GlobalActionTypes.OPEN_SNACKBAR;
-  message: SnackbarMessage;
+  message: Message;
   backgroundColor?: string;
 }
 
@@ -459,7 +448,7 @@ function openSnackbar({
   message,
   backgroundColor,
 }: {
-  message: SnackbarMessage;
+  message: Message;
   backgroundColor?: string;
 }): OpenSnackbar {
   return {

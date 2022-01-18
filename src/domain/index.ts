@@ -177,3 +177,16 @@ export type ChainTimerWithdraws = Record<HermezEthereumAddress, TimerWithdraw[]>
 
 export type AuthSignatures = Record<ChainId, ChainAuthSignatures>;
 export type ChainAuthSignatures = Record<HermezEthereumAddress, string>;
+
+// User reporting
+export type Message =
+  | {
+      type: "info";
+      text: string;
+    }
+  | {
+      type: "error";
+      text?: string;
+      raw: unknown;
+      parsed: string;
+    };

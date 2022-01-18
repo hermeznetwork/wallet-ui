@@ -1,23 +1,24 @@
 import { AppAction } from "src/store";
-import { GlobalActionTypes, GlobalAction, SnackbarMessage } from "src/store/global/global.actions";
+import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
 import {
   CoordinatorState,
   EthereumNetwork,
   FiatExchangeRates,
-  NetworkStatus,
   HermezStatus,
   HermezWallet,
+  NetworkStatus,
   PendingDelayedWithdraws,
   PendingDeposits,
   PendingWithdraw,
   PendingWithdraws,
+  PoolTransaction,
   Signers,
   TimerWithdraw,
   TimerWithdraws,
   Token,
-  PoolTransaction,
+  Message,
 } from "src/domain";
 // adapters
 import * as localStoragePersistence from "src/adapters/local-storage";
@@ -47,7 +48,7 @@ export type SnackbarState =
     }
   | {
       status: "open";
-      message: SnackbarMessage;
+      message: Message;
       backgroundColor?: string;
     };
 
