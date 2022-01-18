@@ -37,6 +37,7 @@ import {
   Token,
   Tokens,
 } from "src/domain";
+import { TxState } from "@hermeznetwork/hermezjs/src/enums";
 
 ////////////////////
 // CoordinatorAPI //
@@ -365,7 +366,7 @@ export function getPoolTransactions(
 ): Promise<PoolTransactions> {
   return CoordinatorAPI.getPoolTransactions(
     hermezEthereumAddress,
-    undefined,
+    TxState.Pending,
     undefined,
     undefined,
     undefined,
