@@ -12,7 +12,7 @@ interface BaseLayoutProps {
   onGoBack: (action: AppAction) => void;
   onClose: (action: AppAction) => void;
   onCloseSnackbar: () => void;
-  onReportFromSnackbar: (error: string) => void;
+  onReportFromSnackbar: (raw: unknown, parsed: string) => void;
 }
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({

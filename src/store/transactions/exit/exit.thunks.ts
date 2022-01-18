@@ -52,7 +52,8 @@ function fetchHermezAccount(
           openSnackbar({
             message: {
               type: "error",
-              error: errorMsg,
+              raw: error,
+              parsed: errorMsg,
             },
           })
         );
@@ -91,7 +92,8 @@ function fetchFees(): AppThunk {
               openSnackbar({
                 message: {
                   type: "error",
-                  error: errorMsg,
+                  raw: error,
+                  parsed: errorMsg,
                 },
               })
             );
@@ -126,7 +128,8 @@ function fetchAccountBalance() {
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );
@@ -179,7 +182,8 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         openSnackbar({
           message: {
             type: "error",
-            error: errorMsg,
+            raw: error,
+            parsed: errorMsg,
           },
         })
       );
@@ -221,7 +225,8 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );

@@ -147,7 +147,8 @@ export interface OpenSnackbar {
     | {
         type: "error";
         text?: string;
-        error: string;
+        raw: unknown;
+        parsed: string;
       };
   backgroundColor?: string;
 }
@@ -464,7 +465,8 @@ function openSnackbar({
     | {
         type: "error";
         text?: string;
-        error: string;
+        raw: unknown;
+        parsed: string;
       };
   backgroundColor?: string;
 }): OpenSnackbar {

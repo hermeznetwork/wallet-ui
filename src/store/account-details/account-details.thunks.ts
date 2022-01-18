@@ -54,7 +54,8 @@ function fetchAccount(
           openSnackbar({
             message: {
               type: "error",
-              error: errorMsg,
+              raw: error,
+              parsed: errorMsg,
             },
           })
         );
@@ -164,7 +165,8 @@ function fetchHistoryTransactions(
           openSnackbar({
             message: {
               type: "error",
-              error: errorMsg,
+              raw: error,
+              parsed: errorMsg,
             },
           })
         );
@@ -270,7 +272,8 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );

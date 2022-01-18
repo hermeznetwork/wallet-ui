@@ -61,7 +61,8 @@ function fetchEthereumAccount(
                 openSnackbar({
                   message: {
                     type: "error",
-                    error: errorMsg,
+                    raw: error,
+                    parsed: errorMsg,
                   },
                 })
               );
@@ -110,7 +111,8 @@ function fetchEthereumAccounts(
                 openSnackbar({
                   message: {
                     type: "error",
-                    error: errorMsg,
+                    raw: error,
+                    parsed: errorMsg,
                   },
                 })
               );
@@ -158,7 +160,8 @@ function fetchEstimatedDepositFee(): AppThunk {
         openSnackbar({
           message: {
             type: "error",
-            error: errorMsg,
+            raw: error,
+            parsed: errorMsg,
           },
         })
       );
@@ -214,7 +217,8 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );

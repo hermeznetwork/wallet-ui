@@ -86,7 +86,8 @@ function fetchTotalBalance(
           openSnackbar({
             message: {
               type: "error",
-              error: errorMsg,
+              raw: error,
+              parsed: errorMsg,
             },
           })
         );
@@ -149,7 +150,8 @@ function fetchAccounts(
           openSnackbar({
             message: {
               type: "error",
-              error: errorMsg,
+              raw: error,
+              parsed: errorMsg,
             },
           })
         );
@@ -251,7 +253,8 @@ function fetchExits(): AppThunk {
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );

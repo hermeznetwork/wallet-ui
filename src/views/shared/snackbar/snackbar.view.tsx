@@ -17,11 +17,12 @@ interface SnackbarProps {
     | {
         type: "error";
         text?: string;
-        error: string;
+        raw: unknown;
+        parsed: string;
       };
   backgroundColor?: string;
   onClose: () => void;
-  onReport: (error: string) => void;
+  onReport: (raw: unknown, parsed: string) => void;
 }
 
 function Snackbar({ message, backgroundColor, onClose, onReport }: SnackbarProps): JSX.Element {
@@ -52,7 +53,7 @@ function Snackbar({ message, backgroundColor, onClose, onReport }: SnackbarProps
       </div>
     );
   } else {
-    const { text = "Oops, an error occurred. Would you mind reporting it?", error } = message;
+    const { text = "Oops, an error occurred. Would you mind reporting it?", raw, parsed } = message;
     return (
       <div className={classes.root}>
         <Container disableVerticalGutters>
@@ -62,7 +63,7 @@ function Snackbar({ message, backgroundColor, onClose, onReport }: SnackbarProps
               className={classes.reportButton}
               text="Report"
               onClick={() => {
-                onReport(error);
+                onReport(raw, parsed);
               }}
             />
             <button className={classes.closeButton} onClick={onClose}>

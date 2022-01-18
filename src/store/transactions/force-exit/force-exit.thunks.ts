@@ -48,7 +48,8 @@ function fetchAccounts(
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );
@@ -84,7 +85,8 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );

@@ -56,7 +56,8 @@ function fetchHermezAccount(
           openSnackbar({
             message: {
               type: "error",
-              error: errorMsg,
+              raw: error,
+              parsed: errorMsg,
             },
           })
         );
@@ -101,7 +102,8 @@ function fetchAccounts(
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );
@@ -141,7 +143,8 @@ function fetchFees(): AppThunk {
               openSnackbar({
                 message: {
                   type: "error",
-                  error: errorMsg,
+                  raw: error,
+                  parsed: errorMsg,
                 },
               })
             );
@@ -260,7 +263,8 @@ function transfer(
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );

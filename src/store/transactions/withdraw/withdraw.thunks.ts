@@ -53,7 +53,8 @@ function fetchHermezAccount(
           openSnackbar({
             message: {
               type: "error",
-              error: errorMsg,
+              raw: error,
+              parsed: errorMsg,
             },
           })
         );
@@ -111,7 +112,8 @@ function fetchExit(
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );
@@ -224,7 +226,8 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
           }
         : {
             type: "error",
-            error: errorMsg,
+            raw: error,
+            parsed: errorMsg,
           },
     })
   );

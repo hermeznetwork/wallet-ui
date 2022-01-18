@@ -58,7 +58,8 @@ interface TransactionDetailsHandlerProps {
       | {
           type: "error";
           text?: string;
-          error: string;
+          raw: unknown;
+          parsed: string;
         }
   ) => void;
 }

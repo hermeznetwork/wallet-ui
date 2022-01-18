@@ -55,7 +55,8 @@ export type SnackbarState =
         | {
             type: "error";
             text?: string;
-            error: string;
+            raw: unknown;
+            parsed: string;
           };
       backgroundColor?: string;
     };

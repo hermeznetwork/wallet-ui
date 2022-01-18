@@ -103,7 +103,8 @@ interface HomeHandlerProps {
       | {
           type: "error";
           text?: string;
-          error: string;
+          raw: unknown;
+          parsed: string;
         }
   ) => void;
   onCleanup: () => void;

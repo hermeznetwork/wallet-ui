@@ -1,3 +1,4 @@
+import platform from "platform";
 import { push } from "connected-react-router";
 import { ethers } from "ethers";
 import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
@@ -18,6 +19,7 @@ import { openSnackbar } from "src/store/global/global.actions";
 import * as storage from "src/utils/storage";
 import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
+import { isAsyncTaskDataAvailable } from "src/utils/types";
 // domain
 import {
   CoordinatorState,
@@ -106,7 +108,8 @@ function fetchFiatExchangeRates(): AppThunk {
           openSnackbar({
             message: {
               type: "error",
-              error: errorMsg,
+              raw: error,
+              parsed: errorMsg,
             },
           })
         );
@@ -195,7 +198,8 @@ function fetchPoolTransactions(): AppThunk {
             openSnackbar({
               message: {
                 type: "error",
-                error: errorMsg,
+                raw: error,
+                parsed: errorMsg,
               },
             })
           );
@@ -962,7 +966,8 @@ function fetchCoordinatorState(): AppThunk {
           openSnackbar({
             message: {
               type: "error",
-              error: errorMsg,
+              raw: error,
+              parsed: errorMsg,
             },
           })
         );
@@ -1013,10 +1018,25 @@ function fetchTokensPrice(): AppThunk {
 /**
  * Report an error using the report issue form
  */
-function reportError(error: string): AppThunk {
-  console.log(error);
-  return () => {
-    window.open(REPORT_ERROR_FORM_URL, "_blank");
+function reportError(raw: unknown, parsed: string): AppThunk {
+  return (_: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { ethereumNetworkTask },
+    } = getState();
+
+    const network = isAsyncTaskDataAvailable(ethereumNetworkTask)
+      ? `${ethereumNetworkTask.data.name} with id ${ethereumNetworkTask.data.chainId}`
+      : "Not available";
+
+    const params = new URLSearchParams({
+      "entry.2056392454": window.location.href,
+      "entry.1632331664": network,
+      "entry.259085709": platform.toString(),
+      "entry.1383309652": parsed,
+      "entry.488074117": JSON.stringify(raw),
+    }).toString();
+
+    window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
   };
 }
 
