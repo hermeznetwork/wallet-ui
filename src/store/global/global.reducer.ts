@@ -8,6 +8,7 @@ import {
   FiatExchangeRates,
   HermezStatus,
   HermezWallet,
+  Message,
   NetworkStatus,
   PendingDelayedWithdraws,
   PendingDeposits,
@@ -18,7 +19,6 @@ import {
   TimerWithdraw,
   TimerWithdraws,
   Token,
-  Message,
 } from "src/domain";
 // adapters
 import * as localStoragePersistence from "src/adapters/local-storage";

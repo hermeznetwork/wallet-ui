@@ -34,6 +34,7 @@ import {
   isHistoryTransaction,
   isPendingDeposit,
   isPoolTransaction,
+  Message,
   PendingDeposit,
   PoolTransaction,
 } from "src/domain";
@@ -49,19 +50,7 @@ interface TransactionDetailsStateProps {
 interface TransactionDetailsHandlerProps {
   onLoadTransaction: (transactionId: string) => void;
   onChangeHeader: (type: TxType, accountIndex: string) => void;
-  onOpenSnackbar: (
-    message:
-      | {
-          type: "info";
-          text: string;
-        }
-      | {
-          type: "error";
-          text?: string;
-          raw: unknown;
-          parsed: string;
-        }
-  ) => void;
+  onOpenSnackbar: (message: Message) => void;
 }
 
 type TransactionDetailsProps = TransactionDetailsStateProps & TransactionDetailsHandlerProps;

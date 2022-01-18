@@ -38,6 +38,7 @@ import {
   HermezAccount,
   HermezWallet,
   isHermezAccount,
+  Message,
   PendingDelayedWithdraws,
   PendingDeposit,
   PendingDeposits,
@@ -45,7 +46,6 @@ import {
   PoolTransaction,
   TimerWithdraw,
   TimerWithdraws,
-  Message,
 } from "src/domain";
 
 interface ViewAccounts {

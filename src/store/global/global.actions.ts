@@ -4,17 +4,17 @@ import {
   CoordinatorState,
   EthereumNetwork,
   FiatExchangeRates,
-  NetworkStatus,
   HermezWallet,
   ISOStringDate,
+  Message,
+  NetworkStatus,
   PendingDelayedWithdraw,
   PendingDeposit,
   PendingWithdraw,
+  PoolTransaction,
   Signers,
   TimerWithdraw,
   Token,
-  PoolTransaction,
-  Message,
 } from "src/domain";
 
 export enum GlobalActionTypes {
