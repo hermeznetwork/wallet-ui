@@ -16,6 +16,18 @@ import {
   PoolTransaction,
 } from "src/domain";
 
+export type SnackbarMessage =
+  | {
+      type: "info";
+      text: string;
+    }
+  | {
+      type: "error";
+      text?: string;
+      raw: unknown;
+      parsed: string;
+    };
+
 export enum GlobalActionTypes {
   LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",
   LOAD_HERMEZ_STATUS_SUCCESS = "[GLOBAL] LOAD HERMEZ STATUS SUCCESS",
@@ -139,17 +151,7 @@ export interface LoadFiatExchangeRatesFailure {
 
 export interface OpenSnackbar {
   type: GlobalActionTypes.OPEN_SNACKBAR;
-  message:
-    | {
-        type: "info";
-        text: string;
-      }
-    | {
-        type: "error";
-        text?: string;
-        raw: unknown;
-        parsed: string;
-      };
+  message: SnackbarMessage;
   backgroundColor?: string;
 }
 
@@ -457,17 +459,7 @@ function openSnackbar({
   message,
   backgroundColor,
 }: {
-  message:
-    | {
-        type: "info";
-        text: string;
-      }
-    | {
-        type: "error";
-        text?: string;
-        raw: unknown;
-        parsed: string;
-      };
+  message: SnackbarMessage;
   backgroundColor?: string;
 }): OpenSnackbar {
   return {

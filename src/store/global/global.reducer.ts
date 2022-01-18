@@ -1,5 +1,5 @@
 import { AppAction } from "src/store";
-import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
+import { GlobalActionTypes, GlobalAction, SnackbarMessage } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
 import {
@@ -47,17 +47,7 @@ export type SnackbarState =
     }
   | {
       status: "open";
-      message:
-        | {
-            type: "info";
-            text: string;
-          }
-        | {
-            type: "error";
-            text?: string;
-            raw: unknown;
-            parsed: string;
-          };
+      message: SnackbarMessage;
       backgroundColor?: string;
     };
 
