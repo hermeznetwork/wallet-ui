@@ -68,12 +68,7 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
 
     if (signer) {
       adapters.hermezApi
-        .forceExit(
-          HermezCompressedAmount.compressAmount(amount.toString()),
-          account.accountIndex,
-          account.token,
-          signer
-        )
+        .forceExit(amount, account.accountIndex, account.token, signer)
         .then(() => handleTransactionSuccess(dispatch))
         .catch((error: unknown) => {
           const errorMsg = adapters.parseError(

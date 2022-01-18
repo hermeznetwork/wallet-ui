@@ -590,7 +590,7 @@ export function generateAndSendL2Tx(
 }
 
 export function deposit(
-  amount: HermezCompressedAmount,
+  amount: BigNumber,
   hezEthereumAddress: string,
   token: Token,
   babyJubJub: string,
@@ -623,7 +623,7 @@ export function deposit(
 }
 
 export function forceExit(
-  amount: HermezCompressedAmount,
+  amount: BigNumber,
   accountIndex: string,
   token: Token,
   signerData: Signers.SignerData

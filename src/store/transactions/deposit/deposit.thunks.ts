@@ -180,7 +180,7 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
     if (wallet !== undefined && signer !== undefined) {
       return adapters.hermezApi
         .deposit(
-          HermezCompressedAmount.compressAmount(amount.toString()),
+          amount,
           wallet.hermezEthereumAddress,
           ethereumAccount.token,
           wallet.publicKeyCompressedHex,
