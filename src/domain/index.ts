@@ -29,6 +29,7 @@ export type {
   PoolTransactions,
   RecommendedFee,
   Signers,
+  Tx,
   Token,
   Tokens,
 } from "@hermeznetwork/hermezjs";
@@ -43,6 +44,9 @@ export interface EthereumNetwork {
   chainId: number;
   name: string;
 }
+
+export type HermezRawAccount = hermezjs.Account;
+export type HermezRawAccounts = hermezjs.Accounts;
 
 export type HermezAccount = hermezjs.Account & { fiatBalance?: number };
 

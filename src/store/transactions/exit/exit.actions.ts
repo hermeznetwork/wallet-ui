@@ -72,7 +72,7 @@ export interface LoadFeesSuccess {
 
 export interface LoadFeesFailure {
   type: ExitActionTypes.LOAD_FEES_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadAccountBalance {
@@ -86,7 +86,7 @@ export interface LoadAccountBalanceSuccess {
 
 export interface LoadAccountBalanceFailure {
   type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadEstimatedWithdrawFee {
@@ -100,7 +100,7 @@ export interface LoadEstimatedWithdrawFeeSuccess {
 
 export interface LoadEstimatedWithdrawFeeFailure {
   type: ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface StartTransactionApproval {
@@ -189,7 +189,7 @@ function loadFeesSuccess(fees: RecommendedFee): LoadFeesSuccess {
   };
 }
 
-function loadFeesFailure(error: Error): LoadFeesFailure {
+function loadFeesFailure(error: string): LoadFeesFailure {
   return {
     type: ExitActionTypes.LOAD_FEES_FAILURE,
     error,
@@ -209,7 +209,7 @@ function loadAccountBalanceSuccess(balance: BigNumber): LoadAccountBalanceSucces
   };
 }
 
-function loadAccountBalanceFailure(error: Error): LoadAccountBalanceFailure {
+function loadAccountBalanceFailure(error: string): LoadAccountBalanceFailure {
   return {
     type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE,
     error,
@@ -231,7 +231,7 @@ function loadEstimatedWithdrawFeeSuccess(
   };
 }
 
-function loadEstimatedWithdrawFeeFailure(error: Error): LoadEstimatedWithdrawFeeFailure {
+function loadEstimatedWithdrawFeeFailure(error: string): LoadEstimatedWithdrawFeeFailure {
   return {
     type: ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE,
     error,

@@ -39,7 +39,13 @@ function fetchAccounts(
           fromItem,
         })
         .then((accounts) => dispatch(forceExitActions.loadAccountsSuccess(accounts)))
-        .catch((err) => dispatch(forceExitActions.loadAccountsFailure(err)));
+        .catch((err: unknown) =>
+          dispatch(
+            forceExitActions.loadAccountsFailure(
+              adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccounts")
+            )
+          )
+        );
     }
   };
 }
@@ -61,7 +67,7 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
           signer
         )
         .then(() => handleTransactionSuccess(dispatch))
-        .catch((error) => {
+        .catch((error: unknown) => {
           console.error(error);
           dispatch(forceExitActions.stopTransactionApproval());
           handleTransactionFailure(dispatch, error);

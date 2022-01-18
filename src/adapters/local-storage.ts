@@ -18,6 +18,7 @@ import {
   TimerWithdraws,
 } from "src/domain";
 // adapters
+import * as adapters from "src/adapters";
 import * as parsers from "src/adapters/parsers";
 import { StrictSchema } from "src/utils/type-safety";
 
@@ -62,8 +63,10 @@ export function getAuthSignatures(): AuthSignatures {
   if (parsedAuthSignatures.success) {
     return parsedAuthSignatures.data;
   } else {
-    console.error("An error occurred parsing AuthSignatures");
-    console.error(parsedAuthSignatures.error);
+    adapters.logDecodingError(
+      parsedAuthSignatures.error,
+      "Could not decode AuthSignatures from the function getAuthSignatures."
+    );
     return {};
   }
 }
@@ -81,8 +84,10 @@ export function getPreferredCurrency(): string {
     return parsedPreferredCurrency.data;
   } else {
     setPreferredCurrency(constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY);
-    console.error("An error occurred parsing PreferredCurrency");
-    console.error(parsedPreferredCurrency.error);
+    adapters.logDecodingError(
+      parsedPreferredCurrency.error,
+      "Could not decode PreferredCurrency from the function getPreferredCurrency."
+    );
     return constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY;
   }
 }
@@ -103,8 +108,10 @@ export function getPendingWithdraws(): PendingWithdraws {
   if (parsedPendingWithdraws.success) {
     return parsedPendingWithdraws.data;
   } else {
-    console.error("An error occurred parsing PendingWithdraws");
-    console.error(parsedPendingWithdraws.error);
+    adapters.logDecodingError(
+      parsedPendingWithdraws.error,
+      "Could not decode PendingWithdraws from the function getPendingWithdraws."
+    );
     return {};
   }
 }
@@ -160,8 +167,10 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
   if (parsedPendingDelayedWithdraws.success) {
     return parsedPendingDelayedWithdraws.data;
   } else {
-    console.error("An error occurred parsing PendingDelayedWithdraws");
-    console.error(parsedPendingDelayedWithdraws.error);
+    adapters.logDecodingError(
+      parsedPendingDelayedWithdraws.error,
+      "Could not decode PendingDelayedWithdraws from the function getPendingDelayedWithdraws."
+    );
     return {};
   }
 }
@@ -265,8 +274,10 @@ export function getPendingDeposits(): PendingDeposits {
   if (parsedPendingDeposits.success) {
     return parsedPendingDeposits.data;
   } else {
-    console.error("An error occurred parsing PendingDeposits");
-    console.error(parsedPendingDeposits.error);
+    adapters.logDecodingError(
+      parsedPendingDeposits.error,
+      "Could not decode PendingDeposits from the function getPendingDeposits."
+    );
     return {};
   }
 }
@@ -364,8 +375,10 @@ export function getTimerWithdraws(): TimerWithdraws {
   if (parsedTimerWithdraw.success) {
     return parsedTimerWithdraw.data;
   } else {
-    console.error("An error occurred parsing TimerWithdraws");
-    console.error(parsedTimerWithdraw.error);
+    adapters.logDecodingError(
+      parsedTimerWithdraw.error,
+      "Could not decode TimerWithdraws from the function getTimerWithdraws."
+    );
     return {};
   }
 }
@@ -414,8 +427,10 @@ export function getCurrentStorageVersion(): number | undefined {
   if (parsedCurrentStorageVersion.success) {
     return parsedCurrentStorageVersion.data;
   } else {
-    console.error("An error occurred parsing CurrentStorageVersion");
-    console.error(parsedCurrentStorageVersion.error);
+    adapters.logDecodingError(
+      parsedCurrentStorageVersion.error,
+      "Could not decode CurrentStorageVersion from the function getCurrentStorageVersion."
+    );
     return undefined;
   }
 }

@@ -43,7 +43,13 @@ function fetchHermezAccount(
         poolTransactions
       )
       .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
-      .catch((error: Error) => dispatch(exitActions.loadAccountFailure(error.message)));
+      .catch((err: unknown) =>
+        dispatch(
+          exitActions.loadAccountFailure(
+            adapters.getErrorMessage(err, "Oops... an error occurred on fetchHermezAccount")
+          )
+        )
+      );
   };
 }
 
@@ -68,7 +74,13 @@ function fetchFees(): AppThunk {
         return adapters.hermezApi
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(exitActions.loadFeesSuccess(res.recommendedFee)))
-          .catch((err) => dispatch(exitActions.loadFeesFailure(err)));
+          .catch((err: unknown) =>
+            dispatch(
+              exitActions.loadFeesFailure(
+                adapters.getErrorMessage(err, "Oops... an error occurred on fetchFees")
+              )
+            )
+          );
       }
     }
   };
@@ -89,7 +101,13 @@ function fetchAccountBalance() {
       provider
         .getBalance(ethereumAddress)
         .then((balance) => dispatch(exitActions.loadAccountBalanceSuccess(balance)))
-        .catch((err) => dispatch(exitActions.loadAccountBalanceFailure(err)));
+        .catch((err: unknown) =>
+          dispatch(
+            exitActions.loadAccountBalanceFailure(
+              adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccountBalance")
+            )
+          )
+        );
     }
   };
 }
@@ -129,11 +147,11 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         }
       }
     } catch (err) {
-      if (err instanceof Error) {
-        dispatch(exitActions.loadEstimatedWithdrawFeeFailure(err));
-      } else {
-        dispatch(exitActions.loadEstimatedWithdrawFeeFailure(new Error("Unexpected error")));
-      }
+      dispatch(
+        exitActions.loadEstimatedWithdrawFeeFailure(
+          adapters.getErrorMessage(err, "Oops... an error occurred on fetchEstimatedWithdrawFee")
+        )
+      );
     }
   };
 }
@@ -162,7 +180,7 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
       return adapters.hermezApi
         .generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
-        .catch((error) => handleTransactionFailure(dispatch, error));
+        .catch((error: unknown) => handleTransactionFailure(dispatch, error));
     }
   };
 }

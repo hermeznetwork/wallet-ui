@@ -21,7 +21,7 @@ import { HermezAccount, HermezWallet, FiatExchangeRates, PoolTransaction } from 
 
 interface ForceExitStateProps {
   step: forceExitActions.Step;
-  accountsTask: AsyncTask<AccountsWithPagination, Error>;
+  accountsTask: AsyncTask<AccountsWithPagination, string>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   isTransactionBeingApproved: boolean;
   account?: HermezAccount;

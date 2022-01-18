@@ -94,10 +94,10 @@ function fetchFiatExchangeRates(): AppThunk {
       .then((fiatExchangeRates: FiatExchangeRates) =>
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
       )
-      .catch((error) => {
+      .catch((error: unknown) => {
         const errorMsg = adapters.getErrorMessage(
           error,
-          "Oops ... There was an error fetching fiat exchange rates"
+          "Oops... an error occurred on fetchFiatExchangeRates"
         );
         dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
       });
@@ -159,7 +159,13 @@ function fetchPoolTransactions(): AppThunk {
         .then((poolTransactions) =>
           dispatch(globalActions.loadPoolTransactionsSuccess(poolTransactions.transactions))
         )
-        .catch((err) => dispatch(globalActions.loadPoolTransactionsFailure(err)));
+        .catch((error: unknown) => {
+          const errorMsg = adapters.getErrorMessage(
+            error,
+            "Oops... an error occurred on fetchPoolTransactions"
+          );
+          dispatch(globalActions.loadPoolTransactionsFailure(errorMsg));
+        });
     }
   };
 }
@@ -912,7 +918,13 @@ function fetchCoordinatorState(): AppThunk {
       .then((coordinatorState: CoordinatorState) =>
         dispatch(globalActions.loadCoordinatorStateSuccess(coordinatorState))
       )
-      .catch((err: Error) => dispatch(globalActions.loadCoordinatorStateFailure(err)));
+      .catch((err: unknown) =>
+        dispatch(
+          globalActions.loadCoordinatorStateFailure(
+            adapters.getErrorMessage(err, "Oops... an error occurred on fetchCoordinatorState")
+          )
+        )
+      );
   };
 }
 

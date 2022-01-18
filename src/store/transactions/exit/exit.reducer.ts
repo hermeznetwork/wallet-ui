@@ -13,9 +13,9 @@ import { HermezAccount, RecommendedFee, EstimatedL1Fee } from "src/domain";
 export interface ExitState {
   step: Step;
   accountTask: AsyncTask<HermezAccount, string>;
-  feesTask: AsyncTask<RecommendedFee, Error>;
-  accountBalanceTask: AsyncTask<BigNumber, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
+  accountBalanceTask: AsyncTask<BigNumber, string>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;
 }

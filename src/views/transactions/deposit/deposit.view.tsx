@@ -29,9 +29,9 @@ import {
 } from "src/domain";
 
 interface DepositStateProps {
-  ethereumAccountsTask: AsyncTask<EthereumAccount[], Error>;
+  ethereumAccountsTask: AsyncTask<EthereumAccount[], string>;
   ethereumAccountTask: AsyncTask<EthereumAccount, string>;
-  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   isTransactionBeingApproved: boolean;

@@ -16,8 +16,8 @@ export interface AccountsWithPagination {
 
 export interface ForceExitState {
   step: Step;
-  accountsTask: AsyncTask<AccountsWithPagination, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  accountsTask: AsyncTask<AccountsWithPagination, string>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   account?: HermezAccount;
   transaction?: TransactionToReview;
   isTransactionBeingApproved: boolean;

@@ -65,7 +65,7 @@ type AccountDetailsStateProps = {
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
-  exitsTask: AsyncTask<Exits, Error>;
+  exitsTask: AsyncTask<Exits, string>;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   wallet: HermezWallet.HermezWallet | undefined;
   pendingWithdraws: PendingWithdraws;

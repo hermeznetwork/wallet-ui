@@ -52,10 +52,10 @@ function fetchEthereumAccount(
                 dispatch(depositActions.loadEthereumAccountFailure("Ethereum account not found"));
               }
             })
-            .catch((error) => {
+            .catch((error: unknown) => {
               const errorMsg = adapters.getErrorMessage(
                 error,
-                "Oops ... There was an error fetching the ethereum account"
+                "Oops... an error occurred on fetchEthereumAccount"
               );
               dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
             });
@@ -93,7 +93,16 @@ function fetchEthereumAccounts(
             .then((ethereumAccounts) =>
               dispatch(depositActions.loadEthereumAccountsSuccess(ethereumAccounts))
             )
-            .catch((err) => dispatch(depositActions.loadEthereumAccountsFailure(err)));
+            .catch((err: unknown) =>
+              dispatch(
+                depositActions.loadEthereumAccountsFailure(
+                  adapters.getErrorMessage(
+                    err,
+                    "Oops... an error occurred on fetchEthereumAccounts"
+                  )
+                )
+              )
+            );
         });
     }
   };
@@ -128,11 +137,11 @@ function fetchEstimatedDepositFee(): AppThunk {
         }
       }
     } catch (err) {
-      if (err instanceof Error) {
-        dispatch(depositActions.loadEstimatedDepositFeeFailure(err));
-      } else {
-        dispatch(depositActions.loadEstimatedDepositFeeFailure(new Error("Unexpected error")));
-      }
+      dispatch(
+        depositActions.loadEstimatedDepositFeeFailure(
+          adapters.getErrorMessage(err, "Oops... an error occurred on fetchEstimatedDepositFee")
+        )
+      );
     }
   };
 }
@@ -175,7 +184,7 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
               handleTransactionSuccess(dispatch, account?.accountIndex);
             });
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           dispatch(depositActions.stopTransactionApproval());
           handleTransactionFailure(dispatch, error);
         });

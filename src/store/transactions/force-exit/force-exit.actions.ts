@@ -47,7 +47,7 @@ export interface LoadAccountsSuccess {
 
 export interface LoadAccountsFailure {
   type: ForceExitActionTypes.LOAD_ACCOUNTS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface StartTransactionApproval {
@@ -106,7 +106,7 @@ function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
   };
 }
 
-function loadAccountsFailure(error: Error): LoadAccountsFailure {
+function loadAccountsFailure(error: string): LoadAccountsFailure {
   return {
     type: ForceExitActionTypes.LOAD_ACCOUNTS_FAILURE,
     error,

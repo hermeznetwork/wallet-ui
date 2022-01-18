@@ -22,7 +22,7 @@ export interface CommonFeeProps {
 
 interface FeeDepositProps {
   txType: TxType.Deposit;
-  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, string>;
 }
 
 interface FeeTransferProps {
@@ -33,7 +33,7 @@ interface FeeTransferProps {
 interface FeeExitProps {
   txType: TxType.Exit;
   fee: BigNumber;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
 }
 
 type FeeProps = CommonFeeProps & (FeeDepositProps | FeeTransferProps | FeeExitProps);

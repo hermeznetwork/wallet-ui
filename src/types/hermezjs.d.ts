@@ -97,11 +97,13 @@ declare module "@hermeznetwork/*" {
 
   export type PoolTransaction = HermezApiResourceItem & {
     amount: string;
+    batchNum?: number | null;
     errorCode?: number | null;
     fee: number;
     fromAccountIndex: string;
     fromBJJ: string | null;
     fromHezEthereumAddress: string | null;
+    id: string;
     state: TxState;
     timestamp: ISOStringDate;
     toAccountIndex: string | null;
@@ -109,8 +111,6 @@ declare module "@hermeznetwork/*" {
     toHezEthereumAddress: string | null;
     token: Token;
     type: TxType;
-    batchNum?: number | null;
-    id: string;
     // errorType?: string | null;
     // info: string | null;
     // maxNumBatch?: number;
@@ -256,7 +256,7 @@ declare module "@hermeznetwork/*" {
     createAccountInternal: number;
   }
 
-  // adapters
+  // API resources
   export interface HistoryTransactions {
     transactions: HistoryTransaction[];
     pendingItems: number;
@@ -352,7 +352,7 @@ declare module "@hermeznetwork/hermezjs/src/tx" {
   import { TxType } from "@hermeznetwork/hermezjs/src/enums";
   import { SignerData } from "@hermeznetwork/hermezjs/src/signers";
 
-  export interface TxData {
+  interface TxData {
     hash: string;
     // type: number;
     // accessList: unknown;
@@ -604,7 +604,7 @@ declare module "@hermeznetwork/hermezjs/src/api" {
     nextForgerUrls?: string[],
     axiosConfig?: Record<string, unknown>
   ): Promise<PostCreateAccountAuthorizationResponse>;
-  // function getCreateAccountAuthorization();
+
   // function getConfig();
 
   function getPoolTransactions(

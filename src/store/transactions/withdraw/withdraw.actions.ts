@@ -38,7 +38,7 @@ export interface LoadExitSuccess {
 
 export interface LoadExitFailure {
   type: WithdrawActionTypes.LOAD_EXIT_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadEstimatedWithdrawFee {
@@ -52,7 +52,7 @@ export interface LoadEstimatedWithdrawFeeSuccess {
 
 export interface LoadEstimatedWithdrawFeeFailure {
   type: WithdrawActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface StartTransactionApproval {
@@ -108,7 +108,7 @@ function loadExitSuccess(exit: Exit): LoadExitSuccess {
   };
 }
 
-function loadExitFailure(error: Error): LoadExitFailure {
+function loadExitFailure(error: string): LoadExitFailure {
   return {
     type: WithdrawActionTypes.LOAD_EXIT_FAILURE,
     error,
@@ -150,7 +150,7 @@ function loadEstimatedWithdrawFeeSuccess(
   };
 }
 
-function loadEstimatedWithdrawFeeFailure(error: Error): LoadEstimatedWithdrawFeeFailure {
+function loadEstimatedWithdrawFeeFailure(error: string): LoadEstimatedWithdrawFeeFailure {
   return {
     type: WithdrawActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE,
     error,

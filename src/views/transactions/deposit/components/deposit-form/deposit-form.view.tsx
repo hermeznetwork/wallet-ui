@@ -22,7 +22,7 @@ export interface TxData {
 
 interface DepositFormStateProps {
   account: EthereumAccount;
-  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, string>;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
 }

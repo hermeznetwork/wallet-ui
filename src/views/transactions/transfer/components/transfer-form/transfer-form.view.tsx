@@ -20,14 +20,14 @@ export interface TxData {
   amount: BigNumber;
   from: HermezAccount;
   to: string;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
 }
 
 interface TransferFormStateProps {
   account: HermezAccount;
   defaultReceiverAddress?: string;
   hasReceiverApprovedAccountsCreation?: boolean;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
 }

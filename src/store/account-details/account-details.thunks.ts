@@ -43,7 +43,13 @@ function fetchAccount(
           dispatch(accountDetailsActions.loadAccountSuccess(account));
         }
       })
-      .catch((err: Error) => dispatch(accountDetailsActions.loadAccountFailure(err)));
+      .catch((err: unknown) =>
+        dispatch(
+          accountDetailsActions.loadAccountFailure(
+            adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccount")
+          )
+        )
+      );
   };
 }
 
@@ -139,7 +145,13 @@ function fetchHistoryTransactions(
       .then((historyTransactions: HistoryTransactions) =>
         dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
       )
-      .catch((err: Error) => dispatch(accountDetailsActions.loadHistoryTransactionsFailure(err)));
+      .catch((err: unknown) =>
+        dispatch(
+          accountDetailsActions.loadHistoryTransactionsFailure(
+            adapters.getErrorMessage(err, "Oops... an error occurred on fetchHistoryTransactions")
+          )
+        )
+      );
   };
 }
 
@@ -231,7 +243,13 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(accountDetailsActions.loadExitsSuccess(exits));
         })
-        .catch((err: Error) => dispatch(accountDetailsActions.loadExitsFailure(err)));
+        .catch((err: unknown) =>
+          dispatch(
+            accountDetailsActions.loadExitsFailure(
+              adapters.getErrorMessage(err, "Oops... an error occurred on fetchExits")
+            )
+          )
+        );
     }
   };
 }

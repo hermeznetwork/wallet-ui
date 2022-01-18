@@ -10,8 +10,8 @@ import { Exit, HermezAccount, EstimatedL1Fee } from "src/domain";
 export interface WithdrawState {
   step: Step;
   accountTask: AsyncTask<HermezAccount, string>;
-  exitTask: AsyncTask<Exit, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  exitTask: AsyncTask<Exit, string>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   isTransactionBeingApproved: boolean;
 }
 

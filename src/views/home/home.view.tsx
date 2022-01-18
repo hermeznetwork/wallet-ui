@@ -60,7 +60,7 @@ type HomeStateProps = {
   totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
-  exitsTask: AsyncTask<Exits, Error>;
+  exitsTask: AsyncTask<Exits, string>;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   preferredCurrency: string;
   pendingDeposits: PendingDeposits;

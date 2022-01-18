@@ -59,7 +59,7 @@ type TransactionOverviewProps = {
       txType: TxType.Exit;
       account: HermezAccount;
       fee: BigNumber;
-      estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+      estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
       onExit: (amount: BigNumber, account: HermezAccount, fee: BigNumber) => void;
     }
   | {
@@ -68,7 +68,7 @@ type TransactionOverviewProps = {
       exit: Exit;
       completeDelayedWithdrawal: boolean;
       instantWithdrawal: boolean;
-      estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+      estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
       onWithdraw: (
         amount: BigNumber,
         account: HermezAccount,

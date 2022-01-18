@@ -11,8 +11,8 @@ import { EthereumAccount, EstimatedL1Fee } from "src/domain";
 export interface DepositState {
   step: Step;
   ethereumAccountTask: AsyncTask<EthereumAccount, string>;
-  ethereumAccountsTask: AsyncTask<EthereumAccount[], Error>;
-  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  ethereumAccountsTask: AsyncTask<EthereumAccount[], string>;
+  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, string>;
   transaction: TransactionToReview | undefined;
   isTransactionBeingApproved: boolean;
 }

@@ -59,7 +59,7 @@ export interface LoadEthereumAccountsSuccess {
 
 export interface LoadEthereumAccountsFailure {
   type: DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadEthereumAccount {
@@ -87,7 +87,7 @@ export interface LoadEstimatedDepositFeeSuccess {
 
 export interface LoadEstimatedDepositFeeFailure {
   type: DepositActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface StartTransactionApproval {
@@ -162,7 +162,7 @@ function loadEthereumAccountsSuccess(
   };
 }
 
-function loadEthereumAccountsFailure(error: Error): LoadEthereumAccountsFailure {
+function loadEthereumAccountsFailure(error: string): LoadEthereumAccountsFailure {
   return {
     type: DepositActionTypes.LOAD_ETHEREUM_ACCOUNTS_FAILURE,
     error,
@@ -204,7 +204,7 @@ function loadEstimatedDepositFeeSuccess(
   };
 }
 
-function loadEstimatedDepositFeeFailure(error: Error): LoadEstimatedDepositFeeFailure {
+function loadEstimatedDepositFeeFailure(error: string): LoadEstimatedDepositFeeFailure {
   return {
     type: DepositActionTypes.LOAD_ESTIMATED_DEPOSIT_FEE_FAILURE,
     error,

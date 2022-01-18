@@ -27,7 +27,7 @@ export interface LoadTotalBalanceSuccess {
 
 export interface LoadTotalBalanceFailure {
   type: HomeActionTypes.LOAD_TOTAL_BALANCE_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadAccounts {
@@ -41,7 +41,7 @@ export interface LoadAccountsSuccess {
 
 export interface LoadAccountsFailure {
   type: HomeActionTypes.LOAD_ACCOUNTS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadExits {
@@ -55,7 +55,7 @@ export interface LoadExitsSuccess {
 
 export interface LoadExitsFailure {
   type: HomeActionTypes.LOAD_EXITS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface RefreshAccounts {
@@ -98,7 +98,7 @@ function loadTotalBalanceSuccess(balance: number): LoadTotalBalanceSuccess {
   };
 }
 
-function loadTotalBalanceFailure(error: Error): LoadTotalBalanceFailure {
+function loadTotalBalanceFailure(error: string): LoadTotalBalanceFailure {
   return {
     type: HomeActionTypes.LOAD_TOTAL_BALANCE_FAILURE,
     error,
@@ -118,7 +118,7 @@ function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
   };
 }
 
-function loadAccountsFailure(error: Error): LoadAccountsFailure {
+function loadAccountsFailure(error: string): LoadAccountsFailure {
   return {
     type: HomeActionTypes.LOAD_ACCOUNTS_FAILURE,
     error,
@@ -138,7 +138,7 @@ function loadExitsSuccess(exits: Exits): LoadExitsSuccess {
   };
 }
 
-function loadExitsFailure(error: Error): LoadExitsFailure {
+function loadExitsFailure(error: string): LoadExitsFailure {
   return {
     type: HomeActionTypes.LOAD_EXITS_FAILURE,
     error,

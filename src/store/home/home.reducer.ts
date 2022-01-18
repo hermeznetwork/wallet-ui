@@ -14,7 +14,7 @@ interface ViewAccounts {
 export interface HomeState {
   totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
-  exitsTask: AsyncTask<Exits, Error>;
+  exitsTask: AsyncTask<Exits, string>;
 }
 
 const initialHomeState: HomeState = {

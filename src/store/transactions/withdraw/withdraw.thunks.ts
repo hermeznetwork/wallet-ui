@@ -44,7 +44,13 @@ function fetchHermezAccount(
         poolTransactions
       )
       .then((res) => dispatch(withdrawActions.loadAccountSuccess(res)))
-      .catch((error: Error) => dispatch(withdrawActions.loadAccountFailure(error.message)));
+      .catch((error: unknown) => {
+        const errorMsg = adapters.getErrorMessage(
+          error,
+          "Oops... an error occurred on fetchHermezAccount"
+        );
+        dispatch(withdrawActions.loadAccountFailure(errorMsg));
+      });
   };
 }
 /**
@@ -81,16 +87,20 @@ function fetchExit(
               dispatch(withdrawActions.loadExitSuccess(mergedPendingDelayedWithdraws[0]));
             } else {
               dispatch(
-                withdrawActions.loadExitFailure(
-                  new Error("Couldn't find the pending delayed withdraw")
-                )
+                withdrawActions.loadExitFailure("Couldn't find the pending delayed withdraw")
               );
             }
           } else {
             dispatch(withdrawActions.loadExitSuccess(exit));
           }
         })
-        .catch((err) => dispatch(withdrawActions.loadExitFailure(err)));
+        .catch((err: unknown) =>
+          dispatch(
+            withdrawActions.loadExitFailure(
+              adapters.getErrorMessage(err, "Oops... an error occurred on fetchExit")
+            )
+          )
+        );
     }
   };
 }
@@ -148,7 +158,7 @@ function withdraw(
             }
             handleTransactionSuccess(dispatch, account.accountIndex);
           })
-          .catch((error) => {
+          .catch((error: unknown) => {
             console.error(error);
             dispatch(withdrawActions.stopTransactionApproval());
             handleTransactionFailure(dispatch, error);
@@ -172,7 +182,7 @@ function withdraw(
             );
             handleTransactionSuccess(dispatch, account.accountIndex);
           })
-          .catch((error) => {
+          .catch((error: unknown) => {
             console.error(error);
             dispatch(withdrawActions.stopTransactionApproval());
             handleTransactionFailure(dispatch, error);
