@@ -439,7 +439,7 @@ function createHermezAccount(
   };
 }
 
-export function getHermezRawAccounts(
+function getHermezRawAccounts(
   address: string,
   tokenIds?: number[],
   fromItem?: number,

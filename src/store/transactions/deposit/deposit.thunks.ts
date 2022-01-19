@@ -9,6 +9,7 @@ import * as depositActions from "src/store/transactions/deposit/deposit.actions"
 import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import { getTxFee } from "src/utils/fees";
+import { isAsyncTaskDataAvailable } from "src/utils/types";
 // domain
 import { FiatExchangeRates, EthereumAccount, HermezAccount } from "src/domain";
 // adapters
@@ -168,15 +169,24 @@ function fetchEstimatedDepositFee(): AppThunk {
   };
 }
 
-function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk {
+function deposit(
+  amount: BigNumber,
+  ethereumAccount: EthereumAccount,
+  preferredCurrency: string
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
-      global: { wallet, signer },
+      global: { wallet, signer, tokensPriceTask, poolTransactionsTask, fiatExchangeRatesTask },
     } = getState();
 
     dispatch(depositActions.startTransactionApproval());
 
-    if (wallet !== undefined && signer !== undefined) {
+    if (
+      wallet !== undefined &&
+      signer !== undefined &&
+      isAsyncTaskDataAvailable(fiatExchangeRatesTask) &&
+      isAsyncTaskDataAvailable(poolTransactionsTask)
+    ) {
       return adapters.hermezApi
         .deposit(
           amount,
@@ -187,7 +197,14 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
         )
         .then((txData) => {
           void adapters.hermezApi
-            .getHermezRawAccounts(wallet.hermezEthereumAddress, [ethereumAccount.token.id])
+            .getHermezAccounts({
+              hermezEthereumAddress: wallet.hermezEthereumAddress,
+              tokenIds: [ethereumAccount.token.id],
+              poolTransactions: poolTransactionsTask.data,
+              fiatExchangeRates: fiatExchangeRatesTask.data,
+              tokensPriceTask,
+              preferredCurrency,
+            })
             .then((res) => {
               const account: HermezAccount | undefined = res.accounts[0];
               dispatch(

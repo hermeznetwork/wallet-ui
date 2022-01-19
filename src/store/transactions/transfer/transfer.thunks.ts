@@ -9,6 +9,7 @@ import * as transferActions from "src/store/transactions/transfer/transfer.actio
 import { openSnackbar } from "src/store/global/global.actions";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import { feeBigIntToNumber, getMinimumL2Fee, getTxFee } from "src/utils/fees";
+import { isAsyncTaskDataAvailable } from "src/utils/types";
 import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
 import {
@@ -155,72 +156,95 @@ function fetchFees(): AppThunk {
 }
 
 function checkTxData(txData: TxData) {
-  return (dispatch: AppDispatch): void => {
-    const { amount, from, to, feesTask } = txData;
+  return (dispatch: AppDispatch, getState: () => AppState): void => {
+    const { amount, from, to, feesTask, preferredCurrency } = txData;
 
-    if (isHermezBjjAddress(txData.to)) {
-      void adapters.hermezApi
-        .getHermezRawAccounts(to, [from.token.id])
-        .then((accounts: HermezAccounts) => {
-          const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
-          const minimumFee = getMinimumL2Fee({
-            txType: TxType.Transfer,
-            receiverAddress: to,
-            feesTask,
-            token: from.token,
-            doesAccountAlreadyExist,
-          });
-          const fee = getTxFee({
-            txType: TxType.Transfer,
-            amount,
-            token: from.token,
-            minimumFee,
-          });
+    const {
+      global: { tokensPriceTask, poolTransactionsTask, fiatExchangeRatesTask },
+    } = getState();
 
-          dispatch(
-            transferActions.goToReviewTransactionStep({
-              amount: amount,
-              from: txData.from,
-              to: { bjj: txData.to },
-              fee,
-            })
-          );
+    if (
+      isAsyncTaskDataAvailable(fiatExchangeRatesTask) &&
+      isAsyncTaskDataAvailable(poolTransactionsTask)
+    ) {
+      if (isHermezBjjAddress(txData.to)) {
+        void adapters.hermezApi
+          .getHermezAccounts({
+            hermezEthereumAddress: to,
+            tokenIds: [from.token.id],
+            poolTransactions: poolTransactionsTask.data,
+            fiatExchangeRates: fiatExchangeRatesTask.data,
+            tokensPriceTask,
+            preferredCurrency,
+          })
+          .then((accounts: HermezAccounts) => {
+            const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
+            const minimumFee = getMinimumL2Fee({
+              txType: TxType.Transfer,
+              receiverAddress: to,
+              feesTask,
+              token: from.token,
+              doesAccountAlreadyExist,
+            });
+            const fee = getTxFee({
+              txType: TxType.Transfer,
+              amount,
+              token: from.token,
+              minimumFee,
+            });
+
+            dispatch(
+              transferActions.goToReviewTransactionStep({
+                amount: amount,
+                from: txData.from,
+                to: { bjj: txData.to },
+                fee,
+              })
+            );
+          });
+      } else {
+        void Promise.allSettled([
+          adapters.hermezApi.getHermezAccounts({
+            hermezEthereumAddress: to,
+            tokenIds: [from.token.id],
+            poolTransactions: poolTransactionsTask.data,
+            fiatExchangeRates: fiatExchangeRatesTask.data,
+            tokensPriceTask,
+            preferredCurrency,
+          }),
+          adapters.hermezApi.getCreateAccountAuthorization(to),
+        ]).then(([accountsResult, accountAuthorizationResult]) => {
+          const doesAccountAlreadyExist: boolean =
+            accountsResult.status === "fulfilled" && accountsResult.value.accounts[0] !== undefined;
+
+          if (!doesAccountAlreadyExist && accountAuthorizationResult.status === "rejected") {
+            dispatch(transferActions.setReceiverCreateAccountsAuthorizationStatus(false));
+          } else {
+            const minimumFee = getMinimumL2Fee({
+              txType: TxType.Transfer,
+              receiverAddress: to,
+              feesTask,
+              token: from.token,
+              doesAccountAlreadyExist,
+            });
+            const fee = getTxFee({
+              txType: TxType.Transfer,
+              amount,
+              token: from.token,
+              minimumFee,
+            });
+
+            dispatch(
+              transferActions.goToReviewTransactionStep({
+                amount: amount,
+                from,
+                to: { hezEthereumAddress: to },
+                fee: fee,
+              })
+            );
+          }
         });
-    } else {
-      void Promise.allSettled([
-        adapters.hermezApi.getHermezRawAccounts(to, [from.token.id]),
-        adapters.hermezApi.getCreateAccountAuthorization(to),
-      ]).then(([accountsResult, accountAuthorizationResult]) => {
-        const doesAccountAlreadyExist: boolean =
-          accountsResult.status === "fulfilled" && accountsResult.value.accounts[0] !== undefined;
-
-        if (!doesAccountAlreadyExist && accountAuthorizationResult.status === "rejected") {
-          dispatch(transferActions.setReceiverCreateAccountsAuthorizationStatus(false));
-        } else {
-          const minimumFee = getMinimumL2Fee({
-            txType: TxType.Transfer,
-            receiverAddress: to,
-            feesTask,
-            token: from.token,
-            doesAccountAlreadyExist,
-          });
-          const fee = getTxFee({
-            txType: TxType.Transfer,
-            amount,
-            token: from.token,
-            minimumFee,
-          });
-
-          dispatch(
-            transferActions.goToReviewTransactionStep({
-              amount: amount,
-              from,
-              to: { hezEthereumAddress: to },
-              fee: fee,
-            })
-          );
-        }
-      });
+      }
     }
   };
 }
