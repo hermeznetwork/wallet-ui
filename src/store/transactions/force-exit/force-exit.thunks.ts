@@ -1,6 +1,5 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as forceExitActions from "src/store/transactions/force-exit/force-exit.actions";

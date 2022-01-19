@@ -1,4 +1,3 @@
-import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { ETHER_TOKEN_ID } from "@hermeznetwork/hermezjs/src/constants";
