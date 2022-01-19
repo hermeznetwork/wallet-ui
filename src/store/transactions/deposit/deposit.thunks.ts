@@ -187,7 +187,7 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
         )
         .then((txData) => {
           void adapters.hermezApi
-            .getAccounts(wallet.hermezEthereumAddress, [ethereumAccount.token.id])
+            .getHermezRawAccounts(wallet.hermezEthereumAddress, [ethereumAccount.token.id])
             .then((res) => {
               const account: HermezAccount | undefined = res.accounts[0];
               dispatch(

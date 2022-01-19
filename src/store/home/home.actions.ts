@@ -1,5 +1,5 @@
 // domain
-import { Accounts, Exits } from "src/domain";
+import { HermezAccounts, Exits } from "src/domain";
 
 export enum HomeActionTypes {
   LOAD_TOTAL_BALANCE = "[HOME] LOAD TOTAL BALANCE",
@@ -36,7 +36,7 @@ export interface LoadAccounts {
 
 export interface LoadAccountsSuccess {
   type: HomeActionTypes.LOAD_ACCOUNTS_SUCCESS;
-  accounts: Accounts;
+  accounts: HermezAccounts;
 }
 
 export interface LoadAccountsFailure {
@@ -64,7 +64,7 @@ export interface RefreshAccounts {
 
 export interface RefreshAccountsSuccess {
   type: HomeActionTypes.REFRESH_ACCOUNTS_SUCCESS;
-  accounts: Accounts;
+  accounts: HermezAccounts;
 }
 
 export interface ResetState {
@@ -111,7 +111,7 @@ function loadAccounts(): LoadAccounts {
   };
 }
 
-function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
+function loadAccountsSuccess(accounts: HermezAccounts): LoadAccountsSuccess {
   return {
     type: HomeActionTypes.LOAD_ACCOUNTS_SUCCESS,
     accounts,
@@ -151,7 +151,7 @@ function refreshAccounts(): RefreshAccounts {
   };
 }
 
-function refreshAccountsSuccess(accounts: Accounts): RefreshAccountsSuccess {
+function refreshAccountsSuccess(accounts: HermezAccounts): RefreshAccountsSuccess {
   return {
     type: HomeActionTypes.REFRESH_ACCOUNTS_SUCCESS,
     accounts,

@@ -36,7 +36,7 @@ function fetchAccount(
     dispatch(accountDetailsActions.loadAccount());
 
     return adapters.hermezApi
-      .fetchHermezAccount(accountIndex, tokensPriceTask, preferredCurrency, fiatExchangeRates)
+      .getHermezAccount(accountIndex, tokensPriceTask, preferredCurrency, fiatExchangeRates)
       .then((account: HermezAccount) => {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push("/"));

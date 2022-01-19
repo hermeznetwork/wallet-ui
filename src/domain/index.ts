@@ -10,7 +10,6 @@ import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
   AccountAuthorization,
-  Accounts,
   CoordinatorState,
   Exit,
   Exits,

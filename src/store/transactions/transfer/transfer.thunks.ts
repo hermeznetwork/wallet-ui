@@ -12,7 +12,7 @@ import { feeBigIntToNumber, getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
 import {
-  Accounts,
+  HermezAccounts,
   FiatExchangeRates,
   HermezAccount,
   PoolTransaction,
@@ -38,7 +38,7 @@ function fetchHermezAccount(
     dispatch(transferActions.loadAccount());
 
     return adapters.hermezApi
-      .fetchHermezAccount(
+      .getHermezAccount(
         accountIndex,
         tokensPriceTask,
         preferredCurrency,
@@ -159,34 +159,36 @@ function checkTxData(txData: TxData) {
     const { amount, from, to, feesTask } = txData;
 
     if (isHermezBjjAddress(txData.to)) {
-      void adapters.hermezApi.getAccounts(to, [from.token.id]).then((accounts: Accounts) => {
-        const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
-        const minimumFee = getMinimumL2Fee({
-          txType: TxType.Transfer,
-          receiverAddress: to,
-          feesTask,
-          token: from.token,
-          doesAccountAlreadyExist,
-        });
-        const fee = getTxFee({
-          txType: TxType.Transfer,
-          amount,
-          token: from.token,
-          minimumFee,
-        });
+      void adapters.hermezApi
+        .getHermezRawAccounts(to, [from.token.id])
+        .then((accounts: HermezAccounts) => {
+          const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
+          const minimumFee = getMinimumL2Fee({
+            txType: TxType.Transfer,
+            receiverAddress: to,
+            feesTask,
+            token: from.token,
+            doesAccountAlreadyExist,
+          });
+          const fee = getTxFee({
+            txType: TxType.Transfer,
+            amount,
+            token: from.token,
+            minimumFee,
+          });
 
-        dispatch(
-          transferActions.goToReviewTransactionStep({
-            amount: amount,
-            from: txData.from,
-            to: { bjj: txData.to },
-            fee,
-          })
-        );
-      });
+          dispatch(
+            transferActions.goToReviewTransactionStep({
+              amount: amount,
+              from: txData.from,
+              to: { bjj: txData.to },
+              fee,
+            })
+          );
+        });
     } else {
       void Promise.allSettled([
-        adapters.hermezApi.getAccounts(to, [from.token.id]),
+        adapters.hermezApi.getHermezRawAccounts(to, [from.token.id]),
         adapters.hermezApi.getCreateAccountAuthorization(to),
       ]).then(([accountsResult, accountAuthorizationResult]) => {
         const doesAccountAlreadyExist: boolean =

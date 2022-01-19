@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { Accounts, HermezAccount, RecommendedFee, TransactionReceiver } from "src/domain";
+import { HermezAccounts, HermezAccount, RecommendedFee, TransactionReceiver } from "src/domain";
 
 export enum TransferActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[TRANSFER] GO TO CHOOSE ACCOUNT STEP",
@@ -85,7 +85,7 @@ export interface LoadAccounts {
 
 export interface LoadAccountsSuccess {
   type: TransferActionTypes.LOAD_ACCOUNTS_SUCCESS;
-  accounts: Accounts;
+  accounts: HermezAccounts;
 }
 
 export interface LoadAccountsFailure {
@@ -202,7 +202,7 @@ function loadAccounts(): LoadAccounts {
   };
 }
 
-function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
+function loadAccountsSuccess(accounts: HermezAccounts): LoadAccountsSuccess {
   return {
     type: TransferActionTypes.LOAD_ACCOUNTS_SUCCESS,
     accounts,
