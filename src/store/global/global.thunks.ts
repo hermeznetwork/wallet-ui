@@ -1011,7 +1011,22 @@ function fetchTokensPrice(): AppThunk {
     return adapters.priceUpdater
       .getTokensPrice()
       .then((res: Token[]) => dispatch(globalActions.loadTokensPriceSuccess(res)))
-      .catch(() => globalActions.loadTokensPriceFailure("An error occured loading token."));
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(
+          error,
+          "An error occurred on src/store/global/global.thunks.ts:fetchTokensPrice"
+        );
+        dispatch(globalActions.loadTokensPriceFailure(errorMsg));
+        dispatch(
+          openSnackbar({
+            message: {
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            },
+          })
+        );
+      });
   };
 }
 

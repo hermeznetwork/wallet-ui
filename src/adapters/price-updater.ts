@@ -4,6 +4,7 @@ import { z } from "zod";
 // domain
 import { FiatExchangeRates, Token } from "src/domain";
 // adapters
+import * as adapters from "src/adapters";
 import * as parsers from "src/adapters/parsers";
 // utils
 import { CurrencySymbol } from "src/utils/currencies";
@@ -46,35 +47,28 @@ const getFiatExchangeRatesResponseParser = StrictSchema<ApiExchangeRateResponse>
   })
 );
 
-const parsedReactAppPriceUpdaterApiUrl = z
-  .string()
-  .safeParse(process.env.REACT_APP_PRICE_UPDATER_API_URL);
-
-const parsedReactAppPriceUpdaterApiKey = z
-  .string()
-  .safeParse(process.env.REACT_APP_PRICE_UPDATER_API_KEY);
-
 /**
  * Returns a list of tokens with usd price.
  */
 function getTokensPrice(): Promise<Token[]> {
-  if (parsedReactAppPriceUpdaterApiUrl.success === false) {
-    return Promise.reject(parsedReactAppPriceUpdaterApiUrl.error.message);
-  } else if (parsedReactAppPriceUpdaterApiKey.success === false) {
-    return Promise.reject(parsedReactAppPriceUpdaterApiKey.error.message);
+  const eitherEnv = adapters.env.getEnv();
+  if (eitherEnv.success === false) {
+    return Promise.reject(eitherEnv.error);
   } else {
     const client = axios.create({
-      baseURL: parsedReactAppPriceUpdaterApiUrl.data,
-      headers: { "X-API-KEY": parsedReactAppPriceUpdaterApiKey.data },
+      baseURL: eitherEnv.data.REACT_APP_PRICE_UPDATER_API_URL,
+      headers: { "X-API-KEY": eitherEnv.data.REACT_APP_PRICE_UPDATER_API_KEY },
     });
-    return client.get(`${parsedReactAppPriceUpdaterApiUrl.data}/v1/tokens`).then(({ data }) => {
-      const parsedgGetTokensPriceResponse = getTokensPriceResponseParser.safeParse(data);
-      if (parsedgGetTokensPriceResponse.success) {
-        return parsedgGetTokensPriceResponse.data.tokens;
-      } else {
-        return Promise.reject(parsedgGetTokensPriceResponse.error.message);
-      }
-    });
+    return client
+      .get(`${eitherEnv.data.REACT_APP_PRICE_UPDATER_API_URL}/v1/tokens`)
+      .then(({ data }) => {
+        const parsedgGetTokensPriceResponse = getTokensPriceResponseParser.safeParse(data);
+        if (parsedgGetTokensPriceResponse.success) {
+          return parsedgGetTokensPriceResponse.data.tokens;
+        } else {
+          return Promise.reject(parsedgGetTokensPriceResponse.error);
+        }
+      });
   }
 }
 
@@ -82,18 +76,17 @@ function getTokensPrice(): Promise<Token[]> {
  * Fetches the USD exchange rates for the requested currency symbols
  */
 function getFiatExchangeRates(symbols: string[]): Promise<FiatExchangeRates> {
-  if (parsedReactAppPriceUpdaterApiUrl.success === false) {
-    return Promise.reject(parsedReactAppPriceUpdaterApiUrl.error.message);
-  } else if (parsedReactAppPriceUpdaterApiKey.success === false) {
-    return Promise.reject(parsedReactAppPriceUpdaterApiKey.error.message);
+  const eitherEnv = adapters.env.getEnv();
+  if (eitherEnv.success === false) {
+    return Promise.reject(eitherEnv.error);
   } else {
     const params = { base: CurrencySymbol.USD.code, symbols: symbols.join("|") };
     const client = axios.create({
-      baseURL: parsedReactAppPriceUpdaterApiUrl.data,
-      headers: { "X-API-KEY": parsedReactAppPriceUpdaterApiKey.data },
+      baseURL: eitherEnv.data.REACT_APP_PRICE_UPDATER_API_URL,
+      headers: { "X-API-KEY": eitherEnv.data.REACT_APP_PRICE_UPDATER_API_KEY },
     });
     return client
-      .get(`${parsedReactAppPriceUpdaterApiUrl.data}/v1/currencies`, { params })
+      .get(`${eitherEnv.data.REACT_APP_PRICE_UPDATER_API_URL}/v1/currencies`, { params })
       .then((res) => {
         const parsedFiatExchangeRates = getFiatExchangeRatesResponseParser.safeParse(res.data);
         if (parsedFiatExchangeRates.success) {
@@ -106,7 +99,7 @@ function getFiatExchangeRates(symbols: string[]): Promise<FiatExchangeRates> {
             {}
           );
         } else {
-          return Promise.reject(parsedFiatExchangeRates.error.message);
+          return Promise.reject(parsedFiatExchangeRates.error);
         }
       });
   }
