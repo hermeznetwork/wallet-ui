@@ -7,6 +7,7 @@ export * as hermezWeb from "src/adapters/hermez-web";
 export * as localStorage from "src/adapters/local-storage";
 export * as priceUpdater from "src/adapters/price-updater";
 export * as ethereum from "src/adapters/ethereum";
+export * as env from "src/adapters/env";
 
 // Error decoding and message extraction helper
 interface MessageKeyError {
