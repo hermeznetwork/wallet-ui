@@ -52,9 +52,7 @@ const getFiatExchangeRatesResponseParser = StrictSchema<ApiExchangeRateResponse>
  */
 function getTokensPrice(): Promise<Token[]> {
   const eitherEnv = adapters.env.getEnv();
-  if (eitherEnv.success === false) {
-    return Promise.reject(eitherEnv.error);
-  } else {
+  if (eitherEnv.success) {
     const client = axios.create({
       baseURL: eitherEnv.data.REACT_APP_PRICE_UPDATER_API_URL,
       headers: { "X-API-KEY": eitherEnv.data.REACT_APP_PRICE_UPDATER_API_KEY },
@@ -69,6 +67,8 @@ function getTokensPrice(): Promise<Token[]> {
           return Promise.reject(parsedgGetTokensPriceResponse.error);
         }
       });
+  } else {
+    return Promise.reject(eitherEnv.error);
   }
 }
 
@@ -77,9 +77,7 @@ function getTokensPrice(): Promise<Token[]> {
  */
 function getFiatExchangeRates(symbols: string[]): Promise<FiatExchangeRates> {
   const eitherEnv = adapters.env.getEnv();
-  if (eitherEnv.success === false) {
-    return Promise.reject(eitherEnv.error);
-  } else {
+  if (eitherEnv.success) {
     const params = { base: CurrencySymbol.USD.code, symbols: symbols.join("|") };
     const client = axios.create({
       baseURL: eitherEnv.data.REACT_APP_PRICE_UPDATER_API_URL,
@@ -102,6 +100,8 @@ function getFiatExchangeRates(symbols: string[]): Promise<FiatExchangeRates> {
           return Promise.reject(parsedFiatExchangeRates.error);
         }
       });
+  } else {
+    return Promise.reject(eitherEnv.error);
   }
 }
 

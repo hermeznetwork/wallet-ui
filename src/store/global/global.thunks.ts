@@ -46,29 +46,46 @@ import * as adapters from "src/adapters";
  */
 function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
   return (dispatch: AppDispatch) => {
-    dispatch(globalActions.loadEthereumNetwork());
+    const env = adapters.env.getEnv();
+    if (env.success) {
+      dispatch(globalActions.loadEthereumNetwork());
 
-    if (
-      process.env.REACT_APP_ENV === "production" &&
-      hermezjs.Environment.isEnvironmentSupported(chainId)
-    ) {
-      hermezjs.Environment.setEnvironment(chainId);
+      if (
+        env.data.REACT_APP_ENV === "production" &&
+        hermezjs.Environment.isEnvironmentSupported(chainId)
+      ) {
+        hermezjs.Environment.setEnvironment(chainId);
+      }
+
+      if (env.data.REACT_APP_ENV === "development") {
+        hermezjs.Environment.setEnvironment({
+          baseApiUrl: env.data.REACT_APP_HERMEZ_API_URL,
+          contractAddresses: {
+            [hermezjs.Constants.ContractNames.Hermez]: env.data.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
+            [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
+              env.data.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS,
+          },
+          batchExplorerUrl: env.data.REACT_APP_BATCH_EXPLORER_URL,
+          etherscanUrl: env.data.REACT_APP_ETHERSCAN_URL,
+        });
+      }
+
+      dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: chainName }));
+    } else {
+      const errorMsg = adapters.parseError(
+        env.error,
+        "An error occurred on src/store/global/global.thunks.ts:setHermezEnvironment"
+      );
+      dispatch(
+        openSnackbar({
+          message: {
+            type: "error",
+            raw: env.error,
+            parsed: errorMsg,
+          },
+        })
+      );
     }
-
-    if (process.env.REACT_APP_ENV === "development") {
-      hermezjs.Environment.setEnvironment({
-        baseApiUrl: process.env.REACT_APP_HERMEZ_API_URL,
-        contractAddresses: {
-          [hermezjs.Constants.ContractNames.Hermez]: process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
-          [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
-            process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS,
-        },
-        batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL,
-        etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL,
-      });
-    }
-
-    dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: chainName }));
   };
 }
 

@@ -241,6 +241,15 @@ function globalReducer(
         },
       };
     }
+    case GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE: {
+      return {
+        ...state,
+        fiatExchangeRatesTask: {
+          status: "failed",
+          error: action.error,
+        },
+      };
+    }
     case GlobalActionTypes.OPEN_SNACKBAR: {
       return {
         ...state,

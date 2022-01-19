@@ -8,10 +8,8 @@ import * as globalThunks from "src/store/global/global.thunks";
 import { closeSnackbar } from "src/store/global/global.actions";
 import { SnackbarState, HeaderState } from "src/store/global/global.reducer";
 import routes from "src/routing/routes";
-import Spinner from "src/views/shared/spinner/spinner.view";
 import Route from "src/views/shared/route/route.view";
 import BaseLayout from "src/views/shared/base-layout/base-layout.view";
-import UnderMaintenanceError from "src/views/shared/under-maintenance-error/under-maintenance-error.view";
 import useAppStyles from "src/views/app.styles";
 import { COORDINATOR_STATE_REFRESH_RATE, RETRY_POOL_TXS_RATE } from "src/constants";
 import { AsyncTask } from "src/utils/types";
@@ -74,7 +72,7 @@ function App({
   onLoadTokensPrice,
 }: AppProps): JSX.Element {
   const theme = useTheme<Theme>();
-  const classes = useAppStyles();
+  useAppStyles();
 
   React.useEffect(() => {
     onCheckHermezStatus();
@@ -125,23 +123,13 @@ function App({
     onLoadTokensPrice();
   }, [onLoadTokensPrice]);
 
-  if (hermezStatusTask.status === "successful" && hermezStatusTask.data.isUnderMaintenance) {
-    return <UnderMaintenanceError />;
-  }
-
-  if (hermezStatusTask.status !== "successful" || fiatExchangeRatesTask.status !== "successful") {
-    return (
-      <div className={classes.root}>
-        <Spinner size={theme.spacing(8)} />
-      </div>
-    );
-  }
-
   return (
     <Switch>
       <BaseLayout
         header={header}
         snackbar={snackbar}
+        fiatExchangeRatesTask={fiatExchangeRatesTask}
+        hermezStatusTask={hermezStatusTask}
         onGoBack={onGoBack}
         onClose={onClose}
         onCloseSnackbar={onCloseSnackbar}

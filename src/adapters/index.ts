@@ -1,4 +1,4 @@
-import { z, ZodError } from "zod";
+import { z, ZodError, ZodIssue } from "zod";
 
 import { StrictSchema } from "src/utils/type-safety";
 
@@ -24,12 +24,8 @@ export function parseError(error: unknown, prefixMsg?: string): string {
   if (typeof error === "string") {
     return prefixMsg ? `${prefixMsg}. ${error}` : error;
   } else if (error instanceof ZodError) {
-    const decodingIssues = error.errors
-      .map((issue) => `${issue.message} at path ${issue.path.join(".")}`)
-      .join(" | ");
-    return prefixMsg
-      ? `${prefixMsg}. Decoding issues: ${decodingIssues}`
-      : `Decoding issues: ${decodingIssues}`;
+    const decodingIssues = parseDecodingError(error).join(". ");
+    return prefixMsg ? `${prefixMsg}. ${decodingIssues}` : decodingIssues;
   } else if (error instanceof Error) {
     return prefixMsg ? `${prefixMsg}. ${error.message}` : error.message;
   } else {
@@ -44,13 +40,43 @@ export function parseError(error: unknown, prefixMsg?: string): string {
   }
 }
 
+export function parseDecodingError(error: ZodError): string[] {
+  return parseDecodingIssues(error.issues);
+}
+
+export function parseDecodingIssues(issues: ZodIssue[]): string[] {
+  return issues.reduce((accIssueMsgs: string[], currIssue: ZodIssue): string[] => {
+    switch (currIssue.code) {
+      case "invalid_union": {
+        const unionMsgs = currIssue.unionErrors.reduce(
+          (accErrorMsgs: string[], currError: ZodError) => [
+            ...accErrorMsgs,
+            ...parseDecodingError(currError),
+          ],
+          []
+        );
+        return [...accIssueMsgs, ...unionMsgs];
+      }
+      default: {
+        const msg = `Decoding issue: ${currIssue.message} at path ${currIssue.path.join(".")}`;
+        return [...accIssueMsgs, msg];
+      }
+    }
+  }, []);
+}
+
 export function logDecodingError<T>(error: ZodError<T>, details: string): void {
-  const message =
-    error.issues.length > 1
-      ? `Some decoding errors occurred: ${details}`
-      : `A decoding error occurred: ${details}`;
-  console.error(message);
-  error.issues.forEach((issue) => {
-    console.error(JSON.stringify(issue, null, 4));
+  error.errors.forEach((issue) => {
+    switch (issue.code) {
+      case "invalid_union": {
+        issue.unionErrors.forEach((e) => logDecodingError(e, details));
+        break;
+      }
+      default: {
+        console.error(`A decoding error occurred: ${details}`);
+        console.error(JSON.stringify(issue, null, 4));
+        break;
+      }
+    }
   });
 }
