@@ -10,7 +10,8 @@
     "generate-contract-types": "./generate-contract-types.sh",
     "postinstall": "npm run generate-contract-types",
     "start:dev": "react-scripts start",
-    "start:prod": "serve -s -C -p 80 build"
+    "start:prod": "serve -s -C -p 80 build",
+    "touch": "find src/ -type f -name '*.ts*' -exec touch {} +"
   },
   "dependencies": {
     "@hermeznetwork/hermezjs": "^2.0.0",
