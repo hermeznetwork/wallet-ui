@@ -25,7 +25,6 @@ import {
   HermezAccount,
   HermezAccounts,
   HermezRawAccount,
-  HermezRawAccounts,
   HermezWallet,
   HistoryTransaction,
   HistoryTransactions,
@@ -440,16 +439,40 @@ function createHermezAccount(
   };
 }
 
-function getHermezRawAccounts(
-  address: string,
-  tokenIds?: number[],
-  fromItem?: number,
-  order?: PaginationOrder,
-  limit?: number,
-  axiosConfig?: Record<string, unknown>
-): Promise<HermezRawAccounts> {
-  return CoordinatorAPI.getAccounts(address, tokenIds, fromItem, order, limit, axiosConfig).then(
-    (hermezRawAccounts: unknown) => {
+export function getHermezAccounts({
+  hermezEthereumAddress,
+  tokenIds,
+  fromItem,
+  order,
+  limit,
+  axiosConfig,
+  tokensPriceTask,
+  poolTransactions,
+  fiatExchangeRates,
+  preferredCurrency,
+  pendingDeposits,
+}: {
+  hermezEthereumAddress: string;
+  tokenIds?: number[];
+  fromItem?: number;
+  order?: CoordinatorAPI.PaginationOrder;
+  limit?: number;
+  axiosConfig?: Record<string, unknown>;
+  tokensPriceTask: AsyncTask<Token[], string>;
+  preferredCurrency: string;
+  poolTransactions: PoolTransaction[];
+  fiatExchangeRates: FiatExchangeRates;
+  pendingDeposits?: PendingDeposit[];
+}): Promise<HermezAccounts> {
+  return CoordinatorAPI.getAccounts(
+    hermezEthereumAddress,
+    tokenIds,
+    fromItem,
+    order,
+    limit,
+    axiosConfig
+  )
+    .then((hermezRawAccounts: unknown) => {
       const parsedUnknownHermezRawAccounts =
         parsers.unknownHermezRawAccounts.safeParse(hermezRawAccounts);
       if (parsedUnknownHermezRawAccounts.success) {
@@ -478,55 +501,20 @@ function getHermezRawAccounts(
         );
         throw parsedUnknownHermezRawAccounts.error;
       }
-    }
-  );
-}
-
-export function getHermezAccounts({
-  hermezEthereumAddress,
-  tokenIds,
-  fromItem,
-  order,
-  limit,
-  axiosConfig,
-  tokensPriceTask,
-  poolTransactions,
-  fiatExchangeRates,
-  preferredCurrency,
-  pendingDeposits,
-}: {
-  hermezEthereumAddress: string;
-  tokenIds?: number[];
-  fromItem?: number;
-  order?: CoordinatorAPI.PaginationOrder;
-  limit?: number;
-  axiosConfig?: Record<string, unknown>;
-  tokensPriceTask: AsyncTask<Token[], string>;
-  preferredCurrency: string;
-  poolTransactions: PoolTransaction[];
-  fiatExchangeRates: FiatExchangeRates;
-  pendingDeposits?: PendingDeposit[];
-}): Promise<HermezAccounts> {
-  return getHermezRawAccounts(
-    hermezEthereumAddress,
-    tokenIds,
-    fromItem,
-    order,
-    limit,
-    axiosConfig
-  ).then((accountsResponse) => ({
-    pendingItems: accountsResponse.pendingItems,
-    accounts: accountsResponse.accounts.map((account) =>
-      createHermezAccount(
-        account,
-        tokensPriceTask,
-        preferredCurrency,
-        poolTransactions,
-        fiatExchangeRates,
-        pendingDeposits
-      )
-    ),
-  }));
+    })
+    .then((accountsResponse) => ({
+      pendingItems: accountsResponse.pendingItems,
+      accounts: accountsResponse.accounts.map((account) =>
+        createHermezAccount(
+          account,
+          tokensPriceTask,
+          preferredCurrency,
+          poolTransactions,
+          fiatExchangeRates,
+          pendingDeposits
+        )
+      ),
+    }));
 }
 
 /**
