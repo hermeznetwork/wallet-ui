@@ -10,7 +10,6 @@ interface ProductionLiteral {
 }
 
 interface ProductionVars {
-  REACT_APP_BATCH_EXPLORER_URL: string;
   REACT_APP_INFURA_API_KEY: string;
   REACT_APP_PRICE_UPDATER_API_URL: string;
   REACT_APP_PRICE_UPDATER_API_KEY: string;
@@ -27,6 +26,7 @@ type DevelopmentVars = ProductionVars & {
   REACT_APP_HERMEZ_API_URL: string;
   REACT_APP_HERMEZ_CONTRACT_ADDRESS: string;
   REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS: string;
+  REACT_APP_BATCH_EXPLORER_URL: string;
   REACT_APP_ETHERSCAN_URL: string;
 };
 
@@ -42,7 +42,6 @@ const productionLiteralParser = StrictSchema<ProductionLiteral>()(
 
 const productionVarsParser = StrictSchema<ProductionVars>()(
   z.object({
-    REACT_APP_BATCH_EXPLORER_URL: z.string(),
     REACT_APP_INFURA_API_KEY: z.string(),
     REACT_APP_PRICE_UPDATER_API_URL: z.string(),
     REACT_APP_PRICE_UPDATER_API_KEY: z.string(),
@@ -66,6 +65,7 @@ const developmentVarsParser = StrictSchema<DevelopmentVars>()(
       REACT_APP_HERMEZ_API_URL: z.string(),
       REACT_APP_HERMEZ_CONTRACT_ADDRESS: z.string(),
       REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS: z.string(),
+      REACT_APP_BATCH_EXPLORER_URL: z.string(),
       REACT_APP_ETHERSCAN_URL: z.string(),
     })
   )

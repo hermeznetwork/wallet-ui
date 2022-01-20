@@ -1,4 +1,3 @@
-import platform from "platform";
 import { push } from "connected-react-router";
 import { ethers } from "ethers";
 import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
@@ -1060,15 +1059,29 @@ function reportError(raw: unknown, parsed: string): AppThunk {
       ? `${ethereumNetworkTask.data.name} with id ${ethereumNetworkTask.data.chainId}`
       : "Not available";
 
-    const params = new URLSearchParams({
+    const data = {
       "entry.2056392454": window.location.href,
       "entry.1632331664": network,
-      "entry.259085709": platform.toString(),
       "entry.1383309652": parsed,
       "entry.488074117": JSON.stringify(raw),
-    }).toString();
+    };
 
-    window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
+    void import("platform")
+      .then((platform) => {
+        const params = new URLSearchParams({
+          ...data,
+          "entry.259085709": platform.toString(),
+        }).toString();
+        window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
+      })
+      .catch(() => {
+        console.error("An error occured dynamically loading the library 'platform'");
+        const params = new URLSearchParams({
+          ...data,
+          "entry.259085709": "Not available",
+        }).toString();
+        window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
+      });
   };
 }
 
