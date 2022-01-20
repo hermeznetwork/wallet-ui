@@ -1046,6 +1046,15 @@ function fetchTokensPrice(): AppThunk {
   };
 }
 
+enum ReportErrorFormEntries {
+  url = "entry.2056392454",
+  network = "entry.1632331664",
+  platform = "entry.259085709",
+  message = "entry.1383309652",
+  stack = "entry.1138934571",
+  error = "entry.488074117",
+}
+
 /**
  * Report an error using the report issue form
  */
@@ -1059,18 +1068,21 @@ function reportError(raw: unknown, parsed: string): AppThunk {
       ? `${ethereumNetworkTask.data.name} with id ${ethereumNetworkTask.data.chainId}`
       : "Not available";
 
+    const stack = raw instanceof Error && raw.stack ? raw.stack : "Not available";
+
     const data = {
-      "entry.2056392454": window.location.href,
-      "entry.1632331664": network,
-      "entry.1383309652": parsed,
-      "entry.488074117": JSON.stringify(raw),
+      [ReportErrorFormEntries.url]: window.location.href,
+      [ReportErrorFormEntries.network]: network,
+      [ReportErrorFormEntries.message]: parsed,
+      [ReportErrorFormEntries.stack]: stack,
+      [ReportErrorFormEntries.error]: JSON.stringify(raw),
     };
 
     void import("platform")
       .then((platform) => {
         const params = new URLSearchParams({
           ...data,
-          "entry.259085709": platform.toString(),
+          [ReportErrorFormEntries.platform]: platform.toString(),
         }).toString();
         window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
       })
@@ -1078,7 +1090,7 @@ function reportError(raw: unknown, parsed: string): AppThunk {
         console.error("An error occured dynamically loading the library 'platform'");
         const params = new URLSearchParams({
           ...data,
-          "entry.259085709": "Not available",
+          [ReportErrorFormEntries.platform]: "Not available",
         }).toString();
         window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
       });

@@ -10,10 +10,11 @@
     "generate-contract-types": "./generate-contract-types.sh",
     "postinstall": "npm run generate-contract-types",
     "start:dev": "react-scripts start",
-    "start:prod": "serve -s -C -p 80 build"
+    "start:prod": "serve -s -C -p 80 build",
+    "touch": "find src/ -type f -name '*.ts*' -exec touch {} +"
   },
   "dependencies": {
-    "@hermeznetwork/hermezjs": "^2.0.0",
+    "@hermeznetwork/hermezjs": "^2.0.1",
     "@typechain/ethers-v5": "^8.0.5",
     "@types/history": "^4.7.9",
     "@types/platform": "^1.3.4",
