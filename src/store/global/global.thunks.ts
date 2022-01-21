@@ -1051,11 +1051,17 @@ function reportError(raw: unknown, parsed: string): AppThunk {
 
     const stack = raw instanceof Error && raw.stack ? raw.stack : "Not available";
 
+    const selectMultipleTabsAndSpaces = /[^\S\r\n]{2,}/g;
+
+    const maxStackLength = 4096;
+
     const data = {
       [REPORT_ERROR_FORM_ENTRIES.url]: window.location.href,
       [REPORT_ERROR_FORM_ENTRIES.network]: network,
       [REPORT_ERROR_FORM_ENTRIES.message]: parsed,
-      [REPORT_ERROR_FORM_ENTRIES.stack]: stack,
+      [REPORT_ERROR_FORM_ENTRIES.stack]: stack
+        .replaceAll(selectMultipleTabsAndSpaces, " ")
+        .substring(0, maxStackLength),
       [REPORT_ERROR_FORM_ENTRIES.error]: JSON.stringify(raw),
     };
 
