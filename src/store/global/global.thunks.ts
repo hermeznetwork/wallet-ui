@@ -77,11 +77,9 @@ function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
       );
       dispatch(
         openSnackbar({
-          message: {
-            type: "error",
-            raw: env.error,
-            parsed: errorMsg,
-          },
+          type: "error",
+          raw: env.error,
+          parsed: errorMsg,
         })
       );
     }
@@ -122,11 +120,9 @@ function fetchFiatExchangeRates(): AppThunk {
         dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -144,25 +140,25 @@ function changeNetworkStatus(newNetworkStatus: NetworkStatus, backgroundColor: s
 
     if (previousNetworkStatus === "online" && newNetworkStatus === "offline") {
       dispatch(
-        globalActions.openSnackbar({
-          message: {
+        globalActions.openSnackbar(
+          {
             type: "info",
             text: "Connection lost",
           },
-          backgroundColor,
-        })
+          backgroundColor
+        )
       );
     }
 
     if (previousNetworkStatus === "offline" && newNetworkStatus === "online") {
       dispatch(
-        globalActions.openSnackbar({
-          message: {
+        globalActions.openSnackbar(
+          {
             type: "info",
             text: "Connection restored",
           },
-          backgroundColor,
-        })
+          backgroundColor
+        )
       );
     }
 
@@ -212,11 +208,9 @@ function fetchPoolTransactions(): AppThunk {
           dispatch(globalActions.loadPoolTransactionsFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -980,11 +974,9 @@ function fetchCoordinatorState(): AppThunk {
         dispatch(globalActions.loadCoordinatorStateFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -1035,11 +1027,9 @@ function fetchTokensPrice(): AppThunk {
         dispatch(globalActions.loadTokensPriceFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });

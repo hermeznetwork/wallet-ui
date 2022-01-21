@@ -54,11 +54,9 @@ function fetchHermezAccount(
         dispatch(transferActions.loadAccountFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -100,11 +98,9 @@ function fetchAccounts(
           dispatch(transferActions.loadAccountsFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -141,11 +137,9 @@ function fetchFees(): AppThunk {
             dispatch(transferActions.loadFeesFailure(errorMsg));
             dispatch(
               openSnackbar({
-                message: {
-                  type: "error",
-                  raw: error,
-                  parsed: errorMsg,
-                },
+                type: "error",
+                raw: error,
+                parsed: errorMsg,
               })
             );
           });
@@ -261,11 +255,9 @@ function transfer(
           dispatch(transferActions.stopTransactionApproval());
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -275,7 +267,7 @@ function transfer(
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   const route = accountIndex ? `/accounts/${accountIndex}` : "/";
-  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
+  dispatch(openSnackbar({ type: "info", text: "Transaction submitted" }));
   dispatch(push(route));
 }
 

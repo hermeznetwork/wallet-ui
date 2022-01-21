@@ -45,11 +45,9 @@ function fetchAccounts(
           dispatch(forceExitActions.loadAccountsFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -77,11 +75,9 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
           dispatch(forceExitActions.stopTransactionApproval());
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -90,7 +86,7 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch) {
-  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
+  dispatch(openSnackbar({ type: "info", text: "Transaction submitted" }));
   dispatch(push("/"));
 }
 

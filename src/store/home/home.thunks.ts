@@ -84,11 +84,9 @@ function fetchTotalBalance(
         dispatch(homeActions.loadTotalBalanceFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -148,11 +146,9 @@ function fetchAccounts(
         dispatch(homeActions.loadAccountsFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -251,11 +247,9 @@ function fetchExits(): AppThunk {
           dispatch(homeActions.loadExitsFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });

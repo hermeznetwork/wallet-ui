@@ -444,13 +444,7 @@ function loadFiatExchangeRatesFailure(error: string): LoadFiatExchangeRatesFailu
   };
 }
 
-function openSnackbar({
-  message,
-  backgroundColor,
-}: {
-  message: Message;
-  backgroundColor?: string;
-}): OpenSnackbar {
+function openSnackbar(message: Message, backgroundColor?: string): OpenSnackbar {
   return {
     type: GlobalActionTypes.OPEN_SNACKBAR,
     message,

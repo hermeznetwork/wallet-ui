@@ -52,11 +52,9 @@ function fetchAccount(
         dispatch(accountDetailsActions.loadAccountFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -163,11 +161,9 @@ function fetchHistoryTransactions(
         dispatch(accountDetailsActions.loadHistoryTransactionsFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -270,11 +266,9 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
           dispatch(accountDetailsActions.loadExitsFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });

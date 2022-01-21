@@ -178,7 +178,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): MyAccountHandlerProps => ({
   onChangePreferredCurrency: (selectedTokenId) =>
     dispatch(changePreferredCurrency(selectedTokenId)),
   onDisconnectWallet: () => dispatch(disconnectWallet()),
-  onOpenSnackbar: (message) => dispatch(openSnackbar({ message })),
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onNavigateToForceExit: () => dispatch(push("/force-withdraw")),
 });
 

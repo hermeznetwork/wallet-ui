@@ -50,11 +50,9 @@ function fetchHermezAccount(
         dispatch(exitActions.loadAccountFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -90,11 +88,9 @@ function fetchFees(): AppThunk {
             dispatch(exitActions.loadFeesFailure(errorMsg));
             dispatch(
               openSnackbar({
-                message: {
-                  type: "error",
-                  raw: error,
-                  parsed: errorMsg,
-                },
+                type: "error",
+                raw: error,
+                parsed: errorMsg,
               })
             );
           });
@@ -126,11 +122,9 @@ function fetchAccountBalance() {
           dispatch(exitActions.loadAccountBalanceFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -180,11 +174,9 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
       dispatch(exitActions.loadEstimatedWithdrawFeeFailure(errorMsg));
       dispatch(
         openSnackbar({
-          message: {
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          },
+          type: "error",
+          raw: error,
+          parsed: errorMsg,
         })
       );
     }
@@ -223,11 +215,9 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
           dispatch(exitActions.stopTransactionApproval());
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -236,7 +226,7 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
+  dispatch(openSnackbar({ type: "info", text: "Transaction submitted" }));
   dispatch(push(`/accounts/${accountIndex}`));
 }
 

@@ -477,7 +477,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): HomeHandlerProps => ({
   onRemoveTimerWithdraw: (timerWithdrawId) =>
     dispatch(globalThunks.removeTimerWithdraw(timerWithdrawId)),
   onNavigateToAccountDetails: (accountIndex) => dispatch(push(`/accounts/${accountIndex}`)),
-  onOpenSnackbar: (message) => dispatch(openSnackbar({ message })),
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onCleanup: () => dispatch(resetState()),
 });
 

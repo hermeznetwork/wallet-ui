@@ -51,11 +51,9 @@ function fetchHermezAccount(
         dispatch(withdrawActions.loadAccountFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -110,11 +108,9 @@ function fetchExit(
           dispatch(withdrawActions.loadExitFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -206,7 +202,7 @@ function withdraw(
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
+  dispatch(openSnackbar({ type: "info", text: "Transaction submitted" }));
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
@@ -218,8 +214,8 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
     "An error occurred on src/store/transactions/withdraw/withdraw.thunks.ts:withdraw"
   );
   dispatch(
-    openSnackbar({
-      message: errorMsg.includes(withdrawAlreadyDoneErrorCode)
+    openSnackbar(
+      errorMsg.includes(withdrawAlreadyDoneErrorCode)
         ? {
             type: "info",
             text: "The withdraw has already been done",
@@ -228,8 +224,8 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
             type: "error",
             raw: error,
             parsed: errorMsg,
-          },
-    })
+          }
+    )
   );
 }
 

@@ -58,11 +58,9 @@ function fetchEthereumAccount(
               dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
               dispatch(
                 openSnackbar({
-                  message: {
-                    type: "error",
-                    raw: error,
-                    parsed: errorMsg,
-                  },
+                  type: "error",
+                  raw: error,
+                  parsed: errorMsg,
                 })
               );
             });
@@ -108,11 +106,9 @@ function fetchEthereumAccounts(
               dispatch(depositActions.loadEthereumAccountsFailure(errorMsg));
               dispatch(
                 openSnackbar({
-                  message: {
-                    type: "error",
-                    raw: error,
-                    parsed: errorMsg,
-                  },
+                  type: "error",
+                  raw: error,
+                  parsed: errorMsg,
                 })
               );
             });
@@ -157,11 +153,9 @@ function fetchEstimatedDepositFee(): AppThunk {
       dispatch(depositActions.loadEstimatedDepositFeeFailure(errorMsg));
       dispatch(
         openSnackbar({
-          message: {
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          },
+          type: "error",
+          raw: error,
+          parsed: errorMsg,
         })
       );
     }
@@ -214,11 +208,9 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
           dispatch(depositActions.stopTransactionApproval());
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -227,7 +219,7 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) {
-  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
+  dispatch(openSnackbar({ type: "info", text: "Transaction submitted" }));
   if (accountIndex) {
     dispatch(push(`/accounts/${accountIndex}`));
   } else {
