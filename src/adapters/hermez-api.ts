@@ -115,13 +115,8 @@ export function getState(
   axiosConfig?: Record<string, unknown>,
   apiUrl?: string
 ): Promise<CoordinatorState> {
-  return CoordinatorAPI.getState(axiosConfig, apiUrl).then((coordinatorState) => {
-    const parsedCoordinatorState = parsers.coordinatorState.safeParse({
-      ...coordinatorState,
-      network: null,
-      node: undefined,
-      recommendedFee: { ...coordinatorState.recommendedFee, createAccount: "foo" },
-    });
+  return CoordinatorAPI.getState(axiosConfig, apiUrl).then((coordinatorState: unknown) => {
+    const parsedCoordinatorState = parsers.coordinatorState.safeParse(coordinatorState);
     if (parsedCoordinatorState.success) {
       return parsedCoordinatorState.data;
     } else {
