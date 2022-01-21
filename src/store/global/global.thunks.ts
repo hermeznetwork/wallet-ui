@@ -11,7 +11,7 @@ import hermezjs, {
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 
-import { REPORT_ERROR_FORM_URL } from "src/constants";
+import { REPORT_ERROR_FORM_URL, REPORT_ERROR_FORM_ENTRIES } from "src/constants";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
 import { openSnackbar } from "src/store/global/global.actions";
@@ -1036,15 +1036,6 @@ function fetchTokensPrice(): AppThunk {
   };
 }
 
-enum ReportErrorFormEntries {
-  url = "entry.2056392454",
-  network = "entry.1632331664",
-  platform = "entry.259085709",
-  message = "entry.1383309652",
-  stack = "entry.1138934571",
-  error = "entry.488074117",
-}
-
 /**
  * Report an error using the report issue form
  */
@@ -1061,18 +1052,18 @@ function reportError(raw: unknown, parsed: string): AppThunk {
     const stack = raw instanceof Error && raw.stack ? raw.stack : "Not available";
 
     const data = {
-      [ReportErrorFormEntries.url]: window.location.href,
-      [ReportErrorFormEntries.network]: network,
-      [ReportErrorFormEntries.message]: parsed,
-      [ReportErrorFormEntries.stack]: stack,
-      [ReportErrorFormEntries.error]: JSON.stringify(raw),
+      [REPORT_ERROR_FORM_ENTRIES.url]: window.location.href,
+      [REPORT_ERROR_FORM_ENTRIES.network]: network,
+      [REPORT_ERROR_FORM_ENTRIES.message]: parsed,
+      [REPORT_ERROR_FORM_ENTRIES.stack]: stack,
+      [REPORT_ERROR_FORM_ENTRIES.error]: JSON.stringify(raw),
     };
 
     void import("platform")
       .then((platform) => {
         const params = new URLSearchParams({
           ...data,
-          [ReportErrorFormEntries.platform]: platform.toString(),
+          [REPORT_ERROR_FORM_ENTRIES.platform]: platform.toString(),
         }).toString();
         window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
       })
@@ -1080,7 +1071,7 @@ function reportError(raw: unknown, parsed: string): AppThunk {
         console.error("An error occured dynamically loading the library 'platform'");
         const params = new URLSearchParams({
           ...data,
-          [ReportErrorFormEntries.platform]: "Not available",
+          [REPORT_ERROR_FORM_ENTRIES.platform]: "Not available",
         }).toString();
         window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
       });
