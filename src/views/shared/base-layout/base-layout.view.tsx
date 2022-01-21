@@ -45,7 +45,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   if (hermezStatusTask.status !== "successful" || fiatExchangeRatesTask.status !== "successful") {
     return (
       <>
-        <div className={classes.spinner}>
+        <div className={classes.spinnerContainer}>
           <Spinner size={theme.spacing(8)} />
         </div>
         {snackbar.status === "open" && (
