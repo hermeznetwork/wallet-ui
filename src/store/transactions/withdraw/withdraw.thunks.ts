@@ -202,7 +202,7 @@ function withdraw(
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar({ type: "info", text: "Transaction submitted" }));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
@@ -217,7 +217,7 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
     openSnackbar(
       errorMsg.includes(withdrawAlreadyDoneErrorCode)
         ? {
-            type: "info",
+            type: "info-msg",
             text: "The withdraw has already been done",
           }
         : {

@@ -274,7 +274,7 @@ function Home({
   function handleEthereumAddressClick(hermezEthereumAddress: string) {
     copyToClipboard(hermezEthereumAddress);
     onOpenSnackbar({
-      type: "info",
+      type: "info-msg",
       text: "The Polygon Hermez address has been copied to the clipboard!",
     });
   }
@@ -368,7 +368,7 @@ function Home({
                             fiatExchangeRates={fiatExchangeRates}
                             onAccountClick={() =>
                               onOpenSnackbar({
-                                type: "info",
+                                type: "info-msg",
                                 text: "This token account is being created",
                               })
                             }

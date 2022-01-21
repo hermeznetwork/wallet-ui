@@ -132,7 +132,7 @@ function fetchFiatExchangeRates(): AppThunk {
 /**
  * Changes the current network status of the application
  */
-function changeNetworkStatus(newNetworkStatus: NetworkStatus, backgroundColor: string): AppThunk {
+function changeNetworkStatus(newNetworkStatus: NetworkStatus): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { networkStatus: previousNetworkStatus },
@@ -140,25 +140,19 @@ function changeNetworkStatus(newNetworkStatus: NetworkStatus, backgroundColor: s
 
     if (previousNetworkStatus === "online" && newNetworkStatus === "offline") {
       dispatch(
-        globalActions.openSnackbar(
-          {
-            type: "info",
-            text: "Connection lost",
-          },
-          backgroundColor
-        )
+        globalActions.openSnackbar({
+          type: "error-msg",
+          text: "Connection lost",
+        })
       );
     }
 
     if (previousNetworkStatus === "offline" && newNetworkStatus === "online") {
       dispatch(
-        globalActions.openSnackbar(
-          {
-            type: "info",
-            text: "Connection restored",
-          },
-          backgroundColor
-        )
+        globalActions.openSnackbar({
+          type: "success-msg",
+          text: "Connection restored",
+        })
       );
     }
 

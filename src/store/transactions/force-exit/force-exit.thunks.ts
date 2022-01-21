@@ -86,7 +86,7 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch) {
-  dispatch(openSnackbar({ type: "info", text: "Transaction submitted" }));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push("/"));
 }
 

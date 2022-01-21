@@ -181,7 +181,7 @@ export type ChainAuthSignatures = Record<HermezEthereumAddress, string>;
 // User reporting
 export type Message =
   | {
-      type: "info";
+      type: "info-msg" | "success-msg" | "error-msg";
       text: string;
     }
   | {

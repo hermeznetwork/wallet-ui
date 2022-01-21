@@ -226,7 +226,7 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar({ type: "info", text: "Transaction submitted" }));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push(`/accounts/${accountIndex}`));
 }
 

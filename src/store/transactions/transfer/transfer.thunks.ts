@@ -267,7 +267,7 @@ function transfer(
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   const route = accountIndex ? `/accounts/${accountIndex}` : "/";
-  dispatch(openSnackbar({ type: "info", text: "Transaction submitted" }));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push(route));
 }
 

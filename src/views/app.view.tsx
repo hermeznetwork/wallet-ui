@@ -41,7 +41,7 @@ interface AppHandlerProps {
   onLoadCoordinatorState: () => void;
   onLoadFiatExchangeRates: () => void;
   onCheckHermezStatus: () => void;
-  onChangeNetworkStatus: (networkStatus: NetworkStatus, color: string) => void;
+  onChangeNetworkStatus: (networkStatus: NetworkStatus) => void;
   onDisconnectAccount: () => void;
   onCheckPendingTransactions: () => void;
   onReloadApp: () => void;
@@ -99,13 +99,11 @@ function App({
   }, [wallet, ethereumNetworkTask, onCheckPendingTransactions]);
 
   React.useEffect(() => {
-    window.addEventListener("online", () => onChangeNetworkStatus("online", theme.palette.green));
+    window.addEventListener("online", () => onChangeNetworkStatus("online"));
   }, [theme, onChangeNetworkStatus]);
 
   React.useEffect(() => {
-    window.addEventListener("offline", () =>
-      onChangeNetworkStatus("offline", theme.palette.red.main)
-    );
+    window.addEventListener("offline", () => onChangeNetworkStatus("offline"));
   }, [theme, onChangeNetworkStatus]);
 
   React.useEffect(() => {
@@ -172,8 +170,8 @@ const mapDispatchToProps = (dispatch: AppDispatch): AppHandlerProps => ({
   onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onLoadFiatExchangeRates: () => dispatch(globalThunks.fetchFiatExchangeRates()),
   onCheckPendingTransactions: () => dispatch(globalThunks.checkPendingTransactions()),
-  onChangeNetworkStatus: (networkStatus, backgroundColor) =>
-    dispatch(globalThunks.changeNetworkStatus(networkStatus, backgroundColor)),
+  onChangeNetworkStatus: (networkStatus) =>
+    dispatch(globalThunks.changeNetworkStatus(networkStatus)),
   onDisconnectAccount: () => dispatch(globalThunks.disconnectWallet()),
   onReloadApp: () => dispatch(globalThunks.reloadApp()),
   onLoadTokensPrice: () => dispatch(globalThunks.fetchTokensPrice()),

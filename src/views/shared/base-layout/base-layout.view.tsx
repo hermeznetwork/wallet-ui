@@ -51,7 +51,6 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         {snackbar.status === "open" && (
           <Snackbar
             message={snackbar.message}
-            backgroundColor={snackbar.backgroundColor}
             onClose={onCloseSnackbar}
             onReport={onReportFromSnackbar}
           />
@@ -77,7 +76,6 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       {snackbar.status === "open" && (
         <Snackbar
           message={snackbar.message}
-          backgroundColor={snackbar.backgroundColor}
           onClose={onCloseSnackbar}
           onReport={onReportFromSnackbar}
         />

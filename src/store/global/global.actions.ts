@@ -141,7 +141,6 @@ export interface LoadFiatExchangeRatesFailure {
 export interface OpenSnackbar {
   type: GlobalActionTypes.OPEN_SNACKBAR;
   message: Message;
-  backgroundColor?: string;
 }
 
 export interface CloseSnackbar {
@@ -444,11 +443,10 @@ function loadFiatExchangeRatesFailure(error: string): LoadFiatExchangeRatesFailu
   };
 }
 
-function openSnackbar(message: Message, backgroundColor?: string): OpenSnackbar {
+function openSnackbar(message: Message): OpenSnackbar {
   return {
     type: GlobalActionTypes.OPEN_SNACKBAR,
     message,
-    backgroundColor,
   };
 }
 

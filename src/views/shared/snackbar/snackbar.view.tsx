@@ -6,35 +6,27 @@ import { ReactComponent as CloseIconDark } from "src/images/icons/close.svg";
 import { ReactComponent as CloseIconLight } from "src/images/icons/close-white.svg";
 import useSnackbarStyles from "src/views/shared/snackbar/snackbar.styles";
 import { SNACKBAR_AUTO_HIDE_DURATION } from "src/constants";
-import theme from "src/styles/theme";
 //domain
 import { Message } from "src/domain";
 
 interface SnackbarProps {
   message: Message;
-  backgroundColor?: string;
   onClose: () => void;
   onReport: (raw: unknown, parsed: string) => void;
 }
 
-function Snackbar({ message, backgroundColor, onClose, onReport }: SnackbarProps): JSX.Element {
-  const bkgColor = backgroundColor
-    ? backgroundColor
-    : message.type === "error"
-    ? theme.palette.red.main
-    : undefined;
-
-  const classes = useSnackbarStyles({ backgroundColor: bkgColor });
+function Snackbar({ message, onClose, onReport }: SnackbarProps): JSX.Element {
+  const classes = useSnackbarStyles({ type: message.type });
 
   React.useEffect(() => {
-    if (message.type === "info") {
+    if (message.type !== "error") {
       const closingTimeoutId = setTimeout(onClose, SNACKBAR_AUTO_HIDE_DURATION);
 
       return () => clearTimeout(closingTimeoutId);
     }
   }, [message.type, onClose]);
 
-  if (message.type === "info") {
+  if (message.type !== "error") {
     return (
       <div className={classes.root}>
         <Container disableVerticalGutters>
@@ -59,7 +51,7 @@ function Snackbar({ message, backgroundColor, onClose, onReport }: SnackbarProps
               }}
             />
             <button className={classes.closeButton} onClick={onClose}>
-              {bkgColor ? <CloseIconLight /> : <CloseIconDark />}
+              {message.type === "error" ? <CloseIconLight /> : <CloseIconDark />}
             </button>
           </div>
         </Container>

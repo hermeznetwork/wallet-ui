@@ -219,7 +219,7 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) {
-  dispatch(openSnackbar({ type: "info", text: "Transaction submitted" }));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   if (accountIndex) {
     dispatch(push(`/accounts/${accountIndex}`));
   } else {
