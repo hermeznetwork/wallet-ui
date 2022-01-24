@@ -68,11 +68,11 @@ declare module "@hermeznetwork/*" {
     token: Token;
     merkleProof: MerkleProof;
     balance: string;
-    // bjj: string;
+    bjj: string;
     delayedWithdrawRequest: number | null;
+    hezEthereumAddress: string;
     // fee: number;
     // hash: string;
-    // hezEthereumAddress: string;
   };
 
   export type HistoryTransaction = HermezApiResourceItem & {

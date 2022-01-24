@@ -230,6 +230,8 @@ const merkleProof = StrictSchema<MerkleProof>()(
 const exit = StrictSchema<Exit>()(
   hermezApiResourceItem.and(
     z.object({
+      bjj: z.string(),
+      hezEthereumAddress: z.string(),
       accountIndex: z.string(),
       batchNum: z.number(),
       delayedWithdraw: z.number().nullable(),
