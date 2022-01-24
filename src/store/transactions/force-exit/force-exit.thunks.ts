@@ -1,11 +1,9 @@
 import { push } from "connected-react-router";
 import { BigNumber } from "ethers";
-import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as forceExitActions from "src/store/transactions/force-exit/force-exit.actions";
 import { openSnackbar } from "src/store/global/global.actions";
-import theme from "src/styles/theme";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain";
 // adapters
@@ -39,13 +37,17 @@ function fetchAccounts(
           fromItem,
         })
         .then((accounts) => dispatch(forceExitActions.loadAccountsSuccess(accounts)))
-        .catch((err: unknown) =>
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(forceExitActions.loadAccountsFailure(errorMsg));
           dispatch(
-            forceExitActions.loadAccountsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccounts")
-            )
-          )
-        );
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
     }
   };
 }
@@ -60,31 +62,26 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
 
     if (signer) {
       adapters.hermezApi
-        .forceExit(
-          HermezCompressedAmount.compressAmount(amount.toString()),
-          account.accountIndex,
-          account.token,
-          signer
-        )
+        .forceExit(amount, account.accountIndex, account.token, signer)
         .then(() => handleTransactionSuccess(dispatch))
         .catch((error: unknown) => {
-          console.error(error);
+          const errorMsg = adapters.parseError(error);
           dispatch(forceExitActions.stopTransactionApproval());
-          handleTransactionFailure(dispatch, error);
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
         });
     }
   };
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch) {
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push("/"));
-}
-
-function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = adapters.getErrorMessage(error);
-  dispatch(forceExitActions.stopTransactionApproval());
-  dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
 export { fetchAccounts, forceExit };

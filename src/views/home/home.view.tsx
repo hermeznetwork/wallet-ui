@@ -38,6 +38,7 @@ import {
   HermezAccount,
   HermezWallet,
   isHermezAccount,
+  Message,
   PendingDelayedWithdraws,
   PendingDeposit,
   PendingDeposits,
@@ -94,7 +95,7 @@ interface HomeHandlerProps {
   onAddTimerWithdraw: (timer: TimerWithdraw) => void;
   onRemoveTimerWithdraw: (message: string) => void;
   onNavigateToAccountDetails: (accountIndex: string) => void;
-  onOpenSnackbar: (message: string) => void;
+  onOpenSnackbar: (message: Message) => void;
   onCleanup: () => void;
 }
 
@@ -272,7 +273,10 @@ function Home({
    */
   function handleEthereumAddressClick(hermezEthereumAddress: string) {
     copyToClipboard(hermezEthereumAddress);
-    onOpenSnackbar("The Polygon Hermez address has been copied to the clipboard!");
+    onOpenSnackbar({
+      type: "info-msg",
+      text: "The Polygon Hermez address has been copied to the clipboard!",
+    });
   }
   return (
     <>
@@ -363,7 +367,10 @@ function Home({
                             preferredCurrency={preferredCurrency}
                             fiatExchangeRates={fiatExchangeRates}
                             onAccountClick={() =>
-                              onOpenSnackbar("This token account is being created")
+                              onOpenSnackbar({
+                                type: "info-msg",
+                                text: "This token account is being created",
+                              })
                             }
                             coordinatorState={coordinatorState}
                           />

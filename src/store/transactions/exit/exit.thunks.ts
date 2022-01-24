@@ -8,7 +8,6 @@ import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
 import { openSnackbar } from "src/store/global/global.actions";
-import theme from "src/styles/theme";
 // utils
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import { feeBigIntToNumber } from "src/utils/fees";
@@ -43,13 +42,17 @@ function fetchHermezAccount(
         poolTransactions
       )
       .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
-      .catch((err: unknown) =>
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(error);
+        dispatch(exitActions.loadAccountFailure(errorMsg));
         dispatch(
-          exitActions.loadAccountFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchHermezAccount")
-          )
-        )
-      );
+          openSnackbar({
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          })
+        );
+      });
   };
 }
 
@@ -74,13 +77,17 @@ function fetchFees(): AppThunk {
         return adapters.hermezApi
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(exitActions.loadFeesSuccess(res.recommendedFee)))
-          .catch((err: unknown) =>
+          .catch((error: unknown) => {
+            const errorMsg = adapters.parseError(error);
+            dispatch(exitActions.loadFeesFailure(errorMsg));
             dispatch(
-              exitActions.loadFeesFailure(
-                adapters.getErrorMessage(err, "Oops... an error occurred on fetchFees")
-              )
-            )
-          );
+              openSnackbar({
+                type: "error",
+                raw: error,
+                parsed: errorMsg,
+              })
+            );
+          });
       }
     }
   };
@@ -101,13 +108,17 @@ function fetchAccountBalance() {
       provider
         .getBalance(ethereumAddress)
         .then((balance) => dispatch(exitActions.loadAccountBalanceSuccess(balance)))
-        .catch((err: unknown) =>
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(exitActions.loadAccountBalanceFailure(errorMsg));
           dispatch(
-            exitActions.loadAccountBalanceFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccountBalance")
-            )
-          )
-        );
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
     }
   };
 }
@@ -146,11 +157,15 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
           );
         }
       }
-    } catch (err) {
+    } catch (error: unknown) {
+      const errorMsg = adapters.parseError(error);
+      dispatch(exitActions.loadEstimatedWithdrawFeeFailure(errorMsg));
       dispatch(
-        exitActions.loadEstimatedWithdrawFeeFailure(
-          adapters.getErrorMessage(err, "Oops... an error occurred on fetchEstimatedWithdrawFee")
-        )
+        openSnackbar({
+          type: "error",
+          raw: error,
+          parsed: errorMsg,
+        })
       );
     }
   };
@@ -180,21 +195,24 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
       return adapters.hermezApi
         .generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
-        .catch((error: unknown) => handleTransactionFailure(dispatch, error));
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(exitActions.stopTransactionApproval());
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
     }
   };
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push(`/accounts/${accountIndex}`));
-}
-
-function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = adapters.getErrorMessage(error);
-  console.error(error);
-  dispatch(exitActions.stopTransactionApproval());
-  dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
 export { fetchHermezAccount, fetchFees, fetchAccountBalance, fetchEstimatedWithdrawFee, exit };

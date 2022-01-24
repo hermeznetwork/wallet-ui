@@ -86,7 +86,9 @@ export function postCreateAccountAuthorization(
         throw new Error(errorMessage);
       } else {
         throw new Error(
-          "Oops... An error occurred while creating the account authorization but I could not decode the error response from the server."
+          `An error occurred on postCreateAccountAuthorization but the server response could not be decoded: ${JSON.stringify(
+            error.response
+          )}`
         );
       }
     }
@@ -589,7 +591,7 @@ export function generateAndSendL2Tx(
 }
 
 export function deposit(
-  amount: HermezCompressedAmount,
+  amount: BigNumber,
   hezEthereumAddress: string,
   token: Token,
   babyJubJub: string,
@@ -622,7 +624,7 @@ export function deposit(
 }
 
 export function forceExit(
-  amount: HermezCompressedAmount,
+  amount: BigNumber,
   accountIndex: string,
   token: Token,
   signerData: Signers.SignerData

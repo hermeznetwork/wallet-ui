@@ -5,7 +5,6 @@ import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as withdrawActions from "src/store/transactions/withdraw/withdraw.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
-import theme from "src/styles/theme";
 import { mergeDelayedWithdraws } from "src/utils/transactions";
 import { WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
 // domain
@@ -45,11 +44,15 @@ function fetchHermezAccount(
       )
       .then((res) => dispatch(withdrawActions.loadAccountSuccess(res)))
       .catch((error: unknown) => {
-        const errorMsg = adapters.getErrorMessage(
-          error,
-          "Oops... an error occurred on fetchHermezAccount"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(withdrawActions.loadAccountFailure(errorMsg));
+        dispatch(
+          openSnackbar({
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          })
+        );
       });
   };
 }
@@ -94,13 +97,17 @@ function fetchExit(
             dispatch(withdrawActions.loadExitSuccess(exit));
           }
         })
-        .catch((err: unknown) =>
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(withdrawActions.loadExitFailure(errorMsg));
           dispatch(
-            withdrawActions.loadExitFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchExit")
-            )
-          )
-        );
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
     }
   };
 }
@@ -159,8 +166,6 @@ function withdraw(
             handleTransactionSuccess(dispatch, account.accountIndex);
           })
           .catch((error: unknown) => {
-            console.error(error);
-            dispatch(withdrawActions.stopTransactionApproval());
             handleTransactionFailure(dispatch, error);
           });
       } else {
@@ -183,8 +188,6 @@ function withdraw(
             handleTransactionSuccess(dispatch, account.accountIndex);
           })
           .catch((error: unknown) => {
-            console.error(error);
-            dispatch(withdrawActions.stopTransactionApproval());
             handleTransactionFailure(dispatch, error);
           });
       }
@@ -193,18 +196,28 @@ function withdraw(
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
+  dispatch(withdrawActions.stopTransactionApproval());
   const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
-  const errorMsg = adapters.getErrorMessage(error);
-  const snackbarMsg = errorMsg.includes(withdrawAlreadyDoneErrorCode)
-    ? "The withdraw has already been done"
-    : errorMsg;
-
-  dispatch(openSnackbar(`Transaction failed - ${snackbarMsg}`, theme.palette.red.main));
+  const errorMsg = adapters.parseError(error);
+  dispatch(
+    openSnackbar(
+      errorMsg.includes(withdrawAlreadyDoneErrorCode)
+        ? {
+            type: "info-msg",
+            text: "The withdraw has already been done",
+          }
+        : {
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          }
+    )
+  );
 }
 
 export { fetchHermezAccount, fetchExit, withdraw };

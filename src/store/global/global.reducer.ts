@@ -4,20 +4,22 @@ import { AsyncTask } from "src/utils/types";
 // domain
 import {
   CoordinatorState,
+  Env,
   EthereumNetwork,
   FiatExchangeRates,
-  NetworkStatus,
   HermezStatus,
   HermezWallet,
+  Message,
+  NetworkStatus,
   PendingDelayedWithdraws,
   PendingDeposits,
   PendingWithdraw,
   PendingWithdraws,
+  PoolTransaction,
   Signers,
   TimerWithdraw,
   TimerWithdraws,
   Token,
-  PoolTransaction,
 } from "src/domain";
 // adapters
 import * as localStoragePersistence from "src/adapters/local-storage";
@@ -47,11 +49,11 @@ export type SnackbarState =
     }
   | {
       status: "open";
-      message: string;
-      backgroundColor?: string;
+      message: Message;
     };
 
 export interface GlobalState {
+  env: Env | undefined;
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
@@ -75,6 +77,7 @@ export interface GlobalState {
 
 function getInitialGlobalState(): GlobalState {
   return {
+    env: undefined,
     hermezStatusTask: {
       status: "pending",
     },
@@ -124,6 +127,18 @@ function globalReducer(
   action: GlobalAction
 ): GlobalState {
   switch (action.type) {
+    case GlobalActionTypes.LOAD_ENV_SUCCESS: {
+      return {
+        ...state,
+        env: action.env,
+      };
+    }
+    case GlobalActionTypes.LOAD_ENV_FAILURE: {
+      return {
+        ...state,
+        env: undefined,
+      };
+    }
     case GlobalActionTypes.LOAD_HERMEZ_STATUS: {
       return {
         ...state,
@@ -240,13 +255,21 @@ function globalReducer(
         },
       };
     }
+    case GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE: {
+      return {
+        ...state,
+        fiatExchangeRatesTask: {
+          status: "failed",
+          error: action.error,
+        },
+      };
+    }
     case GlobalActionTypes.OPEN_SNACKBAR: {
       return {
         ...state,
         snackbar: {
           status: "open",
           message: action.message,
-          backgroundColor: action.backgroundColor,
         },
       };
     }
