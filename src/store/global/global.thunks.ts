@@ -22,6 +22,7 @@ import { isAsyncTaskDataAvailable } from "src/utils/types";
 // domain
 import {
   CoordinatorState,
+  Env,
   Exit,
   Exits,
   FiatExchangeRates,
@@ -90,36 +91,30 @@ function changeRedirectRoute(redirectRoute: string): AppThunk {
 /**
  * Fetches the USD exchange rates for the requested currency symbols
  */
-function fetchFiatExchangeRates(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => AppState) => {
-    const {
-      global: { env },
-    } = getState();
+function fetchFiatExchangeRates(env: Env): AppThunk {
+  return (dispatch: AppDispatch) => {
+    const symbols = Object.values(CurrencySymbol)
+      .filter((currency) => currency.code !== CurrencySymbol.USD.code)
+      .map((currency) => currency.code);
 
-    if (env) {
-      const symbols = Object.values(CurrencySymbol)
-        .filter((currency) => currency.code !== CurrencySymbol.USD.code)
-        .map((currency) => currency.code);
+    dispatch(globalActions.loadFiatExchangeRates());
 
-      dispatch(globalActions.loadFiatExchangeRates());
-
-      return adapters.priceUpdater
-        .getFiatExchangeRates(symbols, env)
-        .then((fiatExchangeRates: FiatExchangeRates) =>
-          dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
-        )
-        .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
-        });
-    }
+    return adapters.priceUpdater
+      .getFiatExchangeRates(symbols, env)
+      .then((fiatExchangeRates: FiatExchangeRates) =>
+        dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
+      )
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(error);
+        dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
+        dispatch(
+          openSnackbar({
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          })
+        );
+      });
   };
 }
 

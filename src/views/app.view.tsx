@@ -17,6 +17,7 @@ import { Theme } from "src/styles/theme";
 //domain
 import {
   EthereumNetwork,
+  Env,
   FiatExchangeRates,
   NetworkStatus,
   HermezStatus,
@@ -24,6 +25,7 @@ import {
 } from "src/domain";
 
 interface AppStateProps {
+  env: Env | undefined;
   wallet: HermezWallet.HermezWallet | undefined;
   header: HeaderState;
   snackbar: SnackbarState;
@@ -39,7 +41,7 @@ interface AppHandlerProps {
   onCloseSnackbar: () => void;
   onReportFromSnackbar: (raw: unknown, parsed: string) => void;
   onLoadCoordinatorState: () => void;
-  onLoadFiatExchangeRates: () => void;
+  onLoadFiatExchangeRates: (env: Env) => void;
   onCheckHermezStatus: () => void;
   onLoadEnv: () => void;
   onChangeNetworkStatus: (networkStatus: NetworkStatus) => void;
@@ -52,6 +54,7 @@ interface AppHandlerProps {
 type AppProps = AppStateProps & AppHandlerProps;
 
 function App({
+  env,
   wallet,
   header,
   snackbar,
@@ -78,9 +81,14 @@ function App({
 
   React.useEffect(() => {
     onLoadEnv();
-    onCheckHermezStatus();
-    onLoadFiatExchangeRates();
-  }, [onLoadEnv, onCheckHermezStatus, onLoadFiatExchangeRates]);
+  }, [onLoadEnv]);
+
+  React.useEffect(() => {
+    if (env) {
+      onCheckHermezStatus();
+      onLoadFiatExchangeRates(env);
+    }
+  }, [env, onCheckHermezStatus, onLoadFiatExchangeRates]);
 
   React.useEffect(() => {
     if (ethereumNetworkTask.status === "successful") {
@@ -153,6 +161,7 @@ function App({
 }
 
 const mapStateToProps = (state: AppState): AppStateProps => ({
+  env: state.global.env,
   wallet: state.global.wallet,
   header: state.global.header,
   snackbar: state.global.snackbar,
@@ -172,7 +181,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): AppHandlerProps => ({
   onLoadEnv: () => dispatch(globalThunks.loadEnv()),
   onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),
   onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
-  onLoadFiatExchangeRates: () => dispatch(globalThunks.fetchFiatExchangeRates()),
+  onLoadFiatExchangeRates: (env: Env) => dispatch(globalThunks.fetchFiatExchangeRates(env)),
   onCheckPendingTransactions: () => dispatch(globalThunks.checkPendingTransactions()),
   onChangeNetworkStatus: (networkStatus) =>
     dispatch(globalThunks.changeNetworkStatus(networkStatus)),
