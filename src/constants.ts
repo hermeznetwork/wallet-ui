@@ -69,7 +69,5 @@ export const REPORT_ERROR_FORM_ENTRIES = {
   url: "entry.2056392454",
   network: "entry.1632331664",
   platform: "entry.259085709",
-  message: "entry.1383309652",
-  stack: "entry.1138934571",
-  error: "entry.488074117",
+  error: "entry.1383309652",
 };

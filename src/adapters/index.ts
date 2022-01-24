@@ -24,8 +24,17 @@ export function parseError(error: unknown): string {
   if (typeof error === "string") {
     return error;
   } else if (error instanceof Error) {
-    const serializedError = `${error.message}. ${JSON.stringify(error)}.`;
-    return error.stack ? `${serializedError}. ${error.stack}` : serializedError;
+    const selectMultipleTabsAndSpaces = /[^\S\r\n]{2,}/g;
+    const maxStackLength = 4096;
+    return [
+      JSON.stringify(error),
+      ...(error.stack
+        ? [
+            ">>>>>>>>>> error.stack >>>>>>>>>>",
+            error.stack.replaceAll(selectMultipleTabsAndSpaces, " ").substring(0, maxStackLength),
+          ]
+        : []),
+    ].join("\n");
   } else {
     const parsedMessageKeyError = messageKeyErrorParser.safeParse(error);
     if (parsedMessageKeyError.success) {
