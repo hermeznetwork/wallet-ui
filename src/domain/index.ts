@@ -10,7 +10,6 @@ import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
   AccountAuthorization,
-  Accounts,
   CoordinatorState,
   Exit,
   Exits,
@@ -46,7 +45,6 @@ export interface EthereumNetwork {
 }
 
 export type HermezRawAccount = hermezjs.Account;
-export type HermezRawAccounts = hermezjs.Accounts;
 
 export type HermezAccount = hermezjs.Account & { fiatBalance?: number };
 
@@ -177,3 +175,47 @@ export type ChainTimerWithdraws = Record<HermezEthereumAddress, TimerWithdraw[]>
 
 export type AuthSignatures = Record<ChainId, ChainAuthSignatures>;
 export type ChainAuthSignatures = Record<HermezEthereumAddress, string>;
+
+// User reporting
+export type Message =
+  | {
+      type: "info-msg" | "success-msg" | "error-msg";
+      text: string;
+    }
+  | {
+      type: "error";
+      text?: string;
+      raw: unknown;
+      parsed: string;
+    };
+
+// Env
+
+export interface ProductionLiteral {
+  REACT_APP_ENV: "production";
+}
+
+export interface ProductionVars {
+  REACT_APP_INFURA_API_KEY: string;
+  REACT_APP_PRICE_UPDATER_API_URL: string;
+  REACT_APP_PRICE_UPDATER_API_KEY: string;
+  REACT_APP_WALLETCONNECT_BRIDGE: string;
+}
+
+export type ProductionEnv = ProductionLiteral & ProductionVars;
+
+export interface DevelopmentLiteral {
+  REACT_APP_ENV: "development";
+}
+
+export type DevelopmentVars = ProductionVars & {
+  REACT_APP_HERMEZ_API_URL: string;
+  REACT_APP_HERMEZ_CONTRACT_ADDRESS: string;
+  REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS: string;
+  REACT_APP_BATCH_EXPLORER_URL: string;
+  REACT_APP_ETHERSCAN_URL: string;
+};
+
+export type DevelopmentEnv = DevelopmentLiteral & DevelopmentVars;
+
+export type Env = ProductionEnv | DevelopmentEnv;

@@ -24,7 +24,7 @@ import { version as packagejsonVersion } from "src/../package.json";
 import { AppDispatch, AppState } from "src/store";
 import { Theme } from "src/styles/theme";
 //domain
-import { HermezWallet } from "src/domain";
+import { HermezWallet, Message } from "src/domain";
 
 interface MyAccountStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
@@ -35,7 +35,7 @@ interface MyAccountHandlerProps {
   onChangeHeader: () => void;
   onChangePreferredCurrency: (selectedTokenId: string) => void;
   onDisconnectWallet: () => void;
-  onOpenSnackbar: (message: string) => void;
+  onOpenSnackbar: (message: Message) => void;
   onNavigateToForceExit: () => void;
   onNavigateToMyCode: () => void;
 }
@@ -64,7 +64,10 @@ function MyAccount({
    */
   function handleEthereumAddressClick(hermezEthereumAddress: string) {
     copyToClipboard(hermezEthereumAddress);
-    onOpenSnackbar("The Polygon Hermez address has been copied to the clipboard!");
+    onOpenSnackbar({
+      type: "info-msg",
+      text: "The Polygon Hermez address has been copied to the clipboard!",
+    });
   }
 
   /**

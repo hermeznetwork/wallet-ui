@@ -41,7 +41,10 @@ export const STORAGE_VERSION_KEY = "hermezWalletStorageVersion";
 
 export const STORAGE_VERSION = 2;
 
-export const REPORT_ISSUE_FORM_URL =
+export const REPORT_ERROR_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLScYF-Ji2N8thuT6Zk5P9pdlYiL1V3Jx2aAaojcwTTC8qNS0Bg/viewform";
+
+export const REPORT_FEEDBACK_FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLScvCK2OaRYSXcFYEiWAkbtWzHxWh8fGO4uOn0sIRdPP9Gigeg/viewform";
 
 export const HERMEZ_HELP_CENTER_URL = "https://docs.hermez.io/#/faq/end-users";
@@ -61,3 +64,10 @@ export const WITHDRAWAL_WASM_URL =
 
 export const WITHDRAWAL_ZKEY_URL =
   "https://raw.githubusercontent.com/hermeznetwork/hermezjs/main/withdraw-circuit-files/withdraw_hez4_final.zkey";
+
+export const REPORT_ERROR_FORM_ENTRIES = {
+  url: "entry.2056392454",
+  network: "entry.1632331664",
+  platform: "entry.259085709",
+  error: "entry.1383309652",
+};

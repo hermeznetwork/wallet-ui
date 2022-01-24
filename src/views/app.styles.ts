@@ -79,15 +79,6 @@ const useAppStyles = createUseStyles((theme: Theme) => ({
       margin: 0,
     },
   },
-  root: {
-    height: "100%",
-    width: "100%",
-    flex: 1,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: theme.palette.primary.main,
-  },
 }));
 
 export default useAppStyles;

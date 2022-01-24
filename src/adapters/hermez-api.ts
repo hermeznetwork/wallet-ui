@@ -25,7 +25,6 @@ import {
   HermezAccount,
   HermezAccounts,
   HermezRawAccount,
-  HermezRawAccounts,
   HermezWallet,
   HistoryTransaction,
   HistoryTransactions,
@@ -86,7 +85,9 @@ export function postCreateAccountAuthorization(
         throw new Error(errorMessage);
       } else {
         throw new Error(
-          "Oops... An error occurred while creating the account authorization but I could not decode the error response from the server."
+          `An error occurred on postCreateAccountAuthorization but the server response could not be decoded: ${JSON.stringify(
+            error.response
+          )}`
         );
       }
     }
@@ -314,48 +315,6 @@ export function getTokens(
   );
 }
 
-export function getAccounts(
-  address: string,
-  tokenIds?: number[],
-  fromItem?: number,
-  order?: PaginationOrder,
-  limit?: number,
-  axiosConfig?: Record<string, unknown>
-): Promise<HermezRawAccounts> {
-  return CoordinatorAPI.getAccounts(address, tokenIds, fromItem, order, limit, axiosConfig).then(
-    (hermezRawAccounts: unknown) => {
-      const parsedUnknownHermezRawAccounts =
-        parsers.unknownHermezRawAccounts.safeParse(hermezRawAccounts);
-      if (parsedUnknownHermezRawAccounts.success) {
-        return {
-          pendingItems: parsedUnknownHermezRawAccounts.data.pendingItems,
-          accounts: parsedUnknownHermezRawAccounts.data.accounts.reduce(
-            (acc: HermezRawAccount[], curr: unknown, index: number): HermezRawAccount[] => {
-              const parsedHermezRawAccount = parsers.hermezRawAccount.safeParse(curr);
-              if (parsedHermezRawAccount.success) {
-                return [...acc, parsedHermezRawAccount.data];
-              } else {
-                logDecodingError(
-                  parsedHermezRawAccount.error,
-                  `Could not decode the Account at index ${index} from the function getAccounts. It has been ignored.`
-                );
-                return acc;
-              }
-            },
-            []
-          ),
-        };
-      } else {
-        logDecodingError(
-          parsedUnknownHermezRawAccounts.error,
-          "Could not decode the resource Accounts from the function getAccounts. Can't show any data."
-        );
-        throw parsedUnknownHermezRawAccounts.error;
-      }
-    }
-  );
-}
-
 /**
  * Fetches the transactions in the pool for a Hermez address
  */
@@ -505,8 +464,45 @@ export function getHermezAccounts({
   fiatExchangeRates: FiatExchangeRates;
   pendingDeposits?: PendingDeposit[];
 }): Promise<HermezAccounts> {
-  return getAccounts(hermezEthereumAddress, tokenIds, fromItem, order, limit, axiosConfig).then(
-    (accountsResponse) => ({
+  return CoordinatorAPI.getAccounts(
+    hermezEthereumAddress,
+    tokenIds,
+    fromItem,
+    order,
+    limit,
+    axiosConfig
+  )
+    .then((hermezRawAccounts: unknown) => {
+      const parsedUnknownHermezRawAccounts =
+        parsers.unknownHermezRawAccounts.safeParse(hermezRawAccounts);
+      if (parsedUnknownHermezRawAccounts.success) {
+        return {
+          pendingItems: parsedUnknownHermezRawAccounts.data.pendingItems,
+          accounts: parsedUnknownHermezRawAccounts.data.accounts.reduce(
+            (acc: HermezRawAccount[], curr: unknown, index: number): HermezRawAccount[] => {
+              const parsedHermezRawAccount = parsers.hermezRawAccount.safeParse(curr);
+              if (parsedHermezRawAccount.success) {
+                return [...acc, parsedHermezRawAccount.data];
+              } else {
+                logDecodingError(
+                  parsedHermezRawAccount.error,
+                  `Could not decode the Account at index ${index} from the function getAccounts. It has been ignored.`
+                );
+                return acc;
+              }
+            },
+            []
+          ),
+        };
+      } else {
+        logDecodingError(
+          parsedUnknownHermezRawAccounts.error,
+          "Could not decode the resource Accounts from the function getAccounts. Can't show any data."
+        );
+        throw parsedUnknownHermezRawAccounts.error;
+      }
+    })
+    .then((accountsResponse) => ({
       pendingItems: accountsResponse.pendingItems,
       accounts: accountsResponse.accounts.map((account) =>
         createHermezAccount(
@@ -518,14 +514,13 @@ export function getHermezAccounts({
           pendingDeposits
         )
       ),
-    })
-  );
+    }));
 }
 
 /**
  * Fetches the HermezRawAccount for an accountIndex.
  */
-export function getAccount(accountIndex: string): Promise<HermezRawAccount> {
+function getHermezRawAccount(accountIndex: string): Promise<HermezRawAccount> {
   return CoordinatorAPI.getAccount(accountIndex).then((hermezRawAccount: unknown) => {
     const parsedHermezRawAccount = parsers.hermezRawAccount.safeParse(hermezRawAccount);
     if (parsedHermezRawAccount.success) {
@@ -543,14 +538,14 @@ export function getAccount(accountIndex: string): Promise<HermezRawAccount> {
 /**
  * Fetches the HermezAccount for an accountIndex.
  */
-export function fetchHermezAccount(
+export function getHermezAccount(
   accountIndex: string,
   tokensPriceTask: AsyncTask<Token[], string>,
   preferredCurrency: string,
   fiatExchangeRates: FiatExchangeRates,
   poolTransactions?: PoolTransaction[]
 ): Promise<HermezAccount> {
-  return getAccount(accountIndex).then((account) =>
+  return getHermezRawAccount(accountIndex).then((account) =>
     createHermezAccount(
       account,
       tokensPriceTask,
@@ -589,7 +584,7 @@ export function generateAndSendL2Tx(
 }
 
 export function deposit(
-  amount: HermezCompressedAmount,
+  amount: BigNumber,
   hezEthereumAddress: string,
   token: Token,
   babyJubJub: string,
@@ -622,7 +617,7 @@ export function deposit(
 }
 
 export function forceExit(
-  amount: HermezCompressedAmount,
+  amount: BigNumber,
   accountIndex: string,
   token: Token,
   signerData: Signers.SignerData

@@ -11,14 +11,18 @@ import hermezjs, {
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 
+import { REPORT_ERROR_FORM_URL, REPORT_ERROR_FORM_ENTRIES } from "src/constants";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
+import { openSnackbar } from "src/store/global/global.actions";
 import * as storage from "src/utils/storage";
 import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
+import { isAsyncTaskDataAvailable } from "src/utils/types";
 // domain
 import {
   CoordinatorState,
+  Env,
   Exit,
   Exits,
   FiatExchangeRates,
@@ -41,30 +45,36 @@ import * as adapters from "src/adapters";
  * a known environment and if not will use the one provided in the .env file
  */
 function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
-  return (dispatch: AppDispatch) => {
-    dispatch(globalActions.loadEthereumNetwork());
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { env },
+    } = getState();
 
-    if (
-      process.env.REACT_APP_ENV === "production" &&
-      hermezjs.Environment.isEnvironmentSupported(chainId)
-    ) {
-      hermezjs.Environment.setEnvironment(chainId);
+    if (env) {
+      dispatch(globalActions.loadEthereumNetwork());
+
+      if (
+        env.REACT_APP_ENV === "production" &&
+        hermezjs.Environment.isEnvironmentSupported(chainId)
+      ) {
+        hermezjs.Environment.setEnvironment(chainId);
+      }
+
+      if (env.REACT_APP_ENV === "development") {
+        hermezjs.Environment.setEnvironment({
+          baseApiUrl: env.REACT_APP_HERMEZ_API_URL,
+          contractAddresses: {
+            [hermezjs.Constants.ContractNames.Hermez]: env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
+            [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
+              env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS,
+          },
+          batchExplorerUrl: env.REACT_APP_BATCH_EXPLORER_URL,
+          etherscanUrl: env.REACT_APP_ETHERSCAN_URL,
+        });
+      }
+
+      dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: chainName }));
     }
-
-    if (process.env.REACT_APP_ENV === "development") {
-      hermezjs.Environment.setEnvironment({
-        baseApiUrl: process.env.REACT_APP_HERMEZ_API_URL,
-        contractAddresses: {
-          [hermezjs.Constants.ContractNames.Hermez]: process.env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
-          [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
-            process.env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS,
-        },
-        batchExplorerUrl: process.env.REACT_APP_BATCH_EXPLORER_URL,
-        etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL,
-      });
-    }
-
-    dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: chainName }));
   };
 }
 
@@ -81,7 +91,7 @@ function changeRedirectRoute(redirectRoute: string): AppThunk {
 /**
  * Fetches the USD exchange rates for the requested currency symbols
  */
-function fetchFiatExchangeRates(): AppThunk {
+function fetchFiatExchangeRates(env: Env): AppThunk {
   return (dispatch: AppDispatch) => {
     const symbols = Object.values(CurrencySymbol)
       .filter((currency) => currency.code !== CurrencySymbol.USD.code)
@@ -90,16 +100,20 @@ function fetchFiatExchangeRates(): AppThunk {
     dispatch(globalActions.loadFiatExchangeRates());
 
     return adapters.priceUpdater
-      .getFiatExchangeRates(symbols)
+      .getFiatExchangeRates(symbols, env)
       .then((fiatExchangeRates: FiatExchangeRates) =>
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
       )
       .catch((error: unknown) => {
-        const errorMsg = adapters.getErrorMessage(
-          error,
-          "Oops... an error occurred on fetchFiatExchangeRates"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
+        dispatch(
+          openSnackbar({
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          })
+        );
       });
   };
 }
@@ -107,21 +121,52 @@ function fetchFiatExchangeRates(): AppThunk {
 /**
  * Changes the current network status of the application
  */
-function changeNetworkStatus(newNetworkStatus: NetworkStatus, backgroundColor: string): AppThunk {
+function changeNetworkStatus(newNetworkStatus: NetworkStatus): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { networkStatus: previousNetworkStatus },
     } = getState();
 
     if (previousNetworkStatus === "online" && newNetworkStatus === "offline") {
-      dispatch(globalActions.openSnackbar("Connection lost", backgroundColor));
+      dispatch(
+        globalActions.openSnackbar({
+          type: "error-msg",
+          text: "Connection lost",
+        })
+      );
     }
 
     if (previousNetworkStatus === "offline" && newNetworkStatus === "online") {
-      dispatch(globalActions.openSnackbar("Connection restored", backgroundColor));
+      dispatch(
+        globalActions.openSnackbar({
+          type: "success-msg",
+          text: "Connection restored",
+        })
+      );
     }
 
     dispatch(globalActions.changeNetworkStatus(newNetworkStatus));
+  };
+}
+
+function loadEnv(): AppThunk {
+  return (dispatch: AppDispatch) => {
+    dispatch(globalActions.loadEnv());
+
+    const env = adapters.env.getEnv();
+    if (env.success) {
+      dispatch(globalActions.loadEnvSuccess(env.data));
+    } else {
+      const errorMsg = adapters.parseError(env.error);
+      dispatch(globalActions.loadEnvFailure(errorMsg));
+      dispatch(
+        openSnackbar({
+          type: "error",
+          raw: env.error,
+          parsed: errorMsg,
+        })
+      );
+    }
   };
 }
 
@@ -160,11 +205,15 @@ function fetchPoolTransactions(): AppThunk {
           dispatch(globalActions.loadPoolTransactionsSuccess(poolTransactions.transactions))
         )
         .catch((error: unknown) => {
-          const errorMsg = adapters.getErrorMessage(
-            error,
-            "Oops... an error occurred on fetchPoolTransactions"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(globalActions.loadPoolTransactionsFailure(errorMsg));
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
         });
     }
   };
@@ -918,13 +967,17 @@ function fetchCoordinatorState(): AppThunk {
       .then((coordinatorState: CoordinatorState) =>
         dispatch(globalActions.loadCoordinatorStateSuccess(coordinatorState))
       )
-      .catch((err: unknown) =>
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(error);
+        dispatch(globalActions.loadCoordinatorStateFailure(errorMsg));
         dispatch(
-          globalActions.loadCoordinatorStateFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchCoordinatorState")
-          )
-        )
-      );
+          openSnackbar({
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          })
+        );
+      });
   };
 }
 
@@ -958,13 +1011,67 @@ function reloadApp(): AppThunk {
  * Fetch tokens price
  */
 function fetchTokensPrice(): AppThunk {
-  return (dispatch: AppDispatch) => {
-    dispatch(globalActions.loadTokensPrice());
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { env },
+    } = getState();
 
-    return adapters.priceUpdater
-      .getTokensPrice()
-      .then((res: Token[]) => dispatch(globalActions.loadTokensPriceSuccess(res)))
-      .catch(() => globalActions.loadTokensPriceFailure("An error occured loading token."));
+    if (env) {
+      dispatch(globalActions.loadTokensPrice());
+
+      return adapters.priceUpdater
+        .getTokensPrice(env)
+        .then((res: Token[]) => dispatch(globalActions.loadTokensPriceSuccess(res)))
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(globalActions.loadTokensPriceFailure(errorMsg));
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
+    }
+  };
+}
+
+/**
+ * Report an error using the report issue form
+ */
+function reportError(raw: unknown, parsed: string): AppThunk {
+  return (_: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { ethereumNetworkTask },
+    } = getState();
+
+    const network = isAsyncTaskDataAvailable(ethereumNetworkTask)
+      ? `${ethereumNetworkTask.data.name} with id ${ethereumNetworkTask.data.chainId}`
+      : "Not available";
+
+    const data = {
+      [REPORT_ERROR_FORM_ENTRIES.url]: window.location.href,
+      [REPORT_ERROR_FORM_ENTRIES.network]: network,
+      [REPORT_ERROR_FORM_ENTRIES.error]: parsed,
+    };
+
+    void import("platform")
+      .then((platform) => {
+        const params = new URLSearchParams({
+          ...data,
+          [REPORT_ERROR_FORM_ENTRIES.platform]: platform.toString(),
+        }).toString();
+        window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
+      })
+      .catch(() => {
+        console.error("An error occured dynamically loading the library 'platform'");
+        const params = new URLSearchParams({
+          ...data,
+          [REPORT_ERROR_FORM_ENTRIES.platform]: "Not available",
+        }).toString();
+        window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
+      });
   };
 }
 
@@ -973,6 +1080,7 @@ export {
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,
+  loadEnv,
   checkHermezStatus,
   fetchPoolTransactions,
   addPendingWithdraw,
@@ -984,6 +1092,7 @@ export {
   checkPendingWithdrawals,
   addTimerWithdraw,
   removeTimerWithdraw,
+  recoverPendingDelayedWithdrawals,
   addPendingDeposit,
   removePendingDepositByTransactionId,
   removePendingDepositByHash,
@@ -994,5 +1103,5 @@ export {
   disconnectWallet,
   reloadApp,
   fetchTokensPrice,
-  recoverPendingDelayedWithdrawals,
+  reportError,
 };

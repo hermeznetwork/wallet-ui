@@ -5,6 +5,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
 import * as globalThunks from "src/store/global/global.thunks";
+import { openSnackbar } from "src/store/global/global.actions";
 // domain
 import {
   Exit,
@@ -35,7 +36,7 @@ function fetchAccount(
     dispatch(accountDetailsActions.loadAccount());
 
     return adapters.hermezApi
-      .fetchHermezAccount(accountIndex, tokensPriceTask, preferredCurrency, fiatExchangeRates)
+      .getHermezAccount(accountIndex, tokensPriceTask, preferredCurrency, fiatExchangeRates)
       .then((account: HermezAccount) => {
         if (wallet === undefined || account.bjj !== wallet.publicKeyBase64) {
           dispatch(push("/"));
@@ -43,13 +44,17 @@ function fetchAccount(
           dispatch(accountDetailsActions.loadAccountSuccess(account));
         }
       })
-      .catch((err: unknown) =>
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(error);
+        dispatch(accountDetailsActions.loadAccountFailure(errorMsg));
         dispatch(
-          accountDetailsActions.loadAccountFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccount")
-          )
-        )
-      );
+          openSnackbar({
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          })
+        );
+      });
   };
 }
 
@@ -145,13 +150,17 @@ function fetchHistoryTransactions(
       .then((historyTransactions: HistoryTransactions) =>
         dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
       )
-      .catch((err: unknown) =>
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(error);
+        dispatch(accountDetailsActions.loadHistoryTransactionsFailure(errorMsg));
         dispatch(
-          accountDetailsActions.loadHistoryTransactionsFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchHistoryTransactions")
-          )
-        )
-      );
+          openSnackbar({
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          })
+        );
+      });
   };
 }
 
@@ -243,13 +252,17 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(accountDetailsActions.loadExitsSuccess(exits));
         })
-        .catch((err: unknown) =>
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(accountDetailsActions.loadExitsFailure(errorMsg));
           dispatch(
-            accountDetailsActions.loadExitsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchExits")
-            )
-          )
-        );
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
     }
   };
 }

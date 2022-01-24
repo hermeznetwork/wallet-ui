@@ -7,6 +7,7 @@ export * as hermezWeb from "src/adapters/hermez-web";
 export * as localStorage from "src/adapters/local-storage";
 export * as priceUpdater from "src/adapters/price-updater";
 export * as ethereum from "src/adapters/ethereum";
+export * as env from "src/adapters/env";
 
 // Error decoding and message extraction helper
 interface MessageKeyError {
@@ -19,37 +20,43 @@ const messageKeyErrorParser = StrictSchema<MessageKeyError>()(
   })
 );
 
-export function getErrorMessage(error: unknown, prefixMsg?: string): string {
+export function parseError(error: unknown): string {
   if (typeof error === "string") {
-    return prefixMsg ? `${prefixMsg}. ${error}` : error;
-  } else if (error instanceof ZodError) {
-    const decodingIssues = error.errors
-      .map((issue) => `${issue.message} at path ${issue.path.join(".")}`)
-      .join(" | ");
-    return prefixMsg
-      ? `${prefixMsg}. Decoding issues: ${decodingIssues}`
-      : `Decoding issues: ${decodingIssues}`;
+    return error;
   } else if (error instanceof Error) {
-    return prefixMsg ? `${prefixMsg}. ${error.message}` : error.message;
+    const selectMultipleTabsAndSpaces = /[^\S\r\n]{2,}/g;
+    const maxStackLength = 4096;
+    return [
+      JSON.stringify(error),
+      ...(error.stack
+        ? [
+            ">>>>>>>>>> error.stack >>>>>>>>>>",
+            error.stack.replaceAll(selectMultipleTabsAndSpaces, " ").substring(0, maxStackLength),
+          ]
+        : []),
+    ].join("\n");
   } else {
     const parsedMessageKeyError = messageKeyErrorParser.safeParse(error);
     if (parsedMessageKeyError.success) {
-      return prefixMsg
-        ? `${prefixMsg}. ${parsedMessageKeyError.data.message}`
-        : parsedMessageKeyError.data.message;
+      return parsedMessageKeyError.data.message;
     } else {
-      return prefixMsg ? prefixMsg : "Oops... an unknown error occurred";
+      return `An unknown error has occurred: ${JSON.stringify(error)}`;
     }
   }
 }
 
 export function logDecodingError<T>(error: ZodError<T>, details: string): void {
-  const message =
-    error.issues.length > 1
-      ? `Some decoding errors occurred: ${details}`
-      : `A decoding error occurred: ${details}`;
-  console.error(message);
-  error.issues.forEach((issue) => {
-    console.error(JSON.stringify(issue, null, 4));
+  error.errors.forEach((issue) => {
+    switch (issue.code) {
+      case "invalid_union": {
+        issue.unionErrors.forEach((e) => logDecodingError(e, details));
+        break;
+      }
+      default: {
+        console.error(`A decoding error occurred: ${details}`);
+        console.error(JSON.stringify(issue, null, 4));
+        break;
+      }
+    }
   });
 }

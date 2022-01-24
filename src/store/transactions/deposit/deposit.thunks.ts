@@ -1,4 +1,3 @@
-import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
 import { ETHER_TOKEN_ID } from "@hermeznetwork/hermezjs/src/constants";
@@ -10,7 +9,7 @@ import * as depositActions from "src/store/transactions/deposit/deposit.actions"
 import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import { getTxFee } from "src/utils/fees";
-import theme from "src/styles/theme";
+import { isAsyncTaskDataAvailable } from "src/utils/types";
 // domain
 import { FiatExchangeRates, EthereumAccount, HermezAccount } from "src/domain";
 // adapters
@@ -53,11 +52,15 @@ function fetchEthereumAccount(
               }
             })
             .catch((error: unknown) => {
-              const errorMsg = adapters.getErrorMessage(
-                error,
-                "Oops... an error occurred on fetchEthereumAccount"
-              );
+              const errorMsg = adapters.parseError(error);
               dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
+              dispatch(
+                openSnackbar({
+                  type: "error",
+                  raw: error,
+                  parsed: errorMsg,
+                })
+              );
             });
         });
     }
@@ -93,16 +96,17 @@ function fetchEthereumAccounts(
             .then((ethereumAccounts) =>
               dispatch(depositActions.loadEthereumAccountsSuccess(ethereumAccounts))
             )
-            .catch((err: unknown) =>
+            .catch((error: unknown) => {
+              const errorMsg = adapters.parseError(error);
+              dispatch(depositActions.loadEthereumAccountsFailure(errorMsg));
               dispatch(
-                depositActions.loadEthereumAccountsFailure(
-                  adapters.getErrorMessage(
-                    err,
-                    "Oops... an error occurred on fetchEthereumAccounts"
-                  )
-                )
-              )
-            );
+                openSnackbar({
+                  type: "error",
+                  raw: error,
+                  parsed: errorMsg,
+                })
+              );
+            });
         });
     }
   };
@@ -136,28 +140,41 @@ function fetchEstimatedDepositFee(): AppThunk {
           );
         }
       }
-    } catch (err) {
+    } catch (error: unknown) {
+      const errorMsg = adapters.parseError(error);
+      dispatch(depositActions.loadEstimatedDepositFeeFailure(errorMsg));
       dispatch(
-        depositActions.loadEstimatedDepositFeeFailure(
-          adapters.getErrorMessage(err, "Oops... an error occurred on fetchEstimatedDepositFee")
-        )
+        openSnackbar({
+          type: "error",
+          raw: error,
+          parsed: errorMsg,
+        })
       );
     }
   };
 }
 
-function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk {
+function deposit(
+  amount: BigNumber,
+  ethereumAccount: EthereumAccount,
+  preferredCurrency: string
+): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
-      global: { wallet, signer },
+      global: { wallet, signer, tokensPriceTask, poolTransactionsTask, fiatExchangeRatesTask },
     } = getState();
 
     dispatch(depositActions.startTransactionApproval());
 
-    if (wallet !== undefined && signer !== undefined) {
+    if (
+      wallet !== undefined &&
+      signer !== undefined &&
+      isAsyncTaskDataAvailable(fiatExchangeRatesTask) &&
+      isAsyncTaskDataAvailable(poolTransactionsTask)
+    ) {
       return adapters.hermezApi
         .deposit(
-          HermezCompressedAmount.compressAmount(amount.toString()),
+          amount,
           wallet.hermezEthereumAddress,
           ethereumAccount.token,
           wallet.publicKeyCompressedHex,
@@ -165,7 +182,14 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
         )
         .then((txData) => {
           void adapters.hermezApi
-            .getAccounts(wallet.hermezEthereumAddress, [ethereumAccount.token.id])
+            .getHermezAccounts({
+              hermezEthereumAddress: wallet.hermezEthereumAddress,
+              tokenIds: [ethereumAccount.token.id],
+              poolTransactions: poolTransactionsTask.data,
+              fiatExchangeRates: fiatExchangeRatesTask.data,
+              tokensPriceTask,
+              preferredCurrency,
+            })
             .then((res) => {
               const account: HermezAccount | undefined = res.accounts[0];
               dispatch(
@@ -185,26 +209,27 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
             });
         })
         .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
           dispatch(depositActions.stopTransactionApproval());
-          handleTransactionFailure(dispatch, error);
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
         });
     }
   };
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) {
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   if (accountIndex) {
     dispatch(push(`/accounts/${accountIndex}`));
   } else {
     dispatch(push("/"));
   }
-}
-
-function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = adapters.getErrorMessage(error);
-  dispatch(depositActions.stopTransactionApproval());
-  dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
 }
 
 export { fetchEthereumAccount, fetchEthereumAccounts, fetchEstimatedDepositFee, deposit };

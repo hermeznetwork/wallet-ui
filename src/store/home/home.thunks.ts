@@ -4,12 +4,13 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import * as globalThunks from "src/store/global/global.thunks";
+import { openSnackbar } from "src/store/global/global.actions";
 import * as homeActions from "src/store/home/home.actions";
 // adapters
 import * as adapters from "src/adapters";
 // domain
 import {
-  Accounts,
+  HermezAccounts,
   FiatExchangeRates,
   HermezAccount,
   PendingDeposit,
@@ -75,13 +76,17 @@ function fetchTotalBalance(
 
         dispatch(homeActions.loadTotalBalanceSuccess(totalBalance));
       })
-      .catch((err: unknown) =>
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(error);
+        dispatch(homeActions.loadTotalBalanceFailure(errorMsg));
         dispatch(
-          homeActions.loadTotalBalanceFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchTotalBalance")
-          )
-        )
-      );
+          openSnackbar({
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          })
+        );
+      });
   };
 }
 
@@ -130,13 +135,17 @@ function fetchAccounts(
         fromItem,
       })
       .then((res) => dispatch(homeActions.loadAccountsSuccess(res)))
-      .catch((err: unknown) =>
+      .catch((error: unknown) => {
+        const errorMsg = adapters.parseError(error);
+        dispatch(homeActions.loadAccountsFailure(errorMsg));
         dispatch(
-          homeActions.loadAccountsFailure(
-            adapters.getErrorMessage(err, "Oops... an error occurred on fetchAccounts")
-          )
-        )
-      );
+          openSnackbar({
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          })
+        );
+      });
   };
 }
 
@@ -163,14 +172,14 @@ function refreshAccounts(
       refreshCancelTokenSource = axios.CancelToken.source();
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token };
-      const initialReq = adapters.hermezApi.getAccounts(
+      const initialReq = adapters.hermezApi.getHermezAccounts({
         hermezEthereumAddress,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        axiosConfig
-      );
+        tokensPriceTask,
+        preferredCurrency,
+        poolTransactions,
+        fiatExchangeRates,
+        axiosConfig,
+      });
       const requests = accountsTask.data.fromItemHistory.reduce(
         (requests, fromItem) => [
           ...requests,
@@ -191,7 +200,7 @@ function refreshAccounts(
       Promise.all(requests)
         .then((results) => {
           const accounts = results.reduce(
-            (acc: HermezAccount[], result: Accounts) => [...acc, ...result.accounts],
+            (acc: HermezAccount[], result: HermezAccounts) => [...acc, ...result.accounts],
             []
           );
           const pendingItems = results[results.length - 1]
@@ -224,13 +233,17 @@ function fetchExits(): AppThunk {
           dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
           dispatch(homeActions.loadExitsSuccess(exits));
         })
-        .catch((err: unknown) =>
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(homeActions.loadExitsFailure(errorMsg));
           dispatch(
-            homeActions.loadExitsFailure(
-              adapters.getErrorMessage(err, "Oops... an error occurred on fetchExits")
-            )
-          )
-        );
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
     }
   };
 }
