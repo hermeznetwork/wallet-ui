@@ -904,7 +904,7 @@ function checkPendingDeposits(): AppThunk {
 }
 
 function checkPendingTransactions(): AppThunk {
-  return (_: AppDispatch, getState: () => AppState) => {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
     const poolTxsLimit = 2049;
     const {
       global: { wallet, coordinatorStateTask },
@@ -948,9 +948,18 @@ function checkPendingTransactions(): AppThunk {
                 .catch(() => ({}));
             });
 
-          Promise.all(resendTransactionsRequests).catch(() => ({}));
+          return Promise.all(resendTransactionsRequests);
         })
-        .catch(() => ({}));
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
     }
   };
 }
