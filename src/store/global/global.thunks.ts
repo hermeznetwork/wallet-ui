@@ -44,41 +44,35 @@ import * as adapters from "src/adapters";
  * a known environment and if not will use the one provided in the .env file
  */
 function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
-  return (dispatch: AppDispatch) => {
-    const env = adapters.env.getEnv();
-    if (env.success) {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { env },
+    } = getState();
+
+    if (env) {
       dispatch(globalActions.loadEthereumNetwork());
 
       if (
-        env.data.REACT_APP_ENV === "production" &&
+        env.REACT_APP_ENV === "production" &&
         hermezjs.Environment.isEnvironmentSupported(chainId)
       ) {
         hermezjs.Environment.setEnvironment(chainId);
       }
 
-      if (env.data.REACT_APP_ENV === "development") {
+      if (env.REACT_APP_ENV === "development") {
         hermezjs.Environment.setEnvironment({
-          baseApiUrl: env.data.REACT_APP_HERMEZ_API_URL,
+          baseApiUrl: env.REACT_APP_HERMEZ_API_URL,
           contractAddresses: {
-            [hermezjs.Constants.ContractNames.Hermez]: env.data.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
+            [hermezjs.Constants.ContractNames.Hermez]: env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
             [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
-              env.data.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS,
+              env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS,
           },
-          batchExplorerUrl: env.data.REACT_APP_BATCH_EXPLORER_URL,
-          etherscanUrl: env.data.REACT_APP_ETHERSCAN_URL,
+          batchExplorerUrl: env.REACT_APP_BATCH_EXPLORER_URL,
+          etherscanUrl: env.REACT_APP_ETHERSCAN_URL,
         });
       }
 
       dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: chainName }));
-    } else {
-      const errorMsg = adapters.parseError(env.error);
-      dispatch(
-        openSnackbar({
-          type: "error",
-          raw: env.error,
-          parsed: errorMsg,
-        })
-      );
     }
   };
 }
@@ -97,29 +91,35 @@ function changeRedirectRoute(redirectRoute: string): AppThunk {
  * Fetches the USD exchange rates for the requested currency symbols
  */
 function fetchFiatExchangeRates(): AppThunk {
-  return (dispatch: AppDispatch) => {
-    const symbols = Object.values(CurrencySymbol)
-      .filter((currency) => currency.code !== CurrencySymbol.USD.code)
-      .map((currency) => currency.code);
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { env },
+    } = getState();
 
-    dispatch(globalActions.loadFiatExchangeRates());
+    if (env) {
+      const symbols = Object.values(CurrencySymbol)
+        .filter((currency) => currency.code !== CurrencySymbol.USD.code)
+        .map((currency) => currency.code);
 
-    return adapters.priceUpdater
-      .getFiatExchangeRates(symbols)
-      .then((fiatExchangeRates: FiatExchangeRates) =>
-        dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
-      )
-      .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
-      });
+      dispatch(globalActions.loadFiatExchangeRates());
+
+      return adapters.priceUpdater
+        .getFiatExchangeRates(symbols, env)
+        .then((fiatExchangeRates: FiatExchangeRates) =>
+          dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
+        )
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
+    }
   };
 }
 
@@ -151,6 +151,27 @@ function changeNetworkStatus(newNetworkStatus: NetworkStatus): AppThunk {
     }
 
     dispatch(globalActions.changeNetworkStatus(newNetworkStatus));
+  };
+}
+
+function loadEnv(): AppThunk {
+  return (dispatch: AppDispatch) => {
+    dispatch(globalActions.loadEnv());
+
+    const env = adapters.env.getEnv();
+    if (env.success) {
+      dispatch(globalActions.loadEnvSuccess(env.data));
+    } else {
+      const errorMsg = adapters.parseError(env.error);
+      dispatch(globalActions.loadEnvFailure(errorMsg));
+      dispatch(
+        openSnackbar({
+          type: "error",
+          raw: env.error,
+          parsed: errorMsg,
+        })
+      );
+    }
   };
 }
 
@@ -995,23 +1016,29 @@ function reloadApp(): AppThunk {
  * Fetch tokens price
  */
 function fetchTokensPrice(): AppThunk {
-  return (dispatch: AppDispatch) => {
-    dispatch(globalActions.loadTokensPrice());
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { env },
+    } = getState();
 
-    return adapters.priceUpdater
-      .getTokensPrice()
-      .then((res: Token[]) => dispatch(globalActions.loadTokensPriceSuccess(res)))
-      .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(globalActions.loadTokensPriceFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
-      });
+    if (env) {
+      dispatch(globalActions.loadTokensPrice());
+
+      return adapters.priceUpdater
+        .getTokensPrice(env)
+        .then((res: Token[]) => dispatch(globalActions.loadTokensPriceSuccess(res)))
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(globalActions.loadTokensPriceFailure(errorMsg));
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
+    }
   };
 }
 
@@ -1068,6 +1095,7 @@ export {
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,
+  loadEnv,
   checkHermezStatus,
   fetchPoolTransactions,
   addPendingWithdraw,

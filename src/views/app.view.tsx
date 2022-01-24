@@ -41,6 +41,7 @@ interface AppHandlerProps {
   onLoadCoordinatorState: () => void;
   onLoadFiatExchangeRates: () => void;
   onCheckHermezStatus: () => void;
+  onLoadEnv: () => void;
   onChangeNetworkStatus: (networkStatus: NetworkStatus) => void;
   onDisconnectAccount: () => void;
   onCheckPendingTransactions: () => void;
@@ -65,6 +66,7 @@ function App({
   onLoadCoordinatorState,
   onLoadFiatExchangeRates,
   onCheckHermezStatus,
+  onLoadEnv,
   onChangeNetworkStatus,
   onDisconnectAccount,
   onCheckPendingTransactions,
@@ -75,9 +77,10 @@ function App({
   useAppStyles();
 
   React.useEffect(() => {
+    onLoadEnv();
     onCheckHermezStatus();
     onLoadFiatExchangeRates();
-  }, [onCheckHermezStatus, onLoadFiatExchangeRates]);
+  }, [onLoadEnv, onCheckHermezStatus, onLoadFiatExchangeRates]);
 
   React.useEffect(() => {
     if (ethereumNetworkTask.status === "successful") {
@@ -166,6 +169,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): AppHandlerProps => ({
     dispatch(globalThunks.reportError(raw, parsed)),
   onClose: (action: AppAction) => dispatch(action),
   onCloseSnackbar: () => dispatch(closeSnackbar()),
+  onLoadEnv: () => dispatch(globalThunks.loadEnv()),
   onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),
   onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onLoadFiatExchangeRates: () => dispatch(globalThunks.fetchFiatExchangeRates()),
