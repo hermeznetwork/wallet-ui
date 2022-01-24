@@ -1,7 +1,7 @@
 import { z, ZodError } from "zod";
 
 import { StrictSchema } from "src/utils/type-safety";
-import { ZodEither } from "src/utils/types";
+import { Either } from "src/utils/types";
 // adapters
 import * as adapters from "src/adapters";
 
@@ -75,7 +75,7 @@ const developmentEnvParser = StrictSchema<DevelopmentEnv>()(
   developmentLiteralParser.and(developmentVarsParser)
 );
 
-export function getEnv(): ZodEither<Env, ZodError<Env>> {
+export function getEnv(): Either<Env, ZodError<Env>> {
   const parsedEnvLiteral = z
     .union([productionLiteralParser, developmentLiteralParser])
     .safeParse(process.env);

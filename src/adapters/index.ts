@@ -1,4 +1,4 @@
-import { z, ZodError, ZodIssue } from "zod";
+import { z, ZodError } from "zod";
 
 import { StrictSchema } from "src/utils/type-safety";
 
