@@ -45,10 +45,7 @@ function fetchAccount(
         }
       })
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/account-details/account-details.thunks.ts:fetchAccount"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(accountDetailsActions.loadAccountFailure(errorMsg));
         dispatch(
           openSnackbar({
@@ -154,10 +151,7 @@ function fetchHistoryTransactions(
         dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
       )
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/account-details/account-details.thunks.ts:fetchHistoryTransactions"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(accountDetailsActions.loadHistoryTransactionsFailure(errorMsg));
         dispatch(
           openSnackbar({
@@ -259,10 +253,7 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
           dispatch(accountDetailsActions.loadExitsSuccess(exits));
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/account-details/account-details.thunks.ts:fetchExits"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(accountDetailsActions.loadExitsFailure(errorMsg));
           dispatch(
             openSnackbar({

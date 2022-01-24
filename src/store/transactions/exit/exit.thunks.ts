@@ -43,10 +43,7 @@ function fetchHermezAccount(
       )
       .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/transactions/exit/exit.thunks.ts:fetchHermezAccount"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(exitActions.loadAccountFailure(errorMsg));
         dispatch(
           openSnackbar({
@@ -81,10 +78,7 @@ function fetchFees(): AppThunk {
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(exitActions.loadFeesSuccess(res.recommendedFee)))
           .catch((error: unknown) => {
-            const errorMsg = adapters.parseError(
-              error,
-              "An error occurred on src/store/transactions/exit/exit.thunks.ts:fetchFees"
-            );
+            const errorMsg = adapters.parseError(error);
             dispatch(exitActions.loadFeesFailure(errorMsg));
             dispatch(
               openSnackbar({
@@ -115,10 +109,7 @@ function fetchAccountBalance() {
         .getBalance(ethereumAddress)
         .then((balance) => dispatch(exitActions.loadAccountBalanceSuccess(balance)))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/transactions/exit/exit.thunks.ts:fetchAccountBalance"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(exitActions.loadAccountBalanceFailure(errorMsg));
           dispatch(
             openSnackbar({
@@ -167,10 +158,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         }
       }
     } catch (error: unknown) {
-      const errorMsg = adapters.parseError(
-        error,
-        "An error occurred on src/store/transactions/exit/exit.thunks.ts:fetchEstimatedWithdrawFee"
-      );
+      const errorMsg = adapters.parseError(error);
       dispatch(exitActions.loadEstimatedWithdrawFeeFailure(errorMsg));
       dispatch(
         openSnackbar({
@@ -208,10 +196,7 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
         .generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/transactions/exit/exit.thunks.ts:exit"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(exitActions.stopTransactionApproval());
           dispatch(
             openSnackbar({

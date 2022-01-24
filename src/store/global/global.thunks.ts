@@ -71,10 +71,7 @@ function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
 
       dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: chainName }));
     } else {
-      const errorMsg = adapters.parseError(
-        env.error,
-        "An error occurred on src/store/global/global.thunks.ts:setHermezEnvironment"
-      );
+      const errorMsg = adapters.parseError(env.error);
       dispatch(
         openSnackbar({
           type: "error",
@@ -113,10 +110,7 @@ function fetchFiatExchangeRates(): AppThunk {
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
       )
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/global/global.thunks.ts:fetchFiatExchangeRates"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
         dispatch(
           openSnackbar({
@@ -195,10 +189,7 @@ function fetchPoolTransactions(): AppThunk {
           dispatch(globalActions.loadPoolTransactionsSuccess(poolTransactions.transactions))
         )
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/global/global.thunks.ts:fetchPoolTransactions"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(globalActions.loadPoolTransactionsFailure(errorMsg));
           dispatch(
             openSnackbar({
@@ -961,10 +952,7 @@ function fetchCoordinatorState(): AppThunk {
         dispatch(globalActions.loadCoordinatorStateSuccess(coordinatorState))
       )
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/global/global.thunks.ts:fetchCoordinatorState"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(globalActions.loadCoordinatorStateFailure(errorMsg));
         dispatch(
           openSnackbar({
@@ -1014,10 +1002,7 @@ function fetchTokensPrice(): AppThunk {
       .getTokensPrice()
       .then((res: Token[]) => dispatch(globalActions.loadTokensPriceSuccess(res)))
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/global/global.thunks.ts:fetchTokensPrice"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(globalActions.loadTokensPriceFailure(errorMsg));
         dispatch(
           openSnackbar({

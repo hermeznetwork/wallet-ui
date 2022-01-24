@@ -156,10 +156,7 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
         }
       }
     } else {
-      const errorMsg = adapters.parseError(
-        env.error,
-        "An error occurred on src/store/login/login.thunks.ts:fetchWallet"
-      );
+      const errorMsg = adapters.parseError(env.error);
       dispatch(
         globalActions.openSnackbar({
           type: "error",

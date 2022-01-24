@@ -51,10 +51,7 @@ function fetchEthereumAccount(
               }
             })
             .catch((error: unknown) => {
-              const errorMsg = adapters.parseError(
-                error,
-                "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEthereumAccount"
-              );
+              const errorMsg = adapters.parseError(error);
               dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
               dispatch(
                 openSnackbar({
@@ -99,10 +96,7 @@ function fetchEthereumAccounts(
               dispatch(depositActions.loadEthereumAccountsSuccess(ethereumAccounts))
             )
             .catch((error: unknown) => {
-              const errorMsg = adapters.parseError(
-                error,
-                "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEthereumAccounts"
-              );
+              const errorMsg = adapters.parseError(error);
               dispatch(depositActions.loadEthereumAccountsFailure(errorMsg));
               dispatch(
                 openSnackbar({
@@ -146,10 +140,7 @@ function fetchEstimatedDepositFee(): AppThunk {
         }
       }
     } catch (error: unknown) {
-      const errorMsg = adapters.parseError(
-        error,
-        "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEstimatedDepositFee"
-      );
+      const errorMsg = adapters.parseError(error);
       dispatch(depositActions.loadEstimatedDepositFeeFailure(errorMsg));
       dispatch(
         openSnackbar({
@@ -201,10 +192,7 @@ function deposit(amount: BigNumber, ethereumAccount: EthereumAccount): AppThunk 
             });
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:deposit"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(depositActions.stopTransactionApproval());
           dispatch(
             openSnackbar({

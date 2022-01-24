@@ -77,10 +77,7 @@ function fetchTotalBalance(
         dispatch(homeActions.loadTotalBalanceSuccess(totalBalance));
       })
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/home/home.thunks.ts:fetchTotalBalance"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(homeActions.loadTotalBalanceFailure(errorMsg));
         dispatch(
           openSnackbar({
@@ -139,10 +136,7 @@ function fetchAccounts(
       })
       .then((res) => dispatch(homeActions.loadAccountsSuccess(res)))
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/home/home.thunks.ts:fetchAccounts"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(homeActions.loadAccountsFailure(errorMsg));
         dispatch(
           openSnackbar({
@@ -240,10 +234,7 @@ function fetchExits(): AppThunk {
           dispatch(homeActions.loadExitsSuccess(exits));
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/home/home.thunks.ts:fetchExits"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(homeActions.loadExitsFailure(errorMsg));
           dispatch(
             openSnackbar({
