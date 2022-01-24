@@ -10,7 +10,7 @@ import * as homeActions from "src/store/home/home.actions";
 import * as adapters from "src/adapters";
 // domain
 import {
-  Accounts,
+  HermezAccounts,
   FiatExchangeRates,
   HermezAccount,
   PendingDeposit,
@@ -172,14 +172,14 @@ function refreshAccounts(
       refreshCancelTokenSource = axios.CancelToken.source();
 
       const axiosConfig = { cancelToken: refreshCancelTokenSource.token };
-      const initialReq = adapters.hermezApi.getAccounts(
+      const initialReq = adapters.hermezApi.getHermezAccounts({
         hermezEthereumAddress,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        axiosConfig
-      );
+        tokensPriceTask,
+        preferredCurrency,
+        poolTransactions,
+        fiatExchangeRates,
+        axiosConfig,
+      });
       const requests = accountsTask.data.fromItemHistory.reduce(
         (requests, fromItem) => [
           ...requests,
@@ -200,7 +200,7 @@ function refreshAccounts(
       Promise.all(requests)
         .then((results) => {
           const accounts = results.reduce(
-            (acc: HermezAccount[], result: Accounts) => [...acc, ...result.accounts],
+            (acc: HermezAccount[], result: HermezAccounts) => [...acc, ...result.accounts],
             []
           );
           const pendingItems = results[results.length - 1]

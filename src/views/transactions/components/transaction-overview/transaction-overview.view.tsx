@@ -41,7 +41,7 @@ type TransactionOverviewProps = {
   | {
       txType: TxType.Deposit;
       account: EthereumAccount;
-      onDeposit: (amount: BigNumber, account: EthereumAccount) => void;
+      onDeposit: (amount: BigNumber, account: EthereumAccount, preferredCurrency: string) => void;
     }
   | {
       txType: TxType.Transfer;
@@ -134,7 +134,7 @@ function TransactionOverview({
     // spinner which will prevent the user from submitting the form twice
     switch (transaction.txType) {
       case TxType.Deposit: {
-        return transaction.onDeposit(amount, transaction.account);
+        return transaction.onDeposit(amount, transaction.account, preferredCurrency);
       }
       case TxType.ForceExit: {
         return transaction.onForceExit(amount, transaction.account);

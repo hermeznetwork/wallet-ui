@@ -47,7 +47,11 @@ interface DepositHandlerProps {
   onChangeHeader: (step: depositActions.Step, accountIndex: string | null) => void;
   onCheckPendingDeposits: () => void;
   onCleanup: () => void;
-  onDeposit: (amount: BigNumber, ethereumAccount: EthereumAccount) => void;
+  onDeposit: (
+    amount: BigNumber,
+    ethereumAccount: EthereumAccount,
+    preferredCurrency: string
+  ) => void;
   onGoToBuildTransactionStep: (ethereumAccount: EthereumAccount) => void;
   onGoToChooseAccountStep: () => void;
   onGoToTransactionOverviewStep: (transactionToReview: depositActions.TransactionToReview) => void;
@@ -284,8 +288,8 @@ const mapDispatchToProps = (dispatch: AppDispatch): DepositHandlerProps => ({
   onGoToTransactionOverviewStep: (transactionToReview: depositActions.TransactionToReview) =>
     dispatch(depositActions.goToReviewTransactionStep(transactionToReview)),
   onLoadEstimatedDepositFee: () => dispatch(depositThunks.fetchEstimatedDepositFee()),
-  onDeposit: (amount: BigNumber, ethereumAccount: EthereumAccount) =>
-    dispatch(depositThunks.deposit(amount, ethereumAccount)),
+  onDeposit: (amount: BigNumber, ethereumAccount: EthereumAccount, preferredCurrency: string) =>
+    dispatch(depositThunks.deposit(amount, ethereumAccount, preferredCurrency)),
   onCleanup: () => dispatch(depositActions.resetState()),
 });
 

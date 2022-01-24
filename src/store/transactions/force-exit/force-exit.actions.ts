@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { Accounts, HermezAccount } from "src/domain";
+import { HermezAccounts, HermezAccount } from "src/domain";
 
 export enum ForceExitActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[FORCE EXIT] GO TO CHOOSE ACCOUNT STEP",
@@ -42,7 +42,7 @@ export interface LoadAccounts {
 
 export interface LoadAccountsSuccess {
   type: ForceExitActionTypes.LOAD_ACCOUNTS_SUCCESS;
-  accounts: Accounts;
+  accounts: HermezAccounts;
 }
 
 export interface LoadAccountsFailure {
@@ -99,7 +99,7 @@ function loadAccounts(): LoadAccounts {
   };
 }
 
-function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
+function loadAccountsSuccess(accounts: HermezAccounts): LoadAccountsSuccess {
   return {
     type: ForceExitActionTypes.LOAD_ACCOUNTS_SUCCESS,
     accounts,

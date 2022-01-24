@@ -10,7 +10,6 @@ import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
   AccountAuthorization,
-  Accounts,
   CoordinatorState,
   Exit,
   Exits,
@@ -46,7 +45,6 @@ export interface EthereumNetwork {
 }
 
 export type HermezRawAccount = hermezjs.Account;
-export type HermezRawAccounts = hermezjs.Accounts;
 
 export type HermezAccount = hermezjs.Account & { fiatBalance?: number };
 

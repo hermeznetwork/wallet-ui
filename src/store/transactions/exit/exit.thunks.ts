@@ -34,7 +34,7 @@ function fetchHermezAccount(
     dispatch(exitActions.loadAccount());
 
     return adapters.hermezApi
-      .fetchHermezAccount(
+      .getHermezAccount(
         accountIndex,
         tokensPriceTask,
         preferredCurrency,
