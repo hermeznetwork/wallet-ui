@@ -242,8 +242,8 @@ function TransactionDetails({
                           : undefined
                       }
                       showStatus
-                      onToCopyClick={() => onOpenSnackbar({ type: "info", text: "Copied" })}
-                      onFromCopyClick={() => onOpenSnackbar({ type: "info", text: "Copied" })}
+                      onToCopyClick={() => onOpenSnackbar({ type: "info-msg", text: "Copied" })}
+                      onFromCopyClick={() => onOpenSnackbar({ type: "info-msg", text: "Copied" })}
                     />
                     <ExploreTransactionButton
                       txLevel={isPendingDeposit(transactionTask.data) ? TxLevel.L1 : TxLevel.L2}
@@ -296,7 +296,7 @@ function getHeaderTitle(transactionType: TxType) {
 const mapDispatchToProps = (dispatch: AppDispatch): TransactionDetailsHandlerProps => ({
   onLoadTransaction: (transactionIdOrHash: string) =>
     dispatch(transactionDetailsThunks.fetchTransaction(transactionIdOrHash)),
-  onOpenSnackbar: (message) => dispatch(openSnackbar({ message })),
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onChangeHeader: (transactionType, accountIndex) =>
     dispatch(
       changeHeader({

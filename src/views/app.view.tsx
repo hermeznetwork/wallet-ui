@@ -17,6 +17,7 @@ import { Theme } from "src/styles/theme";
 //domain
 import {
   EthereumNetwork,
+  Env,
   FiatExchangeRates,
   NetworkStatus,
   HermezStatus,
@@ -24,6 +25,7 @@ import {
 } from "src/domain";
 
 interface AppStateProps {
+  env: Env | undefined;
   wallet: HermezWallet.HermezWallet | undefined;
   header: HeaderState;
   snackbar: SnackbarState;
@@ -39,9 +41,10 @@ interface AppHandlerProps {
   onCloseSnackbar: () => void;
   onReportFromSnackbar: (raw: unknown, parsed: string) => void;
   onLoadCoordinatorState: () => void;
-  onLoadFiatExchangeRates: () => void;
+  onLoadFiatExchangeRates: (env: Env) => void;
   onCheckHermezStatus: () => void;
-  onChangeNetworkStatus: (networkStatus: NetworkStatus, color: string) => void;
+  onLoadEnv: () => void;
+  onChangeNetworkStatus: (networkStatus: NetworkStatus) => void;
   onDisconnectAccount: () => void;
   onCheckPendingTransactions: () => void;
   onReloadApp: () => void;
@@ -51,6 +54,7 @@ interface AppHandlerProps {
 type AppProps = AppStateProps & AppHandlerProps;
 
 function App({
+  env,
   wallet,
   header,
   snackbar,
@@ -65,6 +69,7 @@ function App({
   onLoadCoordinatorState,
   onLoadFiatExchangeRates,
   onCheckHermezStatus,
+  onLoadEnv,
   onChangeNetworkStatus,
   onDisconnectAccount,
   onCheckPendingTransactions,
@@ -75,9 +80,15 @@ function App({
   useAppStyles();
 
   React.useEffect(() => {
-    onCheckHermezStatus();
-    onLoadFiatExchangeRates();
-  }, [onCheckHermezStatus, onLoadFiatExchangeRates]);
+    onLoadEnv();
+  }, [onLoadEnv]);
+
+  React.useEffect(() => {
+    if (env) {
+      onCheckHermezStatus();
+      onLoadFiatExchangeRates(env);
+    }
+  }, [env, onCheckHermezStatus, onLoadFiatExchangeRates]);
 
   React.useEffect(() => {
     if (ethereumNetworkTask.status === "successful") {
@@ -99,13 +110,11 @@ function App({
   }, [wallet, ethereumNetworkTask, onCheckPendingTransactions]);
 
   React.useEffect(() => {
-    window.addEventListener("online", () => onChangeNetworkStatus("online", theme.palette.green));
+    window.addEventListener("online", () => onChangeNetworkStatus("online"));
   }, [theme, onChangeNetworkStatus]);
 
   React.useEffect(() => {
-    window.addEventListener("offline", () =>
-      onChangeNetworkStatus("offline", theme.palette.red.main)
-    );
+    window.addEventListener("offline", () => onChangeNetworkStatus("offline"));
   }, [theme, onChangeNetworkStatus]);
 
   React.useEffect(() => {
@@ -152,6 +161,7 @@ function App({
 }
 
 const mapStateToProps = (state: AppState): AppStateProps => ({
+  env: state.global.env,
   wallet: state.global.wallet,
   header: state.global.header,
   snackbar: state.global.snackbar,
@@ -168,12 +178,13 @@ const mapDispatchToProps = (dispatch: AppDispatch): AppHandlerProps => ({
     dispatch(globalThunks.reportError(raw, parsed)),
   onClose: (action: AppAction) => dispatch(action),
   onCloseSnackbar: () => dispatch(closeSnackbar()),
+  onLoadEnv: () => dispatch(globalThunks.loadEnv()),
   onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),
   onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
-  onLoadFiatExchangeRates: () => dispatch(globalThunks.fetchFiatExchangeRates()),
+  onLoadFiatExchangeRates: (env: Env) => dispatch(globalThunks.fetchFiatExchangeRates(env)),
   onCheckPendingTransactions: () => dispatch(globalThunks.checkPendingTransactions()),
-  onChangeNetworkStatus: (networkStatus, backgroundColor) =>
-    dispatch(globalThunks.changeNetworkStatus(networkStatus, backgroundColor)),
+  onChangeNetworkStatus: (networkStatus) =>
+    dispatch(globalThunks.changeNetworkStatus(networkStatus)),
   onDisconnectAccount: () => dispatch(globalThunks.disconnectWallet()),
   onReloadApp: () => dispatch(globalThunks.reloadApp()),
   onLoadTokensPrice: () => dispatch(globalThunks.fetchTokensPrice()),

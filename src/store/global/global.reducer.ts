@@ -4,6 +4,7 @@ import { AsyncTask } from "src/utils/types";
 // domain
 import {
   CoordinatorState,
+  Env,
   EthereumNetwork,
   FiatExchangeRates,
   HermezStatus,
@@ -49,10 +50,10 @@ export type SnackbarState =
   | {
       status: "open";
       message: Message;
-      backgroundColor?: string;
     };
 
 export interface GlobalState {
+  env: Env | undefined;
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
@@ -76,6 +77,7 @@ export interface GlobalState {
 
 function getInitialGlobalState(): GlobalState {
   return {
+    env: undefined,
     hermezStatusTask: {
       status: "pending",
     },
@@ -125,6 +127,18 @@ function globalReducer(
   action: GlobalAction
 ): GlobalState {
   switch (action.type) {
+    case GlobalActionTypes.LOAD_ENV_SUCCESS: {
+      return {
+        ...state,
+        env: action.env,
+      };
+    }
+    case GlobalActionTypes.LOAD_ENV_FAILURE: {
+      return {
+        ...state,
+        env: undefined,
+      };
+    }
     case GlobalActionTypes.LOAD_HERMEZ_STATUS: {
       return {
         ...state,
@@ -256,7 +270,6 @@ function globalReducer(
         snackbar: {
           status: "open",
           message: action.message,
-          backgroundColor: action.backgroundColor,
         },
       };
     }

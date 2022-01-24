@@ -1,4 +1,4 @@
-import { z, ZodError, ZodIssue } from "zod";
+import { z, ZodError } from "zod";
 
 import { StrictSchema } from "src/utils/type-safety";
 
@@ -20,49 +20,29 @@ const messageKeyErrorParser = StrictSchema<MessageKeyError>()(
   })
 );
 
-export function parseError(error: unknown, prefixMsg?: string): string {
+export function parseError(error: unknown): string {
   if (typeof error === "string") {
-    return prefixMsg ? `${prefixMsg}. ${error}` : error;
-  } else if (error instanceof ZodError) {
-    const decodingIssues = parseDecodingError(error).join(". ");
-    return prefixMsg ? `${prefixMsg}. ${decodingIssues}` : decodingIssues;
+    return error;
   } else if (error instanceof Error) {
-    return prefixMsg ? `${prefixMsg}. ${error.message}` : error.message;
+    const selectMultipleTabsAndSpaces = /[^\S\r\n]{2,}/g;
+    const maxStackLength = 4096;
+    return [
+      JSON.stringify(error),
+      ...(error.stack
+        ? [
+            ">>>>>>>>>> error.stack >>>>>>>>>>",
+            error.stack.replaceAll(selectMultipleTabsAndSpaces, " ").substring(0, maxStackLength),
+          ]
+        : []),
+    ].join("\n");
   } else {
     const parsedMessageKeyError = messageKeyErrorParser.safeParse(error);
     if (parsedMessageKeyError.success) {
-      return prefixMsg
-        ? `${prefixMsg}. ${parsedMessageKeyError.data.message}`
-        : parsedMessageKeyError.data.message;
+      return parsedMessageKeyError.data.message;
     } else {
-      return prefixMsg ? prefixMsg : `An unknown error has occurred: ${JSON.stringify(error)}`;
+      return `An unknown error has occurred: ${JSON.stringify(error)}`;
     }
   }
-}
-
-export function parseDecodingError(error: ZodError): string[] {
-  return parseDecodingIssues(error.issues);
-}
-
-export function parseDecodingIssues(issues: ZodIssue[]): string[] {
-  return issues.reduce((accIssueMsgs: string[], currIssue: ZodIssue): string[] => {
-    switch (currIssue.code) {
-      case "invalid_union": {
-        const unionMsgs = currIssue.unionErrors.reduce(
-          (accErrorMsgs: string[], currError: ZodError) => [
-            ...accErrorMsgs,
-            ...parseDecodingError(currError),
-          ],
-          []
-        );
-        return [...accIssueMsgs, ...unionMsgs];
-      }
-      default: {
-        const msg = `Decoding issue: ${currIssue.message} at path ${currIssue.path.join(".")}`;
-        return [...accIssueMsgs, msg];
-      }
-    }
-  }, []);
 }
 
 export function logDecodingError<T>(error: ZodError<T>, details: string): void {

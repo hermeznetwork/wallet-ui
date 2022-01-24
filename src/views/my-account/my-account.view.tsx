@@ -65,7 +65,7 @@ function MyAccount({
   function handleEthereumAddressClick(hermezEthereumAddress: string) {
     copyToClipboard(hermezEthereumAddress);
     onOpenSnackbar({
-      type: "info",
+      type: "info-msg",
       text: "The Polygon Hermez address has been copied to the clipboard!",
     });
   }
@@ -178,7 +178,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): MyAccountHandlerProps => ({
   onChangePreferredCurrency: (selectedTokenId) =>
     dispatch(changePreferredCurrency(selectedTokenId)),
   onDisconnectWallet: () => dispatch(disconnectWallet()),
-  onOpenSnackbar: (message) => dispatch(openSnackbar({ message })),
+  onOpenSnackbar: (message) => dispatch(openSnackbar(message)),
   onNavigateToForceExit: () => dispatch(push("/force-withdraw")),
 });
 

@@ -11,7 +11,7 @@ import hermezjs, {
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 
-import { REPORT_ERROR_FORM_URL } from "src/constants";
+import { REPORT_ERROR_FORM_URL, REPORT_ERROR_FORM_ENTRIES } from "src/constants";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
 import { openSnackbar } from "src/store/global/global.actions";
@@ -22,6 +22,7 @@ import { isAsyncTaskDataAvailable } from "src/utils/types";
 // domain
 import {
   CoordinatorState,
+  Env,
   Exit,
   Exits,
   FiatExchangeRates,
@@ -44,46 +45,35 @@ import * as adapters from "src/adapters";
  * a known environment and if not will use the one provided in the .env file
  */
 function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
-  return (dispatch: AppDispatch) => {
-    const env = adapters.env.getEnv();
-    if (env.success) {
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { env },
+    } = getState();
+
+    if (env) {
       dispatch(globalActions.loadEthereumNetwork());
 
       if (
-        env.data.REACT_APP_ENV === "production" &&
+        env.REACT_APP_ENV === "production" &&
         hermezjs.Environment.isEnvironmentSupported(chainId)
       ) {
         hermezjs.Environment.setEnvironment(chainId);
       }
 
-      if (env.data.REACT_APP_ENV === "development") {
+      if (env.REACT_APP_ENV === "development") {
         hermezjs.Environment.setEnvironment({
-          baseApiUrl: env.data.REACT_APP_HERMEZ_API_URL,
+          baseApiUrl: env.REACT_APP_HERMEZ_API_URL,
           contractAddresses: {
-            [hermezjs.Constants.ContractNames.Hermez]: env.data.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
+            [hermezjs.Constants.ContractNames.Hermez]: env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
             [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
-              env.data.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS,
+              env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS,
           },
-          batchExplorerUrl: env.data.REACT_APP_BATCH_EXPLORER_URL,
-          etherscanUrl: env.data.REACT_APP_ETHERSCAN_URL,
+          batchExplorerUrl: env.REACT_APP_BATCH_EXPLORER_URL,
+          etherscanUrl: env.REACT_APP_ETHERSCAN_URL,
         });
       }
 
       dispatch(globalActions.loadEthereumNetworkSuccess({ chainId, name: chainName }));
-    } else {
-      const errorMsg = adapters.parseError(
-        env.error,
-        "An error occurred on src/store/global/global.thunks.ts:setHermezEnvironment"
-      );
-      dispatch(
-        openSnackbar({
-          message: {
-            type: "error",
-            raw: env.error,
-            parsed: errorMsg,
-          },
-        })
-      );
     }
   };
 }
@@ -101,7 +91,7 @@ function changeRedirectRoute(redirectRoute: string): AppThunk {
 /**
  * Fetches the USD exchange rates for the requested currency symbols
  */
-function fetchFiatExchangeRates(): AppThunk {
+function fetchFiatExchangeRates(env: Env): AppThunk {
   return (dispatch: AppDispatch) => {
     const symbols = Object.values(CurrencySymbol)
       .filter((currency) => currency.code !== CurrencySymbol.USD.code)
@@ -110,23 +100,18 @@ function fetchFiatExchangeRates(): AppThunk {
     dispatch(globalActions.loadFiatExchangeRates());
 
     return adapters.priceUpdater
-      .getFiatExchangeRates(symbols)
+      .getFiatExchangeRates(symbols, env)
       .then((fiatExchangeRates: FiatExchangeRates) =>
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
       )
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/global/global.thunks.ts:fetchFiatExchangeRates"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -136,7 +121,7 @@ function fetchFiatExchangeRates(): AppThunk {
 /**
  * Changes the current network status of the application
  */
-function changeNetworkStatus(newNetworkStatus: NetworkStatus, backgroundColor: string): AppThunk {
+function changeNetworkStatus(newNetworkStatus: NetworkStatus): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
       global: { networkStatus: previousNetworkStatus },
@@ -145,11 +130,8 @@ function changeNetworkStatus(newNetworkStatus: NetworkStatus, backgroundColor: s
     if (previousNetworkStatus === "online" && newNetworkStatus === "offline") {
       dispatch(
         globalActions.openSnackbar({
-          message: {
-            type: "info",
-            text: "Connection lost",
-          },
-          backgroundColor,
+          type: "error-msg",
+          text: "Connection lost",
         })
       );
     }
@@ -157,16 +139,34 @@ function changeNetworkStatus(newNetworkStatus: NetworkStatus, backgroundColor: s
     if (previousNetworkStatus === "offline" && newNetworkStatus === "online") {
       dispatch(
         globalActions.openSnackbar({
-          message: {
-            type: "info",
-            text: "Connection restored",
-          },
-          backgroundColor,
+          type: "success-msg",
+          text: "Connection restored",
         })
       );
     }
 
     dispatch(globalActions.changeNetworkStatus(newNetworkStatus));
+  };
+}
+
+function loadEnv(): AppThunk {
+  return (dispatch: AppDispatch) => {
+    dispatch(globalActions.loadEnv());
+
+    const env = adapters.env.getEnv();
+    if (env.success) {
+      dispatch(globalActions.loadEnvSuccess(env.data));
+    } else {
+      const errorMsg = adapters.parseError(env.error);
+      dispatch(globalActions.loadEnvFailure(errorMsg));
+      dispatch(
+        openSnackbar({
+          type: "error",
+          raw: env.error,
+          parsed: errorMsg,
+        })
+      );
+    }
   };
 }
 
@@ -205,18 +205,13 @@ function fetchPoolTransactions(): AppThunk {
           dispatch(globalActions.loadPoolTransactionsSuccess(poolTransactions.transactions))
         )
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/global/global.thunks.ts:fetchPoolTransactions"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(globalActions.loadPoolTransactionsFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -973,18 +968,13 @@ function fetchCoordinatorState(): AppThunk {
         dispatch(globalActions.loadCoordinatorStateSuccess(coordinatorState))
       )
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/global/global.thunks.ts:fetchCoordinatorState"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(globalActions.loadCoordinatorStateFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -1021,38 +1011,30 @@ function reloadApp(): AppThunk {
  * Fetch tokens price
  */
 function fetchTokensPrice(): AppThunk {
-  return (dispatch: AppDispatch) => {
-    dispatch(globalActions.loadTokensPrice());
+  return (dispatch: AppDispatch, getState: () => AppState) => {
+    const {
+      global: { env },
+    } = getState();
 
-    return adapters.priceUpdater
-      .getTokensPrice()
-      .then((res: Token[]) => dispatch(globalActions.loadTokensPriceSuccess(res)))
-      .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/global/global.thunks.ts:fetchTokensPrice"
-        );
-        dispatch(globalActions.loadTokensPriceFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            message: {
+    if (env) {
+      dispatch(globalActions.loadTokensPrice());
+
+      return adapters.priceUpdater
+        .getTokensPrice(env)
+        .then((res: Token[]) => dispatch(globalActions.loadTokensPriceSuccess(res)))
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(globalActions.loadTokensPriceFailure(errorMsg));
+          dispatch(
+            openSnackbar({
               type: "error",
               raw: error,
               parsed: errorMsg,
-            },
-          })
-        );
-      });
+            })
+          );
+        });
+    }
   };
-}
-
-enum ReportErrorFormEntries {
-  url = "entry.2056392454",
-  network = "entry.1632331664",
-  platform = "entry.259085709",
-  message = "entry.1383309652",
-  stack = "entry.1138934571",
-  error = "entry.488074117",
 }
 
 /**
@@ -1068,21 +1050,17 @@ function reportError(raw: unknown, parsed: string): AppThunk {
       ? `${ethereumNetworkTask.data.name} with id ${ethereumNetworkTask.data.chainId}`
       : "Not available";
 
-    const stack = raw instanceof Error && raw.stack ? raw.stack : "Not available";
-
     const data = {
-      [ReportErrorFormEntries.url]: window.location.href,
-      [ReportErrorFormEntries.network]: network,
-      [ReportErrorFormEntries.message]: parsed,
-      [ReportErrorFormEntries.stack]: stack,
-      [ReportErrorFormEntries.error]: JSON.stringify(raw),
+      [REPORT_ERROR_FORM_ENTRIES.url]: window.location.href,
+      [REPORT_ERROR_FORM_ENTRIES.network]: network,
+      [REPORT_ERROR_FORM_ENTRIES.error]: parsed,
     };
 
     void import("platform")
       .then((platform) => {
         const params = new URLSearchParams({
           ...data,
-          [ReportErrorFormEntries.platform]: platform.toString(),
+          [REPORT_ERROR_FORM_ENTRIES.platform]: platform.toString(),
         }).toString();
         window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
       })
@@ -1090,7 +1068,7 @@ function reportError(raw: unknown, parsed: string): AppThunk {
         console.error("An error occured dynamically loading the library 'platform'");
         const params = new URLSearchParams({
           ...data,
-          [ReportErrorFormEntries.platform]: "Not available",
+          [REPORT_ERROR_FORM_ENTRIES.platform]: "Not available",
         }).toString();
         window.open(`${REPORT_ERROR_FORM_URL}?${params}`, "_blank");
       });
@@ -1102,6 +1080,7 @@ export {
   changeRedirectRoute,
   fetchFiatExchangeRates,
   changeNetworkStatus,
+  loadEnv,
   checkHermezStatus,
   fetchPoolTransactions,
   addPendingWithdraw,

@@ -57,14 +57,18 @@ function signMessageHelper(
  */
 function fetchWallet(walletName: loginActions.WalletName): AppThunk {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
-    const env = adapters.env.getEnv();
-    if (env.success) {
+    const {
+      login: { step },
+      global: { env },
+    } = getState();
+
+    if (env) {
       try {
         switch (walletName) {
           case loginActions.WalletName.WALLET_CONNECT: {
             const walletConnectProvider = new WalletConnectProvider({
-              infuraId: env.data.REACT_APP_INFURA_API_KEY,
-              bridge: env.data.REACT_APP_WALLETCONNECT_BRIDGE,
+              infuraId: env.REACT_APP_INFURA_API_KEY,
+              bridge: env.REACT_APP_WALLETCONNECT_BRIDGE,
             });
             hermez.Providers.setProvider(
               walletConnectProvider,
@@ -100,13 +104,11 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
 
         const { chainId, name: chainName } = await provider.getNetwork();
 
-        if (env.data.REACT_APP_ENV === "production" && !isEnvironmentSupported(chainId)) {
+        if (env.REACT_APP_ENV === "production" && !isEnvironmentSupported(chainId)) {
           dispatch(
             globalActions.openSnackbar({
-              message: {
-                type: "info",
-                text: "Please, switch your network to Mainnet or Rinkeby to login",
-              },
+              type: "info-msg",
+              text: "Please, switch your network to Mainnet or Rinkeby to login",
             })
           );
           dispatch(loginActions.goToWalletSelectorStep());
@@ -133,9 +135,6 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
         const hashedSignature = keccak256(signature);
         const signatureBuffer = hermez.Utils.hexToBuffer(hashedSignature);
         const wallet = new hermez.HermezWallet.HermezWallet(signatureBuffer, hermezAddress);
-        const {
-          login: { step },
-        } = getState();
 
         if (step.type === "wallet-loader") {
           dispatch(globalActions.loadWallet(wallet));
@@ -153,24 +152,10 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
         if (step.type === "wallet-loader") {
           const text = adapters.parseError(error);
           dispatch(loginActions.loadWalletFailure(text));
-          dispatch(globalActions.openSnackbar({ message: { type: "info", text } }));
+          dispatch(globalActions.openSnackbar({ type: "info-msg", text }));
           dispatch(loginActions.goToPreviousStep());
         }
       }
-    } else {
-      const errorMsg = adapters.parseError(
-        env.error,
-        "An error occurred on src/store/login/login.thunks.ts:fetchWallet"
-      );
-      dispatch(
-        globalActions.openSnackbar({
-          message: {
-            type: "error",
-            raw: env.error,
-            parsed: errorMsg,
-          },
-        })
-      );
     }
   };
 }
@@ -254,7 +239,7 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
         console.error(error);
         const text = adapters.parseError(error);
         dispatch(loginActions.addAccountAuthFailure(text));
-        dispatch(globalActions.openSnackbar({ message: { type: "info", text } }));
+        dispatch(globalActions.openSnackbar({ type: "info-msg", text }));
         dispatch(loginActions.goToWalletSelectorStep());
       }
     }

@@ -2,6 +2,7 @@ import { HeaderState } from "src/store/global/global.reducer";
 // domain
 import {
   CoordinatorState,
+  Env,
   EthereumNetwork,
   FiatExchangeRates,
   HermezWallet,
@@ -18,6 +19,9 @@ import {
 } from "src/domain";
 
 export enum GlobalActionTypes {
+  LOAD_ENV = "[GLOBAL] LOAD ENV",
+  LOAD_ENV_SUCCESS = "[GLOBAL] LOAD ENV SUCCESS",
+  LOAD_ENV_FAILURE = "[GLOBAL] LOAD ENV FAILURE",
   LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",
   LOAD_HERMEZ_STATUS_SUCCESS = "[GLOBAL] LOAD HERMEZ STATUS SUCCESS",
   LOAD_HERMEZ_STATUS_FAILURE = "[GLOBAL] LOAD HERMEZ STATUS FAILURE",
@@ -61,6 +65,20 @@ export enum GlobalActionTypes {
   LOAD_TOKENS_PRICE = "[GLOBAL] LOAD TOKENS PRICE",
   LOAD_TOKENS_PRICE_SUCCESS = "[GLOBAL] LOAD TOKENS PRICE SUCCESS",
   LOAD_TOKENS_PRICE_FAILURE = "[GLOBAL] LOAD TOKENS PRICE FAILURE",
+}
+
+export interface LoadEnv {
+  type: GlobalActionTypes.LOAD_ENV;
+}
+
+export interface LoadEnvSuccess {
+  type: GlobalActionTypes.LOAD_ENV_SUCCESS;
+  env: Env;
+}
+
+export interface LoadEnvFailure {
+  type: GlobalActionTypes.LOAD_ENV_FAILURE;
+  error: string;
 }
 
 export interface LoadHermezStatus {
@@ -141,7 +159,6 @@ export interface LoadFiatExchangeRatesFailure {
 export interface OpenSnackbar {
   type: GlobalActionTypes.OPEN_SNACKBAR;
   message: Message;
-  backgroundColor?: string;
 }
 
 export interface CloseSnackbar {
@@ -291,6 +308,9 @@ export interface LoadTokensPriceFailure {
 }
 
 export type GlobalAction =
+  | LoadEnv
+  | LoadEnvSuccess
+  | LoadEnvFailure
   | LoadHermezStatus
   | LoadHermezStatusSuccess
   | LoadHermezStatusFailure
@@ -334,6 +354,26 @@ export type GlobalAction =
   | LoadTokensPrice
   | LoadTokensPriceSuccess
   | LoadTokensPriceFailure;
+
+function loadEnv(): LoadEnv {
+  return {
+    type: GlobalActionTypes.LOAD_ENV,
+  };
+}
+
+function loadEnvSuccess(env: Env): LoadEnvSuccess {
+  return {
+    type: GlobalActionTypes.LOAD_ENV_SUCCESS,
+    env,
+  };
+}
+
+function loadEnvFailure(error: string): LoadEnvFailure {
+  return {
+    type: GlobalActionTypes.LOAD_ENV_FAILURE,
+    error,
+  };
+}
 
 function loadHermezStatus(): LoadHermezStatus {
   return {
@@ -444,17 +484,10 @@ function loadFiatExchangeRatesFailure(error: string): LoadFiatExchangeRatesFailu
   };
 }
 
-function openSnackbar({
-  message,
-  backgroundColor,
-}: {
-  message: Message;
-  backgroundColor?: string;
-}): OpenSnackbar {
+function openSnackbar(message: Message): OpenSnackbar {
   return {
     type: GlobalActionTypes.OPEN_SNACKBAR,
     message,
-    backgroundColor,
   };
 }
 
@@ -710,6 +743,9 @@ function loadTokensPriceFailure(error: string): LoadTokensPriceFailure {
 }
 
 export {
+  loadEnv,
+  loadEnvSuccess,
+  loadEnvFailure,
   loadHermezStatus,
   loadHermezStatusSuccess,
   loadHermezStatusFailure,

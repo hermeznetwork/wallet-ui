@@ -38,18 +38,13 @@ function fetchAccounts(
         })
         .then((accounts) => dispatch(forceExitActions.loadAccountsSuccess(accounts)))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/transactions/force-exit/force-exit.thunks.ts:fetchAccounts"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(forceExitActions.loadAccountsFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -70,18 +65,13 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
         .forceExit(amount, account.accountIndex, account.token, signer)
         .then(() => handleTransactionSuccess(dispatch))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/transactions/force-exit/force-exit.thunks.ts:forceExit"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(forceExitActions.stopTransactionApproval());
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -90,7 +80,7 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch) {
-  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push("/"));
 }
 

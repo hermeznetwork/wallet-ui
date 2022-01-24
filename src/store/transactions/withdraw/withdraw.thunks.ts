@@ -44,18 +44,13 @@ function fetchHermezAccount(
       )
       .then((res) => dispatch(withdrawActions.loadAccountSuccess(res)))
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/transactions/withdraw/withdraw.thunks.ts:fetchHermezAccount"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(withdrawActions.loadAccountFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -103,18 +98,13 @@ function fetchExit(
           }
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/transactions/withdraw/withdraw.thunks.ts:fetchExit"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(withdrawActions.loadExitFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -206,30 +196,27 @@ function withdraw(
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(withdrawActions.stopTransactionApproval());
   const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
-  const errorMsg = adapters.parseError(
-    error,
-    "An error occurred on src/store/transactions/withdraw/withdraw.thunks.ts:withdraw"
-  );
+  const errorMsg = adapters.parseError(error);
   dispatch(
-    openSnackbar({
-      message: errorMsg.includes(withdrawAlreadyDoneErrorCode)
+    openSnackbar(
+      errorMsg.includes(withdrawAlreadyDoneErrorCode)
         ? {
-            type: "info",
+            type: "info-msg",
             text: "The withdraw has already been done",
           }
         : {
             type: "error",
             raw: error,
             parsed: errorMsg,
-          },
-    })
+          }
+    )
   );
 }
 

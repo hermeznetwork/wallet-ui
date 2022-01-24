@@ -48,18 +48,13 @@ function fetchHermezAccount(
       )
       .then((res) => dispatch(transferActions.loadAccountSuccess(res)))
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(
-          error,
-          "An error occurred on src/store/transactions/transfer/transfer.thunks.ts:fetchHermezAccount"
-        );
+        const errorMsg = adapters.parseError(error);
         dispatch(transferActions.loadAccountFailure(errorMsg));
         dispatch(
           openSnackbar({
-            message: {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            },
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
           })
         );
       });
@@ -94,18 +89,13 @@ function fetchAccounts(
         })
         .then((accounts) => dispatch(transferActions.loadAccountsSuccess(accounts)))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/transactions/transfer/transfer.thunks.ts:fetchAccounts"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(transferActions.loadAccountsFailure(errorMsg));
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -135,18 +125,13 @@ function fetchFees(): AppThunk {
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(transferActions.loadFeesSuccess(res.recommendedFee)))
           .catch((error: unknown) => {
-            const errorMsg = adapters.parseError(
-              error,
-              "An error occurred on src/store/transactions/transfer/transfer.thunks.ts:fetchFees"
-            );
+            const errorMsg = adapters.parseError(error);
             dispatch(transferActions.loadFeesFailure(errorMsg));
             dispatch(
               openSnackbar({
-                message: {
-                  type: "error",
-                  raw: error,
-                  parsed: errorMsg,
-                },
+                type: "error",
+                raw: error,
+                parsed: errorMsg,
               })
             );
           });
@@ -280,18 +265,13 @@ function transfer(
         .generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/transactions/transfer/transfer.thunks.ts:transfer"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(transferActions.stopTransactionApproval());
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -301,7 +281,7 @@ function transfer(
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   const route = accountIndex ? `/accounts/${accountIndex}` : "/";
-  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push(route));
 }
 

@@ -1,38 +1,19 @@
 import { z, ZodError } from "zod";
 
 import { StrictSchema } from "src/utils/type-safety";
-import { ZodEither } from "src/utils/types";
+import { Either } from "src/utils/types";
+// domain
+import {
+  ProductionLiteral,
+  ProductionVars,
+  ProductionEnv,
+  DevelopmentLiteral,
+  DevelopmentVars,
+  DevelopmentEnv,
+  Env,
+} from "src/domain";
 // adapters
 import * as adapters from "src/adapters";
-
-interface ProductionLiteral {
-  REACT_APP_ENV: "production";
-}
-
-interface ProductionVars {
-  REACT_APP_INFURA_API_KEY: string;
-  REACT_APP_PRICE_UPDATER_API_URL: string;
-  REACT_APP_PRICE_UPDATER_API_KEY: string;
-  REACT_APP_WALLETCONNECT_BRIDGE: string;
-}
-
-type ProductionEnv = ProductionLiteral & ProductionVars;
-
-interface DevelopmentLiteral {
-  REACT_APP_ENV: "development";
-}
-
-type DevelopmentVars = ProductionVars & {
-  REACT_APP_HERMEZ_API_URL: string;
-  REACT_APP_HERMEZ_CONTRACT_ADDRESS: string;
-  REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS: string;
-  REACT_APP_BATCH_EXPLORER_URL: string;
-  REACT_APP_ETHERSCAN_URL: string;
-};
-
-type DevelopmentEnv = DevelopmentLiteral & DevelopmentVars;
-
-type Env = ProductionEnv | DevelopmentEnv;
 
 const productionLiteralParser = StrictSchema<ProductionLiteral>()(
   z.object({
@@ -75,7 +56,7 @@ const developmentEnvParser = StrictSchema<DevelopmentEnv>()(
   developmentLiteralParser.and(developmentVarsParser)
 );
 
-export function getEnv(): ZodEither<Env, ZodError<Env>> {
+export function getEnv(): Either<Env, ZodError<Env>> {
   const parsedEnvLiteral = z
     .union([productionLiteralParser, developmentLiteralParser])
     .safeParse(process.env);

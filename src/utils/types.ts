@@ -36,7 +36,7 @@ export function isAsyncTaskDataAvailable<D, E>(
 
 export type Exact<T, U> = [T, U] extends [U, T] ? true : false;
 
-export type ZodEither<T, E> =
+export type Either<T, E> =
   | {
       success: true;
       data: T;

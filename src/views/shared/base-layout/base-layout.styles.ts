@@ -3,7 +3,7 @@ import { createUseStyles } from "react-jss";
 import { Theme } from "src/styles/theme";
 
 const useBaseLayoutStyles = createUseStyles((theme: Theme) => ({
-  spinner: {
+  spinnerContainer: {
     height: "100%",
     width: "100%",
     flex: 1,

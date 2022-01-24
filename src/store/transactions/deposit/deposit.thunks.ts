@@ -52,18 +52,13 @@ function fetchEthereumAccount(
               }
             })
             .catch((error: unknown) => {
-              const errorMsg = adapters.parseError(
-                error,
-                "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEthereumAccount"
-              );
+              const errorMsg = adapters.parseError(error);
               dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
               dispatch(
                 openSnackbar({
-                  message: {
-                    type: "error",
-                    raw: error,
-                    parsed: errorMsg,
-                  },
+                  type: "error",
+                  raw: error,
+                  parsed: errorMsg,
                 })
               );
             });
@@ -102,18 +97,13 @@ function fetchEthereumAccounts(
               dispatch(depositActions.loadEthereumAccountsSuccess(ethereumAccounts))
             )
             .catch((error: unknown) => {
-              const errorMsg = adapters.parseError(
-                error,
-                "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEthereumAccounts"
-              );
+              const errorMsg = adapters.parseError(error);
               dispatch(depositActions.loadEthereumAccountsFailure(errorMsg));
               dispatch(
                 openSnackbar({
-                  message: {
-                    type: "error",
-                    raw: error,
-                    parsed: errorMsg,
-                  },
+                  type: "error",
+                  raw: error,
+                  parsed: errorMsg,
                 })
               );
             });
@@ -151,18 +141,13 @@ function fetchEstimatedDepositFee(): AppThunk {
         }
       }
     } catch (error: unknown) {
-      const errorMsg = adapters.parseError(
-        error,
-        "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:fetchEstimatedDepositFee"
-      );
+      const errorMsg = adapters.parseError(error);
       dispatch(depositActions.loadEstimatedDepositFeeFailure(errorMsg));
       dispatch(
         openSnackbar({
-          message: {
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          },
+          type: "error",
+          raw: error,
+          parsed: errorMsg,
         })
       );
     }
@@ -224,18 +209,13 @@ function deposit(
             });
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(
-            error,
-            "An error occurred on src/store/transactions/deposit/deposit.thunks.ts:deposit"
-          );
+          const errorMsg = adapters.parseError(error);
           dispatch(depositActions.stopTransactionApproval());
           dispatch(
             openSnackbar({
-              message: {
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              },
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
             })
           );
         });
@@ -244,7 +224,7 @@ function deposit(
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex?: string) {
-  dispatch(openSnackbar({ message: { type: "info", text: "Transaction submitted" } }));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   if (accountIndex) {
     dispatch(push(`/accounts/${accountIndex}`));
   } else {
