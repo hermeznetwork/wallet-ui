@@ -596,7 +596,7 @@ function recoverPendingDelayedWithdrawals(exits: Exits): AppThunk {
             !batchNumPendingDelayedWithdraws.includes(exit.batchNum) &&
             exit.delayedWithdrawRequest
           ) {
-            void provider
+            provider
               .getBlockWithTransactions(exit.delayedWithdrawRequest)
               .then((blockWithTransactions) => {
                 const pendingDelayedWithdraw = blockWithTransactions.transactions.find(
@@ -615,7 +615,16 @@ function recoverPendingDelayedWithdrawals(exits: Exits): AppThunk {
                   );
                 }
               })
-              .catch(() => ({}));
+              .catch((error: unknown) => {
+                const errorMsg = adapters.parseError(error);
+                dispatch(
+                  openSnackbar({
+                    type: "error",
+                    raw: error,
+                    parsed: errorMsg,
+                  })
+                );
+              });
           }
         });
       }
