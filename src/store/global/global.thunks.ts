@@ -1015,9 +1015,12 @@ function checkPendingTransactions(): AppThunk {
                 fee: transaction.fee,
               };
 
-              return adapters.hermezApi
-                .generateAndSendL2Tx(txData, wallet, transaction.token, nextForgerUrls)
-                .catch(() => ({}));
+              return adapters.hermezApi.generateAndSendL2Tx(
+                txData,
+                wallet,
+                transaction.token,
+                nextForgerUrls
+              );
             });
 
           return Promise.all(resendTransactionsRequests);
