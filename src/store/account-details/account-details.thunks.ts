@@ -6,6 +6,7 @@ import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
 import * as globalThunks from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
+import { isAsyncTaskDataAvailable } from "src/utils/types";
 // domain
 import {
   Exit,
@@ -123,44 +124,45 @@ function fetchHistoryTransactions(
       accountDetails: { historyTransactionsTask },
     } = getState();
 
-    if (
-      fromItem === undefined &&
-      (historyTransactionsTask.status === "reloading" ||
-        historyTransactionsTask.status === "successful")
-    ) {
-      return dispatch(refreshHistoryTransactions(accountIndex, exits));
+    const isPaginationRequest = fromItem !== undefined;
+    const isRefreshRequest =
+      isPaginationRequest === false && isAsyncTaskDataAvailable(historyTransactionsTask);
+
+    if (isRefreshRequest) {
+      dispatch(refreshHistoryTransactions(accountIndex, exits));
+    } else {
+      dispatch(accountDetailsActions.loadHistoryTransactions());
+
+      if (isPaginationRequest) {
+        // new data prevails over reloading
+        refreshCancelTokenSource.cancel();
+      }
+
+      return adapters.hermezApi
+        .getHistoryTransactions(undefined, undefined, undefined, accountIndex, fromItem, "DESC")
+        .then((historyTransactions: HistoryTransactions) => {
+          const filteredTransactions = filterExitsFromHistoryTransactions(
+            historyTransactions.transactions,
+            exits.exits
+          );
+
+          return { ...historyTransactions, transactions: filteredTransactions };
+        })
+        .then((historyTransactions: HistoryTransactions) =>
+          dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
+        )
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(accountDetailsActions.loadHistoryTransactionsFailure(errorMsg));
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
     }
-
-    dispatch(accountDetailsActions.loadHistoryTransactions());
-
-    if (fromItem) {
-      refreshCancelTokenSource.cancel();
-    }
-
-    return adapters.hermezApi
-      .getHistoryTransactions(undefined, undefined, undefined, accountIndex, fromItem, "DESC")
-      .then((historyTransactions: HistoryTransactions) => {
-        const filteredTransactions = filterExitsFromHistoryTransactions(
-          historyTransactions.transactions,
-          exits.exits
-        );
-
-        return { ...historyTransactions, transactions: filteredTransactions };
-      })
-      .then((historyTransactions: HistoryTransactions) =>
-        dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
-      )
-      .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(accountDetailsActions.loadHistoryTransactionsFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
-      });
   };
 }
 
@@ -230,7 +232,17 @@ function refreshHistoryTransactions(
         .then((historyTransactions: HistoryTransactions) =>
           dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
         )
-        .catch(() => ({}));
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(accountDetailsActions.refreshHistoryTransactionsFailure(errorMsg));
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
     }
   };
 }
