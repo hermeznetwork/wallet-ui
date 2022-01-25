@@ -949,9 +949,27 @@ function checkPendingDeposits(): AppThunk {
                   })
                   .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()));
               })
-              .catch(() => ({}));
+              .catch((error: unknown) => {
+                const errorMsg = adapters.parseError(error);
+                dispatch(
+                  openSnackbar({
+                    type: "error",
+                    raw: error,
+                    parsed: errorMsg,
+                  })
+                );
+              });
           })
-          .catch(() => ({}));
+          .catch((error: unknown) => {
+            const errorMsg = adapters.parseError(error);
+            dispatch(
+              openSnackbar({
+                type: "error",
+                raw: error,
+                parsed: errorMsg,
+              })
+            );
+          });
       }
     }
   };
