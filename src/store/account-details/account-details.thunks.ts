@@ -138,7 +138,7 @@ function fetchHistoryTransactions(
         refreshCancelTokenSource.cancel();
       }
 
-      return adapters.hermezApi
+      adapters.hermezApi
         .getHistoryTransactions(undefined, undefined, undefined, accountIndex, fromItem, "DESC")
         .then((historyTransactions: HistoryTransactions) => {
           const filteredTransactions = filterExitsFromHistoryTransactions(
@@ -148,9 +148,9 @@ function fetchHistoryTransactions(
 
           return { ...historyTransactions, transactions: filteredTransactions };
         })
-        .then((historyTransactions: HistoryTransactions) =>
-          dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions))
-        )
+        .then((historyTransactions: HistoryTransactions) => {
+          dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions));
+        })
         .catch((error: unknown) => {
           const errorMsg = adapters.parseError(error);
           dispatch(accountDetailsActions.loadHistoryTransactionsFailure(errorMsg));
