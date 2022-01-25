@@ -22,7 +22,6 @@ const useWithdrawInfoSidenavStyles = createUseStyles((theme: Theme) => ({
     borderRadius: theme.spacing(2),
     padding: theme.spacing(2.5),
     marginTop: theme.spacing(2),
-    color: theme.palette.black.main,
     fontSize: theme.spacing(1.75),
     fontWeight: theme.fontWeights.medium,
   },
