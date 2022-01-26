@@ -219,3 +219,90 @@ export type DevelopmentVars = ProductionVars & {
 export type DevelopmentEnv = DevelopmentLiteral & DevelopmentVars;
 
 export type Env = ProductionEnv | DevelopmentEnv;
+
+// Metamask errors
+// https://github.com/MetaMask/eth-rpc-errors/blob/main/src/error-constants.ts
+
+export interface InvalidInputError {
+  code: -32000;
+  message: string;
+}
+export interface ResourceNotFoundError {
+  code: -32001;
+  message: string;
+}
+export interface ResourceUnavailableError {
+  code: -32002;
+  message: string;
+}
+export interface TransactionRejectedError {
+  code: -32003;
+  message: string;
+}
+export interface MethodNotSupportedError {
+  code: -32004;
+  message: string;
+}
+export interface LimitExceededError {
+  code: -32005;
+  message: string;
+}
+export interface ParseError {
+  code: -32700;
+  message: string;
+}
+export interface InvalidRequestError {
+  code: -32600;
+  message: string;
+}
+export interface MethodNotFoundError {
+  code: -32601;
+  message: string;
+}
+export interface InvalidParamsError {
+  code: -32602;
+  message: string;
+}
+export interface InternalError {
+  code: -32603;
+  message: string;
+}
+
+export interface UserRejectedRequestError {
+  code: 4001;
+  message: string;
+}
+export interface UnauthorizedError {
+  code: 4100;
+  message: string;
+}
+export interface UnsupportedMethodError {
+  code: 4200;
+  message: string;
+}
+export interface DisconnectedError {
+  code: 4900;
+  message: string;
+}
+export interface ChainDisconnectedError {
+  code: 4901;
+  message: string;
+}
+
+export type MetamaskError =
+  | InvalidInputError
+  | ResourceNotFoundError
+  | ResourceUnavailableError
+  | TransactionRejectedError
+  | MethodNotSupportedError
+  | LimitExceededError
+  | ParseError
+  | InvalidRequestError
+  | MethodNotFoundError
+  | InvalidParamsError
+  | InternalError
+  | UserRejectedRequestError
+  | UnauthorizedError
+  | UnsupportedMethodError
+  | DisconnectedError
+  | ChainDisconnectedError;
