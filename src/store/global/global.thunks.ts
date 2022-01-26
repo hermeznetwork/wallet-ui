@@ -177,11 +177,19 @@ function checkHermezStatus(): AppThunk {
     return adapters.hermezWeb
       .getNetworkStatus()
       .then((status: number) => dispatch(globalActions.loadHermezStatusSuccess(status)))
-      .catch(() =>
+      .catch((error: unknown) => {
+        const errorMsg = `An error occurred loading Polygon Hermez status. ${adapters.parseError(
+          error
+        )}`;
+        dispatch(globalActions.loadHermezStatusFailure(errorMsg));
         dispatch(
-          globalActions.loadHermezStatusFailure("An error occurred loading Polygon Hermez status")
-        )
-      );
+          openSnackbar({
+            type: "error",
+            raw: error,
+            parsed: errorMsg,
+          })
+        );
+      });
   };
 }
 
