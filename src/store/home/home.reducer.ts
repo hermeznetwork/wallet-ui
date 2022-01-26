@@ -135,6 +135,15 @@ function homeReducer(state: HomeState = initialHomeState, action: HomeAction): H
         },
       };
     }
+    case HomeActionTypes.REFRESH_ACCOUNTS_FAILURE: {
+      return {
+        ...state,
+        accountsTask: {
+          status: "failed",
+          error: action.error,
+        },
+      };
+    }
     case HomeActionTypes.LOAD_EXITS: {
       return {
         ...state,

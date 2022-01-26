@@ -217,8 +217,20 @@ function refreshAccounts(
 
           return { accounts, pendingItems };
         })
-        .then((res) => dispatch(homeActions.refreshAccountsSuccess(res)))
-        .catch(() => ({}));
+        .then((res) => {
+          dispatch(homeActions.refreshAccountsSuccess(res));
+        })
+        .catch((error: unknown) => {
+          const errorMsg = adapters.parseError(error);
+          dispatch(homeActions.refreshAccountsFailure(errorMsg));
+          dispatch(
+            openSnackbar({
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            })
+          );
+        });
     }
   };
 }
