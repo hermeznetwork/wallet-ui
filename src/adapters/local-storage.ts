@@ -19,7 +19,7 @@ import {
 } from "src/domain";
 // adapters
 import * as adapters from "src/adapters";
-import * as parsers from "src/adapters/parsers";
+import * as hermezApiParsers from "src/adapters/parsers/hermez-api";
 import { StrictSchema } from "src/utils/type-safety";
 
 // Storage Helpers
@@ -99,7 +99,7 @@ export function setPreferredCurrency(preferredCurrency: string): void {
 // Pending Withdraws
 
 const pendingWithdrawsParser = StrictSchema<PendingWithdraws>()(
-  z.record(z.record(z.array(parsers.pendingWithdraw)))
+  z.record(z.record(z.array(hermezApiParsers.pendingWithdraw)))
 );
 
 export function getPendingWithdraws(): PendingWithdraws {
@@ -157,7 +157,7 @@ export function removePendingWithdrawByHash(
 // Pending Delayed Withdraws
 
 const pendingDelayedWithdrawsParser = StrictSchema<PendingDelayedWithdraws>()(
-  z.record(z.record(z.array(parsers.pendingDelayedWithdraw)))
+  z.record(z.record(z.array(hermezApiParsers.pendingDelayedWithdraw)))
 );
 
 export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
@@ -265,7 +265,7 @@ export function removePendingDelayedWithdrawByHash(
 // Pending Deposits
 
 const pendingDepositsParser = StrictSchema<PendingDeposits>()(
-  z.record(z.record(z.array(parsers.pendingDeposit)))
+  z.record(z.record(z.array(hermezApiParsers.pendingDeposit)))
 );
 
 export function getPendingDeposits(): PendingDeposits {
@@ -366,7 +366,7 @@ export function removePendingDepositByHash(
 // Timer Withdraw
 
 const timerWithdrawParser = StrictSchema<TimerWithdraws>()(
-  z.record(z.record(z.array(parsers.timerWithdraw)))
+  z.record(z.record(z.array(hermezApiParsers.timerWithdraw)))
 );
 
 export function getTimerWithdraws(): TimerWithdraws {
