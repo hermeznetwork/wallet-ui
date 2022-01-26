@@ -202,22 +202,24 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(withdrawActions.stopTransactionApproval());
-  const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
-  const errorMsg = adapters.parseError(error);
-  dispatch(
-    openSnackbar(
-      errorMsg.includes(withdrawAlreadyDoneErrorCode)
-        ? {
-            type: "info-msg",
-            text: "The withdraw has already been done",
-          }
-        : {
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          }
-    )
-  );
+  if (adapters.isMetamaskUserRejectedRequestError(error) === false) {
+    const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
+    const errorMsg = adapters.parseError(error);
+    dispatch(
+      openSnackbar(
+        errorMsg.includes(withdrawAlreadyDoneErrorCode)
+          ? {
+              type: "info-msg",
+              text: "The withdraw has already been done",
+            }
+          : {
+              type: "error",
+              raw: error,
+              parsed: errorMsg,
+            }
+      )
+    );
+  }
 }
 
 export { fetchHermezAccount, fetchExit, withdraw };

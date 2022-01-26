@@ -101,7 +101,7 @@ export type TransactionReceiver =
   | Pick<HermezAccount, "bjj">
   | Pick<HermezAccount, "hezEthereumAddress">;
 
-// Type Guards
+// Hermez Type Guards
 
 export function isHermezAccount(account: Account): account is HermezAccount {
   return "accountIndex" in account;
@@ -219,106 +219,3 @@ export type DevelopmentVars = ProductionVars & {
 export type DevelopmentEnv = DevelopmentLiteral & DevelopmentVars;
 
 export type Env = ProductionEnv | DevelopmentEnv;
-
-// Metamask errors
-// https://github.com/MetaMask/eth-rpc-errors/blob/main/src/error-constants.ts
-
-export interface InvalidInputError {
-  type: "invalidInputError";
-  code: -32000;
-  message: string;
-}
-export interface ResourceNotFoundError {
-  type: "resourceNotFoundError";
-  code: -32001;
-  message: string;
-}
-export interface ResourceUnavailableError {
-  type: "resourceUnavailableError";
-  code: -32002;
-  message: string;
-}
-export interface TransactionRejectedError {
-  type: "transactionRejectedError";
-  code: -32003;
-  message: string;
-}
-export interface MethodNotSupportedError {
-  type: "methodNotSupportedError";
-  code: -32004;
-  message: string;
-}
-export interface LimitExceededError {
-  type: "limitExceededError";
-  code: -32005;
-  message: string;
-}
-export interface ParseError {
-  type: "parseError";
-  code: -32700;
-  message: string;
-}
-export interface InvalidRequestError {
-  type: "invalidRequestError";
-  code: -32600;
-  message: string;
-}
-export interface MethodNotFoundError {
-  type: "methodNotFoundError";
-  code: -32601;
-  message: string;
-}
-export interface InvalidParamsError {
-  type: "invalidParamsError";
-  code: -32602;
-  message: string;
-}
-export interface InternalError {
-  type: "internalError";
-  code: -32603;
-  message: string;
-}
-
-export interface UserRejectedRequestError {
-  type: "userRejectedRequestError";
-  code: 4001;
-  message: string;
-}
-export interface UnauthorizedError {
-  type: "unauthorizedError";
-  code: 4100;
-  message: string;
-}
-export interface UnsupportedMethodError {
-  type: "unsupportedMethodError";
-  code: 4200;
-  message: string;
-}
-export interface DisconnectedError {
-  type: "disconnectedError";
-  code: 4900;
-  message: string;
-}
-export interface ChainDisconnectedError {
-  type: "chainDisconnectedError";
-  code: 4901;
-  message: string;
-}
-
-export type MetamaskError =
-  | InvalidInputError
-  | ResourceNotFoundError
-  | ResourceUnavailableError
-  | TransactionRejectedError
-  | MethodNotSupportedError
-  | LimitExceededError
-  | ParseError
-  | InvalidRequestError
-  | MethodNotFoundError
-  | InvalidParamsError
-  | InternalError
-  | UserRejectedRequestError
-  | UnauthorizedError
-  | UnsupportedMethodError
-  | DisconnectedError
-  | ChainDisconnectedError;

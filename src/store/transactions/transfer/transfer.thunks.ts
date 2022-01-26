@@ -265,15 +265,17 @@ function transfer(
         .generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
           dispatch(transferActions.stopTransactionApproval());
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          if (adapters.isMetamaskUserRejectedRequestError(error) === false) {
+            const errorMsg = adapters.parseError(error);
+            dispatch(
+              openSnackbar({
+                type: "error",
+                raw: error,
+                parsed: errorMsg,
+              })
+            );
+          }
         });
     }
   };

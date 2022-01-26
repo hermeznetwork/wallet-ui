@@ -65,15 +65,17 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
         .forceExit(amount, account.accountIndex, account.token, signer)
         .then(() => handleTransactionSuccess(dispatch))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
           dispatch(forceExitActions.stopTransactionApproval());
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          if (adapters.isMetamaskUserRejectedRequestError(error) === false) {
+            const errorMsg = adapters.parseError(error);
+            dispatch(
+              openSnackbar({
+                type: "error",
+                raw: error,
+                parsed: errorMsg,
+              })
+            );
+          }
         });
     }
   };

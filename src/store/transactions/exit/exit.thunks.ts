@@ -196,15 +196,17 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
         .generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
           dispatch(exitActions.stopTransactionApproval());
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          if (adapters.isMetamaskUserRejectedRequestError(error) === false) {
+            const errorMsg = adapters.parseError(error);
+            dispatch(
+              openSnackbar({
+                type: "error",
+                raw: error,
+                parsed: errorMsg,
+              })
+            );
+          }
         });
     }
   };

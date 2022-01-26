@@ -20,6 +20,24 @@ const messageKeyErrorParser = StrictSchema<MessageKeyError>()(
   })
 );
 
+interface MetamaskUserRejectedRequestError {
+  code: 4001;
+  message: string;
+}
+
+const metamaskUserRejectedRequestError = StrictSchema<MetamaskUserRejectedRequestError>()(
+  z.object({
+    code: z.literal(4001),
+    message: z.string(),
+  })
+);
+
+export function isMetamaskUserRejectedRequestError(
+  error: unknown
+): error is MetamaskUserRejectedRequestError {
+  return metamaskUserRejectedRequestError.safeParse(error).success;
+}
+
 export function parseError(error: unknown): string {
   if (typeof error === "string") {
     return error;
