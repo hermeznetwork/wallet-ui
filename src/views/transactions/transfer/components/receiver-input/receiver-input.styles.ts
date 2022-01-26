@@ -22,7 +22,6 @@ const useReceiverInputStyles = createUseStyles((theme: Theme) => ({
       2.5
     )}px`,
     fontSize: `${theme.spacing(2)}px`,
-    color: theme.palette.black.main,
     fontWeight: theme.fontWeights.medium,
     outline: 0,
     border: "none",
@@ -52,7 +51,6 @@ const useReceiverInputStyles = createUseStyles((theme: Theme) => ({
     padding: theme.spacing(2),
     marginRight: theme.spacing(0.5),
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black.main,
     [theme.breakpoints.upSm]: {
       fontSize: theme.spacing(2.5),
       marginRight: theme.spacing(3),

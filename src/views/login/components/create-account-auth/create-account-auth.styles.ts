@@ -11,7 +11,6 @@ const useCreateAccountAuthStyles = createUseStyles((theme: Theme) => ({
   accountAuthTitle: {
     fontSize: theme.spacing(2.5),
     lineHeight: `${theme.spacing(4)}px`,
-    color: theme.palette.black.main,
     fontWeight: theme.fontWeights.bold,
     marginTop: 0,
     marginBottom: theme.spacing(2),
@@ -19,7 +18,6 @@ const useCreateAccountAuthStyles = createUseStyles((theme: Theme) => ({
   accountAuthText: {
     fontSize: theme.spacing(2),
     lineHeight: `${theme.spacing(3.5)}px`,
-    color: theme.palette.black.main,
     fontWeight: theme.fontWeights.medium,
     textAlign: "center",
     marginBottom: theme.spacing(1),
