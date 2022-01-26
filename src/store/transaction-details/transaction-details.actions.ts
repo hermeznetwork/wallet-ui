@@ -18,6 +18,7 @@ export interface LoadTransactionSuccess {
 
 export interface LoadTransactionFailure {
   type: TransactionDetailsActionTypes.LOAD_TRANSACTION_FAILURE;
+  error: string;
 }
 
 export type TransactionDetailsAction =
@@ -40,9 +41,10 @@ function loadTransactionSuccess(
   };
 }
 
-function loadTransactionFailure(): LoadTransactionFailure {
+function loadTransactionFailure(error: string): LoadTransactionFailure {
   return {
     type: TransactionDetailsActionTypes.LOAD_TRANSACTION_FAILURE,
+    error,
   };
 }
 
