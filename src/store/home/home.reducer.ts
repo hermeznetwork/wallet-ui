@@ -54,7 +54,7 @@ function homeReducer(state: HomeState = initialHomeState, action: HomeAction): H
         ...state,
         totalBalanceTask: {
           status: "failed",
-          error: "An error ocurred loading the total balance of the accounts",
+          error: action.error,
         },
       };
     }
@@ -98,7 +98,7 @@ function homeReducer(state: HomeState = initialHomeState, action: HomeAction): H
         ...state,
         accountsTask: {
           status: "failed",
-          error: "An error ocurred loading the accounts",
+          error: action.error,
         },
       };
     }

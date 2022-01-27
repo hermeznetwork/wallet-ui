@@ -205,7 +205,7 @@ function globalReducer(
         ...state,
         poolTransactionsTask: {
           status: "failed",
-          error: "An error ocurred loading the transactions from the pool",
+          error: action.error,
         },
       };
     }
