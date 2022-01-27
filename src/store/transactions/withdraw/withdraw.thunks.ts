@@ -204,21 +204,25 @@ function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(withdrawActions.stopTransactionApproval());
   if (adapters.isMetamaskUserRejectedRequestError(error) === false) {
     const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
-    const errorMsg = adapters.parseError(error);
-    dispatch(
-      openSnackbar(
-        errorMsg.includes(withdrawAlreadyDoneErrorCode)
-          ? {
-              type: "info-msg",
-              text: "The withdraw has already been done",
-            }
-          : {
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            }
-      )
-    );
+    adapters
+      .asyncParseError(error)
+      .then((errorMsg) => {
+        dispatch(
+          openSnackbar(
+            errorMsg.includes(withdrawAlreadyDoneErrorCode)
+              ? {
+                  type: "info-msg",
+                  text: "The withdraw has already been done",
+                }
+              : {
+                  type: "error",
+                  raw: error,
+                  parsed: errorMsg,
+                }
+          )
+        );
+      })
+      .catch(console.error);
   }
 }
 
