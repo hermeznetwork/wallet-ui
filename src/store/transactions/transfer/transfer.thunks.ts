@@ -5,6 +5,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
+import { processError } from "src/store/global/global.thunks";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import { openSnackbar } from "src/store/global/global.actions";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
@@ -48,15 +49,7 @@ function fetchHermezAccount(
       )
       .then((res) => dispatch(transferActions.loadAccountSuccess(res)))
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(transferActions.loadAccountFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
+        dispatch(processError(error, transferActions.loadAccountFailure));
       });
   };
 }
@@ -89,15 +82,7 @@ function fetchAccounts(
         })
         .then((accounts) => dispatch(transferActions.loadAccountsSuccess(accounts)))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(transferActions.loadAccountsFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, transferActions.loadAccountsFailure));
         });
     }
   };
@@ -125,15 +110,7 @@ function fetchFees(): AppThunk {
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(transferActions.loadFeesSuccess(res.recommendedFee)))
           .catch((error: unknown) => {
-            const errorMsg = adapters.parseError(error);
-            dispatch(transferActions.loadFeesFailure(errorMsg));
-            dispatch(
-              openSnackbar({
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              })
-            );
+            dispatch(processError(error, transferActions.loadFeesFailure));
           });
       }
     }
@@ -266,16 +243,7 @@ function transfer(
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
         .catch((error: unknown) => {
           dispatch(transferActions.stopTransactionApproval());
-          if (adapters.isMetamaskUserRejectedRequestError(error) === false) {
-            const errorMsg = adapters.parseError(error);
-            dispatch(
-              openSnackbar({
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              })
-            );
-          }
+          dispatch(processError(error));
         });
     }
   };

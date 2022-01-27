@@ -4,8 +4,7 @@ import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
-import * as globalThunks from "src/store/global/global.thunks";
-import { openSnackbar } from "src/store/global/global.actions";
+import { recoverPendingDelayedWithdrawals, processError } from "src/store/global/global.thunks";
 import { isAsyncTaskDataAvailable } from "src/utils/types";
 // domain
 import {
@@ -46,15 +45,7 @@ function fetchAccount(
         }
       })
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(accountDetailsActions.loadAccountFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
+        dispatch(processError(error, accountDetailsActions.loadAccountFailure));
       });
   };
 }
@@ -152,15 +143,7 @@ function fetchHistoryTransactions(
           dispatch(accountDetailsActions.loadHistoryTransactionsSuccess(historyTransactions));
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(accountDetailsActions.loadHistoryTransactionsFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, accountDetailsActions.loadHistoryTransactionsFailure));
         });
     }
   };
@@ -233,15 +216,7 @@ function refreshHistoryTransactions(
           dispatch(accountDetailsActions.refreshHistoryTransactionsSuccess(historyTransactions))
         )
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(accountDetailsActions.refreshHistoryTransactionsFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, accountDetailsActions.refreshHistoryTransactionsFailure));
         });
     }
   };
@@ -261,19 +236,11 @@ function fetchExits(tokenId: Token["id"]): AppThunk {
       return adapters.hermezApi
         .getExits(wallet.hermezEthereumAddress, true, tokenId)
         .then((exits: Exits) => {
-          dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
+          dispatch(recoverPendingDelayedWithdrawals(exits));
           dispatch(accountDetailsActions.loadExitsSuccess(exits));
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(accountDetailsActions.loadExitsFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, accountDetailsActions.loadExitsFailure));
         });
     }
   };

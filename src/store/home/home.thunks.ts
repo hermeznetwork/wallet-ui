@@ -2,8 +2,7 @@ import axios from "axios";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
-import * as globalThunks from "src/store/global/global.thunks";
-import { openSnackbar } from "src/store/global/global.actions";
+import { recoverPendingDelayedWithdrawals, processError } from "src/store/global/global.thunks";
 import * as homeActions from "src/store/home/home.actions";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { isAsyncTaskDataAvailable } from "src/utils/types";
@@ -78,15 +77,7 @@ function fetchTotalBalance(
         dispatch(homeActions.loadTotalBalanceSuccess(totalBalance));
       })
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(homeActions.loadTotalBalanceFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
+        dispatch(processError(error, homeActions.loadTotalBalanceFailure));
       });
   };
 }
@@ -143,15 +134,7 @@ function fetchAccounts(
           dispatch(homeActions.loadAccountsSuccess(res));
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(homeActions.loadAccountsFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, homeActions.loadAccountsFailure));
         });
     }
   };
@@ -221,15 +204,7 @@ function refreshAccounts(
           dispatch(homeActions.refreshAccountsSuccess(res));
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(homeActions.refreshAccountsFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, homeActions.refreshAccountsFailure));
         });
     }
   };
@@ -250,19 +225,11 @@ function fetchExits(): AppThunk {
       return adapters.hermezApi
         .getExits(wallet.hermezEthereumAddress, true)
         .then((exits) => {
-          dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
+          dispatch(recoverPendingDelayedWithdrawals(exits));
           dispatch(homeActions.loadExitsSuccess(exits));
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(homeActions.loadExitsFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, homeActions.loadExitsFailure));
         });
     }
   };

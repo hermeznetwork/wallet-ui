@@ -39,32 +39,17 @@ export function isMetamaskUserRejectedRequestError(
   return metamaskUserRejectedRequestError.safeParse(error).success;
 }
 
-export function parseError(error: unknown): string {
-  if (typeof error === "string") {
-    return error;
-  } else if (error instanceof Error) {
+function sanitizeErrorMessage(errorMessage: string): string {
+  try {
+    return JSON.stringify(JSON.parse(errorMessage));
+  } catch (error) {
     const selectMultipleTabsAndSpaces = /[^\S\r\n]{2,}/g;
-    const maxStackLength = 4096;
-    return [
-      JSON.stringify(error),
-      ...(error.stack
-        ? [
-            ">>>>>>>>>> error.stack >>>>>>>>>>",
-            error.stack.replaceAll(selectMultipleTabsAndSpaces, " ").substring(0, maxStackLength),
-          ]
-        : []),
-    ].join("\n");
-  } else {
-    const parsedMessageKeyError = messageKeyErrorParser.safeParse(error);
-    if (parsedMessageKeyError.success) {
-      return parsedMessageKeyError.data.message;
-    } else {
-      return `An unknown error has occurred: ${JSON.stringify(error)}`;
-    }
+    return errorMessage.replaceAll(selectMultipleTabsAndSpaces, " ");
   }
 }
 
-export function asyncParseError(error: unknown): Promise<string> {
+export function parseError(error: unknown): Promise<string> {
+  const unknownError = Promise.resolve(`An unknown error has occurred: ${JSON.stringify(error)}`);
   if (typeof error === "string") {
     return Promise.resolve(error);
   } else if (error instanceof Error) {
@@ -72,20 +57,25 @@ export function asyncParseError(error: unknown): Promise<string> {
     return StackTrace.fromError(error)
       .then((stackframes) =>
         [
+          sanitizeErrorMessage(error.message),
+          ">>>>>>>>>> Stringification >>>>>>>>>>",
           JSON.stringify(error),
-          ">>>>>>>>>> stackframes >>>>>>>>>>",
+          ">>>>>>>>>> Stack >>>>>>>>>>",
           ...stackframes.map((sf) => sf.toString()),
         ]
           .join("\n")
           .substring(0, maxStackLength)
       )
-      .catch(asyncParseError);
+      .catch((e) => {
+        console.error(e);
+        return unknownError;
+      });
   } else {
     const parsedMessageKeyError = messageKeyErrorParser.safeParse(error);
     if (parsedMessageKeyError.success) {
       return Promise.resolve(parsedMessageKeyError.data.message);
     } else {
-      return Promise.resolve(`An unknown error has occurred: ${JSON.stringify(error)}`);
+      return unknownError;
     }
   }
 }

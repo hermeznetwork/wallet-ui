@@ -185,7 +185,6 @@ export type Message =
   | {
       type: "error";
       text?: string;
-      raw: unknown;
       parsed: string;
     };
 

@@ -3,6 +3,7 @@ import { BigNumber } from "ethers";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as forceExitActions from "src/store/transactions/force-exit/force-exit.actions";
+import { processError } from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 // domain
 import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain";
@@ -38,15 +39,7 @@ function fetchAccounts(
         })
         .then((accounts) => dispatch(forceExitActions.loadAccountsSuccess(accounts)))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(forceExitActions.loadAccountsFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, forceExitActions.loadAccountsFailure));
         });
     }
   };
@@ -66,16 +59,7 @@ function forceExit(amount: BigNumber, account: HermezAccount) {
         .then(() => handleTransactionSuccess(dispatch))
         .catch((error: unknown) => {
           dispatch(forceExitActions.stopTransactionApproval());
-          if (adapters.isMetamaskUserRejectedRequestError(error) === false) {
-            const errorMsg = adapters.parseError(error);
-            dispatch(
-              openSnackbar({
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              })
-            );
-          }
+          dispatch(processError(error));
         });
     }
   };

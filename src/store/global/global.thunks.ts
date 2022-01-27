@@ -12,9 +12,8 @@ import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
 import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 
 import { REPORT_ERROR_FORM_URL, REPORT_ERROR_FORM_ENTRIES } from "src/constants";
-import { AppState, AppDispatch, AppThunk } from "src/store";
+import { AppState, AppDispatch, AppThunk, AppAction } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
-import { openSnackbar } from "src/store/global/global.actions";
 import * as storage from "src/utils/storage";
 import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
@@ -105,15 +104,7 @@ function fetchFiatExchangeRates(env: Env): AppThunk {
         dispatch(globalActions.loadFiatExchangeRatesSuccess(fiatExchangeRates))
       )
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(globalActions.loadFiatExchangeRatesFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
+        dispatch(processError(error, globalActions.loadFiatExchangeRatesFailure));
       });
   };
 }
@@ -157,15 +148,7 @@ function loadEnv(): AppThunk {
     if (env.success) {
       dispatch(globalActions.loadEnvSuccess(env.data));
     } else {
-      const errorMsg = adapters.parseError(env.error);
-      dispatch(globalActions.loadEnvFailure(errorMsg));
-      dispatch(
-        openSnackbar({
-          type: "error",
-          raw: env.error,
-          parsed: errorMsg,
-        })
-      );
+      dispatch(processError(env.error, globalActions.loadEnvFailure));
     }
   };
 }
@@ -178,17 +161,7 @@ function checkHermezStatus(): AppThunk {
       .getNetworkStatus()
       .then((status: number) => dispatch(globalActions.loadHermezStatusSuccess(status)))
       .catch((error: unknown) => {
-        const errorMsg = `An error occurred loading Polygon Hermez status. ${adapters.parseError(
-          error
-        )}`;
-        dispatch(globalActions.loadHermezStatusFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
+        dispatch(processError(error, globalActions.loadHermezStatusFailure));
       });
   };
 }
@@ -213,15 +186,7 @@ function fetchPoolTransactions(): AppThunk {
           dispatch(globalActions.loadPoolTransactionsSuccess(poolTransactions.transactions))
         )
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(globalActions.loadPoolTransactionsFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, globalActions.loadPoolTransactionsFailure));
         });
     }
   };
@@ -448,14 +413,7 @@ function checkPendingDelayedWithdrawals(): AppThunk {
                     }
                   })
                   .catch((error: unknown) => {
-                    const errorMsg = adapters.parseError(error);
-                    dispatch(
-                      openSnackbar({
-                        type: "error",
-                        raw: error,
-                        parsed: errorMsg,
-                      })
-                    );
+                    dispatch(processError(error));
                   });
               }
               // Checks here to have access to pendingDelayedWithdraw.timestamp
@@ -507,25 +465,11 @@ function checkPendingDelayedWithdrawals(): AppThunk {
                 );
               })
               .catch((error: unknown) => {
-                const errorMsg = adapters.parseError(error);
-                dispatch(
-                  openSnackbar({
-                    type: "error",
-                    raw: error,
-                    parsed: errorMsg,
-                  })
-                );
+                dispatch(processError(error));
               });
           })
           .catch((error: unknown) => {
-            const errorMsg = adapters.parseError(error);
-            dispatch(
-              openSnackbar({
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              })
-            );
+            dispatch(processError(error));
           });
       }
     }
@@ -624,14 +568,7 @@ function recoverPendingDelayedWithdrawals(exits: Exits): AppThunk {
                 }
               })
               .catch((error: unknown) => {
-                const errorMsg = adapters.parseError(error);
-                dispatch(
-                  openSnackbar({
-                    type: "error",
-                    raw: error,
-                    parsed: errorMsg,
-                  })
-                );
+                dispatch(processError(error));
               });
           }
         });
@@ -722,25 +659,11 @@ function checkPendingWithdrawals(): AppThunk {
                 );
               })
               .catch((error: unknown) => {
-                const errorMsg = adapters.parseError(error);
-                dispatch(
-                  openSnackbar({
-                    type: "error",
-                    raw: error,
-                    parsed: errorMsg,
-                  })
-                );
+                dispatch(processError(error));
               });
           })
           .catch((error: unknown) => {
-            const errorMsg = adapters.parseError(error);
-            dispatch(
-              openSnackbar({
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              })
-            );
+            dispatch(processError(error));
           });
       }
     }
@@ -958,25 +881,11 @@ function checkPendingDeposits(): AppThunk {
                   .catch(() => dispatch(globalActions.checkPendingDepositsSuccess()));
               })
               .catch((error: unknown) => {
-                const errorMsg = adapters.parseError(error);
-                dispatch(
-                  openSnackbar({
-                    type: "error",
-                    raw: error,
-                    parsed: errorMsg,
-                  })
-                );
+                dispatch(processError(error));
               });
           })
           .catch((error: unknown) => {
-            const errorMsg = adapters.parseError(error);
-            dispatch(
-              openSnackbar({
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              })
-            );
+            dispatch(processError(error));
           });
       }
     }
@@ -1034,14 +943,7 @@ function checkPendingTransactions(): AppThunk {
           return Promise.all(resendTransactionsRequests);
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error));
         });
     }
   };
@@ -1060,15 +962,7 @@ function fetchCoordinatorState(): AppThunk {
         dispatch(globalActions.loadCoordinatorStateSuccess(coordinatorState))
       )
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(globalActions.loadCoordinatorStateFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
+        dispatch(processError(error, globalActions.loadCoordinatorStateFailure));
       });
   };
 }
@@ -1115,16 +1009,29 @@ function fetchTokensPrice(): AppThunk {
         .getTokensPrice(env)
         .then((res: Token[]) => dispatch(globalActions.loadTokensPriceSuccess(res)))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(globalActions.loadTokensPriceFailure(errorMsg));
+          dispatch(processError(error, globalActions.loadTokensPriceFailure));
+        });
+    }
+  };
+}
+
+function processError(error: unknown, failureAction?: (error: string) => AppAction): AppThunk {
+  return (dispatch: AppDispatch) => {
+    if (adapters.isMetamaskUserRejectedRequestError(error) === false) {
+      adapters
+        .parseError(error)
+        .then((errorMsg) => {
+          if (failureAction) {
+            dispatch(failureAction(errorMsg));
+          }
           dispatch(
-            openSnackbar({
+            globalActions.openSnackbar({
               type: "error",
-              raw: error,
               parsed: errorMsg,
             })
           );
-        });
+        })
+        .catch(console.error);
     }
   };
 }
@@ -1132,7 +1039,7 @@ function fetchTokensPrice(): AppThunk {
 /**
  * Report an error using the report issue form
  */
-function reportError(raw: unknown, parsed: string): AppThunk {
+function reportError(parsed: string): AppThunk {
   return (_: AppDispatch, getState: () => AppState) => {
     const {
       global: { ethereumNetworkTask },
@@ -1195,5 +1102,6 @@ export {
   disconnectWallet,
   reloadApp,
   fetchTokensPrice,
+  processError,
   reportError,
 };

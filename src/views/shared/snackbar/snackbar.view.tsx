@@ -12,7 +12,7 @@ import { Message } from "src/domain";
 interface SnackbarProps {
   message: Message;
   onClose: () => void;
-  onReport: (raw: unknown, parsed: string) => void;
+  onReport: (error: string) => void;
 }
 
 function Snackbar({ message, onClose, onReport }: SnackbarProps): JSX.Element {
@@ -37,7 +37,7 @@ function Snackbar({ message, onClose, onReport }: SnackbarProps): JSX.Element {
       </div>
     );
   } else {
-    const { text = "Oops, an error occurred. Would you mind reporting it?", raw, parsed } = message;
+    const { text = "Oops, an error occurred. Would you mind reporting it?", parsed } = message;
     return (
       <div className={classes.root}>
         <Container disableVerticalGutters>
@@ -47,7 +47,7 @@ function Snackbar({ message, onClose, onReport }: SnackbarProps): JSX.Element {
               className={classes.reportButton}
               text="Report"
               onClick={() => {
-                onReport(raw, parsed);
+                onReport(parsed);
               }}
             />
             <button className={classes.closeButton} onClick={onClose}>
