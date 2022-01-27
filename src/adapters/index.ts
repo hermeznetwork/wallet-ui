@@ -1,4 +1,5 @@
 import { z, ZodError } from "zod";
+import * as StackTrace from "stacktrace-js";
 
 import { StrictSchema } from "src/utils/type-safety";
 
@@ -59,6 +60,32 @@ export function parseError(error: unknown): string {
       return parsedMessageKeyError.data.message;
     } else {
       return `An unknown error has occurred: ${JSON.stringify(error)}`;
+    }
+  }
+}
+
+export function asyncParseError(error: unknown): Promise<string> {
+  if (typeof error === "string") {
+    return Promise.resolve(error);
+  } else if (error instanceof Error) {
+    const maxStackLength = 4096;
+    return StackTrace.fromError(error)
+      .then((stackframes) =>
+        [
+          JSON.stringify(error),
+          ">>>>>>>>>> stackframes >>>>>>>>>>",
+          ...stackframes.map((sf) => sf.toString()),
+        ]
+          .join("\n")
+          .substring(0, maxStackLength)
+      )
+      .catch(asyncParseError);
+  } else {
+    const parsedMessageKeyError = messageKeyErrorParser.safeParse(error);
+    if (parsedMessageKeyError.success) {
+      return Promise.resolve(parsedMessageKeyError.data.message);
+    } else {
+      return Promise.resolve(`An unknown error has occurred: ${JSON.stringify(error)}`);
     }
   }
 }
