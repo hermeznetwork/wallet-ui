@@ -53,7 +53,7 @@ export function parseError(error: unknown): Promise<string> {
   if (typeof error === "string") {
     return Promise.resolve(error);
   } else if (error instanceof Error) {
-    const maxStackLength = 4096;
+    const maxErrorLength = 4096;
     return StackTrace.fromError(error)
       .then((stackframes) =>
         [
@@ -64,7 +64,7 @@ export function parseError(error: unknown): Promise<string> {
           ...stackframes.map((sf) => sf.toString()),
         ]
           .join("\n")
-          .substring(0, maxStackLength)
+          .substring(0, maxErrorLength)
       )
       .catch((e) => {
         console.error(e);
