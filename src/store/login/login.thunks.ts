@@ -250,7 +250,13 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
           .parseError(error)
           .then((text) => {
             dispatch(loginActions.addAccountAuthFailure(text));
-            dispatch(globalActions.openSnackbar({ type: "info-msg", text }));
+            dispatch(
+              globalActions.openSnackbar(
+                error instanceof Error
+                  ? { type: "error", parsed: text }
+                  : { type: "info-msg", text }
+              )
+            );
             dispatch(loginActions.goToWalletSelectorStep());
           })
           .catch(console.error);
