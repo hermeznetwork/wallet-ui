@@ -154,7 +154,13 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
             .parseError(error)
             .then((text) => {
               dispatch(loginActions.loadWalletFailure(text));
-              dispatch(globalActions.openSnackbar({ type: "info-msg", text }));
+              dispatch(
+                globalActions.openSnackbar(
+                  error instanceof Error
+                    ? { type: "error", parsed: text }
+                    : { type: "info-msg", text }
+                )
+              );
               dispatch(loginActions.goToPreviousStep());
             })
             .catch(console.error);
