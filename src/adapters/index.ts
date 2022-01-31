@@ -75,6 +75,7 @@ export function parseError(error: unknown): Promise<string> {
     if (parsedMessageKeyError.success) {
       return Promise.resolve(parsedMessageKeyError.data.message);
     } else {
+      console.error(error);
       return unknownError;
     }
   }
