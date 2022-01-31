@@ -1015,9 +1015,19 @@ function fetchTokensPrice(): AppThunk {
   };
 }
 
+function shouldReportError(error: unknown): boolean {
+  if (adapters.isMetamaskUserRejectedRequestError(error)) {
+    return false;
+  }
+  if (adapters.isAxiosCancelRequestError(error)) {
+    return false;
+  }
+  return true;
+}
+
 function processError(error: unknown, failureAction?: (error: string) => AppAction): AppThunk {
   return (dispatch: AppDispatch) => {
-    if (adapters.isMetamaskUserRejectedRequestError(error) === false) {
+    if (shouldReportError(error)) {
       adapters
         .parseError(error)
         .then((errorMsg) => {

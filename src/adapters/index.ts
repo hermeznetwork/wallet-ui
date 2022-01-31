@@ -1,8 +1,8 @@
 import { z, ZodError } from "zod";
 import * as StackTrace from "stacktrace-js";
+import axios from "axios";
 
 import { StrictSchema } from "src/utils/type-safety";
-
 export * as hermezApi from "src/adapters/hermez-api";
 export * as hermezWeb from "src/adapters/hermez-web";
 export * as localStorage from "src/adapters/local-storage";
@@ -95,4 +95,8 @@ export function logDecodingError<T>(error: ZodError<T>, details: string): void {
       }
     }
   });
+}
+
+export function isAxiosCancelRequestError(error: unknown): boolean {
+  return axios.isCancel(error);
 }
