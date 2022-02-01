@@ -101,7 +101,7 @@ export type TransactionReceiver =
   | Pick<HermezAccount, "bjj">
   | Pick<HermezAccount, "hezEthereumAddress">;
 
-// Type Guards
+// Hermez Type Guards
 
 export function isHermezAccount(account: Account): account is HermezAccount {
   return "accountIndex" in account;
@@ -185,7 +185,6 @@ export type Message =
   | {
       type: "error";
       text?: string;
-      raw: unknown;
       parsed: string;
     };
 

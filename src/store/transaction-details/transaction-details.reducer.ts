@@ -43,7 +43,7 @@ function transactionDetailsReducer(
         ...state,
         transactionTask: {
           status: "failed",
-          error: "An error ocurred loading the transaction",
+          error: action.error,
         },
       };
     }

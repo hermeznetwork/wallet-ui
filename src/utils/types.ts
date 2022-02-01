@@ -1,3 +1,5 @@
+import * as adapters from "src/adapters";
+
 interface PendingAsyncTask {
   status: "pending";
 }
@@ -45,3 +47,9 @@ export type Either<T, E> =
       success: false;
       error: E;
     };
+
+export function isMetamaskUserRejectedRequestError(
+  error: unknown
+): error is adapters.errors.MetamaskUserRejectedRequestError {
+  return adapters.errors.metamaskUserRejectedRequestError.safeParse(error).success;
+}

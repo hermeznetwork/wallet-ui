@@ -13,8 +13,8 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { HttpStatusCode } from "src/utils/http";
 import { StrictSchema } from "src/utils/type-safety";
 import { AsyncTask } from "src/utils/types";
-import { logDecodingError } from "src/adapters";
-import * as parsers from "src/adapters/parsers";
+import { logDecodingError } from "src/adapters/errors";
+import * as hermezApiParsers from "src/adapters/parsers/hermez-api";
 // domain
 import {
   AccountAuthorization,
@@ -100,7 +100,8 @@ export function getCreateAccountAuthorization(
 ): Promise<AccountAuthorization> {
   return CoordinatorAPI.getCreateAccountAuthorization(hezEthereumAddress, axiosConfig).then(
     (accountAuthorization: unknown) => {
-      const parsedAuthSignatures = parsers.accountAuthorization.safeParse(accountAuthorization);
+      const parsedAuthSignatures =
+        hermezApiParsers.accountAuthorization.safeParse(accountAuthorization);
       if (parsedAuthSignatures.success) {
         return parsedAuthSignatures.data;
       } else {
@@ -115,7 +116,7 @@ export function getState(
   apiUrl?: string
 ): Promise<CoordinatorState> {
   return CoordinatorAPI.getState(axiosConfig, apiUrl).then((coordinatorState: unknown) => {
-    const parsedCoordinatorState = parsers.coordinatorState.safeParse(coordinatorState);
+    const parsedCoordinatorState = hermezApiParsers.coordinatorState.safeParse(coordinatorState);
     if (parsedCoordinatorState.success) {
       return parsedCoordinatorState.data;
     } else {
@@ -134,7 +135,8 @@ export function getHistoryTransaction(
 ): Promise<HistoryTransaction> {
   return CoordinatorAPI.getHistoryTransaction(transactionId, axiosConfig).then(
     (historyTransaction: unknown) => {
-      const parsedHistoryTransaction = parsers.historyTransaction.safeParse(historyTransaction);
+      const parsedHistoryTransaction =
+        hermezApiParsers.historyTransaction.safeParse(historyTransaction);
       if (parsedHistoryTransaction.success) {
         return parsedHistoryTransaction.data;
       } else {
@@ -169,13 +171,13 @@ export function getHistoryTransactions(
     axiosConfig
   ).then((historyTransactions: unknown) => {
     const parsedUnknownHistoryTransactions =
-      parsers.unknownHistoryTransactions.safeParse(historyTransactions);
+      hermezApiParsers.unknownHistoryTransactions.safeParse(historyTransactions);
     if (parsedUnknownHistoryTransactions.success) {
       return {
         pendingItems: parsedUnknownHistoryTransactions.data.pendingItems,
         transactions: parsedUnknownHistoryTransactions.data.transactions.reduce(
           (acc: HistoryTransaction[], curr: unknown, index: number): HistoryTransaction[] => {
-            const parsedHistoryTransaction = parsers.historyTransaction.safeParse(curr);
+            const parsedHistoryTransaction = hermezApiParsers.historyTransaction.safeParse(curr);
             if (parsedHistoryTransaction.success) {
               return [...acc, parsedHistoryTransaction.data];
             } else {
@@ -205,7 +207,7 @@ export function getPoolTransaction(
 ): Promise<PoolTransaction> {
   return CoordinatorAPI.getPoolTransaction(transactionId, axiosConfig).then(
     (poolTransaction: unknown) => {
-      const parsedPoolTransaction = parsers.poolTransaction.safeParse(poolTransaction);
+      const parsedPoolTransaction = hermezApiParsers.poolTransaction.safeParse(poolTransaction);
       if (parsedPoolTransaction.success) {
         return parsedPoolTransaction.data;
       } else {
@@ -225,7 +227,7 @@ export function getExit(
   axiosConfig?: Record<string, unknown>
 ): Promise<Exit> {
   return CoordinatorAPI.getExit(batchNum, accountIndex, axiosConfig).then((exit: unknown) => {
-    const parsedExit = parsers.exit.safeParse(exit);
+    const parsedExit = hermezApiParsers.exit.safeParse(exit);
     if (parsedExit.success) {
       return parsedExit.data;
     } else {
@@ -243,13 +245,13 @@ export function getExits(
 ): Promise<Exits> {
   return CoordinatorAPI.getExits(address, onlyPendingWithdraws, tokenId, fromItem).then(
     (exits: unknown) => {
-      const parsedUnknownExits = parsers.unknownExits.safeParse(exits);
+      const parsedUnknownExits = hermezApiParsers.unknownExits.safeParse(exits);
       if (parsedUnknownExits.success) {
         return {
           pendingItems: parsedUnknownExits.data.pendingItems,
           exits: parsedUnknownExits.data.exits.reduce(
             (acc: Exit[], curr: unknown, index: number): Exit[] => {
-              const parsedExit = parsers.exit.safeParse(curr);
+              const parsedExit = hermezApiParsers.exit.safeParse(curr);
               if (parsedExit.success) {
                 return [...acc, parsedExit.data];
               } else {
@@ -284,13 +286,13 @@ export function getTokens(
 ): Promise<Tokens> {
   return CoordinatorAPI.getTokens(tokenIds, tokenSymbols, fromItem, order, limit, axiosConfig).then(
     (tokens: unknown) => {
-      const parsedUnknownTokens = parsers.unknownTokens.safeParse(tokens);
+      const parsedUnknownTokens = hermezApiParsers.unknownTokens.safeParse(tokens);
       if (parsedUnknownTokens.success) {
         return {
           pendingItems: parsedUnknownTokens.data.pendingItems,
           tokens: parsedUnknownTokens.data.tokens.reduce(
             (acc: Token[], curr: unknown, index: number): Token[] => {
-              const parsedToken = parsers.token.safeParse(curr);
+              const parsedToken = hermezApiParsers.token.safeParse(curr);
               if (parsedToken.success) {
                 return [...acc, parsedToken.data];
               } else {
@@ -334,13 +336,13 @@ export function getPoolTransactions(
     limit
   ).then((poolTransactions: unknown) => {
     const parsedUnknownPoolTransactions =
-      parsers.unknownPoolTransactions.safeParse(poolTransactions);
+      hermezApiParsers.unknownPoolTransactions.safeParse(poolTransactions);
     if (parsedUnknownPoolTransactions.success) {
       return {
         pendingItems: parsedUnknownPoolTransactions.data.pendingItems,
         transactions: parsedUnknownPoolTransactions.data.transactions.reduce(
           (acc: PoolTransaction[], curr: unknown, index: number): PoolTransaction[] => {
-            const parsedPoolTransaction = parsers.poolTransaction.safeParse(curr);
+            const parsedPoolTransaction = hermezApiParsers.poolTransaction.safeParse(curr);
             if (parsedPoolTransaction.success) {
               return [...acc, parsedPoolTransaction.data];
             } else {
@@ -474,13 +476,13 @@ export function getHermezAccounts({
   )
     .then((hermezRawAccounts: unknown) => {
       const parsedUnknownHermezRawAccounts =
-        parsers.unknownHermezRawAccounts.safeParse(hermezRawAccounts);
+        hermezApiParsers.unknownHermezRawAccounts.safeParse(hermezRawAccounts);
       if (parsedUnknownHermezRawAccounts.success) {
         return {
           pendingItems: parsedUnknownHermezRawAccounts.data.pendingItems,
           accounts: parsedUnknownHermezRawAccounts.data.accounts.reduce(
             (acc: HermezRawAccount[], curr: unknown, index: number): HermezRawAccount[] => {
-              const parsedHermezRawAccount = parsers.hermezRawAccount.safeParse(curr);
+              const parsedHermezRawAccount = hermezApiParsers.hermezRawAccount.safeParse(curr);
               if (parsedHermezRawAccount.success) {
                 return [...acc, parsedHermezRawAccount.data];
               } else {
@@ -522,7 +524,7 @@ export function getHermezAccounts({
  */
 function getHermezRawAccount(accountIndex: string): Promise<HermezRawAccount> {
   return CoordinatorAPI.getAccount(accountIndex).then((hermezRawAccount: unknown) => {
-    const parsedHermezRawAccount = parsers.hermezRawAccount.safeParse(hermezRawAccount);
+    const parsedHermezRawAccount = hermezApiParsers.hermezRawAccount.safeParse(hermezRawAccount);
     if (parsedHermezRawAccount.success) {
       return parsedHermezRawAccount.data;
     } else {
@@ -569,7 +571,7 @@ export function generateAndSendL2Tx(
   return Tx.generateAndSendL2Tx(tx, wallet, token, nextForgers).then(
     (sendL2TransactionResponse: unknown) => {
       const parsedSendL2TransactionResponse =
-        parsers.sendL2TransactionResponse.safeParse(sendL2TransactionResponse);
+        hermezApiParsers.sendL2TransactionResponse.safeParse(sendL2TransactionResponse);
       if (parsedSendL2TransactionResponse.success) {
         return parsedSendL2TransactionResponse.data;
       } else {
@@ -603,7 +605,7 @@ export function deposit(
     gasLimit,
     gasMultiplier
   ).then((txData: unknown) => {
-    const parsedTxData = parsers.txData.safeParse(txData);
+    const parsedTxData = hermezApiParsers.txData.safeParse(txData);
     if (parsedTxData.success) {
       return parsedTxData.data;
     } else {
@@ -628,7 +630,7 @@ export function forceExit(
     token,
     signerData
   ).then((txData: unknown) => {
-    const parsedTxData = parsers.txData.safeParse(txData);
+    const parsedTxData = hermezApiParsers.txData.safeParse(txData);
     if (parsedTxData.success) {
       return parsedTxData.data;
     } else {
@@ -650,7 +652,7 @@ export function withdrawCircuit(
 ): Promise<Tx.TxData> {
   return Tx.withdrawCircuit(exit, isInstant, wasmFilePath, zkeyFilePath, signerData).then(
     (txData: unknown) => {
-      const parsedTxData = parsers.txData.safeParse(txData);
+      const parsedTxData = hermezApiParsers.txData.safeParse(txData);
       if (parsedTxData.success) {
         return parsedTxData.data;
       } else {
@@ -670,7 +672,7 @@ export function delayedWithdraw(
   signerData: Signers.SignerData
 ): Promise<Tx.TxData> {
   return Tx.delayedWithdraw(hezEthereumAddress, token, signerData).then((txData: unknown) => {
-    const parsedTxData = parsers.txData.safeParse(txData);
+    const parsedTxData = hermezApiParsers.txData.safeParse(txData);
     if (parsedTxData.success) {
       return parsedTxData.data;
     } else {

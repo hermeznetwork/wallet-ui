@@ -64,7 +64,7 @@ function accountDetailsReducer(
         ...state,
         accountTask: {
           status: "failed",
-          error: "An error ocurred loading the account",
+          error: action.error,
         },
       };
     }
@@ -135,7 +135,7 @@ function accountDetailsReducer(
         ...state,
         historyTransactionsTask: {
           status: "failed",
-          error: "An error ocurred loading the transactions from the history",
+          error: action.error,
         },
       };
     }
@@ -175,6 +175,15 @@ function accountDetailsReducer(
             transactions: action.historyTransactions.transactions,
             pagination,
           },
+        },
+      };
+    }
+    case AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_FAILURE: {
+      return {
+        ...state,
+        historyTransactionsTask: {
+          status: "failed",
+          error: action.error,
         },
       };
     }

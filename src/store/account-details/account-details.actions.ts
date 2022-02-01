@@ -16,6 +16,7 @@ export enum AccountDetailsActionTypes {
   LOAD_EXITS_FAILURE = "[ACCOUNT DETAILS] LOAD EXITS FAILURE",
   REFRESH_HISTORY_TRANSACTIONS = "[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS",
   REFRESH_HISTORY_TRANSACTIONS_SUCCESS = "[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS SUCCESS",
+  REFRESH_HISTORY_TRANSACTIONS_FAILURE = "[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS FAILURE",
   RESET_STATE = "[ACCOUNT DETAILS] RESET STATE",
 }
 
@@ -82,6 +83,11 @@ export interface RefreshHistoryTransactionsSuccessAction {
   historyTransactions: HistoryTransactions;
 }
 
+export interface RefreshHistoryTransactionsFailureAction {
+  type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_FAILURE;
+  error: string;
+}
+
 export interface ResetStateAction {
   type: AccountDetailsActionTypes.RESET_STATE;
 }
@@ -101,6 +107,7 @@ export type AccountDetailsAction =
   | LoadExitsFailureAction
   | RefreshHistoryTransactionsAction
   | RefreshHistoryTransactionsSuccessAction
+  | RefreshHistoryTransactionsFailureAction
   | ResetStateAction;
 
 function loadAccount(): LoadAccountAction {
@@ -198,6 +205,13 @@ function refreshHistoryTransactionsSuccess(
   };
 }
 
+function refreshHistoryTransactionsFailure(error: string): RefreshHistoryTransactionsFailureAction {
+  return {
+    type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_FAILURE,
+    error,
+  };
+}
+
 function resetState(): ResetStateAction {
   return {
     type: AccountDetailsActionTypes.RESET_STATE,
@@ -219,5 +233,6 @@ export {
   loadExitsFailure,
   refreshHistoryTransactions,
   refreshHistoryTransactionsSuccess,
+  refreshHistoryTransactionsFailure,
   resetState,
 };

@@ -10,7 +10,7 @@ import { isEnvironmentSupported } from "@hermeznetwork/hermezjs/src/environment"
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { getNextForgerUrls } from "src/utils/coordinator";
 import * as globalActions from "src/store/global/global.actions";
-import * as globalThunks from "src/store/global/global.thunks";
+import { setHermezEnvironment } from "src/store/global/global.thunks";
 import * as loginActions from "src/store/login/login.actions";
 // domain
 import { Signers, HermezWallet } from "src/domain";
@@ -121,7 +121,7 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
           return;
         }
 
-        dispatch(globalThunks.setHermezEnvironment(chainId, chainName));
+        dispatch(setHermezEnvironment(chainId, chainName));
 
         const address = await signer.getAddress();
         const hermezAddress = hermez.Addresses.getHermezAddress(address);
@@ -150,10 +150,20 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
           login: { step },
         } = getState();
         if (step.type === "wallet-loader") {
-          const text = adapters.parseError(error);
-          dispatch(loginActions.loadWalletFailure(text));
-          dispatch(globalActions.openSnackbar({ type: "info-msg", text }));
-          dispatch(loginActions.goToPreviousStep());
+          adapters.errors
+            .parseError(error)
+            .then((text) => {
+              dispatch(loginActions.loadWalletFailure(text));
+              dispatch(
+                globalActions.openSnackbar(
+                  error instanceof Error
+                    ? { type: "error", parsed: text }
+                    : { type: "info-msg", text }
+                )
+              );
+              dispatch(loginActions.goToPreviousStep());
+            })
+            .catch(console.error);
         }
       }
     }
@@ -236,11 +246,20 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
         dispatch(loginActions.addAccountAuthSuccess());
         dispatch(push(redirectRoute));
       } catch (error: unknown) {
-        console.error(error);
-        const text = adapters.parseError(error);
-        dispatch(loginActions.addAccountAuthFailure(text));
-        dispatch(globalActions.openSnackbar({ type: "info-msg", text }));
-        dispatch(loginActions.goToWalletSelectorStep());
+        adapters.errors
+          .parseError(error)
+          .then((text) => {
+            dispatch(loginActions.addAccountAuthFailure(text));
+            dispatch(
+              globalActions.openSnackbar(
+                error instanceof Error
+                  ? { type: "error", parsed: text }
+                  : { type: "info-msg", text }
+              )
+            );
+            dispatch(loginActions.goToWalletSelectorStep());
+          })
+          .catch(console.error);
       }
     }
   };

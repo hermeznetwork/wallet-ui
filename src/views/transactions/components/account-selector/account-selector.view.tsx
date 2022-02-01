@@ -106,7 +106,7 @@ function AccountSelector({
                     if (transaction.accountsTask.data.length === 0) {
                       return (
                         <p className={classes.emptyState}>
-                          No compatible tokens with Hermez wallet to deposit.
+                          No compatible tokens with Polygon Hermez wallet to deposit.
                         </p>
                       );
                     } else {

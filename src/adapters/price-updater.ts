@@ -4,12 +4,12 @@ import { z } from "zod";
 // domain
 import { Env, FiatExchangeRates, Token } from "src/domain";
 // adapters
-import * as parsers from "src/adapters/parsers";
+import * as hermezApiParsers from "src/adapters/parsers/hermez-api";
 // utils
 import { CurrencySymbol } from "src/utils/currencies";
 import { StrictSchema } from "src/utils/type-safety";
 
-const tokenListParser = StrictSchema<Token[]>()(z.array(parsers.token));
+const tokenListParser = StrictSchema<Token[]>()(z.array(hermezApiParsers.token));
 
 interface GetTokensPriceResponse {
   tokens: Token[];

@@ -8,6 +8,7 @@ import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
 import { openSnackbar } from "src/store/global/global.actions";
+import { processError } from "src/store/global/global.thunks";
 // utils
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
 import { feeBigIntToNumber } from "src/utils/fees";
@@ -43,15 +44,7 @@ function fetchHermezAccount(
       )
       .then((res) => dispatch(exitActions.loadAccountSuccess(res)))
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(exitActions.loadAccountFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
+        dispatch(processError(error, exitActions.loadAccountFailure));
       });
   };
 }
@@ -78,15 +71,7 @@ function fetchFees(): AppThunk {
           .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(exitActions.loadFeesSuccess(res.recommendedFee)))
           .catch((error: unknown) => {
-            const errorMsg = adapters.parseError(error);
-            dispatch(exitActions.loadFeesFailure(errorMsg));
-            dispatch(
-              openSnackbar({
-                type: "error",
-                raw: error,
-                parsed: errorMsg,
-              })
-            );
+            dispatch(processError(error, exitActions.loadFeesFailure));
           });
       }
     }
@@ -109,15 +94,7 @@ function fetchAccountBalance() {
         .getBalance(ethereumAddress)
         .then((balance) => dispatch(exitActions.loadAccountBalanceSuccess(balance)))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(exitActions.loadAccountBalanceFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, exitActions.loadAccountBalanceFailure));
         });
     }
   };
@@ -158,15 +135,7 @@ function fetchEstimatedWithdrawFee(token: Token, amount: BigNumber) {
         }
       }
     } catch (error: unknown) {
-      const errorMsg = adapters.parseError(error);
-      dispatch(exitActions.loadEstimatedWithdrawFeeFailure(errorMsg));
-      dispatch(
-        openSnackbar({
-          type: "error",
-          raw: error,
-          parsed: errorMsg,
-        })
-      );
+      dispatch(processError(error, exitActions.loadEstimatedWithdrawFeeFailure));
     }
   };
 }
@@ -196,15 +165,8 @@ function exit(amount: BigNumber, account: HermezAccount, fee: BigNumber) {
         .generateAndSendL2Tx(txData, wallet, account.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, account.accountIndex))
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
           dispatch(exitActions.stopTransactionApproval());
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error));
         });
     }
   };

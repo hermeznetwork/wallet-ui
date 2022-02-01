@@ -3,9 +3,14 @@ import { BigNumber } from "ethers";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as withdrawActions from "src/store/transactions/withdraw/withdraw.actions";
-import * as globalThunks from "src/store/global/global.thunks";
+import {
+  processError,
+  addPendingWithdraw,
+  addPendingDelayedWithdraw,
+} from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import { mergeDelayedWithdraws } from "src/utils/transactions";
+import { isMetamaskUserRejectedRequestError } from "src/utils/types";
 import { WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
 // domain
 import {
@@ -44,15 +49,7 @@ function fetchHermezAccount(
       )
       .then((res) => dispatch(withdrawActions.loadAccountSuccess(res)))
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(withdrawActions.loadAccountFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
+        dispatch(processError(error, withdrawActions.loadAccountFailure));
       });
   };
 }
@@ -98,15 +95,7 @@ function fetchExit(
           }
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(withdrawActions.loadExitFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, withdrawActions.loadExitFailure));
         });
     }
   };
@@ -143,7 +132,7 @@ function withdraw(
           .then((txData) => {
             if (instantWithdrawal) {
               dispatch(
-                globalThunks.addPendingWithdraw({
+                addPendingWithdraw({
                   ...exit,
                   hash: txData.hash,
                   id: withdrawalId,
@@ -153,7 +142,7 @@ function withdraw(
               );
             } else {
               dispatch(
-                globalThunks.addPendingDelayedWithdraw({
+                addPendingDelayedWithdraw({
                   ...exit,
                   hash: txData.hash,
                   id: withdrawalId,
@@ -173,7 +162,7 @@ function withdraw(
           .delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
           .then((txData) => {
             dispatch(
-              globalThunks.addPendingWithdraw({
+              addPendingWithdraw({
                 ...exit,
                 hash: txData.hash,
                 hermezEthereumAddress: wallet.hermezEthereumAddress,
@@ -202,22 +191,27 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(withdrawActions.stopTransactionApproval());
-  const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
-  const errorMsg = adapters.parseError(error);
-  dispatch(
-    openSnackbar(
-      errorMsg.includes(withdrawAlreadyDoneErrorCode)
-        ? {
-            type: "info-msg",
-            text: "The withdraw has already been done",
-          }
-        : {
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          }
-    )
-  );
+  if (isMetamaskUserRejectedRequestError(error) === false) {
+    const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
+    adapters.errors
+      .parseError(error)
+      .then((errorMsg) => {
+        dispatch(
+          openSnackbar(
+            errorMsg.includes(withdrawAlreadyDoneErrorCode)
+              ? {
+                  type: "info-msg",
+                  text: "The withdraw has already been done",
+                }
+              : {
+                  type: "error",
+                  parsed: errorMsg,
+                }
+          )
+        );
+      })
+      .catch(console.error);
+  }
 }
 
 export { fetchHermezAccount, fetchExit, withdraw };

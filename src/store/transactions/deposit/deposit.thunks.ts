@@ -6,7 +6,7 @@ import { push } from "connected-react-router";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as depositActions from "src/store/transactions/deposit/deposit.actions";
-import * as globalThunks from "src/store/global/global.thunks";
+import { processError, addPendingDeposit } from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import { getTxFee } from "src/utils/fees";
 import { isAsyncTaskDataAvailable } from "src/utils/types";
@@ -52,15 +52,7 @@ function fetchEthereumAccount(
               }
             })
             .catch((error: unknown) => {
-              const errorMsg = adapters.parseError(error);
-              dispatch(depositActions.loadEthereumAccountFailure(errorMsg));
-              dispatch(
-                openSnackbar({
-                  type: "error",
-                  raw: error,
-                  parsed: errorMsg,
-                })
-              );
+              dispatch(processError(error, depositActions.loadEthereumAccountFailure));
             });
         });
     }
@@ -97,15 +89,7 @@ function fetchEthereumAccounts(
               dispatch(depositActions.loadEthereumAccountsSuccess(ethereumAccounts))
             )
             .catch((error: unknown) => {
-              const errorMsg = adapters.parseError(error);
-              dispatch(depositActions.loadEthereumAccountsFailure(errorMsg));
-              dispatch(
-                openSnackbar({
-                  type: "error",
-                  raw: error,
-                  parsed: errorMsg,
-                })
-              );
+              dispatch(processError(error, depositActions.loadEthereumAccountsFailure));
             });
         });
     }
@@ -141,15 +125,7 @@ function fetchEstimatedDepositFee(): AppThunk {
         }
       }
     } catch (error: unknown) {
-      const errorMsg = adapters.parseError(error);
-      dispatch(depositActions.loadEstimatedDepositFeeFailure(errorMsg));
-      dispatch(
-        openSnackbar({
-          type: "error",
-          raw: error,
-          parsed: errorMsg,
-        })
-      );
+      dispatch(processError(error, depositActions.loadEstimatedDepositFeeFailure));
     }
   };
 }
@@ -193,7 +169,7 @@ function deposit(
             .then((res) => {
               const account: HermezAccount | undefined = res.accounts[0];
               dispatch(
-                globalThunks.addPendingDeposit({
+                addPendingDeposit({
                   hash: txData.hash,
                   fromHezEthereumAddress: wallet.hermezEthereumAddress,
                   toHezEthereumAddress: wallet.hermezEthereumAddress,
@@ -209,15 +185,8 @@ function deposit(
             });
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
           dispatch(depositActions.stopTransactionApproval());
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error));
         });
     }
   };

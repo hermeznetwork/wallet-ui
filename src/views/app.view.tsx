@@ -39,7 +39,7 @@ interface AppHandlerProps {
   onGoBack: (action: AppAction) => void;
   onClose: (action: AppAction) => void;
   onCloseSnackbar: () => void;
-  onReportFromSnackbar: (raw: unknown, parsed: string) => void;
+  onReportFromSnackbar: (error: string) => void;
   onLoadCoordinatorState: () => void;
   onLoadFiatExchangeRates: (env: Env) => void;
   onCheckHermezStatus: () => void;
@@ -174,8 +174,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): AppHandlerProps => ({
   onChangeRedirectRoute: (redirectRoute: string) =>
     dispatch(globalThunks.changeRedirectRoute(redirectRoute)),
   onGoBack: (action: AppAction) => dispatch(action),
-  onReportFromSnackbar: (raw: unknown, parsed: string) =>
-    dispatch(globalThunks.reportError(raw, parsed)),
+  onReportFromSnackbar: (error: string) => dispatch(globalThunks.reportError(error)),
   onClose: (action: AppAction) => dispatch(action),
   onCloseSnackbar: () => dispatch(closeSnackbar()),
   onLoadEnv: () => dispatch(globalThunks.loadEnv()),

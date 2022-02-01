@@ -2,10 +2,10 @@ import axios from "axios";
 import { TxType } from "@hermeznetwork/hermezjs/src/enums";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
-import { convertTokenAmountToFiat } from "src/utils/currencies";
-import * as globalThunks from "src/store/global/global.thunks";
-import { openSnackbar } from "src/store/global/global.actions";
+import { recoverPendingDelayedWithdrawals, processError } from "src/store/global/global.thunks";
 import * as homeActions from "src/store/home/home.actions";
+import { convertTokenAmountToFiat } from "src/utils/currencies";
+import { isAsyncTaskDataAvailable } from "src/utils/types";
 // adapters
 import * as adapters from "src/adapters";
 // domain
@@ -77,15 +77,7 @@ function fetchTotalBalance(
         dispatch(homeActions.loadTotalBalanceSuccess(totalBalance));
       })
       .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(homeActions.loadTotalBalanceFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
+        dispatch(processError(error, homeActions.loadTotalBalanceFailure));
       });
   };
 }
@@ -107,8 +99,12 @@ function fetchAccounts(
       global: { tokensPriceTask },
     } = getState();
 
-    if (fromItem === undefined && accountsTask.status === "successful") {
-      return dispatch(
+    const isPaginationRequest = fromItem !== undefined;
+    const isRefreshRequest =
+      isPaginationRequest === false && isAsyncTaskDataAvailable(accountsTask);
+
+    if (isRefreshRequest) {
+      dispatch(
         refreshAccounts(
           hermezEthereumAddress,
           poolTransactions,
@@ -117,35 +113,30 @@ function fetchAccounts(
           fiatExchangeRates
         )
       );
+    } else {
+      dispatch(homeActions.loadAccounts());
+
+      if (isPaginationRequest) {
+        // new data prevails over reloading
+        refreshCancelTokenSource.cancel();
+      }
+
+      adapters.hermezApi
+        .getHermezAccounts({
+          hermezEthereumAddress,
+          tokensPriceTask,
+          poolTransactions,
+          fiatExchangeRates,
+          preferredCurrency,
+          fromItem,
+        })
+        .then((res) => {
+          dispatch(homeActions.loadAccountsSuccess(res));
+        })
+        .catch((error: unknown) => {
+          dispatch(processError(error, homeActions.loadAccountsFailure));
+        });
     }
-
-    dispatch(homeActions.loadAccounts());
-
-    if (fromItem) {
-      refreshCancelTokenSource.cancel();
-    }
-
-    return adapters.hermezApi
-      .getHermezAccounts({
-        hermezEthereumAddress,
-        tokensPriceTask,
-        poolTransactions,
-        fiatExchangeRates,
-        preferredCurrency,
-        fromItem,
-      })
-      .then((res) => dispatch(homeActions.loadAccountsSuccess(res)))
-      .catch((error: unknown) => {
-        const errorMsg = adapters.parseError(error);
-        dispatch(homeActions.loadAccountsFailure(errorMsg));
-        dispatch(
-          openSnackbar({
-            type: "error",
-            raw: error,
-            parsed: errorMsg,
-          })
-        );
-      });
   };
 }
 
@@ -209,8 +200,12 @@ function refreshAccounts(
 
           return { accounts, pendingItems };
         })
-        .then((res) => dispatch(homeActions.refreshAccountsSuccess(res)))
-        .catch(() => ({}));
+        .then((res) => {
+          dispatch(homeActions.refreshAccountsSuccess(res));
+        })
+        .catch((error: unknown) => {
+          dispatch(processError(error, homeActions.refreshAccountsFailure));
+        });
     }
   };
 }
@@ -230,19 +225,11 @@ function fetchExits(): AppThunk {
       return adapters.hermezApi
         .getExits(wallet.hermezEthereumAddress, true)
         .then((exits) => {
-          dispatch(globalThunks.recoverPendingDelayedWithdrawals(exits));
+          dispatch(recoverPendingDelayedWithdrawals(exits));
           dispatch(homeActions.loadExitsSuccess(exits));
         })
         .catch((error: unknown) => {
-          const errorMsg = adapters.parseError(error);
-          dispatch(homeActions.loadExitsFailure(errorMsg));
-          dispatch(
-            openSnackbar({
-              type: "error",
-              raw: error,
-              parsed: errorMsg,
-            })
-          );
+          dispatch(processError(error, homeActions.loadExitsFailure));
         });
     }
   };

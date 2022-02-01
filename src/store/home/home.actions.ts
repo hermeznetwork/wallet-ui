@@ -13,6 +13,7 @@ export enum HomeActionTypes {
   LOAD_EXITS_FAILURE = "[HOME] LOAD EXITS FAILURE",
   REFRESH_ACCOUNTS = "[HOME] REFRESH ACCOUNTS",
   REFRESH_ACCOUNTS_SUCCESS = "[HOME] REFRESH ACCOUNTS SUCCESS",
+  REFRESH_ACCOUNTS_FAILURE = "[HOME] REFRESH ACCOUNTS FAILURE",
   RESET_STATE = "[HOME] RESET STATE",
 }
 
@@ -67,6 +68,11 @@ export interface RefreshAccountsSuccess {
   accounts: HermezAccounts;
 }
 
+export interface RefreshAccountsFailure {
+  type: HomeActionTypes.REFRESH_ACCOUNTS_FAILURE;
+  error: string;
+}
+
 export interface ResetState {
   type: HomeActionTypes.RESET_STATE;
 }
@@ -83,6 +89,7 @@ export type HomeAction =
   | LoadExitsFailure
   | RefreshAccounts
   | RefreshAccountsSuccess
+  | RefreshAccountsFailure
   | ResetState;
 
 function loadTotalBalance(): LoadTotalBalance {
@@ -158,6 +165,13 @@ function refreshAccountsSuccess(accounts: HermezAccounts): RefreshAccountsSucces
   };
 }
 
+function refreshAccountsFailure(error: string): RefreshAccountsFailure {
+  return {
+    type: HomeActionTypes.REFRESH_ACCOUNTS_FAILURE,
+    error,
+  };
+}
+
 function resetState(): ResetState {
   return {
     type: HomeActionTypes.RESET_STATE,
@@ -176,5 +190,6 @@ export {
   loadExitsFailure,
   refreshAccounts,
   refreshAccountsSuccess,
+  refreshAccountsFailure,
   resetState,
 };

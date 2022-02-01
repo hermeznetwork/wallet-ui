@@ -2,6 +2,7 @@ import { HttpStatusCode } from "@hermeznetwork/hermezjs/src/http";
 import { push } from "connected-react-router";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
+import { processError } from "src/store/global/global.thunks";
 import * as transactionDetailsActionTypes from "src/store/transaction-details/transaction-details.actions";
 import * as storage from "src/utils/storage";
 // domain
@@ -71,7 +72,9 @@ function fetchTransaction(transactionIdOrHash: string): AppThunk {
             dispatch(push("/"));
           }
         })
-        .catch(() => dispatch(transactionDetailsActionTypes.loadTransactionFailure()));
+        .catch((error: unknown) => {
+          dispatch(processError(error, transactionDetailsActionTypes.loadTransactionFailure));
+        });
     }
   };
 }
