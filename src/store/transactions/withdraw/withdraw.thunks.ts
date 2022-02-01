@@ -10,6 +10,7 @@ import {
 } from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
 import { mergeDelayedWithdraws } from "src/utils/transactions";
+import { isMetamaskUserRejectedRequestError } from "src/utils/types";
 import { WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
 // domain
 import {
@@ -190,7 +191,7 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(withdrawActions.stopTransactionApproval());
-  if (adapters.errors.isMetamaskUserRejectedRequestError(error) === false) {
+  if (isMetamaskUserRejectedRequestError(error) === false) {
     const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
     adapters.errors
       .parseError(error)

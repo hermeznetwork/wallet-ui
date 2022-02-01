@@ -17,7 +17,7 @@ import * as globalActions from "src/store/global/global.actions";
 import * as storage from "src/utils/storage";
 import { CurrencySymbol } from "src/utils/currencies";
 import { getNextForgerUrls } from "src/utils/coordinator";
-import { isAsyncTaskDataAvailable } from "src/utils/types";
+import { isAsyncTaskDataAvailable, isMetamaskUserRejectedRequestError } from "src/utils/types";
 // domain
 import {
   CoordinatorState,
@@ -1016,7 +1016,7 @@ function fetchTokensPrice(): AppThunk {
 }
 
 function shouldReportError(error: unknown): boolean {
-  if (adapters.errors.isMetamaskUserRejectedRequestError(error)) {
+  if (isMetamaskUserRejectedRequestError(error)) {
     return false;
   }
   if (adapters.errors.isAxiosCancelRequestError(error)) {
