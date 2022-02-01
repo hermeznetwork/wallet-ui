@@ -1016,10 +1016,10 @@ function fetchTokensPrice(): AppThunk {
 }
 
 function shouldReportError(error: unknown): boolean {
-  if (adapters.isMetamaskUserRejectedRequestError(error)) {
+  if (adapters.errors.isMetamaskUserRejectedRequestError(error)) {
     return false;
   }
-  if (adapters.isAxiosCancelRequestError(error)) {
+  if (adapters.errors.isAxiosCancelRequestError(error)) {
     return false;
   }
   return true;
@@ -1028,7 +1028,7 @@ function shouldReportError(error: unknown): boolean {
 function processError(error: unknown, failureAction?: (error: string) => AppAction): AppThunk {
   return (dispatch: AppDispatch) => {
     if (shouldReportError(error)) {
-      adapters
+      adapters.errors
         .parseError(error)
         .then((errorMsg) => {
           if (failureAction) {

@@ -65,7 +65,7 @@ export function getEnv(): Either<Env, ZodError<Env>> {
     if (parsedEnvLiteral.data.REACT_APP_ENV === "production") {
       const parsedProductionEnv = productionEnvParser.safeParse(process.env);
       if (!parsedProductionEnv.success) {
-        adapters.logDecodingError(
+        adapters.errors.logDecodingError(
           parsedProductionEnv.error,
           "Could not decode the production env from the function getEnv."
         );
@@ -74,7 +74,7 @@ export function getEnv(): Either<Env, ZodError<Env>> {
     } else {
       const parsedDevelopmentEnv = developmentEnvParser.safeParse(process.env);
       if (!parsedDevelopmentEnv.success) {
-        adapters.logDecodingError(
+        adapters.errors.logDecodingError(
           parsedDevelopmentEnv.error,
           "Could not decode the development env from the function getEnv."
         );
@@ -82,7 +82,7 @@ export function getEnv(): Either<Env, ZodError<Env>> {
       return parsedDevelopmentEnv;
     }
   } else {
-    adapters.logDecodingError(
+    adapters.errors.logDecodingError(
       parsedEnvLiteral.error,
       "Could not decode the var REACT_APP_ENV from the function getEnv."
     );

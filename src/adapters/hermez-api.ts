@@ -13,7 +13,7 @@ import { convertTokenAmountToFiat } from "src/utils/currencies";
 import { HttpStatusCode } from "src/utils/http";
 import { StrictSchema } from "src/utils/type-safety";
 import { AsyncTask } from "src/utils/types";
-import { logDecodingError } from "src/adapters";
+import { logDecodingError } from "src/adapters/errors";
 import * as hermezApiParsers from "src/adapters/parsers/hermez-api";
 // domain
 import {

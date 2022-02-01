@@ -150,7 +150,7 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
           login: { step },
         } = getState();
         if (step.type === "wallet-loader") {
-          adapters
+          adapters.errors
             .parseError(error)
             .then((text) => {
               dispatch(loginActions.loadWalletFailure(text));
@@ -246,7 +246,7 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
         dispatch(loginActions.addAccountAuthSuccess());
         dispatch(push(redirectRoute));
       } catch (error: unknown) {
-        adapters
+        adapters.errors
           .parseError(error)
           .then((text) => {
             dispatch(loginActions.addAccountAuthFailure(text));

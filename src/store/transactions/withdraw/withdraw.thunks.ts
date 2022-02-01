@@ -190,9 +190,9 @@ function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
   dispatch(withdrawActions.stopTransactionApproval());
-  if (adapters.isMetamaskUserRejectedRequestError(error) === false) {
+  if (adapters.errors.isMetamaskUserRejectedRequestError(error) === false) {
     const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
-    adapters
+    adapters.errors
       .parseError(error)
       .then((errorMsg) => {
         dispatch(

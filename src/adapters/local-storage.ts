@@ -63,7 +63,7 @@ export function getAuthSignatures(): AuthSignatures {
   if (parsedAuthSignatures.success) {
     return parsedAuthSignatures.data;
   } else {
-    adapters.logDecodingError(
+    adapters.errors.logDecodingError(
       parsedAuthSignatures.error,
       "Could not decode AuthSignatures from the function getAuthSignatures."
     );
@@ -84,7 +84,7 @@ export function getPreferredCurrency(): string {
     return parsedPreferredCurrency.data;
   } else {
     setPreferredCurrency(constants.MY_ACCOUNT.DEFAULT_PREFERRED_CURRENCY);
-    adapters.logDecodingError(
+    adapters.errors.logDecodingError(
       parsedPreferredCurrency.error,
       "Could not decode PreferredCurrency from the function getPreferredCurrency."
     );
@@ -108,7 +108,7 @@ export function getPendingWithdraws(): PendingWithdraws {
   if (parsedPendingWithdraws.success) {
     return parsedPendingWithdraws.data;
   } else {
-    adapters.logDecodingError(
+    adapters.errors.logDecodingError(
       parsedPendingWithdraws.error,
       "Could not decode PendingWithdraws from the function getPendingWithdraws."
     );
@@ -167,7 +167,7 @@ export function getPendingDelayedWithdraws(): PendingDelayedWithdraws {
   if (parsedPendingDelayedWithdraws.success) {
     return parsedPendingDelayedWithdraws.data;
   } else {
-    adapters.logDecodingError(
+    adapters.errors.logDecodingError(
       parsedPendingDelayedWithdraws.error,
       "Could not decode PendingDelayedWithdraws from the function getPendingDelayedWithdraws."
     );
@@ -274,7 +274,7 @@ export function getPendingDeposits(): PendingDeposits {
   if (parsedPendingDeposits.success) {
     return parsedPendingDeposits.data;
   } else {
-    adapters.logDecodingError(
+    adapters.errors.logDecodingError(
       parsedPendingDeposits.error,
       "Could not decode PendingDeposits from the function getPendingDeposits."
     );
@@ -375,7 +375,7 @@ export function getTimerWithdraws(): TimerWithdraws {
   if (parsedTimerWithdraw.success) {
     return parsedTimerWithdraw.data;
   } else {
-    adapters.logDecodingError(
+    adapters.errors.logDecodingError(
       parsedTimerWithdraw.error,
       "Could not decode TimerWithdraws from the function getTimerWithdraws."
     );
@@ -427,7 +427,7 @@ export function getCurrentStorageVersion(): number | undefined {
   if (parsedCurrentStorageVersion.success) {
     return parsedCurrentStorageVersion.data;
   } else {
-    adapters.logDecodingError(
+    adapters.errors.logDecodingError(
       parsedCurrentStorageVersion.error,
       "Could not decode CurrentStorageVersion from the function getCurrentStorageVersion."
     );
