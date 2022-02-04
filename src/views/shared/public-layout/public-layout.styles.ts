@@ -14,9 +14,7 @@ const usePublicLayoutStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
   },
   logo: {
-    width: 128,
-    marginTop: theme.spacing(6),
-    marginBottom: theme.spacing(4),
+    width: 400,
     [theme.breakpoints.upSm]: {
       marginTop: theme.spacing(9),
     },
