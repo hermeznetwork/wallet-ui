@@ -1,8 +1,7 @@
 import React from "react";
 import { useTheme } from "react-jss";
 import { BigNumber } from "ethers";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
+import { Enums, Addresses, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import useTransactionOverviewStyles from "src/views/transactions/components/transaction-overview/transaction-overview.styles";
 import Container from "src/views/shared/container/container.view";
@@ -27,9 +26,11 @@ import {
   Exit,
   FiatExchangeRates,
   HermezAccount,
-  HermezWallet,
   TransactionReceiver,
 } from "src/domain";
+
+const { getEthereumAddress } = Addresses;
+const { TxType } = Enums;
 
 type TransactionOverviewProps = {
   wallet: HermezWallet.HermezWallet;
@@ -39,12 +40,12 @@ type TransactionOverviewProps = {
   amount: BigNumber;
 } & (
   | {
-      txType: TxType.Deposit;
+      txType: Enums.TxType.Deposit;
       account: EthereumAccount;
       onDeposit: (amount: BigNumber, account: EthereumAccount, preferredCurrency: string) => void;
     }
   | {
-      txType: TxType.Transfer;
+      txType: Enums.TxType.Transfer;
       account: HermezAccount;
       to: TransactionReceiver;
       fee: BigNumber;
@@ -56,14 +57,14 @@ type TransactionOverviewProps = {
       ) => void;
     }
   | {
-      txType: TxType.Exit;
+      txType: Enums.TxType.Exit;
       account: HermezAccount;
       fee: BigNumber;
       estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
       onExit: (amount: BigNumber, account: HermezAccount, fee: BigNumber) => void;
     }
   | {
-      txType: TxType.Withdraw;
+      txType: Enums.TxType.Withdraw;
       account: HermezAccount;
       exit: Exit;
       completeDelayedWithdrawal: boolean;
@@ -78,7 +79,7 @@ type TransactionOverviewProps = {
       ) => void;
     }
   | {
-      txType: TxType.ForceExit;
+      txType: Enums.TxType.ForceExit;
       account: HermezAccount;
       onForceExit: (amount: BigNumber, account: HermezAccount) => void;
     }

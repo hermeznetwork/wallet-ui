@@ -1,9 +1,6 @@
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "ethers";
-import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
-import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
+import { HermezCompressedAmount, Enums, Providers, Addresses } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
@@ -17,6 +14,10 @@ import { HermezAccount, FiatExchangeRates, PoolTransaction, Token } from "src/do
 import { ETHER_TOKEN_ID } from "src/constants";
 // adapters
 import * as adapters from "src/adapters";
+
+const { TxType } = Enums;
+const { getProvider } = Providers;
+const { getEthereumAddress } = Addresses;
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.

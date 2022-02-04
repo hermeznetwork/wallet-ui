@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "@ethersproject/bignumber";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch } from "src/store";
 import * as forceExitThunks from "src/store/transactions/force-exit/force-exit.thunks";
@@ -17,7 +17,9 @@ import AccountSelector from "src/views/transactions/components/account-selector/
 import ForceExitForm from "src/views/transactions/force-exit/components/force-exit-form/force-exit-form.view";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { HermezAccount, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain";
+import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain";
+
+const { TxType } = Enums;
 
 interface ForceExitStateProps {
   step: forceExitActions.Step;

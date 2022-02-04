@@ -1,3 +1,4 @@
+import { HermezWallet, Signers } from "@hermeznetwork/hermezjs";
 import { AppAction } from "src/store";
 import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
@@ -8,7 +9,6 @@ import {
   EthereumNetwork,
   FiatExchangeRates,
   HermezStatus,
-  HermezWallet,
   Message,
   NetworkStatus,
   PendingDelayedWithdraws,
@@ -16,7 +16,6 @@ import {
   PendingWithdraw,
   PendingWithdraws,
   PoolTransaction,
-  Signers,
   TimerWithdraw,
   TimerWithdraws,
   Token,

@@ -1,21 +1,28 @@
 import { keccak256 } from "js-sha3";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { utils } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
-import hermez from "@hermeznetwork/hermezjs";
-import { isEnvironmentSupported } from "@hermeznetwork/hermezjs/src/environment";
+import {
+  Addresses,
+  Constants,
+  Environment,
+  HermezWallet,
+  Providers,
+  Signers,
+  Utils,
+} from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { getNextForgerUrls } from "src/utils/coordinator";
 import * as globalActions from "src/store/global/global.actions";
 import { setHermezEnvironment } from "src/store/global/global.thunks";
 import * as loginActions from "src/store/login/login.actions";
-// domain
-import { Signers, HermezWallet } from "src/domain";
 // adapters
 import * as adapters from "src/adapters";
+
+const { isEnvironmentSupported } = Environment;
 
 /**
  * Helper function that signs the authentication message depending on Wallet type
@@ -70,19 +77,16 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
               infuraId: env.REACT_APP_INFURA_API_KEY,
               bridge: env.REACT_APP_WALLETCONNECT_BRIDGE,
             });
-            hermez.Providers.setProvider(
-              walletConnectProvider,
-              hermez.Providers.PROVIDER_TYPES.WEB3
-            );
+            Providers.setProvider(walletConnectProvider, Providers.PROVIDER_TYPES.WEB3);
             break;
           }
           case loginActions.WalletName.METAMASK: {
-            hermez.Providers.setProvider();
+            Providers.setProvider();
             break;
           }
         }
 
-        const provider = hermez.Providers.getProvider();
+        const provider = Providers.getProvider();
 
         dispatch(loginActions.loadWallet(walletName));
 
@@ -95,7 +99,7 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
         }
 
         const signerData = { type: "JSON-RPC" as const };
-        const signer = await hermez.Signers.getSigner(provider, signerData);
+        const signer = await Signers.getSigner(provider, signerData);
 
         if (provider.provider instanceof WalletConnectProvider) {
           // Enable shows the QR or uses the stored session
@@ -124,17 +128,17 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
         dispatch(setHermezEnvironment(chainId, chainName));
 
         const address = await signer.getAddress();
-        const hermezAddress = hermez.Addresses.getHermezAddress(address);
+        const hermezAddress = Addresses.getHermezAddress(address);
         const providerOrSigner =
           walletName === loginActions.WalletName.WALLET_CONNECT ? provider : signer;
         const signature = await signMessageHelper(
           providerOrSigner,
-          hermez.Constants.METAMASK_MESSAGE,
+          Constants.METAMASK_MESSAGE,
           address
         );
         const hashedSignature = keccak256(signature);
-        const signatureBuffer = hermez.Utils.hexToBuffer(hashedSignature);
-        const wallet = new hermez.HermezWallet.HermezWallet(signatureBuffer, hermezAddress);
+        const signatureBuffer = Utils.hexToBuffer(hashedSignature);
+        const wallet = new HermezWallet.HermezWallet(signatureBuffer, hermezAddress);
 
         if (step.type === "wallet-loader") {
           dispatch(globalActions.loadWallet(wallet));

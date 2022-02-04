@@ -7,7 +7,7 @@ import {
   isValidEthereumAddress,
   isValidHermezAddress,
 } from "src/utils/addresses";
-import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
+import { Addresses } from "@hermeznetwork/hermezjs";
 import { ReactComponent as ErrorIcon } from "src/images/icons/error.svg";
 import { ReactComponent as CloseIcon } from "src/images/icons/close.svg";
 import { ReactComponent as QRScannerIcon } from "src/images/icons/qr-scanner.svg";
@@ -70,7 +70,7 @@ function ReceiverInput({
       return handleDeleteClick();
     }
 
-    if (isValidHermezAddress(newValue) || isHermezBjjAddress(newValue)) {
+    if (isValidHermezAddress(newValue) || Addresses.isHermezBjjAddress(newValue)) {
       const changeEventData: ReceiverInputChangeEventData = { value: newValue, isValid: true };
 
       setValue(changeEventData.value);

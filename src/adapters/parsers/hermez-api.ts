@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums, Tx } from "@hermeznetwork/hermezjs";
 
 // domain
 import {
@@ -20,11 +20,12 @@ import {
   PoolTransaction,
   RecommendedFee,
   TimerWithdraw,
-  Tx,
   Token,
 } from "src/domain";
 // utils
 import { StrictSchema } from "src/utils/type-safety";
+
+const { TxState, TxType } = Enums;
 
 const hermezApiResourceItem = StrictSchema<HermezApiResourceItem>()(
   z.object({

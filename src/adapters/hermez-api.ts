@@ -3,7 +3,10 @@ import { z } from "zod";
 import { CallOverrides, BigNumber } from "ethers";
 import {
   CoordinatorAPI,
+  Enums,
   HermezCompressedAmount,
+  HermezWallet,
+  Signers,
   Tx,
   TxFees,
   TxUtils,
@@ -25,18 +28,16 @@ import {
   HermezAccount,
   HermezAccounts,
   HermezRawAccount,
-  HermezWallet,
   HistoryTransaction,
   HistoryTransactions,
-  PaginationOrder,
   PendingDeposit,
   PoolTransaction,
   PoolTransactions,
-  Signers,
   Token,
   Tokens,
 } from "src/domain";
-import { TxState } from "@hermeznetwork/hermezjs/src/enums";
+
+const { TxState } = Enums;
 
 ////////////////////
 // CoordinatorAPI //
@@ -156,7 +157,7 @@ export function getHistoryTransactions(
   batchNum?: number,
   accountIndex?: string,
   fromItem?: number,
-  order?: PaginationOrder,
+  order?: CoordinatorAPI.PaginationOrder,
   limit?: number,
   axiosConfig?: Record<string, unknown>
 ): Promise<HistoryTransactions> {
@@ -280,7 +281,7 @@ export function getTokens(
   tokenIds?: number[],
   tokenSymbols?: string[],
   fromItem?: number,
-  order?: PaginationOrder,
+  order?: CoordinatorAPI.PaginationOrder,
   limit?: number,
   axiosConfig?: Record<string, unknown>
 ): Promise<Tokens> {
@@ -322,7 +323,7 @@ export function getTokens(
  */
 export function getPoolTransactions(
   hermezEthereumAddress: string,
-  order?: PaginationOrder,
+  order?: CoordinatorAPI.PaginationOrder,
   limit?: number
 ): Promise<PoolTransactions> {
   return CoordinatorAPI.getPoolTransactions(

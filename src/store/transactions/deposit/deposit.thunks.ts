@@ -1,8 +1,6 @@
-import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
-import { getProvider } from "@hermeznetwork/hermezjs/src/providers";
-import { ETHER_TOKEN_ID } from "@hermeznetwork/hermezjs/src/constants";
+import { Enums, Providers, Constants } from "@hermeznetwork/hermezjs";
 import { BigNumber } from "ethers";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as depositActions from "src/store/transactions/deposit/deposit.actions";
@@ -14,6 +12,10 @@ import { isAsyncTaskDataAvailable } from "src/utils/types";
 import { FiatExchangeRates, EthereumAccount, HermezAccount } from "src/domain";
 // adapters
 import * as adapters from "src/adapters";
+
+const { getProvider } = Providers;
+const { ETHER_TOKEN_ID } = Constants;
+const { TxState, TxType } = Enums;
 
 /**
  * Fetches the account details for a token id in an Ethereum wallet.

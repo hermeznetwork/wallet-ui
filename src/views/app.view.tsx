@@ -1,28 +1,23 @@
 import React from "react";
-import { Switch, Redirect } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { connect } from "react-redux";
 import { useTheme } from "react-jss";
+import { HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { AppDispatch, AppState, AppAction } from "src/store";
 import * as globalThunks from "src/store/global/global.thunks";
 import { closeSnackbar } from "src/store/global/global.actions";
 import { SnackbarState, HeaderState } from "src/store/global/global.reducer";
+import PrivateRoute from "src/views/shared/private-route/private-route.view";
+import PublicRoute from "src/views/shared/public-route/public-route.view";
 import routes from "src/routing/routes";
-import Route from "src/views/shared/route/route.view";
 import BaseLayout from "src/views/shared/base-layout/base-layout.view";
 import useAppStyles from "src/views/app.styles";
 import { COORDINATOR_STATE_REFRESH_RATE, RETRY_POOL_TXS_RATE } from "src/constants";
 import { AsyncTask } from "src/utils/types";
 import { Theme } from "src/styles/theme";
 //domain
-import {
-  EthereumNetwork,
-  Env,
-  FiatExchangeRates,
-  NetworkStatus,
-  HermezStatus,
-  HermezWallet,
-} from "src/domain";
+import { EthereumNetwork, Env, FiatExchangeRates, NetworkStatus, HermezStatus } from "src/domain";
 
 interface AppStateProps {
   env: Env | undefined;
@@ -133,30 +128,38 @@ function App({
   }, [onLoadTokensPrice]);
 
   return (
-    <Switch>
-      <BaseLayout
-        header={header}
-        snackbar={snackbar}
-        fiatExchangeRatesTask={fiatExchangeRatesTask}
-        hermezStatusTask={hermezStatusTask}
-        onGoBack={onGoBack}
-        onClose={onClose}
-        onCloseSnackbar={onCloseSnackbar}
-        onReportFromSnackbar={onReportFromSnackbar}
-      >
+    <BaseLayout
+      header={header}
+      snackbar={snackbar}
+      fiatExchangeRatesTask={fiatExchangeRatesTask}
+      hermezStatusTask={hermezStatusTask}
+      onGoBack={onGoBack}
+      onClose={onClose}
+      onCloseSnackbar={onCloseSnackbar}
+      onReportFromSnackbar={onReportFromSnackbar}
+    >
+      <Routes>
         {Object.values(routes)
           .filter((route) => !route.isHidden)
           .map((route) => (
             <Route
               key={route.path}
-              route={route}
-              wallet={wallet}
-              onChangeRedirectRoute={onChangeRedirectRoute}
+              path={route.path}
+              element={
+                route.isPublic ? (
+                  <PublicRoute route={route} />
+                ) : (
+                  <PrivateRoute
+                    isUserLoggedIn={wallet !== undefined}
+                    route={route}
+                    onChangeRedirectRoute={onChangeRedirectRoute}
+                  />
+                )
+              }
             />
           ))}
-        <Redirect to="/login" />
-      </BaseLayout>
-    </Switch>
+      </Routes>
+    </BaseLayout>
   );
 }
 

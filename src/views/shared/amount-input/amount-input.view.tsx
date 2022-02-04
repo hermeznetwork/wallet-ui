@@ -1,7 +1,7 @@
 import React from "react";
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 
 // constants
 import { MAX_TOKEN_DECIMALS } from "src/constants";
@@ -21,6 +21,8 @@ import {
 } from "src/utils/transactions";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 
+const { TxType } = Enums;
+
 export interface Amount {
   tokens: BigNumber;
   fiat?: number;
@@ -34,7 +36,7 @@ export interface AmountInputChangeEventData {
 }
 
 interface AmountInputProps {
-  txType: TxType.Deposit | TxType.Transfer | TxType.Exit | TxType.ForceExit;
+  txType: Enums.TxType.Deposit | Enums.TxType.Transfer | Enums.TxType.Exit | Enums.TxType.ForceExit;
   account: Account;
   fee: BigNumber;
   preferredCurrency: string;

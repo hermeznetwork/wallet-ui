@@ -1,6 +1,6 @@
 import axios from "axios";
-import { push } from "connected-react-router";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { push } from "@lagunovsky/redux-react-router";
+import { Enums } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as accountDetailsActions from "src/store/account-details/account-details.actions";
@@ -18,6 +18,8 @@ import {
 } from "src/domain";
 // adapters
 import * as adapters from "src/adapters";
+
+const { TxType } = Enums;
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 

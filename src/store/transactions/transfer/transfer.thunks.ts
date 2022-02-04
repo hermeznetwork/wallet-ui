@@ -1,8 +1,6 @@
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "ethers";
-import { HermezCompressedAmount, TxUtils } from "@hermeznetwork/hermezjs";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
+import { Enums, Addresses, HermezCompressedAmount, TxUtils } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { processError } from "src/store/global/global.thunks";
@@ -22,6 +20,10 @@ import {
 } from "src/domain";
 // adapters
 import * as adapters from "src/adapters";
+
+const { TxType } = Enums;
+const { isHermezBjjAddress } = Addresses;
+const { getTransactionType } = TxUtils;
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -230,9 +232,8 @@ function transfer(
 
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
       const toAddress = "bjj" in to ? to.bjj : to.hezEthereumAddress;
-      const type = TxUtils.getTransactionType({ to: toAddress });
       const txData = {
-        type,
+        type: getTransactionType({ to: toAddress }),
         from: from.accountIndex,
         to: toAddress,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),

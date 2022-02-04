@@ -1,3 +1,4 @@
+import { HermezWallet, Signers } from "@hermeznetwork/hermezjs";
 import { HeaderState } from "src/store/global/global.reducer";
 // domain
 import {
@@ -5,7 +6,6 @@ import {
   Env,
   EthereumNetwork,
   FiatExchangeRates,
-  HermezWallet,
   ISOStringDate,
   Message,
   NetworkStatus,
@@ -13,7 +13,6 @@ import {
   PendingDeposit,
   PendingWithdraw,
   PoolTransaction,
-  Signers,
   TimerWithdraw,
   Token,
 } from "src/domain";

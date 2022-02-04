@@ -2,8 +2,9 @@ import React from "react";
 import { connect } from "react-redux";
 import { useTheme } from "react-jss";
 import QRCode from "qrcode.react";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { useLocation } from "react-router-dom";
+import { HermezWallet } from "@hermeznetwork/hermezjs";
 
 import useMyCodeStyles from "src/views/my-code/my-code.styles";
 import Container from "src/views/shared/container/container.view";
@@ -15,8 +16,6 @@ import { isAnyVideoDeviceAvailable } from "src/utils/browser";
 import Button from "src/views/shared/button/button.view";
 import { Theme } from "src/styles/theme";
 import { AppDispatch, AppState } from "src/store";
-//domain
-import { HermezWallet } from "src/domain";
 
 interface MyCodeStateProps {
   wallet: HermezWallet.HermezWallet | undefined;

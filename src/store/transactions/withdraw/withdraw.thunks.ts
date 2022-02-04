@@ -1,4 +1,4 @@
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "ethers";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";

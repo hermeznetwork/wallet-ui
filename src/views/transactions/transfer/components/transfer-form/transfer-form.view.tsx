@@ -1,5 +1,5 @@
 import React from "react";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import useTransferFormStyles from "src/views/transactions/transfer/components/transfer-form/transfer-form.styles";
@@ -16,6 +16,8 @@ import { getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import { AsyncTask } from "src/utils/types";
 // domain
 import { FiatExchangeRates, HermezAccount, RecommendedFee } from "src/domain";
+
+const { TxType } = Enums;
 
 export interface TxData {
   amount: BigNumber;

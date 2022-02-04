@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import { Redirect } from "react-router-dom";
-import { isInstantWithdrawalAllowed } from "@hermeznetwork/hermezjs/src/tx";
+import { Navigate } from "react-router-dom";
+import { Tx } from "@hermeznetwork/hermezjs";
 
 import useExitCardStyles from "src/views/shared/exit-card/exit-card.styles";
 import { getTxPendingTime, formatMinutes } from "src/utils/transactions";
@@ -87,7 +87,7 @@ function ExitCard({
 
   React.useEffect(() => {
     if (coordinatorState && getStep() <= 2) {
-      isInstantWithdrawalAllowed(
+      Tx.isInstantWithdrawalAllowed(
         amount,
         accountIndex,
         token,
@@ -237,7 +237,7 @@ function ExitCard({
 
   if (isWithdrawClicked && batchNum) {
     return (
-      <Redirect
+      <Navigate
         to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=true`}
       />
     );
@@ -245,7 +245,7 @@ function ExitCard({
 
   if (isWithdrawDelayedClicked && batchNum) {
     return (
-      <Redirect
+      <Navigate
         to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&instantWithdrawal=false`}
       />
     );
@@ -253,7 +253,7 @@ function ExitCard({
 
   if (isCompleteDelayedWithdrawalClicked && batchNum) {
     return (
-      <Redirect
+      <Navigate
         to={`/withdraw-complete?batchNum=${batchNum}&accountIndex=${accountIndex}&completeDelayedWithdrawal=true`}
       />
     );
