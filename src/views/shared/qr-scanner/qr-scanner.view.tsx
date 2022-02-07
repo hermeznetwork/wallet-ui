@@ -1,5 +1,5 @@
 import React from "react";
-// import QrReader from "react-qr-reader";
+import QrReader from "react-qr-reader";
 import { useTheme } from "react-jss";
 import { Addresses } from "@hermeznetwork/hermezjs";
 
@@ -62,12 +62,11 @@ function QRScanner({ hideMyCode, onSuccess, onClose }: QRScannerProps): JSX.Elem
                 <Spinner />
               </div>
             )}
-            {/* ToDo: Fix QR reading */}
-            <div
-              // showViewFinder={false}
+            <QrReader
+              showViewFinder={false}
               className={classes.qrReaderWrapper}
               onLoad={handleQRScanLoad}
-              // onScan={handleQRScan}
+              onScan={handleQRScan}
               onError={handleQRScanError}
             />
             {isQRScannerLoaded && (
