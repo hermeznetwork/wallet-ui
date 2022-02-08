@@ -850,7 +850,7 @@ function checkPendingDeposits(): AppThunk {
                       return accL2Transactions;
                     }
 
-                    // ToDo: These where assumed as numbers but they are not according to Result from LogDescription["args"]
+                    // ToDo: These are assumed as numbers. We should consider decoding them.
                     const toForgeL1TxsNum: number = l1UserTxEvent.args[0] as number;
                     const currentPosition: number = l1UserTxEvent.args[1] as number;
 
