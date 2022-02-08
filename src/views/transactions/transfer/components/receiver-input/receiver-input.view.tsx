@@ -35,11 +35,18 @@ function ReceiverInput({
   onChange,
 }: ReceiverInputProps): JSX.Element {
   const classes = useReceiverInputStyles();
-  const [value, setValue] = React.useState(defaultValue || "");
+  const [value, setValue] = React.useState("");
   const [isReceiverValid, setIsReceiverValid] = React.useState<boolean | undefined>(undefined);
   const [isVideoDeviceAvailable, setIsVideoDeviceAvailable] = React.useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false);
   const hasErrors = isReceiverValid === false || hasReceiverApprovedAccountsCreation === false;
+
+  React.useEffect(() => {
+    if (defaultValue) {
+      handleInputChange(defaultValue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValue]);
 
   React.useEffect(() => {
     isAnyVideoDeviceAvailable()
