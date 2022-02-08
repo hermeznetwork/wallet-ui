@@ -21,16 +21,14 @@ interface QRScannerProps {
 function QRScanner({ hideMyCode, onSuccess, onClose }: QRScannerProps): JSX.Element {
   const theme = useTheme<Theme>();
   const classes = useQRScannerStyles();
+  const [scanned, setScanned] = React.useState("");
 
-  /**
-   * Handles the scan event from the QrReader component. If the result is a valid
-   * hermez address it bubbles up the read value to the parent component
-   */
-  function handleQRScan(result: string) {
-    if (Addresses.isHermezEthereumAddress(result) || Addresses.isEthereumAddress(result)) {
-      onSuccess(result);
+  React.useEffect(() => {
+    if (Addresses.isHermezEthereumAddress(scanned) || Addresses.isEthereumAddress(scanned)) {
+      onSuccess(scanned);
+      setScanned("");
     }
-  }
+  }, [scanned, onSuccess]);
 
   /**
    * Handles the onError event from the QrReader component. Logs the error to the console
@@ -51,7 +49,7 @@ function QRScanner({ hideMyCode, onSuccess, onClose }: QRScannerProps): JSX.Elem
               className={classes.qrReaderWrapper}
               onResult={(result, error) => {
                 if (result) {
-                  handleQRScan(result.getText());
+                  setScanned(result.getText());
                 }
                 if (
                   error &&
