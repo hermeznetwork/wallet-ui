@@ -3,13 +3,13 @@ import { QrReader } from "@blackbox-vision/react-qr-reader";
 import { useTheme } from "react-jss";
 import { Addresses } from "@hermeznetwork/hermezjs";
 
-import useQRScannerStyles from "./qr-scanner.styles";
-import Portal from "../portal/portal.view";
-import Container from "../container/container.view";
-import { ReactComponent as QRScannerMask } from "../../../images/qr-scanner-mask.svg";
-import { ReactComponent as ArrowBackIcon } from "../../../images/icons/arrow-back.svg";
-import { ReactComponent as QRCodeIcon } from "../../../images/icons/qr-code.svg";
-import Button from "../button/button.view";
+import useQRScannerStyles from "src/views/shared/qr-scanner/qr-scanner.styles";
+import Portal from "src/views/shared/portal/portal.view";
+import Container from "src/views/shared/container/container.view";
+import Button from "src/views/shared/button/button.view";
+import { ReactComponent as QRScannerMask } from "src/images/qr-scanner-mask.svg";
+import { ReactComponent as ArrowBackIcon } from "src/images/icons/arrow-back.svg";
+import { ReactComponent as QRCodeIcon } from "src/images/icons/qr-code.svg";
 import { Theme } from "src/styles/theme";
 
 interface QRScannerProps {
