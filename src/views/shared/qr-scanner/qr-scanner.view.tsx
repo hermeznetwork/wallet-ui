@@ -40,6 +40,7 @@ function QRScanner({ hideMyCode, onSuccess, onClose }: QRScannerProps): JSX.Elem
   }
 
   const NO_QR_CODE_FOUND_ERROR = "NotFoundException";
+  const CHECKSUM_EXCEPTION_ERROR = "ChecksumException";
 
   return (
     <Portal>
@@ -52,7 +53,11 @@ function QRScanner({ hideMyCode, onSuccess, onClose }: QRScannerProps): JSX.Elem
                 if (result) {
                   handleQRScan(result.getText());
                 }
-                if (error && error.name !== NO_QR_CODE_FOUND_ERROR) {
+                if (
+                  error &&
+                  error.name !== NO_QR_CODE_FOUND_ERROR &&
+                  error.name !== CHECKSUM_EXCEPTION_ERROR
+                ) {
                   handleQRScanError(error);
                 }
               }}
