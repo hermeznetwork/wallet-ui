@@ -59,8 +59,7 @@ function QRScanner({ hideMyCode, onSuccess, onClose }: QRScannerProps): JSX.Elem
                   handleQRScanError(error);
                 }
               }}
-              // We have to pass in the default value because the prop is not optional ¯\_(ツ)_/¯
-              constraints={{ facingMode: "user" }}
+              constraints={{ facingMode: "environment" }}
             />
             <div className={classes.qrReaderFrame}>
               <QRScannerMask className={classes.qrScannerMask} />
