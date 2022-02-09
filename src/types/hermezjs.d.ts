@@ -431,6 +431,7 @@ declare module "@hermeznetwork/hermezjs" {
     // function extract();
     // function getRandomBytes();
   }
+
   namespace Tx {
     interface TxData {
       hash: string;
@@ -525,6 +526,7 @@ declare module "@hermeznetwork/hermezjs" {
     // function sendAtomicGroup();
     // function generateAndSendAtomicGroup();
   }
+
   namespace TxUtils {
     // function _encodeTransaction();
 
@@ -548,6 +550,7 @@ declare module "@hermeznetwork/hermezjs" {
     // function generateAtomicTransaction();
     // function beautifyTransactionStat();
   }
+
   namespace TxFees {
     // function estimateDepositGasLimit();
     // function estimateWithdrawGasLimit();
@@ -561,6 +564,7 @@ declare module "@hermeznetwork/hermezjs" {
       providerUrl?: string
     ): Promise<number>;
   }
+
   namespace Constants {
     // const TRANSACTION_POOL_KEY: string;
     const METAMASK_MESSAGE: string;
@@ -599,6 +603,7 @@ declare module "@hermeznetwork/hermezjs" {
     // const ETHER_ADDRESS: string;
     // const TX_ID_BYTES: number;
   }
+
   class HermezCompressedAmount {
     constructor(value: number);
     static type: "HermezCompressedAmount";
@@ -608,6 +613,7 @@ declare module "@hermeznetwork/hermezjs" {
     static compressAmount(value: string): HermezCompressedAmount;
     static floorCompressAmount(value: ScalarValue): HermezCompressedAmount;
   }
+
   namespace Addresses {
     function getHermezAddress(ethereumAddress: string): string;
 
@@ -625,6 +631,7 @@ declare module "@hermeznetwork/hermezjs" {
     // function base64ToHexBJJ();
     // function getAySignFromBJJ();
   }
+
   namespace Providers {
     const PROVIDER_TYPES: {
       WEB3: "web3";
@@ -639,6 +646,7 @@ declare module "@hermeznetwork/hermezjs" {
       providerType?: string
     ): Web3Provider;
   }
+
   namespace Signers {
     enum SignerType {
       JSON_RPC = "JSON-RPC",
@@ -659,6 +667,7 @@ declare module "@hermeznetwork/hermezjs" {
 
     function getSigner(provider: Web3Provider, signerData: SignerData): Promise<Signer>;
   }
+
   namespace Environment {
     function setEnvironment(env: number | Record<string, unknown>): void;
 
@@ -670,6 +679,7 @@ declare module "@hermeznetwork/hermezjs" {
     function getBatchExplorerUrl(): string;
     function getEtherscanUrl(): string;
   }
+
   namespace Enums {
     enum TxType {
       Deposit = "Deposit",
@@ -694,6 +704,7 @@ declare module "@hermeznetwork/hermezjs" {
       L2 = "L2",
     }
   }
+
   namespace AtomicUtils {
     // function hasLinkedTransaction();
     // function addLinkedTransaction();
