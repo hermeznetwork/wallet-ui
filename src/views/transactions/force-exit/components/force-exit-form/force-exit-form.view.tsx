@@ -1,6 +1,6 @@
 import React from "react";
 import { BigNumber } from "@ethersproject/bignumber";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 
 import useForceExitFormStyles from "src/views/transactions/force-exit/components/force-exit-form/force-exit-form.styles";
 import { FiatExchangeRates, HermezAccount } from "src/domain";
@@ -11,6 +11,8 @@ import { getTxFee } from "src/utils/fees";
 import { AmountInputChangeEventData } from "src/views/shared/amount-input/amount-input.view";
 import TransactionAmountInput from "src/views/transactions/components/transaction-amount-input/transaction-amount-input.view";
 import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
+
+const { TxType } = Enums;
 
 export interface TxData {
   amount: BigNumber;

@@ -1,11 +1,10 @@
 import React from "react";
-import WalletButton from "src/views/login/components/wallet-button/wallet-button.view";
+import { HermezWallet } from "@hermeznetwork/hermezjs";
 
-import useWalletLoaderStyles from "src/views/login/components/wallet-loader/wallet-loader.styles";
 import * as loginActions from "src/store/login/login.actions";
 import { AsyncTask } from "src/utils/types";
-// domain
-import { HermezWallet } from "src/domain";
+import useWalletLoaderStyles from "src/views/login/components/wallet-loader/wallet-loader.styles";
+import WalletButton from "src/views/login/components/wallet-button/wallet-button.view";
 
 interface WalletLoaderProps {
   walletName: loginActions.WalletName;

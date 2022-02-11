@@ -1,9 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "@ethersproject/bignumber";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch } from "src/store";
 import * as transferThunks from "src/store/transactions/transfer/transfer.thunks";
@@ -24,11 +24,12 @@ import TransferForm, {
 import {
   FiatExchangeRates,
   HermezAccount,
-  HermezWallet,
   PoolTransaction,
   RecommendedFee,
   TransactionReceiver,
 } from "src/domain";
+
+const { TxType } = Enums;
 
 interface TransferStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;

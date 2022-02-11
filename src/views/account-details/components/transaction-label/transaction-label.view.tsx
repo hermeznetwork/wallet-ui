@@ -1,10 +1,12 @@
 import React from "react";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 
 import useTransactionLabelStyles from "src/views/account-details/components/transaction-label/transaction-label.styles";
 
+const { TxType } = Enums;
+
 interface TransactionLabelProps {
-  type: TxType;
+  type: Enums.TxType;
   accountIndex: string;
   fromAccountIndex?: string;
 }

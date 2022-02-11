@@ -1,5 +1,4 @@
-import { HttpStatusCode } from "@hermeznetwork/hermezjs/src/http";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { processError } from "src/store/global/global.thunks";
@@ -10,6 +9,10 @@ import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain"
 import { AxiosError } from "axios";
 // adapters
 import * as adapters from "src/adapters";
+
+const HttpStatusCode = {
+  NOT_FOUND: 404,
+};
 
 /**
  * Fetches the details of a transaction

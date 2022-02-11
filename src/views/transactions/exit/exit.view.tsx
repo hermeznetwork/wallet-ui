@@ -2,8 +2,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router";
 import { BigNumber } from "@ethersproject/bignumber";
-import { push } from "connected-react-router";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { push } from "@lagunovsky/redux-react-router";
+import { Enums, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { AppDispatch, AppState } from "src/store";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
@@ -22,11 +22,12 @@ import {
   EstimatedL1Fee,
   FiatExchangeRates,
   HermezAccount,
-  HermezWallet,
   PoolTransaction,
   RecommendedFee,
   Token,
 } from "src/domain";
+
+const { TxType } = Enums;
 
 interface ExitStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;

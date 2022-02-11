@@ -1,5 +1,5 @@
 import React from "react";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 
 import AccountList from "src/views/shared/account-list/account-list.view";
 import Container from "src/views/shared/container/container.view";
@@ -19,6 +19,8 @@ import {
   PoolTransaction,
 } from "src/domain";
 
+const { TxType } = Enums;
+
 export interface AccountsWithPagination {
   accounts: HermezAccount[];
   pagination: Pagination;
@@ -29,14 +31,14 @@ type AccountSelectorProps = {
   preferredCurrency: string;
 } & (
   | {
-      type: TxType.Deposit;
+      type: Enums.TxType.Deposit;
       accountsTask: AsyncTask<EthereumAccount[], string>;
       pendingDeposits: PendingDeposit[];
       onLoadAccounts: (fiatExchangeRates: FiatExchangeRates, preferredCurrency: string) => void;
       onAccountClick: (ethereumAccount: EthereumAccount) => void;
     }
   | {
-      type: TxType.Transfer;
+      type: Enums.TxType.Transfer;
       accountsTask: AsyncTask<AccountsWithPagination, string>;
       poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
       onLoadAccounts: (
@@ -48,7 +50,7 @@ type AccountSelectorProps = {
       onAccountClick: (account: HermezAccount) => void;
     }
   | {
-      type: TxType.ForceExit;
+      type: Enums.TxType.ForceExit;
       accountsTask: AsyncTask<AccountsWithPagination, string>;
       poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
       onLoadAccounts: (

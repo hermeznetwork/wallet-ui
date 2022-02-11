@@ -1,4 +1,4 @@
-import { HermezWallet } from "src/domain";
+import { HermezWallet } from "@hermeznetwork/hermezjs";
 
 export enum WalletName {
   METAMASK = "metaMask",

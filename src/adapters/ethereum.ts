@@ -1,13 +1,13 @@
 import { BigNumber } from "ethers";
 import { TransactionResponse, TransactionReceipt } from "@ethersproject/abstract-provider";
-import hermezjs from "@hermeznetwork/hermezjs";
+import { Providers, Addresses, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "src/constants";
 import { Erc20__factory } from "src/types/contracts/erc-20/factories/Erc20__factory";
 import { AsyncTask } from "src/utils/types";
 import { convertTokenAmountToFiat } from "src/utils/currencies";
 // domain
-import { EthereumAccount, FiatExchangeRates, HermezWallet, ISOStringDate, Token } from "src/domain";
+import { EthereumAccount, FiatExchangeRates, ISOStringDate, Token } from "src/domain";
 
 /**
  * Fetches token balances in the user's Ethereum account. Only for those tokens registered in Hermez and Ether.
@@ -20,8 +20,8 @@ function getEthereumAccounts(
   fiatExchangeRates: FiatExchangeRates,
   preferredCurrency: string
 ): Promise<EthereumAccount[]> {
-  const provider = hermezjs.Providers.getProvider();
-  const ethereumAddress = hermezjs.Addresses.getEthereumAddress(wallet.hermezEthereumAddress);
+  const provider = Providers.getProvider();
+  const ethereumAddress = Addresses.getEthereumAddress(wallet.hermezEthereumAddress);
   const balancePromises: Promise<BigNumber>[] = hermezTokens.map((token) => {
     if (token.id === ETHER_TOKEN_ID) {
       // tokenID 0 is for Ether

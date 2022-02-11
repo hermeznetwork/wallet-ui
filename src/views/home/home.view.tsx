@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { useTheme } from "react-jss";
-import { push } from "connected-react-router";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { push } from "@lagunovsky/redux-react-router";
+import { Enums, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import useHomeStyles from "src/views/home/home.styles";
 import ReportIssueButton from "src/views/home/components/report-issue-button/report-issue-button.view";
@@ -36,7 +36,6 @@ import {
   Exits,
   FiatExchangeRates,
   HermezAccount,
-  HermezWallet,
   isHermezAccount,
   Message,
   PendingDelayedWithdraws,
@@ -47,6 +46,8 @@ import {
   TimerWithdraw,
   TimerWithdraws,
 } from "src/domain";
+
+const { TxType } = Enums;
 
 interface ViewAccounts {
   accounts: HermezAccount[];

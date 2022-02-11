@@ -1,9 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "@ethersproject/bignumber";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch } from "src/store";
 import * as withdrawThunks from "src/store/transactions/withdraw/withdraw.thunks";
@@ -22,11 +22,12 @@ import {
   Exit,
   FiatExchangeRates,
   HermezAccount,
-  HermezWallet,
   PendingDelayedWithdraw,
   PendingDelayedWithdraws,
   PoolTransaction,
 } from "src/domain";
+
+const { TxType } = Enums;
 
 interface WithdrawStateProps {
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;

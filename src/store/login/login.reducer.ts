@@ -1,7 +1,9 @@
+import { HermezWallet } from "@hermeznetwork/hermezjs";
+
 import { AsyncTask } from "src/utils/types";
 import { LoginActionTypes, LoginAction, WalletName } from "src/store/login/login.actions";
 // domain
-import { HermezWallet, AuthSignatures } from "src/domain";
+import { AuthSignatures } from "src/domain";
 // adapters
 import { getAuthSignatures } from "src/adapters/local-storage";
 

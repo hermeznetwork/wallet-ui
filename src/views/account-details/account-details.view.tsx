@@ -2,9 +2,8 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { connect } from "react-redux";
 import { useTheme } from "react-jss";
-import { push } from "connected-react-router";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { INTERNAL_ACCOUNT_ETH_ADDR } from "@hermeznetwork/hermezjs/src/constants";
+import { push } from "@lagunovsky/redux-react-router";
+import { Enums, Constants, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import useAccountDetailsStyles from "src/views/account-details/account-details.styles";
 import TransactionList from "src/views/account-details/components/transaction-list/transaction-list.view";
@@ -33,7 +32,6 @@ import {
   Exits,
   FiatExchangeRates,
   HermezAccount,
-  HermezWallet,
   HistoryTransaction,
   isPendingDeposit,
   PendingDelayedWithdraws,
@@ -49,9 +47,9 @@ import { Pagination } from "src/utils/api";
 // adapters
 import { getAccountBalance } from "src/adapters/hermez-api";
 
-interface UrlParams {
-  accountIndex: string;
-}
+const { TxType } = Enums;
+const { INTERNAL_ACCOUNT_ETH_ADDR } = Constants;
+
 interface ViewHistoryTransactions {
   transactions: HistoryTransaction[];
   fromItemHistory: number[];
@@ -139,7 +137,7 @@ function AccountDetails({
 }: AccountDetailsProps): JSX.Element {
   const theme = useTheme<Theme>();
   const classes = useAccountDetailsStyles();
-  const { accountIndex } = useParams<UrlParams>();
+  const { accountIndex } = useParams();
   const ethereumNetworkAndWalletLoaded = isAsyncTaskDataAvailable(ethereumNetworkTask) && wallet;
   const accountPendingDeposits = React.useMemo(
     () =>
@@ -181,7 +179,7 @@ function AccountDetails({
   }, [accountTask, onChangeHeader]);
 
   React.useEffect(() => {
-    if (fiatExchangeRatesTask.status === "successful") {
+    if (fiatExchangeRatesTask.status === "successful" && accountIndex) {
       const loadInitialData = () => {
         onCheckPendingDeposits();
         onLoadAccount(accountIndex, fiatExchangeRatesTask.data, preferredCurrency);
@@ -221,7 +219,7 @@ function AccountDetails({
   }, [accountTask, onLoadExits]);
 
   React.useEffect(() => {
-    if (exitsTask.status === "successful") {
+    if (exitsTask.status === "successful" && accountIndex) {
       onLoadHistoryTransactions(accountIndex, exitsTask.data);
     }
   }, [exitsTask, accountIndex, onLoadHistoryTransactions]);
@@ -276,8 +274,10 @@ function AccountDetails({
   function handleTransactionClick(
     transaction: PendingDeposit | HistoryTransaction | PoolTransaction
   ) {
-    const transactionId = isPendingDeposit(transaction) ? transaction.hash : transaction.id;
-    onNavigateToTransactionDetails(accountIndex, transactionId);
+    if (accountIndex) {
+      const transactionId = isPendingDeposit(transaction) ? transaction.hash : transaction.id;
+      onNavigateToTransactionDetails(accountIndex, transactionId);
+    }
   }
 
   return (
@@ -318,6 +318,7 @@ function AccountDetails({
         <section className={classes.section}>
           {(() => {
             if (
+              accountIndex &&
               wallet &&
               isAsyncTaskDataAvailable(coordinatorStateTask) &&
               isAsyncTaskDataAvailable(fiatExchangeRatesTask) &&

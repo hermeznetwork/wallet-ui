@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { recoverPendingDelayedWithdrawals, processError } from "src/store/global/global.thunks";
@@ -16,6 +16,8 @@ import {
   PendingDeposit,
   PoolTransaction,
 } from "src/domain";
+
+const { TxType } = Enums;
 
 let refreshCancelTokenSource = axios.CancelToken.source();
 

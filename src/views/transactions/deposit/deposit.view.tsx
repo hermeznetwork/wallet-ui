@@ -1,9 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "@ethersproject/bignumber";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import * as depositThunks from "src/store/transactions/deposit/deposit.thunks";
 import * as depositActions from "src/store/transactions/deposit/deposit.actions";
@@ -24,9 +24,10 @@ import {
   EthereumAccount,
   EthereumNetwork,
   FiatExchangeRates,
-  HermezWallet,
   PendingDeposits,
 } from "src/domain";
+
+const { TxType } = Enums;
 
 interface DepositStateProps {
   ethereumAccountsTask: AsyncTask<EthereumAccount[], string>;

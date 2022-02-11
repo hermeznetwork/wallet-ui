@@ -1,15 +1,18 @@
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { ethers } from "ethers";
 import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
+import { LogDescription } from "@ethersproject/abi";
 import Connector from "@walletconnect/web3-provider";
-import hermezjs, {
+import {
+  Addresses,
+  Enums,
+  Environment,
+  Constants,
+  HermezCompressedAmount,
   Providers,
   TxUtils,
-  HermezCompressedAmount,
-  Addresses,
 } from "@hermeznetwork/hermezjs";
 import HermezABI from "@hermeznetwork/hermezjs/src/abis/HermezABI";
-import { TxType, TxState } from "@hermeznetwork/hermezjs/src/enums";
 
 import { REPORT_ERROR_FORM_URL, REPORT_ERROR_FORM_ENTRIES } from "src/constants";
 import { AppState, AppDispatch, AppThunk, AppAction } from "src/store";
@@ -39,6 +42,8 @@ import {
 // adapters
 import * as adapters from "src/adapters";
 
+const { TxState, TxType } = Enums;
+
 /**
  * Sets the environment to use in hermezjs. If the chainId is supported will pick it up
  * a known environment and if not will use the one provided in the .env file
@@ -52,19 +57,16 @@ function setHermezEnvironment(chainId: number, chainName: string): AppThunk {
     if (env) {
       dispatch(globalActions.loadEthereumNetwork());
 
-      if (
-        env.REACT_APP_ENV === "production" &&
-        hermezjs.Environment.isEnvironmentSupported(chainId)
-      ) {
-        hermezjs.Environment.setEnvironment(chainId);
+      if (env.REACT_APP_ENV === "production" && Environment.isEnvironmentSupported(chainId)) {
+        Environment.setEnvironment(chainId);
       }
 
       if (env.REACT_APP_ENV === "development") {
-        hermezjs.Environment.setEnvironment({
+        Environment.setEnvironment({
           baseApiUrl: env.REACT_APP_HERMEZ_API_URL,
           contractAddresses: {
-            [hermezjs.Constants.ContractNames.Hermez]: env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
-            [hermezjs.Constants.ContractNames.WithdrawalDelayer]:
+            [Constants.ContractNames.Hermez]: env.REACT_APP_HERMEZ_CONTRACT_ADDRESS,
+            [Constants.ContractNames.WithdrawalDelayer]:
               env.REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS,
           },
           batchExplorerUrl: env.REACT_APP_BATCH_EXPLORER_URL,
@@ -840,7 +842,7 @@ function checkPendingDeposits(): AppThunk {
                         // eslint-disable-next-line no-empty
                       } catch (e) {}
                     }
-                    const l1UserTxEvent = parsedLogs.find(
+                    const l1UserTxEvent: LogDescription | undefined = parsedLogs.find(
                       (event) => event.name === "L1UserTxEvent"
                     );
 
@@ -848,10 +850,12 @@ function checkPendingDeposits(): AppThunk {
                       return accL2Transactions;
                     }
 
-                    const txId = TxUtils.getL1UserTxId(
-                      l1UserTxEvent.args[0],
-                      l1UserTxEvent.args[1]
-                    );
+                    // ToDo: These are assumed as numbers. We should consider decoding them.
+                    const toForgeL1TxsNum: number = l1UserTxEvent.args[0] as number;
+                    const currentPosition: number = l1UserTxEvent.args[1] as number;
+
+                    const txId = TxUtils.getL1UserTxId(toForgeL1TxsNum, currentPosition);
+
                     const pendingDeposit = accountPendingDeposits.find(
                       (deposit) => deposit.hash === txReceipt.transactionHash
                     );

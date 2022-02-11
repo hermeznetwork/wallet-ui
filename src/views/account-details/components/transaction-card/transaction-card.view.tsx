@@ -1,5 +1,5 @@
 import React from "react";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 
 import useTransactionCardStyles from "src/views/account-details/components/transaction-card/transaction-card.styles";
 import TransactionType from "src/views/account-details/components/transaction-type/transaction-type.view";
@@ -9,9 +9,11 @@ import { getTxPendingTime, formatMinutes } from "src/utils/transactions";
 //domain
 import { CoordinatorState, ISOStringDate } from "src/domain";
 
+const { TxType } = Enums;
+
 interface TransactionCardProps {
   accountIndex: string;
-  type: TxType;
+  type: Enums.TxType;
   amount: string;
   tokenSymbol: string;
   timestamp: ISOStringDate;

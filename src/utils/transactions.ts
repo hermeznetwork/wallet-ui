@@ -1,7 +1,5 @@
 import { BigNumber } from "ethers";
-import { HermezCompressedAmount } from "@hermeznetwork/hermezjs";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { getMaxAmountFromMinimumFee } from "@hermeznetwork/hermezjs/src/tx-utils";
+import { Enums, TxUtils, HermezCompressedAmount } from "@hermeznetwork/hermezjs";
 
 // domain
 import {
@@ -14,6 +12,9 @@ import {
   PendingDeposit,
   PoolTransaction,
 } from "src/domain";
+
+const { TxType } = Enums;
+const { getMaxAmountFromMinimumFee } = TxUtils;
 
 /**
  * Returns the correct amount for a transaction from the Hermez API depending on its type
@@ -153,7 +154,7 @@ function fixTransactionAmount(amount: BigNumber): BigNumber {
 /**
  * Calculates the max amoumt that can be sent in a transaction
  */
-function getMaxTxAmount(txType: TxType, maxAmount: BigNumber, fee: BigNumber): BigNumber {
+function getMaxTxAmount(txType: Enums.TxType, maxAmount: BigNumber, fee: BigNumber): BigNumber {
   const maxTxAmount = (() => {
     switch (txType) {
       case TxType.ForceExit: {
