@@ -1,33 +1,37 @@
 import React from "react";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import useTransferFormStyles from "src/views/transactions/transfer/components/transfer-form/transfer-form.styles";
-import { FiatExchangeRates, HermezAccount, RecommendedFee } from "src/domain";
 import FormContainer from "src/views/transactions/components/form-container/form.container.view";
-import { AsyncTask } from "src/utils/types";
 import ReceiverInput, {
   ReceiverInputChangeEventData,
 } from "src/views/transactions/transfer/components/receiver-input/receiver-input.view";
 import Fee from "src/views/transactions/components/fee/fee.view";
-import { getMinimumL2Fee, getTxFee } from "src/utils/fees";
 import SelectedAccount from "src/views/transactions/components/selected-account/selected-account.view";
 import { AmountInputChangeEventData } from "src/views/shared/amount-input/amount-input.view";
 import TransactionAmountInput from "src/views/transactions/components/transaction-amount-input/transaction-amount-input.view";
 import PrimaryButton from "src/views/shared/primary-button/primary-button.view";
+import { getMinimumL2Fee, getTxFee } from "src/utils/fees";
+import { AsyncTask } from "src/utils/types";
+// domain
+import { FiatExchangeRates, HermezAccount, RecommendedFee } from "src/domain";
+
+const { TxType } = Enums;
 
 export interface TxData {
   amount: BigNumber;
   from: HermezAccount;
   to: string;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
+  preferredCurrency: string;
 }
 
 interface TransferFormStateProps {
   account: HermezAccount;
   defaultReceiverAddress?: string;
   hasReceiverApprovedAccountsCreation?: boolean;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
 }
@@ -95,7 +99,8 @@ const TransferForm: React.FC<TransferFormProps> = ({
       amount,
       from: account,
       to: receiverAddress,
-      feesTask: feesTask,
+      feesTask,
+      preferredCurrency,
     });
   }
 

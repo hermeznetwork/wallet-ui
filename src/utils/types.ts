@@ -1,3 +1,5 @@
+import * as adapters from "src/adapters";
+
 interface PendingAsyncTask {
   status: "pending";
 }
@@ -35,3 +37,19 @@ export function isAsyncTaskDataAvailable<D, E>(
 }
 
 export type Exact<T, U> = [T, U] extends [U, T] ? true : false;
+
+export type Either<T, E> =
+  | {
+      success: true;
+      data: T;
+    }
+  | {
+      success: false;
+      error: E;
+    };
+
+export function isMetamaskUserRejectedRequestError(
+  error: unknown
+): error is adapters.errors.MetamaskUserRejectedRequestError {
+  return adapters.errors.metamaskUserRejectedRequestError.safeParse(error).success;
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import useDepositFormStyles from "src/views/transactions/deposit/components/deposit-form/deposit-form.styles";
@@ -15,6 +15,8 @@ import { ETHER_TOKEN_ID } from "src/constants";
 // domain
 import { EthereumAccount, FiatExchangeRates, EstimatedL1Fee } from "src/domain";
 
+const { TxType } = Enums;
+
 export interface TxData {
   amount: BigNumber;
   from: EthereumAccount;
@@ -22,7 +24,7 @@ export interface TxData {
 
 interface DepositFormStateProps {
   account: EthereumAccount;
-  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, string>;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
 }

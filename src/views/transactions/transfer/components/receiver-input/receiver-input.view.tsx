@@ -7,7 +7,7 @@ import {
   isValidEthereumAddress,
   isValidHermezAddress,
 } from "src/utils/addresses";
-import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
+import { Addresses } from "@hermeznetwork/hermezjs";
 import { ReactComponent as ErrorIcon } from "src/images/icons/error.svg";
 import { ReactComponent as CloseIcon } from "src/images/icons/close.svg";
 import { ReactComponent as QRScannerIcon } from "src/images/icons/qr-scanner.svg";
@@ -35,11 +35,18 @@ function ReceiverInput({
   onChange,
 }: ReceiverInputProps): JSX.Element {
   const classes = useReceiverInputStyles();
-  const [value, setValue] = React.useState(defaultValue || "");
+  const [value, setValue] = React.useState("");
   const [isReceiverValid, setIsReceiverValid] = React.useState<boolean | undefined>(undefined);
   const [isVideoDeviceAvailable, setIsVideoDeviceAvailable] = React.useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = React.useState(false);
   const hasErrors = isReceiverValid === false || hasReceiverApprovedAccountsCreation === false;
+
+  React.useEffect(() => {
+    if (defaultValue) {
+      handleInputChange(defaultValue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValue]);
 
   React.useEffect(() => {
     isAnyVideoDeviceAvailable()
@@ -70,7 +77,7 @@ function ReceiverInput({
       return handleDeleteClick();
     }
 
-    if (isValidHermezAddress(newValue) || isHermezBjjAddress(newValue)) {
+    if (isValidHermezAddress(newValue) || Addresses.isHermezBjjAddress(newValue)) {
       const changeEventData: ReceiverInputChangeEventData = { value: newValue, isValid: true };
 
       setValue(changeEventData.value);

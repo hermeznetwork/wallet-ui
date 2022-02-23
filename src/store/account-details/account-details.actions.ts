@@ -1,7 +1,5 @@
 // domain
-import { HermezAccount, PoolTransaction } from "src/domain";
-// persistence
-import { HistoryTransactions, Exits } from "src/persistence";
+import { Exits, HermezAccount, HistoryTransactions } from "src/domain";
 
 export enum AccountDetailsActionTypes {
   LOAD_ACCOUNT = "[ACCOUNT DETAILS] LOAD ACCOUNT",
@@ -10,9 +8,6 @@ export enum AccountDetailsActionTypes {
   LOAD_L1_TOKEN_BALANCE = "[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE",
   LOAD_L1_TOKEN_BALANCE_SUCCESS = "[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE SUCCESS",
   LOAD_L1_TOKEN_BALANCE_FAILURE = "[ACCOUNT DETAILS] LOAD L1 TOKEN BALANCE FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[ACCOUNT DETAILS] LOAD POOL TRANSACTIONS FAILURE",
   LOAD_HISTORY_TRANSACTIONS = "[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS",
   LOAD_HISTORY_TRANSACTIONS_SUCCESS = "[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS SUCCESS",
   LOAD_HISTORY_TRANSACTIONS_FAILURE = "[ACCOUNT DETAILS] LOAD HISTORY TRANSACTIONS FAILURE",
@@ -21,6 +16,7 @@ export enum AccountDetailsActionTypes {
   LOAD_EXITS_FAILURE = "[ACCOUNT DETAILS] LOAD EXITS FAILURE",
   REFRESH_HISTORY_TRANSACTIONS = "[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS",
   REFRESH_HISTORY_TRANSACTIONS_SUCCESS = "[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS SUCCESS",
+  REFRESH_HISTORY_TRANSACTIONS_FAILURE = "[ACCOUNT DETAILS] REFRESH HISTORY TRANSACTIONS FAILURE",
   RESET_STATE = "[ACCOUNT DETAILS] RESET STATE",
 }
 
@@ -35,7 +31,7 @@ export interface LoadAccountSuccessAction {
 
 export interface LoadAccountFailureAction {
   type: AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadL1TokenBalanceAction {
@@ -50,20 +46,6 @@ export interface LoadL1TokenBalanceFailureAction {
   type: AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_FAILURE;
 }
 
-export interface LoadPoolTransactionsAction {
-  type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
-export interface LoadPoolTransactionsSuccessAction {
-  type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailureAction {
-  type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
-}
-
 export interface LoadHistoryTransactionsAction {
   type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS;
 }
@@ -75,7 +57,7 @@ export interface LoadHistoryTransactionsSuccessAction {
 
 export interface LoadHistoryTransactionsFailureAction {
   type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadExitsAction {
@@ -89,7 +71,7 @@ export interface LoadExitsSuccessAction {
 
 export interface LoadExitsFailureAction {
   type: AccountDetailsActionTypes.LOAD_EXITS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface RefreshHistoryTransactionsAction {
@@ -99,6 +81,11 @@ export interface RefreshHistoryTransactionsAction {
 export interface RefreshHistoryTransactionsSuccessAction {
   type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_SUCCESS;
   historyTransactions: HistoryTransactions;
+}
+
+export interface RefreshHistoryTransactionsFailureAction {
+  type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_FAILURE;
+  error: string;
 }
 
 export interface ResetStateAction {
@@ -112,9 +99,6 @@ export type AccountDetailsAction =
   | LoadL1TokenBalanceAction
   | LoadL1TokenBalanceSuccessAction
   | LoadL1TokenBalanceFailureAction
-  | LoadPoolTransactionsAction
-  | LoadPoolTransactionsSuccessAction
-  | LoadPoolTransactionsFailureAction
   | LoadHistoryTransactionsAction
   | LoadHistoryTransactionsSuccessAction
   | LoadHistoryTransactionsFailureAction
@@ -123,6 +107,7 @@ export type AccountDetailsAction =
   | LoadExitsFailureAction
   | RefreshHistoryTransactionsAction
   | RefreshHistoryTransactionsSuccessAction
+  | RefreshHistoryTransactionsFailureAction
   | ResetStateAction;
 
 function loadAccount(): LoadAccountAction {
@@ -138,7 +123,7 @@ function loadAccountSuccess(account: HermezAccount): LoadAccountSuccessAction {
   };
 }
 
-function loadAccountFailure(error: Error): LoadAccountFailureAction {
+function loadAccountFailure(error: string): LoadAccountFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_ACCOUNT_FAILURE,
     error,
@@ -163,28 +148,6 @@ function loadL1TokenBalanceFailure(): LoadL1TokenBalanceFailureAction {
   };
 }
 
-function loadPoolTransactions(): LoadPoolTransactionsAction {
-  return {
-    type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(
-  transactions: PoolTransaction[]
-): LoadPoolTransactionsSuccessAction {
-  return {
-    type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailureAction {
-  return {
-    type: AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
-    error,
-  };
-}
-
 function loadHistoryTransactions(): LoadHistoryTransactionsAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS,
@@ -200,7 +163,7 @@ function loadHistoryTransactionsSuccess(
   };
 }
 
-function loadHistoryTransactionsFailure(error: Error): LoadHistoryTransactionsFailureAction {
+function loadHistoryTransactionsFailure(error: string): LoadHistoryTransactionsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_HISTORY_TRANSACTIONS_FAILURE,
     error,
@@ -220,7 +183,7 @@ function loadExitsSuccess(exits: Exits): LoadExitsSuccessAction {
   };
 }
 
-function loadExitsFailure(error: Error): LoadExitsFailureAction {
+function loadExitsFailure(error: string): LoadExitsFailureAction {
   return {
     type: AccountDetailsActionTypes.LOAD_EXITS_FAILURE,
     error,
@@ -242,6 +205,13 @@ function refreshHistoryTransactionsSuccess(
   };
 }
 
+function refreshHistoryTransactionsFailure(error: string): RefreshHistoryTransactionsFailureAction {
+  return {
+    type: AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_FAILURE,
+    error,
+  };
+}
+
 function resetState(): ResetStateAction {
   return {
     type: AccountDetailsActionTypes.RESET_STATE,
@@ -255,9 +225,6 @@ export {
   loadL1TokenBalance,
   loadL1TokenBalanceSuccess,
   loadL1TokenBalanceFailure,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   loadHistoryTransactions,
   loadHistoryTransactionsSuccess,
   loadHistoryTransactionsFailure,
@@ -266,5 +233,6 @@ export {
   loadExitsFailure,
   refreshHistoryTransactions,
   refreshHistoryTransactionsSuccess,
+  refreshHistoryTransactionsFailure,
   resetState,
 };

@@ -5,22 +5,18 @@ import {
 } from "src/store/transactions/withdraw/withdraw.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { PoolTransaction, Exit, HermezAccount, EstimatedL1Fee } from "src/domain";
+import { Exit, HermezAccount, EstimatedL1Fee } from "src/domain";
 
 export interface WithdrawState {
   step: Step;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
   accountTask: AsyncTask<HermezAccount, string>;
-  exitTask: AsyncTask<Exit, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  exitTask: AsyncTask<Exit, string>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   isTransactionBeingApproved: boolean;
 }
 
 const initialWithdrawState: WithdrawState = {
   step: "load-data",
-  poolTransactionsTask: {
-    status: "pending",
-  },
   accountTask: {
     status: "pending",
   },
@@ -38,38 +34,6 @@ function withdrawReducer(
   action: WithdrawAction
 ): WithdrawState {
   switch (action.type) {
-    case WithdrawActionTypes.LOAD_POOL_TRANSACTIONS: {
-      return {
-        ...state,
-        poolTransactionsTask:
-          state.poolTransactionsTask.status === "successful"
-            ? {
-                status: "reloading",
-                data: state.poolTransactionsTask.data,
-              }
-            : {
-                status: "loading",
-              },
-      };
-    }
-    case WithdrawActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "successful",
-          data: action.transactions,
-        },
-      };
-    }
-    case WithdrawActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "failed",
-          error: action.error,
-        },
-      };
-    }
     case WithdrawActionTypes.LOAD_ACCOUNT: {
       return {
         ...state,

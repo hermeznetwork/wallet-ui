@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { HermezAccount, Exit, PoolTransaction, EstimatedL1Fee } from "src/domain";
+import { HermezAccount, Exit, EstimatedL1Fee } from "src/domain";
 
 export enum WithdrawActionTypes {
   LOAD_ACCOUNT = "[WITHDRAW] LOAD ACCOUNT",
@@ -10,9 +10,6 @@ export enum WithdrawActionTypes {
   LOAD_EXIT = "[WITHDRAW] LOAD EXIT",
   LOAD_EXIT_SUCCESS = "[WITHDRAW] LOAD EXIT SUCCESS",
   LOAD_EXIT_FAILURE = "[WITHDRAW] LOAD EXIT FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[WITHDRAW] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[WITHDRAW] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[WITHDRAW] LOAD POOL TRANSACTIONS FAILURE",
   LOAD_ESTIMATED_WITHDRAW_FEE = "[WITHDRAW] LOAD ESTIMATED WITHDRAW FEE",
   LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS = "[WITHDRAW] LOAD ESTIMATED WITHDRAW FEE SUCCESS",
   LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE = "[WITHDRAW] LOAD ESTIMATED WITHDRAW FEE FAILURE",
@@ -30,10 +27,6 @@ export interface TransactionToReview {
   to: Partial<HermezAccount>;
 }
 
-export interface LoadPoolTransactions {
-  type: WithdrawActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
 export interface LoadExit {
   type: WithdrawActionTypes.LOAD_EXIT;
 }
@@ -45,17 +38,7 @@ export interface LoadExitSuccess {
 
 export interface LoadExitFailure {
   type: WithdrawActionTypes.LOAD_EXIT_FAILURE;
-  error: Error;
-}
-
-export interface LoadPoolTransactionsSuccess {
-  type: WithdrawActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailure {
-  type: WithdrawActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadEstimatedWithdrawFee {
@@ -69,7 +52,7 @@ export interface LoadEstimatedWithdrawFeeSuccess {
 
 export interface LoadEstimatedWithdrawFeeFailure {
   type: WithdrawActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface StartTransactionApproval {
@@ -91,9 +74,6 @@ export type WithdrawAction =
   | LoadExit
   | LoadExitSuccess
   | LoadExitFailure
-  | LoadPoolTransactions
-  | LoadPoolTransactionsSuccess
-  | LoadPoolTransactionsFailure
   | LoadEstimatedWithdrawFee
   | LoadEstimatedWithdrawFeeSuccess
   | LoadEstimatedWithdrawFeeFailure
@@ -128,29 +108,9 @@ function loadExitSuccess(exit: Exit): LoadExitSuccess {
   };
 }
 
-function loadExitFailure(error: Error): LoadExitFailure {
+function loadExitFailure(error: string): LoadExitFailure {
   return {
     type: WithdrawActionTypes.LOAD_EXIT_FAILURE,
-    error,
-  };
-}
-
-function loadPoolTransactions(): LoadPoolTransactions {
-  return {
-    type: WithdrawActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
-  return {
-    type: WithdrawActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
-  return {
-    type: WithdrawActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
   };
 }
@@ -190,7 +150,7 @@ function loadEstimatedWithdrawFeeSuccess(
   };
 }
 
-function loadEstimatedWithdrawFeeFailure(error: Error): LoadEstimatedWithdrawFeeFailure {
+function loadEstimatedWithdrawFeeFailure(error: string): LoadEstimatedWithdrawFeeFailure {
   return {
     type: WithdrawActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE,
     error,
@@ -222,9 +182,6 @@ export {
   loadExit,
   loadExitSuccess,
   loadExitFailure,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   loadEstimatedWithdrawFee,
   loadEstimatedWithdrawFeeSuccess,
   loadEstimatedWithdrawFeeFailure,

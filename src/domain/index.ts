@@ -9,21 +9,24 @@ import { BigNumber } from "@ethersproject/bignumber";
 import * as hermezjs from "@hermeznetwork/hermezjs";
 
 export type {
+  AccountAuthorization,
   CoordinatorState,
   Exit,
+  Exits,
   FiatExchangeRates,
   HermezApiResourceItem,
-  HermezWallet,
   HistoryTransaction,
+  HistoryTransactions,
   ISOStringDate,
   L1Info,
   L2Info,
   MerkleProof,
   NextForger,
   PoolTransaction,
+  PoolTransactions,
   RecommendedFee,
-  Signers,
   Token,
+  Tokens,
 } from "@hermeznetwork/hermezjs";
 
 export type NetworkStatus = "online" | "offline";
@@ -37,7 +40,14 @@ export interface EthereumNetwork {
   name: string;
 }
 
+export type HermezRawAccount = hermezjs.Account;
+
 export type HermezAccount = hermezjs.Account & { fiatBalance?: number };
+
+export interface HermezAccounts {
+  accounts: HermezAccount[];
+  pendingItems: number;
+}
 
 export interface EthereumAccount {
   balance: string;
@@ -87,7 +97,7 @@ export type TransactionReceiver =
   | Pick<HermezAccount, "bjj">
   | Pick<HermezAccount, "hezEthereumAddress">;
 
-// Type Guards
+// Hermez Type Guards
 
 export function isHermezAccount(account: Account): account is HermezAccount {
   return "accountIndex" in account;
@@ -161,3 +171,46 @@ export type ChainTimerWithdraws = Record<HermezEthereumAddress, TimerWithdraw[]>
 
 export type AuthSignatures = Record<ChainId, ChainAuthSignatures>;
 export type ChainAuthSignatures = Record<HermezEthereumAddress, string>;
+
+// User reporting
+export type Message =
+  | {
+      type: "info-msg" | "success-msg" | "error-msg";
+      text: string;
+    }
+  | {
+      type: "error";
+      text?: string;
+      parsed: string;
+    };
+
+// Env
+
+export interface ProductionLiteral {
+  REACT_APP_ENV: "production";
+}
+
+export interface ProductionVars {
+  REACT_APP_INFURA_API_KEY: string;
+  REACT_APP_PRICE_UPDATER_API_URL: string;
+  REACT_APP_PRICE_UPDATER_API_KEY: string;
+  REACT_APP_WALLETCONNECT_BRIDGE: string;
+}
+
+export type ProductionEnv = ProductionLiteral & ProductionVars;
+
+export interface DevelopmentLiteral {
+  REACT_APP_ENV: "development";
+}
+
+export type DevelopmentVars = ProductionVars & {
+  REACT_APP_HERMEZ_API_URL: string;
+  REACT_APP_HERMEZ_CONTRACT_ADDRESS: string;
+  REACT_APP_WITHDRAWAL_DELAYER_CONTRACT_ADDRESS: string;
+  REACT_APP_BATCH_EXPLORER_URL: string;
+  REACT_APP_ETHERSCAN_URL: string;
+};
+
+export type DevelopmentEnv = DevelopmentLiteral & DevelopmentVars;
+
+export type Env = ProductionEnv | DevelopmentEnv;

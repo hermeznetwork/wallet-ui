@@ -1,11 +1,13 @@
 import React from "react";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 
 import useTransactionAmountStyles from "src/views/account-details/components/transaction-amount/transaction-amount.style";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
+const { TxType } = Enums;
+
 interface TransactionAmountProps {
-  type: TxType;
+  type: Enums.TxType;
   preferredCurrency: string;
   accountIndex: string;
   fiatAmount?: number;

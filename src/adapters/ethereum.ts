@@ -1,22 +1,27 @@
 import { BigNumber } from "ethers";
 import { TransactionResponse, TransactionReceipt } from "@ethersproject/abstract-provider";
-import hermezjs from "@hermeznetwork/hermezjs";
+import { Providers, Addresses, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { ETHER_TOKEN_ID, DEPOSIT_TX_TIMEOUT } from "src/constants";
 import { Erc20__factory } from "src/types/contracts/erc-20/factories/Erc20__factory";
+import { AsyncTask } from "src/utils/types";
+import { convertTokenAmountToFiat } from "src/utils/currencies";
 // domain
-import { HermezWallet, Token, ISOStringDate, EthereumAccount } from "src/domain";
+import { EthereumAccount, FiatExchangeRates, ISOStringDate, Token } from "src/domain";
 
 /**
  * Fetches token balances in the user's Ethereum account. Only for those tokens registered in Hermez and Ether.
  * Throws an error if the user has no balances for any registered token in Hermez or an error comes up from fetching the balances on-chain.
  */
-function getTokens(
+function getEthereumAccounts(
   wallet: HermezWallet.HermezWallet,
-  hermezTokens: Token[]
+  hermezTokens: Token[],
+  tokensPriceTask: AsyncTask<Token[], string>,
+  fiatExchangeRates: FiatExchangeRates,
+  preferredCurrency: string
 ): Promise<EthereumAccount[]> {
-  const provider = hermezjs.Providers.getProvider();
-  const ethereumAddress = hermezjs.Addresses.getEthereumAddress(wallet.hermezEthereumAddress);
+  const provider = Providers.getProvider();
+  const ethereumAddress = Addresses.getEthereumAddress(wallet.hermezEthereumAddress);
   const balancePromises: Promise<BigNumber>[] = hermezTokens.map((token) => {
     if (token.id === ETHER_TOKEN_ID) {
       // tokenID 0 is for Ether
@@ -34,23 +39,38 @@ function getTokens(
     }
   });
 
-  const balances = Promise.all(balancePromises).then((balanceList) =>
+  return Promise.all(balancePromises).then((balanceList) =>
     balanceList.reduce(
-      (acc: EthereumAccount[], balance: BigNumber, index: number) =>
-        balance.gt(BigNumber.from(0))
-          ? [
-              ...acc,
-              {
-                balance: balance.toString(),
-                token: hermezTokens[index],
-              },
-            ]
-          : acc,
+      (acc: EthereumAccount[], balanceBigNumber: BigNumber, index: number): EthereumAccount[] => {
+        if (balanceBigNumber.gt(BigNumber.from(0))) {
+          const balance = balanceBigNumber.toString();
+          const hermezToken = hermezTokens[index];
+          const tokenFromTokensPrice =
+            tokensPriceTask.status === "successful" && tokensPriceTask.data[hermezToken.id];
+          const token = tokenFromTokensPrice ? tokenFromTokensPrice : hermezToken;
+
+          const fiatBalance = convertTokenAmountToFiat(
+            balance,
+            token,
+            preferredCurrency,
+            fiatExchangeRates
+          );
+
+          return [
+            ...acc,
+            {
+              balance,
+              token,
+              fiatBalance,
+            },
+          ];
+        } else {
+          return acc;
+        }
+      },
       []
     )
   );
-
-  return balances;
 }
 
 /**
@@ -100,4 +120,4 @@ function hasTxBeenReverted(txReceipt: TransactionReceipt): boolean {
   return txReceipt.status === 0;
 }
 
-export { getTokens, isTxCanceled, isTxMined, isTxExpectedToFail, hasTxBeenReverted };
+export { getEthereumAccounts, isTxCanceled, isTxMined, isTxExpectedToFail, hasTxBeenReverted };

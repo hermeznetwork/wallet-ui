@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { useTheme } from "react-jss";
-import { push } from "connected-react-router";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { push } from "@lagunovsky/redux-react-router";
+import { Enums, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import useHomeStyles from "src/views/home/home.styles";
 import ReportIssueButton from "src/views/home/components/report-issue-button/report-issue-button.view";
@@ -33,10 +33,11 @@ import {
   Account,
   CoordinatorState,
   EthereumNetwork,
+  Exits,
   FiatExchangeRates,
   HermezAccount,
-  HermezWallet,
   isHermezAccount,
+  Message,
   PendingDelayedWithdraws,
   PendingDeposit,
   PendingDeposits,
@@ -45,8 +46,8 @@ import {
   TimerWithdraw,
   TimerWithdraws,
 } from "src/domain";
-//persistence
-import { Exits } from "src/persistence";
+
+const { TxType } = Enums;
 
 interface ViewAccounts {
   accounts: HermezAccount[];
@@ -61,7 +62,7 @@ type HomeStateProps = {
   totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
-  exitsTask: AsyncTask<Exits, Error>;
+  exitsTask: AsyncTask<Exits, string>;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
   preferredCurrency: string;
   pendingDeposits: PendingDeposits;
@@ -85,7 +86,7 @@ interface HomeHandlerProps {
     poolTransactions: PoolTransaction[],
     pendingDeposits: PendingDeposit[],
     preferredCurrency: string,
-    fiatExchangeRates?: FiatExchangeRates,
+    fiatExchangeRates: FiatExchangeRates,
     fromItem?: number
   ) => void;
   onLoadPoolTransactions: () => void;
@@ -95,7 +96,7 @@ interface HomeHandlerProps {
   onAddTimerWithdraw: (timer: TimerWithdraw) => void;
   onRemoveTimerWithdraw: (message: string) => void;
   onNavigateToAccountDetails: (accountIndex: string) => void;
-  onOpenSnackbar: (message: string) => void;
+  onOpenSnackbar: (message: Message) => void;
   onCleanup: () => void;
 }
 
@@ -273,7 +274,10 @@ function Home({
    */
   function handleEthereumAddressClick(hermezEthereumAddress: string) {
     copyToClipboard(hermezEthereumAddress);
-    onOpenSnackbar("The Polygon Hermez address has been copied to the clipboard!");
+    onOpenSnackbar({
+      type: "info-msg",
+      text: "The Polygon Hermez address has been copied to the clipboard!",
+    });
   }
   return (
     <>
@@ -364,7 +368,10 @@ function Home({
                             preferredCurrency={preferredCurrency}
                             fiatExchangeRates={fiatExchangeRates}
                             onAccountClick={() =>
-                              onOpenSnackbar("This token account is being created")
+                              onOpenSnackbar({
+                                type: "info-msg",
+                                text: "This token account is being created",
+                              })
                             }
                             coordinatorState={coordinatorState}
                           />
@@ -373,16 +380,18 @@ function Home({
                           asyncTaskStatus={accountsTask.status}
                           paginationData={accountsTask.data.pagination}
                           onLoadNextPage={(fromItem) => {
-                            onLoadAccounts(
-                              wallet.publicKeyBase64,
-                              isAsyncTaskDataAvailable(poolTransactionsTask)
-                                ? poolTransactionsTask.data
-                                : [],
-                              accountPendingDeposits,
-                              preferredCurrency,
-                              fiatExchangeRates,
-                              fromItem
-                            );
+                            if (fiatExchangeRates) {
+                              onLoadAccounts(
+                                wallet.publicKeyBase64,
+                                isAsyncTaskDataAvailable(poolTransactionsTask)
+                                  ? poolTransactionsTask.data
+                                  : [],
+                                accountPendingDeposits,
+                                preferredCurrency,
+                                fiatExchangeRates,
+                                fromItem
+                              );
+                            }
                           }}
                         >
                           <AccountList
@@ -415,7 +424,7 @@ const mapStateToProps = (state: AppState): HomeStateProps => ({
   accountsTask: state.home.accountsTask,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
   preferredCurrency: state.myAccount.preferredCurrency,
-  poolTransactionsTask: state.home.poolTransactionsTask,
+  poolTransactionsTask: state.global.poolTransactionsTask,
   exitsTask: state.home.exitsTask,
   pendingWithdraws: state.global.pendingWithdraws,
   pendingDelayedWithdraws: state.global.pendingDelayedWithdraws,
@@ -461,7 +470,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): HomeHandlerProps => ({
         fromItem
       )
     ),
-  onLoadPoolTransactions: () => dispatch(homeThunks.fetchPoolTransactions()),
+  onLoadPoolTransactions: () => dispatch(globalThunks.fetchPoolTransactions()),
   onLoadExits: () => dispatch(homeThunks.fetchExits()),
   onCheckPendingWithdrawals: () => dispatch(globalThunks.checkPendingWithdrawals()),
   onCheckPendingDelayedWithdrawals: () => dispatch(globalThunks.checkPendingDelayedWithdrawals()),

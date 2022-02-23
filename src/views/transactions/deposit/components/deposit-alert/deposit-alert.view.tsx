@@ -10,7 +10,7 @@ import Alert from "src/views/shared/alert/alert.view";
 import FiatAmount from "src/views/shared/fiat-amount/fiat-amount.view";
 
 interface DepositAlertProps {
-  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, string>;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
 }

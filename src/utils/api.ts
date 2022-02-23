@@ -1,4 +1,4 @@
-import { PaginationOrder } from "@hermeznetwork/hermezjs/src/api";
+import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
 
 // domain
 import { HermezApiResourceItem } from "src/domain";
@@ -18,7 +18,7 @@ export type Pagination =
 function getPaginationData(
   pendingItems: number,
   items: HermezApiResourceItem[],
-  order: PaginationOrder = "ASC"
+  order: CoordinatorAPI.PaginationOrder = "ASC"
 ): Pagination {
   if (pendingItems === 0) {
     return { hasMoreItems: false };

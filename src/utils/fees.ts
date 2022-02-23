@@ -1,8 +1,4 @@
-import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
-import { GAS_LIMIT_LOW } from "@hermeznetwork/hermezjs/src/constants";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { getFeeIndex, getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
-import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
+import { Enums, Addresses, Constants, TxUtils, Utils } from "@hermeznetwork/hermezjs";
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 
@@ -13,18 +9,23 @@ import { MAX_FEE_USD, MAX_TOKEN_DECIMALS } from "src/constants";
 // domain
 import { FiatExchangeRates, RecommendedFee, Token, EstimatedL1Fee } from "src/domain";
 
+const { isHermezBjjAddress } = Addresses;
+const { GAS_LIMIT_LOW } = Constants;
+const { getFeeIndex, getFeeValue } = TxUtils;
+const { getTokenAmountString } = Utils;
+
 interface GetMinimumTransferFee {
-  txType: TxType.Transfer;
+  txType: Enums.TxType.Transfer;
   receiverAddress: string;
   doesAccountAlreadyExist: boolean;
   token: Token;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
 }
 
 interface GetMinimumExitFee {
-  txType: TxType.Exit;
+  txType: Enums.TxType.Exit;
   token: Token;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
 }
 
 type GetMinimumL2FeeParams = GetMinimumTransferFee | GetMinimumExitFee;
@@ -41,7 +42,7 @@ function getMinimumL2Fee(params: GetMinimumL2FeeParams): BigNumber {
   }
 
   const feeInUsd = (() => {
-    if (txType === TxType.Exit || params.doesAccountAlreadyExist) {
+    if (txType === Enums.TxType.Exit || params.doesAccountAlreadyExist) {
       return feesTask.data.existingAccount;
     } else {
       return isHermezBjjAddress(params.receiverAddress)
@@ -69,16 +70,16 @@ function getL2Fee(amount: string, token: Token, minimumFee: BigNumber): number {
 }
 
 interface GetDepositFeeParams {
-  txType: TxType.Deposit;
+  txType: Enums.TxType.Deposit;
   gasPrice: BigNumber;
 }
 
 interface GetForceExitFeeParams {
-  txType: TxType.ForceExit;
+  txType: Enums.TxType.ForceExit;
 }
 
 interface GetL2FeeParams {
-  txType: TxType.Transfer | TxType.Exit;
+  txType: Enums.TxType.Transfer | Enums.TxType.Exit;
   amount: BigNumber;
   token: Token;
   minimumFee: BigNumber;
@@ -91,10 +92,10 @@ type GetTxFeeParams = GetDepositFeeParams | GetForceExitFeeParams | GetL2FeePara
  */
 function getTxFee(params: GetTxFeeParams): BigNumber {
   switch (params.txType) {
-    case TxType.Deposit: {
+    case Enums.TxType.Deposit: {
       return BigNumber.from(GAS_LIMIT_LOW).mul(params.gasPrice);
     }
-    case TxType.ForceExit: {
+    case Enums.TxType.ForceExit: {
       return BigNumber.from(0);
     }
     default: {

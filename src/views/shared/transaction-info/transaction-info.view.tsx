@@ -1,7 +1,5 @@
 import React from "react";
-import { TxState, TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { getEthereumAddress } from "@hermeznetwork/hermezjs/src/addresses";
-import { INTERNAL_ACCOUNT_ETH_ADDR } from "@hermeznetwork/hermezjs/src/constants";
+import { Enums, Addresses, Constants } from "@hermeznetwork/hermezjs";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import TransactionInfoTable, {
@@ -21,6 +19,10 @@ import {
   PendingDeposit,
   PoolTransaction,
 } from "src/domain";
+
+const { TxState, TxType } = Enums;
+const { getEthereumAddress } = Addresses;
+const { INTERNAL_ACCOUNT_ETH_ADDR } = Constants;
 
 const TxStatus = {
   Confirmed: "Confirmed",

@@ -1,26 +1,34 @@
+import { HermezWallet, Signers } from "@hermeznetwork/hermezjs";
 import { HeaderState } from "src/store/global/global.reducer";
 // domain
 import {
   CoordinatorState,
+  Env,
   EthereumNetwork,
   FiatExchangeRates,
-  NetworkStatus,
-  HermezWallet,
   ISOStringDate,
+  Message,
+  NetworkStatus,
   PendingDelayedWithdraw,
   PendingDeposit,
   PendingWithdraw,
-  Signers,
+  PoolTransaction,
   TimerWithdraw,
   Token,
 } from "src/domain";
 
 export enum GlobalActionTypes {
+  LOAD_ENV = "[GLOBAL] LOAD ENV",
+  LOAD_ENV_SUCCESS = "[GLOBAL] LOAD ENV SUCCESS",
+  LOAD_ENV_FAILURE = "[GLOBAL] LOAD ENV FAILURE",
   LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",
   LOAD_HERMEZ_STATUS_SUCCESS = "[GLOBAL] LOAD HERMEZ STATUS SUCCESS",
   LOAD_HERMEZ_STATUS_FAILURE = "[GLOBAL] LOAD HERMEZ STATUS FAILURE",
   LOAD_ETHEREUM_NETWORK = "[GLOBAL] LOAD ETHEREUM NETWORK",
   LOAD_ETHEREUM_NETWORK_SUCCESS = "[GLOBAL] LOAD ETHEREUM NETWORK SUCCESS",
+  LOAD_POOL_TRANSACTIONS = "[GLOBAL] LOAD POOL TRANSACTIONS",
+  LOAD_POOL_TRANSACTIONS_SUCCESS = "[GLOBAL] LOAD POOL TRANSACTIONS SUCCESS",
+  LOAD_POOL_TRANSACTIONS_FAILURE = "[GLOBAL] LOAD POOL TRANSACTIONS FAILURE",
   LOAD_WALLET = "[GLOBAL] LOAD WALLET",
   UNLOAD_WALLET = "[GLOBAL] UNLOAD WALLET",
   SET_SIGNER = "[GLOBAL] SET SIGNER",
@@ -58,6 +66,20 @@ export enum GlobalActionTypes {
   LOAD_TOKENS_PRICE_FAILURE = "[GLOBAL] LOAD TOKENS PRICE FAILURE",
 }
 
+export interface LoadEnv {
+  type: GlobalActionTypes.LOAD_ENV;
+}
+
+export interface LoadEnvSuccess {
+  type: GlobalActionTypes.LOAD_ENV_SUCCESS;
+  env: Env;
+}
+
+export interface LoadEnvFailure {
+  type: GlobalActionTypes.LOAD_ENV_FAILURE;
+  error: string;
+}
+
 export interface LoadHermezStatus {
   type: GlobalActionTypes.LOAD_HERMEZ_STATUS;
 }
@@ -79,6 +101,20 @@ export interface LoadEthereumNetwork {
 export interface LoadEthereumNetworkSuccess {
   type: GlobalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS;
   ethereumNetwork: EthereumNetwork;
+}
+
+export interface LoadPoolTransactions {
+  type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS;
+}
+
+export interface LoadPoolTransactionsSuccess {
+  type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
+  transactions: PoolTransaction[];
+}
+
+export interface LoadPoolTransactionsFailure {
+  type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
+  error: string;
 }
 
 export interface LoadWallet {
@@ -121,8 +157,7 @@ export interface LoadFiatExchangeRatesFailure {
 
 export interface OpenSnackbar {
   type: GlobalActionTypes.OPEN_SNACKBAR;
-  message: string;
-  backgroundColor?: string;
+  message: Message;
 }
 
 export interface CloseSnackbar {
@@ -272,11 +307,17 @@ export interface LoadTokensPriceFailure {
 }
 
 export type GlobalAction =
+  | LoadEnv
+  | LoadEnvSuccess
+  | LoadEnvFailure
   | LoadHermezStatus
   | LoadHermezStatusSuccess
   | LoadHermezStatusFailure
   | LoadEthereumNetwork
   | LoadEthereumNetworkSuccess
+  | LoadPoolTransactions
+  | LoadPoolTransactionsSuccess
+  | LoadPoolTransactionsFailure
   | LoadWallet
   | UnloadWallet
   | SetSigner
@@ -313,6 +354,26 @@ export type GlobalAction =
   | LoadTokensPriceSuccess
   | LoadTokensPriceFailure;
 
+function loadEnv(): LoadEnv {
+  return {
+    type: GlobalActionTypes.LOAD_ENV,
+  };
+}
+
+function loadEnvSuccess(env: Env): LoadEnvSuccess {
+  return {
+    type: GlobalActionTypes.LOAD_ENV_SUCCESS,
+    env,
+  };
+}
+
+function loadEnvFailure(error: string): LoadEnvFailure {
+  return {
+    type: GlobalActionTypes.LOAD_ENV_FAILURE,
+    error,
+  };
+}
+
 function loadHermezStatus(): LoadHermezStatus {
   return {
     type: GlobalActionTypes.LOAD_HERMEZ_STATUS,
@@ -343,6 +404,26 @@ function loadEthereumNetworkSuccess(ethereumNetwork: EthereumNetwork): LoadEther
   return {
     type: GlobalActionTypes.LOAD_ETHEREUM_NETWORK_SUCCESS,
     ethereumNetwork,
+  };
+}
+
+function loadPoolTransactions(): LoadPoolTransactions {
+  return {
+    type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS,
+  };
+}
+
+function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
+  return {
+    type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
+    transactions,
+  };
+}
+
+function loadPoolTransactionsFailure(error: string): LoadPoolTransactionsFailure {
+  return {
+    type: GlobalActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
+    error,
   };
 }
 
@@ -402,11 +483,10 @@ function loadFiatExchangeRatesFailure(error: string): LoadFiatExchangeRatesFailu
   };
 }
 
-function openSnackbar(message: string, backgroundColor?: string): OpenSnackbar {
+function openSnackbar(message: Message): OpenSnackbar {
   return {
     type: GlobalActionTypes.OPEN_SNACKBAR,
     message,
-    backgroundColor,
   };
 }
 
@@ -634,10 +714,10 @@ function loadCoordinatorStateSuccess(
   };
 }
 
-function loadCoordinatorStateFailure(error: Error): LoadCoordinatorStateFailure {
+function loadCoordinatorStateFailure(error: string): LoadCoordinatorStateFailure {
   return {
     type: GlobalActionTypes.LOAD_COORDINATOR_STATE_FAILURE,
-    error: error.message,
+    error,
   };
 }
 
@@ -662,11 +742,17 @@ function loadTokensPriceFailure(error: string): LoadTokensPriceFailure {
 }
 
 export {
+  loadEnv,
+  loadEnvSuccess,
+  loadEnvFailure,
   loadHermezStatus,
   loadHermezStatusSuccess,
   loadHermezStatusFailure,
   loadEthereumNetwork,
   loadEthereumNetworkSuccess,
+  loadPoolTransactions,
+  loadPoolTransactionsSuccess,
+  loadPoolTransactionsFailure,
   loadWallet,
   unloadWallet,
   setSigner,

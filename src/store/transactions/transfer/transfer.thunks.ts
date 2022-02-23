@@ -1,22 +1,29 @@
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx, HermezCompressedAmount, TxUtils } from "@hermeznetwork/hermezjs";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
-import { isHermezBjjAddress } from "@hermeznetwork/hermezjs/src/addresses";
+import { Enums, Addresses, HermezCompressedAmount, TxUtils } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
+import { processError } from "src/store/global/global.thunks";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import { openSnackbar } from "src/store/global/global.actions";
-import { createAccount } from "src/utils/accounts";
 import { getNextBestForger, getNextForgerUrls } from "src/utils/coordinator";
-import theme from "src/styles/theme";
 import { feeBigIntToNumber, getMinimumL2Fee, getTxFee } from "src/utils/fees";
+import { isAsyncTaskDataAvailable } from "src/utils/types";
 import { TxData } from "src/views/transactions/transfer/components/transfer-form/transfer-form.view";
 // domain
-import { HermezAccount, FiatExchangeRates, PoolTransaction, TransactionReceiver } from "src/domain";
-// persistence
-import * as persistence from "src/persistence";
+import {
+  HermezAccounts,
+  FiatExchangeRates,
+  HermezAccount,
+  PoolTransaction,
+  TransactionReceiver,
+} from "src/domain";
+// adapters
+import * as adapters from "src/adapters";
+
+const { TxType } = Enums;
+const { isHermezBjjAddress } = Addresses;
+const { getTransactionType } = TxUtils;
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -34,38 +41,18 @@ function fetchHermezAccount(
 
     dispatch(transferActions.loadAccount());
 
-    return CoordinatorAPI.getAccount(accountIndex)
-      .then((account) =>
-        createAccount(
-          account,
-          poolTransactions,
-          undefined,
-          tokensPriceTask,
-          preferredCurrency,
-          fiatExchangeRates
-        )
+    return adapters.hermezApi
+      .getHermezAccount(
+        accountIndex,
+        tokensPriceTask,
+        preferredCurrency,
+        fiatExchangeRates,
+        poolTransactions
       )
       .then((res) => dispatch(transferActions.loadAccountSuccess(res)))
-      .catch((error: Error) => dispatch(transferActions.loadAccountFailure(error.message)));
-  };
-}
-
-/**
- * Fetches the transactions which are in the transactions pool
- */
-function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(transferActions.loadPoolTransactions());
-
-    const {
-      global: { wallet },
-    } = getState();
-
-    if (wallet !== undefined) {
-      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(transferActions.loadPoolTransactionsSuccess(transactions)))
-        .catch((err) => dispatch(transferActions.loadPoolTransactionsFailure(err)));
-    }
+      .catch((error: unknown) => {
+        dispatch(processError(error, transferActions.loadAccountFailure));
+      });
   };
 }
 
@@ -73,10 +60,10 @@ function fetchPoolTransactions(): AppThunk {
  * Fetches the accounts to use in the transaction in the rollup api.
  */
 function fetchAccounts(
-  fromItem: number | undefined,
   poolTransactions: PoolTransaction[],
   fiatExchangeRates: FiatExchangeRates,
-  preferredCurrency: string
+  preferredCurrency: string,
+  fromItem?: number
 ): AppThunk {
   return (dispatch: AppDispatch, getState: () => AppState) => {
     const {
@@ -85,24 +72,20 @@ function fetchAccounts(
 
     if (wallet !== undefined) {
       dispatch(transferActions.loadAccounts());
-
-      return CoordinatorAPI.getAccounts(wallet.publicKeyBase64, undefined, fromItem)
-        .then((res) => {
-          const accounts = res.accounts.map((account) =>
-            createAccount(
-              account,
-              poolTransactions,
-              undefined,
-              tokensPriceTask,
-              preferredCurrency,
-              fiatExchangeRates
-            )
-          );
-
-          return { ...res, accounts };
+      const hermezEthereumAddress = wallet.publicKeyBase64;
+      return adapters.hermezApi
+        .getHermezAccounts({
+          hermezEthereumAddress,
+          tokensPriceTask,
+          poolTransactions,
+          fiatExchangeRates,
+          preferredCurrency,
+          fromItem,
         })
-        .then((res) => dispatch(transferActions.loadAccountsSuccess(res)))
-        .catch((err) => dispatch(transferActions.loadAccountsFailure(err)));
+        .then((accounts) => dispatch(transferActions.loadAccountsSuccess(accounts)))
+        .catch((error: unknown) => {
+          dispatch(processError(error, transferActions.loadAccountsFailure));
+        });
     }
   };
 }
@@ -125,81 +108,107 @@ function fetchFees(): AppThunk {
       if (nextForger !== undefined) {
         dispatch(transferActions.loadFees());
 
-        return CoordinatorAPI.getState({}, nextForger.coordinator.URL)
+        return adapters.hermezApi
+          .getState({}, nextForger.coordinator.URL)
           .then((res) => dispatch(transferActions.loadFeesSuccess(res.recommendedFee)))
-          .catch((err) => dispatch(transferActions.loadFeesFailure(err)));
+          .catch((error: unknown) => {
+            dispatch(processError(error, transferActions.loadFeesFailure));
+          });
       }
     }
   };
 }
 
 function checkTxData(txData: TxData) {
-  return (dispatch: AppDispatch): void => {
-    const { amount, from, to, feesTask } = txData;
+  return (dispatch: AppDispatch, getState: () => AppState): void => {
+    const { amount, from, to, feesTask, preferredCurrency } = txData;
 
-    if (isHermezBjjAddress(txData.to)) {
-      void CoordinatorAPI.getAccounts(to, [from.token.id]).then(
-        (accounts: persistence.Accounts) => {
-          const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
-          const minimumFee = getMinimumL2Fee({
-            txType: TxType.Transfer,
-            receiverAddress: to,
-            feesTask,
-            token: from.token,
-            doesAccountAlreadyExist,
-          });
-          const fee = getTxFee({
-            txType: TxType.Transfer,
-            amount,
-            token: from.token,
-            minimumFee,
-          });
+    const {
+      global: { tokensPriceTask, poolTransactionsTask, fiatExchangeRatesTask },
+    } = getState();
 
-          dispatch(
-            transferActions.goToReviewTransactionStep({
-              amount: amount,
-              from: txData.from,
-              to: { bjj: txData.to },
-              fee,
-            })
-          );
-        }
-      );
-    } else {
-      void Promise.allSettled([
-        CoordinatorAPI.getAccounts(to, [from.token.id]),
-        CoordinatorAPI.getCreateAccountAuthorization(to),
-      ]).then(([accountsResult, accountAuthorizationResult]) => {
-        const doesAccountAlreadyExist: boolean =
-          accountsResult.status === "fulfilled" && accountsResult.value.accounts[0] !== undefined;
+    if (
+      isAsyncTaskDataAvailable(fiatExchangeRatesTask) &&
+      isAsyncTaskDataAvailable(poolTransactionsTask)
+    ) {
+      if (isHermezBjjAddress(txData.to)) {
+        void adapters.hermezApi
+          .getHermezAccounts({
+            hermezEthereumAddress: to,
+            tokenIds: [from.token.id],
+            poolTransactions: poolTransactionsTask.data,
+            fiatExchangeRates: fiatExchangeRatesTask.data,
+            tokensPriceTask,
+            preferredCurrency,
+          })
+          .then((accounts: HermezAccounts) => {
+            const doesAccountAlreadyExist: boolean = accounts.accounts[0] !== undefined;
+            const minimumFee = getMinimumL2Fee({
+              txType: TxType.Transfer,
+              receiverAddress: to,
+              feesTask,
+              token: from.token,
+              doesAccountAlreadyExist,
+            });
+            const fee = getTxFee({
+              txType: TxType.Transfer,
+              amount,
+              token: from.token,
+              minimumFee,
+            });
 
-        if (!doesAccountAlreadyExist && accountAuthorizationResult.status === "rejected") {
-          dispatch(transferActions.setReceiverCreateAccountsAuthorizationStatus(false));
-        } else {
-          const minimumFee = getMinimumL2Fee({
-            txType: TxType.Transfer,
-            receiverAddress: to,
-            feesTask,
-            token: from.token,
-            doesAccountAlreadyExist,
+            dispatch(
+              transferActions.goToReviewTransactionStep({
+                amount: amount,
+                from: txData.from,
+                to: { bjj: txData.to },
+                fee,
+              })
+            );
           });
-          const fee = getTxFee({
-            txType: TxType.Transfer,
-            amount,
-            token: from.token,
-            minimumFee,
-          });
+      } else {
+        void Promise.allSettled([
+          adapters.hermezApi.getHermezAccounts({
+            hermezEthereumAddress: to,
+            tokenIds: [from.token.id],
+            poolTransactions: poolTransactionsTask.data,
+            fiatExchangeRates: fiatExchangeRatesTask.data,
+            tokensPriceTask,
+            preferredCurrency,
+          }),
+          adapters.hermezApi.getCreateAccountAuthorization(to),
+        ]).then(([accountsResult, accountAuthorizationResult]) => {
+          const doesAccountAlreadyExist: boolean =
+            accountsResult.status === "fulfilled" && accountsResult.value.accounts[0] !== undefined;
 
-          dispatch(
-            transferActions.goToReviewTransactionStep({
-              amount: amount,
-              from,
-              to: { hezEthereumAddress: to },
-              fee: fee,
-            })
-          );
-        }
-      });
+          if (!doesAccountAlreadyExist && accountAuthorizationResult.status === "rejected") {
+            dispatch(transferActions.setReceiverCreateAccountsAuthorizationStatus(false));
+          } else {
+            const minimumFee = getMinimumL2Fee({
+              txType: TxType.Transfer,
+              receiverAddress: to,
+              feesTask,
+              token: from.token,
+              doesAccountAlreadyExist,
+            });
+            const fee = getTxFee({
+              txType: TxType.Transfer,
+              amount,
+              token: from.token,
+              minimumFee,
+            });
+
+            dispatch(
+              transferActions.goToReviewTransactionStep({
+                amount: amount,
+                from,
+                to: { hezEthereumAddress: to },
+                fee: fee,
+              })
+            );
+          }
+        });
+      }
     }
   };
 }
@@ -223,19 +232,19 @@ function transfer(
 
       const nextForgerUrls = getNextForgerUrls(coordinatorStateTask.data);
       const toAddress = "bjj" in to ? to.bjj : to.hezEthereumAddress;
-      const type = TxUtils.getTransactionType({ to: toAddress });
       const txData = {
-        type,
+        type: getTransactionType({ to: toAddress }),
         from: from.accountIndex,
         to: toAddress,
         amount: HermezCompressedAmount.compressAmount(amount.toString()),
         fee: feeBigIntToNumber(fee, from.token),
       };
-      return Tx.generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
+      return adapters.hermezApi
+        .generateAndSendL2Tx(txData, wallet, from.token, nextForgerUrls)
         .then(() => handleTransactionSuccess(dispatch, from.accountIndex))
-        .catch((error) => {
+        .catch((error: unknown) => {
           dispatch(transferActions.stopTransactionApproval());
-          handleTransactionFailure(dispatch, error);
+          dispatch(processError(error));
         });
     }
   };
@@ -243,20 +252,8 @@ function transfer(
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
   const route = accountIndex ? `/accounts/${accountIndex}` : "/";
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push(route));
 }
 
-function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const errorMsg = persistence.getErrorMessage(error);
-  dispatch(openSnackbar(`Transaction failed - ${errorMsg}`, theme.palette.red.main));
-}
-
-export {
-  fetchHermezAccount,
-  fetchPoolTransactions,
-  fetchAccounts,
-  fetchFees,
-  checkTxData,
-  transfer,
-};
+export { fetchHermezAccount, fetchAccounts, fetchFees, checkTxData, transfer };

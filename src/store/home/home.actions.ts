@@ -1,7 +1,5 @@
 // domain
-import { PoolTransaction } from "src/domain";
-// persistence
-import { Accounts, Exits } from "src/persistence";
+import { HermezAccounts, Exits } from "src/domain";
 
 export enum HomeActionTypes {
   LOAD_TOTAL_BALANCE = "[HOME] LOAD TOTAL BALANCE",
@@ -10,14 +8,12 @@ export enum HomeActionTypes {
   LOAD_ACCOUNTS = "[HOME] LOAD ACCOUNTS",
   LOAD_ACCOUNTS_SUCCESS = "[HOME] LOAD ACCOUNTS SUCCESS",
   LOAD_ACCOUNTS_FAILURE = "[HOME] LOAD ACCOUNTS FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[HOME] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[HOME] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[HOME] LOAD POOL TRANSACTIONS FAILURE",
   LOAD_EXITS = "[HOME] LOAD EXITS",
   LOAD_EXITS_SUCCESS = "[HOME] LOAD EXITS SUCCESS",
   LOAD_EXITS_FAILURE = "[HOME] LOAD EXITS FAILURE",
   REFRESH_ACCOUNTS = "[HOME] REFRESH ACCOUNTS",
   REFRESH_ACCOUNTS_SUCCESS = "[HOME] REFRESH ACCOUNTS SUCCESS",
+  REFRESH_ACCOUNTS_FAILURE = "[HOME] REFRESH ACCOUNTS FAILURE",
   RESET_STATE = "[HOME] RESET STATE",
 }
 
@@ -32,7 +28,7 @@ export interface LoadTotalBalanceSuccess {
 
 export interface LoadTotalBalanceFailure {
   type: HomeActionTypes.LOAD_TOTAL_BALANCE_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadAccounts {
@@ -41,26 +37,12 @@ export interface LoadAccounts {
 
 export interface LoadAccountsSuccess {
   type: HomeActionTypes.LOAD_ACCOUNTS_SUCCESS;
-  accounts: Accounts;
+  accounts: HermezAccounts;
 }
 
 export interface LoadAccountsFailure {
   type: HomeActionTypes.LOAD_ACCOUNTS_FAILURE;
-  error: Error;
-}
-
-export interface LoadPoolTransactions {
-  type: HomeActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
-export interface LoadPoolTransactionsSuccess {
-  type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailure {
-  type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadExits {
@@ -74,7 +56,7 @@ export interface LoadExitsSuccess {
 
 export interface LoadExitsFailure {
   type: HomeActionTypes.LOAD_EXITS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface RefreshAccounts {
@@ -83,7 +65,12 @@ export interface RefreshAccounts {
 
 export interface RefreshAccountsSuccess {
   type: HomeActionTypes.REFRESH_ACCOUNTS_SUCCESS;
-  accounts: Accounts;
+  accounts: HermezAccounts;
+}
+
+export interface RefreshAccountsFailure {
+  type: HomeActionTypes.REFRESH_ACCOUNTS_FAILURE;
+  error: string;
 }
 
 export interface ResetState {
@@ -97,14 +84,12 @@ export type HomeAction =
   | LoadAccounts
   | LoadAccountsSuccess
   | LoadAccountsFailure
-  | LoadPoolTransactions
-  | LoadPoolTransactionsSuccess
-  | LoadPoolTransactionsFailure
   | LoadExits
   | LoadExitsSuccess
   | LoadExitsFailure
   | RefreshAccounts
   | RefreshAccountsSuccess
+  | RefreshAccountsFailure
   | ResetState;
 
 function loadTotalBalance(): LoadTotalBalance {
@@ -120,7 +105,7 @@ function loadTotalBalanceSuccess(balance: number): LoadTotalBalanceSuccess {
   };
 }
 
-function loadTotalBalanceFailure(error: Error): LoadTotalBalanceFailure {
+function loadTotalBalanceFailure(error: string): LoadTotalBalanceFailure {
   return {
     type: HomeActionTypes.LOAD_TOTAL_BALANCE_FAILURE,
     error,
@@ -133,36 +118,16 @@ function loadAccounts(): LoadAccounts {
   };
 }
 
-function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
+function loadAccountsSuccess(accounts: HermezAccounts): LoadAccountsSuccess {
   return {
     type: HomeActionTypes.LOAD_ACCOUNTS_SUCCESS,
     accounts,
   };
 }
 
-function loadAccountsFailure(error: Error): LoadAccountsFailure {
+function loadAccountsFailure(error: string): LoadAccountsFailure {
   return {
     type: HomeActionTypes.LOAD_ACCOUNTS_FAILURE,
-    error,
-  };
-}
-
-function loadPoolTransactions(): LoadPoolTransactions {
-  return {
-    type: HomeActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
-  return {
-    type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
-  return {
-    type: HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
   };
 }
@@ -180,7 +145,7 @@ function loadExitsSuccess(exits: Exits): LoadExitsSuccess {
   };
 }
 
-function loadExitsFailure(error: Error): LoadExitsFailure {
+function loadExitsFailure(error: string): LoadExitsFailure {
   return {
     type: HomeActionTypes.LOAD_EXITS_FAILURE,
     error,
@@ -193,10 +158,17 @@ function refreshAccounts(): RefreshAccounts {
   };
 }
 
-function refreshAccountsSuccess(accounts: Accounts): RefreshAccountsSuccess {
+function refreshAccountsSuccess(accounts: HermezAccounts): RefreshAccountsSuccess {
   return {
     type: HomeActionTypes.REFRESH_ACCOUNTS_SUCCESS,
     accounts,
+  };
+}
+
+function refreshAccountsFailure(error: string): RefreshAccountsFailure {
+  return {
+    type: HomeActionTypes.REFRESH_ACCOUNTS_FAILURE,
+    error,
   };
 }
 
@@ -213,13 +185,11 @@ export {
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   loadExits,
   loadExitsSuccess,
   loadExitsFailure,
   refreshAccounts,
   refreshAccountsSuccess,
+  refreshAccountsFailure,
   resetState,
 };

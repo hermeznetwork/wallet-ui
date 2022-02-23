@@ -1,8 +1,6 @@
 import { Pagination } from "src/utils/api";
 // domain
-import { HermezAccount, HistoryTransaction, PoolTransaction } from "src/domain";
-// persistence
-import { Exits } from "src/persistence";
+import { Exits, HermezAccount, HistoryTransaction } from "src/domain";
 import {
   AccountDetailsActionTypes,
   AccountDetailsAction,
@@ -18,10 +16,9 @@ interface ViewHistoryTransactions {
 
 export interface AccountDetailsState {
   accountTask: AsyncTask<HermezAccount, string>;
-  exitsTask: AsyncTask<Exits, Error>;
+  exitsTask: AsyncTask<Exits, string>;
   historyTransactionsTask: AsyncTask<ViewHistoryTransactions, string>;
   l1TokenBalanceTask: AsyncTask<null, string>;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
 }
 
 const initialAccountDetailsState: AccountDetailsState = {
@@ -29,9 +26,6 @@ const initialAccountDetailsState: AccountDetailsState = {
     status: "pending",
   },
   l1TokenBalanceTask: {
-    status: "pending",
-  },
-  poolTransactionsTask: {
     status: "pending",
   },
   historyTransactionsTask: {
@@ -70,16 +64,17 @@ function accountDetailsReducer(
         ...state,
         accountTask: {
           status: "failed",
-          error: "An error ocurred loading the account",
+          error: action.error,
         },
       };
     }
     case AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE: {
       return {
         ...state,
-        l1TokenBalanceTask: {
-          status: "loading",
-        },
+        l1TokenBalanceTask:
+          state.l1TokenBalanceTask.status === "successful"
+            ? { status: "reloading", data: state.l1TokenBalanceTask.data }
+            : { status: "loading" },
       };
     }
     case AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS: {
@@ -97,33 +92,6 @@ function accountDetailsReducer(
         l1TokenBalanceTask: {
           status: "failed",
           error: "An error occurred loading the L1 Token Balance",
-        },
-      };
-    }
-    case AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS: {
-      return {
-        ...state,
-        poolTransactionsTask:
-          state.poolTransactionsTask.status === "successful"
-            ? { status: "reloading", data: state.poolTransactionsTask.data }
-            : { status: "loading" },
-      };
-    }
-    case AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "successful",
-          data: action.transactions,
-        },
-      };
-    }
-    case AccountDetailsActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "failed",
-          error: "An error ocurred loading the transactions from the pool",
         },
       };
     }
@@ -168,7 +136,7 @@ function accountDetailsReducer(
         ...state,
         historyTransactionsTask: {
           status: "failed",
-          error: "An error ocurred loading the transactions from the history",
+          error: action.error,
         },
       };
     }
@@ -208,6 +176,15 @@ function accountDetailsReducer(
             transactions: action.historyTransactions.transactions,
             pagination,
           },
+        },
+      };
+    }
+    case AccountDetailsActionTypes.REFRESH_HISTORY_TRANSACTIONS_FAILURE: {
+      return {
+        ...state,
+        historyTransactionsTask: {
+          status: "failed",
+          error: action.error,
         },
       };
     }

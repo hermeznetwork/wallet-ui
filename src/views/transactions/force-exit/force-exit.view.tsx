@@ -1,12 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "@ethersproject/bignumber";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch } from "src/store";
 import * as forceExitThunks from "src/store/transactions/force-exit/force-exit.thunks";
 import * as forceExitActions from "src/store/transactions/force-exit/force-exit.actions";
+import * as globalThunks from "src/store/global/global.thunks";
 import { changeHeader } from "src/store/global/global.actions";
 import { AccountsWithPagination } from "src/store/transactions/force-exit/force-exit.reducer";
 import { HeaderState } from "src/store/global/global.reducer";
@@ -16,12 +17,14 @@ import AccountSelector from "src/views/transactions/components/account-selector/
 import ForceExitForm from "src/views/transactions/force-exit/components/force-exit-form/force-exit-form.view";
 import { AsyncTask } from "src/utils/types";
 // domain
-import { HermezAccount, HermezWallet, FiatExchangeRates, PoolTransaction } from "src/domain";
+import { HermezAccount, FiatExchangeRates, PoolTransaction } from "src/domain";
+
+const { TxType } = Enums;
 
 interface ForceExitStateProps {
   step: forceExitActions.Step;
-  accountsTask: AsyncTask<AccountsWithPagination, Error>;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+  accountsTask: AsyncTask<AccountsWithPagination, string>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   isTransactionBeingApproved: boolean;
   account?: HermezAccount;
   transaction?: forceExitActions.TransactionToReview;
@@ -38,10 +41,10 @@ interface ForxeExitHandlerProps {
     transactionToReview: forceExitActions.TransactionToReview
   ) => void;
   onLoadAccounts: (
-    fromItem: number | undefined,
     poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string
+    preferredCurrency: string,
+    fromItem?: number
   ) => void;
   onLoadPoolTransactions: () => void;
   onForceExit: (amount: BigNumber, account: HermezAccount) => void;
@@ -148,7 +151,7 @@ function ForceExit({
 const mapStateToProps = (state: AppState): ForceExitStateProps => ({
   step: state.forceExit.step,
   accountsTask: state.forceExit.accountsTask,
-  poolTransactionsTask: state.forceExit.poolTransactionsTask,
+  poolTransactionsTask: state.global.poolTransactionsTask,
   wallet: state.global.wallet,
   isTransactionBeingApproved: state.forceExit.isTransactionBeingApproved,
   account: state.forceExit.account,
@@ -199,20 +202,20 @@ const mapDispatchToProps = (dispatch: AppDispatch): ForxeExitHandlerProps => ({
   onGoToTransactionOverviewStep: (transactionToReview: forceExitActions.TransactionToReview) =>
     dispatch(forceExitActions.goToReviewTransactionStep(transactionToReview)),
   onLoadAccounts: (
-    fromItem: number | undefined,
     poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string
+    preferredCurrency: string,
+    fromItem?: number
   ) =>
     dispatch(
       forceExitThunks.fetchAccounts(
-        fromItem,
         poolTransactions,
         fiatExchangeRates,
-        preferredCurrency
+        preferredCurrency,
+        fromItem
       )
     ),
-  onLoadPoolTransactions: () => dispatch(forceExitThunks.fetchPoolTransactions()),
+  onLoadPoolTransactions: () => dispatch(globalThunks.fetchPoolTransactions()),
   onForceExit: (amount: BigNumber, account: HermezAccount) =>
     dispatch(forceExitThunks.forceExit(amount, account)),
   onCleanup: () => dispatch(forceExitActions.resetState()),

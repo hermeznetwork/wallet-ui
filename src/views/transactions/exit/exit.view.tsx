@@ -2,12 +2,13 @@ import React from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router";
 import { BigNumber } from "@ethersproject/bignumber";
-import { push } from "connected-react-router";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { push } from "@lagunovsky/redux-react-router";
+import { Enums, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { AppDispatch, AppState } from "src/store";
 import * as exitActions from "src/store/transactions/exit/exit.actions";
 import * as exitThunks from "src/store/transactions/exit/exit.thunks";
+import * as globalThunks from "src/store/global/global.thunks";
 import { changeHeader } from "src/store/global/global.actions";
 import { HeaderState } from "src/store/global/global.reducer";
 import Spinner from "src/views/shared/spinner/spinner.view";
@@ -21,19 +22,20 @@ import {
   EstimatedL1Fee,
   FiatExchangeRates,
   HermezAccount,
-  HermezWallet,
   PoolTransaction,
   RecommendedFee,
   Token,
 } from "src/domain";
 
+const { TxType } = Enums;
+
 interface ExitStateProps {
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   step: exitActions.Step;
   accountTask: AsyncTask<HermezAccount, string>;
-  feesTask: AsyncTask<RecommendedFee, Error>;
-  accountBalanceTask: AsyncTask<BigNumber, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
+  accountBalanceTask: AsyncTask<BigNumber, string>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   isTransactionBeingApproved: boolean;
   transactionToReview: exitActions.TransactionToReview | undefined;
   wallet: HermezWallet.HermezWallet | undefined;
@@ -201,7 +203,7 @@ function Exit({
 }
 
 const mapStateToProps = (state: AppState): ExitStateProps => ({
-  poolTransactionsTask: state.exit.poolTransactionsTask,
+  poolTransactionsTask: state.global.poolTransactionsTask,
   step: state.exit.step,
   wallet: state.global.wallet,
   accountTask: state.exit.accountTask,
@@ -267,7 +269,7 @@ const mapDispatchToProps = (dispatch: AppDispatch): ExitHandlerProps => ({
   onLoadEstimatedWithdrawFee: (token: Token, amount: BigNumber) => {
     void dispatch(exitThunks.fetchEstimatedWithdrawFee(token, amount));
   },
-  onLoadPoolTransactions: () => dispatch(exitThunks.fetchPoolTransactions()),
+  onLoadPoolTransactions: () => dispatch(globalThunks.fetchPoolTransactions()),
   onGoToHome: () => dispatch(push("/")),
   onGoToBuildTransactionStep: (account: HermezAccount) =>
     dispatch(exitActions.goToBuildTransactionStep(account)),

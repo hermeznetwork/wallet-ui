@@ -2,8 +2,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useTheme } from "react-jss";
-import { push } from "connected-react-router";
-import { TxType, TxLevel, TxState } from "@hermeznetwork/hermezjs/src/enums";
+import { push } from "@lagunovsky/redux-react-router";
+import { Enums } from "@hermeznetwork/hermezjs";
 import { BigNumber } from "@ethersproject/bignumber";
 import { parseUnits } from "ethers/lib/utils";
 
@@ -34,10 +34,13 @@ import {
   isHistoryTransaction,
   isPendingDeposit,
   isPoolTransaction,
+  Message,
   PendingDeposit,
   PoolTransaction,
 } from "src/domain";
 import { Theme } from "src/styles/theme";
+
+const { TxType, TxLevel, TxState } = Enums;
 
 interface TransactionDetailsStateProps {
   transactionTask: AsyncTask<PendingDeposit | HistoryTransaction | PoolTransaction, string>;
@@ -48,16 +51,11 @@ interface TransactionDetailsStateProps {
 
 interface TransactionDetailsHandlerProps {
   onLoadTransaction: (transactionId: string) => void;
-  onChangeHeader: (type: TxType, accountIndex: string) => void;
-  onOpenSnackbar: (message: string) => void;
+  onChangeHeader: (type: Enums.TxType, accountIndex: string) => void;
+  onOpenSnackbar: (message: Message) => void;
 }
 
 type TransactionDetailsProps = TransactionDetailsStateProps & TransactionDetailsHandlerProps;
-
-interface UrlParams {
-  accountIndex?: string;
-  transactionId?: string;
-}
 
 function TransactionDetails({
   transactionTask,
@@ -71,7 +69,7 @@ function TransactionDetails({
   const theme = useTheme<Theme>();
   const classes = useTransactionDetailsStyles();
 
-  const { accountIndex, transactionId } = useParams<UrlParams>();
+  const { accountIndex, transactionId } = useParams();
 
   React.useEffect(() => {
     if (transactionId) {
@@ -241,8 +239,8 @@ function TransactionDetails({
                           : undefined
                       }
                       showStatus
-                      onToCopyClick={() => onOpenSnackbar("Copied")}
-                      onFromCopyClick={() => onOpenSnackbar("Copied")}
+                      onToCopyClick={() => onOpenSnackbar({ type: "info-msg", text: "Copied" })}
+                      onFromCopyClick={() => onOpenSnackbar({ type: "info-msg", text: "Copied" })}
                     />
                     <ExploreTransactionButton
                       txLevel={isPendingDeposit(transactionTask.data) ? TxLevel.L1 : TxLevel.L2}
@@ -273,7 +271,7 @@ const mapStateToProps = (state: AppState): TransactionDetailsStateProps => ({
   coordinatorStateTask: state.global.coordinatorStateTask,
 });
 
-function getHeaderTitle(transactionType: TxType) {
+function getHeaderTitle(transactionType: Enums.TxType) {
   switch (transactionType) {
     case TxType.CreateAccountDeposit:
     case TxType.Deposit: {

@@ -1,22 +1,28 @@
 import { keccak256 } from "js-sha3";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { utils } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
-import hermez from "@hermeznetwork/hermezjs";
-import { isEnvironmentSupported } from "@hermeznetwork/hermezjs/src/environment";
+import {
+  Addresses,
+  Constants,
+  Environment,
+  HermezWallet,
+  Providers,
+  Signers,
+  Utils,
+} from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import { getNextForgerUrls } from "src/utils/coordinator";
 import * as globalActions from "src/store/global/global.actions";
-import * as globalThunks from "src/store/global/global.thunks";
+import { setHermezEnvironment } from "src/store/global/global.thunks";
 import * as loginActions from "src/store/login/login.actions";
-// domain
-import { Signers, HermezWallet } from "src/domain";
-// persistence
-import * as persistence from "src/persistence";
-import { getAuthSignatures, setAuthSignatures } from "src/persistence/local-storage";
+// adapters
+import * as adapters from "src/adapters";
+
+const { isEnvironmentSupported } = Environment;
 
 /**
  * Helper function that signs the authentication message depending on Wallet type
@@ -38,13 +44,13 @@ function signMessageHelper(
           return Promise.resolve(signature);
         } else {
           return Promise.reject(
-            "Oops... The function signMessage() from the WalletConnectProvider's connector did not return a valid string signature"
+            "The function signMessage() from the WalletConnectProvider's connector did not return a valid string signature"
           );
         }
       });
     } else {
       return Promise.reject(
-        "Oops... The Web3Provider passed as providerOrSigner to the function signMessageHelper is not a valid WalletConnectProvider"
+        "The Web3Provider passed as providerOrSigner to the function signMessageHelper is not a valid WalletConnectProvider"
       );
     }
   } else {
@@ -58,94 +64,111 @@ function signMessageHelper(
  */
 function fetchWallet(walletName: loginActions.WalletName): AppThunk {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
-    try {
-      switch (walletName) {
-        case loginActions.WalletName.WALLET_CONNECT: {
-          const walletConnectProvider = new WalletConnectProvider({
-            infuraId: process.env.REACT_APP_INFURA_API_KEY,
-            bridge: process.env.REACT_APP_WALLETCONNECT_BRIDGE,
-          });
-          hermez.Providers.setProvider(walletConnectProvider, hermez.Providers.PROVIDER_TYPES.WEB3);
-          break;
+    const {
+      login: { step },
+      global: { env },
+    } = getState();
+
+    if (env) {
+      try {
+        switch (walletName) {
+          case loginActions.WalletName.WALLET_CONNECT: {
+            const walletConnectProvider = new WalletConnectProvider({
+              infuraId: env.REACT_APP_INFURA_API_KEY,
+              bridge: env.REACT_APP_WALLETCONNECT_BRIDGE,
+            });
+            Providers.setProvider(walletConnectProvider, Providers.PROVIDER_TYPES.WEB3);
+            break;
+          }
+          case loginActions.WalletName.METAMASK: {
+            Providers.setProvider();
+            break;
+          }
         }
-        case loginActions.WalletName.METAMASK: {
-          hermez.Providers.setProvider();
-          break;
+
+        const provider = Providers.getProvider();
+
+        dispatch(loginActions.loadWallet(walletName));
+
+        if (walletName === loginActions.WalletName.METAMASK) {
+          try {
+            await provider.send("eth_requestAccounts", []);
+          } catch (error: unknown) {
+            console.error(error);
+          }
         }
-      }
 
-      const provider = hermez.Providers.getProvider();
-
-      dispatch(loginActions.loadWallet(walletName));
-
-      if (walletName === loginActions.WalletName.METAMASK) {
-        try {
-          await provider.send("eth_requestAccounts", []);
-        } catch (err) {
-          console.error(err);
-        }
-      }
-
-      const signerData = { type: "JSON-RPC" as const };
-      const signer = await hermez.Signers.getSigner(provider, signerData);
-
-      if (provider.provider instanceof WalletConnectProvider) {
-        // Enable shows the QR or uses the stored session
-        await provider.provider.enable();
-      }
-
-      const { chainId, name: chainName } = await provider.getNetwork();
-
-      if (process.env.REACT_APP_ENV === "production" && !isEnvironmentSupported(chainId)) {
-        dispatch(
-          globalActions.openSnackbar("Please, switch your network to Mainnet or Rinkeby to login")
-        );
-        dispatch(loginActions.goToWalletSelectorStep());
+        const signerData = { type: "JSON-RPC" as const };
+        const signer = await Signers.getSigner(provider, signerData);
 
         if (provider.provider instanceof WalletConnectProvider) {
-          // Close the stored session to avoid storing a network not supported by Hermez
-          await provider.provider.disconnect();
+          // Enable shows the QR or uses the stored session
+          await provider.provider.enable();
         }
 
-        return;
-      }
+        const { chainId, name: chainName } = await provider.getNetwork();
 
-      dispatch(globalThunks.setHermezEnvironment(chainId, chainName));
+        if (env.REACT_APP_ENV === "production" && !isEnvironmentSupported(chainId)) {
+          dispatch(
+            globalActions.openSnackbar({
+              type: "info-msg",
+              text: "Please, switch your network to Mainnet or Rinkeby to login",
+            })
+          );
+          dispatch(loginActions.goToWalletSelectorStep());
 
-      const address = await signer.getAddress();
-      const hermezAddress = hermez.Addresses.getHermezAddress(address);
-      const providerOrSigner =
-        walletName === loginActions.WalletName.WALLET_CONNECT ? provider : signer;
-      const signature = await signMessageHelper(
-        providerOrSigner,
-        hermez.Constants.METAMASK_MESSAGE,
-        address
-      );
-      const hashedSignature = keccak256(signature);
-      const signatureBuffer = hermez.Utils.hexToBuffer(hashedSignature);
-      const wallet = new hermez.HermezWallet.HermezWallet(signatureBuffer, hermezAddress);
-      const {
-        login: { step },
-      } = getState();
+          if (provider.provider instanceof WalletConnectProvider) {
+            // Close the stored session to avoid storing a network not supported by Hermez
+            await provider.provider.disconnect();
+          }
 
-      if (step.type === "wallet-loader") {
-        dispatch(globalActions.loadWallet(wallet));
-        const signerDataWithAddress: Signers.SignerData = {
-          ...signerData,
-          addressOrIndex: address,
-        };
-        dispatch(globalActions.setSigner(signerDataWithAddress));
-        dispatch(loginActions.goToCreateAccountAuthStep(wallet));
-      }
-    } catch (error) {
-      const {
-        login: { step },
-      } = getState();
-      if (step.type === "wallet-loader") {
-        const stringError = persistence.getErrorMessage(error);
-        dispatch(loginActions.loadWalletFailure(stringError));
-        dispatch(globalActions.openSnackbar(stringError));
-        dispatch(loginActions.goToPreviousStep());
+          return;
+        }
+
+        dispatch(setHermezEnvironment(chainId, chainName));
+
+        const address = await signer.getAddress();
+        const hermezAddress = Addresses.getHermezAddress(address);
+        const providerOrSigner =
+          walletName === loginActions.WalletName.WALLET_CONNECT ? provider : signer;
+        const signature = await signMessageHelper(
+          providerOrSigner,
+          Constants.METAMASK_MESSAGE,
+          address
+        );
+        const hashedSignature = keccak256(signature);
+        const signatureBuffer = Utils.hexToBuffer(hashedSignature);
+        const wallet = new HermezWallet.HermezWallet(signatureBuffer, hermezAddress);
+
+        if (step.type === "wallet-loader") {
+          dispatch(globalActions.loadWallet(wallet));
+          const signerDataWithAddress: Signers.SignerData = {
+            ...signerData,
+            addressOrIndex: address,
+          };
+          dispatch(globalActions.setSigner(signerDataWithAddress));
+          dispatch(loginActions.goToCreateAccountAuthStep(wallet));
+        }
+      } catch (error: unknown) {
+        const {
+          login: { step },
+        } = getState();
+        if (step.type === "wallet-loader") {
+          adapters.errors
+            .parseError(error)
+            .then((text) => {
+              dispatch(loginActions.loadWalletFailure(text));
+              dispatch(
+                globalActions.openSnackbar(
+                  error instanceof Error
+                    ? { type: "error", parsed: text }
+                    : { type: "info-msg", text }
+                )
+              );
+              dispatch(loginActions.goToPreviousStep());
+            })
+            .catch(console.error);
+        }
       }
     }
   };
@@ -159,7 +182,7 @@ async function getCreateAccountAuthorization(
   hermezEthereumAddress: string
 ): Promise<string | null> {
   try {
-    const { signature } = await hermez.CoordinatorAPI.getCreateAccountAuthorization(
+    const { signature } = await adapters.hermezApi.getCreateAccountAuthorization(
       hermezEthereumAddress
     );
     return signature;
@@ -216,7 +239,7 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
         dispatch(setAccountAuthSignature(wallet.hermezEthereumAddress, signature));
 
         if (sendSignature) {
-          await persistence.postCreateAccountAuthorization(
+          await adapters.hermezApi.postCreateAccountAuthorization(
             wallet.hermezEthereumAddress,
             wallet.publicKeyBase64,
             signature,
@@ -226,12 +249,21 @@ function postCreateAccountAuthorization(wallet: HermezWallet.HermezWallet): AppT
 
         dispatch(loginActions.addAccountAuthSuccess());
         dispatch(push(redirectRoute));
-      } catch (error) {
-        console.error(error);
-        const stringError = persistence.getErrorMessage(error);
-        dispatch(loginActions.addAccountAuthFailure(stringError));
-        dispatch(globalActions.openSnackbar(stringError));
-        dispatch(loginActions.goToWalletSelectorStep());
+      } catch (error: unknown) {
+        adapters.errors
+          .parseError(error)
+          .then((text) => {
+            dispatch(loginActions.addAccountAuthFailure(text));
+            dispatch(
+              globalActions.openSnackbar(
+                error instanceof Error
+                  ? { type: "error", parsed: text }
+                  : { type: "info-msg", text }
+              )
+            );
+            dispatch(loginActions.goToWalletSelectorStep());
+          })
+          .catch(console.error);
       }
     }
   };
@@ -250,7 +282,7 @@ function setAccountAuthSignature(hermezEthereumAddress: string, signature: strin
         data: { chainId },
       } = ethereumNetworkTask;
 
-      const authSignatures = getAuthSignatures();
+      const authSignatures = adapters.localStorage.getAuthSignatures();
       const chainAuthSignatures = authSignatures[chainId] || {};
       const newAccountAuthSignature = {
         ...authSignatures,
@@ -259,7 +291,7 @@ function setAccountAuthSignature(hermezEthereumAddress: string, signature: strin
           [hermezEthereumAddress]: signature,
         },
       };
-      setAuthSignatures(newAccountAuthSignature);
+      adapters.localStorage.setAuthSignatures(newAccountAuthSignature);
       dispatch(loginActions.setAccountAuthSignature(chainId, hermezEthereumAddress, signature));
     }
   };

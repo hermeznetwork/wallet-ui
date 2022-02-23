@@ -1,13 +1,15 @@
 import React from "react";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 
 import depositedIcon from "src/images/icons/deposited.svg";
 import receivedIcon from "src/images/icons/received.svg";
 import sentIcon from "src/images/icons/sent.svg";
 import withdrawnIcon from "src/images/icons/withdrawn.svg";
 
+const { TxType } = Enums;
+
 interface TransactionTypeProps {
-  type: TxType;
+  type: Enums.TxType;
   accountIndex: string;
   fromAccountIndex?: string;
 }

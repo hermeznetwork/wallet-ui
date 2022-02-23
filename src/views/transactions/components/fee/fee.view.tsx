@@ -1,5 +1,5 @@
 import React from "react";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import useFeeStyles from "src/views/transactions/components/fee/fee.styles";
@@ -12,6 +12,8 @@ import { FiatExchangeRates, Token, EstimatedL1Fee } from "src/domain";
 import { AsyncTask, isAsyncTaskDataAvailable } from "src/utils/types";
 import { getEstimatedWithdrawFee } from "src/utils/fees";
 
+const { TxType } = Enums;
+
 export interface CommonFeeProps {
   token: Token;
   amount: BigNumber;
@@ -21,19 +23,19 @@ export interface CommonFeeProps {
 }
 
 interface FeeDepositProps {
-  txType: TxType.Deposit;
-  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  txType: Enums.TxType.Deposit;
+  estimatedDepositFeeTask: AsyncTask<EstimatedL1Fee, string>;
 }
 
 interface FeeTransferProps {
-  txType: TxType.Transfer;
+  txType: Enums.TxType.Transfer;
   fee: BigNumber;
 }
 
 interface FeeExitProps {
-  txType: TxType.Exit;
+  txType: Enums.TxType.Exit;
   fee: BigNumber;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
 }
 
 type FeeProps = CommonFeeProps & (FeeDepositProps | FeeTransferProps | FeeExitProps);

@@ -1,13 +1,18 @@
-import { CoordinatorAPI } from "@hermeznetwork/hermezjs";
-import { HttpStatusCode } from "@hermeznetwork/hermezjs/src/http";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
-import * as transactionDetailsActionTypes from "./transaction-details.actions";
-import * as storage from "../../utils/storage";
+import { processError } from "src/store/global/global.thunks";
+import * as transactionDetailsActionTypes from "src/store/transaction-details/transaction-details.actions";
+import * as storage from "src/utils/storage";
 // domain
 import { PendingDeposit, HistoryTransaction, PoolTransaction } from "src/domain";
 import { AxiosError } from "axios";
+// adapters
+import * as adapters from "src/adapters";
+
+const HttpStatusCode = {
+  NOT_FOUND: 404,
+};
 
 /**
  * Fetches the details of a transaction
@@ -40,15 +45,17 @@ function fetchTransaction(transactionIdOrHash: string): AppThunk {
             }
           }
 
-          CoordinatorAPI.getPoolTransaction(transactionIdOrHash)
+          adapters.hermezApi
+            .getPoolTransaction(transactionIdOrHash)
             .then(resolve)
-            .catch((err: AxiosError) => {
-              if (err.response?.status === HttpStatusCode.NOT_FOUND) {
-                CoordinatorAPI.getHistoryTransaction(transactionIdOrHash)
+            .catch((error: AxiosError) => {
+              if (error.response?.status === HttpStatusCode.NOT_FOUND) {
+                adapters.hermezApi
+                  .getHistoryTransaction(transactionIdOrHash)
                   .then(resolve)
                   .catch(reject);
               } else {
-                reject(err);
+                reject(error);
               }
             });
         });
@@ -68,7 +75,9 @@ function fetchTransaction(transactionIdOrHash: string): AppThunk {
             dispatch(push("/"));
           }
         })
-        .catch(() => dispatch(transactionDetailsActionTypes.loadTransactionFailure()));
+        .catch((error: unknown) => {
+          dispatch(processError(error, transactionDetailsActionTypes.loadTransactionFailure));
+        });
     }
   };
 }

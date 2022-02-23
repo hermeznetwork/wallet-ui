@@ -1,25 +1,27 @@
+import { HermezWallet, Signers } from "@hermeznetwork/hermezjs";
 import { AppAction } from "src/store";
 import { GlobalActionTypes, GlobalAction } from "src/store/global/global.actions";
 import { AsyncTask } from "src/utils/types";
 // domain
 import {
   CoordinatorState,
+  Env,
   EthereumNetwork,
   FiatExchangeRates,
-  NetworkStatus,
   HermezStatus,
-  HermezWallet,
+  Message,
+  NetworkStatus,
   PendingDelayedWithdraws,
   PendingDeposits,
   PendingWithdraw,
   PendingWithdraws,
-  Signers,
+  PoolTransaction,
   TimerWithdraw,
   TimerWithdraws,
   Token,
 } from "src/domain";
-// persistence
-import * as localStoragePersistence from "src/persistence/local-storage";
+// adapters
+import * as localStoragePersistence from "src/adapters/local-storage";
 
 interface PageHeader {
   type: "page";
@@ -46,13 +48,14 @@ export type SnackbarState =
     }
   | {
       status: "open";
-      message: string;
-      backgroundColor?: string;
+      message: Message;
     };
 
 export interface GlobalState {
+  env: Env | undefined;
   hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   wallet: HermezWallet.HermezWallet | undefined;
   signer: Signers.SignerData | undefined;
   header: HeaderState;
@@ -73,10 +76,14 @@ export interface GlobalState {
 
 function getInitialGlobalState(): GlobalState {
   return {
+    env: undefined,
     hermezStatusTask: {
       status: "pending",
     },
     ethereumNetworkTask: {
+      status: "pending",
+    },
+    poolTransactionsTask: {
       status: "pending",
     },
     wallet: undefined,
@@ -119,6 +126,18 @@ function globalReducer(
   action: GlobalAction
 ): GlobalState {
   switch (action.type) {
+    case GlobalActionTypes.LOAD_ENV_SUCCESS: {
+      return {
+        ...state,
+        env: action.env,
+      };
+    }
+    case GlobalActionTypes.LOAD_ENV_FAILURE: {
+      return {
+        ...state,
+        env: undefined,
+      };
+    }
     case GlobalActionTypes.LOAD_HERMEZ_STATUS: {
       return {
         ...state,
@@ -159,6 +178,33 @@ function globalReducer(
         ethereumNetworkTask: {
           status: "successful",
           data: action.ethereumNetwork,
+        },
+      };
+    }
+    case GlobalActionTypes.LOAD_POOL_TRANSACTIONS: {
+      return {
+        ...state,
+        poolTransactionsTask:
+          state.poolTransactionsTask.status === "successful"
+            ? { status: "reloading", data: state.poolTransactionsTask.data }
+            : { status: "loading" },
+      };
+    }
+    case GlobalActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: "successful",
+          data: action.transactions,
+        },
+      };
+    }
+    case GlobalActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
+      return {
+        ...state,
+        poolTransactionsTask: {
+          status: "failed",
+          error: action.error,
         },
       };
     }
@@ -208,13 +254,21 @@ function globalReducer(
         },
       };
     }
+    case GlobalActionTypes.LOAD_FIAT_EXCHANGE_RATES_FAILURE: {
+      return {
+        ...state,
+        fiatExchangeRatesTask: {
+          status: "failed",
+          error: action.error,
+        },
+      };
+    }
     case GlobalActionTypes.OPEN_SNACKBAR: {
       return {
         ...state,
         snackbar: {
           status: "open",
           message: action.message,
-          backgroundColor: action.backgroundColor,
         },
       };
     }

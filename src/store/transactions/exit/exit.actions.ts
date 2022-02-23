@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { HermezAccount, PoolTransaction, RecommendedFee, EstimatedL1Fee } from "src/domain";
+import { HermezAccount, RecommendedFee, EstimatedL1Fee } from "src/domain";
 
 export enum ExitActionTypes {
   GO_TO_BUILD_TRANSACTION_STEP = "[EXIT] GO TO BUILD TRANSACTION STEP",
@@ -19,9 +19,6 @@ export enum ExitActionTypes {
   LOAD_ESTIMATED_WITHDRAW_FEE = "[EXIT] LOAD ESTIMATED WITHDRAW FEE",
   LOAD_ESTIMATED_WITHDRAW_FEE_SUCCESS = "[EXIT] LOAD ESTIMATED WITHDRAW FEE SUCCESS",
   LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE = "[EXIT] LOAD ESTIMATED WITHDRAW FEE FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[EXIT] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[EXIT] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[EXIT] LOAD POOL TRANSACTIONS FAILURE",
   START_TRANSACTION_APPROVAL = "[EXIT] START TRANSACTION APPROVAL",
   STOP_TRANSACTION_APPROVAL = "[EXIT] STOP TRANSACTION APPROVAL",
   RESET_STATE = "[EXIT] RESET STATE",
@@ -75,7 +72,7 @@ export interface LoadFeesSuccess {
 
 export interface LoadFeesFailure {
   type: ExitActionTypes.LOAD_FEES_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadAccountBalance {
@@ -89,7 +86,7 @@ export interface LoadAccountBalanceSuccess {
 
 export interface LoadAccountBalanceFailure {
   type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface LoadEstimatedWithdrawFee {
@@ -103,21 +100,7 @@ export interface LoadEstimatedWithdrawFeeSuccess {
 
 export interface LoadEstimatedWithdrawFeeFailure {
   type: ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE;
-  error: Error;
-}
-
-export interface LoadPoolTransactions {
-  type: ExitActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
-export interface LoadPoolTransactionsSuccess {
-  type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailure {
-  type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface StartTransactionApproval {
@@ -148,9 +131,6 @@ export type ExitAction =
   | LoadEstimatedWithdrawFee
   | LoadEstimatedWithdrawFeeSuccess
   | LoadEstimatedWithdrawFeeFailure
-  | LoadPoolTransactions
-  | LoadPoolTransactionsSuccess
-  | LoadPoolTransactionsFailure
   | StartTransactionApproval
   | StopTransactionApproval
   | ResetState;
@@ -209,7 +189,7 @@ function loadFeesSuccess(fees: RecommendedFee): LoadFeesSuccess {
   };
 }
 
-function loadFeesFailure(error: Error): LoadFeesFailure {
+function loadFeesFailure(error: string): LoadFeesFailure {
   return {
     type: ExitActionTypes.LOAD_FEES_FAILURE,
     error,
@@ -229,7 +209,7 @@ function loadAccountBalanceSuccess(balance: BigNumber): LoadAccountBalanceSucces
   };
 }
 
-function loadAccountBalanceFailure(error: Error): LoadAccountBalanceFailure {
+function loadAccountBalanceFailure(error: string): LoadAccountBalanceFailure {
   return {
     type: ExitActionTypes.LOAD_ACCOUNT_BALANCE_FAILURE,
     error,
@@ -251,29 +231,9 @@ function loadEstimatedWithdrawFeeSuccess(
   };
 }
 
-function loadEstimatedWithdrawFeeFailure(error: Error): LoadEstimatedWithdrawFeeFailure {
+function loadEstimatedWithdrawFeeFailure(error: string): LoadEstimatedWithdrawFeeFailure {
   return {
     type: ExitActionTypes.LOAD_ESTIMATED_WITHDRAW_FEE_FAILURE,
-    error,
-  };
-}
-
-function loadPoolTransactions(): LoadPoolTransactions {
-  return {
-    type: ExitActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
-  return {
-    type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
-  return {
-    type: ExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
   };
 }
@@ -300,9 +260,6 @@ export {
   goToBuildTransactionStep,
   goToReviewTransactionStep,
   changeCurrentStep,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   loadAccount,
   loadAccountSuccess,
   loadAccountFailure,

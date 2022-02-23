@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { useTheme } from "react-jss";
-import { push } from "connected-react-router";
-import hermezjs from "@hermeznetwork/hermezjs";
+import { push } from "@lagunovsky/redux-react-router";
+import { HermezWallet, Environment } from "@hermeznetwork/hermezjs";
 
 import useMyAccountStyles from "src/views/my-account/my-account.styles";
 import { changeHeader, openSnackbar } from "src/store/global/global.actions";
@@ -24,7 +24,7 @@ import { version as packagejsonVersion } from "src/../package.json";
 import { AppDispatch, AppState } from "src/store";
 import { Theme } from "src/styles/theme";
 //domain
-import { HermezWallet } from "src/domain";
+import { Message } from "src/domain";
 
 interface MyAccountStateProps {
   wallet: HermezWallet.HermezWallet | undefined;
@@ -35,7 +35,7 @@ interface MyAccountHandlerProps {
   onChangeHeader: () => void;
   onChangePreferredCurrency: (selectedTokenId: string) => void;
   onDisconnectWallet: () => void;
-  onOpenSnackbar: (message: string) => void;
+  onOpenSnackbar: (message: Message) => void;
   onNavigateToForceExit: () => void;
   onNavigateToMyCode: () => void;
 }
@@ -64,7 +64,10 @@ function MyAccount({
    */
   function handleEthereumAddressClick(hermezEthereumAddress: string) {
     copyToClipboard(hermezEthereumAddress);
-    onOpenSnackbar("The Polygon Hermez address has been copied to the clipboard!");
+    onOpenSnackbar({
+      type: "info-msg",
+      text: "The Polygon Hermez address has been copied to the clipboard!",
+    });
   }
 
   /**
@@ -129,7 +132,7 @@ function MyAccount({
             {wallet && (
               <a
                 className={classes.settingContainer}
-                href={`${hermezjs.Environment.getBatchExplorerUrl()}/user-account/${
+                href={`${Environment.getBatchExplorerUrl()}/user-account/${
                   wallet.hermezEthereumAddress
                 }`}
                 target="_blank"

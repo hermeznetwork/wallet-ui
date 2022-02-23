@@ -1,11 +1,9 @@
 import { HomeActionTypes, HomeAction } from "src/store/home/home.actions";
 import { getPaginationData } from "src/utils/api";
 import { Pagination } from "src/utils/api";
-// domain
-import { HermezAccount, PoolTransaction } from "src/domain";
-// persistence
-import { Exits } from "src/persistence";
 import { AsyncTask } from "src/utils/types";
+// domain
+import { Exits, HermezAccount } from "src/domain";
 
 interface ViewAccounts {
   accounts: HermezAccount[];
@@ -16,8 +14,7 @@ interface ViewAccounts {
 export interface HomeState {
   totalBalanceTask: AsyncTask<number, string>;
   accountsTask: AsyncTask<ViewAccounts, string>;
-  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
-  exitsTask: AsyncTask<Exits, Error>;
+  exitsTask: AsyncTask<Exits, string>;
 }
 
 const initialHomeState: HomeState = {
@@ -25,9 +22,6 @@ const initialHomeState: HomeState = {
     status: "pending",
   },
   accountsTask: {
-    status: "pending",
-  },
-  poolTransactionsTask: {
     status: "pending",
   },
   exitsTask: {
@@ -60,7 +54,7 @@ function homeReducer(state: HomeState = initialHomeState, action: HomeAction): H
         ...state,
         totalBalanceTask: {
           status: "failed",
-          error: "An error ocurred loading the total balance of the accounts",
+          error: action.error,
         },
       };
     }
@@ -104,7 +98,7 @@ function homeReducer(state: HomeState = initialHomeState, action: HomeAction): H
         ...state,
         accountsTask: {
           status: "failed",
-          error: "An error ocurred loading the accounts",
+          error: action.error,
         },
       };
     }
@@ -141,30 +135,12 @@ function homeReducer(state: HomeState = initialHomeState, action: HomeAction): H
         },
       };
     }
-    case HomeActionTypes.LOAD_POOL_TRANSACTIONS: {
+    case HomeActionTypes.REFRESH_ACCOUNTS_FAILURE: {
       return {
         ...state,
-        poolTransactionsTask:
-          state.poolTransactionsTask.status === "successful"
-            ? { status: "reloading", data: state.poolTransactionsTask.data }
-            : { status: "loading" },
-      };
-    }
-    case HomeActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS: {
-      return {
-        ...state,
-        poolTransactionsTask: {
-          status: "successful",
-          data: action.transactions,
-        },
-      };
-    }
-    case HomeActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE: {
-      return {
-        ...state,
-        poolTransactionsTask: {
+        accountsTask: {
           status: "failed",
-          error: "An error ocurred loading the transactions from the pool",
+          error: action.error,
         },
       };
     }

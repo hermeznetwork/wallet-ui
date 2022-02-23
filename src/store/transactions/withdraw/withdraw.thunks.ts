@@ -1,16 +1,17 @@
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "ethers";
-import { CoordinatorAPI, Tx } from "@hermeznetwork/hermezjs";
-import { getPoolTransactions } from "@hermeznetwork/hermezjs/src/tx-pool";
 
 import { AppState, AppDispatch, AppThunk } from "src/store";
 import * as withdrawActions from "src/store/transactions/withdraw/withdraw.actions";
-import * as globalThunks from "src/store/global/global.thunks";
+import {
+  processError,
+  addPendingWithdraw,
+  addPendingDelayedWithdraw,
+} from "src/store/global/global.thunks";
 import { openSnackbar } from "src/store/global/global.actions";
-import theme from "src/styles/theme";
 import { mergeDelayedWithdraws } from "src/utils/transactions";
+import { isMetamaskUserRejectedRequestError } from "src/utils/types";
 import { WITHDRAWAL_ZKEY_URL, WITHDRAWAL_WASM_URL } from "src/constants";
-import { createAccount } from "src/utils/accounts";
 // domain
 import {
   Exit,
@@ -19,8 +20,8 @@ import {
   PendingDelayedWithdraw,
   PoolTransaction,
 } from "src/domain";
-// persistence
-import * as persistence from "src/persistence";
+// adapters
+import * as adapters from "src/adapters";
 
 /**
  * Fetches the account details for an accountIndex in the Hermez API.
@@ -38,19 +39,18 @@ function fetchHermezAccount(
 
     dispatch(withdrawActions.loadAccount());
 
-    return CoordinatorAPI.getAccount(accountIndex)
-      .then((account) =>
-        createAccount(
-          account,
-          poolTransactions,
-          undefined,
-          tokensPriceTask,
-          preferredCurrency,
-          fiatExchangeRates
-        )
+    return adapters.hermezApi
+      .getHermezAccount(
+        accountIndex,
+        tokensPriceTask,
+        preferredCurrency,
+        fiatExchangeRates,
+        poolTransactions
       )
       .then((res) => dispatch(withdrawActions.loadAccountSuccess(res)))
-      .catch((error: Error) => dispatch(withdrawActions.loadAccountFailure(error.message)));
+      .catch((error: unknown) => {
+        dispatch(processError(error, withdrawActions.loadAccountFailure));
+      });
   };
 }
 /**
@@ -70,7 +70,8 @@ function fetchExit(
     dispatch(withdrawActions.loadExit());
 
     if (wallet) {
-      CoordinatorAPI.getExit(batchNum, accountIndex)
+      adapters.hermezApi
+        .getExit(batchNum, accountIndex)
         .then((exit: Exit) => {
           // If we are completing a delayed withdrawal, we need to merge all delayed withdrawals
           // of the same token to show the correct amount in Transaction Overview
@@ -86,35 +87,16 @@ function fetchExit(
               dispatch(withdrawActions.loadExitSuccess(mergedPendingDelayedWithdraws[0]));
             } else {
               dispatch(
-                withdrawActions.loadExitFailure(
-                  new Error("Couldn't find the pending delayed withdraw")
-                )
+                withdrawActions.loadExitFailure("Couldn't find the pending delayed withdraw")
               );
             }
           } else {
             dispatch(withdrawActions.loadExitSuccess(exit));
           }
         })
-        .catch((err) => dispatch(withdrawActions.loadExitFailure(err)));
-    }
-  };
-}
-
-/**
- * Fetches the transactions which are in the transactions pool
- */
-function fetchPoolTransactions(): AppThunk {
-  return (dispatch: AppDispatch, getState: () => AppState) => {
-    dispatch(withdrawActions.loadPoolTransactions());
-
-    const {
-      global: { wallet },
-    } = getState();
-
-    if (wallet !== undefined) {
-      getPoolTransactions(undefined, wallet.publicKeyCompressedHex)
-        .then((transactions) => dispatch(withdrawActions.loadPoolTransactionsSuccess(transactions)))
-        .catch((err) => dispatch(withdrawActions.loadPoolTransactionsFailure(err)));
+        .catch((error: unknown) => {
+          dispatch(processError(error, withdrawActions.loadExitFailure));
+        });
     }
   };
 }
@@ -139,17 +121,18 @@ function withdraw(
 
     if (wallet && signer) {
       if (!completeDelayedWithdrawal) {
-        Tx.withdrawCircuit(
-          exit,
-          instantWithdrawal,
-          WITHDRAWAL_WASM_URL,
-          WITHDRAWAL_ZKEY_URL,
-          signer
-        )
+        adapters.hermezApi
+          .withdrawCircuit(
+            exit,
+            instantWithdrawal,
+            WITHDRAWAL_WASM_URL,
+            WITHDRAWAL_ZKEY_URL,
+            signer
+          )
           .then((txData) => {
             if (instantWithdrawal) {
               dispatch(
-                globalThunks.addPendingWithdraw({
+                addPendingWithdraw({
                   ...exit,
                   hash: txData.hash,
                   id: withdrawalId,
@@ -159,7 +142,7 @@ function withdraw(
               );
             } else {
               dispatch(
-                globalThunks.addPendingDelayedWithdraw({
+                addPendingDelayedWithdraw({
                   ...exit,
                   hash: txData.hash,
                   id: withdrawalId,
@@ -171,16 +154,15 @@ function withdraw(
             }
             handleTransactionSuccess(dispatch, account.accountIndex);
           })
-          .catch((error) => {
-            console.error(error);
-            dispatch(withdrawActions.stopTransactionApproval());
+          .catch((error: unknown) => {
             handleTransactionFailure(dispatch, error);
           });
       } else {
-        Tx.delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
+        adapters.hermezApi
+          .delayedWithdraw(wallet.hermezEthereumAddress, account.token, signer)
           .then((txData) => {
             dispatch(
-              globalThunks.addPendingWithdraw({
+              addPendingWithdraw({
                 ...exit,
                 hash: txData.hash,
                 hermezEthereumAddress: wallet.hermezEthereumAddress,
@@ -194,9 +176,7 @@ function withdraw(
             );
             handleTransactionSuccess(dispatch, account.accountIndex);
           })
-          .catch((error) => {
-            console.error(error);
-            dispatch(withdrawActions.stopTransactionApproval());
+          .catch((error: unknown) => {
             handleTransactionFailure(dispatch, error);
           });
       }
@@ -205,18 +185,33 @@ function withdraw(
 }
 
 function handleTransactionSuccess(dispatch: AppDispatch, accountIndex: string) {
-  dispatch(openSnackbar("Transaction submitted"));
+  dispatch(openSnackbar({ type: "info-msg", text: "Transaction submitted" }));
   dispatch(push(`/accounts/${accountIndex}`));
 }
 
 function handleTransactionFailure(dispatch: AppDispatch, error: unknown) {
-  const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
-  const errorMsg = persistence.getErrorMessage(error);
-  const snackbarMsg = errorMsg.includes(withdrawAlreadyDoneErrorCode)
-    ? "The withdraw has already been done"
-    : errorMsg;
-
-  dispatch(openSnackbar(`Transaction failed - ${snackbarMsg}`, theme.palette.red.main));
+  dispatch(withdrawActions.stopTransactionApproval());
+  if (isMetamaskUserRejectedRequestError(error) === false) {
+    const withdrawAlreadyDoneErrorCode = "WITHDRAW_ALREADY_DONE";
+    adapters.errors
+      .parseError(error)
+      .then((errorMsg) => {
+        dispatch(
+          openSnackbar(
+            errorMsg.includes(withdrawAlreadyDoneErrorCode)
+              ? {
+                  type: "info-msg",
+                  text: "The withdraw has already been done",
+                }
+              : {
+                  type: "error",
+                  parsed: errorMsg,
+                }
+          )
+        );
+      })
+      .catch(console.error);
+  }
 }
 
-export { fetchHermezAccount, fetchExit, fetchPoolTransactions, withdraw };
+export { fetchHermezAccount, fetchExit, withdraw };

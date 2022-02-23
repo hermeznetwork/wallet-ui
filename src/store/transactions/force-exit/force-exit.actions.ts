@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 // domain
-import { HermezAccount, PoolTransaction } from "src/domain";
-import { Accounts } from "src/persistence";
+import { HermezAccounts, HermezAccount } from "src/domain";
 
 export enum ForceExitActionTypes {
   GO_TO_CHOOSE_ACCOUNT_STEP = "[FORCE EXIT] GO TO CHOOSE ACCOUNT STEP",
@@ -11,9 +10,6 @@ export enum ForceExitActionTypes {
   LOAD_ACCOUNTS = "[FORCE EXIT] LOAD ACCOUNTS",
   LOAD_ACCOUNTS_SUCCESS = "[FORCE EXIT] LOAD ACCOUNTS SUCCESS",
   LOAD_ACCOUNTS_FAILURE = "[FORCE EXIT] LOAD ACCOUNTS FAILURE",
-  LOAD_POOL_TRANSACTIONS = "[FORCE EXIT] LOAD POOL TRANSACTIONS",
-  LOAD_POOL_TRANSACTIONS_SUCCESS = "[FORCE EXIT] LOAD POOL TRANSACTIONS SUCCESS",
-  LOAD_POOL_TRANSACTIONS_FAILURE = "[FORCE EXIT] LOAD POOL TRANSACTIONS FAILURE",
   START_TRANSACTION_APPROVAL = "[FORCE EXIT] START TRANSACTION APPROVAL",
   STOP_TRANSACTION_APPROVAL = "[FORCE EXIT] STOP TRANSACTION APPROVAL",
   RESET_STATE = "[FORCE EXIT] RESET STATE",
@@ -46,26 +42,12 @@ export interface LoadAccounts {
 
 export interface LoadAccountsSuccess {
   type: ForceExitActionTypes.LOAD_ACCOUNTS_SUCCESS;
-  accounts: Accounts;
+  accounts: HermezAccounts;
 }
 
 export interface LoadAccountsFailure {
   type: ForceExitActionTypes.LOAD_ACCOUNTS_FAILURE;
-  error: Error;
-}
-
-export interface LoadPoolTransactions {
-  type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS;
-}
-
-export interface LoadPoolTransactionsSuccess {
-  type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS;
-  transactions: PoolTransaction[];
-}
-
-export interface LoadPoolTransactionsFailure {
-  type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE;
-  error: Error;
+  error: string;
 }
 
 export interface StartTransactionApproval {
@@ -87,9 +69,6 @@ export type ForceExitAction =
   | LoadAccounts
   | LoadAccountsSuccess
   | LoadAccountsFailure
-  | LoadPoolTransactions
-  | LoadPoolTransactionsSuccess
-  | LoadPoolTransactionsFailure
   | StartTransactionApproval
   | StopTransactionApproval
   | ResetState;
@@ -120,36 +99,16 @@ function loadAccounts(): LoadAccounts {
   };
 }
 
-function loadAccountsSuccess(accounts: Accounts): LoadAccountsSuccess {
+function loadAccountsSuccess(accounts: HermezAccounts): LoadAccountsSuccess {
   return {
     type: ForceExitActionTypes.LOAD_ACCOUNTS_SUCCESS,
     accounts,
   };
 }
 
-function loadAccountsFailure(error: Error): LoadAccountsFailure {
+function loadAccountsFailure(error: string): LoadAccountsFailure {
   return {
     type: ForceExitActionTypes.LOAD_ACCOUNTS_FAILURE,
-    error,
-  };
-}
-
-function loadPoolTransactions(): LoadPoolTransactions {
-  return {
-    type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS,
-  };
-}
-
-function loadPoolTransactionsSuccess(transactions: PoolTransaction[]): LoadPoolTransactionsSuccess {
-  return {
-    type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_SUCCESS,
-    transactions,
-  };
-}
-
-function loadPoolTransactionsFailure(error: Error): LoadPoolTransactionsFailure {
-  return {
-    type: ForceExitActionTypes.LOAD_POOL_TRANSACTIONS_FAILURE,
     error,
   };
 }
@@ -179,9 +138,6 @@ export {
   loadAccounts,
   loadAccountsSuccess,
   loadAccountsFailure,
-  loadPoolTransactions,
-  loadPoolTransactionsSuccess,
-  loadPoolTransactionsFailure,
   startTransactionApproval,
   stopTransactionApproval,
   resetState,

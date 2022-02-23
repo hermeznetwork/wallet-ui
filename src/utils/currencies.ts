@@ -1,5 +1,4 @@
-import { getFeeValue } from "@hermeznetwork/hermezjs/src/tx-utils";
-import { getTokenAmountString } from "@hermeznetwork/hermezjs/src/utils";
+import { TxUtils, Utils } from "@hermeznetwork/hermezjs";
 
 import { MAX_TOKEN_DECIMALS } from "src/constants";
 import { FiatExchangeRates, Token } from "src/domain";
@@ -86,7 +85,9 @@ function getFeeInUsd(feeIndex: number, amount: string, token: Token): number {
   if (!token.USD) {
     return 0;
   }
-  const feeInToken = Number(getTokenAmountString(getFeeValue(feeIndex, amount), token.decimals));
+  const feeInToken = Number(
+    Utils.getTokenAmountString(TxUtils.getFeeValue(feeIndex, amount), token.decimals)
+  );
   const feeInFiat = feeInToken * token.USD;
   return feeInFiat;
 }

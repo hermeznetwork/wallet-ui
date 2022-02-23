@@ -27,7 +27,6 @@ const useTransactionAmountInputStyles = createUseStyles((theme: Theme) => ({
   amountCurrency: {
     fontSize: `${theme.spacing(2)}px`,
     fontWeight: theme.fontWeights.bold,
-    color: theme.palette.black.main,
     marginBottom: theme.spacing(0.5),
     [theme.breakpoints.upSm]: {
       fontSize: `${theme.spacing(2.5)}px`,

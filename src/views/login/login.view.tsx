@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch } from "src/store";
 import * as globalActions from "src/store/global/global.actions";
@@ -13,7 +14,7 @@ import WalletLoader from "src/views/login/components/wallet-loader/wallet-loader
 import CreateAccountAuth from "src/views/login/components/create-account-auth/create-account-auth.view";
 import useLoginStyles from "src/views/login/login.styles";
 // domain
-import { EthereumNetwork, HermezWallet, AuthSignatures } from "src/domain";
+import { EthereumNetwork, AuthSignatures } from "src/domain";
 
 interface LoginStateProps {
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;

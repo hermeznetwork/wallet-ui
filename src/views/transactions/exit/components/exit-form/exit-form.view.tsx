@@ -1,5 +1,5 @@
 import React from "react";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums } from "@hermeznetwork/hermezjs";
 import { BigNumber } from "ethers";
 
 import useExitFormStyles from "src/views/transactions/exit/components/exit-form/exit-form.styles";
@@ -20,6 +20,9 @@ import {
   RecommendedFee,
   Token,
 } from "src/domain";
+
+const { TxType } = Enums;
+
 export interface TxData {
   amount: BigNumber;
   from: HermezAccount;
@@ -28,8 +31,8 @@ export interface TxData {
 
 interface ExitFormStateProps {
   account: HermezAccount;
-  feesTask: AsyncTask<RecommendedFee, Error>;
-  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, Error>;
+  feesTask: AsyncTask<RecommendedFee, string>;
+  estimatedWithdrawFeeTask: AsyncTask<EstimatedL1Fee, string>;
   doesUserHaveEnoughEthForWithdraw: boolean;
   preferredCurrency: string;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;

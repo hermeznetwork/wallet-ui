@@ -1,12 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { push } from "connected-react-router";
+import { push } from "@lagunovsky/redux-react-router";
 import { BigNumber } from "@ethersproject/bignumber";
-import { TxType } from "@hermeznetwork/hermezjs/src/enums";
+import { Enums, HermezWallet } from "@hermeznetwork/hermezjs";
 
 import { AppState, AppDispatch } from "src/store";
 import * as transferThunks from "src/store/transactions/transfer/transfer.thunks";
+import * as globalThunks from "src/store/global/global.thunks";
 import * as transferActions from "src/store/transactions/transfer/transfer.actions";
 import * as transferReducer from "src/store/transactions/transfer/transfer.reducer";
 import { changeHeader } from "src/store/global/global.actions";
@@ -23,18 +24,19 @@ import TransferForm, {
 import {
   FiatExchangeRates,
   HermezAccount,
-  HermezWallet,
   PoolTransaction,
   RecommendedFee,
   TransactionReceiver,
 } from "src/domain";
 
+const { TxType } = Enums;
+
 interface TransferStateProps {
-  poolTransactionsTask: AsyncTask<PoolTransaction[], Error>;
+  poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   step: transferActions.Step;
   accountTask: AsyncTask<HermezAccount, string>;
-  accountsTask: AsyncTask<transferReducer.AccountsWithPagination, Error>;
-  feesTask: AsyncTask<RecommendedFee, Error>;
+  accountsTask: AsyncTask<transferReducer.AccountsWithPagination, string>;
+  feesTask: AsyncTask<RecommendedFee, string>;
   hasReceiverApprovedAccountsCreation?: boolean;
   isTransactionBeingApproved: boolean;
   transactionToReview: transferActions.TransactionToReview | undefined;
@@ -54,10 +56,10 @@ interface TransferHandlerProps {
   onLoadFees: () => void;
   onLoadPoolTransactions: () => void;
   onLoadAccounts: (
-    fromItem: number | undefined,
     poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string
+    preferredCurrency: string,
+    fromItem?: number
   ) => void;
   onGoToChooseAccountStep: () => void;
   onGoToBuildTransactionStep: (account: HermezAccount) => void;
@@ -227,7 +229,7 @@ function Transfer({
 }
 
 const mapStateToProps = (state: AppState): TransferStateProps => ({
-  poolTransactionsTask: state.transfer.poolTransactionsTask,
+  poolTransactionsTask: state.global.poolTransactionsTask,
   step: state.transfer.step,
   wallet: state.global.wallet,
   accountTask: state.transfer.accountTask,
@@ -301,15 +303,15 @@ const mapDispatchToProps = (dispatch: AppDispatch): TransferHandlerProps => ({
       )
     ),
   onLoadFees: () => dispatch(transferThunks.fetchFees()),
-  onLoadPoolTransactions: () => dispatch(transferThunks.fetchPoolTransactions()),
+  onLoadPoolTransactions: () => dispatch(globalThunks.fetchPoolTransactions()),
   onLoadAccounts: (
-    fromItem: number | undefined,
     poolTransactions: PoolTransaction[],
     fiatExchangeRates: FiatExchangeRates,
-    preferredCurrency: string
+    preferredCurrency: string,
+    fromItem?: number
   ) =>
     dispatch(
-      transferThunks.fetchAccounts(fromItem, poolTransactions, fiatExchangeRates, preferredCurrency)
+      transferThunks.fetchAccounts(poolTransactions, fiatExchangeRates, preferredCurrency, fromItem)
     ),
   onGoToChooseAccountStep: () => dispatch(transferActions.goToChooseAccountStep()),
   onGoToBuildTransactionStep: (account: HermezAccount) =>
