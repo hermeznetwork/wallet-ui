@@ -71,9 +71,10 @@ function accountDetailsReducer(
     case AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE: {
       return {
         ...state,
-        l1TokenBalanceTask: {
-          status: "loading",
-        },
+        l1TokenBalanceTask:
+          state.l1TokenBalanceTask.status === "successful"
+            ? { status: "reloading", data: state.l1TokenBalanceTask.data }
+            : { status: "loading" },
       };
     }
     case AccountDetailsActionTypes.LOAD_L1_TOKEN_BALANCE_SUCCESS: {

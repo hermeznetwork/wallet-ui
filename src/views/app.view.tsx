@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { useTheme } from "react-jss";
 import { HermezWallet } from "@hermeznetwork/hermezjs";
@@ -158,6 +158,7 @@ function App({
               }
             />
           ))}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BaseLayout>
   );
