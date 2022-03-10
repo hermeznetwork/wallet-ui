@@ -194,7 +194,6 @@ export interface ProductionVars {
   REACT_APP_INFURA_API_KEY: string;
   REACT_APP_PRICE_UPDATER_API_URL: string;
   REACT_APP_PRICE_UPDATER_API_KEY: string;
-  REACT_APP_WALLETCONNECT_BRIDGE: string;
 }
 
 export type ProductionEnv = ProductionLiteral & ProductionVars;

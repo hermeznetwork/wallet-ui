@@ -26,7 +26,6 @@ const productionVarsParser = StrictSchema<ProductionVars>()(
     REACT_APP_INFURA_API_KEY: z.string(),
     REACT_APP_PRICE_UPDATER_API_URL: z.string(),
     REACT_APP_PRICE_UPDATER_API_KEY: z.string(),
-    REACT_APP_WALLETCONNECT_BRIDGE: z.string(),
   })
 );
 
