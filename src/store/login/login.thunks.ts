@@ -75,7 +75,6 @@ function fetchWallet(walletName: loginActions.WalletName): AppThunk {
           case loginActions.WalletName.WALLET_CONNECT: {
             const walletConnectProvider = new WalletConnectProvider({
               infuraId: env.REACT_APP_INFURA_API_KEY,
-              bridge: env.REACT_APP_WALLETCONNECT_BRIDGE,
             });
             Providers.setProvider(walletConnectProvider, Providers.PROVIDER_TYPES.WEB3);
             break;
