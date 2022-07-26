@@ -155,19 +155,6 @@ function loadEnv(): AppThunk {
   };
 }
 
-function checkHermezStatus(): AppThunk {
-  return (dispatch: AppDispatch) => {
-    dispatch(globalActions.loadHermezStatus());
-
-    return adapters.hermezWeb
-      .getNetworkStatus()
-      .then((status: number) => dispatch(globalActions.loadHermezStatusSuccess(status)))
-      .catch((error: unknown) => {
-        dispatch(processError(error, globalActions.loadHermezStatusFailure));
-      });
-  };
-}
-
 /**
  * Fetches the transactions which are in the transactions pool
  */
@@ -1094,7 +1081,6 @@ export {
   fetchFiatExchangeRates,
   changeNetworkStatus,
   loadEnv,
-  checkHermezStatus,
   fetchPoolTransactions,
   addPendingWithdraw,
   removePendingWithdraw,

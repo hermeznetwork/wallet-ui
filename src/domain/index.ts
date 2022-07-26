@@ -31,10 +31,6 @@ export type {
 
 export type NetworkStatus = "online" | "offline";
 
-export interface HermezStatus {
-  isUnderMaintenance: boolean;
-}
-
 export interface EthereumNetwork {
   chainId: number;
   name: string;
