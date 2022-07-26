@@ -7,17 +7,15 @@ import PageHeader from "src/views/shared/page-header/page-header.view";
 import Snackbar from "src/views/shared/snackbar/snackbar.view";
 import Spinner from "src/views/shared/spinner/spinner.view";
 import { AsyncTask } from "src/utils/types";
-import UnderMaintenanceError from "src/views/shared/under-maintenance-error/under-maintenance-error.view";
 import { Theme } from "src/styles/theme";
 import useBaseLayoutStyles from "src/views/shared/base-layout/base-layout.styles";
 //domain
-import { FiatExchangeRates, HermezStatus } from "src/domain";
+import { FiatExchangeRates } from "src/domain";
 
 interface BaseLayoutProps {
   header: HeaderState;
   snackbar: SnackbarState;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  hermezStatusTask: AsyncTask<HermezStatus, string>;
   onGoBack: (action: AppAction) => void;
   onClose: (action: AppAction) => void;
   onCloseSnackbar: () => void;
@@ -29,7 +27,6 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   snackbar,
   children,
   fiatExchangeRatesTask,
-  hermezStatusTask,
   onGoBack,
   onClose,
   onCloseSnackbar,
@@ -38,11 +35,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   const theme = useTheme<Theme>();
   const classes = useBaseLayoutStyles();
 
-  if (hermezStatusTask.status === "successful" && hermezStatusTask.data.isUnderMaintenance) {
-    return <UnderMaintenanceError />;
-  }
-
-  if (hermezStatusTask.status !== "successful" || fiatExchangeRatesTask.status !== "successful") {
+  if (fiatExchangeRatesTask.status !== "successful") {
     return (
       <>
         <div className={classes.spinnerContainer}>

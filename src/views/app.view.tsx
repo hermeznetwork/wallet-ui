@@ -17,7 +17,7 @@ import { COORDINATOR_STATE_REFRESH_RATE, RETRY_POOL_TXS_RATE } from "src/constan
 import { AsyncTask } from "src/utils/types";
 import { Theme } from "src/styles/theme";
 //domain
-import { EthereumNetwork, Env, FiatExchangeRates, NetworkStatus, HermezStatus } from "src/domain";
+import { EthereumNetwork, Env, FiatExchangeRates, NetworkStatus } from "src/domain";
 
 interface AppStateProps {
   env: Env | undefined;
@@ -25,7 +25,6 @@ interface AppStateProps {
   header: HeaderState;
   snackbar: SnackbarState;
   fiatExchangeRatesTask: AsyncTask<FiatExchangeRates, string>;
-  hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
 }
 
@@ -37,7 +36,6 @@ interface AppHandlerProps {
   onReportFromSnackbar: (error: string) => void;
   onLoadCoordinatorState: () => void;
   onLoadFiatExchangeRates: (env: Env) => void;
-  onCheckHermezStatus: () => void;
   onLoadEnv: () => void;
   onChangeNetworkStatus: (networkStatus: NetworkStatus) => void;
   onDisconnectAccount: () => void;
@@ -54,7 +52,6 @@ function App({
   header,
   snackbar,
   fiatExchangeRatesTask,
-  hermezStatusTask,
   ethereumNetworkTask,
   onChangeRedirectRoute,
   onGoBack,
@@ -63,7 +60,6 @@ function App({
   onReportFromSnackbar,
   onLoadCoordinatorState,
   onLoadFiatExchangeRates,
-  onCheckHermezStatus,
   onLoadEnv,
   onChangeNetworkStatus,
   onDisconnectAccount,
@@ -80,10 +76,9 @@ function App({
 
   React.useEffect(() => {
     if (env) {
-      onCheckHermezStatus();
       onLoadFiatExchangeRates(env);
     }
-  }, [env, onCheckHermezStatus, onLoadFiatExchangeRates]);
+  }, [env, onLoadFiatExchangeRates]);
 
   React.useEffect(() => {
     if (ethereumNetworkTask.status === "successful") {
@@ -132,7 +127,6 @@ function App({
       header={header}
       snackbar={snackbar}
       fiatExchangeRatesTask={fiatExchangeRatesTask}
-      hermezStatusTask={hermezStatusTask}
       onGoBack={onGoBack}
       onClose={onClose}
       onCloseSnackbar={onCloseSnackbar}
@@ -170,7 +164,6 @@ const mapStateToProps = (state: AppState): AppStateProps => ({
   header: state.global.header,
   snackbar: state.global.snackbar,
   fiatExchangeRatesTask: state.global.fiatExchangeRatesTask,
-  hermezStatusTask: state.global.hermezStatusTask,
   ethereumNetworkTask: state.global.ethereumNetworkTask,
 });
 
@@ -182,7 +175,6 @@ const mapDispatchToProps = (dispatch: AppDispatch): AppHandlerProps => ({
   onClose: (action: AppAction) => dispatch(action),
   onCloseSnackbar: () => dispatch(closeSnackbar()),
   onLoadEnv: () => dispatch(globalThunks.loadEnv()),
-  onCheckHermezStatus: () => dispatch(globalThunks.checkHermezStatus()),
   onLoadCoordinatorState: () => dispatch(globalThunks.fetchCoordinatorState()),
   onLoadFiatExchangeRates: (env: Env) => dispatch(globalThunks.fetchFiatExchangeRates(env)),
   onCheckPendingTransactions: () => dispatch(globalThunks.checkPendingTransactions()),

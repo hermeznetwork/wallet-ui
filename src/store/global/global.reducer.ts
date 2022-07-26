@@ -8,7 +8,6 @@ import {
   Env,
   EthereumNetwork,
   FiatExchangeRates,
-  HermezStatus,
   Message,
   NetworkStatus,
   PendingDelayedWithdraws,
@@ -53,7 +52,6 @@ export type SnackbarState =
 
 export interface GlobalState {
   env: Env | undefined;
-  hermezStatusTask: AsyncTask<HermezStatus, string>;
   ethereumNetworkTask: AsyncTask<EthereumNetwork, string>;
   poolTransactionsTask: AsyncTask<PoolTransaction[], string>;
   wallet: HermezWallet.HermezWallet | undefined;
@@ -77,9 +75,6 @@ export interface GlobalState {
 function getInitialGlobalState(): GlobalState {
   return {
     env: undefined,
-    hermezStatusTask: {
-      status: "pending",
-    },
     ethereumNetworkTask: {
       status: "pending",
     },
@@ -136,32 +131,6 @@ function globalReducer(
       return {
         ...state,
         env: undefined,
-      };
-    }
-    case GlobalActionTypes.LOAD_HERMEZ_STATUS: {
-      return {
-        ...state,
-        hermezStatusTask: {
-          status: "loading",
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS: {
-      return {
-        ...state,
-        hermezStatusTask: {
-          status: "successful",
-          data: { isUnderMaintenance: Boolean(action.status) },
-        },
-      };
-    }
-    case GlobalActionTypes.LOAD_HERMEZ_STATUS_FAILURE: {
-      return {
-        ...state,
-        hermezStatusTask: {
-          status: "failed",
-          error: action.error,
-        },
       };
     }
     case GlobalActionTypes.LOAD_ETHEREUM_NETWORK: {

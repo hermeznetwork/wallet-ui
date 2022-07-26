@@ -21,9 +21,6 @@ export enum GlobalActionTypes {
   LOAD_ENV = "[GLOBAL] LOAD ENV",
   LOAD_ENV_SUCCESS = "[GLOBAL] LOAD ENV SUCCESS",
   LOAD_ENV_FAILURE = "[GLOBAL] LOAD ENV FAILURE",
-  LOAD_HERMEZ_STATUS = "[GLOBAL] LOAD HERMEZ STATUS",
-  LOAD_HERMEZ_STATUS_SUCCESS = "[GLOBAL] LOAD HERMEZ STATUS SUCCESS",
-  LOAD_HERMEZ_STATUS_FAILURE = "[GLOBAL] LOAD HERMEZ STATUS FAILURE",
   LOAD_ETHEREUM_NETWORK = "[GLOBAL] LOAD ETHEREUM NETWORK",
   LOAD_ETHEREUM_NETWORK_SUCCESS = "[GLOBAL] LOAD ETHEREUM NETWORK SUCCESS",
   LOAD_POOL_TRANSACTIONS = "[GLOBAL] LOAD POOL TRANSACTIONS",
@@ -77,20 +74,6 @@ export interface LoadEnvSuccess {
 
 export interface LoadEnvFailure {
   type: GlobalActionTypes.LOAD_ENV_FAILURE;
-  error: string;
-}
-
-export interface LoadHermezStatus {
-  type: GlobalActionTypes.LOAD_HERMEZ_STATUS;
-}
-
-export interface LoadHermezStatusSuccess {
-  type: GlobalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS;
-  status: number;
-}
-
-export interface LoadHermezStatusFailure {
-  type: GlobalActionTypes.LOAD_HERMEZ_STATUS_FAILURE;
   error: string;
 }
 
@@ -310,9 +293,6 @@ export type GlobalAction =
   | LoadEnv
   | LoadEnvSuccess
   | LoadEnvFailure
-  | LoadHermezStatus
-  | LoadHermezStatusSuccess
-  | LoadHermezStatusFailure
   | LoadEthereumNetwork
   | LoadEthereumNetworkSuccess
   | LoadPoolTransactions
@@ -370,26 +350,6 @@ function loadEnvSuccess(env: Env): LoadEnvSuccess {
 function loadEnvFailure(error: string): LoadEnvFailure {
   return {
     type: GlobalActionTypes.LOAD_ENV_FAILURE,
-    error,
-  };
-}
-
-function loadHermezStatus(): LoadHermezStatus {
-  return {
-    type: GlobalActionTypes.LOAD_HERMEZ_STATUS,
-  };
-}
-
-function loadHermezStatusSuccess(status: number): LoadHermezStatusSuccess {
-  return {
-    type: GlobalActionTypes.LOAD_HERMEZ_STATUS_SUCCESS,
-    status,
-  };
-}
-
-function loadHermezStatusFailure(error: string): LoadHermezStatusFailure {
-  return {
-    type: GlobalActionTypes.LOAD_HERMEZ_STATUS_FAILURE,
     error,
   };
 }
@@ -745,9 +705,6 @@ export {
   loadEnv,
   loadEnvSuccess,
   loadEnvFailure,
-  loadHermezStatus,
-  loadHermezStatusSuccess,
-  loadHermezStatusFailure,
   loadEthereumNetwork,
   loadEthereumNetworkSuccess,
   loadPoolTransactions,
